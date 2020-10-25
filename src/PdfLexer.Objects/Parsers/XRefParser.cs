@@ -7,7 +7,7 @@ namespace PdfLexer.Objects.Parsers
 {
     public class XRefParser
     {
-                private static byte[] startxref = new byte[9] {
+        private static byte[] startxref = new byte[9] {
             (byte)'s',(byte)'t',(byte)'a',(byte)'r',(byte)'t',(byte)'x',(byte)'r',(byte)'e',(byte)'f'
         };
         private static byte[] trailer = new byte[7] {
@@ -24,7 +24,8 @@ namespace PdfLexer.Objects.Parsers
             if (start == -1)
             {
                 return start;
-            } else
+            }
+            else
             {
                 return start + 9;
             }
@@ -84,7 +85,8 @@ namespace PdfLexer.Objects.Parsers
             if (numFound == false)
             {
                 throw new ApplicationException("Incomplete file, xref offset not finished.");
-            } else if (numberType != NumberType.Integer)
+            }
+            else if (numberType != NumberType.Integer)
             {
                 throw new ApplicationException("Non-integer byte offset given for xref.");
             }
@@ -112,9 +114,10 @@ namespace PdfLexer.Objects.Parsers
                     middlespace = false;
                     readingSecond = true;
                     secondStart = i;
-                } else if (readingSecond && CommonUtil.IsWhiteSpace(chars, i))
+                }
+                else if (readingSecond && CommonUtil.IsWhiteSpace(chars, i))
                 {
-                    return (first, int.Parse(chars.Slice(secondStart, i-secondStart)));
+                    return (first, int.Parse(chars.Slice(secondStart, i - secondStart)));
                 }
             }
             return (first, int.Parse(chars.Slice(secondStart)));
@@ -170,7 +173,7 @@ namespace PdfLexer.Objects.Parsers
         }
     }
 
-        internal enum XRefParseStage
+    internal enum XRefParseStage
     {
         Start,
         Records,
@@ -180,7 +183,7 @@ namespace PdfLexer.Objects.Parsers
     {
 
         private ReadOnlySpan<byte> _data;
-        
+
         private XRefParseStage stage;
         private Span<char> _buffer;
         private uint currentObject;
@@ -385,7 +388,8 @@ namespace PdfLexer.Objects.Parsers
                     tableStart = bytes.Slice((int)offset);
                     tableOffset = (int)offset;
                     hasTable = true;
-                } else
+                }
+                else
                 {
                     hasTable = false;
                 }

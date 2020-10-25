@@ -21,7 +21,7 @@ namespace PdfLexer.Objects.Parsers
                     {
                         throw new ApplicationException("Dictionary missing value for key " + name);
                     }
-                    dict.Values[name] = new PdfLazyObject(dictReader.ObjectType, offset+dictReader.currentStart, dictReader.currentLength);
+                    dict.Values[name] = new PdfLazyObject(dictReader.ObjectType, offset + dictReader.currentStart, dictReader.currentLength);
                 }
             }
 
@@ -37,6 +37,7 @@ namespace PdfLexer.Objects.Parsers
             }
             return dict;
         }
+
         public static bool GetDict(ReadOnlySpan<byte> bytes, out ReadOnlySpan<byte> dictBytes)
         {
             var parser = new NestedParser(bytes);

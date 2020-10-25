@@ -2,7 +2,7 @@ using System;
 
 namespace PdfLexer.Objects.Parsers
 {
-    internal class IndirectSequences
+    public class IndirectSequences
     {
         public static byte[] obj = new byte[] { (byte)'o', (byte)'b', (byte)'j' };
         public static byte[] endobj = new byte[] { (byte)'e', (byte)'n', (byte)'d',
@@ -24,13 +24,6 @@ namespace PdfLexer.Objects.Parsers
     {
         public static IndirectReference ParseIndirectReference(ReadOnlySpan<byte> bytes, int offset)
         {
-            if (offset > 0)
-            {
-                // todo optimize this
-                // number parser doesn't accept offset
-                bytes = bytes.Slice(offset);
-            }
-
             var used = NumberParser.GetInt(bytes, offset, out int objNum);
             if (used == -1)
             {
@@ -66,7 +59,7 @@ namespace PdfLexer.Objects.Parsers
         /// <summary>
         /// Gets length of bytes used by an indirect reference.
         /// Should only be used after confirming token type is indirect ref
-        /// as this method blindy assumes it is correctly structured.
+        /// as this method assumes it is correctly structured.
         /// </summary>
         /// <param name="bytes"></param>
         /// <returns></returns>
@@ -74,7 +67,5 @@ namespace PdfLexer.Objects.Parsers
         {
             return bytes.IndexOf((byte)'R') + 1;
         }
-
-
     }
 }
