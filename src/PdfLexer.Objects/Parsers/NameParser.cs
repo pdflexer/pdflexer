@@ -6,7 +6,7 @@ namespace PdfLexer.Objects.Parsers
 {
     public class NameParser
     {
-        private static byte[] nameTerminators = new byte[16] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
+        public static byte[] nameTerminators = new byte[16] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
             (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
         public static int CountNameBytes(ReadOnlySpan<byte> bytes)
         {

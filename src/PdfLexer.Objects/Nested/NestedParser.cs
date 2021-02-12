@@ -1,17 +1,18 @@
 using System;
+using System.Buffers;
 using PdfLexer.Objects.Parsers;
 
 namespace PdfLexer.Objects.Nested
 {
-public ref struct NestedParser
+    public ref struct NestedParser
     {
         private ReadOnlySpan<byte> _data;
-
         internal int currentStart;
         internal int currentLength;
-        private int beginning;
-        private bool isFinished;
-        private NestedParseType runType;
+        internal int beginning;
+        internal bool isFinished;
+        internal NestedParseType runType;
+
 
         public PdfObjectType ObjectType { get; private set; }
 
@@ -78,8 +79,6 @@ public ref struct NestedParser
                 // bump to next object
                 currentStart += currentLength;
             }
-
-
 
             var used = CommonUtil.FindNextToken(_data.Slice(currentStart), out PdfTokenType type);
             if (used == -1)

@@ -10,7 +10,7 @@ namespace PdfLexer.Objects.Parsers
         private static byte[] startxref = new byte[9] {
             (byte)'s',(byte)'t',(byte)'a',(byte)'r',(byte)'t',(byte)'x',(byte)'r',(byte)'e',(byte)'f'
         };
-        private static byte[] trailer = new byte[7] {
+        public static byte[] trailer = new byte[7] {
             (byte)'t',(byte)'r',(byte)'a',(byte)'i',(byte)'l',(byte)'e',(byte)'r'
         };
         public static int GetXrefStart(ReadOnlySpan<byte> bytes)

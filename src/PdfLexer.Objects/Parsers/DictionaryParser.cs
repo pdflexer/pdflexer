@@ -7,6 +7,8 @@ namespace PdfLexer.Objects.Parsers
 {
     public class DictionaryParser
     {
+        public static byte[] startDict = new byte[2] {(byte)'<', (byte)'<'};
+        public static byte[] endDict = new byte[2] {(byte)'>', (byte)'>'};
         public static PdfLazyDictionary ParseLazyDictionary(ReadOnlySpan<byte> data, int offset)
         {
             var dict = new PdfLazyDictionary();

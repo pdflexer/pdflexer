@@ -1,6 +1,7 @@
 
 using System;
 using System.Runtime.CompilerServices;
+using PdfLexer.Objects.Parsers;
 
 namespace PdfLexer.Objects
 {
@@ -17,34 +18,50 @@ namespace PdfLexer.Objects
             (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
         public static bool IsWhiteSpace(ReadOnlySpan<char> chars, int location)
         {
-            return chars[location] == 0x00
-                || chars[location] == 0x09
-                || chars[location] == 0x0A
-                || chars[location] == 0x0C
-                || chars[location] == 0x0D
-                || chars[location] == 0x20;
+            var c = chars[location];
+            return c == 0x00
+                   || c == 0x09
+                   || c == 0x0A
+                   || c == 0x0C
+                   || c == 0x0D
+                   || c == 0x20;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWhiteSpace(ReadOnlySpan<byte> bytes, int location)
         {
-            return bytes[location] == 0x00
-                || bytes[location] == 0x09
-                || bytes[location] == 0x0A
-                || bytes[location] == 0x0C
-                || bytes[location] == 0x0D
-                || bytes[location] == 0x20;
+            var b = bytes[location];
+            return b == 0x00
+                   || b == 0x09
+                   || b == 0x0A
+                   || b == 0x0C
+                   || b == 0x0D
+                   || b == 0x20;
         }
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool IsWhiteSpace(byte item)
         {
-            return Array.IndexOf(whiteSpaces, item) > -1;
+            return item == 0x00 ||
+                   item == 0x09 ||
+                   item == 0x0A ||
+                   item == 0x0C ||
+                   item == 0x0D ||
+                   item == 0x20;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int SkipWhiteSpaces(ReadOnlySpan<byte> bytes, int location)
         {
+            ReadOnlySpan<byte> localBuffer = bytes;
             for (var i = location; i < bytes.Length; i++)
             {
-                if (Array.IndexOf(whiteSpaces, bytes[i]) == -1)
+                byte val = localBuffer[i];
+                if (val != 0x00 &&
+                    val != 0x09 &&
+                    val != 0x0A &&
+                    val != 0x0C &&
+                    val != 0x0D &&
+                    val != 0x20)
                 {
                     return i;
                 }
@@ -61,14 +78,16 @@ namespace PdfLexer.Objects
         /// <returns>Byte position for start of object.</returns>
         public static int FindNextToken(ReadOnlySpan<byte> bytes, out PdfTokenType type, int startAt = 0)
         {
+            ReadOnlySpan<byte> buffer = bytes;
             type = PdfTokenType.NullObj;
 
-            for (var i = startAt; i < bytes.Length; i++)
+            for (var i = startAt; i < buffer.Length; i++)
             {
-                if (bytes[i] == (byte)'%')
+                byte b = buffer[i];
+                if (b == (byte)'%')
                 {
                     // comments
-                    var eol = bytes.Slice(i).IndexOfAny((byte)'\r', (byte)'\n');
+                    var eol = buffer.Slice(i).IndexOfAny((byte)'\r', (byte)'\n');
                     if (eol == -1)
                     {
                         return -1;
@@ -76,21 +95,21 @@ namespace PdfLexer.Objects
                     i += eol - 1;
                     continue;
                 }
-                if (IsWhiteSpace(bytes[i]))
+                if (IsWhiteSpace(b))
                 {
                     continue;
                 }
-                switch (bytes[i])
+                switch (b)
                 {
                     case (byte)'t':
-                        if (bytes.Length > i + 2)
+                        if (buffer.Length > i + 2)
                         {
-                            if (bytes[i + 1] == (byte)'r' && bytes[i + 2] == (byte)'u')
+                            if (buffer[i + 1] == (byte)'r' && buffer[i + 2] == (byte)'u')
                             {
                                 type = PdfTokenType.BooleanObj;
                                 return i;
                             }
-                            else if (bytes[i + 1] == (byte)'r' && bytes[i + 2] == (byte)'a')
+                            else if (buffer[i + 1] == (byte)'r' && buffer[i + 2] == (byte)'a')
                             {
                                 type = PdfTokenType.Trailer;
                                 return i;
@@ -114,9 +133,9 @@ namespace PdfLexer.Objects
                         type = PdfTokenType.StringObj;
                         return i;
                     case (byte)'<':
-                        if (bytes.Length > i + 1)
+                        if (buffer.Length > i + 1)
                         {
-                            if (bytes[i + 1] == (byte)'<')
+                            if (buffer[i + 1] == (byte)'<')
                             {
                                 type = PdfTokenType.DictionaryStart;
                                 return i;
@@ -155,9 +174,10 @@ namespace PdfLexer.Objects
                         // TODO: need to look into optimizing this
                         int state = 0;
                         bool inWhiteSpace = false;
-                        for (var j = i + 1; j < bytes.Length; j++)
+                        for (var j = i + 1; j < buffer.Length; j++)
                         {
-                            if (IsWhiteSpace(bytes[j]))
+                            byte bw = buffer[j];
+                            if (IsWhiteSpace(bw))
                             {
                                 if (!inWhiteSpace)
                                 {
@@ -173,7 +193,7 @@ namespace PdfLexer.Objects
 
                             if (state == 0)
                             {
-                                if (Array.IndexOf(numTers, bytes[j]) > -1)
+                                if (Array.IndexOf(numTers, bw) > -1)
                                 {
                                     type = PdfTokenType.NumericObj;
                                     return i;
@@ -181,7 +201,7 @@ namespace PdfLexer.Objects
                             }
                             else if (state == 1)
                             {
-                                if (Array.IndexOf(ints, bytes[j]) == -1)
+                                if (Array.IndexOf(ints, bw) == -1)
                                 {
                                     // non int field, can't be indirect object
                                     type = PdfTokenType.NumericObj;
@@ -190,7 +210,7 @@ namespace PdfLexer.Objects
                             }
                             else if (state == 2)
                             {
-                                if (bytes[j] == (byte)'R')
+                                if (bw == (byte)'R')
                                 {
                                     type = PdfTokenType.IndirectRef;
                                     return i;
@@ -204,9 +224,9 @@ namespace PdfLexer.Objects
                         }
                         return -1;
                     case (byte)'>':
-                        if (bytes.Length > i + 1)
+                        if (buffer.Length > i + 1)
                         {
-                            if (bytes[i + 1] == (byte)'>')
+                            if (buffer[i + 1] == (byte)'>')
                             {
                                 type = PdfTokenType.DictionaryEnd;
                                 return i;
@@ -224,10 +244,13 @@ namespace PdfLexer.Objects
                         type = PdfTokenType.ArrayEnd;
                         return i;
                     default:
-                        throw new ApplicationException($"Unknown object start: {(char)bytes[i]}");
+                        throw new ApplicationException($"Unknown object start: {(char)buffer[i]}");
                 }
             }
             return -1;
         }
+
+
+        
     }
 }

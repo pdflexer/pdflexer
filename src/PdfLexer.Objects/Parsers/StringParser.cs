@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,6 +7,24 @@ namespace PdfLexer.Objects.Parsers
 {
     public class StringParser
     {
+        public static bool AdvancePastString(ref SequenceReader<byte> reader)
+        {
+            if (!reader.TryPeek(out byte b))
+            {
+                return false;
+            }
+
+            if (b == (byte)'(')
+            {
+                return  AdvancePastStringLiteral(ref reader);
+            } else if (b == (byte)'<')
+            {
+                return reader.TryAdvanceTo((byte) '>', true);
+            }
+
+            throw new ApplicationException("Invalid string, first char not ( or <.");
+        }
+
         public static bool GetString(ReadOnlySpan<byte> data, out ReadOnlySpan<byte> results)
         {
             if (data[0] == (byte)'(')
@@ -21,17 +40,54 @@ namespace PdfLexer.Objects.Parsers
                 throw new ApplicationException("Invalid string, first char not ( or <.");
             }
         }
+
+        private static bool AdvancePastStringLiteral(ref SequenceReader<byte> data)
+        {
+            var depth = 0;
+            while (data.TryRead(out var b))
+            {
+                if (b == '\\')
+                {
+                    if (!data.TryRead(out b))
+                    {
+                        return false;
+                    }
+
+                    continue;
+
+                } else if (b == '(')
+                {
+                    depth++;
+                }
+                else if (b == ')')
+                {
+                    depth--;
+                }
+
+                if (depth == 0)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static bool GetStringLiteral(ReadOnlySpan<byte> data, out ReadOnlySpan<byte> results)
         {
             int depth = 1;
             int end = -1;
             for (var i = 1; i < data.Length; i++)
             {
-                if (data[i] == '(' && data[i - 1] != '\\')
+                var b = data[i];
+                if (b == '\\')
+                {
+                    i++; // skip next
+                } else 
+                if (b == '(')
                 {
                     depth++;
                 }
-                else if (data[i] == ')' && data[i - 1] != '\\')
+                else if (data[i] == ')')
                 {
                     depth--;
                 }
