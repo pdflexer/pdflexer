@@ -374,26 +374,27 @@ namespace PdfLexer.Objects.Parsers
                 {
                     throw new ApplicationException("Ahhh");
                 }
-                var thisTrailer = DictionaryParser.ParseLazyDictionary(bytes, tableOffset + reader.CurrentPosition + 7); //7 for trailer
-                if (thisTrailer.Values.ContainsKey("/Prev"))
-                {
-                    var value = thisTrailer.Values["/Prev"];
-                    if (value.Type != PdfObjectType.NumericObj)
-                    {
-                        throw new ApplicationException("/Prev entry is non-numeric.");
-                    }
-                    // can optimize
-                    var stringOffset = Encoding.ASCII.GetString(bytes.Slice(value.Offset, value.Length));
-                    var offset = ulong.Parse(stringOffset);
-                    tableStart = bytes.Slice((int)offset);
-                    tableOffset = (int)offset;
-                    hasTable = true;
-                }
-                else
-                {
-                    hasTable = false;
-                }
-                trailer = MergeTrailers(trailer, thisTrailer);
+
+                // var thisTrailer = null; NestedParser.ParseLazyDictionary(bytes, tableOffset + reader.CurrentPosition + 7); //7 for trailer
+                // if (thisTrailer.Values.ContainsKey("/Prev"))
+                // {
+                //     var value = thisTrailer.Values["/Prev"];
+                //     if (value.Type != PdfObjectType.NumericObj)
+                //     {
+                //         throw new ApplicationException("/Prev entry is non-numeric.");
+                //     }
+                //     // can optimize
+                //     var stringOffset = Encoding.ASCII.GetString(bytes.Slice(value.Offset, value.Length));
+                //     var offset = ulong.Parse(stringOffset);
+                //     tableStart = bytes.Slice((int)offset);
+                //     tableOffset = (int)offset;
+                //     hasTable = true;
+                // }
+                // else
+                // {
+                //     hasTable = false;
+                // }
+                // trailer = MergeTrailers(trailer, thisTrailer);
             }
             return entries;
         }

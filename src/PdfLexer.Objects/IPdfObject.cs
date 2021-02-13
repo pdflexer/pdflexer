@@ -167,6 +167,7 @@ namespace PdfLexer.Objects
 
                 return false;
             }
+            set => modified = value;
         }
 
         public bool IsIndirect { get; set; }

@@ -8,24 +8,20 @@ namespace PdfLexer.Objects
 {
     public static class PdfTokenizer
     {
-        //
-        public static bool TryReadNextToken(in ReadOnlySequence<byte> sequence, bool isCompleted, out PdfTokenType type, out long start, out int length)
+        private static byte[] eolChars = new byte[] {(byte) '\r', (byte) '\n'};
+        public static bool TryReadNextToken(this ref SequenceReader<byte> reader, bool isCompleted, out PdfTokenType type, out long start, out int length)
         {
-            
-            var eolChars = new byte[] {(byte) '\r', (byte) '\n'};
-            var reader = new SequenceReader<byte>(sequence);
             reader.AdvancePastAny(CommonUtil.whiteSpaces);
 
             start = reader.Consumed;
             length = 0;
             type = PdfTokenType.NullObj;
-
             if (!reader.TryPeek(out byte b))
             {
                 return false;
             }
 
-            if (b == (byte) '%')
+            while (b == (byte) '%')
             {
                 // comments
                 if (!reader.TryAdvanceToAny(eolChars, true))
@@ -34,11 +30,11 @@ namespace PdfLexer.Objects
                 }
                 reader.AdvancePastAny(CommonUtil.whiteSpaces);
                 start = reader.Consumed;
-            }
 
-            if (!reader.TryPeek(out b))
-            {
-                return false;
+                if (!reader.TryPeek(out b))
+                {
+                    return false;
+                }
             }
 
             try
@@ -48,6 +44,7 @@ namespace PdfLexer.Objects
                     case (byte) 't':
                         if (reader.Remaining < 4)
                         {
+                            if (isCompleted) { throw new ApplicationException("Unknown token"); }
                             return false;
                         }
 
@@ -59,6 +56,7 @@ namespace PdfLexer.Objects
 
                         if (reader.Remaining < 7)
                         {
+                            if (isCompleted) { throw new ApplicationException("Unknown token"); }
                             return false;
                         }
 
@@ -72,6 +70,7 @@ namespace PdfLexer.Objects
                     case (byte) 'f':
                         if (reader.Remaining < 4)
                         {
+                            if (isCompleted) { throw new ApplicationException("Unknown token"); }
                             return false;
                         }
 
@@ -85,6 +84,7 @@ namespace PdfLexer.Objects
                     case (byte) 'n':
                         if (reader.Remaining < 4)
                         {
+                            if (isCompleted) { throw new ApplicationException("Unknown token"); }
                             return false;
                         }
 
@@ -98,22 +98,20 @@ namespace PdfLexer.Objects
                         throw new ApplicationException("Unknown token");
                     case (byte) '(':
                         type = PdfTokenType.StringObj;
+                        if (StringParser.AdvancePastString(ref reader))
                         {
-                            // READ NORMAL STRING
-                            if (StringParser.AdvancePastString(ref reader))
-                            {
-                                return true;
-                            }
-
-                            return false;
+                            return true;
                         }
+
+                        return false;
                     case (byte) '<':
                         if (reader.Remaining < 2)
                         {
+                            if (isCompleted) { throw new ApplicationException("Unknown token"); }
                             return false;
                         }
 
-                        if (reader.IsNext(DictionaryParser.startDict, true))
+                        if (reader.IsNext(NestedParser.startDict, true))
                         {
                             type = PdfTokenType.DictionaryStart;
                             return true;
@@ -121,14 +119,21 @@ namespace PdfLexer.Objects
                         type = PdfTokenType.StringObj;
                         return StringParser.AdvancePastString(ref reader);
                     case (byte) '/':
-                        if (!reader.TryRead(out var _) || !reader.TryAdvanceToAny(NameParser.nameTerminators, false))
+                        reader.TryRead(out _);
+                        type = PdfTokenType.NameObj;
+                        if (!reader.TryAdvanceToAny(NameParser.nameTerminators, false))
                         {
+                            if (isCompleted)
+                            {
+                                reader.Advance(reader.Remaining);
+                                return true;
+                            }
+                            reader.Rewind(1);
                             return false;
                         }
-                        type = PdfTokenType.NameObj;
                         return true;
                     case (byte) '[':
-                        reader.TryRead(out var _);
+                        reader.TryRead(out _);
                         type = PdfTokenType.ArrayStart;
                         return true;
                     case (byte) '-':
@@ -145,44 +150,143 @@ namespace PdfLexer.Objects
                     case (byte) '8':
                     case (byte) '9':
                         type = PdfTokenType.NumericObj;
-                        if (!reader.TryAdvanceToAny(NameParser.nameTerminators, false))
+                        reader.AdvancePastAny(CommonUtil.numeric);
+                        if (reader.End && isCompleted)
                         {
-                            if (isCompleted)
-                            {
-                                reader.Advance(reader.Remaining);
-                                return true;
-                            }
+                            return true;
+                        } else if (reader.End)
+                        {
                             return false;
                         }
                         return true;
                     case (byte) 'R':
-                        reader.TryRead(out var _);
+                        reader.TryRead(out _);
                         type = PdfTokenType.IndirectRef;
                         return true;
                     case (byte) '>':
                         if (reader.Remaining < 2)
                         {
+                            if (isCompleted)
+                            {
+                                throw new ApplicationException($"Bad token found '>'");
+                            }
                             return false;
                         }
-                        if (reader.IsNext(DictionaryParser.endDict, true))
+                        if (reader.IsNext(NestedParser.endDict, true))
                         {
                             type = PdfTokenType.DictionaryEnd;
                             return true;
                         }
                         throw new ApplicationException($"Bad token found '>'");
                     case (byte) ']':
-                        reader.TryRead(out var _);
+                        reader.TryRead(out _);
                         type = PdfTokenType.ArrayEnd;
                         return true;
+                    case (byte) 's':
+                        type = PdfTokenType.StartStream;
+                        if (reader.Remaining < 6)
+                        {
+                            if (isCompleted)
+                            {
+                                throw new ApplicationException($"Unknown object start: {(char) b}");
+                            }
+                            return false;
+                        }
+                        if (reader.IsNext(IndirectSequences.stream, true))
+                        {
+                            if (!reader.ReadRequiredByte(isCompleted, out var nxt))
+                            {
+                                reader.Rewind(6);
+                                return false;
+                            }
+                            if (nxt == (byte) '\n')
+                            {
+                                return true;
+                            }
+
+                            if (nxt != (byte) '\r')
+                            {
+                                throw new ApplicationException($"Stream not followed by \\r\\n or \\n.");
+                            }
+
+                            if (!reader.ReadRequiredByte(isCompleted, out nxt))
+                            {
+                                reader.Rewind(7);
+                                return false;
+                            }
+
+                            if (nxt != (byte) '\n')
+                            {
+                                throw new ApplicationException($"Stream not followed by \\r\\n or \\n.");
+                            }
+
+                            return true;
+                        }
+                        throw new ApplicationException($"Unknown object start: {(char) b}");
+                    case (byte) 'e':
+                        if (reader.Remaining < 6)
+                        {
+                            if (isCompleted) { throw new ApplicationException("Unknown token"); }
+                            return false;
+                        }
+
+                        if (reader.IsNext(IndirectSequences.endobj, true))
+                        {
+                            type = PdfTokenType.EndObj;
+                            return true;
+                        }
+
+                        if (reader.Remaining < 9)
+                        {
+                            if (isCompleted) { throw new ApplicationException("Unknown token"); }
+                            return false;
+                        }
+
+                        if (reader.IsNext(IndirectSequences.endstream, true))
+                        {
+                            type = PdfTokenType.EndStream;
+                            return true;
+                        }
+                        throw new ApplicationException($"Unknown object start: {(char) b}");
+                    case (byte) 'o':
+                        if (reader.Remaining < 3)
+                        {
+                            if (isCompleted) { throw new ApplicationException("Unknown token"); }
+                            return false;
+                        }
+
+                        if (reader.IsNext(IndirectSequences.obj, true))
+                        {
+                            type = PdfTokenType.EndObj;
+                            return true;
+                        }
+                        
+                        throw new ApplicationException($"Unknown object start: {(char) b}");
                     default:
                         throw new ApplicationException($"Unknown object start: {(char) b}");
                 }
+
+
             }
             finally
             {
                 length = (int)(reader.Consumed - start);
             }
+        }
 
+        public static bool ReadRequiredByte(this ref SequenceReader<byte> reader, bool isCompleted, out byte value)
+        {
+            if (!reader.TryRead(out value))
+            {
+                if (isCompleted)
+                {
+                    throw new ApplicationException($"Unexpected token end.");
+                }
+
+                return false;
+            }
+
+            return true;
         }
         public static int ReadNextToken(ReadOnlySpan<byte> bytes, out PdfTokenType type, int startAt, out int length)
         {

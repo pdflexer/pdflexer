@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
-using PdfLexer.Objects.Nested;
 using PdfLexer.Objects.Parsers;
 
 namespace PdfLexer.Objects
@@ -33,7 +32,7 @@ namespace PdfLexer.Objects
     {
         IPdfObject RegisterObject(long startPosition, int length, PdfObjectType type, bool indirect);
         int FillData(long startPosition, int desiredBytes, out Span<byte> data);
-        void CopyData(long startPosition, int desiredBytes, Stream stream);
+        void CopyData(long startPosition, int requiredBytes, Stream stream);
         void CopyData(IPdfObject obj, Stream stream);
     }
     public class InMemoryDataSource : IPdfDataSource
@@ -43,9 +42,12 @@ namespace PdfLexer.Objects
         public InMemoryDataSource(byte[] data)
         {
             _data = data;
+            _ms = new MemoryStream(_data);
         }
 
         private Dictionary<IPdfObject, (long, int)> objects = new Dictionary<IPdfObject, (long, int)>();
+        private MemoryStream _ms;
+
         public IPdfObject RegisterObject(long startPosition, int length, PdfObjectType type, bool indirect)
         {
             var obj = new PdfObject
@@ -59,6 +61,12 @@ namespace PdfLexer.Objects
             return obj;
         }
 
+        public PipeReader GetReader(long startPosition)
+        {
+            _ms.Seek(startPosition, SeekOrigin.Begin);
+            return PipeReader.Create(_ms, new StreamPipeReaderOptions(leaveOpen: true));
+        }
+
         public int FillData(long startPosition, int desiredBytes, out Span<byte> data)
         {
             // TODO
@@ -70,14 +78,14 @@ namespace PdfLexer.Objects
             data = new Span<byte>(_data, start, desiredBytes);
             return desiredBytes;
         }
-        public void CopyData(long startPosition, int desiredBytes, Stream stream)
+        public void CopyData(long startPosition, int requiredBytes, Stream stream)
         {
             var start = (int) startPosition;
-            if (desiredBytes > _data.Length - start)
+            if (requiredBytes > _data.Length - start)
             {
-                desiredBytes = _data.Length - start;
+                throw new ApplicationException();
             }
-            stream.Write(_data, (int) startPosition, desiredBytes); // TODO
+            stream.Write(_data, (int) startPosition, requiredBytes); // TODO
         }
 
         public void CopyData(IPdfObject obj, Stream stream)
@@ -229,7 +237,7 @@ namespace PdfLexer.Objects
                     case PdfTokenType.ArrayStart:
                         // TODO: determine approach for nested objects, this setup requires two passes
                         var rest = _data.Slice(currentStart);
-                        currentLength = NestedUtils.CountNestedBytes(rest);
+                        currentLength = -1; //NestedUtils.CountNestedBytes(rest);
                         if (currentLength == -1)
                         {
                             return ReadResult.NotEnoughData;

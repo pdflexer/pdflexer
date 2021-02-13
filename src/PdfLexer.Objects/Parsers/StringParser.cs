@@ -41,8 +41,9 @@ namespace PdfLexer.Objects.Parsers
             }
         }
 
-        private static bool AdvancePastStringLiteral(ref SequenceReader<byte> data)
+        internal static bool AdvancePastStringLiteral(ref SequenceReader<byte> data)
         {
+            var orig = data.Consumed;
             var depth = 0;
             while (data.TryRead(out var b))
             {
@@ -50,6 +51,7 @@ namespace PdfLexer.Objects.Parsers
                 {
                     if (!data.TryRead(out b))
                     {
+                        data.Rewind(data.Consumed-orig);
                         return false;
                     }
 
@@ -69,6 +71,7 @@ namespace PdfLexer.Objects.Parsers
                     return true;
                 }
             }
+            data.Rewind(data.Consumed-orig);
             return false;
         }
 

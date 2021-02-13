@@ -12,6 +12,10 @@ namespace PdfLexer.Objects
         DictionaryStart,
         ArrayEnd,
         DictionaryEnd,
-        Trailer
+        Trailer,
+        StartStream,
+        EndStream,
+        StartObj,
+        EndObj
     }
 }
