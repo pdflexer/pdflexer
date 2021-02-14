@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using PdfLexer.Lexing;
 
 namespace PdfLexer.Parsers
 {
@@ -71,7 +72,7 @@ namespace PdfLexer.Parsers
             }
 
             var offset = bytes.Slice(end);
-            var loc = CommonUtil.FindNextToken(offset, out PdfTokenType type);
+            var loc = PdfSpanLexer.TryReadNextToken(offset, out PdfTokenType type, out int length);
             if (loc == -1 || type != PdfTokenType.NumericObj)
             {
                 throw new ApplicationException("Startxref not followed by offset number.");

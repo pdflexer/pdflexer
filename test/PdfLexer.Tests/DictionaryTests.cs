@@ -1,11 +1,11 @@
-using System;
 using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
 using System.Text;
 using System.Threading.Tasks;
+using PdfLexer.IO;
 using PdfLexer.Parsers;
+using PdfLexer.Parsers.Nested;
 using Xunit;
 
 namespace PdfLexer.Tests
@@ -25,6 +25,9 @@ namespace PdfLexer.Tests
         [Theory]
         public void It_Gets_Dict_Basic(string data, bool found, string expected)
         {
+            var buffer = Encoding.ASCII.GetBytes(data);
+            var ctx = new ParsingContext();
+            var result = ctx.DictionaryParser.Parse(buffer);
             // Do_Get_Dict(data, found, expected);
         }
 
@@ -101,11 +104,11 @@ namespace PdfLexer.Tests
             var pipe = PipeReader.Create(ms);
             var result = await pipe.ReadAsync();
             
-            var parser = new LazyNestedParser(source);
+            var parser = new LazyNestedSeqParser(new ParsingContext());
             var buffer = result.Buffer;
             while (parser.ParseNestedItem(in buffer, result.IsCompleted))
             { }
-            var value = parser.GetItem();
+            var value = parser.GetCompletedObject();
             var dict = value as PdfDictionary;
             Assert.NotNull(dict);
             Assert.Equal(top, dict.Count);

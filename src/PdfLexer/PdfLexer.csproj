@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/plaisted/pdflexer</PackageProjectUrl>
+    <Authors>Michael Plaisted</Authors>
+    <Company></Company>
+    <Product />
+    <Description>Lower level PDF parsing library.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.1-Alpha</Version>
   </PropertyGroup>
   
     <ItemGroup>
@@ -9,7 +17,7 @@
     <PackageReference Include="System.Memory" Version="4.5.4" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v5.0'">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
     <DefineConstants>$(DefineConstants);NET50</DefineConstants>
   </PropertyGroup>
 

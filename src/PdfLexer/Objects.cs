@@ -10,6 +10,7 @@ namespace PdfLexer
         ArrayObj,
         IndirectRefObj,
         DictionaryObj,
-        StreamObj
+        StreamObj,
+        IndirectObj
     }
 }

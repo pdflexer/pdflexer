@@ -16,7 +16,7 @@
     <ProjectReference Include="..\..\src\PdfLexer\PdfLexer.csproj" />
   </ItemGroup>
 
-  <PropertyGroup Condition="'$(TargetFrameworkVersion)' == 'v5.0'">
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'net5.0' ">
     <DefineConstants>$(DefineConstants);NET50</DefineConstants>
   </PropertyGroup>
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using PdfLexer.IO;
 
 namespace PdfLexer
 {
@@ -17,18 +18,9 @@ namespace PdfLexer
         public bool IsIndirect { get; set; }
         public bool HasLazyIndirect { get; set; }
         public PdfObjectType Type { get; set; }
+        public long Offset {get; set; }
+        public int Length {get; set; }
         public IPdfDataSource Source { get; set; }
         public IParsedLazyObj Parsed { get; set; }
-        public void WriteObject(Stream stream)
-        {
-            if (Parsed?.IsModified ?? false)
-            {
-                Parsed.WriteObject(stream);
-            }
-            else
-            {
-                Source.CopyData(this, stream);
-            }
-        }
     }
 }

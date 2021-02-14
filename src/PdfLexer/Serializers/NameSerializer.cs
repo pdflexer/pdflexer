@@ -23,15 +23,23 @@ namespace PdfLexer.Serializers
             return escapeNeeded;
         }
 
+        private byte[] nameBuffer = new byte[100];
         public void WriteToStream(PdfName obj, Stream stream)
         {
-            // TODO well known values
-
+            // TODO well known values or grab from cache since we are saving key
             if (!NeedsEscaping(obj))
             {
-                Span<byte> buffer = stackalloc byte[obj.Value.Length];
-                var count = GetBytes(obj, buffer, false);
-                stream.Write(count != buffer.Length ? buffer.Slice(0, count) : buffer);
+                var buffer = nameBuffer;
+                if (obj.Value.Length > nameBuffer.Length)
+                {
+                    Span<byte> larger = stackalloc byte[obj.Value.Length];
+                    var count = GetBytes(obj, larger, false);
+                    stream.Write(count != buffer.Length ? larger.Slice(0, count) : buffer);
+                    return;
+                }
+                var written = GetBytes(obj, buffer, false);
+                stream.Write(buffer, 0, written);
+                return;
             }
 
             int extra = 0;

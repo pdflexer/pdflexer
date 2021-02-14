@@ -1,12 +1,48 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Text;
+using PdfLexer.IO;
+using PdfLexer.Parsers.Nested;
 
 namespace PdfLexer.Parsers
 {
     public class ParsingContext
     {
+        internal long CurrentOffset { get; set; }
+        internal IPdfDataSource CurrentSource { get; set; }
         public bool CacheNumbers { get; set; } = true;
+
+        internal NameParser NameParser { get; } = new NameParser();
+        internal LazyNestedSeqParser NestedSeqParser { get; }
+        internal LazyNestedSpanParser NestedSpanParser { get; }
+        internal DictionaryParser DictionaryParser { get; }
+        public ParsingContext()
+        {
+            NestedSeqParser = new LazyNestedSeqParser(this);
+            NestedSpanParser = new LazyNestedSpanParser(this);
+            DictionaryParser = new DictionaryParser(this);
+        }
+
+        internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
+        {
+            return null;
+        }
+
+        internal IPdfObject GetPdfItem(PdfObjectType type, ReadOnlySpan<byte> data, int start, int length)
+        {
+            return null;
+        }
+
+        internal PdfLazyObject CreateLazy(PdfObjectType type, long subOffset, int length)
+        {
+            return new PdfLazyObject {
+                    Offset = CurrentOffset + subOffset,
+                    Length = length,
+                    IsIndirect = false,
+                    Type = type
+                };
+        }
 
         public void Clear()
         {

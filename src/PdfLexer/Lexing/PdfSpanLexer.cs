@@ -71,8 +71,7 @@ namespace PdfLexer.Lexing
                         return i;
                     }
 
-                    throw new ApplicationException(
-                        "Unknown token: " + Encoding.ASCII.GetString(buffer.Slice(i, 10)));
+                    throw UnknownTokenError(buffer);
                 case (byte) 'f':
                     if (!(buffer.Length > i + 4))
                     {
@@ -87,8 +86,7 @@ namespace PdfLexer.Lexing
                         return i;
                     }
 
-                    throw new ApplicationException(
-                        "Unknown token: " + Encoding.ASCII.GetString(buffer.Slice(i, 10)));
+                    throw UnknownTokenError(buffer);
                 case (byte) 'n':
                     if (!(buffer.Length > i + 3))
                     {
@@ -103,8 +101,7 @@ namespace PdfLexer.Lexing
                         return i;
                     }
 
-                    throw new ApplicationException(
-                        "Unknown token: " + Encoding.ASCII.GetString(buffer.Slice(i, 10)));
+                    throw UnknownTokenError(buffer);
                 case (byte) '(':
                 {
                     var start = i;
@@ -146,6 +143,8 @@ namespace PdfLexer.Lexing
                     {
                         length = buffer.Length - i;
                     }
+
+                    length++; // Slice(i+1)
                     return i;
                 case (byte)'[':
                     type = PdfTokenType.ArrayStart;
@@ -186,8 +185,7 @@ namespace PdfLexer.Lexing
                         }
                         else
                         {
-                            throw new ApplicationException(
-                                "Unknown token: " + Encoding.ASCII.GetString(buffer.Slice(i, 10)));
+                            throw UnknownTokenError(buffer);
                         }
                     }
                     else
@@ -227,8 +225,7 @@ namespace PdfLexer.Lexing
                         return i;
                     }
 
-                    throw new ApplicationException(
-                        "Unknown token: " + Encoding.ASCII.GetString(buffer.Slice(i, 10)));
+                    throw UnknownTokenError(buffer);
                 case (byte) 's':
                     type = PdfTokenType.StartStream;
                     if (!(buffer.Length > i + 5))
@@ -275,10 +272,16 @@ namespace PdfLexer.Lexing
                         return i;
                     }
 
-                    throw new ApplicationException(
-                        "Unknown token: " + Encoding.ASCII.GetString(buffer.Slice(i, 10)));
+                    throw UnknownTokenError(buffer);
                 default:
                     throw new ApplicationException($"Unknown object start: {(char)buffer[i]}");
+            }
+
+            Exception UnknownTokenError(ReadOnlySpan<byte> data)
+            {
+                var count = data.Length > i + 10 ? 10 : data.Length - i;
+                return new ApplicationException(
+                    "Unknown token: '" + Encoding.ASCII.GetString(data.Slice(i, count)) + "'");
             }
         }
     }
