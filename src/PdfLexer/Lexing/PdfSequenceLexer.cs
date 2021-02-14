@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Buffers;
-using System.Collections.Generic;
-using System.Text;
 using PdfLexer.Parsers;
 
-namespace PdfLexer
+namespace PdfLexer.Lexing
 {
     public static class PdfSequenceLexer
     {
@@ -129,7 +127,7 @@ namespace PdfLexer
                 case (byte) '/':
                     reader.TryRead(out _);
                     type = PdfTokenType.NameObj;
-                    if (!reader.TryAdvanceToAny(NameParser.nameTerminators, false))
+                    if (!reader.TryAdvanceToAny(NameParser.NameTerminators, false))
                     {
                         if (isCompleted)
                         {

@@ -1,5 +1,6 @@
 using System;
 using System.Buffers;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,6 +8,8 @@ namespace PdfLexer.Parsers
 {
     public class StringParser
     {
+
+        // TODO string literal octal (\0053) = \005, (\053) = \053, (\53) = \053
         public static bool AdvancePastString(ref SequenceReader<byte> reader)
         {
             if (!reader.TryPeek(out byte b))
@@ -132,6 +135,8 @@ namespace PdfLexer.Parsers
 
         private static bool GetStringLiteral(ReadOnlySpan<byte> data, out ReadOnlySpan<byte> results)
         {
+
+            var result = Convert.ToInt16("", 8);
             int depth = 1;
             int end = -1;
             for (var i = 1; i < data.Length; i++)
@@ -169,6 +174,7 @@ namespace PdfLexer.Parsers
         }
         private static bool GetStringHex(ReadOnlySpan<byte> data, out ReadOnlySpan<byte> results)
         {
+            Utf8Parser.TryParse(data, out byte value, out int consumed, 'x');
             var loc = data.IndexOf((byte)'>');
             if (loc == -1)
             {

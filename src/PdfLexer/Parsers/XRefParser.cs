@@ -80,16 +80,18 @@ namespace PdfLexer.Parsers
             {
                 offset = offset.Slice(loc);
             }
-            var numFound = NumberParser.GetNumber(offset, out ReadOnlySpan<byte> numberBytes, out NumberType numberType);
-            if (numFound == false)
-            {
-                throw new ApplicationException("Incomplete file, xref offset not finished.");
-            }
-            else if (numberType != NumberType.Integer)
-            {
-                throw new ApplicationException("Non-integer byte offset given for xref.");
-            }
-            return NumberParser.ParseUInt64(numberBytes);
+
+            throw new NotImplementedException();
+            // var numFound = NumberParser.GetNumber(offset, out ReadOnlySpan<byte> numberBytes, out NumberType numberType);
+            // if (numFound == false)
+            // {
+            //     throw new ApplicationException("Incomplete file, xref offset not finished.");
+            // }
+            // else if (numberType != NumberType.Integer)
+            // {
+            //     throw new ApplicationException("Non-integer byte offset given for xref.");
+            // }
+            // return NumberParser.ParseUInt64(numberBytes);
         }
 
 

@@ -24,37 +24,38 @@ namespace PdfLexer.Parsers
     {
         public static IndirectReference ParseIndirectReference(ReadOnlySpan<byte> bytes, int offset)
         {
-            var used = NumberParser.GetInt(bytes, offset, out int objNum);
-            if (used == -1)
-            {
-                throw new ApplicationException("Incomplete or non-integer found for indirect reference.");
-            }
-            offset += used;
-            offset = CommonUtil.SkipWhiteSpaces(bytes, offset);
-            if (offset == -1)
-            {
-                throw new ApplicationException("Second token not found for indirect reference.");
-            }
-            used = NumberParser.GetInt(bytes, offset, out int gen);
-            if (used == -1)
-            {
-                throw new ApplicationException("Second token not integer for indirect reference.");
-            }
-            offset += used;
-            offset = CommonUtil.SkipWhiteSpaces(bytes, offset);
-            if (offset == -1)
-            {
-                throw new ApplicationException("Third token not found for indirect reference.");
-            }
-            if (bytes[offset] != (byte)'R')
-            {
-                throw new ApplicationException("Indirect reference did not complete with R.");
-            }
-            return new IndirectReference
-            {
-                ObjectNumber = objNum,
-                Generation = gen
-            };
+            throw new NotImplementedException();
+            // var used = NumberParser.GetInt(bytes, offset, out int objNum);
+            // if (used == -1)
+            // {
+            //     throw new ApplicationException("Incomplete or non-integer found for indirect reference.");
+            // }
+            // offset += used;
+            // offset = CommonUtil.SkipWhiteSpaces(bytes, offset);
+            // if (offset == -1)
+            // {
+            //     throw new ApplicationException("Second token not found for indirect reference.");
+            // }
+            // used = NumberParser.GetInt(bytes, offset, out int gen);
+            // if (used == -1)
+            // {
+            //     throw new ApplicationException("Second token not integer for indirect reference.");
+            // }
+            // offset += used;
+            // offset = CommonUtil.SkipWhiteSpaces(bytes, offset);
+            // if (offset == -1)
+            // {
+            //     throw new ApplicationException("Third token not found for indirect reference.");
+            // }
+            // if (bytes[offset] != (byte)'R')
+            // {
+            //     throw new ApplicationException("Indirect reference did not complete with R.");
+            // }
+            // return new IndirectReference
+            // {
+            //     ObjectNumber = objNum,
+            //     Generation = gen
+            // };
         }
         /// <summary>
         /// Gets length of bytes used by an indirect reference.

@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.Text;
+using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using Xunit;
@@ -76,7 +77,7 @@ namespace PdfLexer.Tests
         [InlineData("/paired#28#29parentheses", "/paired()parentheses")]
         [InlineData("/The_Key_of_F#23_Minor", "/The_Key_of_F#_Minor")]
         [Theory]
-        public void It_Writes_Name_Span(string expected, string input)
+        public void It_Writes_Name(string expected, string input)
         {
             var output = Serialize_With_Span(input);
             Assert.Equal(expected, output);

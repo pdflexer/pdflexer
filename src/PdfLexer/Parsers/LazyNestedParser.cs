@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using PdfLexer.Lexing;
 
 namespace PdfLexer.Parsers
 {

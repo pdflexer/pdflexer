@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.Text;
+using PdfLexer.Lexing;
 using Xunit;
 
 namespace PdfLexer.Tests

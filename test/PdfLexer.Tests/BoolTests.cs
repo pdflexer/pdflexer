@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Text;
+using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using Xunit;
 

@@ -2,7 +2,7 @@
 using System.Text;
 using PdfLexer.Parsers;
 
-namespace PdfLexer
+namespace PdfLexer.Lexing
 {
     public class PdfSpanLexer
     {
@@ -141,7 +141,7 @@ namespace PdfLexer
                 }
                 case (byte)'/':
                     type = PdfTokenType.NameObj;
-                    length = NameParser.CountNameBytes(buffer, i);
+                    length = bytes.Slice(i + 1).IndexOfAny(NameParser.NameTerminators);
                     if (length == -1)
                     {
                         length = buffer.Length - i;
