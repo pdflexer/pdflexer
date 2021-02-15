@@ -16,8 +16,8 @@ namespace PdfLexer.Serializers
         }
         public void WriteToStream(PdfNumber obj, Stream stream)
         {
-            var count = GetBytes(obj, _ctx.NumberBuffer);
-            stream.Write(_ctx.NumberBuffer, 0, count);
+            var count = GetBytes(obj, _ctx.Buffer);
+            stream.Write(_ctx.Buffer, 0, count);
         }
 
         public int GetBytes(PdfNumber obj, Span<byte> data)
@@ -30,11 +30,18 @@ namespace PdfLexer.Serializers
                 }
 
                 return written;
-            } else if (obj is PdfRealNumber real)
+            } else if (obj is PdfDecimalNumber dn)
             {
-                if (!Utf8Formatter.TryFormat(real.Value, data, out var written))
+                if (!Utf8Formatter.TryFormat(dn.Value, data, out var written))
                 {
                     throw new ApplicationException("Unable for write PdfNumber decimal: " + Encoding.ASCII.GetString(data));
+                }
+                return written;
+            } else if (obj is PdfLongNumber ln)
+            {
+                if (!Utf8Formatter.TryFormat(ln.Value, data, out var written))
+                {
+                    throw new ApplicationException("Unable for write PdfNumber long: " + Encoding.ASCII.GetString(data));
                 }
                 return written;
             }

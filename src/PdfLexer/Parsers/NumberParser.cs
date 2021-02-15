@@ -34,6 +34,7 @@ namespace PdfLexer.Parsers
                 buffer = buffer.Slice(1);
             }
 
+            // TODO move to buffer
             var array = ArrayPool<byte>.Shared.Rent(buffer.Length);
             buffer.CopyTo(array);
             var key = new ParsingContext.CacheItem
@@ -57,9 +58,13 @@ namespace PdfLexer.Parsers
 
         private PdfNumber GetResult(ReadOnlySpan<byte> buffer)
         {
-            if (buffer.Length > 9 || buffer.IndexOf((byte) '.') > -1)
+            if (buffer.IndexOf((byte) '.') > -1)
             {
-                return GetReal(buffer);
+                return GetDecimal(buffer);
+            }
+            else if (buffer.Length > 9)
+            {
+                return GetLong(buffer);
             } else
             {
                 return GetInt(buffer);
@@ -71,13 +76,13 @@ namespace PdfLexer.Parsers
             return Parse(buffer.Slice(start, length));
         }
 
-        public PdfNumber Parse(ref ReadOnlySequence<byte> sequence)
+        public PdfNumber Parse(in ReadOnlySequence<byte> sequence)
         {
             // TODO optimize
             return Parse(sequence.ToArray());
         }
 
-        public PdfNumber Parse(ref ReadOnlySequence<byte> sequence, long start, int length)
+        public PdfNumber Parse(in ReadOnlySequence<byte> sequence, long start, int length)
         {
             // TODO optimize
             return Parse(sequence.Slice(start, length).ToArray());
@@ -94,7 +99,18 @@ namespace PdfLexer.Parsers
             return  new PdfIntNumber(val);
         }
 
-        private PdfRealNumber GetReal(ReadOnlySpan<byte> buffer)
+        private PdfLongNumber GetLong(ReadOnlySpan<byte> buffer)
+        {
+            if (!Utf8Parser.TryParse(buffer, out long val, out int consumed))
+            {
+                throw new ApplicationException("Bad data for long number: " + Encoding.ASCII.GetString(buffer));
+            }
+            Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for long");
+
+            return  new PdfLongNumber(val);
+        }
+
+        private PdfDecimalNumber GetDecimal(ReadOnlySpan<byte> buffer)
         {
             if (!Utf8Parser.TryParse(buffer, out decimal val, out int consumed))
             {
@@ -102,7 +118,7 @@ namespace PdfLexer.Parsers
             }
             Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for double");
 
-            return  new PdfRealNumber(val);
+            return  new PdfDecimalNumber(val);
         }
 
     

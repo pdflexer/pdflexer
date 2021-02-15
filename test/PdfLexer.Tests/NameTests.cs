@@ -39,7 +39,7 @@ namespace PdfLexer.Tests
             Assert.Equal(length, measured);
             var parser = new NameParser();
             var sliced = seq.Slice(start, reader.Position);
-            var result = parser.Parse(ref sliced);
+            var result = parser.Parse(in sliced);
             Assert.Equal(output, result.Value);
         }
 

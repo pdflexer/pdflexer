@@ -4,10 +4,17 @@ using System.Text;
 
 namespace PdfLexer
 {
+    public enum PdfNumberType
+    {
+        Integer,
+        Long,
+        Decimal
+    }
     public abstract class PdfNumber : IPdfObject
     {
         public bool IsIndirect => false;
         public PdfObjectType Type => PdfObjectType.NumericObj;
+        public abstract PdfNumberType NumberType { get; }
     }
 
     public class PdfIntNumber : PdfNumber
@@ -17,14 +24,29 @@ namespace PdfLexer
         {
             Value = value;
         }
+
+        public override PdfNumberType NumberType => PdfNumberType.Integer;
     }
 
-    public class PdfRealNumber : PdfNumber
+    public class PdfLongNumber : PdfNumber
     {
-        public decimal Value { get; }
-        public PdfRealNumber(decimal value)
+        public long Value { get; }
+        public PdfLongNumber(long value)
         {
             Value = value;
         }
+
+        public override PdfNumberType NumberType => PdfNumberType.Long;
+    }
+
+    public class PdfDecimalNumber : PdfNumber
+    {
+        public decimal Value { get; }
+        public PdfDecimalNumber(decimal value)
+        {
+            Value = value;
+        }
+
+        public override PdfNumberType NumberType => PdfNumberType.Decimal;
     }
 }

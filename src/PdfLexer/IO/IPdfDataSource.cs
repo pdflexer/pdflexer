@@ -8,6 +8,10 @@ namespace PdfLexer.IO
     public interface IPdfDataSource
     {
         /// <summary>
+        /// Total bytes contained in the PDF data source
+        /// </summary>
+        long TotalBytes { get; }
+        /// <summary>
         /// If the buffer returned by <see cref="FillData"/> contains all data till end of
         /// data source. Optimization. 
         /// </summary>

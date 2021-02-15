@@ -24,18 +24,18 @@ namespace PdfLexer.Parsers
             return dict;
         }
 
-        public PdfDictionary Parse(ref ReadOnlySequence<byte> sequence)
+        public PdfDictionary Parse(in ReadOnlySequence<byte> sequence)
         {
             while (_ctx.NestedSeqParser.ParseNestedItem(sequence, true)) { }
             var dict = _ctx.NestedSeqParser.GetCompletedObject() as PdfDictionary;
             return dict;
         }
 
-        public PdfDictionary Parse(ref ReadOnlySequence<byte> sequence, long start, int length)
+        public PdfDictionary Parse(in ReadOnlySequence<byte> sequence, long start, int length)
         {
             Debug.Assert(sequence.Length > start + length, "sequence.Length > start + length PdfDictionary seg parse.");
             var sliced = sequence.Slice(start);
-            return Parse(ref sliced);
+            return Parse(in sliced);
         }
     }
 }

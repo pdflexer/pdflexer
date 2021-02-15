@@ -273,6 +273,36 @@ namespace PdfLexer.Lexing
                     }
 
                     throw UnknownTokenError(buffer);
+                case (byte) 'x':
+                    if (!(buffer.Length > i + 3))
+                    {
+                        length = -1;
+                        return -1;
+                    }
+
+                    if (buffer.Slice(i).StartsWith(XRefParser.xref))
+                    {
+                        type = PdfTokenType.Xref;
+                        length = 4;
+                        return i;
+                    }
+
+                    throw UnknownTokenError(buffer);
+                case (byte) 'o':
+                    if (!(buffer.Length > i + 2))
+                    {
+                        length = -1;
+                        return -1;
+                    }
+
+                    if (buffer.Slice(i).StartsWith(IndirectSequences.obj))
+                    {
+                        type = PdfTokenType.StartObj;
+                        length = 3;
+                        return i;
+                    }
+
+                    throw UnknownTokenError(buffer);
                 default:
                     throw new ApplicationException($"Unknown object start: {(char)buffer[i]}");
             }

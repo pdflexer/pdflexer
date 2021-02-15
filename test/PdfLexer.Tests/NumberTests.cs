@@ -36,12 +36,13 @@ namespace PdfLexer.Tests
             var bytes = Encoding.ASCII.GetBytes(input);
             var parser = new NumberParser(new ParsingContext());
             var result = parser.Parse(bytes);
-            var num  = result as PdfRealNumber;
+            var num  = result as PdfDecimalNumber;
             Assert.NotNull(num);
             Assert.Equal(value, num.Value);
         }
 
-        [InlineData("34.5", 34.5, typeof(PdfRealNumber))]
+        [InlineData("34.5", 34.5, typeof(PdfDecimalNumber))]
+        [InlineData("1000000000000", 1000000000000, typeof(PdfLongNumber))]
         [InlineData("100", 100, typeof(PdfIntNumber))]
         [Theory]
         public void It_Caches_Tokens(string input, decimal value, Type expected)
@@ -51,13 +52,16 @@ namespace PdfLexer.Tests
             var result = parser.Parse(bytes);
             
             Assert.Equal(expected, result.GetType());
-            if (result is PdfRealNumber real)
+            if (result is PdfDecimalNumber dn)
             {
-                Assert.Equal(value, real.Value);
+                Assert.Equal(value, dn.Value);
             }
             else if (result is PdfIntNumber integer)
             {
                 Assert.Equal(value, integer.Value);
+            } else if (result is PdfLongNumber ln)
+            {
+                Assert.Equal(value, ln.Value);
             }
 
             var again = parser.Parse(bytes);
@@ -115,7 +119,7 @@ namespace PdfLexer.Tests
         {
             var serializer = new NumberSerializer(new ParsingContext());
             var data = new Span<byte>(new byte[50]);
-            var count = serializer.GetBytes(new PdfRealNumber(input), data);
+            var count = serializer.GetBytes(new PdfDecimalNumber(input), data);
 
             return Encoding.ASCII.GetString(data.Slice(0, count));
         }
@@ -124,7 +128,7 @@ namespace PdfLexer.Tests
         {
             var serializer = new NumberSerializer(new ParsingContext());
             var ms = new MemoryStream();
-            serializer.WriteToStream(new PdfRealNumber(input), ms);
+            serializer.WriteToStream(new PdfDecimalNumber(input), ms);
 
             return Encoding.ASCII.GetString(ms.ToArray());
         }

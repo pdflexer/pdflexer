@@ -24,7 +24,7 @@ namespace PdfLexer.Parsers
         /// </summary>
         /// <param name="sequence">Sequence to parse from</param>
         /// <returns>Parsed object</returns>
-        T Parse(ref ReadOnlySequence<byte> sequence);
+        T Parse(in ReadOnlySequence<byte> sequence);
         /// <summary>
         /// Parses PDF object of type T from a portion of the provided sequence.
         /// </summary>
@@ -32,6 +32,6 @@ namespace PdfLexer.Parsers
         /// <param name="start">Start position</param>
         /// <param name="length">Length of object</param>
         /// <returns>Parsed object</returns>
-        T Parse(ref ReadOnlySequence<byte> sequence, long start, int length);
+        T Parse(in ReadOnlySequence<byte> sequence, long start, int length);
     }
 }

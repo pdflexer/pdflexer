@@ -61,7 +61,7 @@ namespace PdfLexer.Tests
             Assert.Equal(bytesUsed, length);
             var parser = new BoolParser();
             var data = seq.Slice(start, reader.Position);
-            var result = parser.Parse(ref data);
+            var result = parser.Parse(in data);
             Assert.Equal(value, result.Value);
         }
 #endif

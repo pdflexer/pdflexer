@@ -16,12 +16,12 @@ namespace PdfLexer.Parsers.Nested
             _ctx = ctx;
         }
         private ParseState currentState = ParseState.Unknown;
-        private bool completed = false;
+        internal bool completed = false;
 
         private PdfName currentKey;
         private IParsedLazyObj obj = null;
-        SequencePosition startPos = default;
-        SequencePosition endPos = default;
+        internal SequencePosition startPos = default;
+        internal SequencePosition endPos = default;
 
         public IParsedLazyObj GetCompletedObject()
         {
@@ -39,10 +39,15 @@ namespace PdfLexer.Parsers.Nested
             return toReturn;
         }
 
-
         public bool ParseNestedItem(in ReadOnlySequence<byte> sequence, bool isCompleted)
         {
             var reader = new SequenceReader<byte>(sequence);
+            return ParseNestedItem(ref reader, isCompleted);
+        }
+
+        public bool ParseNestedItem(ref SequenceReader<byte> reader, bool isCompleted)
+        {
+            var sequence = reader.Sequence;
             while (reader.TryReadNextToken(isCompleted, out var tokenType, out startPos))
             {
                 endPos = reader.Position;
@@ -63,7 +68,7 @@ namespace PdfLexer.Parsers.Nested
                             }
                             endPos = reader.Position;
 
-                            AddValue(in sequence, PdfTokenType.DictionaryStart);
+                            AddLazyValue(in sequence, tokenType);
                             continue;
                         }
                         currentState = ParseState.DictKey;
@@ -78,7 +83,7 @@ namespace PdfLexer.Parsers.Nested
                                 return false;
                             }
                             endPos = reader.Position;
-                            AddValue(in sequence, PdfTokenType.DictionaryStart);
+                            AddLazyValue(in sequence, tokenType);
                             continue;
                         }
                         obj = new PdfArray();
@@ -115,11 +120,13 @@ namespace PdfLexer.Parsers.Nested
                         throw new ApplicationException("Unexpected indirect Ref token found.");
                     case PdfTokenType.DictionaryEnd:
                         var dict = obj as PdfDictionary;
+                        endPos = reader.Position;
                         dict.IsModified = false;
                         completed = true;
                         return false;
                     case PdfTokenType.ArrayEnd:
                         var arr = obj as PdfArray;
+                        endPos = reader.Position;
                         arr.IsModified = false;
                         completed = true;
                         return false;
@@ -132,14 +139,33 @@ namespace PdfLexer.Parsers.Nested
             return false;
         }
 
-
+        void AddLazyValue(in ReadOnlySequence<byte> sequence, PdfTokenType type)
+        {
+            switch (currentState)
+            {
+                case ParseState.DictValue:
+                {
+                    var item = _ctx.CreateLazy((PdfObjectType) type, sequence, startPos, endPos);
+                    (obj as PdfDictionary)[currentKey] = item;
+                    currentKey = null;
+                    currentState = ParseState.DictKey;
+                    return;
+                }
+                case ParseState.Array:
+                {
+                    var item = _ctx.CreateLazy((PdfObjectType) type, sequence, startPos, endPos);
+                    (obj as PdfArray).Add(item);
+                    return;
+                }
+            }
+        }
         void AddValue(in ReadOnlySequence<byte> sequence, PdfTokenType type)
         {
             switch (currentState)
             {
                 case ParseState.DictKey:
                     var seg = sequence.Slice(startPos, endPos);
-                    currentKey = _ctx.NameParser.Parse(ref seg);
+                    currentKey = _ctx.NameParser.Parse(in seg);
                     currentState = ParseState.DictValue;
                     return;
                 case ParseState.DictValue:

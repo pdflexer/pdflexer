@@ -1,5 +1,6 @@
 
 using System;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Text;
 using PdfLexer.Parsers;
@@ -11,6 +12,7 @@ namespace PdfLexer
 
     public class CommonUtil
     {
+        internal static byte[] eols = new byte[2] {(byte)'\r', (byte)'n' };
         internal static byte[] whiteSpaces = new byte[6] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20 };
         public static byte[] numeric = new byte[13] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
         (byte)'7', (byte)'8', (byte)'9', (byte)'.', (byte)'-', (byte)'+'};
@@ -32,8 +34,21 @@ namespace PdfLexer
 
         public static Exception DisplayDataErrorException(ReadOnlySpan<byte> data, int i, string prefixInfo)
         {
-            var count = data.Length > i + 10 ? 10 : data.Length - i;
+            var count = data.Length > i + 25 ? 25 : data.Length - i;
             return new ApplicationException(prefixInfo + ": '" + Encoding.ASCII.GetString(data.Slice(i, count)) + "'");
+        }
+
+        public static Exception DisplayDataErrorException(ref SequenceReader<byte> reader, string prefixInfo)
+        {
+            var count = reader.Remaining > 25 ? 25 : reader.Remaining;
+            return new ApplicationException(prefixInfo + ": '" + Encoding.ASCII.GetString(reader.Sequence.Slice(reader.Position, count).ToArray()) + "'");
+        }
+
+        public static Exception DisplayDataErrorException(ReadOnlySequence<byte> sequence, SequencePosition position, string prefixInfo)
+        {
+            var count = sequence.Length > 25 ? 25 : sequence.Length;
+            
+            return new ApplicationException(prefixInfo + ": '" + Encoding.ASCII.GetString(sequence.Slice(position, count).ToArray()) + "'");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

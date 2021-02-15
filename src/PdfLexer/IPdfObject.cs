@@ -63,6 +63,7 @@ namespace PdfLexer
                     }
                     else
                     {
+                        // TODO 255 line length limit
                         stream.Write(PdfDictionary.start);
                         foreach (var item in dict)
                         {

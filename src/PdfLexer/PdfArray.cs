@@ -43,8 +43,8 @@ namespace PdfLexer
         }
 
         public bool IsIndirect { get; set; }
-     
-        public PdfObjectType Type { get; set; }
+
+        public PdfObjectType Type => PdfObjectType.ArrayObj;
 
         public IEnumerator<IPdfObject> GetEnumerator() => internalList.GetEnumerator();
 

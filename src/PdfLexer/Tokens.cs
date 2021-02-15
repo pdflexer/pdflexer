@@ -8,14 +8,30 @@ namespace PdfLexer
         StringObj,
         NameObj,
         ArrayStart,
-        IndirectRef,
         DictionaryStart,
+        IndirectRef,
         ArrayEnd,
         DictionaryEnd,
         Trailer,
         StartStream,
         EndStream,
         StartObj,
-        EndObj
+        EndObj,
+        Xref,
+        WildCard // dummy
+    }
+
+    public enum PdfObjectType
+    {
+        NullObj,
+        BooleanObj,
+        NumericObj,
+        StringObj,
+        NameObj,
+        ArrayObj,
+        DictionaryObj,
+        StreamObj,
+        IndirectObj,
+        IndirectRefObj
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using PdfLexer.IO;
 using PdfLexer.Parsers.Nested;
@@ -9,10 +10,12 @@ namespace PdfLexer.Parsers
 {
     public class ParsingContext
     {
+        internal byte[] Buffer = new byte[5000];
         internal long CurrentOffset { get; set; }
         internal IPdfDataSource CurrentSource { get; set; }
         public bool CacheNumbers { get; set; } = true;
 
+        internal NumberParser NumberParser { get; }
         internal NameParser NameParser { get; } = new NameParser();
         internal LazyNestedSeqParser NestedSeqParser { get; }
         internal LazyNestedSpanParser NestedSpanParser { get; }
@@ -22,10 +25,17 @@ namespace PdfLexer.Parsers
             NestedSeqParser = new LazyNestedSeqParser(this);
             NestedSpanParser = new LazyNestedSpanParser(this);
             DictionaryParser = new DictionaryParser(this);
+            NumberParser =  new NumberParser(this);
         }
 
         internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
         {
+            switch (type)
+            {
+                case PdfObjectType.NumericObj:
+                    var slice = data.Slice(start, end); // TODO ? switch parser to take positions?
+                    return NumberParser.Parse(in slice);
+            }
             return null;
         }
 
@@ -34,13 +44,14 @@ namespace PdfLexer.Parsers
             return null;
         }
 
-        internal PdfLazyObject CreateLazy(PdfObjectType type, long subOffset, int length)
+        internal PdfLazyObject CreateLazy(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
         {
             return new PdfLazyObject {
-                    Offset = CurrentOffset + subOffset,
-                    Length = length,
+                    Offset = 0,
+                    Length = 0,
                     IsIndirect = false,
-                    Type = type
+                    Type = type,
+                    Source = CurrentSource
                 };
         }
 
@@ -49,7 +60,6 @@ namespace PdfLexer.Parsers
             CachedNumbers.Clear();
         }
 
-        internal byte[] NumberBuffer = new byte[30];
         internal Dictionary<CacheItem, PdfNumber> CachedNumbers = new Dictionary<CacheItem, PdfNumber>(new FNVByteComparison());
 
         internal struct CacheItem

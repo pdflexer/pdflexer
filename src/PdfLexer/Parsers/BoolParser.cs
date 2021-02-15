@@ -34,7 +34,7 @@ namespace PdfLexer.Parsers
             return PdfBoolean.False;
         }
 
-        public PdfBoolean Parse(ref ReadOnlySequence<byte> sequence)
+        public PdfBoolean Parse(in ReadOnlySequence<byte> sequence)
         {
             var fb = sequence.FirstSpan[0];
             if (fb == (byte)'t')
@@ -46,11 +46,11 @@ namespace PdfLexer.Parsers
             return PdfBoolean.False;
         }
 
-        public PdfBoolean Parse(ref ReadOnlySequence<byte> sequence, long start, int length)
+        public PdfBoolean Parse(in ReadOnlySequence<byte> sequence, long start, int length)
         {
             // can optimize
             var slice = sequence.Slice(start, length);
-            return Parse(ref slice);
+            return Parse(in slice);
         }
     }
 }

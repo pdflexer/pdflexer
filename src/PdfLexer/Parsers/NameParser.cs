@@ -33,13 +33,13 @@ namespace PdfLexer.Parsers
             return ParseWithHex(buffer, start, length);
         }
 
-        public PdfName Parse(ref ReadOnlySequence<byte> sequence)
+        public PdfName Parse(in ReadOnlySequence<byte> sequence)
         {
             // TODO optimize
             return Parse(sequence.ToArray());
         }
 
-        public PdfName Parse(ref ReadOnlySequence<byte> sequence, long start, int length)
+        public PdfName Parse(in ReadOnlySequence<byte> sequence, long start, int length)
         {
             // TODO optimize
             return Parse(sequence.Slice(start, length).ToArray());

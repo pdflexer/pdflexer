@@ -17,6 +17,7 @@ namespace PdfLexer.IO
         }
 
 
+        public long TotalBytes => _data.LongLength;
         public bool ReturnsCompleteData => true;
         public bool SupportsCloning => true;
         public IPdfDataSource Clone() => this;

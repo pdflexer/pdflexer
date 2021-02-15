@@ -1,21 +1,289 @@
 using System;
+using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Pipelines;
 using System.Text;
+using System.Threading.Tasks;
+using PdfLexer.IO;
 using PdfLexer.Lexing;
 
 namespace PdfLexer.Parsers
 {
     public class XRefParser
     {
+        private const int XrefBackScan = 250;
         private static byte[] startxref = new byte[9] {
             (byte)'s',(byte)'t',(byte)'a',(byte)'r',(byte)'t',(byte)'x',(byte)'r',(byte)'e',(byte)'f'
         };
         public static byte[] trailer = new byte[7] {
             (byte)'t',(byte)'r',(byte)'a',(byte)'i',(byte)'l',(byte)'e',(byte)'r'
         };
-        public static int GetXrefStart(ReadOnlySpan<byte> bytes)
+        public static byte[] xref = new byte[4] {
+            (byte)'x',(byte)'r',(byte)'e',(byte)'f'
+        };
+        private readonly ParsingContext _ctx;
+
+
+        public XRefParser(ParsingContext ctx)
         {
-            return bytes.LastIndexOf(startxref);
+            _ctx = ctx;
+        }
+
+        public async Task LoadCrossReference(IPdfDataSource source)
+        {
+            var readStart = source.TotalBytes - XrefBackScan;
+            if (readStart < 0)
+            {
+                readStart = 0;
+            }
+
+            long offset = 0;
+            var stream = source.GetStream(readStart);
+            int stage = 0;
+            var pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
+            var item = await pipe.ReadNextObject(_ctx);
+            while (true)
+            {
+                var result = await pipe.ReadAsync();
+                if (TryGetOffset(result.Buffer, result.IsCompleted, ref stage, out offset, out var pos))
+                {
+                    break;
+                }
+                pipe.AdvanceTo(pos);
+
+                if (result.IsCompleted || result.IsCanceled)
+                {
+                    throw new ApplicationException("Unable to find xref offset.");
+                }
+            }
+            pipe.Complete();
+
+            stream = source.GetStream(offset);
+            pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
+            var peak = await pipe.ReadAsync();
+            var start = PdfSpanLexer.TryReadNextToken(peak.Buffer.FirstSpan, out var type, 0, out int length);
+            if (start == -1)
+            {
+                throw new ApplicationException("Unable to read data to determine Xref catalog type");
+            }
+
+            if (type == PdfTokenType.NumericObj)
+            {
+                throw new NotImplementedException("PDF 1.5 Cross-Reference Streams not yet implemented.");
+            } else if (type == PdfTokenType.Xref)
+            {
+                var sequence = await pipe.LocateXrefTableAndTrailer();
+                if (sequence.IsSingleSegment)
+                {
+
+                }
+            }
+        }
+
+        internal List<XRefEntry> GetEntries(ReadOnlySpan<byte> data)
+        {
+            var entries = new List<XRefEntry>();
+            var i = 0;
+            while (data.Length > i)
+            {
+                var info = GetSectionHeader(data, ref i);
+                GetSection(info.firtObjectNum, info.totalCount, entries, data, ref i);
+                CommonUtil.SkipWhiteSpace(data, ref i);
+            }
+
+            return entries;
+        }
+
+        private (int firtObjectNum, int totalCount) GetSectionHeader(ReadOnlySpan<byte> data, ref int position)
+        {
+            var first = PdfSpanLexer.TryReadNextToken(data, out var type, position, out var length);
+            if (first == -1 || type != PdfTokenType.NumericObj)
+            {
+                throw CommonUtil.DisplayDataErrorException(data, position, "Bad xref header entry");
+            }
+            var num1 = _ctx.NumberParser.Parse(data, first, length);
+
+            var second = PdfSpanLexer.TryReadNextToken(data, out type, first+length, out length);
+            if (second == -1 || type != PdfTokenType.NumericObj)
+            {
+                throw CommonUtil.DisplayDataErrorException(data, position, "Bad xref header entry");
+            }
+
+            var num2 = _ctx.NumberParser.Parse(data, second, length);
+
+            if (!(num1 is PdfIntNumber fn) || !(num2 is PdfIntNumber sn))
+            {
+                throw CommonUtil.DisplayDataErrorException(data, position, "Bad xref entry header, items not int");
+            }
+
+            position = second + length;
+            return (fn.Value, sn.Value);
+        }
+
+        private void GetSection(int firtObjectNum, int totalCount, List<XRefEntry> entries, ReadOnlySpan<byte> data, ref int position)
+        {
+            for (var i=0;i<totalCount;i++)
+            {
+                var entry = GetSingleEntry(data, position, out int nextPos);
+                entry.ObjectNumber = firtObjectNum + i;
+                position = nextPos;
+                entries.Add(entry);
+            }
+        }
+
+        private XRefEntry GetSingleEntry(ReadOnlySpan<byte> data, int startPos, out int nextPos)
+        {
+            var first = PdfSpanLexer.TryReadNextToken(data, out var type, startPos, out var length);
+            if (first == -1 || type != PdfTokenType.NumericObj)
+            {
+                throw CommonUtil.DisplayDataErrorException(data, startPos, "Bad xref entry");
+            }
+            Debug.Assert(length == 10, "Xref offset is 10 bytes");
+            var num1 = _ctx.NumberParser.Parse(data, first, length);
+
+            var second = PdfSpanLexer.TryReadNextToken(data, out type, first+length, out length);
+            if (second == -1 || type != PdfTokenType.NumericObj)
+            {
+                throw CommonUtil.DisplayDataErrorException(data, startPos, "Bad xref entry");
+            }
+            Debug.Assert(length == 5, "Xref gen number is 5 bytes");
+            var num2 = _ctx.NumberParser.Parse(data, second, length);
+
+            var pos = second + length;
+            CommonUtil.SkipWhiteSpace(data, ref pos);
+
+            bool isFree = false;
+            var b = data[pos];
+            if (b == (byte) 'f')
+            {
+                isFree = true;
+            } else if (b == (byte) 'n')
+            {
+                isFree = false;
+            } else
+            {
+                throw CommonUtil.DisplayDataErrorException(data, startPos, "Bad xref entry");
+            }
+
+            if (!(num1 is PdfLongNumber ln))
+            {
+                throw CommonUtil.DisplayDataErrorException(data, startPos, "Bad xref entry, offset not long");
+            }
+            if (!(num2 is PdfIntNumber intNum))
+            {
+                throw CommonUtil.DisplayDataErrorException(data, startPos, "Bad xref entry, generation not int");
+            }
+
+            nextPos = pos + 1;
+            CommonUtil.SkipWhiteSpace(data, ref nextPos);
+            Debug.Assert(nextPos - pos == 3, "nextPos - pos == 3, 2 EOL chars");
+
+            return new XRefEntry
+            {
+                Offset = ln.Value,
+                Generation = intNum.Value,
+                IsFree = isFree
+            };
+        }
+
+        private bool TryGetOffset(ReadOnlySequence<byte> buffer, bool isCompleted, ref int stage, out long offset, out SequencePosition pos)
+        {
+            offset = 0;
+            var reader = new SequenceReader<byte>(buffer);
+            if (stage == 0)
+            {
+                if (!reader.TryAdvanceTo((byte) 's'))
+                {
+                    pos = reader.Position;
+                    return false;
+                }
+
+                if (!reader.IsNext(startxref))
+                {
+                    pos = reader.Position;
+                    return false;
+                }
+
+                stage++;
+            } else if (stage == 1)
+            {
+                if (!reader.TryReadNextToken(isCompleted, out var type, out var position))
+                {
+                    pos = reader.Position;
+                    return false;
+                }
+
+                if (type != PdfTokenType.NumericObj)
+                {
+                    throw new ApplicationException("Startxref not followed by offset number.");
+                }
+
+                var numData = buffer.Slice(reader.Position, position);
+                var offsetNumber = _ctx.NumberParser.Parse(in numData);
+                if (offsetNumber is PdfLongNumber ln)
+                {
+                    pos = reader.Position;
+                    offset = ln.Value;
+                    return true;
+                } else if (offsetNumber is PdfIntNumber nm)
+                {
+                    pos = reader.Position;
+                    offset = nm.Value;
+                    return true;
+                } else
+                {
+                    throw new ApplicationException("Did not get long or int for xref offset");
+                }
+            }
+
+            throw new ApplicationException("Unknown stage for XRef parsing.");
+        }
+
+        private long GetXrefEasy(Stream stream)
+        {
+            // stream.Seek(-scanback, SeekOrigin.End);
+            // var read = stream.Read(_ctx.Buffer, 0, scanback);
+            // Debug.Assert(read == scanback, "read == scanback for GettingXrefOffset");
+            // var buff = new Span<byte>(_ctx.Buffer, 0, scanback);
+            // var start = buff.LastIndexOf(startxref);
+            // if (start == -1)
+            // {
+            //     throw new ApplicationException("Unable to find startxref.");
+            // }
+            // 
+            // buff = buff.Slice(start + 9);
+            // var loc = PdfSpanLexer.TryReadNextToken(buff, out PdfTokenType type, out int length);
+            // if (loc == -1 || type != PdfTokenType.NumericObj)
+            // {
+            //     throw new ApplicationException("Startxref not followed by offset number.");
+            // }
+            // 
+            // var offsetNumber = _ctx.NumberParser.Parse(buff, loc, length);
+            // if (offsetNumber is PdfLongNumber ln)
+            // {
+            //     return ln.Value;
+            // } else if (offsetNumber is PdfIntNumber nm)
+            // {
+            //     return nm.Value;
+            // } else
+            // {
+            //     throw new ApplicationException("Did not get long or int for xref offset");
+            // }
+            return 0;
+        }
+
+        public PdfDictionary LoadCrossReference(Stream stream, long offset)
+        {
+
+            // for non streamed
+            // starts with xref then lew line
+            // section started with two numbers (first obj number in section, total objects in section)
+            // 20 byte entries including eol 
+            // 10 digits offset, 5 digit gen, n or f, 2 char eol
+            // always starts with object 0, gen 65,535, f
+            return null;
         }
 
         public static int GetXrefEnd(ReadOnlySpan<byte> bytes)
@@ -166,12 +434,13 @@ namespace PdfLexer.Parsers
             var offset = UInt64.Parse(buffer.Slice(0, 10));
             Encoding.ASCII.GetChars(bytes.Slice(11, 5), buffer);
             var gen = uint.Parse(buffer.Slice(0, 5));
-            return new XRefEntry
-            {
-                Offset = offset,
-                Generation = gen,
-                IsFree = bytes[17] == 'f'
-            };
+            return null;
+            // return new XRefEntry
+            // {
+            //     Offset = offset,
+            //     Generation = gen,
+            //     IsFree = bytes[17] == 'f'
+            // };
         }
     }
 
@@ -217,13 +486,14 @@ namespace PdfLexer.Parsers
 
         public XRefEntry GetCurrentEntry()
         {
-            return new XRefEntry
-            {
-                ObjectNumber = xrefObjNum,
-                Offset = xrefOffset,
-                Generation = xrefGen,
-                IsFree = xrefIsFree
-            };
+            return null;
+            //return new XRefEntry
+            //{
+            //    ObjectNumber = xrefObjNum,
+            //    Offset = xrefOffset,
+            //    Generation = xrefGen,
+            //    IsFree = xrefIsFree
+            //};
         }
 
         public bool Read()
@@ -430,11 +700,11 @@ namespace PdfLexer.Parsers
             return -1;
         }
     }
-    public struct XRefEntry
+    public class XRefEntry
     {
-        public uint ObjectNumber { get; set; }
-        public ulong Offset { get; set; }
-        public uint Generation { get; set; }
+        public int ObjectNumber { get; set; }
+        public long Offset { get; set; }
+        public int Generation { get; set; }
         public bool IsFree { get; set; }
     }
 }
