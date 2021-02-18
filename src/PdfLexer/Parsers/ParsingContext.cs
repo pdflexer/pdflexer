@@ -2,8 +2,12 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Pipelines;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using PdfLexer.IO;
+using PdfLexer.Lexing;
 using PdfLexer.Parsers.Nested;
 
 namespace PdfLexer.Parsers
@@ -27,10 +31,14 @@ namespace PdfLexer.Parsers
 
         internal NumberParser NumberParser { get; }
         internal NameParser NameParser { get; } = new NameParser();
+        public IPdfDataSource MainDocument { get; private set; }
         internal LazyNestedSeqParser NestedSeqParser { get; }
         internal LazyNestedSpanParser NestedSpanParser { get; }
         internal DictionaryParser DictionaryParser { get; }
         internal StringParser StringParser {get;}
+        internal XRefParser XRefParser { get; }
+        internal PdfDictionary Trailer { get; } // move to pdf doc
+
         public ParsingContext()
         {
             NestedSeqParser = new LazyNestedSeqParser(this);
@@ -38,6 +46,41 @@ namespace PdfLexer.Parsers
             DictionaryParser = new DictionaryParser(this);
             NumberParser =  new NumberParser(this);
             StringParser = new StringParser(this);
+            XRefParser = new XRefParser(this);
+        }
+
+        public async ValueTask Initialize(IPdfDataSource pdf)
+        {
+            MainDocument = pdf;
+            var (refs, trailer) = await XRefParser.LoadCrossReference(MainDocument);
+            XrefEntries = refs.Where(x=>!x.IsFree).ToDictionary(x=>x.ObjectNumber, x=>x);
+            var ordered = refs.Where(x=>x.Type == XRefType.Normal).OrderBy(x=>x.Offset).ToList();
+            for (var i = 0; i < ordered.Count; i++)
+            {
+                if (i + 1 < ordered.Count)
+                {
+                    ordered[i].MaxLength = (int)(ordered[i+1].Offset-ordered[i].Offset);
+                }
+            }
+            ordered[^1].MaxLength = (int)(MainDocument.TotalBytes -ordered[^2].Offset);
+        }
+
+        internal Dictionary<int, XRefEntry> XrefEntries;
+
+
+        internal IPdfObject GetIndirectObject(int objectNumber)
+        {
+            if (!XrefEntries.TryGetValue(objectNumber, out var value))
+            {
+                throw new ApplicationException($"Unknown indirect object {objectNumber}");
+            }
+            if (value.Type == XRefType.Compressed)
+            {
+                throw new NotImplementedException("PDF 1.5 Object streams not yet supported.");
+            }
+
+            MainDocument.FillData(value.Offset, value.MaxLength, out var buffer);
+            return GetPdfItem(buffer, 0);
         }
 
         internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
@@ -59,8 +102,41 @@ namespace PdfLexer.Parsers
             return null;
         }
 
-        internal IPdfObject GetPdfItem(PdfObjectType type, ReadOnlySpan<byte> data, int start, int length)
+        internal IPdfObject GetPdfItem(ReadOnlySpan<byte> data, int start)
         {
+            var next = PdfSpanLexer.TryReadNextToken(data, out var type, start, out int actualLength);
+            if (next == -1)
+            {
+                throw CommonUtil.DisplayDataErrorException(data, start, "Object not found in provided data buffer");
+            }
+
+            if ((int)type > 7)
+            {
+                throw CommonUtil.DisplayDataErrorException(data, start, $"No object found at offset, found token of type {type.ToString()}");
+            }
+
+            return GetKnownPdfItem((PdfObjectType) type, data, next, actualLength);
+        }
+
+        internal IPdfObject GetKnownPdfItem(PdfObjectType type, ReadOnlySpan<byte> data, int start, int length)
+        {
+            switch (type)
+            {
+                // TODO ? switch parser to take positions for no slice if not needed?
+                case PdfObjectType.NumericObj:
+                    {
+                    var slice = data.Slice(start, length);
+                    return NumberParser.Parse(slice);
+                    }
+                case PdfObjectType.NameObj:
+                    {
+                    var slice = data.Slice(start, length);
+                    return NameParser.Parse(slice);
+                    }
+                case PdfObjectType.DictionaryObj:
+                case PdfObjectType.ArrayObj:
+                    return NestedSpanParser.ParseNestedItem(null, 0, data, start); // TODO lazy support
+            }
             return null;
         }
 

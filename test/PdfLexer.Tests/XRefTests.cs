@@ -97,8 +97,8 @@ startxref
             var source = new InMemoryDataSource(bytes);
             var parser = new XRefParser(new ParsingContext());
             var data = await parser.LoadCrossReference(source);
-            Assert.Equal(objectCount, data.Count);
-            Assert.Equal(lastObjNum, data.Max(x=>x.ObjectNumber));
+            Assert.Equal(objectCount, data.Item1.Count);
+            Assert.Equal(lastObjNum, data.Item1.Max(x=>x.ObjectNumber));
         }
 
         [InlineData(@"xref
@@ -153,8 +153,8 @@ startxref
         {
             var bytes = Encoding.ASCII.GetBytes(input);
             var source = new InMemoryDataSource(bytes);
-            var parser = new XRefParser(new ParsingContext());
-            var results = await parser.LoadCrossReference(source);
+            var parser = new XRefParser(new ParsingContext() { IsEager = true });
+            var (results, trailer) = await parser.LoadCrossReference(source);
             Assert.Equal(entries, results.Count);
             var last = results.OrderByDescending(x=>x.ObjectNumber).First();
             Assert.Equal(lastOffset, last.Offset);

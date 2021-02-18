@@ -141,7 +141,7 @@ namespace PdfLexer.Lexing
                     length = bytes.Slice(i + 1).IndexOfAny(NameParser.NameTerminators);
                     if (length == -1)
                     {
-                        length = buffer.Length - i;
+                        length = buffer.Length - i - 1;
                     }
 
                     length++; // Slice(i+1)

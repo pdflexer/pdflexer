@@ -1,4 +1,5 @@
 ﻿using System;
+using PdfLexer.IO;
 using PdfLexer.Lexing;
 
 namespace PdfLexer.Parsers.Nested
@@ -14,42 +15,15 @@ namespace PdfLexer.Parsers.Nested
         {
             _ctx = ctx;
         }
-        private ParseState currentState = ParseState.None;
-        private bool completed = false;
 
-        private PdfName currentKey;
-        private IParsedLazyObj obj = null;
-
-        internal IParsedLazyObj GetCompletedObject()
+        public IParsedLazyObj ParseNestedItem(IPdfDataSource source, long offset, ReadOnlySpan<byte> buffer, int startAt)
         {
-            if (!completed)
-            {
-                throw new InvalidOperationException("GetCompletedObject() called before parsing was finished.");
-            }
-            currentState = ParseState.None;
-            currentKey = null;
-            startPos = default;
-            currentLength = default;
-            var toReturn = obj;
-            obj = null;
-            completed = false;
-            return toReturn;
-        }
-
-        public IParsedLazyObj ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt)
-        {
-            while (ParseNestedItemPart(buffer, startAt)) { }
-
-            return GetCompletedObject();
-        }
-
-        private int startPos;
-        private int currentLength;
-        internal bool ParseNestedItemPart(ReadOnlySpan<byte> buffer, int startAt)
-        {
-            startPos = startAt;
+            ParseState state = default;
+            IParsedLazyObj obj = null;
+            PdfName currentKey = null;
+            bool completed = false;
             var lastStart = 0;
-            while ((startPos = PdfSpanLexer.TryReadNextToken(buffer, out var tokenType, lastStart=startPos, out currentLength)) != -1)
+            while ((startAt = PdfSpanLexer.TryReadNextToken(buffer, out var tokenType, lastStart=startAt, out var currentLength)) != -1)
             {
                 switch (tokenType)
                 {
@@ -57,59 +31,61 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.BooleanObj:
                     case PdfTokenType.NullObj:
                     case PdfTokenType.StringObj:
-                        AddValue(buffer, tokenType);
-                        startPos += currentLength;
+                        AddValue(buffer, startAt, currentLength, tokenType);
+                        startAt += currentLength;
                         continue;
                     case PdfTokenType.DictionaryStart:
                         if (obj != null)
                         {
-                            startPos += currentLength;
-                            var end = startPos;
-                            if (!NestedUtil.AdvanceToDictEnd(buffer, ref end, out _))
+                            var originalStart = startAt;
+                            startAt += currentLength;
+                            var end = startAt;
+                            if (!NestedUtil.AdvanceToDictEnd(buffer, ref end, out var hadIndirect))
                             {
-                                return false;
+                                goto Done;
                             }
 
-                            currentLength = end - startPos;
-                            AddValue(buffer, PdfTokenType.DictionaryStart);
-                            startPos += currentLength;
+                            currentLength = end - startAt;
+                            AddLazyValue(source, offset, originalStart, currentLength, PdfTokenType.DictionaryStart, hadIndirect);
+                            startAt += currentLength;
                             continue;
                         }
-                        currentState = ParseState.ReadDictKey;
+                        state = ParseState.ReadDictKey;
                         obj = new PdfDictionary();
-                        startPos += currentLength;
+                        startAt += currentLength;
                         continue;
                     case PdfTokenType.ArrayStart:
                         if (obj != null)
                         {
-                            startPos += currentLength;
-                            var end = startPos;
-                            if (!NestedUtil.AdvanceToArrayEnd(buffer, ref end, out _))
+                            var originalStart = startAt;
+                            startAt += currentLength;
+                            var end = startAt;
+                            if (!NestedUtil.AdvanceToArrayEnd(buffer, ref end, out var hadIndirect))
                             {
-                                return false;
+                               goto Done;
                             }
 
-                            currentLength = end - startPos;
-                            AddValue(buffer, PdfTokenType.ArrayStart);
-                            startPos += currentLength;
+                            currentLength = end - startAt;
+                            AddLazyValue(source, offset, originalStart, currentLength, PdfTokenType.ArrayStart, hadIndirect);
+                            startAt += currentLength;
                             continue;
                         }
                         obj = new PdfArray();
-                        currentState = ParseState.ReadArray;
-                        startPos += currentLength;
+                        state = ParseState.ReadArray;
+                        startAt += currentLength;
                         continue;
                     case PdfTokenType.NumericObj:
-                        var current = PdfSpanLexer.TryReadNextToken(buffer, out var secondType, startPos + currentLength,
+                        var current = PdfSpanLexer.TryReadNextToken(buffer, out var secondType, startAt + currentLength,
                             out int secondLength);
                         if (current == -1)
                         {
-                            return false;
+                             goto Done;
                         }
    
                         if (secondType != PdfTokenType.NumericObj)
                         {
-                            AddValue(buffer, tokenType);
-                            startPos += currentLength;
+                            AddValue(buffer, startAt, currentLength, tokenType);
+                            startAt += currentLength;
                             continue;
                         }
 
@@ -117,18 +93,18 @@ namespace PdfLexer.Parsers.Nested
                             out int thirdLength);
                         if (current == -1)
                         {
-                            return false;
+                             goto Done;
                         }
 
                         if (thirdType != PdfTokenType.IndirectRef)
                         {
-                            AddValue(buffer, tokenType);
-                            startPos += currentLength;
+                            AddValue(buffer, startAt, currentLength, tokenType);
+                            startAt += currentLength;
                             continue;
                         }
-                        currentLength = current + thirdLength - startPos;
-                        AddValue(buffer, PdfTokenType.IndirectRef);
-                        startPos += currentLength;
+                        currentLength = current + thirdLength - startAt;
+                        AddValue(buffer, startAt, currentLength, PdfTokenType.IndirectRef);
+                        startAt += currentLength;
                         continue;
                     case PdfTokenType.IndirectRef:
                         throw new ApplicationException("Unexpected indirect Ref token found.");
@@ -136,50 +112,91 @@ namespace PdfLexer.Parsers.Nested
                         var dict = obj as PdfDictionary;
                         dict.IsModified = false;
                         completed = true;
-                        return false;
+                        goto Done;
                     case PdfTokenType.ArrayEnd:
                         var arr = obj as PdfArray;
                         arr.IsModified = false;
                         completed = true;
-                        return false;
+                        goto Done;
                     default:
                         throw new ApplicationException("Unknown object encountered.");
                 }
 
+
             }
+
+            Done:
 
             if (!completed)
             {
                 throw CommonUtil.DisplayDataErrorException(buffer, lastStart,
-                    $"Parsing ended unexpectedly for looking for {currentState.ToString()}, remaining data");
+                    $"Parsing ended unexpectedly for looking for {state.ToString()} or Dict End, remaining data");
             }
 
-            return false;
-        }
+            return obj;
 
-        void AddValue(ReadOnlySpan<byte> buffer, PdfTokenType type)
-        {
-            switch (currentState)
+            void AddLazyValue(IPdfDataSource source, long offset, int startPos, int length, PdfTokenType type, bool hadIndirect)
             {
-                case ParseState.ReadDictKey:
-                    currentKey = _ctx.NameParser.Parse(buffer, startPos, currentLength);
-                    currentState = ParseState.ReadDictValue;
-                    return;
-                case ParseState.ReadDictValue:
+                // TODO lazy support with span... should we allow? would need to track offset
+                switch (state)
                 {
-                    var item = _ctx.GetPdfItem((PdfObjectType) type, buffer, startPos, currentLength);
-                    (obj as PdfDictionary)[currentKey] = item;
-                    currentKey = null;
-                    currentState = ParseState.ReadDictKey;
-                    return;
-                }
-                case ParseState.ReadArray:
-                {
-                    var item = _ctx.GetPdfItem((PdfObjectType) type, buffer, startPos, currentLength);
-                    (obj as PdfArray).Add(item);
-                    return;
+                    case ParseState.ReadDictValue:
+                    {
+                        var lazy = new PdfLazyObject
+                        {
+                            Source = source,
+                            Offset = offset + startPos,
+                            Length = length,
+                            HasLazyIndirect = hadIndirect,
+                            Type = (PdfObjectType) type
+                        };
+                        (obj as PdfDictionary)[currentKey] = lazy;
+                        currentKey = null;
+                        state = ParseState.ReadDictKey;
+                        return;
+                    }
+                    case ParseState.ReadArray:
+                    {
+                        var lazy = new PdfLazyObject
+                        {
+                            Source = source,
+                            Offset = offset + startPos,
+                            Length = length,
+                            HasLazyIndirect = hadIndirect,
+                            Type = (PdfObjectType) type
+                        };
+                        (obj as PdfArray).Add(lazy);
+                        return;
+                    }
                 }
             }
+
+            void AddValue(ReadOnlySpan<byte> buffer, int startPos, int length, PdfTokenType type)
+            {
+                switch (state)
+                {
+                    case ParseState.ReadDictKey:
+                        currentKey = _ctx.NameParser.Parse(buffer, startPos, length);
+                        state = ParseState.ReadDictValue;
+                        return;
+                    case ParseState.ReadDictValue:
+                    {
+                        var item = _ctx.GetKnownPdfItem((PdfObjectType) type, buffer, startPos, length);
+                        (obj as PdfDictionary)[currentKey] = item;
+                        currentKey = null;
+                        state = ParseState.ReadDictKey;
+                        return;
+                    }
+                    case ParseState.ReadArray:
+                    {
+                        var item = _ctx.GetKnownPdfItem((PdfObjectType) type, buffer, startPos, length);
+                        (obj as PdfArray).Add(item);
+                        return;
+                    }
+                }
+            }
+
+
         }
     }
 }

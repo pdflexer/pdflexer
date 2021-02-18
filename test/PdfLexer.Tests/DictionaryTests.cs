@@ -1,3 +1,4 @@
+using System;
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
@@ -27,7 +28,14 @@ namespace PdfLexer.Tests
         {
             var buffer = Encoding.ASCII.GetBytes(data);
             var ctx = new ParsingContext();
-            var result = ctx.DictionaryParser.Parse(buffer);
+            if (!found)
+            {
+                Assert.ThrowsAny<Exception>(() => ctx.DictionaryParser.Parse(buffer));
+            } else
+            {
+                var result = ctx.DictionaryParser.Parse(buffer);
+            }
+            
             // Do_Get_Dict(data, found, expected);
         }
 

@@ -34,7 +34,7 @@ namespace PdfLexer.Parsers
             _ctx = ctx;
         }
 
-        public async ValueTask<List<XRefEntry>> LoadCrossReference(IPdfDataSource source)
+        public async ValueTask<(List<XRefEntry>, PdfDictionary)> LoadCrossReference(IPdfDataSource source)
         {
             var readStart = source.TotalBytes - XrefBackScan;
             if (readStart < 0)
@@ -65,7 +65,13 @@ namespace PdfLexer.Parsers
             var result = await pipe.ReadNextObject(_ctx);
             if (result.Type == PdfTokenType.Xref)
             {
-                return await GetEntries(pipe);
+                var data = await GetEntries(pipe);
+                var trailer = await pipe.ReadNextObject(_ctx);
+                if (trailer.Obj?.Type != PdfObjectType.DictionaryObj)
+                {
+                    throw new ApplicationException("Object following trailer was not a dictionary.");
+                }
+                return (data, trailer.Obj as PdfDictionary);
             } else if (result.Obj?.Type == PdfObjectType.NumericObj)
             {
                 throw new NotImplementedException("PDF 1.5 Cross-Reference Streams not yet implemented.");
@@ -747,6 +753,7 @@ namespace PdfLexer.Parsers
         public int Generation { get; set; }
         public bool IsFree { get; set; }
         public long Offset { get; set; }
+        public int MaxLength { get; set; }
         public int ObjectStreamNumber { get; set; }
         public int ObjectIndex { get; set; }
     }
