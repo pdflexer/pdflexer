@@ -1,15 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
 
 namespace PdfLexer.Parsers.Nested
 {
-    /// <summary>
-    /// Todo: clean this up.. mirrors the re-entrant sequence setup but doesn't need to as all data
-    /// is supposed to be in memory for this
-    /// </summary>
     internal class LazyNestedSpanParser
     {
+        private List<ObjParseState> StateStack = new List<ObjParseState>(10);
+        private ObjParseState CurrentState = default;
         private readonly ParsingContext _ctx;
         public LazyNestedSpanParser(ParsingContext ctx)
         {
@@ -18,9 +17,6 @@ namespace PdfLexer.Parsers.Nested
 
         public IParsedLazyObj ParseNestedItem(IPdfDataSource source, long offset, ReadOnlySpan<byte> buffer, int startAt)
         {
-            ParseState state = default;
-            IParsedLazyObj obj = null;
-            PdfName currentKey = null;
             bool completed = false;
             var lastStart = 0;
             while ((startAt = PdfSpanLexer.TryReadNextToken(buffer, out var tokenType, lastStart=startAt, out var currentLength)) != -1)
@@ -31,93 +27,120 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.BooleanObj:
                     case PdfTokenType.NullObj:
                     case PdfTokenType.StringObj:
-                        AddValue(buffer, startAt, currentLength, tokenType);
+                    case PdfTokenType.DecimalObj:
+                    case PdfTokenType.NumericObj:
+                        CurrentState.Bag.Add(_ctx.GetKnownPdfItem((PdfObjectType) tokenType, buffer, startAt, currentLength));
                         startAt += currentLength;
                         continue;
                     case PdfTokenType.DictionaryStart:
-                        if (obj != null)
+                        if (CurrentState.Dict != null || CurrentState.Array != null)
                         {
-                            var originalStart = startAt;
-                            startAt += currentLength;
-                            var end = startAt;
-                            if (!NestedUtil.AdvanceToDictEnd(buffer, ref end, out var hadIndirect))
+                            if (_ctx.IsEager)
                             {
-                                goto Done;
+                                StateStack.Add(CurrentState);
+                                CurrentState = default;
+                                CurrentState.State = ParseState.ReadDictKey;
+                                CurrentState.Dict = new PdfDictionary();
+                                CurrentState.Bag ??= new List<IPdfObject>();
+                                CurrentState.Bag.Clear();
+                                startAt += currentLength;
+                                continue;
                             }
+                            else
+                            {
+                                var originalStart = startAt;
+                                startAt += currentLength;
+                                var end = startAt;
+                                if (!NestedUtil.AdvanceToDictEnd(buffer, ref end, out var hadIndirect))
+                                {
+                                    goto Done;
+                                }
 
-                            currentLength = end - startAt;
-                            AddLazyValue(source, offset, originalStart, currentLength, PdfTokenType.DictionaryStart, hadIndirect);
-                            startAt += currentLength;
-                            continue;
+                                currentLength = end - startAt;
+                                AddLazyValue(source, offset, originalStart, currentLength, PdfTokenType.DictionaryStart, hadIndirect);
+                                startAt += currentLength;
+                                continue;
+                            }
                         }
-                        state = ParseState.ReadDictKey;
-                        obj = new PdfDictionary();
+                        CurrentState.State = ParseState.ReadDictKey;
+                        CurrentState.Dict = new PdfDictionary();
+                        CurrentState.Bag ??= new List<IPdfObject>();
+                        CurrentState.Bag.Clear();
                         startAt += currentLength;
                         continue;
                     case PdfTokenType.ArrayStart:
-                        if (obj != null)
+                        if (CurrentState.Dict != null || CurrentState.Array != null)
                         {
-                            var originalStart = startAt;
-                            startAt += currentLength;
-                            var end = startAt;
-                            if (!NestedUtil.AdvanceToArrayEnd(buffer, ref end, out var hadIndirect))
+                            if (_ctx.IsEager)
                             {
-                               goto Done;
+                                StateStack.Add(CurrentState);
+                                CurrentState = default;
+                                CurrentState.State = ParseState.ReadArray;
+                                CurrentState.Array = new PdfArray();
+                                CurrentState.Bag ??= new List<IPdfObject>();
+                                CurrentState.Bag.Clear();
+                                startAt += currentLength;
+                                continue;
                             }
+                            else
+                            {
+                                var originalStart = startAt;
+                                startAt += currentLength;
+                                var end = startAt;
+                                if (!NestedUtil.AdvanceToArrayEnd(buffer, ref end, out var hadIndirect))
+                                {
+                                   goto Done;
+                                }
 
-                            currentLength = end - startAt;
-                            AddLazyValue(source, offset, originalStart, currentLength, PdfTokenType.ArrayStart, hadIndirect);
-                            startAt += currentLength;
-                            continue;
+                                currentLength = end - startAt;
+                                AddLazyValue(source, offset, originalStart, currentLength, PdfTokenType.ArrayStart, hadIndirect);
+                                startAt += currentLength;
+                                continue;
+                            }
                         }
-                        obj = new PdfArray();
-                        state = ParseState.ReadArray;
-                        startAt += currentLength;
-                        continue;
-                    case PdfTokenType.NumericObj:
-                        var current = PdfSpanLexer.TryReadNextToken(buffer, out var secondType, startAt + currentLength,
-                            out int secondLength);
-                        if (current == -1)
-                        {
-                             goto Done;
-                        }
-   
-                        if (secondType != PdfTokenType.NumericObj)
-                        {
-                            AddValue(buffer, startAt, currentLength, tokenType);
-                            startAt += currentLength;
-                            continue;
-                        }
-
-                        current = PdfSpanLexer.TryReadNextToken(buffer, out var thirdType, current + secondLength,
-                            out int thirdLength);
-                        if (current == -1)
-                        {
-                             goto Done;
-                        }
-
-                        if (thirdType != PdfTokenType.IndirectRef)
-                        {
-                            AddValue(buffer, startAt, currentLength, tokenType);
-                            startAt += currentLength;
-                            continue;
-                        }
-                        currentLength = current + thirdLength - startAt;
-                        AddValue(buffer, startAt, currentLength, PdfTokenType.IndirectRef);
+                        CurrentState.Array = new PdfArray();
+                        CurrentState.State = ParseState.ReadArray;
+                        CurrentState.Bag ??= new List<IPdfObject>();
+                        CurrentState.Bag.Clear();
                         startAt += currentLength;
                         continue;
                     case PdfTokenType.IndirectRef:
-                        throw new ApplicationException("Unexpected indirect Ref token found.");
+                        CurrentState.Bag.Add(IndirectRefToken.Value);
+                        startAt += 1;
+                        continue;
                     case PdfTokenType.DictionaryEnd:
-                        var dict = obj as PdfDictionary;
-                        dict.IsModified = false;
-                        completed = true;
-                        goto Done;
+                        CurrentState.Dict = GetDictionaryFromCurrent();
+                        if (StateStack.Count > 0)
+                        {
+                            var last = StateStack[^1];
+                            last.Bag.Add(CurrentState.Dict);
+                            CurrentState = last;
+                            StateStack.RemoveAt(StateStack.Count-1);
+                            startAt += currentLength;
+                            break;
+                        }
+                        else
+                        {
+                            completed = true;
+                            goto Done;
+                        }
                     case PdfTokenType.ArrayEnd:
-                        var arr = obj as PdfArray;
-                        arr.IsModified = false;
-                        completed = true;
-                        goto Done;
+                        CurrentState.Array = GetArrayFromCurrent();
+                        if (StateStack.Count > 0)
+                        {
+                            var last = StateStack[^1];
+                            last.Bag.Add(CurrentState.Array);
+                            CurrentState = last;
+                            StateStack.RemoveAt(StateStack.Count-1);
+                            startAt += currentLength;
+                            break;
+                        }
+                        else
+                        {
+                            completed = true;
+                            goto Done;
+                        }
+                        
                     default:
                         throw new ApplicationException("Unknown object encountered.");
                 }
@@ -126,77 +149,79 @@ namespace PdfLexer.Parsers.Nested
             }
 
             Done:
-
+            var obj = (IParsedLazyObj) CurrentState.Dict ?? CurrentState.Array;
+            CurrentState = default;
             if (!completed)
             {
                 throw CommonUtil.DisplayDataErrorException(buffer, lastStart,
-                    $"Parsing ended unexpectedly for looking for {state.ToString()} or Dict End, remaining data");
+                    $"Parsing ended unexpectedly for looking for {CurrentState.State.ToString()} or Dict End, remaining data");
             }
-
+            
             return obj;
 
             void AddLazyValue(IPdfDataSource source, long offset, int startPos, int length, PdfTokenType type, bool hadIndirect)
             {
-                // TODO lazy support with span... should we allow? would need to track offset
-                switch (state)
+                var lazy = new PdfLazyObject
                 {
-                    case ParseState.ReadDictValue:
-                    {
-                        var lazy = new PdfLazyObject
-                        {
-                            Source = source,
-                            Offset = offset + startPos,
-                            Length = length,
-                            HasLazyIndirect = hadIndirect,
-                            Type = (PdfObjectType) type
-                        };
-                        (obj as PdfDictionary)[currentKey] = lazy;
-                        currentKey = null;
-                        state = ParseState.ReadDictKey;
-                        return;
-                    }
-                    case ParseState.ReadArray:
-                    {
-                        var lazy = new PdfLazyObject
-                        {
-                            Source = source,
-                            Offset = offset + startPos,
-                            Length = length,
-                            HasLazyIndirect = hadIndirect,
-                            Type = (PdfObjectType) type
-                        };
-                        (obj as PdfArray).Add(lazy);
-                        return;
-                    }
-                }
+                    Source = source,
+                    Offset = offset + startPos,
+                    Length = length,
+                    HasLazyIndirect = hadIndirect,
+                    Type = (PdfObjectType) type
+                };
+                CurrentState.Bag.Add(lazy);
             }
 
-            void AddValue(ReadOnlySpan<byte> buffer, int startPos, int length, PdfTokenType type)
+        }
+
+        private PdfArray GetArrayFromCurrent()
+        {
+            
+            var array = CurrentState.Array;
+            foreach (var item in CurrentState.Bag)
             {
-                switch (state)
-                {
-                    case ParseState.ReadDictKey:
-                        currentKey = _ctx.NameParser.Parse(buffer, startPos, length);
-                        state = ParseState.ReadDictValue;
-                        return;
-                    case ParseState.ReadDictValue:
-                    {
-                        var item = _ctx.GetKnownPdfItem((PdfObjectType) type, buffer, startPos, length);
-                        (obj as PdfDictionary)[currentKey] = item;
-                        currentKey = null;
-                        state = ParseState.ReadDictKey;
-                        return;
-                    }
-                    case ParseState.ReadArray:
-                    {
-                        var item = _ctx.GetKnownPdfItem((PdfObjectType) type, buffer, startPos, length);
-                        (obj as PdfArray).Add(item);
-                        return;
-                    }
-                }
+                array.Add(item);
             }
+            array.IsModified = false;
+            return array;
+        }
 
-
+        private PdfDictionary GetDictionaryFromCurrent()
+        {
+            bool key = true;
+            PdfName name = null;
+            var dict = CurrentState.Dict;
+            for (var i=0;i<CurrentState.Bag.Count;i++)
+            {
+                var item = CurrentState.Bag[i];
+                if (key)
+                {
+                    if (item is PdfName nm)
+                    {
+                        name = nm;
+                    } else
+                    {
+                        throw new ApplicationException("");
+                    }
+                } else
+                {
+                    if (item is PdfNumber num 
+                        && i + 2 < CurrentState.Bag.Count
+                        && CurrentState.Bag[i+1] is PdfIntNumber num2
+                        && CurrentState.Bag[i+2] is IndirectRefToken)
+                    {
+                        dict[name] = new PdfIndirectRef((long)num, num2.Value);
+                        i+=2;
+                    } else
+                    {
+                        dict[name] = item;
+                    }
+                    
+                }
+                key = !key;
+            }
+            dict.IsModified = false;
+            return dict;
         }
     }
 }

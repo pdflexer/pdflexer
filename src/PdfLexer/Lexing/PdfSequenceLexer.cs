@@ -131,6 +131,23 @@ namespace PdfLexer.Lexing
                 case (byte) '8':
                 case (byte) '9':
                     type = PdfTokenType.NumericObj;
+                    reader.AdvancePastAny(CommonUtil.ints);
+                    if (reader.End && isCompleted)
+                    {
+                        return true;
+                    } else if (reader.End)
+                    {
+                        return false;
+                    }
+                    if (!reader.TryPeek(out var dg))
+                    {
+                        return false;
+                    }
+                    if (dg != (byte)'.')
+                    {
+                        return true;
+                    }
+                    type = PdfTokenType.DecimalObj;
                     reader.AdvancePastAny(CommonUtil.numeric);
                     if (reader.End && isCompleted)
                     {
@@ -139,6 +156,7 @@ namespace PdfLexer.Lexing
                     {
                         return false;
                     }
+
                     return true;
                 case (byte) 'R':
                     reader.TryRead(out _);

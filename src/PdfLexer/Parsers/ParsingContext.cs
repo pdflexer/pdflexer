@@ -21,7 +21,7 @@ namespace PdfLexer.Parsers
     public class ParsingContext
     {
         // TODO different types
-        internal bool IsEager { get; set; } = true;
+        public bool IsEager { get; set; } = true;
         internal NestedSkipper Skipper { get; } = new NestedSkipper();
         internal ParseState ParseState { get; set; }
         internal List<IPdfObject> ObjectBag = new List<IPdfObject>();
@@ -31,6 +31,7 @@ namespace PdfLexer.Parsers
         public bool CacheNumbers { get; set; } = true;
 
         internal NumberParser NumberParser { get; }
+        internal DecimalParser DecimalParser { get; }
         internal NameParser NameParser { get; } = new NameParser();
         public IPdfDataSource MainDocument { get; private set; }
         internal LazyNestedSeqParser NestedSeqParser { get; }
@@ -40,12 +41,19 @@ namespace PdfLexer.Parsers
         internal XRefParser XRefParser { get; }
         internal PdfDictionary Trailer { get; } // move to pdf doc
 
+        internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
+        // internal Dictionary<CacheItem, PdfNumber> CachedNumbers = new Dictionary<CacheItem, PdfNumber>(new FNVByteComparison());
+        // internal Dictionary<decimal, PdfDecimalNumber> CachedDecimals = new Dictionary<decimal, PdfDecimalNumber>();
+        
+        // internal Dictionary<long, PdfLongNumber> CachedLongs = new Dictionary<long, PdfLongNumber>();
+
         public ParsingContext()
         {
             NestedSeqParser = new LazyNestedSeqParser(this);
             NestedSpanParser = new LazyNestedSpanParser(this);
             DictionaryParser = new DictionaryParser(this);
             NumberParser =  new NumberParser(this);
+            DecimalParser =  new DecimalParser();
             StringParser = new StringParser(this);
             XRefParser = new XRefParser(this);
         }
@@ -102,6 +110,11 @@ namespace PdfLexer.Parsers
                     var slice = data.Slice(start, end); 
                     return NumberParser.Parse(in slice);
                     }
+                case PdfObjectType.DecimalObj:
+                    {
+                    var slice = data.Slice(start, end); 
+                    return DecimalParser.Parse(in slice);
+                    }
                 case PdfObjectType.NameObj:
                     {
                     var slice = data.Slice(start, end);
@@ -137,6 +150,11 @@ namespace PdfLexer.Parsers
                     var slice = data.Slice(start, length);
                     return NumberParser.Parse(slice);
                     }
+                case PdfObjectType.DecimalObj:
+                    {
+                    var slice = data.Slice(start, length);
+                    return DecimalParser.Parse(slice);
+                    }
                 case PdfObjectType.NameObj:
                     {
                     var slice = data.Slice(start, length);
@@ -162,10 +180,11 @@ namespace PdfLexer.Parsers
 
         public void Clear()
         {
-            CachedNumbers.Clear();
+            CachedInts.Clear();
+            // CachedNumbers.Clear();
         }
 
-        internal Dictionary<CacheItem, PdfNumber> CachedNumbers = new Dictionary<CacheItem, PdfNumber>(new FNVByteComparison());
+        
 
         internal struct CacheItem
         {

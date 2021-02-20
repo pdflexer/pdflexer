@@ -123,7 +123,7 @@ namespace PdfLexer.Lexing
                     {
                         type = PdfTokenType.DictionaryStart;
                         length = 2;
-                        return startAt;
+                        return i;
                     }
 
                     var start = i;
@@ -137,14 +137,18 @@ namespace PdfLexer.Lexing
                     return start;
                 }
                 case (byte)'/':
+                    var ne = i;
+                    ne++;
                     type = PdfTokenType.NameObj;
-                    length = bytes.Slice(i + 1).IndexOfAny(NameParser.NameTerminators);
-                    if (length == -1)
-                    {
-                        length = buffer.Length - i - 1;
-                    }
-
-                    length++; // Slice(i+1)
+                    NameParser.SkipName(buffer, ref ne);
+                    // length = bytes.Slice(i + 1).IndexOfAny(NameParser.NameTerminators);
+                    // if (length == -1)
+                    // {
+                    //     length = buffer.Length - i - 1;
+                    // }
+                    // 
+                    // length++; // Slice(i+1)
+                    length = ne-i;
                     return i;
                 case (byte)'[':
                     type = PdfTokenType.ArrayStart;
@@ -163,12 +167,15 @@ namespace PdfLexer.Lexing
                 case (byte)'7':
                 case (byte)'8':
                 case (byte)'9':
-                    type = PdfTokenType.NumericObj;
-                    length = NumberParser.CountNumberBytes(buffer.Slice(i));
-                    if (length == -1)
-                    {
-                        length = buffer.Length - i;
-                    }
+                    var nume = i;
+                    NumberParser.SkipNumber(buffer, ref nume, out bool isDecimal);
+                    type = isDecimal ? PdfTokenType.DecimalObj : PdfTokenType.NumericObj;
+                    length = nume-i;
+                    // length = NumberParser.CountNumberBytes(buffer.Slice(i));
+                    // if (length == -1)
+                    // {
+                    //     length = buffer.Length - i;
+                    // }
                     return i;
                 case (byte)'R':
                     type = PdfTokenType.IndirectRef;

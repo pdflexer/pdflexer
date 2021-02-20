@@ -31,4 +31,12 @@ namespace PdfLexer
         public bool IsIndirect => true;
         public PdfObjectType Type => PdfObjectType.IndirectObj;
     }
+
+    internal class IndirectRefToken : IPdfObject
+    {
+        public static IndirectRefToken Value => new IndirectRefToken();
+        public bool IsIndirect => throw new NotImplementedException();
+
+        public PdfObjectType Type => throw new NotImplementedException();
+    }
 }

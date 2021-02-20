@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace PdfLexer.Parsers
@@ -13,7 +14,9 @@ namespace PdfLexer.Parsers
     }
     public class NumberParser : IParser<PdfNumber>
     {
-        private static readonly byte[] numberTerminators = new byte[16] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
+        private static readonly byte[] numberTerminators = new byte[17] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20, (byte)'.',
+            (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
+        private static readonly byte[] decimalTerminators = new byte[16] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
             (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
         private readonly ParsingContext _ctx;
 
@@ -24,6 +27,37 @@ namespace PdfLexer.Parsers
 
         public PdfNumber Parse(ReadOnlySpan<byte> buffer)
         {
+            if (buffer.Length == 1)
+            {
+                switch (buffer[0])
+                {
+                    case (byte)'0':
+                        return PdfCommonNumbers.Zero;
+                    case (byte)'1':
+                        return PdfCommonNumbers.One;
+                    case (byte)'2':
+                        return PdfCommonNumbers.Two;
+                    case (byte)'3':
+                        return PdfCommonNumbers.Three;
+                    case (byte)'4':
+                        return PdfCommonNumbers.Four;
+                    case (byte)'5':
+                        return PdfCommonNumbers.Five;
+                    case (byte)'6':
+                        return PdfCommonNumbers.Six;
+                    case (byte)'7':
+                        return PdfCommonNumbers.Seven;
+                    case (byte)'8':
+                        return PdfCommonNumbers.Eight;
+                    case (byte)'9':
+                        return PdfCommonNumbers.Nine;
+                }
+            }
+
+            if (buffer.Length == 2 && buffer[0] == (byte)'-' && buffer[1] == (byte)'1') {
+                return PdfCommonNumbers.MinusOne;
+            }
+
             if (!_ctx.CacheNumbers)
             {
                 return GetResult(buffer);
@@ -34,41 +68,36 @@ namespace PdfLexer.Parsers
                 buffer = buffer.Slice(1);
             }
 
-            // TODO move to buffer
-            var array = ArrayPool<byte>.Shared.Rent(buffer.Length);
-            buffer.CopyTo(array);
-            var key = new ParsingContext.CacheItem
+            if (buffer.Length > 9)
             {
-                Data = array,
-                Length = buffer.Length
-            };
-            if (_ctx.CachedNumbers.TryGetValue(key, out var cached))
+                return new PdfLongNumber(GetLong(buffer));
+            } else
             {
-                ArrayPool<byte>.Shared.Return(array);
-                return cached;
+                var val = GetInt(buffer);
+                if (val > 1000)
+                {
+                    return new PdfIntNumber(val);
+                }
+                if (_ctx.CachedInts.TryGetValue(val, out var intObj))
+                {
+                    return intObj;
+                } else
+                {
+                    var obj = new PdfIntNumber(val);
+                    _ctx.CachedInts[val] = obj;
+                    return obj;
+                }
             }
-
-            // could keep rented array... pool will re-allocate as needed
-            key.Data = buffer.ToArray();
-            ArrayPool<byte>.Shared.Return(array);
-
-            var value = GetResult(buffer);
-            _ctx.CachedNumbers[key] = value;
-            return value;
         }
 
         private PdfNumber GetResult(ReadOnlySpan<byte> buffer)
         {
-            if (buffer.IndexOf((byte) '.') > -1)
+            if (buffer.Length > 9)
             {
-                return GetDecimal(buffer);
-            }
-            else if (buffer.Length > 9)
-            {
-                return GetLong(buffer);
+                return new PdfLongNumber(GetLong(buffer));
             } else
             {
-                return GetInt(buffer);
+                return new PdfIntNumber(GetInt(buffer));
             }
         }
 
@@ -79,17 +108,26 @@ namespace PdfLexer.Parsers
 
         public PdfNumber Parse(in ReadOnlySequence<byte> sequence)
         {
+            if (sequence.IsSingleSegment)
+            {
+                return Parse(sequence.FirstSpan);
+            }
             // TODO optimize
+            var len = (int)sequence.Length;
+            var buffer = ArrayPool<byte>.Shared.Rent(len);
+            sequence.CopyTo(buffer);
+            Span<byte> buff = buffer;
+            var result = Parse(buff.Slice(0,len));
+            ArrayPool<byte>.Shared.Return(buffer);
             return Parse(sequence.ToArray());
         }
 
         public PdfNumber Parse(in ReadOnlySequence<byte> sequence, long start, int length)
         {
-            // TODO optimize
-            return Parse(sequence.Slice(start, length).ToArray());
+            return Parse(sequence.Slice(start, length));
         }
 
-        private PdfIntNumber GetInt(ReadOnlySpan<byte> buffer)
+        private int GetInt(ReadOnlySpan<byte> buffer)
         {
             if (!Utf8Parser.TryParse(buffer, out int val, out int consumed))
             {
@@ -97,10 +135,10 @@ namespace PdfLexer.Parsers
             }
             Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for int");
 
-            return  new PdfIntNumber(val);
+            return val;
         }
 
-        private PdfLongNumber GetLong(ReadOnlySpan<byte> buffer)
+        private long GetLong(ReadOnlySpan<byte> buffer)
         {
             if (!Utf8Parser.TryParse(buffer, out long val, out int consumed))
             {
@@ -108,10 +146,10 @@ namespace PdfLexer.Parsers
             }
             Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for long");
 
-            return  new PdfLongNumber(val);
+            return val;
         }
 
-        private PdfDecimalNumber GetDecimal(ReadOnlySpan<byte> buffer)
+        private decimal GetDecimal(ReadOnlySpan<byte> buffer)
         {
             if (!Utf8Parser.TryParse(buffer, out decimal val, out int consumed))
             {
@@ -119,14 +157,30 @@ namespace PdfLexer.Parsers
             }
             Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for double");
 
-            return  new PdfDecimalNumber(val);
+            return val;
         }
 
-    
-
-        public static int CountNumberBytes(ReadOnlySpan<byte> bytes)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SkipNumber(ReadOnlySpan<byte> bytes, ref int i, out bool isDecimal)
         {
-            return bytes.IndexOfAny(numberTerminators);
+            ReadOnlySpan<byte> local = bytes;
+            isDecimal = false;
+            ReadOnlySpan<byte> terms = numberTerminators;
+            for (; i < local.Length; i++)
+            {
+                byte b = local[i];
+                if (terms.IndexOf(b) == -1)
+                {
+                    continue;
+                }
+                if (b == (byte)'.')
+                {
+                    isDecimal = true;
+                    continue;
+                }
+
+                return;
+            }
         }
     }
 }

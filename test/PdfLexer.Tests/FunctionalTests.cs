@@ -13,8 +13,10 @@ namespace PdfLexer.Tests
         [InlineData("01_CMYK_OP/010_ReadMe_Ghent_Output_Patch.pdf")]
         [InlineData("01_CMYK_OP/011_Overprint-Mode_x3.pdf")]
         [InlineData("01_CMYK_OP/011_ReadMe_Ghent_Output_Patch.pdf")]
-        [InlineData("mt200953a.pdf")] // bad xref
-        [InlineData("ymj-46-585.pdf")] // bad xref
+        [InlineData("02_Spot_OP/020_CMYKSpot_OP_x1a.pdf")]
+        [InlineData("02_Spot_OP/020_ReadMe_Ghent_Output_Patch.pdf")]
+        //[InlineData("mt200953a.pdf")] // bad xref // TODO test rebuilding
+        [InlineData("ymj-46-585.pdf")]
         [Theory]
         public async Task It_Reads_Objects(string pdfPath)
         {
@@ -42,6 +44,22 @@ namespace PdfLexer.Tests
            //             break;
            //     }
            // }
+        }
+
+        //[Fact]
+        public async Task It_Reads_All()
+        {
+            foreach (var pdf in Directory.GetFiles(@"C:\temp\test-pdfs\pp", "*.pdf"))
+            {
+                var data = File.ReadAllBytes(pdf);
+                var source = new InMemoryDataSource(data);
+                var ctx = new ParsingContext();
+                await ctx.Initialize(source);
+                foreach (var item in ctx.XrefEntries)
+                {
+                    ctx.GetIndirectObject(item.Key);
+                }
+            }
         }
     }
 }

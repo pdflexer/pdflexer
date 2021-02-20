@@ -23,7 +23,9 @@ namespace PdfLexer.Parsers.Nested
     {
         public ParseState State { get; set; }
         public PdfName CurrentKey { get; set; }
-        public IParsedLazyObj Object { get; set; }
+        public PdfDictionary Dict { get; set; }
+        public PdfArray Array { get; set; }
+        public List<IPdfObject> Bag { get; set; } 
     }
 
     /// <summary>
@@ -54,7 +56,7 @@ namespace PdfLexer.Parsers.Nested
             
             startPos = default;
             endPos = default;
-            var toReturn = CurrentState.Object;
+            var toReturn = (IParsedLazyObj) CurrentState.Dict ?? CurrentState.Array;
             CurrentState = default;
             completed = false;
             return toReturn;
@@ -111,7 +113,9 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.NameObj:
                     case PdfTokenType.BooleanObj:
                     case PdfTokenType.NullObj:
-                        AddValue(in sequence, tokenType);
+                    case PdfTokenType.NumericObj:
+                    case PdfTokenType.DecimalObj:
+                        CurrentState.Bag.Add(_ctx.GetPdfItem((PdfObjectType) tokenType, sequence, startPos, endPos));
                         break;
                     case PdfTokenType.StringObj:
                         reader.Rewind(1);
@@ -122,17 +126,19 @@ namespace PdfLexer.Parsers.Nested
                             CurrentState.State = ParseState.ReadString;
                             return false;
                         }
-                        AddCurrentString();
+                        CurrentState.Bag.Add(new PdfString(_ctx.StringParser.GetCurrentString()));
                         break;
                     case PdfTokenType.DictionaryStart:
-                        if (CurrentState.Object != null)
+                        if (CurrentState.Dict != null || CurrentState.Array != null)
                         {
                             if (_ctx.IsEager)
                             {
                                 StateStack.Add(CurrentState);
                                 CurrentState = default;
-                                CurrentState.State = ParseState.ReadDictKey;
-                                CurrentState.Object = new PdfDictionary();
+                                CurrentState.State = ParseState.ReadDictValue;
+                                CurrentState.Dict = new PdfDictionary();
+                                CurrentState.Bag ??= new List<IPdfObject>();
+                                CurrentState.Bag.Clear();
                                 continue;
                             }
                             else
@@ -144,116 +150,81 @@ namespace PdfLexer.Parsers.Nested
                                     return false;
                                 }
                                 endPos = reader.Position;
-                                AddLazyValue(in sequence, tokenType);
+                                CurrentState.Bag.Add(_ctx.CreateLazy((PdfObjectType) tokenType, sequence, startPos, endPos));
                                 continue;
                             }
                         }
                         Debug.Assert(CurrentState.State == ParseState.None);
-                        CurrentState.State = ParseState.ReadDictKey;
-                        CurrentState.Object = new PdfDictionary();
+                        CurrentState.State = ParseState.ReadDictValue;
+                        CurrentState.Dict = new PdfDictionary();
+                        CurrentState.Bag ??= new List<IPdfObject>();
+                        CurrentState.Bag.Clear();
                         continue;
                     case PdfTokenType.ArrayStart:
-                        if (CurrentState.Object != null)
+                        if (CurrentState.Dict != null || CurrentState.Array != null)
                         {
-                            if (!reader.AdvanceToArrayEnd(out _))
+                            if (_ctx.IsEager)
                             {
                                 StateStack.Add(CurrentState);
                                 CurrentState = default;
-                                CurrentState.Object = new PdfArray();
-                                CurrentState.State = ParseState.SkipArray;
-                                return false;
-                            }
-                            endPos = reader.Position;
-                            AddLazyValue(in sequence, tokenType);
-                            continue;
-                        }
-                        CurrentState.Object = new PdfArray();
-                        Debug.Assert(CurrentState.State == ParseState.None);
-                        CurrentState.State = ParseState.ReadArray;
-                        break;
-                    case PdfTokenType.NumericObj:
-                        var current = reader.Consumed;
-                        if (!reader.TryReadNextToken(isCompleted, out var secondType, out var secondStart))
-                        {
-                            return false;
-                        }
-                        
-                        if (secondType != PdfTokenType.NumericObj)
-                        {
-                            reader.Rewind(reader.Consumed - current);
-                            AddValue(in sequence, tokenType);
-                            continue;
-                        }
-
-                        if (!reader.TryReadNextToken(isCompleted, out var thirdType, out var thirdStart))
-                        {
-                            reader.Rewind(reader.Consumed - current);
-                            return false;
-                        }
-                        if (thirdType != PdfTokenType.IndirectRef)
-                        {
-                            reader.Rewind(reader.Consumed - current);
-                            AddValue(in sequence, tokenType);
-                            continue;
-                        }
-                        endPos = reader.Position;
-                        AddValue(in sequence, PdfTokenType.IndirectRef);
-                        break;
-                    case PdfTokenType.IndirectRef:
-                        throw new ApplicationException("Unexpected indirect Ref token found.");
-                    case PdfTokenType.DictionaryEnd:
-                        if (StateStack.Count > 0)
-                        {
-                            var last = StateStack[^1];
-                            if (last.State == ParseState.ReadDictValue)
-                            {
-                                (last.Object as PdfDictionary)[last.CurrentKey] = CurrentState.Object;
-                                last.State = ParseState.ReadDictKey;
-                            } else if (last.State == ParseState.ReadArray)
-                            {
-                                (last.Object as PdfArray).Add(CurrentState.Object);
+                                CurrentState.Array = new PdfArray();
+                                CurrentState.State = ParseState.ReadArray;
+                                CurrentState.Bag ??= new List<IPdfObject>();
+                                CurrentState.Bag.Clear();
+                                continue;
                             }
                             else
                             {
-                                throw new ApplicationException("Todo");
+                                if (!reader.AdvanceToArrayEnd(out _))
+                                {
+                                    StateStack.Add(CurrentState);
+                                    CurrentState.State = ParseState.SkipArray;
+                                    return false;
+                                }
+                                endPos = reader.Position;
+                                CurrentState.Bag.Add(_ctx.CreateLazy((PdfObjectType) tokenType, sequence, startPos, endPos));
+                                continue;
                             }
+                        }
+                        CurrentState.Array = new PdfArray();
+                        Debug.Assert(CurrentState.State == ParseState.None);
+                        CurrentState.State = ParseState.ReadArray;
+                        CurrentState.Bag ??= new List<IPdfObject>();
+                        CurrentState.Bag.Clear();
+                        break;
+                    case PdfTokenType.IndirectRef:
+                        CurrentState.Bag.Add(IndirectRefToken.Value);
+                        endPos = reader.Position;
+                        break;
+                    case PdfTokenType.DictionaryEnd:
+                        CurrentState.Dict = GetDictionaryFromCurrent();
+                        if (StateStack.Count > 0)
+                        {
+                            var last = StateStack[^1];
+                            last.Bag.Add(CurrentState.Dict);
                             CurrentState = last;
                             StateStack.RemoveAt(StateStack.Count-1);
                             break;
                         }
                         else
                         {
-                            var dict = CurrentState.Object as PdfDictionary;
                             endPos = reader.Position;
-                            dict.IsModified = false;
                             completed = true;
                             return false;
                         }
                     case PdfTokenType.ArrayEnd:
+                        CurrentState.Array = GetArrayFromCurrent();
                         if (StateStack.Count > 0)
                         {
                             var last = StateStack[^1];
-                            if (last.State == ParseState.ReadDictValue)
-                            {
-                                (last.Object as PdfDictionary)[last.CurrentKey] = CurrentState.Object;
-                                last.State = ParseState.ReadDictKey;
-                            } else if (last.State == ParseState.ReadArray)
-                            {
-                                (last.Object as PdfArray).Add(CurrentState.Object);
-                            }
-                            else
-                            {
-                                throw new ApplicationException("Todo");
-                            }
+                            last.Bag.Add(CurrentState.Array);
                             CurrentState = last;
                             StateStack.RemoveAt(StateStack.Count-1);
                             break;
                         }
                         else
                         {
-                            var arr = CurrentState.Object as PdfArray;
                             endPos = reader.Position;
-                            arr.IsModified = false;
                             completed = true;
                             return false;
                         }
@@ -267,69 +238,54 @@ namespace PdfLexer.Parsers.Nested
             return false;
         }
 
-        void AddCurrentString()
+        private PdfArray GetArrayFromCurrent()
         {
-            switch (CurrentState.State)
+            
+            var array = CurrentState.Array;
+            foreach (var item in CurrentState.Bag)
             {
-                case ParseState.ReadDictValue:
-                {
-                    (CurrentState.Object as PdfDictionary)[CurrentState.CurrentKey] = new PdfString(_ctx.StringParser.GetCurrentString());
-                    CurrentState.CurrentKey = null;
-                    CurrentState.State = ParseState.ReadDictKey;
-                    return;
-                }
-                case ParseState.ReadArray:
-                {
-                    (CurrentState.Object as PdfArray).Add(new PdfString(_ctx.StringParser.GetCurrentString()));
-                    return;
-                }
+                array.Add(item);
             }
+            array.IsModified = false;
+            return array;
         }
 
-        void AddLazyValue(in ReadOnlySequence<byte> sequence, PdfTokenType type)
+        private PdfDictionary GetDictionaryFromCurrent()
         {
-            switch (CurrentState.State)
+            bool key = true;
+            PdfName name = null;
+            var dict = CurrentState.Dict;
+            for (var i=0;i<CurrentState.Bag.Count;i++)
             {
-                case ParseState.ReadDictValue:
+                var item = CurrentState.Bag[i];
+                if (key)
                 {
-                    var item = _ctx.CreateLazy((PdfObjectType) type, sequence, startPos, endPos);
-                    (CurrentState.Object as PdfDictionary)[CurrentState.CurrentKey] = item;
-                    CurrentState.CurrentKey = null;
-                    CurrentState.State = ParseState.ReadDictKey;
-                    return;
-                }
-                case ParseState.ReadArray:
+                    if (item is PdfName nm)
+                    {
+                        name = nm;
+                    } else
+                    {
+                        throw new ApplicationException("");
+                    }
+                } else
                 {
-                    var item = _ctx.CreateLazy((PdfObjectType) type, sequence, startPos, endPos);
-                    (CurrentState.Object as PdfArray).Add(item);
-                    return;
+                    if (item is PdfNumber num 
+                        && i + 2 < CurrentState.Bag.Count
+                        && CurrentState.Bag[i+1] is PdfIntNumber num2
+                        && CurrentState.Bag[i+2] is IndirectRefToken)
+                    {
+                        dict[name] = new PdfIndirectRef((long)num, num2.Value);
+                        i+=2;
+                    } else
+                    {
+                        dict[name] = item;
+                    }
+                    
                 }
+                key = !key;
             }
-        }
-        void AddValue(in ReadOnlySequence<byte> sequence, PdfTokenType type)
-        {
-            switch (CurrentState.State)
-            {
-                case ParseState.ReadDictKey:
-                    var seg = sequence.Slice(startPos, endPos);
-                    CurrentState.CurrentKey = _ctx.NameParser.Parse(in seg);
-                    CurrentState.State = ParseState.ReadDictValue;
-                    return;
-                case ParseState.ReadDictValue:
-                {
-                    var item = _ctx.GetPdfItem((PdfObjectType) type, sequence, startPos, endPos);
-                    (CurrentState.Object as PdfDictionary)[CurrentState.CurrentKey] = item;
-                    CurrentState.CurrentKey = null;
-                    CurrentState.State = ParseState.ReadDictKey;
-                    return;
-                }
-                case ParseState.ReadArray:
-                {
-                    var item = _ctx.GetPdfItem((PdfObjectType) type, sequence, startPos, endPos);
-                    (CurrentState.Object as PdfArray).Add(item);
-                    return;
-                }
-            }
+            dict.IsModified = false;
+            return dict;
         }
     }
 }

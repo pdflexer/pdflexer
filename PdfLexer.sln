@@ -9,6 +9,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{255B3635
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.Tests", "test\PdfLexer.Tests\PdfLexer.Tests.csproj", "{3483147C-037D-47AB-972D-F95EE245F114}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bench", "bench", "{582EC350-900E-4119-B8EB-4ED6DD02D45F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfLexer.Benchmarks", "PdfLexer.Benchmarks\PdfLexer.Benchmarks.csproj", "{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,12 +27,17 @@ Global
 		{3483147C-037D-47AB-972D-F95EE245F114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3483147C-037D-47AB-972D-F95EE245F114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3483147C-037D-47AB-972D-F95EE245F114}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3483147C-037D-47AB-972D-F95EE245F114} = {255B3635-FE74-4930-ABE3-4927692218F6}
+		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755} = {582EC350-900E-4119-B8EB-4ED6DD02D45F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CA4BE97-518D-4374-BAC7-469AFC1F69AF}

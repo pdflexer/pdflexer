@@ -44,7 +44,7 @@ namespace PdfLexer.Parsers.Nested
                         if (slice[pos + 1] == (byte) '<')
                         {
                             // new dict
-                            i++;
+                            i+= pos + 2;
                             if (!AdvanceToDictEnd(buffer, ref i, out bool hadSubIOs))
                             {
                                 return false;
@@ -54,6 +54,8 @@ namespace PdfLexer.Parsers.Nested
                             {
                                 hadIndirectObjects = true;
                             }
+                            slice = buffer.Slice(i);
+                            continue;
                         }
 
                         // just hex string
@@ -71,7 +73,7 @@ namespace PdfLexer.Parsers.Nested
                         if (slice[pos + 1] == (byte) '>')
                         {
                             // ended!
-                            i++;
+                            i += pos + 2;
                             return true;
                         }
                         // just hex end
@@ -81,7 +83,7 @@ namespace PdfLexer.Parsers.Nested
                     }
                     case (byte) '(':
                     {
-                        i--;
+                        i += pos-1;
                         if (!StringParser.AdvancePastStringLiteral(buffer, ref i))
                         {
                             return false;

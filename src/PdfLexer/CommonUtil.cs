@@ -16,8 +16,8 @@ namespace PdfLexer
         internal static byte[] whiteSpaces = new byte[6] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20 };
         public static byte[] numeric = new byte[13] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
         (byte)'7', (byte)'8', (byte)'9', (byte)'.', (byte)'-', (byte)'+'};
-        private static byte[] ints = new byte[10] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
-        (byte)'7', (byte)'8', (byte)'9'};
+        public static byte[] ints = new byte[12] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
+        (byte)'7', (byte)'8', (byte)'9', (byte)'-', (byte)'+'};
         // special characters that allow us to stop scanning and confirm the token is a numeric
         private static byte[] numTers = new byte[11] { (byte)'.',
             (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };

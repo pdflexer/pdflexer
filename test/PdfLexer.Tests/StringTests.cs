@@ -30,11 +30,11 @@ namespace PdfLexer.Tests
         [InlineData("()", "")]
         [InlineData("(\\171)", "y")] // octal
         [InlineData("( \\1a)", " 1a")] 
-        [InlineData("( \\17a)", " 17a")] 
         [InlineData("( \\171a)", " ya")] 
         [InlineData("(Test \\\rNext\\147Line) ", "Test NextgLine")]
+        [InlineData("(partial octal \\53\\171)", "partial octal +y")]
         [Theory]
-        public async Task It_Gets_Literals_Reader(string input, string output)
+        public async Task It_Parses_Literals_Reader(string input, string output)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
             var ms = new MemoryStream(bytes);
@@ -60,13 +60,19 @@ namespace PdfLexer.Tests
             }
         }
 
-        [InlineData("<> ", "<>")]
-        [InlineData("<1234564879879> ", "<1234564879879>")]
-        [InlineData("<123> ", "<123>")]
+        [InlineData("<> ", "")]
+        [InlineData("<303132> ", "012")]
+        [InlineData("<30313> ", "010")]
         [Theory]
         public void It_Gets_Hex(string input, string output)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
+            var ms = new MemoryStream(bytes);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 4, minimumReadSize: 1));
+            var parser = new StringParser(new ParsingContext());
+            var span = new Span<byte>(bytes);
+            var result = parser.Parse(span);
+            Assert.Equal(output, result.Value);
             // var gotit = StringParser.GetString(bytes, out ReadOnlySpan<byte> result);
             // Assert.True(gotit);
             // var outputBytes = Encoding.ASCII.GetBytes(output);

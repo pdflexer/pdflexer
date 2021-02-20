@@ -45,13 +45,13 @@ namespace PdfLexer.Tests
 
 #endif
 
-        [InlineData("/Test ", "/Test", -1)]
-        [InlineData("/Test  ", "/Test", -1)]
+        [InlineData("/Test ", "/Test", 5)]
+        [InlineData("/Test  ", "/Test", 5)]
         [InlineData(" /Test", "/Test", 5)]
         [InlineData("/Test\r", "/Test", 5)]
         [InlineData("/Test\n", "/Test", 5)]
         [InlineData("/Test\r\n", "/Test", 5)]
-        [InlineData("/Test#20Test ", "/Test Test", -1)]
+        [InlineData("/Test#20Test ", "/Test Test", 12)]
         [InlineData("/PANTONE#205757#20CV ", "/PANTONE 5757 CV", -1)]
         [InlineData("/paired#28#29parentheses ", "/paired()parentheses", -1)]
         [InlineData("/The_Key_of_F#23_Minor ", "/The_Key_of_F#_Minor", -1)]

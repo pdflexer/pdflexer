@@ -44,7 +44,8 @@ namespace PdfLexer
                 case PdfDictionary dict:
                     return dict.IsModified;
                 default:
-                    throw new ApplicationException($"Unknown object type for checking modification: {obj.GetType()}");
+                    return false; // rest immutable
+                    // throw new ApplicationException($"Unknown object type for checking modification: {obj.GetType()}");
             }
         }
 

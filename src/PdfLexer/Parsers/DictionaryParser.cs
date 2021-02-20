@@ -21,14 +21,21 @@ namespace PdfLexer.Parsers
         {
             // TODO better lazy support
             var dict = _ctx.NestedSpanParser.ParseNestedItem(null, 0, buffer, start) as PdfDictionary;
-            foreach (var item in dict)
-            {
-                if (item.Value is PdfLazyObject lz)
-                {
-                    var replacement = _ctx.GetKnownPdfItem(lz.Type, buffer, (int)lz.Offset, lz.Length);
-                    dict[item.Key] = replacement;
-                }
-            }
+            // List<(PdfName,IPdfObject)> toReplace = new List<(PdfName,IPdfObject)>();
+            // foreach (var item in dict)
+            // {
+            //     if (item.Value is PdfLazyObject lz)
+            //     {
+            //         var replacement = _ctx.GetKnownPdfItem(lz.Type, buffer, (int)lz.Offset, lz.Length);
+            //         toReplace.Add((item.Key,replacement));
+            //     }
+            // }
+            // 
+            // foreach (var item in toReplace)
+            // {
+            //     dict[item.Item1] = item.Item2;
+            // }
+
             return dict;
         }
 

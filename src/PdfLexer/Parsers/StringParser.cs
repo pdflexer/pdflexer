@@ -34,133 +34,69 @@ namespace PdfLexer.Parsers
 
         public PdfString Parse(ReadOnlySpan<byte> buffer)
         {
-            builder.Clear();
-            var copyStart = 0;
-            int pos = -1;
-            while ((pos = buffer.IndexOfAny(stringLiteralTerms)) > -1)
+            var b = buffer[0];
+            if (b == '(')
             {
-                var b = buffer[pos];
-                switch (b)
-                {
-                    case (byte)'\\':
-                        if (buffer.Length > pos+1)
-                        {
-                            var b2 = buffer[pos+1];
-                            switch (b2)
-                            {
-                                case (byte)'n':
-                                    AddToBuilder(buffer.Slice(copyStart, pos));
-                                    builder.Append('\n');
-                                    pos+=1;
-                                    break;
-                                case (byte)'r':
-                                    AddToBuilder(buffer.Slice(copyStart, pos));
-                                    builder.Append('\r');
-                                    pos+=1;
-                                    break;
-                                case (byte)'t':
-                                    AddToBuilder(buffer.Slice(copyStart, pos));
-                                    builder.Append('\t');
-                                    pos+=1;
-                                    break;
-                                case (byte)'b':
-                                    AddToBuilder(buffer.Slice(copyStart, pos));
-                                    builder.Append('\b');
-                                    pos+=1;
-                                    break;
-                                case (byte)'f':
-                                    AddToBuilder(buffer.Slice(copyStart, pos));
-                                    builder.Append('\f');
-                                    pos+=1;
-                                    break;
-                                case (byte)'(':
-                                    AddToBuilder(buffer.Slice(copyStart, pos));
-                                    builder.Append('(');
-                                    pos+=1;
-                                    break;
-                                case (byte)')':
-                                    AddToBuilder(buffer.Slice(copyStart, pos));
-                                    builder.Append(')');
-                                    pos+=1;
-                                    break;
-                                case (byte)'\\':
-                                    AddToBuilder(buffer.Slice(copyStart, pos));
-                                    builder.Append('\\');
-                                    pos+=1;
-                                    break;
-                                case (byte)'\r':
-                                    if (buffer.Length > pos+2)
-                                    {
-                                        var b3 = buffer[pos+2];
-                                        if (b3 == (byte)'\n')
-                                        {
-                                            AddToBuilder(buffer.Slice(copyStart, pos));
-                                            pos+=2;
-                                            break;
-                                        }
-                                        AddToBuilder(buffer.Slice(copyStart, pos));
-                                        pos+=1;
-                                        break;
-                                    }
-                                    throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
-                                case (byte)'\n':
-                                    AddToBuilder(buffer.Slice(copyStart, pos));
-                                    pos+=1;
-                                    break;
-                                default:
-                                    if (buffer.Length < pos+4)
-                                    {
-                                        AddToBuilder(buffer.Slice(copyStart, pos));
-                                        break;
-                                    }
-                                    {
-                                        b2 = buffer[pos+1];
-                                        var b3 = buffer[pos+2];
-                                        var b4 = buffer[pos+3];
-
-                                        if (b2 < 48 || b2 > 55 || b3 < 48 || b3 > 55 || b4 < 48 || b4 > 55)
-                                        {
-                                            AddToBuilder(buffer.Slice(copyStart, pos));
-                                            break;
-                                        }
-
-
-                                        AddToBuilder(buffer.Slice(copyStart, pos));
-                                        builder.Append((char)(64*((int)b2-48)+8*((int)b3-48)+((int)b4-48)));
-                                        pos += 3;
-                                        break;
-                                    }
-                            }
-                        } else
-                        {
-                            throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
-                        }
-                        buffer = buffer.Slice(pos+1);
-                        copyStart = 0;
-                        break;
-                    case (byte)'(':
-                        stringDepth++;
-                        if (stringDepth > 1)
-                        {
-                            AddToBuilder(buffer.Slice(copyStart, pos+1));
-                            copyStart = 0;
-                        }
-                        buffer = buffer.Slice(pos+1);
-                        continue;
-                    case (byte)')':
-                        stringDepth--;
-                        if (stringDepth == 0)
-                        {
-                            AddToBuilder(buffer.Slice(copyStart, pos));
-                            return new PdfString(GetCurrentString());
-                        }
-                        AddToBuilder(buffer.Slice(copyStart, pos+1));
-                        buffer = buffer.Slice(pos+1);
-                        copyStart = 0;
-                        continue;
-                }
+                return ParseStringLiteral(buffer);
+            } else if (b == (byte)'<')
+            {
+                return ParseStringHex(buffer);
             }
-            throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
+            throw new ApplicationException("Invalid string, first char not ( or <.");
+        }
+
+        private byte[] hexBuffer = new byte[2];
+        private PdfString ParseStringHex(ReadOnlySpan<byte> buffer)
+        {
+            var data = ArrayPool<byte>.Shared.Rent((buffer.Length-2)/2);
+            var di = 0;
+            bool isLow = true;
+            for (var i = 1; i < buffer.Length; i++)
+            {
+                var b = buffer[i];
+                if (b == 0x00
+                   || b == 0x09
+                   || b == 0x0A
+                   || b == 0x0C
+                   || b == 0x0D
+                   || b == 0x20)
+                {
+                    continue;
+                }
+
+                if (b == (byte)'>')
+                {
+                    break;
+                }
+
+                if (isLow)
+                {
+                    hexBuffer[0] = b;
+                } else
+                {
+                    hexBuffer[1] = b;
+                    if (!Utf8Parser.TryParse(hexBuffer, out byte value, out int consumed, 'x'))
+                    {
+                        throw CommonUtil.DisplayDataErrorException(buffer, i, "Bad hex string data");
+                    }
+                    Debug.Assert(consumed == 2);
+                    data[di++] = value;
+                }
+                isLow = !isLow;
+            }
+            if (!isLow)
+            {
+                hexBuffer[1] = (byte)'0';
+                if (!Utf8Parser.TryParse(hexBuffer, out byte v, out int c, 'x'))
+                {
+                    throw CommonUtil.DisplayDataErrorException(buffer, buffer.Length-1, "Bad hex string data");
+                }
+                Debug.Assert(c == 2);
+                data[di++] = v;
+            }
+
+            var span = new Span<byte>(data).Slice(0, di);
+            return new PdfString(Encoding.UTF8.GetString(span)); // TODO bytes?
         }
 
         public PdfString Parse(ReadOnlySpan<byte> buffer, int start, int length)
@@ -204,6 +140,7 @@ namespace PdfLexer.Parsers
                 result = await reader.ReadAsync(cancellationToken).ConfigureAwait(false);
                 if (TryReadString(result, out value, out pos))
                 {
+                    reader.AdvanceTo(pos);
                     return value;
                 }
                
@@ -307,6 +244,152 @@ namespace PdfLexer.Parsers
             return value;
         }
 
+
+        private PdfString ParseStringLiteral(ReadOnlySpan<byte> buffer)
+        {
+            builder.Clear();
+            var copyStart = 0;
+            int pos = -1;
+            while ((pos = buffer.IndexOfAny(stringLiteralTerms)) > -1)
+            {
+                var b = buffer[pos];
+                switch (b)
+                {
+                    case (byte)'\\':
+                        if (buffer.Length > pos+1)
+                        {
+                            var b2 = buffer[pos+1];
+                            switch (b2)
+                            {
+                                case (byte)'n':
+                                    AddToBuilder(buffer.Slice(copyStart, pos));
+                                    builder.Append('\n');
+                                    pos+=1;
+                                    break;
+                                case (byte)'r':
+                                    AddToBuilder(buffer.Slice(copyStart, pos));
+                                    builder.Append('\r');
+                                    pos+=1;
+                                    break;
+                                case (byte)'t':
+                                    AddToBuilder(buffer.Slice(copyStart, pos));
+                                    builder.Append('\t');
+                                    pos+=1;
+                                    break;
+                                case (byte)'b':
+                                    AddToBuilder(buffer.Slice(copyStart, pos));
+                                    builder.Append('\b');
+                                    pos+=1;
+                                    break;
+                                case (byte)'f':
+                                    AddToBuilder(buffer.Slice(copyStart, pos));
+                                    builder.Append('\f');
+                                    pos+=1;
+                                    break;
+                                case (byte)'(':
+                                    AddToBuilder(buffer.Slice(copyStart, pos));
+                                    builder.Append('(');
+                                    pos+=1;
+                                    break;
+                                case (byte)')':
+                                    AddToBuilder(buffer.Slice(copyStart, pos));
+                                    builder.Append(')');
+                                    pos+=1;
+                                    break;
+                                case (byte)'\\':
+                                    AddToBuilder(buffer.Slice(copyStart, pos));
+                                    builder.Append('\\');
+                                    pos+=1;
+                                    break;
+                                case (byte)'\r':
+                                    if (buffer.Length > pos+2)
+                                    {
+                                        var b3 = buffer[pos+2];
+                                        if (b3 == (byte)'\n')
+                                        {
+                                            AddToBuilder(buffer.Slice(copyStart, pos));
+                                            pos+=2;
+                                            break;
+                                        }
+                                        AddToBuilder(buffer.Slice(copyStart, pos));
+                                        pos+=1;
+                                        break;
+                                    }
+                                    throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
+                                case (byte)'\n':
+                                    AddToBuilder(buffer.Slice(copyStart, pos));
+                                    pos+=1;
+                                    break;
+                                default:
+                                    if (buffer.Length < pos+3)
+                                    {
+                                        AddToBuilder(buffer.Slice(copyStart, pos));
+                                        break;
+                                    }
+                                    {
+                                        b2 = buffer[pos+1];
+                                        var b3 = buffer[pos+2];
+                                        if (b2 < 48 || b2 > 55 || b3 < 48 || b3 > 55)
+                                        {
+                                            AddToBuilder(buffer.Slice(copyStart, pos));
+                                            break;
+                                        }
+
+                                        if (buffer.Length > pos + 3)
+                                        {
+                                            byte b4 = buffer[pos+3];
+                                            if (b4 < 48 || b4 > 55)
+                                            {
+                                                AddToBuilder(buffer.Slice(copyStart, pos));
+                                                builder.Append((char)(8*((int)b2-48)+((int)b3-48)));
+                                                pos +=2;
+                                                break;
+                                            }
+
+                                            AddToBuilder(buffer.Slice(copyStart, pos));
+                                            builder.Append((char)(64*((int)b2-48) + 8*((int)b3-48)+((int)b4-48)));
+                                            pos +=3;
+                                        } else
+                                        {
+                                            AddToBuilder(buffer.Slice(copyStart, pos));
+                                            builder.Append((char)(8*((int)b2-48)+((int)b3-48)));
+                                            pos +=2;
+                                        }
+                                        break;
+                                    }
+                            }
+                        } else
+                        {
+                            throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
+                        }
+                        buffer = buffer.Slice(pos+1);
+                        copyStart = 0;
+                        break;
+                    case (byte)'(':
+                        stringDepth++;
+                        if (stringDepth > 1)
+                        {
+                            AddToBuilder(buffer.Slice(copyStart, pos+1));
+                            copyStart = 0;
+                        }
+                        buffer = buffer.Slice(pos+1);
+                        continue;
+                    case (byte)')':
+                        stringDepth--;
+                        if (stringDepth == 0)
+                        {
+                            AddToBuilder(buffer.Slice(copyStart, pos));
+                            return new PdfString(GetCurrentString());
+                        }
+                        AddToBuilder(buffer.Slice(copyStart, pos+1));
+                        buffer = buffer.Slice(pos+1);
+                        copyStart = 0;
+                        continue;
+                }
+            }
+            throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
+        }
+
         internal bool TryReadStringLiteral(ref SequenceReader<byte> reader)
         {
             var start = reader.Position;
@@ -322,6 +405,7 @@ namespace PdfLexer.Parsers
                     case (byte)'\\':
                         if (!reader.TryRead(out var b2))
                         {
+                            AddToBuilder(reader.Sequence.Slice(start, reader.Consumed-initial-1));
                             reader.Rewind(1);
                             return false;
                         }
@@ -396,13 +480,16 @@ namespace PdfLexer.Parsers
 
                                 if (!reader.TryRead(out var b4))
                                 {
-                                    reader.Rewind(3);
-                                    return false;
+                                    AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-3));
+                                    builder.Append((char)(8*((int)b2-48)+((int)b3-48)));
+                                    break;;
                                 }
 
                                 if (b4 < 48 || b4 > 55)
                                 {
-                                    Ignore(ref reader, 3);
+                                    AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-4));
+                                    builder.Append((char)(8*((int)b2-48)+((int)b3-48)));
+                                    reader.Rewind(1);
                                     break;
                                 }
 
