@@ -34,21 +34,21 @@ namespace PdfLexer.Tests
         public void It_Parses_Floats(string input, decimal value)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
-            var parser = new NumberParser(new ParsingContext());
+            var parser = new DecimalParser();
             var result = parser.Parse(bytes);
             var num  = result as PdfDecimalNumber;
             Assert.NotNull(num);
             Assert.Equal(value, num.Value);
         }
 
-        [InlineData("34.5", 34.5, typeof(PdfDecimalNumber))]
+        // [InlineData("34.5", 34.5, typeof(PdfDecimalNumber))]
         [InlineData("1000000000000", 1000000000000, typeof(PdfLongNumber))]
         [InlineData("100", 100, typeof(PdfIntNumber))]
         [Theory]
         public void It_Caches_Tokens(string input, decimal value, Type expected)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
-            var parser = new NumberParser(new ParsingContext());
+            var parser = new NumberParser(new ParsingContext() { CacheNumbers = true });
             var result = parser.Parse(bytes);
             
             Assert.Equal(expected, result.GetType());
@@ -63,10 +63,12 @@ namespace PdfLexer.Tests
             {
                 Assert.Equal(value, ln.Value);
             }
-
-            var again = parser.Parse(bytes);
-            Assert.True(Object.ReferenceEquals(result, again));
             
+            if (expected == typeof(PdfIntNumber))
+            {
+                var again = parser.Parse(bytes);
+                Assert.True(Object.ReferenceEquals(result, again));
+            }
         }
 
         [InlineData(1, "1")]

@@ -119,7 +119,7 @@ namespace PdfLexer.Parsers
             Span<byte> buff = buffer;
             var result = Parse(buff.Slice(0,len));
             ArrayPool<byte>.Shared.Return(buffer);
-            return Parse(sequence.ToArray());
+            return result;
         }
 
         public PdfNumber Parse(in ReadOnlySequence<byte> sequence, long start, int length)

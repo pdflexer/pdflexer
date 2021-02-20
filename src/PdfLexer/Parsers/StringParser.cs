@@ -37,17 +37,19 @@ namespace PdfLexer.Parsers
             var b = buffer[0];
             if (b == '(')
             {
-                return ParseStringLiteral(buffer);
+                return ParseStringLiteral(buffer, out _);
             } else if (b == (byte)'<')
             {
-                return ParseStringHex(buffer);
+                return ParseStringHex(buffer, out _);
             }
             throw new ApplicationException("Invalid string, first char not ( or <.");
         }
 
         private byte[] hexBuffer = new byte[2];
-        private PdfString ParseStringHex(ReadOnlySpan<byte> buffer)
+        private PdfString ParseStringHex(ReadOnlySpan<byte> buffer, out int length)
         {
+            length = 0;
+            bool completed = true;
             var data = ArrayPool<byte>.Shared.Rent((buffer.Length-2)/2);
             var di = 0;
             bool isLow = true;
@@ -66,6 +68,8 @@ namespace PdfLexer.Parsers
 
                 if (b == (byte)'>')
                 {
+                    length = i;
+                    completed = true;
                     break;
                 }
 
@@ -84,6 +88,12 @@ namespace PdfLexer.Parsers
                 }
                 isLow = !isLow;
             }
+
+            if (!completed)
+            {
+                throw CommonUtil.DisplayDataErrorException(buffer, buffer.Length-1, "Unexpected hex string end");
+            }
+
             if (!isLow)
             {
                 hexBuffer[1] = (byte)'0';
@@ -111,7 +121,7 @@ namespace PdfLexer.Parsers
             {
                 throw CommonUtil.DisplayDataErrorException(ref reader, "End of string not found");
             }
-            return new PdfString(GetCurrentString());
+            return GetCurrentString();
         }
 
         public PdfString Parse(in ReadOnlySequence<byte> sequence, long start, int length)
@@ -177,7 +187,7 @@ namespace PdfLexer.Parsers
             var success = TryReadString(ref reader);
             if (success)
             {
-                result = new PdfString(GetCurrentString());
+                result = GetCurrentString();
             } else
             {
                 result = null;
@@ -192,6 +202,7 @@ namespace PdfLexer.Parsers
             {
                 case StringStatus.None:
                     builder.Clear();
+                    value = null;
                     break;
                 case StringStatus.ParsingLiteral:
                     if (TryReadStringLiteral(ref reader))
@@ -235,21 +246,29 @@ namespace PdfLexer.Parsers
             throw new ApplicationException("Invalid string, first char not ( or <.");
         }
 
+        private PdfString value;
         internal StringBuilder builder = new StringBuilder();
-        internal string GetCurrentString()
+        internal PdfString GetCurrentString()
         {
-            var value = builder.ToString();
-            builder.Clear();
-            Status = StringStatus.None;
-            return value;
+            if (value == null)
+            {
+                var str = builder.ToString();
+                builder.Clear();
+                Status = StringStatus.None;
+                return new PdfString(str);
+            } else
+            {
+                var val = value;
+                value = null;
+                return val;
+            }
+
         }
 
-
-        private PdfString ParseStringLiteral(ReadOnlySpan<byte> buffer)
+        private PdfString ParseStringLiteral(ReadOnlySpan<byte> buffer, out int pos)
         {
             builder.Clear();
             var copyStart = 0;
-            int pos = -1;
             while ((pos = buffer.IndexOfAny(stringLiteralTerms)) > -1)
             {
                 var b = buffer[pos];
@@ -379,7 +398,8 @@ namespace PdfLexer.Parsers
                         if (stringDepth == 0)
                         {
                             AddToBuilder(buffer.Slice(copyStart, pos));
-                            return new PdfString(GetCurrentString());
+                            pos += 2;
+                            return GetCurrentString();
                         }
                         AddToBuilder(buffer.Slice(copyStart, pos+1));
                         buffer = buffer.Slice(pos+1);
@@ -544,8 +564,25 @@ namespace PdfLexer.Parsers
 
         private bool TryReadStringHex(ref SequenceReader<byte> reader)
         {
-            // Utf8Parser.TryParse(data, out byte value, out int consumed, 'x');
-            // TODO
+            var pos = reader.Position;
+            if (!reader.TryAdvanceTo((byte)'>'))
+            {
+                return false;
+            }
+
+            var sequence = reader.Sequence.Slice(pos, reader.Position);
+            if (sequence.IsSingleSegment)
+            {
+                value = Parse(sequence.FirstSpan);
+                return true;
+            }
+            // TODO optimize
+            var len = (int)sequence.Length;
+            var buffer = ArrayPool<byte>.Shared.Rent(len);
+            sequence.CopyTo(buffer);
+            Span<byte> buff = buffer;
+            value = Parse(buff.Slice(0,len));
+            ArrayPool<byte>.Shared.Return(buffer);
             return true;
         }
 
@@ -661,6 +698,20 @@ namespace PdfLexer.Parsers
             }
             reader.Rewind(reader.Consumed-orig);
             return false;
+        }
+
+        public PdfString Parse(ReadOnlySpan<byte> data, int start, out int length)
+        {
+            // TODO optimize
+            var b = data[start];
+            if (b == '(')
+            {
+                return ParseStringLiteral(data.Slice(start), out length);
+            } else if (b == (byte)'<')
+            {
+                return ParseStringHex(data.Slice(start), out length);
+            }
+            throw new ApplicationException("Invalid string, first char not ( or <.");
         }
     }
 }

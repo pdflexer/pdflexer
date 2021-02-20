@@ -7,7 +7,7 @@ namespace PdfLexer
         NumericObj,
         DecimalObj,
         NameObj,
-        StringObj,
+        StringStart,
         ArrayStart,
         DictionaryStart,
         IndirectRef,

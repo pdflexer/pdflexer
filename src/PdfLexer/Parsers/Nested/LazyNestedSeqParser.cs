@@ -19,15 +19,6 @@ namespace PdfLexer.Parsers.Nested
         ReadString
     }
 
-    internal struct ObjParseState
-    {
-        public ParseState State { get; set; }
-        public PdfName CurrentKey { get; set; }
-        public PdfDictionary Dict { get; set; }
-        public PdfArray Array { get; set; }
-        public List<IPdfObject> Bag { get; set; } 
-    }
-
     /// <summary>
     /// TODO: re-entrant eager parsing
     /// TODO: re-entrant string parsing
@@ -117,7 +108,7 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.DecimalObj:
                         CurrentState.Bag.Add(_ctx.GetPdfItem((PdfObjectType) tokenType, sequence, startPos, endPos));
                         break;
-                    case PdfTokenType.StringObj:
+                    case PdfTokenType.StringStart:
                         reader.Rewind(1);
                         if (!_ctx.StringParser.TryReadString(ref reader))
                         {
@@ -126,10 +117,10 @@ namespace PdfLexer.Parsers.Nested
                             CurrentState.State = ParseState.ReadString;
                             return false;
                         }
-                        CurrentState.Bag.Add(new PdfString(_ctx.StringParser.GetCurrentString()));
+                        CurrentState.Bag.Add(_ctx.StringParser.GetCurrentString());
                         break;
                     case PdfTokenType.DictionaryStart:
-                        if (CurrentState.Dict != null || CurrentState.Array != null)
+                        if (CurrentState.IsParsing())
                         {
                             if (_ctx.IsEager)
                             {
@@ -161,7 +152,7 @@ namespace PdfLexer.Parsers.Nested
                         CurrentState.Bag.Clear();
                         continue;
                     case PdfTokenType.ArrayStart:
-                        if (CurrentState.Dict != null || CurrentState.Array != null)
+                        if (CurrentState.IsParsing())
                         {
                             if (_ctx.IsEager)
                             {
@@ -197,7 +188,7 @@ namespace PdfLexer.Parsers.Nested
                         endPos = reader.Position;
                         break;
                     case PdfTokenType.DictionaryEnd:
-                        CurrentState.Dict = GetDictionaryFromCurrent();
+                        CurrentState.Dict = CurrentState.GetDictionaryFromBag();
                         if (StateStack.Count > 0)
                         {
                             var last = StateStack[^1];
@@ -213,7 +204,7 @@ namespace PdfLexer.Parsers.Nested
                             return false;
                         }
                     case PdfTokenType.ArrayEnd:
-                        CurrentState.Array = GetArrayFromCurrent();
+                        CurrentState.Array = CurrentState.GetArrayFromBag();
                         if (StateStack.Count > 0)
                         {
                             var last = StateStack[^1];
@@ -236,56 +227,6 @@ namespace PdfLexer.Parsers.Nested
             }
 
             return false;
-        }
-
-        private PdfArray GetArrayFromCurrent()
-        {
-            
-            var array = CurrentState.Array;
-            foreach (var item in CurrentState.Bag)
-            {
-                array.Add(item);
-            }
-            array.IsModified = false;
-            return array;
-        }
-
-        private PdfDictionary GetDictionaryFromCurrent()
-        {
-            bool key = true;
-            PdfName name = null;
-            var dict = CurrentState.Dict;
-            for (var i=0;i<CurrentState.Bag.Count;i++)
-            {
-                var item = CurrentState.Bag[i];
-                if (key)
-                {
-                    if (item is PdfName nm)
-                    {
-                        name = nm;
-                    } else
-                    {
-                        throw new ApplicationException("");
-                    }
-                } else
-                {
-                    if (item is PdfNumber num 
-                        && i + 2 < CurrentState.Bag.Count
-                        && CurrentState.Bag[i+1] is PdfIntNumber num2
-                        && CurrentState.Bag[i+2] is IndirectRefToken)
-                    {
-                        dict[name] = new PdfIndirectRef((long)num, num2.Value);
-                        i+=2;
-                    } else
-                    {
-                        dict[name] = item;
-                    }
-                    
-                }
-                key = !key;
-            }
-            dict.IsModified = false;
-            return dict;
         }
     }
 }

@@ -70,7 +70,7 @@ namespace PdfLexer.Lexing
                         return true;
                     }
 
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
+                    return false;
                 case (byte) 'f':
                     if (IsNext(ref reader, BoolParser.falsebytes, true))
                     {
@@ -78,7 +78,7 @@ namespace PdfLexer.Lexing
                         return true;
                     }
 
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
+                    return false;
                 case (byte) 'n':
                     if (IsNext(ref reader, PdfNull.NullBytes, true))
                     {
@@ -86,10 +86,9 @@ namespace PdfLexer.Lexing
                         return true;
                     }
 
-                    type = PdfTokenType.NullObj;
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
+                    return false;
                 case (byte) '(':
-                    type = PdfTokenType.StringObj;
+                    type = PdfTokenType.StringStart;
                     return reader.TryRead(out _);
                 case (byte) '<':
                     if (IsNext(ref reader, PdfDictionary.start, true))
@@ -97,7 +96,7 @@ namespace PdfLexer.Lexing
                         type = PdfTokenType.DictionaryStart;
                         return true;
                     }
-                    type = PdfTokenType.StringObj;
+                    type = PdfTokenType.StringStart;
                     return reader.TryRead(out _);
                 case (byte) '/':
                     reader.TryRead(out _);
@@ -168,7 +167,7 @@ namespace PdfLexer.Lexing
                         type = PdfTokenType.DictionaryEnd;
                         return true;
                     }
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
+                    return false;
                 case (byte) ']':
                     reader.TryRead(out _);
                     type = PdfTokenType.ArrayEnd;
@@ -211,7 +210,7 @@ namespace PdfLexer.Lexing
                         type = PdfTokenType.StartXref;
                         return true;
                     }
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
+                    return false;
                 case (byte) 'e':
                     if (IsNext(ref reader, IndirectSequences.endobj, true))
                     {
@@ -224,7 +223,7 @@ namespace PdfLexer.Lexing
                         type = PdfTokenType.EndStream;
                         return true;
                     }
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
+                    return false;
                 case (byte) 'x':
                     if (IsNext(ref reader, XRefParser.xref, true))
                     {
@@ -232,7 +231,7 @@ namespace PdfLexer.Lexing
                         return true;
                     }
                     
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
+                    return false;
                 case (byte) 'o':
                     if (IsNext(ref reader, IndirectSequences.obj, true))
                     {
@@ -240,7 +239,7 @@ namespace PdfLexer.Lexing
                         return true;
                     }
                     
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
+                    return false;
                 default:
                     throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
             }

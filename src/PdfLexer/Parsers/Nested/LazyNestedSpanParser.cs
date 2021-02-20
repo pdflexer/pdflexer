@@ -26,14 +26,17 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.NameObj:
                     case PdfTokenType.BooleanObj:
                     case PdfTokenType.NullObj:
-                    case PdfTokenType.StringObj:
                     case PdfTokenType.DecimalObj:
                     case PdfTokenType.NumericObj:
                         CurrentState.Bag.Add(_ctx.GetKnownPdfItem((PdfObjectType) tokenType, buffer, startAt, currentLength));
                         startAt += currentLength;
                         continue;
+                    case PdfTokenType.StringStart:
+                        CurrentState.Bag.Add(_ctx.StringParser.Parse(buffer, startAt, out int used));
+                        startAt += used;
+                        break;
                     case PdfTokenType.DictionaryStart:
-                        if (CurrentState.Dict != null || CurrentState.Array != null)
+                        if (CurrentState.IsParsing())
                         {
                             if (_ctx.IsEager)
                             {
@@ -69,7 +72,7 @@ namespace PdfLexer.Parsers.Nested
                         startAt += currentLength;
                         continue;
                     case PdfTokenType.ArrayStart:
-                        if (CurrentState.Dict != null || CurrentState.Array != null)
+                        if (CurrentState.IsParsing())
                         {
                             if (_ctx.IsEager)
                             {
@@ -109,7 +112,7 @@ namespace PdfLexer.Parsers.Nested
                         startAt += 1;
                         continue;
                     case PdfTokenType.DictionaryEnd:
-                        CurrentState.Dict = GetDictionaryFromCurrent();
+                        CurrentState.Dict = CurrentState.GetDictionaryFromBag();
                         if (StateStack.Count > 0)
                         {
                             var last = StateStack[^1];
@@ -125,7 +128,7 @@ namespace PdfLexer.Parsers.Nested
                             goto Done;
                         }
                     case PdfTokenType.ArrayEnd:
-                        CurrentState.Array = GetArrayFromCurrent();
+                        CurrentState.Array = CurrentState.GetArrayFromBag();
                         if (StateStack.Count > 0)
                         {
                             var last = StateStack[^1];
@@ -172,56 +175,6 @@ namespace PdfLexer.Parsers.Nested
                 CurrentState.Bag.Add(lazy);
             }
 
-        }
-
-        private PdfArray GetArrayFromCurrent()
-        {
-            
-            var array = CurrentState.Array;
-            foreach (var item in CurrentState.Bag)
-            {
-                array.Add(item);
-            }
-            array.IsModified = false;
-            return array;
-        }
-
-        private PdfDictionary GetDictionaryFromCurrent()
-        {
-            bool key = true;
-            PdfName name = null;
-            var dict = CurrentState.Dict;
-            for (var i=0;i<CurrentState.Bag.Count;i++)
-            {
-                var item = CurrentState.Bag[i];
-                if (key)
-                {
-                    if (item is PdfName nm)
-                    {
-                        name = nm;
-                    } else
-                    {
-                        throw new ApplicationException("");
-                    }
-                } else
-                {
-                    if (item is PdfNumber num 
-                        && i + 2 < CurrentState.Bag.Count
-                        && CurrentState.Bag[i+1] is PdfIntNumber num2
-                        && CurrentState.Bag[i+2] is IndirectRefToken)
-                    {
-                        dict[name] = new PdfIndirectRef((long)num, num2.Value);
-                        i+=2;
-                    } else
-                    {
-                        dict[name] = item;
-                    }
-                    
-                }
-                key = !key;
-            }
-            dict.IsModified = false;
-            return dict;
         }
     }
 }

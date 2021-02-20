@@ -105,15 +105,8 @@ namespace PdfLexer.Lexing
                 case (byte) '(':
                 {
                     var start = i;
-                
-                    if (!StringParser.AdvancePastString(buffer, ref i))
-                    {
-                        length = -1;
-                        return -1;
-                    }
-
-                    type = PdfTokenType.StringObj;
-                    length = i - start;
+                    type = PdfTokenType.StringStart;
+                    length = 1;
                     return start;
                 }
 
@@ -126,28 +119,15 @@ namespace PdfLexer.Lexing
                         return i;
                     }
 
-                    var start = i;
-                    if (!StringParser.AdvancePastString(buffer, ref i))
-                    {
-                        length = -1;
-                        return -1;
-                    }
-                    type = PdfTokenType.StringObj;
-                    length = i - start;
-                    return start;
+                    type = PdfTokenType.StringStart;
+                    length = 1;
+                    return i;
                 }
                 case (byte)'/':
                     var ne = i;
                     ne++;
                     type = PdfTokenType.NameObj;
                     NameParser.SkipName(buffer, ref ne);
-                    // length = bytes.Slice(i + 1).IndexOfAny(NameParser.NameTerminators);
-                    // if (length == -1)
-                    // {
-                    //     length = buffer.Length - i - 1;
-                    // }
-                    // 
-                    // length++; // Slice(i+1)
                     length = ne-i;
                     return i;
                 case (byte)'[':
