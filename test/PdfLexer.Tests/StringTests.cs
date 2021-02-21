@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
@@ -31,7 +31,7 @@ namespace PdfLexer.Tests
         [InlineData("(\\171)", "y")] // octal
         [InlineData("( \\1a)", " 1a")] 
         [InlineData("( \\171a)", " ya")] 
-        [InlineData("(Test \\\rNext\\334Line)", "Test NextÜLine")]
+        [InlineData("(Test \\\rNext\\334Line)", "Test NextÃœLine")]
         [InlineData("(partial octal \\53\\171)", "partial octal +y")]
         [Theory]
         public async Task It_Parses_Literals_Reader(string input, string output)
@@ -76,7 +76,7 @@ namespace PdfLexer.Tests
         [InlineData("(Test \\036 Test )", "Test \u001E Test ")]
         [InlineData("()", "")]
         [InlineData("(\\216\\217)", "\u008e\u008f")] // octal unhappy
-        [InlineData("(Test \\310Line)", "Test ÈLine")] // "happy" > 128 chars
+        [InlineData("(Test \\310Line)", "Test ÃˆLine")] // "happy" > 128 chars
         [Theory]
         public async Task It_Parses_And_Serializes_Literals_Reader(string input, string output)
         {
