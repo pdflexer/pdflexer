@@ -36,9 +36,6 @@ namespace PdfLexer.Tests
         [Theory]
         public async Task It_Parses_Literals_Reader(string input, string output)
         {
-            var test = "\u00A1";
-            var c = test[0];
-            var i = (int)c;
             var bytes = Encoding.ASCII.GetBytes(input);
             var ms = new MemoryStream(bytes);
             var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 4, minimumReadSize: 1));
