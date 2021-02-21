@@ -10,10 +10,9 @@ namespace PdfLexer
         Long,
         Decimal
     }
-    public abstract class PdfNumber : IPdfObject
+    public abstract class PdfNumber : PdfObject
     {
-        public bool IsIndirect => false;
-        public PdfObjectType Type => PdfObjectType.NumericObj;
+        public override PdfObjectType Type => PdfObjectType.NumericObj;
         public abstract PdfNumberType NumberType { get; }
 
         public static implicit operator long(PdfNumber num)
@@ -22,6 +21,16 @@ namespace PdfLexer
                 PdfIntNumber val => (long)val.Value,
                 PdfLongNumber val => (long)val.Value,
                 _ => throw new ApplicationException("Unable to convert PdfNumber to long for type " + num.GetType())
+            };
+        }
+
+        public static implicit operator decimal(PdfNumber num)
+        {
+            return num switch {
+                PdfIntNumber val => (decimal)val.Value,
+                PdfLongNumber val => (decimal)val.Value,
+                PdfDecimalNumber val => val.Value,
+                _ => throw new ApplicationException("Unable to convert PdfNumber to decimal for type " + num.GetType())
             };
         }
     }

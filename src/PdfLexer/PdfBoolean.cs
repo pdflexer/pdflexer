@@ -2,7 +2,7 @@
 
 namespace PdfLexer
 {
-    public class PdfBoolean : IPdfObject
+    public class PdfBoolean : PdfObject
     {
         public static PdfBoolean True { get; } = new PdfBoolean(true);
         public static PdfBoolean False { get; } = new PdfBoolean(false);
@@ -14,8 +14,6 @@ namespace PdfLexer
             Value = value;
         }
         public bool Value { get; }
-        public bool IsIndirect => false;
-        public PdfObjectType Type => PdfObjectType.BooleanObj;
-
+        public override PdfObjectType Type => PdfObjectType.BooleanObj;
     }
 }

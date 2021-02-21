@@ -6,7 +6,6 @@ using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using System;
 using System.Buffers;
-using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
@@ -15,56 +14,113 @@ using System.Text;
 namespace PdfLexer.Benchmarks.Benchmarks
 {
     
-    /// <summary>
-    /// Looked at using string to look up common number values but the utf8 parser is faster than
-    /// just getting ascii.
-    /// </summary>
+    
     [Config(typeof(BenchmarkConfig))]
-    public class MicroCacheBench
+    public class StringBenchmark
     {
         public static List<string> data = new List<string>
         {
-            "1", "10", "2", "100", "20131", "121251288"
+            @"(D:20210111115333-05'00')",
+            @"(RUBIKA::PDF\(F\)\nPX\(D\)\n)",
+            @"(iTextSharp 4.1.6 by 1T3XT)",
+            "(Strings may contain newlines\r\nand such.)",
+            "(Strings may contain balanced parentheses () and special characters (*!*&}^% and so on).)",
+            "(this string (contains nested (two levels)) parentheses)",
+            "(this string <contains>)"
         };
         private List<byte[]> samples = new List<byte[]>();
-
-        private char[] chars = new char[10];
-        public MicroCacheBench()
+        private List<MemoryStream> mss = new List<MemoryStream>();
+        private MemoryStream allMs;
+        public StringBenchmark()
         {
             foreach (var item in data)
             {
                 samples.Add(Encoding.ASCII.GetBytes(item));
             }
-        }
-
-        [Benchmark(Baseline = true)]
-        public int JustGetAscii()
-        {
-            var count = 0;
             foreach (var item in samples)
             {
-                for (var i = 0; i < item.Length; i++)
-                {
-                    chars[i] = (char) item[i];
-                }
-                count += new String(chars, 0, item.Length).Length;
+                mss.Add(new MemoryStream(item));
             }
-            return count;
+            var all = string.Join("", data);
+            allMs = new MemoryStream(Encoding.ASCII.GetBytes(all));
+        }
+        private StringParser parser = new StringParser(new ParsingContext());
+        private List<PdfString> results = new List<PdfString>(10);
+
+
+        [Benchmark(Baseline = true)]
+        public List<PdfString> SpanString()
+        {
+            results.Clear();
+            foreach (var item in samples)
+            {
+                results.Add(parser.Parse(item));
+            }
+            return results;
         }
 
         [Benchmark()]
-        public int Utf8Parse()
+        public List<PdfString> Sequence()
         {
-            var count = 0;
+            results.Clear();
             foreach (var item in samples)
             {
-                if (!Utf8Parser.TryParse(item, out int value, out _))
-                {
-                    throw new ApplicationException();
-                }
-                count += value;
+                var seq = new ReadOnlySequence<byte>(item);
+                results.Add(parser.Parse(seq));
             }
-            return count;
+            return results;
+        }
+
+        [Benchmark()]
+        public List<PdfString> PipeReaderMs()
+        {
+            results.Clear();
+            foreach (var ms in mss)
+            {
+                ms.Position = 0;
+                var reader = PipeReader.Create(ms);
+                results.Add(parser.Parse(reader));
+            }
+            return results;
+        }
+
+        [Benchmark()]
+        public List<PdfString> PipeReaderMsBatch()
+        {
+            results.Clear();
+            allMs.Position = 0;
+            var reader = PipeReader.Create(allMs);
+            for (var i = 0; i < 7; i++)
+            {
+                results.Add(parser.Parse(reader));
+            }
+            return results;
+        }
+
+        [Benchmark()]
+        public List<PdfString> PipeReaderMsSmallBuffer()
+        {
+            results.Clear();
+            foreach (var ms in mss)
+            {
+                ms.Position = 0;
+                var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+                results.Add(parser.Parse(reader));
+            }
+            return results;
+        }
+
+        [Benchmark()]
+        public List<PdfString> PipeReaderMsSmallBufferBatch()
+        {
+            results.Clear();
+            allMs.Position = 0;
+            var reader = PipeReader.Create(allMs, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+            for (var i = 0; i < 7; i++)
+            {
+                results.Add(parser.Parse(reader));
+            }
+            return results;
         }
     }
 }

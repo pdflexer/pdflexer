@@ -146,7 +146,7 @@ namespace PdfLexer.Lexing
                     }
                 }
 
-                if ((int)type < 7) // objects to parse
+                if ((int)type < 8) // objects to parse
                 {
                     results.Add(ctx.GetPdfItem((PdfObjectType) type, read.Buffer, start, reader.Position));
                 }
@@ -165,7 +165,6 @@ namespace PdfLexer.Lexing
             return false;
 
         }
-
 
         internal static async ValueTask<(PdfTokenType Type, IPdfObject Obj)> ReadNextObjectOrToken(this PipeReader pipe, ParsingContext ctx)
         {
@@ -238,7 +237,7 @@ namespace PdfLexer.Lexing
             } else { 
                 pos = reader.Position;
                 
-                if ((int)type < 7) // objects to parse
+                if ((int)type < 8) // objects to parse
                 {
                     obj = ctx.GetPdfItem((PdfObjectType) type, reader.Sequence, start, reader.Position);
                 } else

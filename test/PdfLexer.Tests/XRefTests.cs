@@ -15,53 +15,6 @@ namespace PdfLexer.Tests
 {
     public class XRefTests
     {
-        [InlineData("0 310", 0, 310)]
-        [InlineData("0 310\r\n", 0, 310)]
-        [InlineData("0 310\r", 0, 310)]
-        [InlineData("0 310\n", 0 , 310)]
-        [InlineData("0 310 ", 0, 310)]
-        [InlineData("120  220 ", 120, 220)]
-        [Theory]
-        public void ItParsesXrefHeader(string header, int first, int second)
-        {
-            var chars = header.ToCharArray();
-            var span = new Span<char>(chars);
-            var (f,s) = XRefParser.ParseHeader(span);
-            Assert.Equal(f, first);
-            Assert.Equal(s, second);
-        }
-
-        [InlineData("0 310", 0, 310)]
-        [InlineData("0 310\r\n", 0, 310)]
-        [InlineData("0 310\r", 0, 310)]
-        [InlineData("0 310\n", 0, 310)]
-        [InlineData("0 310 ", 0, 310)]
-        [InlineData("120  220 ", 120, 220)]
-        [Theory]
-        public void ItParsesXrefHeaderBytes(string header, uint first, uint second)
-        {
-            var bytes = Encoding.ASCII.GetBytes(header);
-            var span = new Span<byte>(bytes);
-            var (f, s) = XRefParser.ParseHeader(span);
-            Assert.Equal(f, first);
-            Assert.Equal(s, second);
-        }
-
-        [InlineData("0000000000 00000 f\n\r", 0, 0, true)]
-        [InlineData("0000000001 00001 n\n\r", 1, 1, false)]
-        [InlineData("9999999999 65535 n\n\r", 9999999999, 65535, false)]
-        [Theory]
-        public void ItParsesXrefRecord(string line, UInt64 offset, uint gen, bool isfree)
-        {
-            var bytes = Encoding.ASCII.GetBytes(line);
-            var span = new Span<byte>(bytes);
-            var buffer = new Span<char>(new char[10]);
-            var result = XRefParser.ParseXrefRecord(span, buffer);
-            // Assert.Equal(offset, result.Offset);
-            // Assert.Equal(gen, result.Generation);
-            // Assert.Equal(isfree, result.IsFree);
-        }
-
         [InlineData(@"1234xref
 2 5
 0004658443 00000 n 
@@ -98,7 +51,7 @@ startxref
             var parser = new XRefParser(new ParsingContext());
             var data = await parser.LoadCrossReference(source);
             Assert.Equal(objectCount, data.Item1.Count);
-            Assert.Equal(lastObjNum, data.Item1.Max(x=>x.ObjectNumber));
+            Assert.Equal(lastObjNum, data.Item1.Max(x=>x.Reference.ObjectNumber));
         }
 
         [InlineData(@"xref
@@ -156,9 +109,9 @@ startxref
             var parser = new XRefParser(new ParsingContext() { IsEager = true });
             var (results, trailer) = await parser.LoadCrossReference(source);
             Assert.Equal(entries, results.Count);
-            var last = results.OrderByDescending(x=>x.ObjectNumber).First();
+            var last = results.OrderByDescending(x=>x.Reference.ObjectNumber).First();
             Assert.Equal(lastOffset, last.Offset);
-            Assert.Equal(lastObj, last.ObjectNumber);
+            Assert.Equal(lastObj, last.Reference.ObjectNumber);
         }
 
         [InlineData(@"0 6
@@ -201,9 +154,9 @@ startxref
             var data = new List<XRefEntry>();
             var results = parser.GetEntries(bytes, data);
             Assert.Equal(entries, results.Count);
-            var last = results.Single(x => x.ObjectNumber == lastObj);
+            var last = results.Single(x => x.Reference.ObjectNumber == lastObj);
             Assert.Equal(lastOffset, last.Offset);
-            Assert.Equal(lastObj, last.ObjectNumber);
+            Assert.Equal(lastObj, last.Reference.ObjectNumber);
         }
 
         [InlineData(@"0 1 1 R", 4, 1)]

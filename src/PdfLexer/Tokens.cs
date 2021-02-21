@@ -2,17 +2,18 @@ namespace PdfLexer
 {
     public enum PdfTokenType
     {
-        NullObj,
+        NullObj, // Obj tokens get lexed as the entire token
         BooleanObj,
         NumericObj,
         DecimalObj,
-        NameObj,
-        StringStart,
+        NameObj, 
+        StringStart, // Obj start token get lexed as just the start char(s)
+        HexStart, // Obj start token get lexed as just the start char(s)
         ArrayStart,
         DictionaryStart,
-        IndirectRef,
-        ArrayEnd,
+        ArrayEnd, // tokens below here 
         DictionaryEnd,
+        IndirectRef, 
         Trailer,
         StartStream,
         EndStream,
@@ -30,7 +31,8 @@ namespace PdfLexer
         NumericObj,
         DecimalObj,
         NameObj,
-        StingObj,
+        StringObj,
+        HexObj,
         ArrayObj,
         DictionaryObj,
         StreamObj,

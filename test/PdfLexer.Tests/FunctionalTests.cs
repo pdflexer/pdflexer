@@ -9,15 +9,15 @@ namespace PdfLexer.Tests
 {
     public class FunctionalTests
     {
-        [InlineData("01_CMYK_OP/010_CMYK_OP_x3.pdf")]
-        [InlineData("01_CMYK_OP/010_ReadMe_Ghent_Output_Patch.pdf")]
-        [InlineData("01_CMYK_OP/011_Overprint-Mode_x3.pdf")]
-        [InlineData("01_CMYK_OP/011_ReadMe_Ghent_Output_Patch.pdf")]
-        [InlineData("02_Spot_OP/020_CMYKSpot_OP_x1a.pdf")]
-        [InlineData("02_Spot_OP/020_ReadMe_Ghent_Output_Patch.pdf")]
-        //[InlineData("mt200953a.pdf")] // bad xref // TODO test rebuilding
-        [InlineData("ymj-46-585.pdf")]
-        [Theory]
+        // [InlineData("01_CMYK_OP/010_CMYK_OP_x3.pdf")]
+        // [InlineData("01_CMYK_OP/010_ReadMe_Ghent_Output_Patch.pdf")]
+        // [InlineData("01_CMYK_OP/011_Overprint-Mode_x3.pdf")]
+        // [InlineData("01_CMYK_OP/011_ReadMe_Ghent_Output_Patch.pdf")]
+        // [InlineData("02_Spot_OP/020_CMYKSpot_OP_x1a.pdf")]
+        // [InlineData("02_Spot_OP/020_ReadMe_Ghent_Output_Patch.pdf")]
+        // //[InlineData("mt200953a.pdf")] // bad xref // TODO test rebuilding
+        // [InlineData("ymj-46-585.pdf")]
+        // [Theory]
         public async Task It_Reads_Objects(string pdfPath)
         {
             var data = File.ReadAllBytes(Path.Combine("c:\\temp\\test-pdfs\\", pdfPath));

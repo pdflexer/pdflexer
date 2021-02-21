@@ -12,8 +12,13 @@ namespace PdfLexer
 
     public class CommonUtil
     {
-        internal static byte[] eols = new byte[2] {(byte)'\r', (byte)'n' };
-        internal static byte[] whiteSpaces = new byte[6] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20 };
+        internal static byte[] Terminators = new byte[16] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
+            (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
+
+        internal static byte[] WhiteSpaces = new byte[6] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20 };
+
+        internal static byte[] EOLs = new byte[2] {(byte)'\r', (byte)'n' };
+        
         public static byte[] numeric = new byte[13] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
         (byte)'7', (byte)'8', (byte)'9', (byte)'.', (byte)'-', (byte)'+'};
         public static byte[] ints = new byte[12] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',

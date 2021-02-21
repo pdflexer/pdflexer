@@ -19,23 +19,7 @@ namespace PdfLexer.Parsers
 
         public PdfDictionary Parse(ReadOnlySpan<byte> buffer, int start, int length)
         {
-            // TODO better lazy support
             var dict = _ctx.NestedSpanParser.ParseNestedItem(null, 0, buffer, start) as PdfDictionary;
-            // List<(PdfName,IPdfObject)> toReplace = new List<(PdfName,IPdfObject)>();
-            // foreach (var item in dict)
-            // {
-            //     if (item.Value is PdfLazyObject lz)
-            //     {
-            //         var replacement = _ctx.GetKnownPdfItem(lz.Type, buffer, (int)lz.Offset, lz.Length);
-            //         toReplace.Add((item.Key,replacement));
-            //     }
-            // }
-            // 
-            // foreach (var item in toReplace)
-            // {
-            //     dict[item.Item1] = item.Item2;
-            // }
-
             return dict;
         }
 

@@ -7,32 +7,15 @@ using System.Text;
 
 namespace PdfLexer.Parsers
 {
-    public class DecimalParser : IParser<PdfDecimalNumber>
+    public class DecimalParser : Parser<PdfDecimalNumber>
     {
-        public PdfDecimalNumber Parse(ReadOnlySpan<byte> buffer)
+        public override PdfDecimalNumber Parse(ReadOnlySpan<byte> buffer)
         {
             if (buffer[0] == (byte) '+')
             {
                 buffer = buffer.Slice(1);
             }
             return new PdfDecimalNumber(GetDecimal(buffer));
-        }
-
-        public PdfDecimalNumber Parse(ReadOnlySpan<byte> buffer, int start, int length)
-        {
-            return Parse(buffer.Slice(start,length));
-        }
-
-        public PdfDecimalNumber Parse(in ReadOnlySequence<byte> sequence)
-        {
-            // TODO optimize
-            return Parse(sequence.ToArray());
-        }
-
-        public PdfDecimalNumber Parse(in ReadOnlySequence<byte> sequence, long start, int length)
-        {
-            // TODO optimize
-            return Parse(sequence.Slice(start, length).ToArray());
         }
 
         private decimal GetDecimal(ReadOnlySpan<byte> buffer)

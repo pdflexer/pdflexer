@@ -9,29 +9,13 @@ using System.Text;
 
 namespace PdfLexer.Parsers
 {
-    public class NameParser : IParser<PdfName>
+    public class NameParser : Parser<PdfName>
     {
         internal static byte[] NameTerminators = new byte[16] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
             (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void SkipName(ReadOnlySpan<byte> bytes, ref int i)
-        {
-            ReadOnlySpan<byte> local = bytes;
-            ReadOnlySpan<byte> terms = NameTerminators;
-            for (; i < local.Length; i++)
-            {
-                byte b = local[i];
-                if (terms.IndexOf(b) == -1)
-                {
-                    continue;
-                }
 
-                return;
-            }
-        }
-
-        public PdfName Parse(ReadOnlySpan<byte> buffer)
+        public override PdfName Parse(ReadOnlySpan<byte> buffer)
         {
             if (buffer.IndexOf((byte) '#') == -1)
             {
@@ -39,29 +23,6 @@ namespace PdfLexer.Parsers
             }
 
             return ParseWithHex(buffer, 0, buffer.Length);
-        }
-
-        public PdfName Parse(ReadOnlySpan<byte> buffer, int start, int length)
-        {
-            var part = buffer.Slice(start, length);
-            if (part.IndexOf((byte) '#') == -1)
-            {
-                return ParseFastNoHex(part);
-            }
-
-            return ParseWithHex(buffer, start, length);
-        }
-
-        public PdfName Parse(in ReadOnlySequence<byte> sequence)
-        {
-            // TODO optimize
-            return Parse(sequence.ToArray());
-        }
-
-        public PdfName Parse(in ReadOnlySequence<byte> sequence, long start, int length)
-        {
-            // TODO optimize
-            return Parse(sequence.Slice(start, length).ToArray());
         }
 
         private PdfName ParseFastNoHex(ReadOnlySpan<byte> buffer)
@@ -102,9 +63,22 @@ namespace PdfLexer.Parsers
             return name;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SkipName(ReadOnlySpan<byte> bytes, ref int i)
+        {
+            ReadOnlySpan<byte> local = bytes;
+            ReadOnlySpan<byte> terms = NameTerminators;
+            for (; i < local.Length; i++)
+            {
+                byte b = local[i];
+                if (terms.IndexOf(b) == -1)
+                {
+                    continue;
+                }
 
-        private static byte[] delimiters = new byte[10] {
-            (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%', };
+                return;
+            }
+        }
         
     }
 }

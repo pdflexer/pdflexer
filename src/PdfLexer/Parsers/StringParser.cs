@@ -1,8 +1,6 @@
-using PdfLexer.IO;
 using System;
 using System.Buffers;
 using System.Buffers.Text;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Text;
@@ -17,10 +15,17 @@ namespace PdfLexer.Parsers
         ParsingLiteral,
         ParsingHex
     }
-    public class StringParser : IParser<PdfString>, IStreamedParser<PdfString>
+    public class StringParser : Parser<PdfString>, IStreamedParser<PdfString>
     {
+        private static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
+        private static Encoding Win1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252); // WinAnsiEncoding
+        private static Encoding MacRoman = CodePagesEncodingProvider.Instance.GetEncoding("macintosh"); // WinAnsiEncoding
+        // PdfEncoding : 162-255 same, 20-126 same, 127 undefined, 0-21 same
+        // MaxExpert??
+
         private StringStatus Status = StringStatus.None;
         private readonly ParsingContext _ctx;
+        private readonly Decoder _decoder;
         private int stringDepth = 0;
         private static byte[] stringLiteralTerms = new byte[]
         {
@@ -30,9 +35,10 @@ namespace PdfLexer.Parsers
         public StringParser(ParsingContext ctx)
         {
             _ctx = ctx;
+            _decoder = Iso88591.GetDecoder();
         }
 
-        public PdfString Parse(ReadOnlySpan<byte> buffer)
+        public override PdfString Parse(ReadOnlySpan<byte> buffer)
         {
             var b = buffer[0];
             if (b == '(')
@@ -48,6 +54,7 @@ namespace PdfLexer.Parsers
         private byte[] hexBuffer = new byte[2];
         private PdfString ParseStringHex(ReadOnlySpan<byte> buffer, out int length)
         {
+
             length = 0;
             bool completed = true;
             var data = ArrayPool<byte>.Shared.Rent((buffer.Length-2)/2);
@@ -79,6 +86,7 @@ namespace PdfLexer.Parsers
                 } else
                 {
                     hexBuffer[1] = b;
+                    
                     if (!Utf8Parser.TryParse(hexBuffer, out byte value, out int consumed, 'x'))
                     {
                         throw CommonUtil.DisplayDataErrorException(buffer, i, "Bad hex string data");
@@ -109,12 +117,7 @@ namespace PdfLexer.Parsers
             return new PdfString(Encoding.UTF8.GetString(span)); // TODO bytes?
         }
 
-        public PdfString Parse(ReadOnlySpan<byte> buffer, int start, int length)
-        {
-            return Parse(buffer.Slice(start, length));
-        }
-
-        public PdfString Parse(in ReadOnlySequence<byte> sequence)
+        public override PdfString Parse(in ReadOnlySequence<byte> sequence)
         {
             var reader = new SequenceReader<byte>(sequence);
             if (!TryReadString(ref reader))
@@ -122,12 +125,6 @@ namespace PdfLexer.Parsers
                 throw CommonUtil.DisplayDataErrorException(ref reader, "End of string not found");
             }
             return GetCurrentString();
-        }
-
-        public PdfString Parse(in ReadOnlySequence<byte> sequence, long start, int length)
-        {
-            var slice = sequence.Slice(start, length);
-            return Parse(in slice);
         }
 
         public PdfString Parse(PipeReader reader)
@@ -264,7 +261,8 @@ namespace PdfLexer.Parsers
             }
 
         }
-
+        private char[] charResults = new char[1];
+        private byte[] charBuff = new byte[1];
         private PdfString ParseStringLiteral(ReadOnlySpan<byte> buffer, out int pos)
         {
             builder.Clear();
@@ -366,7 +364,16 @@ namespace PdfLexer.Parsers
                                             }
 
                                             AddToBuilder(buffer.Slice(copyStart, pos));
-                                            builder.Append((char)(64*((int)b2-48) + 8*((int)b3-48)+((int)b4-48)));
+                                            var cc = (64*((int)b2-48)+8*((int)b3-48)+((int)b4-48)) & 0xFF; // 256 max allowed
+                                            if (cc > 127)
+                                            {
+                                                charBuff[0]=(byte)cc;
+                                                _decoder.GetChars(charBuff, charResults, true);
+                                                builder.Append(charResults[0]);
+                                            } else
+                                            {
+                                                builder.Append((char)cc);
+                                            }
                                             pos +=3;
                                         } else
                                         {
@@ -409,7 +416,6 @@ namespace PdfLexer.Parsers
             }
             throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
         }
-
         internal bool TryReadStringLiteral(ref SequenceReader<byte> reader)
         {
             var start = reader.Position;
@@ -514,7 +520,17 @@ namespace PdfLexer.Parsers
                                 }
 
                                 AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-4));
-                                builder.Append((char)(64*((int)b2-48)+8*((int)b3-48)+((int)b4-48)));
+                                var cc = (64*((int)b2-48)+8*((int)b3-48)+((int)b4-48)) & 0xFF; // 256 max allowed
+                                if (cc > 127)
+                                {
+                                    charBuff[0]=(byte)cc;
+                                    _decoder.GetChars(charBuff, charResults, true);
+                                    builder.Append(charResults[0]);
+                                } else
+                                {
+                                    builder.Append((char)cc);
+                                }
+
                                 break;
 
                                 void Ignore(ref SequenceReader<byte> rdr, int cnt)
@@ -552,14 +568,14 @@ namespace PdfLexer.Parsers
             // TODO optimize.. for now this is easy
             foreach (var seg in data)
             {
-                builder.Append(Encoding.ASCII.GetString(seg.Span));
+                builder.Append(Iso88591.GetString(seg.Span));
             }
         }
 
         private void AddToBuilder(ReadOnlySpan<byte> data)
         {
             // TODO optimize.. for now this is easy
-            builder.Append(Encoding.ASCII.GetString(data));
+            builder.Append(Iso88591.GetString(data));
         }
 
         private bool TryReadStringHex(ref SequenceReader<byte> reader)

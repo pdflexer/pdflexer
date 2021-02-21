@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 
 namespace PdfLexer
@@ -11,6 +12,13 @@ namespace PdfLexer
     {
         public bool IsIndirect { get; }
         public PdfObjectType Type { get; }
+    }
+
+    public abstract class PdfObject : IPdfObject
+    {
+        internal XRef IndirectRef { get; set; }
+        public virtual bool IsIndirect => IndirectRef.ObjectNumber > 0 || IndirectRef.ObjectNumber == -1;
+        public abstract PdfObjectType Type { get; }
     }
 
     public static class PdfObjectExtensions
@@ -49,69 +57,5 @@ namespace PdfLexer
             }
         }
 
-        private static NameSerializer NameSerializer = new NameSerializer();
-        internal static void WriteObject(this IPdfObject obj, Stream stream)
-        {
-            switch (obj)
-            {
-                case PdfLazyObject lz:
-                    lz.WriteObject(stream);
-                    return;
-                case PdfDictionary dict:
-                    if (dict.LazyWrapper != null)
-                    {
-                        dict.LazyWrapper.WriteObject(stream);
-                    }
-                    else
-                    {
-                        // TODO 255 line length limit
-                        stream.Write(PdfDictionary.start);
-                        foreach (var item in dict)
-                        {
-                            NameSerializer.WriteToStream(item.Key, stream);
-                            if (item.Value.Type != PdfObjectType.NameObj
-                                && item.Value.Type != PdfObjectType.ArrayObj
-                                && item.Value.Type != PdfObjectType.DictionaryObj
-                                && item.Value.Type != PdfObjectType.StreamObj)
-                            {
-                                stream.WriteByte((byte)' ');
-                            }
-                            item.Value.WriteObject(stream);
-                        }
-                        stream.Write(PdfDictionary.end);
-                    }
-
-                    return;
-                case PdfBoolean bl:
-                    stream.Write(bl.Value ? PdfBoolean.TrueBytes : PdfBoolean.FalseBytes);
-                    return;
-                case PdfName nm:
-                    //
-                    bool escapeNeeded = false;
-                    if (nm.NeedsEscaping == null)
-                    {
-                        // todo
-                    }
-
-                    if (!escapeNeeded)
-                    {
-                        Span<byte> buffer = stackalloc byte[nm.Value.Length];
-                        Encoding.ASCII.GetBytes(nm.Value, buffer);
-                        stream.Write(buffer);
-                    }
-                    else
-                    {
-                        throw new NotImplementedException();
-                    }
-
-                    break;
-                default:
-                    throw new ApplicationException($"Unknown object type for writing: {obj.GetType()}");
-            }
-        }
     }
-
-
-
-
 }

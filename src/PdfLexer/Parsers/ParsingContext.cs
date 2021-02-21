@@ -2,10 +2,7 @@
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.IO.Pipelines;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
@@ -42,10 +39,6 @@ namespace PdfLexer.Parsers
         internal PdfDictionary Trailer { get; } // move to pdf doc
 
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
-        // internal Dictionary<CacheItem, PdfNumber> CachedNumbers = new Dictionary<CacheItem, PdfNumber>(new FNVByteComparison());
-        // internal Dictionary<decimal, PdfDecimalNumber> CachedDecimals = new Dictionary<decimal, PdfDecimalNumber>();
-        
-        // internal Dictionary<long, PdfLongNumber> CachedLongs = new Dictionary<long, PdfLongNumber>();
 
         public ParsingContext()
         {
@@ -63,9 +56,9 @@ namespace PdfLexer.Parsers
             MainDocument = pdf;
             var (refs, trailer) = await XRefParser.LoadCrossReference(MainDocument);
             XrefEntries = new Dictionary<XRef, XRefEntry>();
-            foreach (var entry in refs.Where(x=>!x.IsFree).OrderBy(x=>x.ObjectNumber))
+            foreach (var entry in refs.Where(x=>!x.IsFree).OrderBy(x=>x.Reference.ObjectNumber))
             {
-                XrefEntries[new XRef(entry.ObjectNumber, entry.Generation)] = entry;
+                XrefEntries[entry.Reference] = entry;
             }
             if (refs.Any())
             {
@@ -172,8 +165,7 @@ namespace PdfLexer.Parsers
             return new PdfLazyObject {
                     Offset = 0,
                     Length = 0,
-                    IsIndirect = false,
-                    Type = type,
+                    LazyObjectType = type,
                     Source = CurrentSource
                 };
         }

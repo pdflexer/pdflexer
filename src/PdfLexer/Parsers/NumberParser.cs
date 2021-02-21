@@ -12,7 +12,7 @@ namespace PdfLexer.Parsers
         Integer,
         Real
     }
-    public class NumberParser : IParser<PdfNumber>
+    public class NumberParser : Parser<PdfNumber>
     {
         private static readonly byte[] numberTerminators = new byte[17] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20, (byte)'.',
             (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
@@ -25,7 +25,7 @@ namespace PdfLexer.Parsers
             _ctx = ctx;
         }
 
-        public PdfNumber Parse(ReadOnlySpan<byte> buffer)
+        public override PdfNumber Parse(ReadOnlySpan<byte> buffer)
         {
             if (buffer.Length == 1)
             {
@@ -101,37 +101,11 @@ namespace PdfLexer.Parsers
             }
         }
 
-        public PdfNumber Parse(ReadOnlySpan<byte> buffer, int start, int length)
-        {
-            return Parse(buffer.Slice(start, length));
-        }
-
-        public PdfNumber Parse(in ReadOnlySequence<byte> sequence)
-        {
-            if (sequence.IsSingleSegment)
-            {
-                return Parse(sequence.FirstSpan);
-            }
-            // TODO optimize
-            var len = (int)sequence.Length;
-            var buffer = ArrayPool<byte>.Shared.Rent(len);
-            sequence.CopyTo(buffer);
-            Span<byte> buff = buffer;
-            var result = Parse(buff.Slice(0,len));
-            ArrayPool<byte>.Shared.Return(buffer);
-            return result;
-        }
-
-        public PdfNumber Parse(in ReadOnlySequence<byte> sequence, long start, int length)
-        {
-            return Parse(sequence.Slice(start, length));
-        }
-
         private int GetInt(ReadOnlySpan<byte> buffer)
         {
             if (!Utf8Parser.TryParse(buffer, out int val, out int consumed))
             {
-                throw new ApplicationException("Bad data for double number: " + Encoding.ASCII.GetString(buffer));
+                throw new ApplicationException("Bad data for int number: " + Encoding.ASCII.GetString(buffer));
             }
             Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for int");
 
@@ -145,17 +119,6 @@ namespace PdfLexer.Parsers
                 throw new ApplicationException("Bad data for long number: " + Encoding.ASCII.GetString(buffer));
             }
             Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for long");
-
-            return val;
-        }
-
-        private decimal GetDecimal(ReadOnlySpan<byte> buffer)
-        {
-            if (!Utf8Parser.TryParse(buffer, out decimal val, out int consumed))
-            {
-                throw new ApplicationException("Bad data for double number: " + Encoding.ASCII.GetString(buffer));
-            }
-            Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for double");
 
             return val;
         }

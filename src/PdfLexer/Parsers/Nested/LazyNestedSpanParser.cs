@@ -170,7 +170,7 @@ namespace PdfLexer.Parsers.Nested
                     Offset = offset + startPos,
                     Length = length,
                     HasLazyIndirect = hadIndirect,
-                    Type = (PdfObjectType) type
+                    LazyObjectType = (PdfObjectType) type
                 };
                 CurrentState.Bag.Add(lazy);
             }

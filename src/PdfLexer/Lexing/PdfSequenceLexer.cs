@@ -26,7 +26,7 @@ namespace PdfLexer.Lexing
         /// <returns>If token was successfully lexed.</returns>
         public static bool TryReadNextToken(this ref SequenceReader<byte> reader, bool isCompleted, out PdfTokenType type, out SequencePosition start)
         {
-            reader.AdvancePastAny(CommonUtil.whiteSpaces);
+            reader.AdvancePastAny(CommonUtil.WhiteSpaces);
 
             type = PdfTokenType.NullObj;
             if (!reader.TryPeek(out byte b))
@@ -44,7 +44,7 @@ namespace PdfLexer.Lexing
                     start = reader.Position;
                     return false;
                 }
-                reader.AdvancePastAny(CommonUtil.whiteSpaces);
+                reader.AdvancePastAny(CommonUtil.WhiteSpaces);
 
                 if (!reader.TryPeek(out b))
                 {

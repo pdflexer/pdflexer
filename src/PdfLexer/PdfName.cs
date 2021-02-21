@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PdfLexer
 {
-    public class PdfName : IPdfObject
+    public class PdfName : PdfObject
     {
         internal bool? NeedsEscaping { get;} 
         public PdfName(string value)
@@ -22,8 +22,7 @@ namespace PdfLexer
         }
 
         public string Value { get; }
-        public bool IsIndirect => false;
-        public PdfObjectType Type => PdfObjectType.NameObj;
+        public override PdfObjectType Type => PdfObjectType.NameObj;
 
         public override bool Equals(object obj)
         {

@@ -8,21 +8,8 @@ using PdfLexer.Lexing;
 
 namespace PdfLexer.Parsers.Nested
 {
-    internal enum ParseState
-    {
-        None,
-        ReadDictKey,
-        ReadDictValue,
-        ReadArray,
-        SkipDict,
-        SkipArray,
-        ReadString
-    }
 
-    /// <summary>
-    /// TODO: re-entrant eager parsing
-    /// TODO: re-entrant string parsing
-    /// </summary>
+
     internal class LazyNestedSeqParser
     {
         private readonly ParsingContext _ctx;

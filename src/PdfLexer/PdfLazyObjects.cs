@@ -13,11 +13,11 @@ namespace PdfLexer
         public PdfLazyObject Wrapper { get; }
     }
 
-    internal class PdfLazyObject : IPdfObject
+    internal class PdfLazyObject : PdfObject
     {
-        public bool IsIndirect { get; set; }
+        public override PdfObjectType Type => LazyObjectType;
+        public PdfObjectType LazyObjectType { get; set; }
         public bool HasLazyIndirect { get; set; }
-        public PdfObjectType Type { get; set; }
         public long Offset {get; set; }
         public int Length {get; set; }
         public IPdfDataSource Source { get; set; }

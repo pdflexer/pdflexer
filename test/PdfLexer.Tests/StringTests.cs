@@ -5,45 +5,51 @@ using System.IO.Pipelines;
 using System.Text;
 using System.Threading.Tasks;
 using PdfLexer.Parsers;
+using PdfLexer.Serializers;
 using Xunit;
 
 namespace PdfLexer.Tests
 {
     public class StringTests
     {
-        [InlineData("(Test) ", "Test")]
-        [InlineData("(Test\\ Test) ", "Test Test")]  // ignore random \
-        [InlineData("(Test \\t) ", "Test \t")] // tab
-        [InlineData("(Test \\n\\r) ", "Test \n\r")] // keep new lines by espace
-        [InlineData("(Test \\\nNextLine) ", "Test NextLine")] // allows split strings by line
-        [InlineData("(Test \\\rNextLine) ", "Test NextLine")]
-        [InlineData("(Test \\\r\nNextLine) ", "Test NextLine")]
-        [InlineData("(Test Test\rTest )\r\n", "Test Test\rTest ")] // keeps new lines
-        [InlineData("(Test Test\r\nTest )\r\n", "Test Test\r\nTest ")]
-        [InlineData("(Test Test\nTest )\r\n", "Test Test\nTest ")]
-        [InlineData("(Test Test Test )\r\n", "Test Test Test ")]
-        [InlineData("(Test (Test) Test )\n", "Test (Test) Test ")]
-        [InlineData("(Test \\\\(Test) Test )\n", "Test \\(Test) Test ")]
-        [InlineData("(Test \\) Test )\n", "Test ) Test ")]
-        [InlineData("(Test \\\\\\) Test )\n", "Test \\) Test ")]
-        [InlineData("() ", "")]
+        [InlineData("(Test)", "Test")]
+        [InlineData("(Test\\ Test)", "Test Test")]  // ignore random \
+        [InlineData("(Test \\t)", "Test \t")] // tab
+        [InlineData("(Test \\n\\r)", "Test \n\r")] // keep new lines by espace
+        [InlineData("(Test \\\nNextLine)", "Test NextLine")] // allows split strings by line
+        [InlineData("(Test \\\rNextLine)", "Test NextLine")]
+        [InlineData("(Test \\\r\nNextLine)", "Test NextLine")]
+        [InlineData("(Test Test\rTest )", "Test Test\rTest ")] // keeps new lines
+        [InlineData("(Test Test\r\nTest )", "Test Test\r\nTest ")]
+        [InlineData("(Test Test\nTest )", "Test Test\nTest ")]
+        [InlineData("(Test Test Test )", "Test Test Test ")]
+        [InlineData("(Test (Test) Test )", "Test (Test) Test ")]
+        [InlineData("(Test \\\\(Test) Test )", "Test \\(Test) Test ")]
+        [InlineData("(Test \\) Test )", "Test ) Test ")]
+        [InlineData("(Test \\\\\\) Test )", "Test \\) Test ")]
         [InlineData("()", "")]
         [InlineData("(\\171)", "y")] // octal
         [InlineData("( \\1a)", " 1a")] 
         [InlineData("( \\171a)", " ya")] 
-        [InlineData("(Test \\\rNext\\147Line) ", "Test NextgLine")]
+        [InlineData("(Test \\\rNext\\334Line)", "Test Next‹Line")]
         [InlineData("(partial octal \\53\\171)", "partial octal +y")]
         [Theory]
         public async Task It_Parses_Literals_Reader(string input, string output)
         {
+            var test = "\u00A1";
+            var c = test[0];
+            var i = (int)c;
             var bytes = Encoding.ASCII.GetBytes(input);
             var ms = new MemoryStream(bytes);
             var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 4, minimumReadSize: 1));
             var parser = new StringParser(new ParsingContext());
+            var serializer = new StringSerializer();
+
 
             // sync
             var result = parser.Parse(reader);
             Assert.Equal(output, result.Value);
+
             // async
             ms.Seek(0, SeekOrigin.Begin);
             reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 4, minimumReadSize: 1));
@@ -51,6 +57,57 @@ namespace PdfLexer.Tests
             Assert.Equal(output, result.Value);
             // span
             CheckSpanBased();
+
+
+
+            void CheckSpanBased()
+            {
+                var span = new Span<byte>(bytes);
+                result = parser.Parse(span);
+                Assert.Equal(output, result.Value);
+            }
+        }
+
+        [InlineData("(Test)", "Test")]
+        [InlineData("(Test \\t)", "Test \t")] // tab
+        [InlineData("(Test \\n\\r)", "Test \n\r")] // keep new lines by espace
+        [InlineData("(Test Test Test )", "Test Test Test ")]
+        [InlineData("(Test (Test) Test )", "Test (Test) Test ")]
+        [InlineData("(Test \\\\(Test) Test )", "Test \\(Test) Test ")]
+        [InlineData("(Test \\) Test )", "Test ) Test ")]
+        [InlineData("(Test \\\\\\) Test )", "Test \\) Test ")]
+        [InlineData("(Test \\036 Test )", "Test \u001E Test ")]
+        [InlineData("()", "")]
+        [InlineData("(\\216\\217)", "\u008e\u008f")] // octal unhappy
+        [InlineData("(Test \\310Line)", "Test »Line")] // "happy" > 128 chars
+        [Theory]
+        public async Task It_Parses_And_Serializes_Literals_Reader(string input, string output)
+        {
+            var bytes = Encoding.ASCII.GetBytes(input);
+            var ms = new MemoryStream(bytes);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 4, minimumReadSize: 1));
+            var parser = new StringParser(new ParsingContext());
+            var serializer = new StringSerializer();
+
+
+            // sync
+            var result = parser.Parse(reader);
+            Assert.Equal(output, result.Value.ToString());
+
+            var st = new MemoryStream();
+            serializer.WriteToStream(result, st);
+            var text = Encoding.ASCII.GetString(st.ToArray());
+            Assert.Equal(input, text);
+
+            // async
+            ms.Seek(0, SeekOrigin.Begin);
+            reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 4, minimumReadSize: 1));
+            result = await parser.ParseAsync(reader);
+            Assert.Equal(output, result.Value);
+            // span
+            CheckSpanBased();
+
+
 
             void CheckSpanBased()
             {

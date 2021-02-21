@@ -4,6 +4,17 @@ using System.Text;
 
 namespace PdfLexer.Parsers.Nested
 {
+    internal enum ParseState
+    {
+        None,
+        ReadDictKey,
+        ReadDictValue,
+        ReadArray,
+        SkipDict,
+        SkipArray,
+        ReadString
+    }
+
     internal struct ObjParseState
     {
         public ParseState State { get; set; }

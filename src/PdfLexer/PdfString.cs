@@ -4,7 +4,7 @@ using System.Text;
 
 namespace PdfLexer
 {
-    public class PdfString : IPdfObject
+    public class PdfString : PdfObject
     {
         // TODO support lazy writing
         public PdfString(string value)
@@ -12,8 +12,6 @@ namespace PdfLexer
             Value = value;
         }
         public string Value { get; }
-        public bool IsIndirect { get;set; }
-
-        public PdfObjectType Type => PdfObjectType.StingObj;
+        public override PdfObjectType Type => PdfObjectType.StringObj;
     }
 }
