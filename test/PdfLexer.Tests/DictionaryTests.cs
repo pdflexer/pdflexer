@@ -61,6 +61,9 @@ namespace PdfLexer.Tests
         [InlineData("<</FormType 1/Subtype/Form/BBox[0 0 612 792]/Resources<</XObject<</Xf19189 19 0 R>>/ProcSet[/PDF/Text/ImageB/ImageC/ImageI]>>/Type/XObject/Filter/FlateDecode/Length 53/Matrix[1 0 0 1 0 0]>>")]
         [InlineData("<</Type/XObject/DecodeParms<</K -1/Columns 20/Rows 20>>/Subtype/Image/Width 20/ColorSpace/DeviceGray/Filter/CCITTFaxDecode/BitsPerComponent 1/Length 115/Height 20>>")]
         [InlineData("<</FormType 1/Subtype/Form/BBox[0 0 612 792]/Resources<</XObject<</Xf19186 20 0 R>>/ProcSet[/PDF/Text/ImageB/ImageC/ImageI]>>/Type/XObject/Filter/FlateDecode/Length 53/Matrix[1 0 0 1 0 0]>>")]
+        [InlineData("<</Test (string)/Test2 (string2)>>")]
+        [InlineData("<</Test <AAAFF>/Test2 <AAAFF>>>")]
+        [InlineData("<</Key (Test \\\\(Test) Test )/Key2 (\\216\\217)/Key3 (Test \\\rNextLine Test \\\rNextLine Test \\\rNextLine Test \\\rNextLine Test \\\rNextLine Test \\\rNextLineTest \\\rNextLineTest \\\rNextLine)>>")]
         [Theory]
         public void It_Gets_Real_Dicts(string data)
         {
@@ -71,6 +74,7 @@ namespace PdfLexer.Tests
             var dict3 = parser.Parse(seq);
             var parser2 = new DictionaryParser(new ParsingContext() { IsEager = false });
             var dict2 = parser2.Parse(buffer);
+            var dict4 = parser2.Parse(seq);
             // Do_Get_Dict(data, true, data);
         }
 

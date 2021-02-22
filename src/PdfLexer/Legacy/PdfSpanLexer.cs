@@ -4,7 +4,7 @@ using PdfLexer.Parsers;
 
 namespace PdfLexer.Lexing
 {
-    public class PdfSpanLexer
+    public class PdfSpanLexer_Previous
     {
         /// <summary>
         /// Attempts to tokenize and determine type of the next token in the provided buffer.
@@ -44,42 +44,64 @@ namespace PdfLexer.Lexing
             switch (b)
             {
                 case (byte) 't':
+
+                    if (!(buffer.Length > i + 3))
                     {
-                    var current = buffer.Slice(i);
-                    if (current.StartsWith(BoolParser.truebytes))
+                        length = -1;
+                        return -1;
+                    }
+
+                    if (buffer.Slice(i).StartsWith(BoolParser.truebytes))
                     {
-                        length = 4;
                         type = PdfTokenType.BooleanObj;
+                        length = 4;
                         return i;
                     }
 
-                    if (current.StartsWith(XRefParser.trailer))
+                    if (!(buffer.Length > i + 6))
                     {
-                        length = 7;
+                        length = -1;
+                        return -1;
+                    }
+
+                    if (buffer.Slice(i).StartsWith(XRefParser.trailer))
+                    {
                         type = PdfTokenType.Trailer;
+                        length = 7;
                         return i;
                     }
 
-                    break;
-                    }
+                    throw UnknownTokenError(buffer);
                 case (byte) 'f':
+                    if (!(buffer.Length > i + 4))
+                    {
+                        length = -1;
+                        return -1;
+                    }
+
                     if (buffer.Slice(i).StartsWith(BoolParser.falsebytes))
                     {
-                        length = 5;
                         type = PdfTokenType.BooleanObj;
+                        length = 5;
                         return i;
                     }
 
-                    break;
+                    throw UnknownTokenError(buffer);
                 case (byte) 'n':
+                    if (!(buffer.Length > i + 3))
+                    {
+                        length = -1;
+                        return -1;
+                    }
+
                     if (buffer.Slice(i).StartsWith(PdfNull.NullBytes))
                     {
-                        length = 4;
                         type = PdfTokenType.NullObj;
+                        length = 4;
                         return i;
                     }
 
-                    break;
+                    throw UnknownTokenError(buffer);
                 case (byte) '(':
                 {
                     var se = i;
@@ -144,43 +166,71 @@ namespace PdfLexer.Lexing
                     length = 1;
                     return i;
                 case (byte)'>':
-                    if (buffer.Length > i + 1 && buffer[i + 1] == (byte)'>')
+                    if (buffer.Length > i + 1)
                     {
-                        type = PdfTokenType.DictionaryEnd;
-                        length = 2;
-                        return i;
+                        if (buffer[i + 1] == (byte)'>')
+                        {
+                            type = PdfTokenType.DictionaryEnd;
+                            length = 2;
+                            return i;
+                        }
+                        else
+                        {
+                            throw UnknownTokenError(buffer);
+                        }
                     }
-                    type = PdfTokenType.EndString;
-                    length = 1;
-                    return i;
+                    else
+                    {
+                        length = -1;
+                        return -1;
+                    }
                 case (byte)']':
                     type = PdfTokenType.ArrayEnd;
                     length = 1;
                     return i;
                 case (byte) 'e':
+
+                    if (!(buffer.Length > i + 5))
                     {
-                    var current = buffer.Slice(i);
-                    if (current.StartsWith(IndirectSequences.endobj))
+                        length = -1;
+                        return -1;
+                    }
+
+                    if (buffer.Slice(i).StartsWith(IndirectSequences.endobj))
                     {
                         type = PdfTokenType.EndObj;
                         length = 6;
                         return i;
                     }
 
-                    if (current.StartsWith(IndirectSequences.endstream))
+                    if (!(buffer.Length > i + 8))
+                    {
+                        length = -1;
+                        return -1;
+                    }
+
+                    if (buffer.Slice(i).StartsWith(IndirectSequences.endstream))
                     {
                         type = PdfTokenType.EndStream;
                         length = 9;
                         return i;
                     }
-                    }
-                    break;
+
+                    throw UnknownTokenError(buffer);
                 case (byte) 's':
+                    type = PdfTokenType.StartStream;
+                    if (!(buffer.Length > i + 5))
+                    {
+                        length = -1;
+                        return -1;
+                    }
+
                     if (buffer.Slice(i).StartsWith(IndirectSequences.stream))
                     {
                         if (!(buffer.Length > i + 6))
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"Stream not followed by \\r\\n or \\n.");
+                            length = -1;
+                            return -1;
                         }
 
                         type = PdfTokenType.StartStream;
@@ -194,51 +244,66 @@ namespace PdfLexer.Lexing
                         
                         if (nxt != (byte) '\r')
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"Stream not followed by \\r\\n or \\n.");
+                            throw new ApplicationException($"Stream not followed by \\r\\n or \\n.");
                         }
 
                         if (!(buffer.Length > i + 7))
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"Stream not followed by \\r\\n or \\n.");
+                            length = -1;
+                            return -1;
                         }
 
                         nxt = buffer[i + 7];
                         if (nxt != (byte) '\n')
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"Stream not followed by \\r\\n or \\n.");
+                            throw new ApplicationException($"Stream not followed by \\r\\n or \\n.");
                         }
 
                         length = 8;
                         return i;
                     }
-                    break;
+
+                    throw UnknownTokenError(buffer);
                 case (byte) 'x':
+                    if (!(buffer.Length > i + 3))
+                    {
+                        length = -1;
+                        return -1;
+                    }
+
                     if (buffer.Slice(i).StartsWith(XRefParser.xref))
                     {
-                        length = 4;
                         type = PdfTokenType.Xref;
+                        length = 4;
                         return i;
                     }
-                    break;
+
+                    throw UnknownTokenError(buffer);
                 case (byte) 'o':
+                    if (!(buffer.Length > i + 2))
+                    {
+                        length = -1;
+                        return -1;
+                    }
+
                     if (buffer.Slice(i).StartsWith(IndirectSequences.obj))
                     {
-                        length = 3;
                         type = PdfTokenType.StartObj;
+                        length = 3;
                         return i;
                     }
-                    break;
+
+                    throw UnknownTokenError(buffer);
                 default:
-                    break;
+                    throw CommonUtil.DisplayDataErrorException(buffer, i, "Unknown token start");
             }
 
-            // Default tokenization
-            ReadOnlySpan<byte> terms = CommonUtil.Terminators;
-            var end = i;
-            CommonUtil.ScanTokenEnd(buffer, ref end);
-            length = end-i;
-            type = PdfTokenType.Unknown;
-            return i;
+            Exception UnknownTokenError(ReadOnlySpan<byte> data)
+            {
+                var count = data.Length > i + 10 ? 10 : data.Length - i;
+                return new ApplicationException(
+                    "Unknown token: '" + Encoding.ASCII.GetString(data.Slice(i, count)) + "'");
+            }
         }
     }
 }

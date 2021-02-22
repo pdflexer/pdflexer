@@ -10,17 +10,10 @@ using PdfLexer.Parsers.Nested;
 
 namespace PdfLexer.Parsers
 {
-    public enum ParseState 
-    {
-        None,
-        Nested,
-    }
     public class ParsingContext
     {
         // TODO different types
         public bool IsEager { get; set; } = true;
-        internal NestedSkipper Skipper { get; } = new NestedSkipper();
-        internal ParseState ParseState { get; set; }
         internal List<IPdfObject> ObjectBag = new List<IPdfObject>();
         internal byte[] Buffer = new byte[5000];
         internal long CurrentOffset { get; set; }
@@ -29,10 +22,10 @@ namespace PdfLexer.Parsers
 
         internal NumberParser NumberParser { get; }
         internal DecimalParser DecimalParser { get; }
+        internal ArrayParser ArrayParser { get; }
         internal NameParser NameParser { get; } = new NameParser();
         public IPdfDataSource MainDocument { get; private set; }
-        internal LazyNestedSeqParser NestedSeqParser { get; }
-        internal LazyNestedSpanParser NestedSpanParser { get; }
+        internal LazyNestedSpanParser NestedParser { get; }
         internal DictionaryParser DictionaryParser { get; }
         internal StringParser StringParser {get;}
         internal XRefParser XRefParser { get; }
@@ -42,13 +35,13 @@ namespace PdfLexer.Parsers
 
         public ParsingContext()
         {
-            NestedSeqParser = new LazyNestedSeqParser(this);
-            NestedSpanParser = new LazyNestedSpanParser(this);
+            NestedParser = new LazyNestedSpanParser(this);
             DictionaryParser = new DictionaryParser(this);
             NumberParser =  new NumberParser(this);
             DecimalParser =  new DecimalParser();
             StringParser = new StringParser(this);
             XRefParser = new XRefParser(this);
+            ArrayParser = new ArrayParser(this);
         }
 
         public async ValueTask Initialize(IPdfDataSource pdf)
@@ -113,6 +106,21 @@ namespace PdfLexer.Parsers
                     var slice = data.Slice(start, end);
                     return NameParser.Parse(in slice);
                     }
+                case PdfObjectType.DictionaryObj:
+                    {
+                    var slice = data.Slice(start, end);
+                    return DictionaryParser.Parse(in slice);
+                    }
+                case PdfObjectType.ArrayObj:
+                    {
+                    var slice = data.Slice(start, end);
+                    return ArrayParser.Parse(in slice);
+                    }
+                case PdfObjectType.StringObj:
+                    {
+                    var slice = data.Slice(start, end);
+                    return StringParser.Parse(in slice);
+                    }
             }
             return null;
         }
@@ -155,7 +163,7 @@ namespace PdfLexer.Parsers
                     }
                 case PdfObjectType.DictionaryObj:
                 case PdfObjectType.ArrayObj:
-                    return NestedSpanParser.ParseNestedItem(null, 0, data, start); // TODO lazy support
+                    return NestedParser.ParseNestedItem(data, start); // TODO lazy support
             }
             return null;
         }

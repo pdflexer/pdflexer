@@ -1,15 +1,95 @@
-﻿using System;
+﻿using PdfLexer.Lexing;
+using PdfLexer.Parsers;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.InteropServices;
-using System.Text;
-using PdfLexer.Lexing;
 
-namespace PdfLexer.Parsers.Nested
+namespace PdfLexer.Legacy
 {
+    [Obsolete("No longer in use", false)]
+    internal struct ObjParseState
+    {
+        public ParseState State { get; set; }
+        public PdfName CurrentKey { get; set; }
+        public PdfDictionary Dict { get; set; }
+        public PdfArray Array { get; set; }
+        public List<IPdfObject> Bag { get; set; }
 
+        public bool IsParsing()
+        {
+            return Dict != null || Array != null;
+        }
 
+        public PdfArray GetArrayFromBag()
+        {
+            for (var i=0;i<Bag.Count;i++)
+            {
+                var item = Bag[i];
+                if (item is PdfNumber num 
+                    && i + 2 < Bag.Count
+                    && Bag[i+1] is PdfIntNumber num2
+                    && Bag[i+2] is IndirectRefToken)
+                {
+                    Array.Add(new PdfIndirectRef((long)num, num2.Value));
+                    i+=2;
+                } else
+                {
+                    Array.Add(item);
+                }
+            }
+            return Array;
+        }
+
+        public PdfDictionary GetDictionaryFromBag()
+        {
+            bool key = true;
+            PdfName name = null;
+            for (var i=0;i<Bag.Count;i++)
+            {
+                var item = Bag[i];
+                if (key)
+                {
+                    if (item is PdfName nm)
+                    {
+                        name = nm;
+                    } else
+                    {
+                        throw new ApplicationException("");
+                    }
+                } else
+                {
+                    if (item is PdfNumber num 
+                        && i + 2 < Bag.Count
+                        && Bag[i+1] is PdfIntNumber num2
+                        && Bag[i+2] is IndirectRefToken)
+                    {
+                        Dict[name] = new PdfIndirectRef((long)num, num2.Value);
+                        i+=2;
+                    } else
+                    {
+                        Dict[name] = item;
+                    }
+                    
+                }
+                key = !key;
+            }
+            Dict.IsModified = false;
+            return Dict;
+        }
+    }
+    [Obsolete("No longer in use", false)]
+    internal enum ParseState
+    {
+        None,
+        ReadDictKey,
+        ReadDictValue,
+        ReadArray,
+        SkipDict,
+        SkipArray
+    }
+
+    [Obsolete("No longer in use", false)]
     internal class LazyNestedSeqParser
     {
         private readonly ParsingContext _ctx;
@@ -55,28 +135,28 @@ namespace PdfLexer.Parsers.Nested
                 case ParseState.ReadDictKey:
                 case ParseState.ReadDictValue:
                     break;
-                case ParseState.ReadString:
-                    if (!_ctx.StringParser.TryReadString(ref reader))
-                    {
-                        return false;
-                    }
-
-                    CurrentState = StateStack[^1];
-                    StateStack.RemoveAt(StateStack.Count-1);
-                    return ParseNestedItem(ref reader, isCompleted);
+                // case ParseState.ReadString:
+                //     if (!_ctx.StringParser.TryReadString(ref reader))
+                //     {
+                //         return false;
+                //     }
+                // 
+                //     CurrentState = StateStack[^1];
+                //     StateStack.RemoveAt(StateStack.Count-1);
+                //     return ParseNestedItem(ref reader, isCompleted);
                 case ParseState.SkipDict:
-                    if (!_ctx.Skipper.TryScanToEndOfDict(ref reader))
-                    {
-                        return false;
-                    }
+                    // if (!_ctx.Skipper.TryScanToEndOfDict(ref reader))
+                    // {
+                    //     return false;
+                    // }
                     CurrentState = StateStack[^1];
                     StateStack.RemoveAt(StateStack.Count-1);
                     return ParseNestedItem(ref reader, isCompleted);
                 case ParseState.SkipArray:
-                    if (!_ctx.Skipper.TryScanToEndOfArray(ref reader))
-                    {
-                        return false;
-                    }
+                    // if (!_ctx.Skipper.TryScanToEndOfArray(ref reader))
+                    // {
+                    //     return false;
+                    // }
                     CurrentState = StateStack[^1];
                     StateStack.RemoveAt(StateStack.Count-1);
                     return ParseNestedItem(ref reader, isCompleted);
@@ -96,15 +176,16 @@ namespace PdfLexer.Parsers.Nested
                         CurrentState.Bag.Add(_ctx.GetPdfItem((PdfObjectType) tokenType, sequence, startPos, endPos));
                         break;
                     case PdfTokenType.StringStart:
-                        reader.Rewind(1);
-                        if (!_ctx.StringParser.TryReadString(ref reader))
-                        {
-                            StateStack.Add(CurrentState);
-                            CurrentState = default;
-                            CurrentState.State = ParseState.ReadString;
-                            return false;
-                        }
-                        CurrentState.Bag.Add(_ctx.StringParser.GetCurrentString());
+                        // reader.Rewind(1);
+                        var item = _ctx.StringParser.Parse(reader.Sequence.Slice(startPos, endPos));
+                        // if (!_ctx.StringParser.TryReadString(ref reader))
+                        // {
+                        //     StateStack.Add(CurrentState);
+                        //     CurrentState = default;
+                        //     CurrentState.State = ParseState.ReadString;
+                        //     return false;
+                        // }
+                        CurrentState.Bag.Add(item);
                         break;
                     case PdfTokenType.DictionaryStart:
                         if (CurrentState.IsParsing())
@@ -121,7 +202,7 @@ namespace PdfLexer.Parsers.Nested
                             }
                             else
                             {
-                                if (!reader.AdvanceToDictEnd(out _))
+                                if (!PdfLexer.Parsers.Nested.NestedUtil.AdvanceToDictEnd(ref reader, out _))
                                 {
                                     StateStack.Add(CurrentState);
                                     CurrentState.State = ParseState.SkipDict;
@@ -153,7 +234,7 @@ namespace PdfLexer.Parsers.Nested
                             }
                             else
                             {
-                                if (!reader.AdvanceToArrayEnd(out _))
+                                if (!PdfLexer.Parsers.Nested.NestedUtil.AdvanceToArrayEnd(ref reader, out _))
                                 {
                                     StateStack.Add(CurrentState);
                                     CurrentState.State = ParseState.SkipArray;

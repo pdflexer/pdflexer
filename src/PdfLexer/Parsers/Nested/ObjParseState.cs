@@ -11,8 +11,7 @@ namespace PdfLexer.Parsers.Nested
         ReadDictValue,
         ReadArray,
         SkipDict,
-        SkipArray,
-        ReadString
+        SkipArray
     }
 
     internal struct ObjParseState

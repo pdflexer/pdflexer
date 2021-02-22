@@ -17,11 +17,13 @@ namespace PdfLexer
         Trailer,
         StartStream,
         EndStream,
+        EndString,
         StartObj,
         EndObj,
         Xref,
         StartXref,
-        WildCard // dummy
+        WildCard, // dummy
+        Unknown
     }
 
     public enum PdfObjectType

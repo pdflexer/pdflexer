@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -9,6 +10,7 @@ namespace PdfLexer.IO
     {
         private readonly byte[] _data;
         private readonly MemoryStream _ms;
+        // TODO in memory larger than int.maxvalue bytes
         // TODO -> Memory<byte>??
         public InMemoryDataSource(byte[] data)
         {
@@ -28,7 +30,7 @@ namespace PdfLexer.IO
             return _ms;
         }
 
-        public void FillData(long startPosition, int desiredBytes, out Span<byte> data)
+        public void FillData(long startPosition, int desiredBytes, out ReadOnlySpan<byte> data)
         {
             if (startPosition > int.MaxValue)
             {

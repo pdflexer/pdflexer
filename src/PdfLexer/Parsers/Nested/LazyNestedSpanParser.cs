@@ -15,7 +15,7 @@ namespace PdfLexer.Parsers.Nested
             _ctx = ctx;
         }
 
-        public IParsedLazyObj ParseNestedItem(IPdfDataSource source, long offset, ReadOnlySpan<byte> buffer, int startAt)
+        public IParsedLazyObj ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt)
         {
             bool completed = false;
             var lastStart = 0;
@@ -32,8 +32,8 @@ namespace PdfLexer.Parsers.Nested
                         startAt += currentLength;
                         continue;
                     case PdfTokenType.StringStart:
-                        CurrentState.Bag.Add(_ctx.StringParser.Parse(buffer, startAt, out int used));
-                        startAt += used;
+                        CurrentState.Bag.Add(_ctx.StringParser.Parse(buffer, startAt, currentLength));
+                        startAt += currentLength;
                         break;
                     case PdfTokenType.DictionaryStart:
                         if (CurrentState.IsParsing())
@@ -60,7 +60,7 @@ namespace PdfLexer.Parsers.Nested
                                 }
 
                                 currentLength = end - startAt;
-                                AddLazyValue(source, offset, originalStart, currentLength, PdfTokenType.DictionaryStart, hadIndirect);
+                                AddLazyValue(originalStart, currentLength, PdfTokenType.DictionaryStart, hadIndirect);
                                 startAt += currentLength;
                                 continue;
                             }
@@ -96,7 +96,7 @@ namespace PdfLexer.Parsers.Nested
                                 }
 
                                 currentLength = end - startAt;
-                                AddLazyValue(source, offset, originalStart, currentLength, PdfTokenType.ArrayStart, hadIndirect);
+                                AddLazyValue(originalStart, currentLength, PdfTokenType.ArrayStart, hadIndirect);
                                 startAt += currentLength;
                                 continue;
                             }
@@ -162,12 +162,12 @@ namespace PdfLexer.Parsers.Nested
             
             return obj;
 
-            void AddLazyValue(IPdfDataSource source, long offset, int startPos, int length, PdfTokenType type, bool hadIndirect)
+            void AddLazyValue(int startPos, int length, PdfTokenType type, bool hadIndirect)
             {
                 var lazy = new PdfLazyObject
                 {
-                    Source = source,
-                    Offset = offset + startPos,
+                    Source = null,
+                    Offset = 0 + startPos, // TODO
                     Length = length,
                     HasLazyIndirect = hadIndirect,
                     LazyObjectType = (PdfObjectType) type

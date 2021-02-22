@@ -250,6 +250,7 @@ namespace PdfLexer.Parsers.Nested
 
         /// <summary>
         /// Advances to the end of dictionary. Note: Current dictionary tokens must already have been read.
+        /// TODO: switch to not have token be read
         /// </summary>
         /// <param name="reader"></param>
         /// <returns>If completed successfully. False designates incomplete data.</returns>

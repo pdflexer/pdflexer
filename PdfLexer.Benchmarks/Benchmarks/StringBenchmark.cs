@@ -71,56 +71,59 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return results;
         }
 
-        [Benchmark()]
-        public List<PdfString> PipeReaderMs()
-        {
-            results.Clear();
-            foreach (var ms in mss)
-            {
-                ms.Position = 0;
-                var reader = PipeReader.Create(ms);
-                results.Add(parser.Parse(reader));
-            }
-            return results;
-        }
+        // LEGACY
+        // [Benchmark()]
+        // public List<PdfString> PipeReaderMs()
+        // {
+        //     results.Clear();
+        //     foreach (var ms in mss)
+        //     {
+        //         ms.Position = 0;
+        //         var reader = PipeReader.Create(ms);
+        //         results.Add(parser.Parse(reader));
+        //     }
+        //     return results;
+        // }
 
-        [Benchmark()]
-        public List<PdfString> PipeReaderMsBatch()
-        {
-            results.Clear();
-            allMs.Position = 0;
-            var reader = PipeReader.Create(allMs);
-            for (var i = 0; i < 7; i++)
-            {
-                results.Add(parser.Parse(reader));
-            }
-            return results;
-        }
+        // LEGACY
+        // [Benchmark()]
+        // public List<PdfString> PipeReaderMsBatch()
+        // {
+        //     results.Clear();
+        //     allMs.Position = 0;
+        //     var reader = PipeReader.Create(allMs);
+        //     for (var i = 0; i < 7; i++)
+        //     {
+        //         results.Add(parser.Parse(reader));
+        //     }
+        //     return results;
+        // }
 
-        [Benchmark()]
-        public List<PdfString> PipeReaderMsSmallBuffer()
-        {
-            results.Clear();
-            foreach (var ms in mss)
-            {
-                ms.Position = 0;
-                var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
-                results.Add(parser.Parse(reader));
-            }
-            return results;
-        }
-
-        [Benchmark()]
-        public List<PdfString> PipeReaderMsSmallBufferBatch()
-        {
-            results.Clear();
-            allMs.Position = 0;
-            var reader = PipeReader.Create(allMs, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
-            for (var i = 0; i < 7; i++)
-            {
-                results.Add(parser.Parse(reader));
-            }
-            return results;
-        }
+        // LEGACY
+        // [Benchmark()]
+        // public List<PdfString> PipeReaderMsSmallBuffer()
+        // {
+        //     results.Clear();
+        //     foreach (var ms in mss)
+        //     {
+        //         ms.Position = 0;
+        //         var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+        //         results.Add(parser.Parse(reader));
+        //     }
+        //     return results;
+        // }
+        // 
+        // [Benchmark()]
+        // public List<PdfString> PipeReaderMsSmallBufferBatch()
+        // {
+        //     results.Clear();
+        //     allMs.Position = 0;
+        //     var reader = PipeReader.Create(allMs, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+        //     for (var i = 0; i < 7; i++)
+        //     {
+        //         results.Add(parser.Parse(reader));
+        //     }
+        //     return results;
+        // }
     }
 }

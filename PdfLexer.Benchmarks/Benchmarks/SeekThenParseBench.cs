@@ -4,8 +4,10 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using PdfLexer.Lexing;
 using PdfLexer.Parsers;
+using PdfLexer.Parsers.Nested;
 using System;
 using System.Buffers;
+using System.Buffers.Text;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
@@ -13,17 +15,13 @@ using System.Text;
 
 namespace PdfLexer.Benchmarks.Benchmarks
 {
-    internal class BenchmarkConfig : ManualConfig
-    {
-        public BenchmarkConfig()
-        {
-            AddDiagnoser(MemoryDiagnoser.Default);
-            AddJob(Job.ShortRun.WithWarmupCount(5).WithIterationCount(10));
-        }
-    }
-
+    
+    /// <summary>
+    /// Looked at using string to look up common number values but the utf8 parser is faster than
+    /// just getting ascii.
+    /// </summary>
     [Config(typeof(BenchmarkConfig))]
-    public class LexingBenchmark
+    public class SeekThenParseBench
     {
         public static List<string> data = new List<string>
         {
@@ -36,72 +34,116 @@ namespace PdfLexer.Benchmarks.Benchmarks
             "<</FormType 1/Subtype/Form/BBox[0 0 612 792]/Resources<</XObject<</Xf19186 20 0 R>>/ProcSet[/PDF/Text/ImageB/ImageC/ImageI]>>/Type/XObject/Filter/FlateDecode/Length 53/Matrix[1 0 0 1 0 0]>>"
         };
         private List<byte[]> samples = new List<byte[]>();
-        private List<MemoryStream> mss = new List<MemoryStream>();
-        private MemoryStream allMs;
-        public LexingBenchmark()
+        private DictionaryParser parser = new DictionaryParser(new ParsingContext());
+
+        private char[] chars = new char[10];
+        public SeekThenParseBench()
         {
             foreach (var item in data)
             {
                 samples.Add(Encoding.ASCII.GetBytes(item));
             }
-            foreach (var item in samples)
-            {
-                mss.Add(new MemoryStream(item));
-            }
-            var all = string.Join("", data);
-            allMs = new MemoryStream(Encoding.ASCII.GetBytes(all));
         }
-        private StringParser parser = new StringParser(new ParsingContext());
-        private List<PdfString> results = new List<PdfString>(10);
-
-
+        private NestedSkipper skipper = new NestedSkipper();
         [Benchmark(Baseline = true)]
-        public int SpanLookup()
+        public int ScanThenParse()
         {
-            int count = 0;
-            foreach (var item in samples)
-            {
-                int pos = 0;
-                while (pos < item.Length && (pos = PdfSpanLexer.TryReadNextToken(item, out var type, pos, out int length)) != -1)
-                {
-                    count++;
-                    pos += length;
-                }
-                
-            }
-            return count;
-        }
-
-        [Benchmark()]
-        public int SpanOldLookup()
-        {
-            int count = 0;
-            foreach (var item in samples)
-            {
-                int pos = 0;
-                while (pos < item.Length && (pos = PdfSpanLexer_Previous.TryReadNextToken(item, out var type, pos, out int length)) != -1)
-                {
-                    count++;
-                    pos += length;
-                }
-                
-            }
-            return count;
-        }
-
-        [Benchmark()]
-        public int SeqLookup()
-        {
-            int count = 0;
-            results.Clear();
+            
+            var count = 0;
             foreach (var item in samples)
             {
                 var seq = new ReadOnlySequence<byte>(item);
                 var reader = new SequenceReader<byte>(seq);
-                while (PdfSequenceLexer.TryReadNextToken(ref reader, true, out var type, out var pos))
-                {
-                    count++;
-                }
+                var start = reader.Position;
+                skipper.TryScanToEndOfDict(ref reader);
+                var part = seq.Slice(start, reader.Position);
+                var dict = parser.Parse(in part);
+                count += dict.Count;
+            }
+            return count;
+        }
+
+        [Benchmark()]
+        public int ScanThenParseSpan()
+        {
+            
+            var count = 0;
+            foreach (var item in samples)
+            {
+                var seq = new ReadOnlySequence<byte>(item);
+                var reader = new SequenceReader<byte>(seq);
+                var start = reader.Position;
+                skipper.TryScanToEndOfDict(ref reader);
+                var part = seq.Slice(start, reader.Position);
+                var dict = parser.Parse(part.FirstSpan);
+                count += dict.Count;
+            }
+            return count;
+        }
+
+        [Benchmark()]
+        public int ScanThenParseCopied()
+        {
+            var count = 0;
+            foreach (var item in samples)
+            {
+                
+                var seq = new ReadOnlySequence<byte>(item);
+                var reader = new SequenceReader<byte>(seq);
+                var start = reader.Position;
+                skipper.TryScanToEndOfDict(ref reader);
+                var part = seq.Slice(start, reader.Position);
+                var len = (int)part.Length;
+                var array = ArrayPool<byte>.Shared.Rent(len);
+                Span<byte> rented = array;
+                part.FirstSpan.CopyTo(rented);
+                var dict = parser.Parse(rented.Slice(0, len));
+                ArrayPool<byte>.Shared.Return(array);
+                count += dict.Count;
+            }
+            return count;
+        }
+
+
+        [Benchmark()]
+        public int JustSeqParse()
+        {
+            
+            var count = 0;
+            foreach (var item in samples)
+            {
+                var seq = new ReadOnlySequence<byte>(item);
+                var reader = new SequenceReader<byte>(seq);
+                var dict = parser.Parse(seq);
+                count += dict.Count;
+            }
+            return count;
+        }
+
+        [Benchmark()]
+        public int JustSpanParseWithOverhead()
+        {
+            
+            var count = 0;
+            foreach (var item in samples)
+            {
+                var seq = new ReadOnlySequence<byte>(item);
+                var reader = new SequenceReader<byte>(seq);
+                var dict = parser.Parse(item);
+                count += dict.Count;
+            }
+            return count;
+        }
+
+        [Benchmark()]
+        public int JustSpanParse()
+        {
+            
+            var count = 0;
+            foreach (var item in samples)
+            {
+                var dict = parser.Parse(item);
+                count += dict.Count;
             }
             return count;
         }

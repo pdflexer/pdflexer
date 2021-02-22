@@ -1,12 +1,14 @@
-﻿using System;
+﻿using PdfLexer.Parsers;
+using PdfLexer.Parsers.Nested;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
 
-namespace PdfLexer.Parsers.Nested
+namespace PdfLexer.Legacy
 {
-    internal class NestedSkipper
+    public class NestedSkipper
     {
         internal int ArrayDepth = 0;
         internal int DictDepth = 0;

@@ -39,7 +39,7 @@ namespace PdfLexer.IO
         /// <param name="startPosition">Starting position in data source for buffer</param>
         /// <param name="requiredBytes">Number of required bytes.</param>
         /// <param name="buffer">Filled buffer of at least required bytes size.</param>
-        void FillData(long startPosition, int requiredBytes, out Span<byte> buffer);
+        void FillData(long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer);
         /// <summary>
         /// Copies data from data source to stream.
         /// </summary>

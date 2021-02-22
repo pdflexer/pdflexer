@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO.Pipelines;
 using System.Threading.Tasks;
 using PdfLexer.Parsers;
+using PdfLexer.Parsers.Nested;
 
 namespace PdfLexer.Lexing
 {
@@ -89,15 +90,22 @@ namespace PdfLexer.Lexing
                     return false;
                 case (byte) '(':
                     type = PdfTokenType.StringStart;
-                    return reader.TryRead(out _);
+                    return StringParser.TryAdvancePastString(ref reader);
                 case (byte) '<':
                     if (IsNext(ref reader, PdfDictionary.start, true))
                     {
+                        var cs = reader.Consumed;
+                        if (!NestedUtil.AdvanceToDictEnd(ref reader, out _))
+                        {
+                            reader.Rewind(2+reader.Consumed - cs);
+                            return false;
+                        }
                         type = PdfTokenType.DictionaryStart;
                         return true;
                     }
+
                     type = PdfTokenType.StringStart;
-                    return reader.TryRead(out _);
+                    return StringParser.TryAdvancePastString(ref reader);
                 case (byte) '/':
                     reader.TryRead(out _);
                     type = PdfTokenType.NameObj;
@@ -113,9 +121,17 @@ namespace PdfLexer.Lexing
                     }
                     return true;
                 case (byte) '[':
-                    reader.TryRead(out _);
+                    {
+                    var cs = reader.Consumed;
+                    reader.Advance(1);
+                    if (!NestedUtil.AdvanceToArrayEnd(ref reader, out _))
+                    {
+                        reader.Rewind(reader.Consumed - cs);
+                        return false;
+                    }
                     type = PdfTokenType.ArrayStart;
                     return true;
+                    }
                 case (byte) '-':
                 case (byte) '+':
                 case (byte) '.':

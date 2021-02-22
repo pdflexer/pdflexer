@@ -100,6 +100,40 @@ namespace PdfLexer
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void SkipWhiteSpaceArray(ReadOnlySpan<byte> bytes, ref int i)
+        {
+            ReadOnlySpan<byte> local = bytes;
+            ReadOnlySpan<byte> whitespaces = WhiteSpaces;
+            for (; i < local.Length; i++)
+            {
+                if (whitespaces.IndexOf(local[i]) > -1) {
+                    continue;
+                }
+
+                return;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void ScanTokenEnd(ReadOnlySpan<byte> bytes, ref int pos)
+        {
+            ReadOnlySpan<byte> local = bytes;
+            for (; pos < local.Length; pos++)
+            {
+                // ugly but benched better than Span IndexOf / IndexOfAny alternatives
+                var b = local[pos];
+                if (
+                    b == 0x00 || b == 0x09 || b == 0x0A || b == 0x0C || b == 0x0D || b == 0x20
+                    || b == (byte)'(' || b == (byte)')' || b == (byte)'<' || b == (byte)'>' 
+                    || b == (byte)'[' || b == (byte)']' || b == (byte)'{' || b == (byte)'}' 
+                    || b == (byte)'/' || b == (byte)'%')
+                {
+                    return;
+                }
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int SkipWhiteSpaces(ReadOnlySpan<byte> bytes, int location)
         {
             ReadOnlySpan<byte> localBuffer = bytes;
