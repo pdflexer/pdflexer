@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
+using PdfLexer.Legacy;
 using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Nested;
