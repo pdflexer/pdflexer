@@ -18,7 +18,9 @@ namespace PdfLexer.Lexing
 
         private static byte[] eolChars = new byte[] {(byte) '\r', (byte) '\n'};
         /// <summary>
-        /// Attempts to tokenize and determine type of the next token from the reader.
+        /// Attempts to tokenize and determine type of the next token / object from the reader.
+        /// NOTE: Dictionary, array, and string objects are considered one large token by the lexer.
+        /// NOTE: Indirect object references are considered three tokens.
         /// </summary>
         /// <param name="reader">SequenceReader to read.</param>
         /// <param name="isCompleted">Signifies if the underlying ReadOnlySequence has read all available data.</param>

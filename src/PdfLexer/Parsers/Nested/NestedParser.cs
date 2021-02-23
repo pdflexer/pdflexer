@@ -5,12 +5,12 @@ using PdfLexer.Lexing;
 
 namespace PdfLexer.Parsers.Nested
 {
-    internal class LazyNestedSpanParser
+    internal class NestedParser
     {
         private List<ObjParseState> StateStack = new List<ObjParseState>(10);
         private ObjParseState CurrentState = default;
         private readonly ParsingContext _ctx;
-        public LazyNestedSpanParser(ParsingContext ctx)
+        public NestedParser(ParsingContext ctx)
         {
             _ctx = ctx;
         }

@@ -23,6 +23,12 @@ namespace PdfLexer.Parsers
         // PdfEncoding : 162-255 same, 20-126 same, 127 undefined, 0-21 same
         // MaxExpert??
 
+        // TODO: switch string types to based on pdf types (text, ascii, byte). Add enum to denote if it came from Hex or Literal
+        // For Text type add enum to signify encoding type: UTF16BE or PdfEncoding
+		// For creating byte string add overload to specify hex / literal, default to hex.
+		// For creating text string add overload to specify hex / literal, default to literal
+		// For creating text string add overload to specify UTF16BE or PdfEncoding, default to "Optimal", will scan to see if needs non-standard chars
+		// - more performant to specify PdfEncoding (or 16) so it doesn't have to scan
         private StringStatus Status = StringStatus.None;
         private readonly ParsingContext _ctx;
         private readonly Decoder _decoder;

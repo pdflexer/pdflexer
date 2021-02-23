@@ -25,7 +25,7 @@ namespace PdfLexer.Parsers
         internal ArrayParser ArrayParser { get; }
         internal NameParser NameParser { get; } = new NameParser();
         public IPdfDataSource MainDocument { get; private set; }
-        internal LazyNestedSpanParser NestedParser { get; }
+        internal NestedParser NestedParser { get; }
         internal DictionaryParser DictionaryParser { get; }
         internal StringParser StringParser {get;}
         internal XRefParser XRefParser { get; }
@@ -35,7 +35,7 @@ namespace PdfLexer.Parsers
 
         public ParsingContext()
         {
-            NestedParser = new LazyNestedSpanParser(this);
+            NestedParser = new NestedParser(this);
             DictionaryParser = new DictionaryParser(this);
             NumberParser =  new NumberParser(this);
             DecimalParser =  new DecimalParser();

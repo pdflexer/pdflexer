@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.IO;
 using System.Text;
 
@@ -26,37 +27,32 @@ namespace PdfLexer.Serializers
         private byte[] nameBuffer = new byte[100];
         public void WriteToStream(PdfName obj, Stream stream)
         {
-            // TODO well known values or grab from cache since we are saving key
-            if (!NeedsEscaping(obj))
+            var size = obj.Value.Length;
+            if (NeedsEscaping(obj))
             {
-                var buffer = nameBuffer;
-                if (obj.Value.Length > nameBuffer.Length)
+                foreach (var c in obj.Value)
                 {
-                    Span<byte> larger = stackalloc byte[obj.Value.Length];
-                    var count = GetBytes(obj, larger, false);
-                    stream.Write(count != buffer.Length ? larger.Slice(0, count) : buffer);
-                    return;
+                    // TODO swith to || || || instead of indexof for perf
+                    if (Array.IndexOf(needsEscaping,  c) > -1)
+                    {
+                        size += 2;
+                    }
                 }
-                var written = GetBytes(obj, buffer, false);
-                stream.Write(buffer, 0, written);
+            }
+            // TODO well known values or grab from cache since we are saving key
+            var buffer = nameBuffer;
+            if (obj.Value.Length > nameBuffer.Length)
+            {
+                var array = ArrayPool<byte>.Shared.Rent(obj.Value.Length);
+                Span<byte> larger = array;
+                var count = GetBytes(obj, larger, false);
+                stream.Write(count != larger.Length ? larger.Slice(0, count) : larger);
+                ArrayPool<byte>.Shared.Return(array);
                 return;
             }
-
-            int extra = 0;
-            foreach (var c in obj.Value)
-            {
-                if (Array.IndexOf(needsEscaping,  c) > -1)
-                {
-                    extra += 2;
-                }
-            }
-
-            {
-                Span<byte> buffer = stackalloc byte[obj.Value.Length + extra];
-                var count = GetBytes(obj, buffer, true);
-                stream.Write(count != buffer.Length ? buffer.Slice(0, count) : buffer);
-            }
-
+            var written = GetBytes(obj, buffer, false);
+            stream.Write(buffer, 0, written);
+            return;
         }
 
         public int GetBytes(PdfName obj, Span<byte> data, bool escapeNeeded)
@@ -78,6 +74,7 @@ namespace PdfLexer.Serializers
                     }
                     else
                     {
+                        // TODO swith to || || || instead of indexof for perf
                         if (Array.IndexOf(needsEscaping, cc) > -1)
                         {
                             data[ci++] = (byte) '#';

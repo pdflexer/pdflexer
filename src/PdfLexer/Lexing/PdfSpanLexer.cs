@@ -7,8 +7,9 @@ namespace PdfLexer.Lexing
     public class PdfSpanLexer
     {
         /// <summary>
-        /// Attempts to tokenize and determine type of the next token in the provided buffer.
-        /// Note: If reaches end of span, while parsing a token, will assume end of token if valid.
+        /// Attempts to tokenize and determine type of the next token / object in the Span.
+        /// NOTE: Dictionary, array, and string objects are considered one large token by the lexer.
+        /// NOTE: Indirect object references are considered three tokens.
         /// </summary>
         /// <param name="bytes">Data to read.</param>
         /// <param name="type">Type of token found.</param>
