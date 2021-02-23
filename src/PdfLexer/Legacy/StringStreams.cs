@@ -80,14 +80,15 @@ namespace PdfLexer.Legacy
             return success;
         }
 
-                internal PdfString GetCurrentString()
+        internal PdfString GetCurrentString()
         {
             if (value == null)
             {
                 var str = builder.ToString();
                 builder.Clear();
                 Status = StringStatus.None;
-                return new PdfString(str);
+                return null;
+                // return new PdfString(str);
             } else
             {
                 var val = value;

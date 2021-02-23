@@ -29,7 +29,7 @@ namespace PdfLexer.Parsers
 		// For creating text string add overload to specify hex / literal, default to literal
 		// For creating text string add overload to specify UTF16BE or PdfEncoding, default to "Optimal", will scan to see if needs non-standard chars
 		// - more performant to specify PdfEncoding (or 16) so it doesn't have to scan
-        private StringStatus Status = StringStatus.None;
+
         private readonly ParsingContext _ctx;
         private readonly Decoder _decoder;
         private int stringDepth = 0;
@@ -46,24 +46,43 @@ namespace PdfLexer.Parsers
 
         public override PdfString Parse(ReadOnlySpan<byte> buffer)
         {
-            var b = buffer[0];
-            if (b == '(')
+            var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
+
+            var length = ConvertBytes(buffer, rented);
+
+            var encoding = PdfTextEncodingType.PdfDocument;
+            if (length > 1 && rented[0] == 0xFE && rented[1] == 0xFF)
             {
-                return ParseStringLiteral(buffer, out _);
+                encoding = PdfTextEncodingType.UTF16BE;
+                var str = new PdfString(Encoding.BigEndianUnicode.GetString(rented, 2, length-2),
+                    buffer[0] == '(' ? PdfStringType.Literal : PdfStringType.Hex, encoding);
+                ArrayPool<byte>.Shared.Return(rented);
+                return str;
+            }
+            
+            // TODO real PdfDocEncoded decoding
+            var dictStr = new PdfString(Iso88591.GetString(rented, 0, length), buffer[0] == '(' ? PdfStringType.Literal : PdfStringType.Hex, encoding);
+            ArrayPool<byte>.Shared.Return(rented);
+            return dictStr;
+        }
+
+        public int ConvertBytes(ReadOnlySpan<byte> input, Span<byte> buffer)
+        {
+            var b = input[0];
+            if (b == (byte)'(')
+            {
+                return ConvertLiteralBytes(input, buffer);
             } else if (b == (byte)'<')
             {
-                return ParseStringHex(buffer, out _);
+                return ConvertHexBytes(input, buffer);
             }
             throw new ApplicationException("Invalid string, first char not ( or <.");
         }
 
         private byte[] hexBuffer = new byte[2];
-        private PdfString ParseStringHex(ReadOnlySpan<byte> buffer, out int length)
+        private int ConvertHexBytes(ReadOnlySpan<byte> buffer, Span<byte> data)
         {
-
-            length = 0;
             bool completed = true;
-            var data = ArrayPool<byte>.Shared.Rent((buffer.Length-2)/2);
             var di = 0;
             bool isLow = true;
             for (var i = 1; i < buffer.Length; i++)
@@ -81,7 +100,6 @@ namespace PdfLexer.Parsers
 
                 if (b == (byte)'>')
                 {
-                    length = i+1;
                     completed = true;
                     break;
                 }
@@ -119,34 +137,14 @@ namespace PdfLexer.Parsers
                 data[di++] = v;
             }
 
-            var span = new Span<byte>(data).Slice(0, di);
-            return new PdfString(Encoding.UTF8.GetString(span)); // TODO bytes?
+
+            return di;
         }
 
-        private PdfString value;
-        internal StringBuilder builder = new StringBuilder();
-        internal PdfString GetCurrentString()
+        private int ConvertLiteralBytes(ReadOnlySpan<byte> buffer, Span<byte> output)
         {
-            if (value == null)
-            {
-                var str = builder.ToString();
-                builder.Clear();
-                Status = StringStatus.None;
-                return new PdfString(str);
-            } else
-            {
-                var val = value;
-                value = null;
-                return val;
-            }
-
-        }
-        private char[] charResults = new char[1];
-        private byte[] charBuff = new byte[1];
-        private PdfString ParseStringLiteral(ReadOnlySpan<byte> buffer, out int total)
-        {
-            builder.Clear();
-            total = 0;
+            Span<byte> data = output;
+            var total = 0;
             var pos = 0;
             while ((pos = buffer.IndexOfAny(stringLiteralTerms)) > -1)
             {
@@ -160,43 +158,52 @@ namespace PdfLexer.Parsers
                             switch (b2)
                             {
                                 case (byte)'n':
-                                    AddToBuilder(buffer.Slice(0, pos));
-                                    builder.Append('\n');
+                                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                    total+= pos;
+                                    data[total++] = (byte)'\n';
                                     pos+=1;
                                     break;
                                 case (byte)'r':
-                                    AddToBuilder(buffer.Slice(0, pos));
-                                    builder.Append('\r');
+                                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                    total+= pos;
+                                    data[total++] = (byte)'\r';
                                     pos+=1;
                                     break;
                                 case (byte)'t':
-                                    AddToBuilder(buffer.Slice(0, pos));
-                                    builder.Append('\t');
+                                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                    total+= pos;
+                                    data[total++] = (byte)'\t';
                                     pos+=1;
                                     break;
                                 case (byte)'b':
-                                    AddToBuilder(buffer.Slice(0, pos));
-                                    builder.Append('\b');
+                                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                    total+= pos;
+                                    data[total++] = (byte)'\b';
                                     pos+=1;
                                     break;
                                 case (byte)'f':
-                                    AddToBuilder(buffer.Slice(0, pos));
-                                    builder.Append('\f');
+                                    buffer.Slice(0, pos).CopyTo(data.Slice(total)); total+= pos;
+                                    data[total++] = (byte)'\f';
+                                    // AddToBuilder(buffer.Slice(0, pos));
+                                    // builder.Append('\f');
                                     pos+=1;
                                     break;
                                 case (byte)'(':
-                                    AddToBuilder(buffer.Slice(0, pos));
-                                    builder.Append('(');
+                                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                    total+= pos;
+                                    data[total++] = (byte)'(';
                                     pos+=1;
                                     break;
                                 case (byte)')':
-                                    AddToBuilder(buffer.Slice(0, pos));
-                                    builder.Append(')');
+                                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                    total+= pos;
+                                    data[total++] = (byte)')';
                                     pos+=1;
                                     break;
                                 case (byte)'\\':
-                                    AddToBuilder(buffer.Slice(0, pos));
-                                    builder.Append('\\');
+                                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                    total+= pos;
+                                    data[total++] = (byte)'\\';
                                     pos+=1;
                                     break;
                                 case (byte)'\r':
@@ -205,23 +212,27 @@ namespace PdfLexer.Parsers
                                         var b3 = buffer[pos+2];
                                         if (b3 == (byte)'\n')
                                         {
-                                            AddToBuilder(buffer.Slice(0, pos));
+                                            buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                            total+= pos;
                                             pos+=2;
                                             break;
                                         }
-                                        AddToBuilder(buffer.Slice(0, pos));
+                                        buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                        total+= pos;
                                         pos+=1;
                                         break;
                                     }
                                     throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
                                 case (byte)'\n':
-                                    AddToBuilder(buffer.Slice(0, pos));
+                                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                    total+= pos;
                                     pos+=1;
                                     break;
                                 default:
                                     if (buffer.Length < pos+3)
                                     {
-                                        AddToBuilder(buffer.Slice(0, pos));
+                                        buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                        total+= pos;
                                         break;
                                     }
                                     {
@@ -229,7 +240,8 @@ namespace PdfLexer.Parsers
                                         var b3 = buffer[pos+2];
                                         if (b2 < 48 || b2 > 55 || b3 < 48 || b3 > 55)
                                         {
-                                            AddToBuilder(buffer.Slice(0, pos));
+                                            buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                            total+= pos;
                                             break;
                                         }
 
@@ -238,28 +250,24 @@ namespace PdfLexer.Parsers
                                             byte b4 = buffer[pos+3];
                                             if (b4 < 48 || b4 > 55)
                                             {
-                                                AddToBuilder(buffer.Slice(0, pos));
-                                                builder.Append((char)(8*((int)b2-48)+((int)b3-48)));
+                                                buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                                total+= pos;
+                                                data[total++] = (byte)(8*((int)b2-48)+((int)b3-48));
                                                 pos +=2;
                                                 break;
                                             }
+                                            
+                                            buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                            total+= pos;
 
-                                            AddToBuilder(buffer.Slice(0, pos));
                                             var cc = (64*((int)b2-48)+8*((int)b3-48)+((int)b4-48)) & 0xFF; // 256 max allowed
-                                            if (cc > 127)
-                                            {
-                                                charBuff[0]=(byte)cc;
-                                                _decoder.GetChars(charBuff, charResults, true);
-                                                builder.Append(charResults[0]);
-                                            } else
-                                            {
-                                                builder.Append((char)cc);
-                                            }
+                                            data[total++] = (byte)cc;
                                             pos +=3;
                                         } else
                                         {
-                                            AddToBuilder(buffer.Slice(0, pos));
-                                            builder.Append((char)(8*((int)b2-48)+((int)b3-48)));
+                                            buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                                            total+= pos;
+                                            data[total++] = (byte)(8*((int)b2-48)+((int)b3-48));
                                             pos +=2;
                                         }
                                         break;
@@ -271,32 +279,29 @@ namespace PdfLexer.Parsers
                         }
                         pos += 1;
                         buffer = buffer.Slice(pos);
-                        total += pos;
                         break;
                     case (byte)'(':
                         stringDepth++;
                         pos += 1;
                         if (stringDepth > 1)
                         {
-                            AddToBuilder(buffer.Slice(0, pos));
-
+                            buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                            total+= pos;
                         }
                         buffer = buffer.Slice(pos);
-                        total += pos;
                         continue;
                     case (byte)')':
                         stringDepth--;
                         if (stringDepth == 0)
                         {
-                            AddToBuilder(buffer.Slice(0, pos));
-                            pos += 1;
-                            total += pos;
-                            return GetCurrentString();
+                            buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                            total+= pos;
+                            return total;
                         }
                         pos += 1;
-                        AddToBuilder(buffer.Slice(0, pos));
+                        buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                        total+= pos;
                         buffer = buffer.Slice(pos);
-                        total += pos;
                         continue;
                 }
             }
@@ -304,11 +309,6 @@ namespace PdfLexer.Parsers
         }
         
 
-        private void AddToBuilder(ReadOnlySpan<byte> data)
-        {
-            // TODO optimize.. for now this is easy
-            builder.Append(Iso88591.GetString(data));
-        }
 
         public static bool TryAdvancePastString(ref SequenceReader<byte> reader)
         {
@@ -396,7 +396,6 @@ namespace PdfLexer.Parsers
 
         internal static bool AdvancePastStringLiteral(ref SequenceReader<byte> reader)
         {
-            // TODO allow rentrancy?
             var orig = reader.Consumed;
             var stringDepth = 0;
             while (reader.TryAdvanceToAny(stringLiteralTerms, false))

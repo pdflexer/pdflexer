@@ -16,7 +16,16 @@ namespace PdfLexer.Serializers
         {
             'r', 'n', 't', 'b', 'f', '\\'
         };
-        public int GetBytes(PdfString obj, Span<byte> data)
+
+        // TODO open up support for writing raw bytes for specific use cases
+        public void WriteToStream(PdfString obj, Stream stream)
+        {
+            var buffer = ArrayPool<byte>.Shared.Rent((obj.Value?.Length ?? 0)*3+2); // overkill find better solution
+            var i = GetBytes(obj, buffer);
+            stream.Write(buffer, 0, i);
+        }
+
+        public int GetLiteralBytes(PdfString obj, Span<byte> data)
         {
             var ri = 0;
             ReadOnlySpan<int> escapes = escapeNeeded;
@@ -72,62 +81,33 @@ namespace PdfLexer.Serializers
             return ri;
         }
 
-        // TODO add support for writing raw bytes
-        public void WriteToStream(PdfString obj, Stream stream)
+        public int GetBytes(PdfString obj, Span<byte> data)
         {
-            var buffer = ArrayPool<byte>.Shared.Rent((obj.Value?.Length ?? 0)*3+2); // overkill find better solution
-            var i = GetBytes(obj, buffer);
-            stream.Write(buffer, 0, i);
-            // ReadOnlySpan<int> escapes = escapeNeeded;
-            // ReadOnlySpan<char> chars = obj.Value.AsSpan();
-            // stream.WriteByte((byte)'(');
-            // int depth = 0;
-            // int ei = 0;
-            // for (var i=0;i<obj.Value.Length;i++)
-            // {
-            //     var c = (int)obj.Value[i];
-            //     if (c == (int)'(')
-            //     {
-            //         if (chars.Slice(i).IndexOf(')') > -1)
-            //         {
-            //             stream.WriteByte((byte)c);
-            //             depth++;
-            //         } else
-            //         {
-            //             stream.WriteByte((byte)'\\');
-            //             stream.WriteByte((byte)c);
-            //         }
-            //     } else if (c == (int)')')
-            //     {
-            //         if (depth > 0)
-            //         {
-            //             stream.WriteByte((byte)c);
-            //             depth--;
-            //         } else
-            //         {
-            //             stream.WriteByte((byte)'\\');
-            //             stream.WriteByte((byte)c);
-            //         }
-            //     } else if ((ei = escapes.IndexOf(c)) > -1)
-            //     {
-            //         stream.WriteByte((byte)'\\');
-            //         stream.WriteByte((byte)escaped[ei]);
-            //     } else if (c < 32 || c > 127) // non printable
-            //     {
-            //         var b3 = c/64;
-            //         var b2 = (c - b3*64)/8;
-            //         var b1 = c%8;
-            //         stream.WriteByte((byte)'\\');
-            //         stream.WriteByte((byte)(b3+'0'));
-            //         stream.WriteByte((byte)(b2+'0'));
-            //         stream.WriteByte((byte)(b1+'0'));
-            // 
-            //     } else 
-            //     {
-            //         stream.WriteByte((byte)c);
-            //     }
-            // }
-            // stream.WriteByte((byte)')');
+            if (obj.StringType == PdfStringType.Hex)
+            {
+                return GetHexBytes(obj, data);
+            } else
+            {
+                 return GetLiteralBytes(obj, data);
+            }
+        }
+
+        private static byte[] hexVals = { (byte) '0',(byte) '1',(byte) '2', (byte) '3',(byte) '4', (byte)'5',(byte) '6',(byte) '7', (byte)'8',(byte) '9',
+                    (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F' };
+        private int GetHexBytes(PdfString obj, Span<byte> data)
+        {
+            var di = 0;
+            data[di++] = (byte)'<';
+            for (var i = 0; i < obj.Value.Length; i++)
+            {
+                var b = obj.Value[i];
+                int high = ((b & 0xf0) >> 4);
+                int low = (b & 0x0f);
+                data[di++] = hexVals[high];
+                data[di++] = hexVals[low];
+            }
+            data[di++] = (byte)'>';
+            return di;
         }
     }
 }
