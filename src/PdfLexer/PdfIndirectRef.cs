@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfLexer.Parsers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -6,11 +7,13 @@ namespace PdfLexer
 {
     internal class PdfIndirectRef : IPdfObject
     {
-        public PdfIndirectRef(long objectNumber, int generation)
+        public PdfIndirectRef(ParsingContext ctx, long objectNumber, int generation)
         {
+            Context = ctx;
             ObjectNumber = objectNumber;
             Generation = generation;
         }
+        public ParsingContext Context { get; }
         public long ObjectNumber { get; }
         public int Generation { get; }
         public bool IsIndirect => false;

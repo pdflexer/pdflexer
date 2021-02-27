@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfLexer.Parsers;
+using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
@@ -12,8 +13,9 @@ namespace PdfLexer.IO
         private readonly MemoryStream _ms;
         // TODO in memory larger than int.maxvalue bytes
         // TODO -> Memory<byte>??
-        public InMemoryDataSource(byte[] data)
+        public InMemoryDataSource(ParsingContext ctx, byte[] data)
         {
+            Context = ctx;
             _data = data;
             _ms = new MemoryStream(_data);
         }
@@ -22,6 +24,9 @@ namespace PdfLexer.IO
         public long TotalBytes => _data.LongLength;
         public bool ReturnsCompleteData => true;
         public bool SupportsCloning => true;
+
+        public ParsingContext Context {get;}
+
         public IPdfDataSource Clone() => this;
 
         public Stream GetStream(long startPosition)

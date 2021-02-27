@@ -40,5 +40,6 @@ namespace PdfLexer
         }
 
         public static PdfName Prev => new PdfName("/Prev");
+        public static PdfName Length => new PdfName("/Length");
     }
 }

@@ -2,10 +2,7 @@ using System;
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
-using System.IO.Pipelines;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PdfLexer.Parsers
 {
@@ -20,7 +17,7 @@ namespace PdfLexer.Parsers
         private static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
         private static Encoding Win1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252); // WinAnsiEncoding
         private static Encoding MacRoman = CodePagesEncodingProvider.Instance.GetEncoding("macintosh"); // WinAnsiEncoding
-        // PdfEncoding : 162-255 same, 20-126 same, 127 undefined, 0-21 same
+        // PdfEncoding : ???-255 same, 20-126 same, 127 undefined, 0-21 same
         // MaxExpert??
 
         // TODO: switch string types to based on pdf types (text, ascii, byte). Add enum to denote if it came from Hex or Literal
@@ -139,6 +136,193 @@ namespace PdfLexer.Parsers
 
 
             return di;
+        }
+
+        private int ConvertLiteralBytes_Bad(ReadOnlySpan<byte> buffer, Span<byte> output)
+        {
+            Span<byte> data = output;
+            var total = 0;
+            var lastRead = 0;
+            var pos = 0;
+            // while ((pos = buffer.IndexOfAny(stringLiteralTerms)) > -1)
+            for (;pos<buffer.Length;)
+            {
+                var b = buffer[pos];
+                switch (b)
+                {
+                    case (byte)'\\':
+
+                        if (buffer.Length > pos+1)
+                        {
+                            var len = pos-lastRead;
+                            var b2 = buffer[pos+1];
+                            switch (b2)
+                            {
+                                case (byte)'n':
+                                    buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                    total += len;
+                                    data[total++] = (byte)'\n';
+                                    pos+=2; // skip byte
+                                    lastRead = pos;
+                                    break;
+                                case (byte)'r':
+                                    buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                    total += len;
+                                    data[total++] = (byte)'\r';
+                                    pos+=2; // skip byte
+                                    lastRead = pos;
+                                    break;
+                                case (byte)'t':
+                                    buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                    total += len;
+                                    data[total++] = (byte)'\t';
+                                    pos+=2;
+                                    lastRead = pos;
+                                    break;
+                                case (byte)'b':
+                                    buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                    total += len;
+                                    data[total++] = (byte)'\b';
+                                    pos+=2;
+                                    lastRead = pos;
+                                    break;
+                                case (byte)'f':
+                                    buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                    total += len;
+                                    data[total++] = (byte)'\f';
+                                    // AddToBuilder(buffer.Slice(0, pos));
+                                    // builder.Append('\f');
+                                    pos+=2;
+                                    lastRead = pos;
+                                    break;
+                                case (byte)'(':
+                                    buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                    total += len;
+                                    data[total++] = (byte)'(';
+                                    pos+=2;
+                                    lastRead = pos;
+                                    break;
+                                case (byte)')':
+                                    buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                    total += len;
+                                    data[total++] = (byte)')';
+                                    pos+=2;
+                                    lastRead = pos;
+                                    break;
+                                case (byte)'\\':
+                                    buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                    total += len;
+                                    data[total++] = (byte)'\\';
+                                    pos+=2;
+                                    lastRead = pos;
+                                    break;
+                                case (byte)'\r':
+                                    if (buffer.Length > pos+2)
+                                    {
+                                        var b3 = buffer[pos+2];
+                                        if (b3 == (byte)'\n')
+                                        {
+                                            buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                            total += len;
+                                            pos+=3;
+                                            lastRead = pos;
+                                            break;
+                                        }
+                                        buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                        total += len;
+                                        pos+=2;
+                                        lastRead = pos;
+                                        break;
+                                    }
+                                    throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
+                                case (byte)'\n':
+                                    buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                    total += len;
+                                    pos+=2;
+                                    lastRead = pos;
+                                    break;
+                                default:
+                                    if (buffer.Length < pos+3)
+                                    {
+                                        buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                        total += len;
+                                        pos += 1;
+                                        lastRead = pos;
+                                        break;
+                                    }
+                                    {
+                                        b2 = buffer[pos+1];
+                                        var b3 = buffer[pos+2];
+                                        if (b2 < 48 || b2 > 55 || b3 < 48 || b3 > 55)
+                                        {
+                                            buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                            total += len;
+                                            pos += 2;
+                                            lastRead = pos;
+                                            break;
+                                        }
+
+                                        if (buffer.Length > pos + 3)
+                                        {
+                                            byte b4 = buffer[pos+3];
+                                            if (b4 < 48 || b4 > 55)
+                                            {
+                                                buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                                total += len;
+                                                data[total++] = (byte)(8*((int)b2-48)+((int)b3-48));
+                                                pos +=3;
+                                                lastRead = pos;
+                                                break;
+                                            }
+                                            
+                                            buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                            total += len;
+
+                                            var cc = (64*((int)b2-48)+8*((int)b3-48)+((int)b4-48)) & 0xFF; // 256 max allowed
+                                            data[total++] = (byte)cc;
+                                            pos +=4;
+                                            lastRead = pos;
+                                        } else
+                                        {
+                                            buffer.Slice(lastRead, len).CopyTo(data.Slice(total));
+                                            total += len;
+                                            data[total++] = (byte)(8*((int)b2-48)+((int)b3-48));
+                                            pos +=2;
+                                            lastRead = pos;
+                                        }
+                                        break;
+                                    }
+                            }
+                        } else
+                        {
+                            throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
+                        }
+
+                        continue;
+                    case (byte)'(':
+                        var lenn = pos - lastRead;
+                        stringDepth++;
+                        pos += 1;
+                        if (stringDepth == 1)
+                        {
+                            lastRead = pos;
+                        }
+                        continue;
+                    case (byte)')':
+                        stringDepth--;
+                        if (stringDepth == 0)
+                        {
+                            lenn = pos - lastRead;
+                            buffer.Slice(lastRead, lenn).CopyTo(data.Slice(total));
+                            total += lenn;
+                            return total;
+                        }
+                        pos += 1;
+                        continue;
+                }
+                pos += 1;
+            }
+            throw CommonUtil.DisplayDataErrorException(buffer,pos,"String ended incorrectly");
         }
 
         private int ConvertLiteralBytes(ReadOnlySpan<byte> buffer, Span<byte> output)

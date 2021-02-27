@@ -2,7 +2,7 @@ using System;
 
 namespace PdfLexer.Parsers
 {
-    public class IndirectSequences
+    internal class IndirectSequences
     {
         public static byte[] obj = new byte[] { (byte)'o', (byte)'b', (byte)'j' };
         public static byte[] endobj = new byte[] { (byte)'e', (byte)'n', (byte)'d',

@@ -27,7 +27,7 @@ namespace PdfLexer.Parsers.Nested
             return Dict != null || Array != null;
         }
 
-        public PdfArray GetArrayFromBag()
+        public PdfArray GetArrayFromBag(ParsingContext ctx)
         {
             for (var i=0;i<Bag.Count;i++)
             {
@@ -37,7 +37,7 @@ namespace PdfLexer.Parsers.Nested
                     && Bag[i+1] is PdfIntNumber num2
                     && Bag[i+2] is IndirectRefToken)
                 {
-                    Array.Add(new PdfIndirectRef((long)num, num2.Value));
+                    Array.Add(new PdfIndirectRef(ctx, (long)num, num2.Value));
                     i+=2;
                 } else
                 {
@@ -47,7 +47,7 @@ namespace PdfLexer.Parsers.Nested
             return Array;
         }
 
-        public PdfDictionary GetDictionaryFromBag()
+        public PdfDictionary GetDictionaryFromBag(ParsingContext ctx)
         {
             bool key = true;
             PdfName name = null;
@@ -70,7 +70,7 @@ namespace PdfLexer.Parsers.Nested
                         && Bag[i+1] is PdfIntNumber num2
                         && Bag[i+2] is IndirectRefToken)
                     {
-                        Dict[name] = new PdfIndirectRef((long)num, num2.Value);
+                        Dict[name] = new PdfIndirectRef(ctx, (long)num, num2.Value);
                         i+=2;
                     } else
                     {

@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using PdfLexer.Parsers;
-using PdfLexer.Serializers;
+using PdfLexer.Parsers.Structure;
 
 namespace PdfLexer
 {
@@ -17,20 +12,42 @@ namespace PdfLexer
     public abstract class PdfObject : IPdfObject
     {
         internal XRef IndirectRef { get; set; }
-        public virtual bool IsIndirect => IndirectRef.ObjectNumber > 0 || IndirectRef.ObjectNumber == -1;
+        public virtual bool IsIndirect => IndirectRef.ObjectNumber != 0;
         public abstract PdfObjectType Type { get; }
     }
 
     public static class PdfObjectExtensions
     {
-        public static PdfNull GetNull(this IPdfObject obj)
+        public static IPdfObject Resolve(this IPdfObject item)
         {
-            if (obj is PdfNull pdfNull)
+            if (item is PdfIndirectRef ir)
             {
-                return pdfNull;
+                var resolved = ir.Context.GetIndirectObject(new XRef((int)ir.ObjectNumber, ir.Generation)); // TODO consolidate XRef vs PdfIndirectRef
+                return resolved;
+            }
+            else if (item is PdfLazyObject lz)
+            {
+                var resolved = lz.Resolve();
+                return resolved;
+            }
+            return item;
+        }
+
+        public static T GetValue<T>(this IPdfObject item) where T : IPdfObject
+        {
+            if (item is T typed)
+            {
+                return typed;
             }
 
-            throw new NotSupportedException($"Null object requested from {obj.GetType()}");
+            item = item.Resolve();
+
+            if (item is T retyped)
+            {
+                return retyped;
+            }
+
+            throw new ApplicationException($"Mismatched data type requested, got {item.Type} expected {typeof(T)}");
         }
 
         internal static bool CheckForIndirect(this PdfLazyObject obj)
@@ -49,13 +66,11 @@ namespace PdfLexer
             {
                 case PdfLazyObject lz:
                     return lz.Parsed?.IsModified ?? false;
-                case PdfDictionary dict:
-                    return dict.IsModified;
+                case IParsedLazyObj parsed:
+                    return parsed.IsModified;
                 default:
                     return false; // rest immutable
-                    // throw new ApplicationException($"Unknown object type for checking modification: {obj.GetType()}");
             }
         }
-
     }
 }

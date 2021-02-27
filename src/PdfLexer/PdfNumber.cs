@@ -24,6 +24,15 @@ namespace PdfLexer
             };
         }
 
+        public static implicit operator int(PdfNumber num)
+        {
+            return num switch {
+                PdfIntNumber val => val.Value,
+                PdfLongNumber val => (int)val.Value,
+                _ => throw new ApplicationException("Unable to convert PdfNumber to int for type " + num.GetType())
+            };
+        }
+
         public static implicit operator decimal(PdfNumber num)
         {
             return num switch {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfLexer.IO;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
@@ -24,6 +25,10 @@ namespace PdfLexer
 
     public class PdfStreamContents
     {
+        public PdfStreamContents(IPdfDataSource source, long offset, int length)
+        {
+
+        }
         public int Length { get;}
         public void CopyRawContents(Stream destination)
         {

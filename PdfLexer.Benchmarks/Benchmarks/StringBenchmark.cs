@@ -46,7 +46,12 @@ namespace PdfLexer.Benchmarks.Benchmarks
         }
         private StringParser parser = new StringParser(new ParsingContext());
         private List<PdfString> results = new List<PdfString>(10);
+        private byte[] test = new byte[200];
 
+        private static byte[] stringLiteralTerms = new byte[]
+        {
+            (byte) '(', (byte) ')', (byte) '\\'
+        };
 
         [Benchmark(Baseline = true)]
         public List<PdfString> SpanString()
@@ -60,6 +65,17 @@ namespace PdfLexer.Benchmarks.Benchmarks
         }
 
         [Benchmark()]
+        public List<PdfString> JustUtf()
+        {
+            results.Clear();
+            foreach (var item in samples)
+            {
+                results.Add(new PdfString(Encoding.UTF8.GetString(item), PdfStringType.Literal, PdfTextEncodingType.Calculate));
+            }
+            return results;
+        }
+
+        //[Benchmark()]
         public List<PdfString> Sequence()
         {
             results.Clear();
@@ -71,6 +87,69 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return results;
         }
 
+        [Benchmark()]
+        public int ScanOverData()
+        {
+            var count = 0;
+            foreach (var item in samples)
+            {
+                for (var i=0;i<item.Length;i++)
+                {
+                    var b = item[i];
+                    if (b == (byte) '(' || b == (byte) ')' || b == (byte) '\\')
+                    {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+
+        [Benchmark()]
+        public int SkipOverData()
+        {
+            var count = 0;
+            foreach (var item in samples)
+            {
+                Span<byte> data = item;
+                var pos = 0;
+                while ((pos = data.IndexOfAny(stringLiteralTerms)) > -1)
+                {
+                    count++;
+                    data = data.Slice(pos+1);
+                }
+            }
+            return count;
+        }
+
+        // [Benchmark()]
+        public List<PdfString> CopyTo()
+        {
+            results.Clear();
+            foreach (var item in samples)
+            {
+                Span<byte> from = item;
+                Span<byte> to = test;
+                from.CopyTo(to);
+            }
+            return results;
+        }
+
+        // [Benchmark()]
+        public List<PdfString> LoopCopy()
+        {
+            results.Clear();
+            foreach (var item in samples)
+            {
+                Span<byte> from = item;
+                Span<byte> to = test;
+                for (var i=0;i<from.Length;i++)
+                { 
+                    to[i] = from[i];
+                }
+            }
+            return results;
+        }
         // LEGACY
         // [Benchmark()]
         // public List<PdfString> PipeReaderMs()

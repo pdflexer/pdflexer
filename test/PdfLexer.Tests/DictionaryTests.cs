@@ -28,7 +28,7 @@ namespace PdfLexer.Tests
         public void It_Gets_Dict_Basic(string data, bool found, string expected)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
-            var ctx = new ParsingContext();
+            var ctx = new ParsingContext() { ShouldLoadIndirects = false };
             if (!found)
             {
                 Assert.ThrowsAny<Exception>(() => ctx.DictionaryParser.Parse(buffer));
@@ -50,6 +50,7 @@ namespace PdfLexer.Tests
         }
 
 
+        [InlineData("<</FICL:Enfocus 57 0 R/ViewerPreferences<</Direction/L2R>>/Metadata 2592 0 R/Pages 1 0 R/Type/Catalog/OutputIntents[<</Info(ISO Coated)/S/GTS_PDFX/OutputConditionIdentifier(FOGRA27)/OutputCondition(Offset printing, according to ISO/DIS 12647-2:2003, OFCOM,  paper type 1 or 2 = coated art, 115 g/m2, screen ruling 60 cm-1, positive-acting plates.)/DestOutputProfile 2590 0 R/Type/OutputIntent/RegistryName(http://www.color.org)>>]>>")]
         [InlineData("<</Type/Page/MediaBox[0 0 612 792]/Parent 3 0 R/Contents 2 0 R/Resources<</XObject<</Xf1 1 0 R>>/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]>>>>")]
         [InlineData("<</Type/Page/MediaBox[0 0 612 792]/Parent 375 0 R/Contents 381 0 R/Resources<</XObject<</Xf123 380 0 R>>/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]>>>>")]
         [InlineData("<</FormType 1/Subtype/Form/BBox[0 0 612 792]/Resources<</Font<</F3 1031 0 R/F2 1032 0 R/F1 1033 0 R>>/ProcSet[/PDF/Text/ImageB/ImageC/ImageI]/XObject<</Xf18 1662 0 R/img17 1663 0 R>>>>/Type/XObject/Filter/FlateDecode/Length 374/Matrix[1 0 0 1 0 0]>>")]
@@ -68,11 +69,11 @@ namespace PdfLexer.Tests
         public void It_Gets_Real_Dicts(string data)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
-            var parser = new DictionaryParser(new ParsingContext() { IsEager = true });
+            var parser = new DictionaryParser(new ParsingContext() { IsEager = true, ShouldLoadIndirects = false });
             var dict = parser.Parse(buffer);
             var seq = new ReadOnlySequence<byte>(buffer);
             var dict3 = parser.Parse(seq);
-            var parser2 = new DictionaryParser(new ParsingContext() { IsEager = false });
+            var parser2 = new DictionaryParser(new ParsingContext() { IsEager = false, ShouldLoadIndirects = false });
             var dict2 = parser2.Parse(buffer);
             var dict4 = parser2.Parse(seq);
             // Do_Get_Dict(data, true, data);

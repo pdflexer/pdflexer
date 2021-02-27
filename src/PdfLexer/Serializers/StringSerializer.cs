@@ -29,35 +29,16 @@ namespace PdfLexer.Serializers
         {
             var ri = 0;
             ReadOnlySpan<int> escapes = escapeNeeded;
-            ReadOnlySpan<char> chars = obj.Value.AsSpan();
+            //ReadOnlySpan<char> chars = obj.Value.AsSpan();
             data[ri++] = (byte)'(';
-            int depth = 0;
             int ei = 0;
             for (var i=0;i<obj.Value.Length;i++)
             {
                 var c = (int)obj.Value[i];
-                if (c == (int)'(')
+                if (c == (int)'(' || c == (int)')') // wastes a little space if escaping not needed but better than forward searching
                 {
-                    if (chars.Slice(i).IndexOf(')') > -1)
-                    {
-                        data[ri++] = (byte)c;
-                        depth++;
-                    } else
-                    {
-                        data[ri++] = (byte)'\\';
-                        data[ri++] = (byte)c;
-                    }
-                } else if (c == (int)')')
-                {
-                    if (depth > 0)
-                    {
-                        data[ri++] = (byte)c;
-                        depth--;
-                    } else
-                    {
-                        data[ri++] = (byte)'\\';
-                        data[ri++] = (byte)c;
-                    }
+                    data[ri++] = (byte)'\\';
+                    data[ri++] = (byte)c;
                 } else if ((ei = escapes.IndexOf(c)) > -1)
                 {
                     data[ri++] = (byte)'\\';

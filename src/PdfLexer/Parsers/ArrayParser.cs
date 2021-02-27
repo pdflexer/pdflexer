@@ -15,7 +15,7 @@ namespace PdfLexer.Parsers
         }
         public override PdfArray Parse(ReadOnlySpan<byte> buffer)
         {
-            return _ctx.NestedParser.ParseNestedItem(buffer, 0) as PdfArray;
+            return _ctx.NestedParser.ParseNestedItem(buffer, 0, out _) as PdfArray;
         }
     }
 }

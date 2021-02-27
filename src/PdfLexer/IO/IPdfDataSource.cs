@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfLexer.Parsers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -47,5 +48,9 @@ namespace PdfLexer.IO
         /// <param name="requiredBytes">Number of bytes to copy</param>
         /// <param name="stream">Stream to copy to.</param>
         void CopyData(long startPosition, int requiredBytes, Stream stream);
+        /// <summary>
+        /// Associated parsing context.
+        /// </summary>
+        ParsingContext Context {get;}
     }
 }

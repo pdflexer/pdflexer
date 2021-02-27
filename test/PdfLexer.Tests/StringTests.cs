@@ -49,8 +49,8 @@ namespace PdfLexer.Tests
         [InlineData("(Test \\t)", "Test \t")] // tab
         [InlineData("(Test \\n\\r)", "Test \n\r")] // keep new lines by espace
         [InlineData("(Test Test Test )", "Test Test Test ")]
-        [InlineData("(Test (Test) Test )", "Test (Test) Test ")]
-        [InlineData("(Test \\\\(Test) Test )", "Test \\(Test) Test ")]
+        // [InlineData("(Test (Test) Test )", "Test (Test) Test ")]
+        [InlineData("(Test \\\\\\(Test Test )", "Test \\(Test Test ")]
         [InlineData("(Test \\) Test )", "Test ) Test ")]
         [InlineData("(Test \\\\\\) Test )", "Test \\) Test ")]
         [InlineData("(Test \\036 Test )", "Test \u001E Test ")]

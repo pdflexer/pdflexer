@@ -15,10 +15,11 @@ namespace PdfLexer.Parsers.Nested
             _ctx = ctx;
         }
 
-        public IParsedLazyObj ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt)
+        public IParsedLazyObj ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt, out int itemEnd)
         {
             bool completed = false;
             var lastStart = 0;
+            itemEnd = 0;
             while ((startAt = PdfSpanLexer.TryReadNextToken(buffer, out var tokenType, lastStart=startAt, out var currentLength)) != -1)
             {
                 switch (tokenType)
@@ -59,9 +60,8 @@ namespace PdfLexer.Parsers.Nested
                                     goto Done;
                                 }
 
-                                currentLength = end - startAt;
-                                AddLazyValue(originalStart, currentLength, PdfTokenType.DictionaryStart, hadIndirect);
-                                startAt += currentLength;
+                                AddLazyValue(originalStart, end - originalStart, PdfTokenType.DictionaryStart, hadIndirect);
+                                startAt = end;
                                 continue;
                             }
                         }
@@ -95,9 +95,8 @@ namespace PdfLexer.Parsers.Nested
                                    goto Done;
                                 }
 
-                                currentLength = end - startAt;
-                                AddLazyValue(originalStart, currentLength, PdfTokenType.ArrayStart, hadIndirect);
-                                startAt += currentLength;
+                                AddLazyValue(originalStart, end - originalStart, PdfTokenType.ArrayStart, hadIndirect);
+                                startAt = end;
                                 continue;
                             }
                         }
@@ -112,7 +111,7 @@ namespace PdfLexer.Parsers.Nested
                         startAt += 1;
                         continue;
                     case PdfTokenType.DictionaryEnd:
-                        CurrentState.Dict = CurrentState.GetDictionaryFromBag();
+                        CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx);
                         if (StateStack.Count > 0)
                         {
                             var last = StateStack[^1];
@@ -124,11 +123,12 @@ namespace PdfLexer.Parsers.Nested
                         }
                         else
                         {
+                            itemEnd = startAt + 2;
                             completed = true;
                             goto Done;
                         }
                     case PdfTokenType.ArrayEnd:
-                        CurrentState.Array = CurrentState.GetArrayFromBag();
+                        CurrentState.Array = CurrentState.GetArrayFromBag(_ctx);
                         if (StateStack.Count > 0)
                         {
                             var last = StateStack[^1];
@@ -152,14 +152,16 @@ namespace PdfLexer.Parsers.Nested
             }
 
             Done:
-            var obj = (IParsedLazyObj) CurrentState.Dict ?? CurrentState.Array;
-            CurrentState = default;
+
             if (!completed)
             {
                 throw CommonUtil.DisplayDataErrorException(buffer, lastStart,
                     $"Parsing ended unexpectedly for looking for {CurrentState.State.ToString()} or Dict End, remaining data");
             }
             
+            var obj = (IParsedLazyObj) CurrentState.Dict ?? CurrentState.Array;
+            CurrentState = default;
+
             return obj;
 
             void AddLazyValue(int startPos, int length, PdfTokenType type, bool hadIndirect)

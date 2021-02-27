@@ -22,5 +22,15 @@ namespace PdfLexer
         public int Length {get; set; }
         public IPdfDataSource Source { get; set; }
         public IParsedLazyObj Parsed { get; set; }
+        public IPdfObject Resolve()
+        {
+            if (Parsed != null)
+            {
+                return Parsed;
+            }
+            Source.FillData(Offset, Length, out var buffer);
+            Parsed = (IParsedLazyObj)Source.Context.GetKnownPdfItem(LazyObjectType, buffer, 0, Length);
+            return Parsed;
+        }
     }
 }

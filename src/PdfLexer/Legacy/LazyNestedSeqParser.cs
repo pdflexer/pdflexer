@@ -31,7 +31,7 @@ namespace PdfLexer.Legacy
                     && Bag[i+1] is PdfIntNumber num2
                     && Bag[i+2] is IndirectRefToken)
                 {
-                    Array.Add(new PdfIndirectRef((long)num, num2.Value));
+                    Array.Add(new PdfIndirectRef(null, (long)num, num2.Value));
                     i+=2;
                 } else
                 {
@@ -64,7 +64,7 @@ namespace PdfLexer.Legacy
                         && Bag[i+1] is PdfIntNumber num2
                         && Bag[i+2] is IndirectRefToken)
                     {
-                        Dict[name] = new PdfIndirectRef((long)num, num2.Value);
+                        Dict[name] = new PdfIndirectRef(null, (long)num, num2.Value);
                         i+=2;
                     } else
                     {

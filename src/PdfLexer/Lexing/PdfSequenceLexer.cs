@@ -5,6 +5,7 @@ using System.IO.Pipelines;
 using System.Threading.Tasks;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Nested;
+using PdfLexer.Parsers.Structure;
 
 namespace PdfLexer.Lexing
 {
@@ -16,10 +17,10 @@ namespace PdfLexer.Lexing
             new KeyValuePair<PdfTokenType, byte[]> (PdfTokenType.StartXref, IndirectSequences.strartxref)
         };
 
-        private static byte[] eolChars = new byte[] {(byte) '\r', (byte) '\n'};
+        private static byte[] eolChars = new byte[] { (byte)'\r', (byte)'\n' };
         /// <summary>
         /// Attempts to tokenize and determine type of the next token / object from the reader.
-        /// NOTE: Dictionary, array, and string objects are considered one large token by the lexer.
+        /// NOTE: String objects are considered one large token by the lexer.
         /// NOTE: Indirect object references are considered three tokens.
         /// </summary>
         /// <param name="reader">SequenceReader to read.</param>
@@ -39,7 +40,7 @@ namespace PdfLexer.Lexing
             }
 
             // TODO support reading comments
-            while (b == (byte) '%')
+            while (b == (byte)'%')
             {
                 // comments
                 if (!reader.TryAdvanceToAny(eolChars, true))
@@ -60,7 +61,7 @@ namespace PdfLexer.Lexing
 
             switch (b)
             {
-                case (byte) 't':
+                case (byte)'t':
                     if (IsNext(ref reader, BoolParser.truebytes, true))
                     {
                         type = PdfTokenType.BooleanObj;
@@ -74,7 +75,7 @@ namespace PdfLexer.Lexing
                     }
 
                     return false;
-                case (byte) 'f':
+                case (byte)'f':
                     if (IsNext(ref reader, BoolParser.falsebytes, true))
                     {
                         type = PdfTokenType.BooleanObj;
@@ -82,7 +83,7 @@ namespace PdfLexer.Lexing
                     }
 
                     return false;
-                case (byte) 'n':
+                case (byte)'n':
                     if (IsNext(ref reader, PdfNull.NullBytes, true))
                     {
                         type = PdfTokenType.NullObj;
@@ -90,25 +91,19 @@ namespace PdfLexer.Lexing
                     }
 
                     return false;
-                case (byte) '(':
+                case (byte)'(':
                     type = PdfTokenType.StringStart;
                     return StringParser.TryAdvancePastString(ref reader);
-                case (byte) '<':
+                case (byte)'<':
                     if (IsNext(ref reader, PdfDictionary.start, true))
                     {
-                        var cs = reader.Consumed;
-                        if (!NestedUtil.AdvanceToDictEnd(ref reader, out _))
-                        {
-                            reader.Rewind(2+reader.Consumed - cs);
-                            return false;
-                        }
                         type = PdfTokenType.DictionaryStart;
                         return true;
                     }
 
                     type = PdfTokenType.StringStart;
                     return StringParser.TryAdvancePastString(ref reader);
-                case (byte) '/':
+                case (byte)'/':
                     reader.TryRead(out _);
                     type = PdfTokenType.NameObj;
                     if (!reader.TryAdvanceToAny(NameParser.NameTerminators, false))
@@ -122,37 +117,32 @@ namespace PdfLexer.Lexing
                         return false;
                     }
                     return true;
-                case (byte) '[':
+                case (byte)'[':
                     {
-                    var cs = reader.Consumed;
-                    reader.Advance(1);
-                    if (!NestedUtil.AdvanceToArrayEnd(ref reader, out _))
-                    {
-                        reader.Rewind(reader.Consumed - cs);
-                        return false;
+                        type = PdfTokenType.ArrayStart;
+                        reader.Advance(1);
+                        return true;
                     }
-                    type = PdfTokenType.ArrayStart;
-                    return true;
-                    }
-                case (byte) '-':
-                case (byte) '+':
-                case (byte) '.':
-                case (byte) '0':
-                case (byte) '1':
-                case (byte) '2':
-                case (byte) '3':
-                case (byte) '4':
-                case (byte) '5':
-                case (byte) '6':
-                case (byte) '7':
-                case (byte) '8':
-                case (byte) '9':
+                case (byte)'-':
+                case (byte)'+':
+                case (byte)'.':
+                case (byte)'0':
+                case (byte)'1':
+                case (byte)'2':
+                case (byte)'3':
+                case (byte)'4':
+                case (byte)'5':
+                case (byte)'6':
+                case (byte)'7':
+                case (byte)'8':
+                case (byte)'9':
                     type = PdfTokenType.NumericObj;
                     reader.AdvancePastAny(CommonUtil.ints);
                     if (reader.End && isCompleted)
                     {
                         return true;
-                    } else if (reader.End)
+                    }
+                    else if (reader.End)
                     {
                         return false;
                     }
@@ -169,28 +159,29 @@ namespace PdfLexer.Lexing
                     if (reader.End && isCompleted)
                     {
                         return true;
-                    } else if (reader.End)
+                    }
+                    else if (reader.End)
                     {
                         return false;
                     }
 
                     return true;
-                case (byte) 'R':
+                case (byte)'R':
                     reader.TryRead(out _);
                     type = PdfTokenType.IndirectRef;
                     return true;
-                case (byte) '>':
+                case (byte)'>':
                     if (IsNext(ref reader, PdfDictionary.end, true))
                     {
                         type = PdfTokenType.DictionaryEnd;
                         return true;
                     }
                     return false;
-                case (byte) ']':
+                case (byte)']':
                     reader.TryRead(out _);
                     type = PdfTokenType.ArrayEnd;
                     return true;
-                case (byte) 's':
+                case (byte)'s':
                     if (IsNext(ref reader, IndirectSequences.stream, true))
                     {
                         type = PdfTokenType.StartStream;
@@ -199,12 +190,12 @@ namespace PdfLexer.Lexing
                             reader.Rewind(6);
                             return false;
                         }
-                        if (nxt == (byte) '\n')
+                        if (nxt == (byte)'\n')
                         {
                             return true;
                         }
 
-                        if (nxt != (byte) '\r')
+                        if (nxt != (byte)'\r')
                         {
                             throw CommonUtil.DisplayDataErrorException(ref reader, "Stream not followed by \\r\\n or \\n.");
                         }
@@ -215,7 +206,7 @@ namespace PdfLexer.Lexing
                             return false;
                         }
 
-                        if (nxt != (byte) '\n')
+                        if (nxt != (byte)'\n')
                         {
                             throw CommonUtil.DisplayDataErrorException(ref reader, "Stream not followed by \\r\\n or \\n.");
                         }
@@ -229,7 +220,7 @@ namespace PdfLexer.Lexing
                         return true;
                     }
                     return false;
-                case (byte) 'e':
+                case (byte)'e':
                     if (IsNext(ref reader, IndirectSequences.endobj, true))
                     {
                         type = PdfTokenType.EndObj;
@@ -242,27 +233,27 @@ namespace PdfLexer.Lexing
                         return true;
                     }
                     return false;
-                case (byte) 'x':
+                case (byte)'x':
                     if (IsNext(ref reader, XRefParser.xref, true))
                     {
                         type = PdfTokenType.Xref;
                         return true;
                     }
-                    
+
                     return false;
-                case (byte) 'o':
+                case (byte)'o':
                     if (IsNext(ref reader, IndirectSequences.obj, true))
                     {
                         type = PdfTokenType.StartObj;
                         return true;
                     }
-                    
+
                     return false;
                 default:
                     throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
             }
 
-            bool IsNext(ref SequenceReader<byte> rdr, ReadOnlySpan<byte> data, bool advancePast=false)
+            bool IsNext(ref SequenceReader<byte> rdr, ReadOnlySpan<byte> data, bool advancePast = false)
             {
                 if (rdr.Remaining < data.Length)
                 {

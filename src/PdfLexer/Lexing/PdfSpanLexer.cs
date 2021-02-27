@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Text;
 using PdfLexer.Parsers;
+using PdfLexer.Parsers.Nested;
+using PdfLexer.Parsers.Structure;
 
 namespace PdfLexer.Lexing
 {
@@ -8,7 +10,7 @@ namespace PdfLexer.Lexing
     {
         /// <summary>
         /// Attempts to tokenize and determine type of the next token / object in the Span.
-        /// NOTE: Dictionary, array, and string objects are considered one large token by the lexer.
+        /// NOTE: String objects are considered one large token by the lexer.
         /// NOTE: Indirect object references are considered three tokens.
         /// </summary>
         /// <param name="bytes">Data to read.</param>
@@ -98,7 +100,7 @@ namespace PdfLexer.Lexing
                     if (buffer.Length > i + 1 && buffer[i + 1] == (byte) '<')
                     {
                         type = PdfTokenType.DictionaryStart;
-                        length = 2;
+                        length =2;
                         return i;
                     }
 

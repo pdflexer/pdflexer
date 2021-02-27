@@ -152,5 +152,21 @@ namespace PdfLexer
             }
             return -1;
         }
+
+        public static PdfObjectType GetEnumType<T>() where T : IPdfObject
+        {
+            var type = typeof(T);
+            if (type == typeof(PdfNumber))
+            {
+                return PdfObjectType.NumericObj;
+            } else if (type == typeof(PdfDictionary))
+            {
+                return PdfObjectType.DictionaryObj;
+            } else if (type == typeof(PdfArray))
+            {
+                return PdfObjectType.ArrayObj;
+            }
+            throw new NotImplementedException("EnumType not implemented for " + typeof(T).Name);
+        }
     }
 }

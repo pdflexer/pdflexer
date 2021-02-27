@@ -124,6 +124,23 @@ namespace PdfLexer.Lexing
                 {
                     throw CommonUtil.DisplayDataErrorException(ref reader, $"Unexpected token type, got {type} instead of {expected}");
                 }
+
+                if (type == PdfTokenType.ArrayStart)
+                {
+                    if (!reader.AdvanceToArrayEnd(out _))
+                    {
+                        pos = start;
+                        return false;
+                    }
+                } else if (type == PdfTokenType.DictionaryStart)
+                {
+                    
+                    if (!reader.AdvanceToDictEnd(out _))
+                    {
+                        pos = start;
+                        return false;
+                    }
+                }
     
                 if ((int)type < 9) // objects to parse
                 {
@@ -175,6 +192,26 @@ namespace PdfLexer.Lexing
                 return false;
             }
    
+            
+            if (type == PdfTokenType.ArrayStart)
+            {
+                if (!reader.AdvanceToArrayEnd(out _))
+                {
+                    pos = start;
+                    obj = null;
+                    return false;
+                }
+            } else if (type == PdfTokenType.DictionaryStart)
+            {
+                    
+                if (!reader.AdvanceToDictEnd(out _))
+                {
+                    pos = start;
+                    obj = null;
+                    return false;
+                }
+            }
+
             pos = reader.Position;
                 
             if ((int)type < 9) // objects to parse

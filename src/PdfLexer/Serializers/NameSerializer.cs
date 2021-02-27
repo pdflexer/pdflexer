@@ -7,23 +7,6 @@ namespace PdfLexer.Serializers
 {
     public class NameSerializer : ISerializer<PdfName>
     {
-        // private bool NeedsEscaping(PdfName obj)
-        // {
-        //     bool escapeNeeded = false;
-        //     if (obj.NeedsEscaping == null)
-        //     {
-        //         if (obj.Value.IndexOfAny(needsEscaping) > -1)
-        //         {
-        //             escapeNeeded = true;
-        //         }
-        //     } else
-        //     {
-        //         escapeNeeded = obj.NeedsEscaping.Value;
-        //     }
-        // 
-        //     return escapeNeeded;
-        // }
-
         public void WriteToStream(PdfName obj, Stream stream)
         {
             // TODO well known values or grab from cache since we are saving key

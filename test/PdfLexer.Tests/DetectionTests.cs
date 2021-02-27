@@ -10,7 +10,7 @@ namespace PdfLexer.Tests
     {
         [InlineData(" (Test) ", true, 1, 6, true, PdfTokenType.StringStart)]
         [InlineData("<1111> ", true, 0, 6, true, PdfTokenType.StringStart)]
-        [InlineData("<<", true,0, 2, true,PdfTokenType.DictionaryStart)]
+        [InlineData("<</Key/Value>>", true,0, 2, true,PdfTokenType.DictionaryStart)]
         [InlineData(" true ", true,1, 4, true,PdfTokenType.BooleanObj)]
         [InlineData("  false ", true, 2, 5, true,PdfTokenType.BooleanObj)]
         [InlineData("null",true, 0, 4, true,PdfTokenType.NullObj)]
@@ -36,7 +36,7 @@ namespace PdfLexer.Tests
         [InlineData("  %asdf%\r\n.1 ", true,10, 2, true,PdfTokenType.DecimalObj)]
         [InlineData("  %asdf%\n.1 ",true, 9, 2, true,PdfTokenType.DecimalObj)]
         [InlineData("  %asdf\n(.1 10 R)", true, 8, 9, true,PdfTokenType.StringStart)]
-        [InlineData("[", true,0, 1, true,PdfTokenType.ArrayStart)]
+        [InlineData("[]", true,0, 1, true,PdfTokenType.ArrayStart)]
         [InlineData("1<", true,0, 1, true,PdfTokenType.NumericObj)]
         [Theory]
         public void It_Lexes_Span(string input, bool success, int startPos, int expectedLength, bool completed, PdfTokenType type)
@@ -61,7 +61,7 @@ namespace PdfLexer.Tests
 
         [InlineData(" (Test) ", true, 1, 6, true, PdfTokenType.StringStart)]
         [InlineData("<1111> ", true, 0, 6, true, PdfTokenType.StringStart)]
-        [InlineData("<</Key/Value>>", true,0, 14, true,PdfTokenType.DictionaryStart)]
+        [InlineData("<</Key/Value>>", true,0, 2, true,PdfTokenType.DictionaryStart)]
         [InlineData(" true ", true,1, 4, true,PdfTokenType.BooleanObj)]
         [InlineData("  false ", true, 2, 5, true,PdfTokenType.BooleanObj)]
         [InlineData("null",true, 0, 4, true,PdfTokenType.NullObj)]
@@ -87,7 +87,7 @@ namespace PdfLexer.Tests
         [InlineData("  %asdf%\r\n.1 ", true,10, 2, true,PdfTokenType.DecimalObj)]
         [InlineData("  %asdf%\n.1 ",true, 9, 2, true,PdfTokenType.DecimalObj)]
         [InlineData("  %asdf\n(.1 10 R)", true, 8, 9, true,PdfTokenType.StringStart)]
-        [InlineData("[]", true,0, 2, true,PdfTokenType.ArrayStart)]
+        [InlineData("[]", true,0, 1, true,PdfTokenType.ArrayStart)]
         [InlineData("1<", true,0, 1, true,PdfTokenType.NumericObj)]
         [Theory]
         public void It_Lexes_Sequence(string input, bool success, int startPos, int expectedLength, bool completed, PdfTokenType type)

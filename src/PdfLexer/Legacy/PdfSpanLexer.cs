@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using PdfLexer.Parsers;
+using PdfLexer.Parsers.Structure;
 
 namespace PdfLexer.Lexing
 {

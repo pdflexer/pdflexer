@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
 using PdfLexer.Parsers;
+using PdfLexer.Parsers.Structure;
 using Xunit;
 
 namespace PdfLexer.Tests
@@ -47,8 +48,9 @@ startxref
         public async Task ItGetsXrefOffset(string input, int objectCount, int lastObjNum)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
-            var source = new InMemoryDataSource(bytes);
-            var parser = new XRefParser(new ParsingContext());
+            var ctx = new ParsingContext();
+            var parser = new XRefParser(ctx);
+            var source = new InMemoryDataSource(ctx, bytes);
             var data = await parser.LoadCrossReference(source);
             Assert.Equal(objectCount, data.Item1.Count);
             Assert.Equal(lastObjNum, data.Item1.Max(x=>x.Reference.ObjectNumber));
@@ -105,8 +107,9 @@ startxref
         public async Task ItGetsXRefTableMultiSection(string input, int entries, long lastOffset, int lastObj)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
-            var source = new InMemoryDataSource(bytes);
-            var parser = new XRefParser(new ParsingContext() { IsEager = true });
+            var ctx = new ParsingContext() { IsEager = true };
+            var parser = new XRefParser(ctx);
+            var source = new InMemoryDataSource(ctx, bytes);
             var (results, trailer) = await parser.LoadCrossReference(source);
             Assert.Equal(entries, results.Count);
             var last = results.OrderByDescending(x=>x.Reference.ObjectNumber).First();
@@ -149,8 +152,9 @@ startxref
         public void ItGetsXRefEntries(string input, int entries, long lastOffset, int lastObj)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
-            var source = new InMemoryDataSource(bytes);
-            var parser = new XRefParser(new ParsingContext());
+            var ctx = new ParsingContext();
+            var parser = new XRefParser(ctx);
+            var source = new InMemoryDataSource(ctx, bytes);
             var data = new List<XRefEntry>();
             var results = parser.GetEntries(bytes, data);
             Assert.Equal(entries, results.Count);

@@ -19,7 +19,7 @@ namespace PdfLexer.Parsers
 
         public override PdfDictionary Parse(ReadOnlySpan<byte> buffer, int start, int length)
         {
-            var dict = _ctx.NestedParser.ParseNestedItem(buffer, start) as PdfDictionary;
+            var dict = _ctx.NestedParser.ParseNestedItem(buffer, start, out _) as PdfDictionary;
             return dict;
         }
 

@@ -8,7 +8,6 @@ namespace PdfLexer
         DecimalObj,
         NameObj, 
         StringStart, // Obj start token get lexed as just the start char(s)
-        HexStart, // Obj start token get lexed as just the start char(s)
         ArrayStart,
         DictionaryStart,
         ArrayEnd, // tokens below here 
@@ -34,11 +33,9 @@ namespace PdfLexer
         DecimalObj,
         NameObj,
         StringObj,
-        HexObj,
         ArrayObj,
         DictionaryObj,
         StreamObj,
-        IndirectObj,
         IndirectRefObj
     }
 }

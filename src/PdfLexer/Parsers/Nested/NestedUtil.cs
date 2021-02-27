@@ -26,72 +26,72 @@ namespace PdfLexer.Parsers.Nested
             {
                 var b = slice[pos];
                 switch (b)
-                {                    
-                    case (byte) 'R':
-                    {
-                        hadIndirectObjects = true;
-                        i += pos+1;
-                        slice = buffer.Slice(i);
-                        continue;
-                    }
-                    case (byte) '<':
-                    {
-                        if (slice.Length < pos + 1)
+                {
+                    case (byte)'R':
                         {
-                            return false;
+                            hadIndirectObjects = true;
+                            i += pos + 1;
+                            slice = buffer.Slice(i);
+                            continue;
                         }
-
-                        if (slice[pos + 1] == (byte) '<')
+                    case (byte)'<':
                         {
-                            // new dict
-                            i+= pos + 2;
-                            if (!AdvanceToDictEnd(buffer, ref i, out bool hadSubIOs))
+                            if (slice.Length < pos + 1)
                             {
                                 return false;
                             }
 
-                            if (hadSubIOs)
+                            if (slice[pos + 1] == (byte)'<')
                             {
-                                hadIndirectObjects = true;
+                                // new dict
+                                i += pos + 2;
+                                if (!AdvanceToDictEnd(buffer, ref i, out bool hadSubIOs))
+                                {
+                                    return false;
+                                }
+
+                                if (hadSubIOs)
+                                {
+                                    hadIndirectObjects = true;
+                                }
+                                slice = buffer.Slice(i);
+                                continue;
                             }
+
+                            // just hex string
+                            i += pos + 1;
                             slice = buffer.Slice(i);
                             continue;
                         }
-
-                        // just hex string
-                        i += pos + 1;
-                        slice = buffer.Slice(i);
-                        continue;
-                    }
-                    case (byte) '>':
-                    {
-                        if (slice.Length < pos + 1)
+                    case (byte)'>':
                         {
-                            return false;
-                        }
+                            if (slice.Length < pos + 1)
+                            {
+                                return false;
+                            }
 
-                        if (slice[pos + 1] == (byte) '>')
-                        {
-                            // ended!
-                            i += pos + 2;
-                            return true;
+                            if (slice[pos + 1] == (byte)'>')
+                            {
+                                // ended!
+                                i += pos + 2;
+                                return true;
+                            }
+                            // just hex end
+                            i += pos + 1;
+                            slice = buffer.Slice(i);
+                            continue;
                         }
-                        // just hex end
-                        i += pos + 1;
-                        slice = buffer.Slice(i);
-                        continue;
-                    }
-                    case (byte) '(':
-                    {
-                        i += pos-1;
-                        if (!StringParser.AdvancePastStringLiteral(buffer, ref i))
+                    case (byte)'(':
                         {
-                            return false;
-                        }
+                            i += pos;
+                            if (!StringParser.AdvancePastStringLiteral(buffer, ref i))
+                            {
+                                return false;
+                            }
 
-                        slice = buffer.Slice(i);
-                        continue;
-                    }
+                            slice = buffer.Slice(i);
+                            continue;
+                        }
                 }
             }
 
@@ -108,67 +108,71 @@ namespace PdfLexer.Parsers.Nested
                 var b = slice[pos];
                 switch (b)
                 {
-                    case (byte) 'R':
-                    {
-                        hadIndirectObjects = true;
-                        i += pos+1;
-                        slice = buffer.Slice(i);
-                        continue;
-                    }
-                    case (byte) '<':
-                    {
-                        if (slice.Length < pos + 1)
+                    case (byte)'R':
                         {
-                            return false;
+                            hadIndirectObjects = true;
+                            i += pos + 1;
+                            slice = buffer.Slice(i);
+                            continue;
                         }
-
-                        if (slice[pos+1] == (byte) '<')
+                    case (byte)'<':
                         {
-                            // new dict
-                            i++;
-                            if (!AdvanceToDictEnd(buffer, ref i, out bool hadSubIOs))
+                            if (slice.Length < pos + 1)
                             {
                                 return false;
                             }
+
+                            if (slice[pos + 1] == (byte)'<')
+                            {
+                                // new dict
+                                i += pos + 2;
+                                if (!AdvanceToDictEnd(buffer, ref i, out bool hadSubIOs))
+                                {
+                                    return false;
+                                }
+                                if (hadSubIOs)
+                                {
+                                    hadIndirectObjects = true;
+                                }
+                            } else
+                            {
+                                // just hex string
+                                i += pos + 1;
+                            }
+
+                            
+                            slice = buffer.Slice(i);
+                            continue;
+                        }
+                    case (byte)'(':
+                        {
+                            i += pos;
+                            if (!StringParser.AdvancePastStringLiteral(buffer, ref i))
+                            {
+                                return false;
+                            }
+
+                            slice = buffer.Slice(i);
+                            continue;
+                        }
+                    case (byte)'[':
+                        {
+                            i += pos + 1;
+                            if (!AdvanceToArrayEnd(buffer, ref i, out bool hadSubIOs))
+                            {
+                                return false;
+                            }
+
                             if (hadSubIOs)
                             {
                                 hadIndirectObjects = true;
                             }
-                        }
 
-                        // just hex string
-                        i += pos+1;
-                        slice = buffer.Slice(i);
-                        continue;
-                    }
-                    case (byte) '(':
-                    {
-                        i--;
-                        if (!StringParser.AdvancePastStringLiteral(buffer, ref i))
-                        {
-                            return false;
+                            slice = buffer.Slice(i);
+                            continue;
                         }
-
-                        slice = buffer.Slice(i);
-                        continue;
-                    }
-                    case (byte) '[':
-                    {
-                        if (!AdvanceToArrayEnd(buffer, ref i, out bool hadSubIOs))
-                        {
-                            return false;
-                        }
-
-                        if (hadSubIOs)
-                        {
-                            hadIndirectObjects = true;
-                        }
-
-                        slice = buffer.Slice(i);
-                        continue;
-                    }
-                    case (byte) ']':
-                        i += pos+1;
+                    case (byte)']':
+                        i += pos + 1;
                         return true;
                 }
             }
@@ -187,60 +191,60 @@ namespace PdfLexer.Parsers.Nested
 
                 switch (b)
                 {
-                    case (byte) 'R':
-                    {
-                        hadIndirectObjects = true;
-                        continue;
-                    }
-                    case (byte) '<':
-                    {
-                        if (!reader.TryPeek(out byte b2))
+                    case (byte)'R':
                         {
-                            return false;
+                            hadIndirectObjects = true;
+                            continue;
                         }
-
-                        if (b2 == (byte) '<')
+                    case (byte)'<':
                         {
-                            // new dict
-                            reader.TryRead(out byte _);
-                            if (!reader.AdvanceToDictEnd(out bool hadSubIOs))
+                            if (!reader.TryPeek(out byte b2))
                             {
                                 return false;
                             }
+
+                            if (b2 == (byte)'<')
+                            {
+                                // new dict
+                                reader.TryRead(out byte _);
+                                if (!reader.AdvanceToDictEnd(out bool hadSubIOs))
+                                {
+                                    return false;
+                                }
+                                if (hadSubIOs)
+                                {
+                                    hadIndirectObjects = true;
+                                }
+                            }
+
+                            // just hex string
+                        }
+                        continue;
+                    case (byte)'(':
+                        {
+                            reader.Rewind(1);
+                            if (!StringParser.AdvancePastStringLiteral(ref reader))
+                            {
+                                return false;
+                            }
+
+                            continue;
+                        }
+                    case (byte)'[':
+                        {
+                            if (!reader.AdvanceToArrayEnd(out bool hadSubIOs))
+                            {
+                                return false;
+                            }
+
                             if (hadSubIOs)
                             {
                                 hadIndirectObjects = true;
                             }
-                        }
 
-                        // just hex string
-                    }
-                        continue;
-                    case (byte) '(':
-                    {
-                        reader.Rewind(1);
-                        if (!StringParser.AdvancePastStringLiteral(ref reader))
-                        {
-                            return false;
+                            continue;
                         }
-
-                        continue;
-                    }
-                    case (byte) '[':
-                    {
-                        if (!reader.AdvanceToArrayEnd(out bool hadSubIOs))
-                        {
-                            return false;
-                        }
-
-                        if (hadSubIOs)
-                        {
-                            hadIndirectObjects = true;
-                        }
-
-                        continue;
-                    }
-                    case (byte) ']':
+                    case (byte)']':
                         return true;
                 }
             }
@@ -265,62 +269,62 @@ namespace PdfLexer.Parsers.Nested
                 }
 
                 switch (b)
-                {                    
-                    case (byte) 'R':
-                    {
-                        hadIndirectObjects = true;
-                        continue;
-                    }
-                    case (byte) '<':
-                    {
-                        if (!reader.TryPeek(out byte b2))
+                {
+                    case (byte)'R':
                         {
-                            return false;
+                            hadIndirectObjects = true;
+                            continue;
                         }
-
-                        if (b2 == (byte) '<')
+                    case (byte)'<':
                         {
-                            // new dict
-                            reader.TryRead(out byte _);
-                            if (!reader.AdvanceToDictEnd(out bool hadSubIOs))
+                            if (!reader.TryPeek(out byte b2))
                             {
                                 return false;
                             }
 
-                            if (hadSubIOs)
+                            if (b2 == (byte)'<')
                             {
-                                hadIndirectObjects = true;
+                                // new dict
+                                reader.TryRead(out byte _);
+                                if (!reader.AdvanceToDictEnd(out bool hadSubIOs))
+                                {
+                                    return false;
+                                }
+
+                                if (hadSubIOs)
+                                {
+                                    hadIndirectObjects = true;
+                                }
                             }
-                        }
 
-                        // just hex string
-                    }
-                        continue;
-                    case (byte) '>':
-                    {
-                        if (!reader.TryPeek(out byte b2))
-                        {
-                            return false;
+                            // just hex string
                         }
+                        continue;
+                    case (byte)'>':
+                        {
+                            if (!reader.TryPeek(out byte b2))
+                            {
+                                return false;
+                            }
 
-                        if (b2 == (byte) '>')
-                        {
-                            // ended!
-                            return reader.TryRead(out _);
+                            if (b2 == (byte)'>')
+                            {
+                                // ended!
+                                return reader.TryRead(out _);
+                            }
+                            // just hex end
                         }
-                        // just hex end
-                    }
                         continue;
-                    case (byte) '(':
-                    {
-                        reader.Rewind(1);
-                        if (!StringParser.AdvancePastStringLiteral(ref reader))
+                    case (byte)'(':
                         {
-                            return false;
-                        }
+                            reader.Rewind(1);
+                            if (!StringParser.AdvancePastStringLiteral(ref reader))
+                            {
+                                return false;
+                            }
 
-                        continue;
-                    }
+                            continue;
+                        }
                 }
             }
 

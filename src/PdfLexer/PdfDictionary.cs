@@ -128,6 +128,14 @@ namespace PdfLexer
                 return true;
             }
 
+            item = item.Resolve();
+
+            if (item is T retyped)
+            {
+                value = retyped;
+                return true;
+            }
+
             if (errorOnMismatch)
             {
                 throw new ApplicationException($"Unexpected data type in dictionary for key {key.Value}, got {item.Type} expected {typeof(T)}");

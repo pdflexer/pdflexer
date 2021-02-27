@@ -2,14 +2,12 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Pipelines;
-using System.Text;
 using System.Threading.Tasks;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
 
-namespace PdfLexer.Parsers
+namespace PdfLexer.Parsers.Structure
 {
     public class XRefParser
     {
