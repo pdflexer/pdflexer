@@ -15,13 +15,7 @@ namespace PdfLexer.Parsers
 {
     public class ParsingContext
     {
-        public bool ShouldLoadIndirects { get; set; } = true;
-        public bool CacheObjects { get; set; } = true;
-                public bool CacheNumbers { get; set; } = true;
-        // TODO different types
-        public bool IsEager { get; set; } = true;
-        // internal List<IPdfObject> ObjectBag = new List<IPdfObject>();
-        // internal byte[] Buffer = new byte[5000];
+        internal int SourceId {get;set;}
         internal long CurrentOffset { get; set; }
         internal IPdfDataSource CurrentSource { get; set; }
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
@@ -43,11 +37,13 @@ namespace PdfLexer.Parsers
 
         internal NumberSerializer NumberSerializer { get; }
         internal NameSerializer NameSerializer { get; }
+        public ParsingOptions Options { get; }
         internal ArraySerializer ArraySerializer { get; }
         internal DictionarySerializer DictionarySerializer { get; }
 
-        public ParsingContext()
+        public ParsingContext(ParsingOptions options=null)
         {
+            Options = options ??= new ParsingOptions();
             ArraySerializer = new ArraySerializer(this);
             ArrayParser = new ArrayParser(this);
 
@@ -73,8 +69,6 @@ namespace PdfLexer.Parsers
 
         public async ValueTask<(Dictionary<XRef, XRefEntry>, PdfDictionary)> Initialize(IPdfDataSource pdf)
         {
-            var initial = ShouldLoadIndirects;
-            ShouldLoadIndirects = false;
             MainDocSource = pdf;
             var (refs, trailer) = await XRefParser.LoadCrossReference(MainDocSource);
             var entries = new Dictionary<XRef, XRefEntry>();
@@ -95,18 +89,18 @@ namespace PdfLexer.Parsers
                 }
                 ordered[^1].MaxLength = (int)(MainDocSource.TotalBytes - ordered[^1].Offset - 1);
             }
-            ShouldLoadIndirects = initial;
             return (entries, trailer);
         }
 
         internal IPdfObject GetIndirectObject(PdfIndirectRef ir)
         {
+            return ir.GetObject(); // Is this needed anymore?
             // TODO allow lazy loading here -> especially for ShouldLoadIndirects
-            return GetIndirectObject(new XRef { ObjectNumber = (int)ir.ObjectNumber, Generation = ir.Generation });
+            // return GetIndirectObject(ir.Reference);
         }
         internal IPdfObject GetIndirectObject(XRef xref)
         {
-            if (CacheObjects && IndirectCache.TryGetValue(xref, out var cached))
+            if (Options.CacheObjects && IndirectCache.TryGetValue(xref, out var cached))
             {
                 return cached;
             }
@@ -136,24 +130,14 @@ namespace PdfLexer.Parsers
             Debug.Assert(type == PdfTokenType.StartObj);
             var os = i + length;
             var obj = GetPdfItem(buffer, os, out length);
-            obj.IndirectRef = xref;
+            // obj.IndirectRef = xref;
             // GET NEXT TOKEN
             i = PdfSpanLexer.TryReadNextToken(buffer, out type, os+length, out length);
             if (type == PdfTokenType.EndObj)
             {
-                if (CacheObjects)
+                if (Options.CacheObjects) // TODO add obj/endobj offsets for copying of data later
                 {
                     IndirectCache[xref] = obj;
-                }
-                if (ShouldLoadIndirects)
-                {
-                    if (obj is PdfArray arr)
-                    {
-                        LoadIndirectRefs(arr);
-                    } else if (obj is PdfDictionary dict)
-                    {
-                        LoadIndirectRefs(dict);
-                    }
                 }
                 return obj;
             } else if (type == PdfTokenType.StartStream)
@@ -169,13 +153,9 @@ namespace PdfLexer.Parsers
                 var stream = new PdfStream(dict, new PdfStreamContents(MainDocSource, value.Offset + i + length, streamLength));
                 i = PdfSpanLexer.TryReadNextToken(buffer, out type, i+length+(int)streamLength, out length);
                 Debug.Assert(type == PdfTokenType.EndStream);
-                if (CacheObjects)
+                if (Options.CacheObjects)
                 {
                     IndirectCache[xref] = stream;
-                }
-                if (ShouldLoadIndirects)
-                {
-                    LoadIndirectRefs(dict);
                 }
                 return stream;
             }

@@ -50,8 +50,8 @@ namespace PdfLexer.Benchmarks.Benchmarks
             
         }
         private DictionaryParser parser = new DictionaryParser(new ParsingContext());
-        private DictionaryParser lazyParser = new DictionaryParser(new ParsingContext() { IsEager = false }); 
-        private DictionaryParser noCache = new DictionaryParser(new ParsingContext() { CacheNumbers = false }); 
+        private DictionaryParser lazyParser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.Lazy })); 
+        private DictionaryParser noCache = new DictionaryParser(new ParsingContext(new ParsingOptions { CacheNumbers = false })); 
         private List<PdfDictionary> results = new List<PdfDictionary>(10);
         private List<DictionaryToken> pigResults = new List<DictionaryToken>(10);
         private List<ByteArrayInputBytes> pigItems = new List<ByteArrayInputBytes>();

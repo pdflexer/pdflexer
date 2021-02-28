@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace PdfLexer.IO
@@ -42,7 +43,14 @@ namespace PdfLexer.IO
             throw new NotImplementedException();
         }
 
+        private Dictionary<PdfIndirectRef, PdfIndirectReference> sharedStack = new Dictionary<PdfIndirectRef, PdfIndirectReference>();
         public IPdfObject AddItem(IPdfObject obj)
+        {
+            sharedStack.Clear();
+            return AddItem(obj, sharedStack);
+        }
+
+        internal IPdfObject AddItem(IPdfObject obj, Dictionary<PdfIndirectRef, PdfIndirectReference> refStack)
         {
             if (obj is PdfLazyObject lz)
             {
@@ -51,10 +59,10 @@ namespace PdfLexer.IO
                     var rz = lz.Resolve();
                     if (rz is PdfDictionary dict)
                     {
-                        return AddItem(dict);
+                        return AddItem(dict, refStack);
                     } else if (rz is PdfArray arr)
                     {
-                        return AddItem(arr);
+                        return AddItem(arr, refStack);
                     } else
                     {
                         throw new NotImplementedException($"PdfLazyObject of type {rz.GetType()} not implemented for copy");
@@ -71,26 +79,38 @@ namespace PdfLexer.IO
                         Offset = init,
                         Length = lz.Length,
                     };
-                    if (lz.IsIndirect)
-                    {
-                        copy.IndirectRef = new Parsers.Structure.XRef(-1, 0);
-                    }
                     return copy;
                 }
+            } else if (obj is PdfIndirectRef ir)
+            {
+                if (ir.IsOwned(Context.SourceId)) { return ir; }
+                if (refStack.TryGetValue(ir, out var copied))
+                {
+                    return copied;
+                }
+                var newRef = new PdfIndirectReference();
+                refStack[ir] = newRef;
+                var newObj = AddItem(ir.GetObject(), refStack);
+                newRef.Object = newObj;
+                return newObj;
             } else if (obj is PdfDictionary dict)
             {
                 var copy = new PdfDictionary();
                 foreach (var kvp in dict)
                 {
-                    // kvp.Value.
+                    copy[kvp.Key] = AddItem(kvp.Value, refStack);
                 }
+                return copy;
             } else if (obj is PdfArray arr)
             {
-
-            } else if (obj.IsIndirect)
-            {
-                // TODO copy
+                var copy = new PdfArray();
+                foreach (var item in arr)
+                {
+                    copy.Add(AddItem(item, refStack));
+                }
+                return copy;
             }
+            // rest are immutable
             return obj;
         }
     }

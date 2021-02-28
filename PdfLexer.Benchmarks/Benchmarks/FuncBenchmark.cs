@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UglyToad.PdfPig.Content;
+using UglyToad.PdfPig.Tokens;
 
 namespace PdfLexer.Benchmarks.Benchmarks
 {
@@ -19,49 +21,59 @@ namespace PdfLexer.Benchmarks.Benchmarks
             data = File.ReadAllBytes("C:\\temp\\PRIV\\Origrk.pdf");
         }
         [Benchmark(Baseline = true)]
-        public int EagerEager()
+        public int Eager()
         {
-            using var doc = PdfDocument.Open(data).GetAwaiter().GetResult();
-            doc.Context.IsEager = true;
-            doc.Context.ShouldLoadIndirects = true;
+            using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.FullEager }).GetAwaiter().GetResult();
             return Run(doc);
         }
 
         [Benchmark()]
-        public int LazyLazy()
+        public int Lazy()
         {
-            using var doc = PdfDocument.Open(data).GetAwaiter().GetResult();
-            doc.Context.IsEager = false;
-            doc.Context.ShouldLoadIndirects = false;
+            using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
             return Run(doc);
         }
 
-        private int Run(PdfDocument doc)
+
+        [Benchmark()]
+        public int NoLoad()
         {
-            var root = doc.Trailer.GetRequiredValue<PdfDictionary>(PdfName.Root);
-            var pages = root.GetRequiredValue<PdfDictionary>(PdfName.Pages);
-            return EnumeratePages(pages).Count();
-            
-            IEnumerable<PdfDictionary> EnumeratePages(PdfDictionary dict)
+            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
+            return 0;
+        }
+
+        [Benchmark()]
+        public int PdfPig()
+        {
+            var doc = UglyToad.PdfPig.PdfDocument.Open(data);
+            return WalkTree(doc.Structure.Catalog.PageTree, null).Count();
+        }
+        internal static IEnumerable<(DictionaryToken, IReadOnlyList<DictionaryToken>)> WalkTree(PageTreeNode node, List<DictionaryToken> parents=null)
+        {
+            if (parents == null)
             {
-                var type = dict.GetRequiredValue<PdfName>(PdfName.TypeName);
-                switch (type.Value)
+                parents = new List<DictionaryToken>();
+            }
+
+            if (node.IsPage)
+            {
+                yield return (node.NodeDictionary, parents);
+                yield break;
+            }
+
+            parents = parents.ToList();
+            parents.Add(node.NodeDictionary);
+            foreach (var child in node.Children)
+            {
+                foreach (var item in WalkTree(child, parents))
                 {
-                    case "/Pages":
-                        var kids = dict.GetRequiredValue<PdfArray>(PdfName.Kids);
-                        foreach (var child in kids)
-                        {
-                            foreach (var pg in EnumeratePages(child.GetValue<PdfDictionary>())) 
-                            {
-                                yield return pg;
-                            }
-                        }
-                        break;
-                    case "/Page":
-                        yield return dict;
-                        break;
+                    yield return item;
                 }
             }
+        }
+        private int Run(PdfDocument doc)
+        {
+            return doc.Pages.Count;
         }
     }
 }

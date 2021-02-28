@@ -93,6 +93,11 @@ namespace PdfLexer
             internalList.RemoveAt(index);
         }
 
+        // public override PdfObject Clone()
+        // {
+        //     throw new NotImplementedException();
+        // }
+
         public IPdfObject this[int index]
         {
             get => internalList[index];

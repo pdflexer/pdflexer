@@ -39,30 +39,30 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.DictionaryStart:
                         if (CurrentState.IsParsing())
                         {
-                            if (_ctx.IsEager)
+                            switch (_ctx.Options.Eagerness)
                             {
-                                StateStack.Add(CurrentState);
-                                CurrentState = default;
-                                CurrentState.State = ParseState.ReadDictKey;
-                                CurrentState.Dict = new PdfDictionary();
-                                CurrentState.Bag ??= new List<IPdfObject>();
-                                CurrentState.Bag.Clear();
-                                startAt += currentLength;
-                                continue;
-                            }
-                            else
-                            {
-                                var originalStart = startAt;
-                                startAt += currentLength;
-                                var end = startAt;
-                                if (!NestedUtil.AdvanceToDictEnd(buffer, ref end, out var hadIndirect))
-                                {
-                                    goto Done;
-                                }
+                                case Eagerness.Lazy:
+                                    var originalStart = startAt;
+                                    startAt += currentLength;
+                                    var end = startAt;
+                                    if (!NestedUtil.AdvanceToDictEnd(buffer, ref end, out var hadIndirect))
+                                    {
+                                        goto Done;
+                                    }
 
-                                AddLazyValue(originalStart, end - originalStart, PdfTokenType.DictionaryStart, hadIndirect);
-                                startAt = end;
-                                continue;
+                                    AddLazyValue(originalStart, end - originalStart, PdfTokenType.DictionaryStart, hadIndirect);
+                                    startAt = end;
+                                    continue;
+                                case Eagerness.FullEager:
+                                default:
+                                    StateStack.Add(CurrentState);
+                                    CurrentState = default;
+                                    CurrentState.State = ParseState.ReadDictKey;
+                                    CurrentState.Dict = new PdfDictionary();
+                                    CurrentState.Bag ??= new List<IPdfObject>();
+                                    CurrentState.Bag.Clear();
+                                    startAt += currentLength;
+                                    continue;
                             }
                         }
                         CurrentState.State = ParseState.ReadDictKey;
@@ -74,30 +74,30 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.ArrayStart:
                         if (CurrentState.IsParsing())
                         {
-                            if (_ctx.IsEager)
+                            switch (_ctx.Options.Eagerness)
                             {
-                                StateStack.Add(CurrentState);
-                                CurrentState = default;
-                                CurrentState.State = ParseState.ReadArray;
-                                CurrentState.Array = new PdfArray();
-                                CurrentState.Bag ??= new List<IPdfObject>();
-                                CurrentState.Bag.Clear();
-                                startAt += currentLength;
-                                continue;
-                            }
-                            else
-                            {
-                                var originalStart = startAt;
-                                startAt += currentLength;
-                                var end = startAt;
-                                if (!NestedUtil.AdvanceToArrayEnd(buffer, ref end, out var hadIndirect))
-                                {
-                                   goto Done;
-                                }
+                                case Eagerness.Lazy:
+                                    var originalStart = startAt;
+                                    startAt += currentLength;
+                                    var end = startAt;
+                                    if (!NestedUtil.AdvanceToArrayEnd(buffer, ref end, out var hadIndirect))
+                                    {
+                                       goto Done;
+                                    }
 
-                                AddLazyValue(originalStart, end - originalStart, PdfTokenType.ArrayStart, hadIndirect);
-                                startAt = end;
-                                continue;
+                                    AddLazyValue(originalStart, end - originalStart, PdfTokenType.ArrayStart, hadIndirect);
+                                    startAt = end;
+                                    continue;
+                                case Eagerness.FullEager:
+                                default:
+                                    StateStack.Add(CurrentState);
+                                    CurrentState = default;
+                                    CurrentState.State = ParseState.ReadArray;
+                                    CurrentState.Array = new PdfArray();
+                                    CurrentState.Bag ??= new List<IPdfObject>();
+                                    CurrentState.Bag.Clear();
+                                    startAt += currentLength;
+                                    continue;
                             }
                         }
                         CurrentState.Array = new PdfArray();

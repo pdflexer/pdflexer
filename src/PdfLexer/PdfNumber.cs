@@ -8,6 +8,7 @@ namespace PdfLexer
     {
         Integer,
         Long,
+        Double,
         Decimal
     }
     public abstract class PdfNumber : PdfObject
@@ -33,11 +34,23 @@ namespace PdfLexer
             };
         }
 
+        public static implicit operator double(PdfNumber num)
+        {
+            return num switch {
+                PdfIntNumber val => (double)val.Value,
+                PdfLongNumber val => (double)val.Value,
+                PdfDoubleNumber val => val.Value,
+                PdfDecimalNumber val => (double)val.Value,
+                _ => throw new ApplicationException("Unable to convert PdfNumber to decimal for type " + num.GetType())
+            };
+        }
+
         public static implicit operator decimal(PdfNumber num)
         {
             return num switch {
                 PdfIntNumber val => (decimal)val.Value,
                 PdfLongNumber val => (decimal)val.Value,
+                PdfDoubleNumber val => (decimal)val.Value,
                 PdfDecimalNumber val => val.Value,
                 _ => throw new ApplicationException("Unable to convert PdfNumber to decimal for type " + num.GetType())
             };
@@ -79,6 +92,17 @@ namespace PdfLexer
         }
 
         public override PdfNumberType NumberType => PdfNumberType.Long;
+    }
+
+    public class PdfDoubleNumber : PdfNumber
+    {
+        public double Value { get; }
+        public PdfDoubleNumber(double value)
+        {
+            Value = value;
+        }
+
+        public override PdfNumberType NumberType => PdfNumberType.Double;
     }
 
     public class PdfDecimalNumber : PdfNumber

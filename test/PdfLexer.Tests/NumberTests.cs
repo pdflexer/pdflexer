@@ -48,7 +48,7 @@ namespace PdfLexer.Tests
         public void It_Caches_Tokens(string input, decimal value, Type expected)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
-            var parser = new NumberParser(new ParsingContext() { CacheNumbers = true });
+            var parser = new NumberParser(new ParsingContext(new ParsingOptions { CacheNumbers = true }));
             var result = parser.Parse(bytes);
             
             Assert.Equal(expected, result.GetType());

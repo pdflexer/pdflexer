@@ -124,6 +124,17 @@ namespace PdfLexer
             return value;
         }
 
+        public T GetOrCreateValue<T>(PdfName key) where T : IPdfObject, new()
+        {
+            if (!TryGetValue<T>(key, out T value))
+            {
+                var val = new T();
+                this.Add(key, val);
+                return val;
+            }
+            return value;
+        }
+
         public bool TryGetValue<T>(PdfName key, out T value, bool errorOnMismatch=true) where T : IPdfObject
         {
             if (!_dictionary.TryGetValue(key, out var item))

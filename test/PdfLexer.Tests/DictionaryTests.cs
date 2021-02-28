@@ -28,7 +28,7 @@ namespace PdfLexer.Tests
         public void It_Gets_Dict_Basic(string data, bool found, string expected)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
-            var ctx = new ParsingContext() { ShouldLoadIndirects = false };
+            var ctx = new ParsingContext();
             if (!found)
             {
                 Assert.ThrowsAny<Exception>(() => ctx.DictionaryParser.Parse(buffer));
@@ -69,11 +69,11 @@ namespace PdfLexer.Tests
         public void It_Gets_Real_Dicts(string data)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
-            var parser = new DictionaryParser(new ParsingContext() { IsEager = true, ShouldLoadIndirects = false });
+            var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
             var dict = parser.Parse(buffer);
             var seq = new ReadOnlySequence<byte>(buffer);
             var dict3 = parser.Parse(seq);
-            var parser2 = new DictionaryParser(new ParsingContext() { IsEager = false, ShouldLoadIndirects = false });
+            var parser2 = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.Lazy }));
             var dict2 = parser2.Parse(buffer);
             var dict4 = parser2.Parse(seq);
             // Do_Get_Dict(data, true, data);
@@ -84,7 +84,7 @@ namespace PdfLexer.Tests
         public void It_Gets_Count_From_Dict(string data, int count)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
-            var parser = new DictionaryParser(new ParsingContext() { IsEager = true });
+            var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
             var dict = parser.Parse(buffer);
             Assert.Equal(count, GetCounts(dict.Values));
             var seq = new ReadOnlySequence<byte>(buffer);

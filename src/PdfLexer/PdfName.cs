@@ -47,6 +47,24 @@ namespace PdfLexer
         public static PdfName Count => new PdfName("/Count");
         public static PdfName Kids => new PdfName("/Kids");
         public static PdfName Contents => new PdfName("/Contents");
+        public static PdfName Resources => new PdfName("/Resources");
+        public static PdfName MediaBox => new PdfName("/MediaBox");
+        public static PdfName CropBox => new PdfName("/CropBox");
+        public static PdfName Rotate => new PdfName("/Rotate");
+        public static PdfName Catalog => new PdfName("/Catalog");
+
+        public static implicit operator PdfName(string name)
+        {
+            // TODO common lookups for above?
+            if (name[0] == '/')
+            {
+                return new PdfName(name);
+            } else
+            {
+                return new PdfName("/"+name);
+            }
+            
+        }
         
     }
 }

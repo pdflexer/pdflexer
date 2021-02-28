@@ -60,10 +60,8 @@ namespace PdfLexer.Tests
         {
             var data = File.ReadAllBytes(Path.Combine("c:\\temp\\test-pdfs\\", pdfPath));
             var doc = await PdfDocument.Open(data);
-            var root = doc.Trailer.GetRequiredValue<PdfDictionary>(PdfName.Root);
-            var pages = root.GetRequiredValue<PdfDictionary>(PdfName.Pages);
             long total = 0;
-            foreach (var page in EnumeratePages(pages))
+            foreach (PdfDictionary page in doc.Pages)
             {
                 var content = page[PdfName.Contents];
                 if (content is PdfArray contentArray)
@@ -78,27 +76,8 @@ namespace PdfLexer.Tests
                     total += content.GetValue<PdfStream>().Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
                 }
             }
-            
-            IEnumerable<PdfDictionary> EnumeratePages(PdfDictionary dict)
-            {
-                var type = dict.GetRequiredValue<PdfName>(PdfName.TypeName);
-                switch (type.Value)
-                {
-                    case "/Pages":
-                        var kids = dict.GetRequiredValue<PdfArray>(PdfName.Kids);
-                        foreach (var child in kids)
-                        {
-                            foreach (var pg in EnumeratePages(child.GetValue<PdfDictionary>())) 
-                            {
-                                yield return pg;
-                            }
-                        }
-                        break;
-                    case "/Page":
-                        yield return dict;
-                        break;
-                }
-            }
+           
+
            // }
         }
 

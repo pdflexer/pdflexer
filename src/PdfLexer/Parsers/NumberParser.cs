@@ -58,7 +58,7 @@ namespace PdfLexer.Parsers
                 return PdfCommonNumbers.MinusOne;
             }
 
-            if (!_ctx.CacheNumbers)
+            if (!_ctx.Options.CacheNumbers)
             {
                 return GetResult(buffer);
             }

@@ -107,7 +107,7 @@ startxref
         public async Task ItGetsXRefTableMultiSection(string input, int entries, long lastOffset, int lastObj)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
-            var ctx = new ParsingContext() { IsEager = true };
+            var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager });
             var parser = new XRefParser(ctx);
             var source = new InMemoryDataSource(ctx, bytes);
             var (results, trailer) = await parser.LoadCrossReference(source);

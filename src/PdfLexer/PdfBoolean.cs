@@ -15,5 +15,10 @@ namespace PdfLexer
         }
         public bool Value { get; }
         public override PdfObjectType Type => PdfObjectType.BooleanObj;
+
+        // public override PdfObject Clone()
+        // {
+        //     return this; 
+        // }
     }
 }

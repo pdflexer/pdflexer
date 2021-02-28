@@ -1,19 +1,21 @@
 ﻿using System;
+using System.Threading;
 using PdfLexer.Parsers.Structure;
 
 namespace PdfLexer
 {
     public interface IPdfObject
     {
-        public bool IsIndirect { get; }
+        // public bool IsIndirect { get; }
         public PdfObjectType Type { get; }
     }
 
     public abstract class PdfObject : IPdfObject
     {
-        internal XRef IndirectRef { get; set; }
-        public virtual bool IsIndirect => IndirectRef.ObjectNumber != 0;
+        //internal XRef IndirectRef { get; set; }
+        //public virtual bool IsIndirect => IndirectRef.ObjectNumber != 0;
         public abstract PdfObjectType Type { get; }
+        //public abstract PdfObject Clone();
     }
 
     public static class PdfObjectExtensions
@@ -22,7 +24,7 @@ namespace PdfLexer
         {
             if (item is PdfIndirectRef ir)
             {
-                var resolved = ir.Context.GetIndirectObject(new XRef((int)ir.ObjectNumber, ir.Generation)); // TODO consolidate XRef vs PdfIndirectRef
+                var resolved = ir.GetObject();
                 return resolved;
             }
             else if (item is PdfLazyObject lz)
