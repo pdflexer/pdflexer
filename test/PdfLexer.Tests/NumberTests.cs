@@ -87,7 +87,7 @@ namespace PdfLexer.Tests
 
         private string Serialize_With_Span(int input)
         {
-            var serializer = new NumberSerializer(new ParsingContext());
+            var serializer = new NumberSerializer();
             var data = new Span<byte>(new byte[50]);
             var count = serializer.GetBytes(new PdfIntNumber(input), data);
 
@@ -96,7 +96,7 @@ namespace PdfLexer.Tests
 
         private string Serialize_With_Stream(int input)
         {
-            var serializer = new NumberSerializer(new ParsingContext());
+            var serializer = new NumberSerializer();
             var ms = new MemoryStream();
             serializer.WriteToStream(new PdfIntNumber(input), ms);
 
@@ -119,7 +119,7 @@ namespace PdfLexer.Tests
 
         private string Serialize_With_Span(decimal input)
         {
-            var serializer = new NumberSerializer(new ParsingContext());
+            var serializer = new NumberSerializer();
             var data = new Span<byte>(new byte[50]);
             var count = serializer.GetBytes(new PdfDecimalNumber(input), data);
 
@@ -128,7 +128,7 @@ namespace PdfLexer.Tests
 
         private string Serialize_With_Stream(decimal input)
         {
-            var serializer = new NumberSerializer(new ParsingContext());
+            var serializer = new NumberSerializer();
             var ms = new MemoryStream();
             serializer.WriteToStream(new PdfDecimalNumber(input), ms);
 

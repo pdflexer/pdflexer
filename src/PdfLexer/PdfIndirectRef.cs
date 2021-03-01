@@ -19,7 +19,7 @@ namespace PdfLexer
             };
         }
         public ParsingContext Context { get; }
-        public XRef Reference { get; }
+        internal override XRef Reference { get; set; }
         public override PdfObjectType Type => PdfObjectType.IndirectRefObj;
         public override IPdfObject GetObject() 
         {
@@ -38,7 +38,7 @@ namespace PdfLexer
     {
         public abstract IPdfObject GetObject();
         public abstract bool IsOwned(int sourceId);
-
+        internal abstract XRef Reference { get; set; }
         public override int GetHashCode()
         {
             if (this is ExistingIndirectRef ir)
@@ -91,13 +91,21 @@ namespace PdfLexer
     internal class PdfIndirectReference : PdfIndirectRef
     {
         internal bool IsDefined => Reference.ObjectNumber != 0;
-        internal XRef Reference { get; set; }
+        internal override XRef Reference { get; set; }
         internal int SourceId { get; set; }
         public IPdfObject Object { get; internal set; }
         public override PdfObjectType Type => PdfObjectType.IndirectRefObj;
         public override IPdfObject GetObject() => Object;
 
-        public override bool IsOwned(int sourceId) => SourceId == sourceId;
+        public override bool IsOwned(int sourceId) 
+        {
+            if (SourceId == 0)
+            {
+                SourceId = sourceId;
+                return true;
+            }
+            return SourceId == sourceId;
+        }
 
         internal PdfIndirectReference()
         {

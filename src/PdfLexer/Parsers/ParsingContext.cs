@@ -25,43 +25,38 @@ namespace PdfLexer.Parsers
         internal DecimalParser DecimalParser { get; }
         internal ArrayParser ArrayParser { get; }
         internal BoolParser BoolParser { get; }
-        internal BoolSerializer BoolSerializer { get; }
         internal NameParser NameParser { get; }
         public IPdfDataSource MainDocSource { get; private set; }
         public PdfDocument Document { get; internal set; }
         internal NestedParser NestedParser { get; }
         internal DictionaryParser DictionaryParser { get; }
         internal StringParser StringParser { get; }
-        public StringSerializer StringSerializer { get; }
+        
         internal XRefParser XRefParser { get; }
 
-        internal NumberSerializer NumberSerializer { get; }
-        internal NameSerializer NameSerializer { get; }
         public ParsingOptions Options { get; }
-        internal ArraySerializer ArraySerializer { get; }
-        internal DictionarySerializer DictionarySerializer { get; }
+
 
         public ParsingContext(ParsingOptions options=null)
         {
             Options = options ??= new ParsingOptions();
-            ArraySerializer = new ArraySerializer(this);
+            
             ArrayParser = new ArrayParser(this);
-
             BoolParser = new BoolParser();
-            BoolSerializer = new BoolSerializer();
+
+            
 
             DictionaryParser = new DictionaryParser(this);
-            DictionarySerializer = new DictionarySerializer(this);
+
 
             NameParser = new NameParser();
-            NameSerializer = new NameSerializer();
+                        
 
             NumberParser = new NumberParser(this);
             DecimalParser = new DecimalParser();
-            NumberSerializer = new NumberSerializer(this);
+
 
             StringParser = new StringParser(this);
-            StringSerializer = new StringSerializer();
 
             XRefParser = new XRefParser(this);
             NestedParser = new NestedParser(this);
@@ -196,18 +191,7 @@ namespace PdfLexer.Parsers
 
         internal void SerializeObject(IPdfObject obj, Stream stream)
         {
-            switch (obj)
-            {
-                // TODO ? switch parser to take positions for no slice if not needed?
-                case PdfNumber no:
-                    NumberSerializer.WriteToStream(no, stream);
-                    break;
 
-                case PdfName name:
-                    NameSerializer.WriteToStream(name, stream);
-                    break;
-            }
-            throw new NotImplementedException($"Requested to write pdf object of type {obj.GetType()}.");
         }
 
         internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
@@ -215,6 +199,10 @@ namespace PdfLexer.Parsers
             switch (type)
             {
                 // TODO ? switch parser to take positions for no slice if not needed?
+                case PdfObjectType.NullObj:
+                    {
+                        return PdfNull.Value;
+                    }
                 case PdfObjectType.NumericObj:
                     {
                         var slice = data.Slice(start, end);
@@ -244,6 +232,11 @@ namespace PdfLexer.Parsers
                     {
                         var slice = data.Slice(start, end);
                         return StringParser.Parse(in slice);
+                    }
+                case PdfObjectType.BooleanObj:
+                    {
+                        var slice = data.Slice(start, end);
+                        return BoolParser.Parse(slice);
                     }
             }
             return null;
@@ -284,6 +277,10 @@ namespace PdfLexer.Parsers
             switch (type)
             {
                 // TODO ? switch parser to take positions for no slice if not needed?
+                case PdfObjectType.NullObj:
+                    {
+                        return PdfNull.Value;
+                    }
                 case PdfObjectType.NumericObj:
                     {
                         var slice = data.Slice(start, length);
@@ -298,6 +295,16 @@ namespace PdfLexer.Parsers
                     {
                         var slice = data.Slice(start, length);
                         return NameParser.Parse(slice);
+                    }
+                case PdfObjectType.BooleanObj:
+                    {
+                        var slice = data.Slice(start, length);
+                        return BoolParser.Parse(slice);
+                    }
+                case PdfObjectType.StringObj:
+                    {
+                        var slice = data.Slice(start, length);
+                        return StringParser.Parse(slice);
                     }
                 case PdfObjectType.DictionaryObj:
                 case PdfObjectType.ArrayObj:

@@ -9,12 +9,6 @@ namespace PdfLexer.Serializers
 {
     public class NumberSerializer : ISerializer<PdfNumber>
     {
-        private ParsingContext _ctx;
-
-        public NumberSerializer(ParsingContext ctx)
-        {
-            _ctx = ctx;
-        }
         public void WriteToStream(PdfNumber obj, Stream stream)
         {
             var buff = ArrayPool<byte>.Shared.Rent(20);

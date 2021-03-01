@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using PdfLexer.IO;
 using PdfLexer.Parsers;
+using PdfLexer.Serializers;
 using Xunit;
 
 namespace PdfLexer.Tests
@@ -19,7 +20,7 @@ namespace PdfLexer.Tests
         // [InlineData("02_Spot_OP/020_ReadMe_Ghent_Output_Patch.pdf")]
         // //[InlineData("mt200953a.pdf")] // bad xref // TODO test rebuilding
         // [InlineData("ymj-46-585.pdf")]
-        // [Theory]
+        //[Theory]
         public async Task It_Reads_Objects(string pdfPath)
         {
             var data = File.ReadAllBytes(Path.Combine("c:\\temp\\test-pdfs\\", pdfPath));
@@ -28,6 +29,12 @@ namespace PdfLexer.Tests
             {
                 doc.Context.GetIndirectObject(item.Key);
             }
+
+            var ms = new MemoryStream();
+            var ctx = new WritingContext();
+            ctx.Initialize(1.7m, ms);
+            ctx.WriteIndirectObject(PdfIndirectRef.Create(doc.Pages[0].Dictionary), ms);
+            File.WriteAllBytes("c:\\temp\\dummy.tmp.pdf", ms.ToArray());
            // var xrefStart = XRefParser.GetXrefTableOffset(pdf);
            // var refs = XRefTableParser.GetEntries(pdf, xrefStart, out PdfLazyDictionary trailer);
            // var lookup = new IndirectLookup(pdf, refs, 10);

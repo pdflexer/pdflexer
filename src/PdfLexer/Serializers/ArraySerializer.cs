@@ -6,9 +6,9 @@ namespace PdfLexer.Serializers
 {
     public class ArraySerializer : ISerializer<PdfArray>
     {
-        private ParsingContext _ctx;
+        private WritingContext _ctx;
 
-        public ArraySerializer(ParsingContext ctx)
+        public ArraySerializer(WritingContext ctx)
         {
             _ctx = ctx;
         }

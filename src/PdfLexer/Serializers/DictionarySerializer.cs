@@ -8,9 +8,9 @@ namespace PdfLexer.Serializers
 {
     public class DictionarySerializer : ISerializer<PdfDictionary>
     {
-        private ParsingContext _ctx;
+        private WritingContext _ctx;
 
-        public DictionarySerializer(ParsingContext ctx)
+        public DictionarySerializer(WritingContext ctx)
         {
             _ctx = ctx;
         }

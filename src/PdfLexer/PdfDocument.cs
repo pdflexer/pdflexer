@@ -16,6 +16,7 @@ namespace PdfLexer
     {
         internal int DocumentId { get; } = Interlocked.Increment(ref docId);
         public ParsingContext Context { get; }
+        public decimal PdfVersion { get; set; }
         public PdfDictionary Trailer { get; }
         public PdfDictionary Catalog { get; internal set; }
         public List<PdfPage> Pages { get; internal set; }
@@ -129,5 +130,6 @@ namespace PdfLexer
         }
 
         private static int docId = 0;
+        internal static int GetNextId() => Interlocked.Increment(ref docId);
     }
 }
