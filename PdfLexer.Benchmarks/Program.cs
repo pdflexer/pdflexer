@@ -9,11 +9,13 @@ namespace PdfLexer.Benchmarks
     {
         static void Main(string[] args)
         {
-            //var bench = new FuncBenchmark();
-            //for (var i = 0; i < 1000; i++)
-            //{
-            //    var c = bench.EagerEager();
-            //}
+            // var bench = new NameCacheBench();
+            // bench.Casting();
+            // var bench = new FuncBenchmark();
+            // for (var i = 0; i < 1000; i++)
+            // {
+            //     var c = bench.Eager();
+            // }
             //var bench = new DictionaryBenchmark();
             //for (var i=0;i<100000;i++)
             //{

@@ -10,6 +10,7 @@ namespace PdfLexer
         public Eagerness Eagerness { get; set; } = Eagerness.FullEager;
         public bool CacheObjects { get; set; } = true;
         public bool CacheNumbers { get; set; } = true;
+        public bool CacheNames { get; set; } = true;
     }
 
     public enum Eagerness

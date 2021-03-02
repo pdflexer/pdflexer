@@ -11,40 +11,6 @@ namespace PdfLexer.Tests
 {
     public class NameTests
     {
-#if NET50
-        [InlineData("/Test ", "/Test", -1)]
-        [InlineData("/Test  ", "/Test", -1)]
-        [InlineData(" /Test", "/Test", 5)]
-        [InlineData("/Test\r", "/Test", 5)]
-        [InlineData("/Test\n", "/Test", 5)]
-        [InlineData("/Test\r\n", "/Test", 5)]
-        [InlineData("/Test#20Test ", "/Test Test", -1)]
-        [InlineData("/PANTONE#205757#20CV ", "/PANTONE 5757 CV", -1)]
-        [InlineData("/paired#28#29parentheses ", "/paired()parentheses", -1)]
-        [InlineData("/The_Key_of_F#23_Minor ", "/The_Key_of_F#_Minor", -1)]
-        [InlineData("/A#42 ", "/AB", -1)]
-        [Theory]
-        public void It_Gets_Name_Sequence(string input, string output, int length)
-        {
-            if (length == -1) { length = input.Trim().Length; }
-            var bytes = Encoding.ASCII.GetBytes(input);
-            var seq = new ReadOnlySequence<byte>(bytes);
-            var reader = new SequenceReader<byte>(seq);
-            var read = reader.TryReadNextToken(true, out var type, out var start);
-            Assert.True(read);
-
-            Assert.Equal(PdfTokenType.NameObj, type);
-
-            var measured = seq.GetOffset(reader.Position) - seq.GetOffset(start);
-            Assert.Equal(length, measured);
-            var parser = new NameParser();
-            var sliced = seq.Slice(start, reader.Position);
-            var result = parser.Parse(in sliced);
-            Assert.Equal(output, result.Value);
-        }
-
-#endif
-
         [InlineData("/Test ", "/Test", 5)]
         [InlineData("/Test  ", "/Test", 5)]
         [InlineData(" /Test", "/Test", 5)]
@@ -66,9 +32,27 @@ namespace PdfLexer.Tests
             Assert.Equal(PdfTokenType.NameObj, type);
 
             Assert.Equal(length, measured);
-            var parser = new NameParser();
+            var parser = new NameParser(new ParsingContext());
             var result = parser.Parse(new ReadOnlySpan<byte>(bytes).Slice(start, measured));
             Assert.Equal(output, result.Value);
+        }
+
+        [Fact]
+        public void It_Caches()
+        {
+            var key = "/Key";
+            var key2 = "/yeK";
+            var keyBytes = Encoding.ASCII.GetBytes(key);
+            var key2Bytes = Encoding.ASCII.GetBytes(key2);
+            var parser = new NameParser(new ParsingContext(new ParsingOptions { CacheNames = true }));
+            var result = parser.Parse(keyBytes);
+            var result2 = parser.Parse(keyBytes);
+            Assert.True(Object.ReferenceEquals(result, result2));
+            var result3 = parser.Parse(key2Bytes);
+            Assert.False(Object.ReferenceEquals(result, result3));
+            Assert.Equal(key, result.Value);
+            Assert.Equal(key2, result3.Value);
+
         }
 
         [InlineData("/Test", "/Test")]

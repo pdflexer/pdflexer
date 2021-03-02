@@ -23,9 +23,15 @@ namespace PdfLexer.Serializers
             // TODO only write spaces if needed
             for (var i = 0;i<obj.Count;i++)
             {
-                _ctx.SerializeObject(obj[i], stream);
+                _ctx.SerializeObject(obj[i]); // TODO fix stream refs
                 if (i+1<obj.Count)
                 {
+                    var nxt = obj[i+1];
+                    if (nxt.Type == PdfObjectType.NameObj || nxt.Type == PdfObjectType.ArrayObj || nxt.Type == PdfObjectType.DictionaryObj
+                        || nxt.Type == PdfObjectType.StringObj)
+                    {
+                        continue;
+                    }
                     stream.WriteByte((byte)' ');
                 }
             }

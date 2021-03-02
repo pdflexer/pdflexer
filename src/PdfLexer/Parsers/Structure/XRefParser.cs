@@ -12,7 +12,7 @@ namespace PdfLexer.Parsers.Structure
     public class XRefParser
     {
         private const int XrefBackScan = 250;
-        private static byte[] startxref = new byte[9] {
+        public static byte[] startxref = new byte[9] {
             (byte)'s',(byte)'t',(byte)'a',(byte)'r',(byte)'t',(byte)'x',(byte)'r',(byte)'e',(byte)'f'
         };
         public static byte[] trailer = new byte[7] {

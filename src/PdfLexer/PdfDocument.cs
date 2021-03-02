@@ -61,7 +61,11 @@ namespace PdfLexer
 
             if (ctx.Options.LoadPageTree)
             {
-                doc.Pages = EnumeratePages(pages, null, null, null, null).Select(x=>(PdfPage)x).ToList();
+                doc.Pages = new List<PdfPage>();
+                foreach (var pg in EnumeratePages(pages, null, null, null, null))
+                {
+                    doc.Pages.Add(pg);
+                }
             }
 
             return doc;

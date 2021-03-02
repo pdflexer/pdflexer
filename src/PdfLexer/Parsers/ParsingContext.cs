@@ -20,7 +20,7 @@ namespace PdfLexer.Parsers
         internal IPdfDataSource CurrentSource { get; set; }
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
         internal Dictionary<XRef, IPdfObject> IndirectCache = new Dictionary<XRef, IPdfObject>();
-
+        internal NameCache NameCache = new NameCache();
         internal NumberParser NumberParser { get; }
         internal DecimalParser DecimalParser { get; }
         internal ArrayParser ArrayParser { get; }
@@ -43,21 +43,11 @@ namespace PdfLexer.Parsers
             
             ArrayParser = new ArrayParser(this);
             BoolParser = new BoolParser();
-
-            
-
             DictionaryParser = new DictionaryParser(this);
-
-
-            NameParser = new NameParser();
-                        
-
+            NameParser = new NameParser(this);
             NumberParser = new NumberParser(this);
             DecimalParser = new DecimalParser();
-
-
             StringParser = new StringParser(this);
-
             XRefParser = new XRefParser(this);
             NestedParser = new NestedParser(this);
         }

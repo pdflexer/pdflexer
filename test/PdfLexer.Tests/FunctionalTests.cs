@@ -12,7 +12,7 @@ namespace PdfLexer.Tests
 {
     public class FunctionalTests
     {
-        // [InlineData("01_CMYK_OP/010_CMYK_OP_x3.pdf")]
+        [InlineData("01_CMYK_OP/010_CMYK_OP_x3.pdf")]
         // [InlineData("01_CMYK_OP/010_ReadMe_Ghent_Output_Patch.pdf")]
         // [InlineData("01_CMYK_OP/011_Overprint-Mode_x3.pdf")]
         // [InlineData("01_CMYK_OP/011_ReadMe_Ghent_Output_Patch.pdf")]
@@ -20,7 +20,7 @@ namespace PdfLexer.Tests
         // [InlineData("02_Spot_OP/020_ReadMe_Ghent_Output_Patch.pdf")]
         // //[InlineData("mt200953a.pdf")] // bad xref // TODO test rebuilding
         // [InlineData("ymj-46-585.pdf")]
-        //[Theory]
+        [Theory]
         public async Task It_Reads_Objects(string pdfPath)
         {
             var data = File.ReadAllBytes(Path.Combine("c:\\temp\\test-pdfs\\", pdfPath));
@@ -31,9 +31,12 @@ namespace PdfLexer.Tests
             }
 
             var ms = new MemoryStream();
-            var ctx = new WritingContext();
-            ctx.Initialize(1.7m, ms);
-            ctx.WriteIndirectObject(PdfIndirectRef.Create(doc.Pages[0].Dictionary), ms);
+            var ctx = new WritingContext(ms);
+            ctx.Initialize(1.7m);
+            // doc.Catalog["/ModifiedMDP"] = PdfBoolean.True;
+            // var ir = ctx.WriteIndirectObject(PdfIndirectRef.Create(doc.Catalog));
+            // doc.Trailer["/Root"] = ir;
+            ctx.Complete(doc.Trailer);
             File.WriteAllBytes("c:\\temp\\dummy.tmp.pdf", ms.ToArray());
            // var xrefStart = XRefParser.GetXrefTableOffset(pdf);
            // var refs = XRefTableParser.GetEntries(pdf, xrefStart, out PdfLazyDictionary trailer);
@@ -61,8 +64,8 @@ namespace PdfLexer.Tests
         // [InlineData("02_Spot_OP/020_ReadMe_Ghent_Output_Patch.pdf")]
         // //[InlineData("mt200953a.pdf")] // bad xref // TODO test rebuilding
         // [InlineData("ymj-46-585.pdf")]
-        // [InlineData("C:\\temp\\PRIV\\Origrk.pdf")]
-        // [Theory]
+        [InlineData("C:\\temp\\PRIV\\Origrk.pdf")]
+        [Theory]
         public async Task It_Loads_Pages(string pdfPath)
         {
             var data = File.ReadAllBytes(Path.Combine("c:\\temp\\test-pdfs\\", pdfPath));

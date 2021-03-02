@@ -23,13 +23,14 @@ namespace PdfLexer.Serializers
         {
             stream.WriteByte((byte)'<');
             stream.WriteByte((byte)'<');
-            // TODO only write spaces if needed
             foreach (var item in obj)
             {
-                _ctx.SerializeObject(item.Key, stream);
-                stream.WriteByte((byte)' ');
-                _ctx.SerializeObject(item.Value, stream);
-                stream.WriteByte((byte)' ');
+                _ctx.SerializeObject(item.Key);
+                if (item.Value.Type != PdfObjectType.NameObj && item.Value.Type != PdfObjectType.StringObj && item.Value.Type != PdfObjectType.ArrayObj && item.Value.Type != PdfObjectType.DictionaryObj)
+                {
+                        stream.WriteByte((byte)' ');
+                }
+                _ctx.SerializeObject(item.Value);
             }
             stream.WriteByte((byte)'>');
             stream.WriteByte((byte)'>');

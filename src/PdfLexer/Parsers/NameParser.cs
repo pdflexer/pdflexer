@@ -13,25 +13,39 @@ namespace PdfLexer.Parsers
     {
         internal static byte[] NameTerminators = new byte[16] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
             (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
+        private ParsingContext _ctx;
 
+        public NameParser(ParsingContext ctx)
+        {
+            _ctx = ctx;
+        }
 
         public override PdfName Parse(ReadOnlySpan<byte> buffer)
         {
-            if (buffer.IndexOf((byte) '#') == -1)
+            ulong key = 0;
+            if (_ctx.Options.CacheNames)
             {
-                return ParseFastNoHex(buffer);
+                if (_ctx.NameCache.TryGetName(buffer, out key, out var result))
+                {
+                    return result;
+                }
             }
-
-            return ParseWithHex(buffer, 0, buffer.Length);
+            var val = buffer.IndexOf((byte)'#') == -1 ? ParseFastNoHex(buffer) : ParseWithHex(buffer, 0, buffer.Length);
+            if (key > 0)
+            {
+                _ctx.NameCache.AddValue(key, val);
+            }
+            return val;
         }
 
         private PdfName ParseFastNoHex(ReadOnlySpan<byte> buffer)
         {
-            // TODO lookup for commonly used names
-            var chars = ArrayPool<char>.Shared.Rent(buffer.Length);
+            // TODO Perf testing..
+            var buff = ArrayPool<char>.Shared.Rent(buffer.Length);
+            Span<char> chars = buff;
             var i = Encoding.ASCII.GetChars(buffer, chars);
-            var str = new PdfName(new String(chars, 0, i));
-            ArrayPool<char>.Shared.Return(chars);
+            var str = new PdfName(chars.Slice(0, i).ToString());
+            ArrayPool<char>.Shared.Return(buff);
             return str;
         }
 
@@ -43,9 +57,9 @@ namespace PdfLexer.Parsers
             for (var i = start; i < start + length; i++)
             {
                 var c = buffer[i];
-                if (c == (byte) '#')
+                if (c == (byte)'#')
                 {
-                    if (!Utf8Parser.TryParse(buffer.Slice(i+1, 2), out byte v, out int ic, 'x'))
+                    if (!Utf8Parser.TryParse(buffer.Slice(i + 1, 2), out byte v, out int ic, 'x'))
                     {
                         throw CommonUtil.DisplayDataErrorException(buffer, i, "Invalid hex found");
                     }
@@ -58,7 +72,7 @@ namespace PdfLexer.Parsers
                     chars[ci++] = (char)c;
                 }
             }
-            var name = new PdfName(new String(chars.Slice(0,ci)));
+            var name = new PdfName(chars.Slice(0, ci).ToString());
             ArrayPool<char>.Shared.Return(rented);
             return name;
         }
@@ -79,6 +93,6 @@ namespace PdfLexer.Parsers
                 return;
             }
         }
-        
+
     }
 }
