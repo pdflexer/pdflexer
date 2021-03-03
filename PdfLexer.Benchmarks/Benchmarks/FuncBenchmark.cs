@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using PdfLexer.IO;
 using PdfLexer.Parsers;
+using PdfLexer.Serializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,14 +24,14 @@ namespace PdfLexer.Benchmarks.Benchmarks
             data = File.ReadAllBytes("C:\\temp\\PRIV\\Origrk.pdf");
             data2 = File.ReadAllBytes("C:\\temp\\test-pdfs\\kjped-53-661.pdf");
         }
-        [Benchmark(Baseline = true)]
+        //[Benchmark(Baseline = true)]
         public int Eager()
         {
             using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.FullEager }).GetAwaiter().GetResult();
             return Run(doc);
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public int EagerNoCache()
         {
             using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.FullEager, CacheNames = false }).GetAwaiter().GetResult();
@@ -44,14 +45,14 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return Run(doc);
         }
 
-        [Benchmark()]
+        //[Benchmark(Baseline = true)]
         public int Lazy()
         {
             using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
             return Run(doc);
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public int LazyNoCacheNames()
         {
             using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.Lazy, CacheNames = false }).GetAwaiter().GetResult();
@@ -74,13 +75,56 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return 0;
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public int PdfPig()
         {
             var doc = UglyToad.PdfPig.PdfDocument.Open(data);
             return WalkTree(doc.Structure.Catalog.PageTree, null).Count();
         }
-        
+
+        private MemoryStream ms = new MemoryStream();
+        [Benchmark(Baseline = true)]
+        public int PdfPigCopy()
+        {
+            var doc = UglyToad.PdfPig.PdfDocument.Open(data);
+            ms.Position = 0;
+            var builder = new UglyToad.PdfPig.Writer.PdfDocumentBuilder(ms);
+            for (var i=0;i<doc.NumberOfPages;i++)
+            {
+                builder.AddPage(doc, i+1);
+            }
+            builder.Dispose();
+            return 0;
+        }
+
+        [Benchmark()]
+        public int EagerCopy()
+        {
+            using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.FullEager }).GetAwaiter().GetResult();
+            ms.Position = 0;
+            var writer = new WritingContext(ms);
+            writer.Complete(doc.Trailer);
+            return 0;
+        }
+
+        [Benchmark()]
+        public int LazyCopy()
+        {
+            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
+            ms.Position = 0;
+            var writer = new WritingContext(ms);
+            writer.Complete(doc.Trailer);
+            return 0;
+        }
+        //[Benchmark()]
+        public int LazyCopyPageTree()
+        {
+            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
+            ms.Position = 0;
+            var writer = new WritingContext(ms);
+            writer.Complete(doc.Trailer);
+            return 0;
+        }
         //[Benchmark()]
         public int PdfPigNoLoad()
         {

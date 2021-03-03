@@ -9,12 +9,11 @@ namespace PdfLexer.Serializers
 {
     public class NumberSerializer : ISerializer<PdfNumber>
     {
+        private byte[] miniBuffer = new byte[20];
         public void WriteToStream(PdfNumber obj, Stream stream)
         {
-            var buff = ArrayPool<byte>.Shared.Rent(20);
-            var count = GetBytes(obj, buff);
-            stream.Write(buff, 0, count);
-            ArrayPool<byte>.Shared.Return(buff);
+            var count = GetBytes(obj, miniBuffer);
+            stream.Write(miniBuffer, 0, count);
         }
 
         public int GetBytes(PdfNumber obj, Span<byte> data)

@@ -10,10 +10,18 @@ namespace PdfLexer.Serializers
         public void WriteToStream(PdfName obj, Stream stream)
         {
             // TODO well known values or grab from cache since we are saving key
-            var buffer = ArrayPool<byte>.Shared.Rent(obj.Value.Length*3);
-            var written = GetBytes(obj, buffer);
-            stream.Write(buffer, 0, written);
-            ArrayPool<byte>.Shared.Return(buffer);
+            if (obj.Value.Length < 50)
+            {
+                Span<byte> buffer = stackalloc byte[100];
+                var written = GetBytes(obj, buffer);
+                stream.Write(buffer.Slice(0, written));   
+            } else
+            {
+                var buffer = ArrayPool<byte>.Shared.Rent(obj.Value.Length*3);
+                var written = GetBytes(obj, buffer);
+                stream.Write(buffer, 0, written);   
+                ArrayPool<byte>.Shared.Return(buffer);
+            }
             return;
         }
 

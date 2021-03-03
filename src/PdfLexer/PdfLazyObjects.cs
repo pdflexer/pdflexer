@@ -25,6 +25,7 @@ namespace PdfLexer
 
     internal class PdfLazyObject : PdfObject
     {
+        public override bool IsLazy => true;
         public override PdfObjectType Type => LazyObjectType;
         public PdfObjectType LazyObjectType { get; set; }
         public bool HasLazyIndirect { get; set; }

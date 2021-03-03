@@ -13,7 +13,7 @@ namespace PdfLexer
 
         public override PdfObjectType Type => PdfObjectType.DictionaryObj;
 
-        private readonly IDictionary<PdfName, IPdfObject> _dictionary;
+        internal readonly IDictionary<PdfName, IPdfObject> _dictionary;
         internal bool DictionaryModified { get;set; }
         internal PdfLazyObject LazyWrapper { get;set; }
         

@@ -43,14 +43,14 @@ namespace PdfLexer.IO
             throw new NotImplementedException();
         }
 
-        private Dictionary<PdfIndirectRef, PdfIndirectReference> sharedStack = new Dictionary<PdfIndirectRef, PdfIndirectReference>();
+        private Dictionary<PdfIndirectRef, NewIndirectRef> sharedStack = new Dictionary<PdfIndirectRef, NewIndirectRef>();
         public IPdfObject AddItem(IPdfObject obj)
         {
             sharedStack.Clear();
             return AddItem(obj, sharedStack);
         }
 
-        internal IPdfObject AddItem(IPdfObject obj, Dictionary<PdfIndirectRef, PdfIndirectReference> refStack)
+        internal IPdfObject AddItem(IPdfObject obj, Dictionary<PdfIndirectRef, NewIndirectRef> refStack)
         {
             if (obj is PdfLazyObject lz)
             {
@@ -88,7 +88,7 @@ namespace PdfLexer.IO
                 {
                     return copied;
                 }
-                var newRef = new PdfIndirectReference();
+                var newRef = new NewIndirectRef();
                 refStack[ir] = newRef;
                 var newObj = AddItem(ir.GetObject(), refStack);
                 newRef.Object = newObj;

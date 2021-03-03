@@ -55,6 +55,7 @@ namespace PdfLexer.Parsers
         public async ValueTask<(Dictionary<XRef, XRefEntry>, PdfDictionary)> Initialize(IPdfDataSource pdf)
         {
             MainDocSource = pdf;
+            CurrentSource = MainDocSource;
             var (refs, trailer) = await XRefParser.LoadCrossReference(MainDocSource);
             var entries = new Dictionary<XRef, XRefEntry>();
             foreach (var entry in refs.OrderBy(x => x.Reference.ObjectNumber))

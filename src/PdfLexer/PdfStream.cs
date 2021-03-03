@@ -7,7 +7,7 @@ using System.Text;
 
 namespace PdfLexer
 {
-    public class PdfStream : IPdfObject
+    public class PdfStream : PdfObject
     {
         // TODO support external content?
         public PdfStream(PdfDictionary dictionary, PdfStreamContents contents)
@@ -18,7 +18,7 @@ namespace PdfLexer
         public PdfDictionary Dictionary { get; }
         public PdfStreamContents Contents { get; set; }
         public bool IsIndirect => true;
-        public PdfObjectType Type => PdfObjectType.StreamObj;
+        public override PdfObjectType Type => PdfObjectType.StreamObj;
 
         // /Length required
         // /Filter /DecodeParms -> if filters

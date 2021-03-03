@@ -8,6 +8,7 @@ namespace PdfLexer
     {
         // public bool IsIndirect { get; }
         public PdfObjectType Type { get; }
+        public bool IsLazy { get; }
     }
 
     public abstract class PdfObject : IPdfObject
@@ -15,6 +16,7 @@ namespace PdfLexer
         //internal XRef IndirectRef { get; set; }
         //public virtual bool IsIndirect => IndirectRef.ObjectNumber != 0;
         public abstract PdfObjectType Type { get; }
+        public virtual bool IsLazy { get => false; }
         //public abstract PdfObject Clone();
     }
 
