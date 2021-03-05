@@ -1,4 +1,7 @@
-﻿using BenchmarkDotNet.Running;
+﻿using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
+using BenchmarkDotNet.Jobs;
+using BenchmarkDotNet.Running;
 using PdfLexer.Benchmarks.Benchmarks;
 using PdfLexer.Serializers;
 using System;
@@ -8,6 +11,15 @@ using System.Threading.Tasks;
 
 namespace PdfLexer.Benchmarks
 {
+    internal class BenchmarkConfig : ManualConfig
+    {
+        public BenchmarkConfig()
+        {
+            AddDiagnoser(MemoryDiagnoser.Default);
+            AddJob(Job.ShortRun.WithWarmupCount(5).WithIterationCount(12));
+        }
+    }
+
     class Program
     {
         static async Task Main(string[] args)
@@ -23,9 +35,9 @@ namespace PdfLexer.Benchmarks
             //    ms.Position = 0;
             //    var ctx = new WritingContext(ms);
             //    ctx.Initialize(1.7m);
-            //    // doc.Catalog["/ModifiedMDP"] = PdfBoolean.True;
-            //    // var ir = ctx.WriteIndirectObject(PdfIndirectRef.Create(doc.Catalog));
-            //    // doc.Trailer["/Root"] = ir;
+            // doc.Catalog["/ModifiedMDP"] = PdfBoolean.True;
+            // var ir = ctx.WriteIndirectObject(PdfIndirectRef.Create(doc.Catalog));
+            // doc.Trailer["/Root"] = ir;
             //    ctx.Complete(doc.Trailer);
             //}
             //var bench = new DictionaryBenchmark();

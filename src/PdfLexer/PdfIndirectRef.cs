@@ -1,6 +1,7 @@
 ﻿using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using System;
+using System.IO;
 using System.Runtime.CompilerServices;
 
 namespace PdfLexer
@@ -17,6 +18,14 @@ namespace PdfLexer
                 Generation = generation
             };
         }
+
+        public ExistingIndirectRef(ParsingContext ctx, XRef reference)
+        {
+            Context = ctx;
+            SourceId = ctx.SourceId;
+            Reference = reference;
+        }
+
         public ParsingContext Context { get; }
         internal override XRef Reference { get; set; }
         internal override int SourceId { get; set; }
@@ -51,53 +60,36 @@ namespace PdfLexer
 
             return SourceId == oir.SourceId && Reference.Equals(oir.Reference);
         }
-    }
 
-    internal class WeakExistingRef : PdfIndirectRef
-    {
-        public override PdfObjectType Type => PdfObjectType.IndirectRefObj;
+        // internal override bool CanLazyCopy(int destinationId)
+        // {
+        //     if (destinationId != SourceId)
+        //     {
+        //         return false;
+        //     }
+        // 
+        //     ulong id = ((ulong)Reference.ObjectNumber << 16) | ((uint)Reference.Generation & 0xFFFF);
+        //     if (Context.IndirectCache.TryGetValue(id, out var value))
+        //     {
+        //         switch (value.Type)
+        //         {
+        //             case PdfObjectType.ArrayObj:
+        //                 var arr = (PdfArray)value;
+        //                 return !arr.IsModified;
+        //             case PdfObjectType.DictionaryObj:
+        //                 var dict = (PdfDictionary)value;
+        //                 return !dict.IsModified;
+        //         }
+        //         return true;
+        //     }
+        //     return true;
+        // 
+        // }
 
-        internal override XRef Reference { get; set; }
-
-        internal override int SourceId {get; set;}
-
-        public WeakExistingRef(ExistingIndirectRef existing)
-        {
-            SourceId = existing.Context.SourceId;
-            Reference = existing.Reference;
-        }
-
-        public override IPdfObject GetObject()
-        {
-            throw new NotSupportedException();
-        }
-
-        public override bool IsOwned(int sourceId) => SourceId == sourceId;
-
-        public override int GetHashCode()
-        {
-            return unchecked(SourceId + Reference.Generation + Reference.ObjectNumber);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (System.Object.ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj is WeakExistingRef wer)
-            {
-                return false;
-            }
-
-            if (!(obj is ExistingIndirectRef oir))
-            {
-                return false;
-            }
-
-            return SourceId == oir.Context.SourceId && Reference.Equals(oir.Reference);
-        }
+        // internal override void CopyExistingData(Stream stream)
+        // {
+        //     Context.CopyExsitingData(Reference, stream);
+        // }
     }
 
     public abstract class PdfIndirectRef : PdfObject
@@ -106,6 +98,8 @@ namespace PdfLexer
         public abstract bool IsOwned(int sourceId);
         internal abstract XRef Reference { get; set; }
         internal abstract int SourceId { get; set; }
+        // internal abstract bool CanLazyCopy(int destinationId);
+        // internal abstract void CopyExistingData(Stream stream);
         public static PdfIndirectRef Create(IPdfObject obj) => new NewIndirectRef(obj);
     }
 
@@ -161,6 +155,13 @@ namespace PdfLexer
             }
             return false;
         }
+
+        // internal override bool CanLazyCopy(int destinationId) => false;
+        // 
+        // internal override void CopyExistingData(Stream stream)
+        // {
+        //     throw new NotSupportedException();
+        // }
     }
 
     internal class IndirectRefToken : IPdfObject

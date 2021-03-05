@@ -2,6 +2,7 @@
 using PdfLexer.IO;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
+using PdfLexer.Serializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -16,7 +17,7 @@ namespace PdfLexer
     {
         internal int DocumentId { get; } = Interlocked.Increment(ref docId);
         public ParsingContext Context { get; }
-        public decimal PdfVersion { get; set; }
+        public decimal PdfVersion { get; set; } = 1.7m; // TODO
         public PdfDictionary Trailer { get; }
         public PdfDictionary Catalog { get; internal set; }
         public List<PdfPage> Pages { get; internal set; }
@@ -34,10 +35,49 @@ namespace PdfLexer
             NextObjectNumber = entries.Max(x=>x.Key.ObjectNumber) + 1;
         }
 
-
-
         public void Dispose()
         {
+        }
+
+        public void SaveTo(Stream stream)
+        {
+            var nextId =  XrefEntries.Keys.Select(x=>x.ObjectNumber).Max() + 1;
+            var ctx = new WritingContext(stream, nextId, DocumentId);
+            ctx.Initialize(PdfVersion);
+            foreach (var obj in XrefEntries.Values)
+            {
+                if (obj.IsFree)
+                {
+                    continue;
+                }
+                if (IsDataCopyable(obj.Reference))
+                {
+                    ctx.WriteExistingData(Context, obj);
+                } else
+                {
+                    ctx.WriteIndirectObject(new ExistingIndirectRef(Context, obj.Reference));
+                }
+            }
+            ctx.Complete(Trailer);
+        }
+
+        private bool IsDataCopyable(XRef entry)
+        {
+                ulong id = ((ulong)entry.ObjectNumber << 16) | ((uint)entry.Generation & 0xFFFF);
+                if (Context.IndirectCache.TryGetValue(id, out var value))
+                {
+                    switch (value.Type)
+                    {
+                        case PdfObjectType.ArrayObj:
+                            var arr = (PdfArray)value;
+                            return !arr.IsModified;
+                        case PdfObjectType.DictionaryObj:
+                            var dict = (PdfDictionary)value;
+                            return !dict.IsModified;
+                    }
+                    return true;
+                }
+                return true;
         }
 
         public static PdfDocument Create()
@@ -55,7 +95,18 @@ namespace PdfLexer
             
             var source = new InMemoryDataSource(ctx, data);
             var result = await ctx.Initialize(source);
+
+
             var doc = new PdfDocument(ctx, result.Item2, result.Item1);
+            // TODO: clean the existing ref ID up
+            foreach (var item in result.Item2.Values)
+            {
+                if (item.Type == PdfObjectType.IndirectRefObj)
+                {
+                    var eir = (ExistingIndirectRef)item;
+                    eir.SourceId = doc.DocumentId;
+                }
+            }
             doc.Catalog = doc.Trailer.GetRequiredValue<PdfDictionary>(PdfName.Root);
             var pages = doc.Catalog.GetRequiredValue<PdfDictionary>(PdfName.Pages);
 

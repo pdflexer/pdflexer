@@ -64,13 +64,16 @@ namespace PdfLexer.Tests
         // [InlineData("02_Spot_OP/020_ReadMe_Ghent_Output_Patch.pdf")]
         // //[InlineData("mt200953a.pdf")] // bad xref // TODO test rebuilding
         // [InlineData("ymj-46-585.pdf")]
-        //[InlineData("C:\\temp\\PRIV\\Origrk.pdf")]
-        //[Theory]
+        // [InlineData("C:\\temp\\PRIV\\Origrk.pdf")]
+        // [Theory]
         public async Task It_Loads_Pages(string pdfPath)
         {
             var data = File.ReadAllBytes(Path.Combine("c:\\temp\\test-pdfs\\", pdfPath));
             var doc = await PdfDocument.Open(data);
 
+            var raw = new MemoryStream();
+            doc.SaveTo(raw);
+            File.WriteAllBytes("c:\\temp\\large.raw.pdf", raw.ToArray());
             var ms = new MemoryStream();
             var ctx = new WritingContext(ms);
             ctx.Initialize(1.7m);

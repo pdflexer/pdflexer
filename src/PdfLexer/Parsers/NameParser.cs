@@ -44,7 +44,7 @@ namespace PdfLexer.Parsers
             var buff = ArrayPool<char>.Shared.Rent(buffer.Length);
             Span<char> chars = buff;
             var i = Encoding.ASCII.GetChars(buffer, chars);
-            var str = new PdfName(chars.Slice(0, i).ToString());
+            var str = new PdfName(chars.Slice(0, i).ToString(), false);
             ArrayPool<char>.Shared.Return(buff);
             return str;
         }
@@ -72,7 +72,7 @@ namespace PdfLexer.Parsers
                     chars[ci++] = (char)c;
                 }
             }
-            var name = new PdfName(chars.Slice(0, ci).ToString());
+            var name = new PdfName(chars.Slice(0, ci).ToString(), true);
             ArrayPool<char>.Shared.Return(rented);
             return name;
         }

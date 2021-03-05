@@ -19,7 +19,7 @@ namespace PdfLexer.Parsers
         internal long CurrentOffset { get; set; }
         internal IPdfDataSource CurrentSource { get; set; }
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
-        internal Dictionary<XRef, IPdfObject> IndirectCache = new Dictionary<XRef, IPdfObject>();
+        internal Dictionary<ulong, IPdfObject> IndirectCache = new Dictionary<ulong, IPdfObject>();
         internal NameCache NameCache = new NameCache();
         internal NumberParser NumberParser { get; }
         internal DecimalParser DecimalParser { get; }
@@ -84,9 +84,62 @@ namespace PdfLexer.Parsers
             // TODO allow lazy loading here -> especially for ShouldLoadIndirects
             // return GetIndirectObject(ir.Reference);
         }
+
+
+        internal void CopyExsitingData(XRefEntry xref, Stream stream)
+        {
+            // TODO deduplicate with GetIndirectObject
+
+            // TODO split data sources
+            MainDocSource.FillData(xref.Offset, xref.MaxLength, out var buffer);
+
+            // SKIP INDIRECT REF INFO
+            var i = PdfSpanLexer.TryReadNextToken(buffer, out var type, 0, out var length);
+            Debug.Assert(type == PdfTokenType.NumericObj);
+            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i+length, out length);
+            Debug.Assert(type == PdfTokenType.NumericObj);
+            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i+length, out length);
+            Debug.Assert(type == PdfTokenType.StartObj);
+            var os = i + length;
+
+            length = GetCompleteLength(buffer, ref os, out var objType);
+            var initObj = os;
+            var initLength = length;
+            // GET NEXT TOKEN
+            i = PdfSpanLexer.TryReadNextToken(buffer, out type, os+length, out length);
+            if (type == PdfTokenType.EndObj)
+            {
+                stream.Write(buffer.Slice(initObj, initLength));
+                return;
+            } else if (type == PdfTokenType.StartStream)
+            {
+                // TODO look into this.. feels wrong parsing dict here
+                var existing = Options.Eagerness;
+                Options.Eagerness = Eagerness.Lazy;
+                var obj = GetKnownPdfItem(PdfObjectType.DictionaryObj, buffer, initObj, initLength);
+                if (!(obj is PdfDictionary dict))
+                {
+                    throw new ApplicationException("Indirect object followed by start stream token but was not dictionary.");
+                }
+                if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
+                {
+                    throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
+                }
+                var se = i + length + streamLength;
+                i = PdfSpanLexer.TryReadNextToken(buffer, out type, se, out length);
+                Debug.Assert(type == PdfTokenType.EndStream);
+                var cse = i + length;                
+                stream.Write(buffer.Slice(initObj, cse-initObj));
+                Options.Eagerness = existing;
+                return;
+            }
+            throw new ApplicationException("Bad");
+        }
+
         internal IPdfObject GetIndirectObject(XRef xref)
         {
-            if (Options.CacheObjects && IndirectCache.TryGetValue(xref, out var cached))
+            ulong id = ((ulong)xref.ObjectNumber << 16) | ((uint)xref.Generation & 0xFFFF);
+            if (Options.CacheObjects && IndirectCache.TryGetValue(id, out var cached))
             {
                 return cached;
             }
@@ -116,14 +169,13 @@ namespace PdfLexer.Parsers
             Debug.Assert(type == PdfTokenType.StartObj);
             var os = i + length;
             var obj = GetPdfItem(buffer, os, out length);
-            // obj.IndirectRef = xref;
             // GET NEXT TOKEN
             i = PdfSpanLexer.TryReadNextToken(buffer, out type, os+length, out length);
             if (type == PdfTokenType.EndObj)
             {
                 if (Options.CacheObjects) // TODO add obj/endobj offsets for copying of data later
                 {
-                    IndirectCache[xref] = obj;
+                    IndirectCache[id] = obj;
                 }
                 return obj;
             } else if (type == PdfTokenType.StartStream)
@@ -141,7 +193,7 @@ namespace PdfLexer.Parsers
                 Debug.Assert(type == PdfTokenType.EndStream);
                 if (Options.CacheObjects)
                 {
-                    IndirectCache[xref] = stream;
+                    IndirectCache[id] = stream;
                 }
                 return stream;
             }
@@ -235,7 +287,17 @@ namespace PdfLexer.Parsers
 
         internal PdfObject GetPdfItem(ReadOnlySpan<byte> data, int start, out int length)
         {
-            var next = PdfSpanLexer.TryReadNextToken(data, out var type, start, out length);
+            var orig = start;
+            length = GetCompleteLength(data, ref start, out var type);
+
+            var item = GetKnownPdfItem((PdfObjectType)type, data, start, length);
+            length = length + start - orig;
+            return item;
+        }
+
+        private int GetCompleteLength(ReadOnlySpan<byte> data, ref int start, out PdfObjectType objType)
+        {
+            var next = PdfSpanLexer.TryReadNextToken(data, out var type, start, out var length);
             if (next == -1)
             {
                 throw CommonUtil.DisplayDataErrorException(data, start, "Object not found in provided data buffer");
@@ -257,10 +319,9 @@ namespace PdfLexer.Parsers
                 NestedUtil.AdvanceToDictEnd(data, ref ed, out _);
                 length = ed-next;
             }
-
-            var item = GetKnownPdfItem((PdfObjectType)type, data, next, length);
-            length = length + next - start;
-            return item;
+            start = next;
+            objType = (PdfObjectType)type;
+            return length;
         }
 
         internal PdfObject GetKnownPdfItem(PdfObjectType type, ReadOnlySpan<byte> data, int start, int length)

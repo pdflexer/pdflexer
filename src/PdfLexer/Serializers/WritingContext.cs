@@ -16,6 +16,7 @@ namespace PdfLexer.Serializers
     {
         private static byte[] zeros = new byte[] { (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0' };
         private static byte[] gen0end = new byte[] { (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)' ', (byte)'n', (byte)' ', (byte)'\n' };
+        private static byte[] gen1end = new byte[] { (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'1', (byte)' ', (byte)'f', (byte)' ', (byte)'\n' };
         private static byte[] oef = new byte[] { (byte)'%', (byte)'%', (byte)'E', (byte)'O', (byte)'F', (byte)'\n' };
         private static byte[] obj0 = Encoding.ASCII.GetBytes("0000000000 65535 f \n");
         internal Dictionary<int, long> offsets = new Dictionary<int, long>();
@@ -37,6 +38,12 @@ namespace PdfLexer.Serializers
             NameSerializer = new NameSerializer();
             NumberSerializer = new NumberSerializer();
             StringSerializer = new StringSerializer();
+        }
+        
+        internal WritingContext(Stream stream, int nextId, int docId) : this(stream)
+        {
+            NextId = nextId;
+            NewDocId = docId;
         }
 
         public void Initialize(decimal version)
@@ -72,9 +79,16 @@ namespace PdfLexer.Serializers
             Stream.Write(buff.Slice(0, count));
             Stream.WriteByte((byte)'\n');
             Stream.Write(obj0);
-            for (var i = 0; i < offsets.Count; i++)
+            for (var i = 1; i < offsets.Count; i++)
             {
-                var oos = offsets[i+1];
+                if (!offsets.TryGetValue(i, out var oos))
+                {
+                    Stream.Write(z);
+                    Stream.WriteByte((byte)' ');
+                    Stream.Write(gen1end);
+                    continue;
+                }
+
                 if (!Utf8Formatter.TryFormat(oos, buff, out count))
                 {
                     throw new ApplicationException("TODO");
@@ -280,6 +294,16 @@ namespace PdfLexer.Serializers
             reused.Clear();
             return WriteIndirectObject(ir, reused);
         }
+
+        internal void WriteExistingData(ParsingContext ctx, XRefEntry entry)
+        {
+            Debug.Assert(entry.Reference.ObjectNumber != 0);
+            offsets[entry.Reference.ObjectNumber] = Stream.Position;
+            WriteObjStart(entry.Reference);
+            ctx.CopyExsitingData(entry, Stream);
+            WriteObjEnd();
+        }
+
         int test = 0;
         internal PdfIndirectRef WriteIndirectObject(PdfIndirectRef ir, HashSet<PdfIndirectRef> refStack)
         {
@@ -321,8 +345,6 @@ Parse:
                 WriteObjEnd();
                 return local;
             }
-
-            
         }
 
         private void Recurse(PdfDictionary obj, HashSet<PdfIndirectRef> refStack)

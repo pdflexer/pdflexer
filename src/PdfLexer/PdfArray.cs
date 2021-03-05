@@ -11,7 +11,29 @@ namespace PdfLexer
         internal List<IPdfObject> internalList = new List<IPdfObject>();
 
         // TODO check children
-        public bool IsModified { get; set; }
+        
+        private bool ArrayModified {get;set;}
+        public bool IsModified
+        {
+            get
+            {
+                if (ArrayModified)
+                {
+                    return true;
+                }
+
+                foreach (var item in internalList)
+                {
+                    if (item.IsModified())
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+            set => ArrayModified = value;
+        }
         internal PdfLazyObject LazyWrapper { get;set; }
         PdfLazyObject IParsedLazyObj.Wrapper => LazyWrapper;
         public override PdfObjectType Type => PdfObjectType.ArrayObj;

@@ -39,19 +39,19 @@ namespace PdfLexer
             return Value.GetHashCode();
         }
 
-        public static PdfName Prev => new PdfName("/Prev");
-        public static PdfName Length => new PdfName("/Length");
-        public static PdfName Root => new PdfName("/Root");
-        public static PdfName Pages => new PdfName("/Pages");
-        public static PdfName TypeName => new PdfName("/Type");
-        public static PdfName Count => new PdfName("/Count");
-        public static PdfName Kids => new PdfName("/Kids");
-        public static PdfName Contents => new PdfName("/Contents");
-        public static PdfName Resources => new PdfName("/Resources");
-        public static PdfName MediaBox => new PdfName("/MediaBox");
-        public static PdfName CropBox => new PdfName("/CropBox");
-        public static PdfName Rotate => new PdfName("/Rotate");
-        public static PdfName Catalog => new PdfName("/Catalog");
+        public static PdfName Prev => new PdfName("/Prev", false);
+        public static PdfName Length => new PdfName("/Length", false);
+        public static PdfName Root => new PdfName("/Root", false);
+        public static PdfName Pages => new PdfName("/Pages", false);
+        public static PdfName TypeName => new PdfName("/Type", false);
+        public static PdfName Count => new PdfName("/Count", false);
+        public static PdfName Kids => new PdfName("/Kids", false);
+        public static PdfName Contents => new PdfName("/Contents", false);
+        public static PdfName Resources => new PdfName("/Resources", false);
+        public static PdfName MediaBox => new PdfName("/MediaBox", false);
+        public static PdfName CropBox => new PdfName("/CropBox", false);
+        public static PdfName Rotate => new PdfName("/Rotate", false);
+        public static PdfName Catalog => new PdfName("/Catalog", false);
 
         public static implicit operator PdfName(string name)
         {

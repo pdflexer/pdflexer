@@ -13,15 +13,6 @@ using System.Text;
 
 namespace PdfLexer.Benchmarks.Benchmarks
 {
-    internal class BenchmarkConfig : ManualConfig
-    {
-        public BenchmarkConfig()
-        {
-            AddDiagnoser(MemoryDiagnoser.Default);
-            AddJob(Job.ShortRun.WithWarmupCount(10).WithIterationCount(40));
-        }
-    }
-
     [Config(typeof(BenchmarkConfig))]
     public class LexingBenchmark
     {
