@@ -79,9 +79,9 @@ namespace PdfLexer.Serializers
             Stream.Write(buff.Slice(0, count));
             Stream.WriteByte((byte)'\n');
             Stream.Write(obj0);
-            for (var i = 1; i < offsets.Count; i++)
+            for (var i = 0; i < offsets.Count; i++)
             {
-                if (!offsets.TryGetValue(i, out var oos))
+                if (!offsets.TryGetValue(i+1, out var oos))
                 {
                     Stream.Write(z);
                     Stream.WriteByte((byte)' ');

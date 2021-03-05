@@ -65,6 +65,7 @@ namespace PdfLexer.Tests
         // //[InlineData("mt200953a.pdf")] // bad xref // TODO test rebuilding
         // [InlineData("ymj-46-585.pdf")]
         // [InlineData("C:\\temp\\PRIV\\Origrk.pdf")]
+        // [InlineData("C:\\temp\\large.raw.pdf")]
         // [Theory]
         public async Task It_Loads_Pages(string pdfPath)
         {
