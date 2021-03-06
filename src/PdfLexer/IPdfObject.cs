@@ -9,6 +9,7 @@ namespace PdfLexer
         // public bool IsIndirect { get; }
         public PdfObjectType Type { get; }
         public bool IsLazy { get; }
+        public bool IsModified { get; }
     }
 
     public abstract class PdfObject : IPdfObject
@@ -17,6 +18,7 @@ namespace PdfLexer
         //public virtual bool IsIndirect => IndirectRef.ObjectNumber != 0;
         public abstract PdfObjectType Type { get; }
         public virtual bool IsLazy { get => false; }
+        public virtual bool IsModified { get => false; }
         //public abstract PdfObject Clone();
     }
 
@@ -24,26 +26,22 @@ namespace PdfLexer
     {
         public static IPdfObject Resolve(this IPdfObject item)
         {
-            if (item is PdfIndirectRef ir)
+            if (item.IsLazy)
             {
-                var resolved = ir.GetObject();
-                return resolved;
+                var lz = (PdfLazyObject)item;
+                return lz.Resolve();
             }
-            else if (item is PdfLazyObject lz)
+
+            if (item.Type == PdfObjectType.IndirectRefObj)
             {
-                var resolved = lz.Resolve();
-                return resolved;
+                var ir = (PdfIndirectRef)item;
+                return ir.GetObject();
             }
             return item;
         }
 
         public static T GetValue<T>(this IPdfObject item) where T : IPdfObject
         {
-            if (item is T typed)
-            {
-                return typed;
-            }
-
             item = item.Resolve();
 
             if (item is T retyped)
@@ -52,29 +50,6 @@ namespace PdfLexer
             }
 
             throw new ApplicationException($"Mismatched data type requested, got {item.Type} expected {typeof(T)}");
-        }
-
-        internal static bool CheckForIndirect(this PdfLazyObject obj)
-        {
-            if (obj.Parsed != null)
-            {
-                return obj.Parsed.HasLazyIndirect;
-            }
-
-            return obj.HasLazyIndirect;
-        }
-
-        internal static bool IsModified(this IPdfObject obj)
-        {
-            switch (obj)
-            {
-                case PdfLazyObject lz:
-                    return lz.Parsed?.IsModified ?? false;
-                case IParsedLazyObj parsed:
-                    return parsed.IsModified;
-                default:
-                    return false; // rest immutable
-            }
         }
     }
 }

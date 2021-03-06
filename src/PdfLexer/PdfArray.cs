@@ -6,14 +6,15 @@ using System.Text;
 
 namespace PdfLexer
 {
-    public class PdfArray : PdfObject, IList<IPdfObject>, IParsedLazyObj
+    /// <summary>
+    /// Pdf array object.
+    /// </summary>
+    public class PdfArray : PdfObject, IList<IPdfObject>
     {
         internal List<IPdfObject> internalList = new List<IPdfObject>();
+        internal bool ArrayModified {get;set;}
 
-        // TODO check children
-        
-        private bool ArrayModified {get;set;}
-        public bool IsModified
+        public override bool IsModified
         {
             get
             {
@@ -24,7 +25,7 @@ namespace PdfLexer
 
                 foreach (var item in internalList)
                 {
-                    if (item.IsModified())
+                    if (item.IsModified)
                     {
                         return true;
                     }
@@ -32,41 +33,28 @@ namespace PdfLexer
 
                 return false;
             }
-            set => ArrayModified = value;
         }
-        internal PdfLazyObject LazyWrapper { get;set; }
-        PdfLazyObject IParsedLazyObj.Wrapper => LazyWrapper;
+
         public override PdfObjectType Type => PdfObjectType.ArrayObj;
 
-        bool IParsedLazyObj.HasLazyIndirect
-        {
-            get
-            {
-                foreach (var item in internalList)
-                {
-                    if (item is PdfLazyObject lz && lz.HasLazyIndirect)
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-        }
-
+        /// <summary>
+        /// Creates a new empty array.
+        /// </summary>
         public PdfArray()
         {
-            
+            ArrayModified = true;
         }
 
-        internal PdfArray(PdfLazyObject wrapper, List<IPdfObject> items)
+        /// <summary>
+        /// Creates an new pdf array from the provided list.
+        /// Note: List provided will be modified is Pdf array is modified.
+        /// </summary>
+        /// <param name="items"></param>
+        public PdfArray(List<IPdfObject> items)
         {
-            LazyWrapper = wrapper;
             internalList = items;
+            ArrayModified = true;
         }
-
-
-
 
         public IEnumerator<IPdfObject> GetEnumerator() => internalList.GetEnumerator();
 
@@ -74,13 +62,13 @@ namespace PdfLexer
 
         public void Add(IPdfObject item)
         {
-            IsModified = true;
+            ArrayModified = true;
             internalList.Add(item);
         }
 
         public void Clear()
         {
-            IsModified = true;
+            ArrayModified = true;
             internalList.Clear();
         }
 
@@ -93,7 +81,7 @@ namespace PdfLexer
             var result = internalList.Remove(item);
             if (result)
             {
-                IsModified = true;
+                ArrayModified = true;
             }
             return result;
         }
@@ -105,26 +93,21 @@ namespace PdfLexer
 
         public void Insert(int index, IPdfObject item)
         {
-            IsModified = true;
+            ArrayModified = true;
             internalList.Insert(index, item);
         }
 
         public void RemoveAt(int index)
         {
-            IsModified = true;
+            ArrayModified = true;
             internalList.RemoveAt(index);
         }
-
-        // public override PdfObject Clone()
-        // {
-        //     throw new NotImplementedException();
-        // }
 
         public IPdfObject this[int index]
         {
             get => internalList[index];
             set {
-                IsModified = true;
+                ArrayModified = true;
                 internalList[index] = value;
             }
         }

@@ -20,10 +20,9 @@ namespace PdfLexer.Serializers
         public void WriteToStream(PdfArray obj, Stream stream)
         {
             stream.WriteByte((byte)'[');
-            // TODO only write spaces if needed
             for (var i = 0;i<obj.Count;i++)
             {
-                _ctx.SerializeObject(obj[i]); // TODO fix stream refs
+                _ctx.SerializeObject(obj[i]);
                 if (i+1<obj.Count)
                 {
                     var nxt = obj[i+1];

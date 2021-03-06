@@ -15,7 +15,7 @@ namespace PdfLexer.Parsers.Nested
             _ctx = ctx;
         }
 
-        public IParsedLazyObj ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt, out int itemEnd)
+        public IPdfObject ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt, out int itemEnd)
         {
             bool completed = false;
             var lastStart = 0;
@@ -159,7 +159,7 @@ namespace PdfLexer.Parsers.Nested
                     $"Parsing ended unexpectedly for looking for {CurrentState.State.ToString()} or Dict End, remaining data");
             }
             
-            var obj = (IParsedLazyObj) CurrentState.Dict ?? CurrentState.Array;
+            IPdfObject obj = (IPdfObject) CurrentState.Dict ?? CurrentState.Array;
             CurrentState = default;
 
             return obj;

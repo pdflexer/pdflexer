@@ -1,38 +1,8 @@
-﻿using PdfLexer.IO;
-using System;
+﻿using System;
 using System.Buffers;
-using System.IO.Pipelines;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace PdfLexer.Parsers
 {
-    public abstract class Parser<T> : IParser<T> where T : IPdfObject
-    {
-        public abstract T Parse(ReadOnlySpan<byte> buffer);
-
-        public virtual T Parse(ReadOnlySpan<byte> buffer, int start, int length)
-            => Parse(buffer.Slice(start, length));
-
-        public virtual T Parse(in ReadOnlySequence<byte> sequence)
-        {
-            if (sequence.IsSingleSegment)
-            {
-                return Parse(sequence.FirstSpan);
-            }
-
-            var len = (int)sequence.Length;
-            var buffer = ArrayPool<byte>.Shared.Rent(len);
-            sequence.CopyTo(buffer);
-            Span<byte> buff = buffer;
-            var result = Parse(buff.Slice(0,len));
-            ArrayPool<byte>.Shared.Return(buffer);
-            return result;
-        }
-
-        public virtual T Parse(in ReadOnlySequence<byte> sequence, long start, int length) =>
-            Parse(sequence.Slice(start, length));
-    }
     public interface IParser<out T> where T : IPdfObject
     {
         /// <summary>
@@ -68,5 +38,35 @@ namespace PdfLexer.Parsers
         T Parse(in ReadOnlySequence<byte> sequence, long start, int length);
     }
 
+    /// <summary>
+    /// Base parser with helpers to automatically convert data types to a ReadOnlySpan
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class Parser<T> : IParser<T> where T : IPdfObject
+    {
+        public abstract T Parse(ReadOnlySpan<byte> buffer);
+
+        public virtual T Parse(ReadOnlySpan<byte> buffer, int start, int length)
+            => Parse(buffer.Slice(start, length));
+
+        public virtual T Parse(in ReadOnlySequence<byte> sequence)
+        {
+            if (sequence.IsSingleSegment)
+            {
+                return Parse(sequence.FirstSpan);
+            }
+
+            var len = (int)sequence.Length;
+            var buffer = ArrayPool<byte>.Shared.Rent(len);
+            sequence.CopyTo(buffer);
+            Span<byte> buff = buffer;
+            var result = Parse(buff.Slice(0,len));
+            ArrayPool<byte>.Shared.Return(buffer);
+            return result;
+        }
+
+        public virtual T Parse(in ReadOnlySequence<byte> sequence, long start, int length) =>
+            Parse(sequence.Slice(start, length));
+    }
 
 }

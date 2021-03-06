@@ -6,23 +6,9 @@ using PdfLexer.IO;
 
 namespace PdfLexer
 {
-    internal interface IParsedLazyObj : IPdfObject
-    {
-        public bool IsModified { get; }
-        public bool HasLazyIndirect { get; }
-        public PdfLazyObject Wrapper { get; }
-    }
-
-    // public abstract class ParsedLazyObj : PdfObject //, IParsedLazyObj
-    // {
-    //     public abstract bool IsModified { get; }
-    // 
-    //     public abstract bool HasLazyIndirect { get; }
-    // 
-    //     public abstract IPdfLazyObject Wrapper { get; }
-    // 
-    // }
-
+    /// <summary>
+    /// Wrapper object providing access to an unparsed PDF object.
+    /// </summary>
     internal class PdfLazyObject : PdfObject
     {
         public override bool IsLazy => true;
@@ -32,7 +18,7 @@ namespace PdfLexer
         public long Offset {get; set; }
         public int Length {get; set; }
         public IPdfDataSource Source { get; set; }
-        public IParsedLazyObj Parsed { get; set; }
+        public IPdfObject Parsed { get; set; }
         public IPdfObject Resolve()
         {
             if (Parsed != null)
@@ -40,7 +26,7 @@ namespace PdfLexer
                 return Parsed;
             }
             Source.FillData(Offset, Length, out var buffer);
-            Parsed = (IParsedLazyObj)Source.Context.GetKnownPdfItem(LazyObjectType, buffer, 0, Length);
+            Parsed = Source.Context.GetKnownPdfItem(LazyObjectType, buffer, 0, Length);
             return Parsed;
         }
     }

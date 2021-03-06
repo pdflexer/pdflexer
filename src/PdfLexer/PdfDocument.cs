@@ -13,17 +13,43 @@ using System.Threading.Tasks;
 
 namespace PdfLexer
 {
+    /// <summary>
+    /// Represents a single PDF document.
+    /// </summary>
     public class PdfDocument : IDisposable
     {
+        /// <summary>
+        /// Id of PDF, used for tracking indirect references between documents. 
+        /// </summary>
         internal int DocumentId { get; } = Interlocked.Increment(ref docId);
+        /// <summary>
+        /// Parsing context for this PDF. May be internalized but may provide external access to allow parallel processing at some point.
+        /// </summary>
         public ParsingContext Context { get; }
+        /// <summary>
+        /// Version of the PDF document.
+        /// </summary>
         public decimal PdfVersion { get; set; } = 1.7m; // TODO
+        /// <summary>
+        /// PDF trailer dictionary.
+        /// Note: The /Root entry pointing to the PDF catalog will be overwritten if PDF is saved.
+        /// </summary>
         public PdfDictionary Trailer { get; }
-        public PdfDictionary Catalog { get; internal set; }
-        public List<PdfPage> Pages { get; internal set; }
-
-        public IReadOnlyDictionary<XRef, XRefEntry> XrefEntries {get;}
-        internal int NextObjectNumber {get; set;}
+        /// <summary>
+        /// PDF catalog dictionary.
+        /// Note: The /Pages entry pointing to the page tree will be overwritten if PDF is saved and <see cref="Pages"/> is not null.
+        /// </summary>
+        public PdfDictionary Catalog { get; set; }
+        /// <summary>
+        /// List of pages in the document. May be null if <see cref="ParsingOptions.LoadPageTree"/> is false.
+        /// </summary>
+        public List<PdfPage> Pages { get; set; }
+        /// <summary>
+        /// XRef entries of this document. May be internalized at some point.
+        /// Will be null on new documents.
+        /// </summary>
+        public IReadOnlyDictionary<XRef, XRefEntry> XrefEntries { get; }
+        
 
         internal PdfDocument(ParsingContext ctx, PdfDictionary trailer, Dictionary<XRef, XRefEntry> entries)
         {
@@ -32,13 +58,18 @@ namespace PdfLexer
             ctx.Document = this;
             XrefEntries = entries;
             Trailer = trailer;
-            NextObjectNumber = entries.Max(x=>x.Key.ObjectNumber) + 1;
         }
 
         public void Dispose()
         {
+            // TODO
+            // context disposing -> currently in memory only
         }
 
+        /// <summary>
+        /// Saves the document to the provided stream.
+        /// </summary>
+        /// <param name="stream"></param>
         public void SaveTo(Stream stream)
         {
             var nextId =  XrefEntries.Keys.Select(x=>x.ObjectNumber).Max() + 1;
@@ -61,6 +92,7 @@ namespace PdfLexer
             ctx.Complete(Trailer);
         }
 
+        // TODO move elsewhere
         private bool IsDataCopyable(XRef entry)
         {
                 ulong id = ((ulong)entry.ObjectNumber << 16) | ((uint)entry.Generation & 0xFFFF);
@@ -80,6 +112,10 @@ namespace PdfLexer
                 return true;
         }
 
+        /// <summary>
+        /// Create a new empty PDF document.
+        /// </summary>
+        /// <returns>PdfDocument</returns>
         public static PdfDocument Create()
         {
             var doc = new PdfDocument(new ParsingContext(), new PdfDictionary(), new Dictionary<XRef, XRefEntry>());
@@ -89,6 +125,13 @@ namespace PdfLexer
             return doc;
         }
 
+        /// <summary>
+        /// Opens a PDF document from the provided byte array.
+        /// TODO turn this into sync code.
+        /// </summary>
+        /// <param name="data">PDF data</param>
+        /// <param name="options">Optional parsing options</param>
+        /// <returns>PdfDocument</returns>
         public static async ValueTask<PdfDocument> Open(byte[] data, ParsingOptions options=null)
         {
             var ctx = new ParsingContext(options);

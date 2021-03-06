@@ -119,7 +119,7 @@ namespace PdfLexer.Serializers
             if (obj.IsLazy)
             {
                 var lz = (PdfLazyObject)obj;
-                if (lz.HasLazyIndirect || lz.IsModified())
+                if (lz.HasLazyIndirect || lz.IsModified)
                 {
                     obj = lz.Resolve();
                 } else
@@ -312,7 +312,7 @@ Parse:
             switch (obj) 
             {
                 case PdfLazyObject lz:
-                    if (lz.HasLazyIndirect || lz.IsModified())
+                    if (lz.HasLazyIndirect || lz.IsModified)
                     {
                         obj = lz.Resolve();
                         goto Parse; // sorry
@@ -369,7 +369,7 @@ Parse:
             if (obj.IsLazy)
             {
                 var lz = (PdfLazyObject)obj;
-                if (lz.HasLazyIndirect || lz.IsModified())
+                if (lz.HasLazyIndirect || lz.IsModified)
                 {
                     toCheck = lz.Resolve();
                 } else

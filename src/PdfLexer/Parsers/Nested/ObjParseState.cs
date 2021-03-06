@@ -80,7 +80,7 @@ namespace PdfLexer.Parsers.Nested
                 }
                 key = !key;
             }
-            Dict.IsModified = false;
+            Dict.DictionaryModified = false;
             return Dict;
         }
     }

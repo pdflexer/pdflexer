@@ -76,7 +76,7 @@ namespace PdfLexer.Legacy
                 }
                 key = !key;
             }
-            Dict.IsModified = false;
+            Dict.DictionaryModified = false;
             return Dict;
         }
     }
@@ -108,27 +108,27 @@ namespace PdfLexer.Legacy
         internal SequencePosition startPos = default;
         internal SequencePosition endPos = default;
 
-        public IParsedLazyObj GetCompletedObject()
-        {
-            if (!completed)
-            {
-                throw new InvalidOperationException("GetCompletedObject() called before parsing was finished.");
-            }
-            
-            startPos = default;
-            endPos = default;
-            var toReturn = (IParsedLazyObj) CurrentState.Dict ?? CurrentState.Array;
-            CurrentState = default;
-            completed = false;
-            return toReturn;
-        }
-
-        public bool ParseNestedItem(in ReadOnlySequence<byte> sequence, bool isCompleted)
-        {
-            var reader = new SequenceReader<byte>(sequence);
-            return false;
-            //return ParseNestedItem(ref reader, isCompleted);
-        }
+        // public IParsedLazyObj GetCompletedObject()
+        // {
+        //     if (!completed)
+        //     {
+        //         throw new InvalidOperationException("GetCompletedObject() called before parsing was finished.");
+        //     }
+        //     
+        //     startPos = default;
+        //     endPos = default;
+        //     var toReturn = (IParsedLazyObj) CurrentState.Dict ?? CurrentState.Array;
+        //     CurrentState = default;
+        //     completed = false;
+        //     return toReturn;
+        // }
+        // 
+        // public bool ParseNestedItem(in ReadOnlySequence<byte> sequence, bool isCompleted)
+        // {
+        //     var reader = new SequenceReader<byte>(sequence);
+        //     return false;
+        //     //return ParseNestedItem(ref reader, isCompleted);
+        // }
 
         // public bool ParseNestedItem(ref SequenceReader<byte> reader, bool isCompleted)
         // {

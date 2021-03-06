@@ -4,6 +4,7 @@ using System.Text;
 
 namespace PdfLexer
 {
+
     public enum PdfNumberType
     {
         Integer,
@@ -11,9 +12,16 @@ namespace PdfLexer
         Double,
         Decimal
     }
+    /// <summary>
+    /// PDF Number object type.
+    /// </summary>
     public abstract class PdfNumber : PdfObject
     {
         public override PdfObjectType Type => PdfObjectType.NumericObj;
+
+        /// <summary>
+        /// C# number type of the <see cref="PdfNumber"/>.
+        /// </summary>
         public abstract PdfNumberType NumberType { get; }
 
         public static implicit operator long(PdfNumber num)
@@ -72,8 +80,14 @@ namespace PdfLexer
         public static PdfIntNumber MinusOne => new PdfIntNumber(-1);
     }
 
+    /// <summary>
+    /// Pdf number object represented by a c# int.
+    /// </summary>
     public class PdfIntNumber : PdfNumber
     {
+        /// <summary>
+        /// Value of pdf object.
+        /// </summary>
         public int Value { get; }
         public PdfIntNumber(int value)
         {
@@ -83,8 +97,14 @@ namespace PdfLexer
         public override PdfNumberType NumberType => PdfNumberType.Integer;
     }
 
+    /// <summary>
+    /// Pdf number object represented by a c# long
+    /// </summary>
     public class PdfLongNumber : PdfNumber
     {
+        /// <summary>
+        /// Value of pdf object.
+        /// </summary>
         public long Value { get; }
         public PdfLongNumber(long value)
         {
@@ -94,8 +114,14 @@ namespace PdfLexer
         public override PdfNumberType NumberType => PdfNumberType.Long;
     }
 
+    /// <summary>
+    /// Pdf number object represented by a c# double
+    /// </summary>
     public class PdfDoubleNumber : PdfNumber
     {
+        /// <summary>
+        /// Value of pdf object.
+        /// </summary>
         public double Value { get; }
         public PdfDoubleNumber(double value)
         {
@@ -105,8 +131,14 @@ namespace PdfLexer
         public override PdfNumberType NumberType => PdfNumberType.Double;
     }
 
+    /// <summary>
+    /// Pdf number object represented by a c# decimal
+    /// </summary>
     public class PdfDecimalNumber : PdfNumber
     {
+        /// <summary>
+        /// Value of pdf object.
+        /// </summary>
         public decimal Value { get; }
         public PdfDecimalNumber(decimal value)
         {

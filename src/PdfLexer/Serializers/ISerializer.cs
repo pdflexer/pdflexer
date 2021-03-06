@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 
 namespace PdfLexer.Serializers
 {
+    /// <summary>
+    /// TODO determine proper interface here... maybe just writing to only Stream
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface ISerializer<in T> where T : IPdfObject
     {
         /// <summary>
@@ -22,5 +26,5 @@ namespace PdfLexer.Serializers
         /// <param name="data">Byte buffer</param>
         /// <returns>Number of bytes written.</returns>
         int GetBytes(T obj, Span<byte> data);
-}
+    }
 }

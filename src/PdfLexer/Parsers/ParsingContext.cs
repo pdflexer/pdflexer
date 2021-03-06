@@ -139,7 +139,7 @@ namespace PdfLexer.Parsers
         internal IPdfObject GetIndirectObject(XRef xref)
         {
             ulong id = ((ulong)xref.ObjectNumber << 16) | ((uint)xref.Generation & 0xFFFF);
-            if (Options.CacheObjects && IndirectCache.TryGetValue(id, out var cached))
+            if (IndirectCache.TryGetValue(id, out var cached))
             {
                 return cached;
             }
@@ -173,10 +173,7 @@ namespace PdfLexer.Parsers
             i = PdfSpanLexer.TryReadNextToken(buffer, out type, os+length, out length);
             if (type == PdfTokenType.EndObj)
             {
-                if (Options.CacheObjects) // TODO add obj/endobj offsets for copying of data later
-                {
-                    IndirectCache[id] = obj;
-                }
+                IndirectCache[id] = obj; // TODO add obj/endobj offsets for copying of data later
                 return obj;
             } else if (type == PdfTokenType.StartStream)
             {
@@ -191,10 +188,7 @@ namespace PdfLexer.Parsers
                 var stream = new PdfStream(dict, new PdfStreamContents(MainDocSource, value.Offset + i + length, streamLength));
                 i = PdfSpanLexer.TryReadNextToken(buffer, out type, i+length+(int)streamLength, out length);
                 Debug.Assert(type == PdfTokenType.EndStream);
-                if (Options.CacheObjects)
-                {
-                    IndirectCache[id] = stream;
-                }
+                IndirectCache[id] = stream;
                 return stream;
             }
             throw new ApplicationException("Indirect object not followed by endobj token.");

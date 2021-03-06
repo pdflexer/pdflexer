@@ -6,7 +6,10 @@ using System.Text;
 
 namespace PdfLexer
 {
-    public class PdfDictionary : PdfObject, IDictionary<PdfName, IPdfObject>, IParsedLazyObj
+    /// <summary>
+    /// Pdf dictionary object.
+    /// </summary>
+    public class PdfDictionary : PdfObject, IDictionary<PdfName, IPdfObject>
     {
         internal static readonly byte[] start = new byte[2] {(byte) '<', (byte) '<'};
         internal static readonly byte[] end = new byte[2] {(byte) '>', (byte) '>'};
@@ -17,34 +20,18 @@ namespace PdfLexer
         internal bool DictionaryModified { get;set; }
         internal PdfLazyObject LazyWrapper { get;set; }
         
-        PdfLazyObject IParsedLazyObj.Wrapper => LazyWrapper;
-
+        /// <summary>
+        /// Creates a new empty PDF dictionary.
+        /// </summary>
         public PdfDictionary()
         {
             DictionaryModified = true;
             _dictionary = new Dictionary<PdfName, IPdfObject>();
         }
 
-        internal PdfDictionary(PdfLazyObject wrapper, IEnumerable<KeyValuePair<PdfName, IPdfObject>> items)
+        internal PdfDictionary(IEnumerable<KeyValuePair<PdfName, IPdfObject>> items)
         {
-            LazyWrapper = wrapper;
             _dictionary = new Dictionary<PdfName, IPdfObject>(items);
-        }
-
-        bool IParsedLazyObj.HasLazyIndirect
-        {
-            get
-            {
-                foreach (var item in _dictionary.Values)
-                {
-                    if (item is PdfLazyObject lz && lz.CheckForIndirect())
-                    {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
         }
 
 
@@ -135,18 +122,24 @@ namespace PdfLexer
             return value;
         }
 
+
+        // private static Type dictType = typeof(PdfDictionary);
+        // private PdfObjectType GetType<T>() where T : IPdfObject
+        // {
+        //     var type = typeof(T);
+        //     switch (type)
+        //     {
+        //         case PdfDictionary:
+        // 
+        //     }
+        // }
+
         public bool TryGetValue<T>(PdfName key, out T value, bool errorOnMismatch=true) where T : IPdfObject
         {
             if (!_dictionary.TryGetValue(key, out var item))
             {
                 value = default(T);
                 return false;
-            }
-
-            if (item is T typed)
-            {
-                value = typed;
-                return true;
             }
 
             item = item.Resolve();
@@ -174,7 +167,7 @@ namespace PdfLexer
         public ICollection<PdfName> Keys => _dictionary.Keys;
         public ICollection<IPdfObject> Values => _dictionary.Values;
 
-        public bool IsModified
+        public override bool IsModified
         {
             get
             {
@@ -185,7 +178,7 @@ namespace PdfLexer
 
                 foreach (var item in Values)
                 {
-                    if (item.IsModified())
+                    if (item.IsModified)
                     {
                         return true;
                     }
@@ -193,7 +186,6 @@ namespace PdfLexer
 
                 return false;
             }
-            set => DictionaryModified = value;
         }
 
     }

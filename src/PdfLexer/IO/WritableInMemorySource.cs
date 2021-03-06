@@ -54,7 +54,7 @@ namespace PdfLexer.IO
         {
             if (obj is PdfLazyObject lz)
             {
-                if (lz.HasLazyIndirect || !lz.IsModified())
+                if (lz.HasLazyIndirect || !lz.IsModified)
                 {
                     var rz = lz.Resolve();
                     if (rz is PdfDictionary dict)

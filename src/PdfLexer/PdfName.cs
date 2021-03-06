@@ -6,9 +6,16 @@ using System.Threading.Tasks;
 
 namespace PdfLexer
 {
+    /// <summary>
+    /// PDF Name Object
+    /// </summary>
     public class PdfName : PdfObject
     {
         internal bool? NeedsEscaping { get;} 
+        /// <summary>
+        /// PdfName CTOR
+        /// </summary>
+        /// <param name="value">Pdf name including '/'</param>
         public PdfName(string value)
         {
             Value = value;
@@ -21,9 +28,12 @@ namespace PdfLexer
             NeedsEscaping = needsEscaping;
         }
 
+        /// <summary>
+        /// Value of the PDF Name including '/'
+        /// </summary>
         public string Value { get; }
-        public override PdfObjectType Type => PdfObjectType.NameObj;
 
+        public override PdfObjectType Type => PdfObjectType.NameObj;
         public override bool Equals(object obj)
         {
             if (!(obj is PdfName name))

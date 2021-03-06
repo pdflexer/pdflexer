@@ -1,5 +1,8 @@
 namespace PdfLexer
 {
+    /// <summary>
+    /// Type of pdf token.
+    /// </summary>
     public enum PdfTokenType
     {
         NullObj, // Obj tokens get lexed as the entire token
@@ -25,6 +28,9 @@ namespace PdfLexer
         Unknown
     }
 
+    /// <summary>
+    /// Type of pdf object.
+    /// </summary>
     public enum PdfObjectType
     {
         NullObj,

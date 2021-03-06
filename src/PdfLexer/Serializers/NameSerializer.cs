@@ -9,7 +9,7 @@ namespace PdfLexer.Serializers
     {
         public void WriteToStream(PdfName obj, Stream stream)
         {
-            // TODO well known values or grab from cache since we are saving key
+            // TODO look into writing from cache?
             if (obj.Value.Length < 50)
             {
                 Span<byte> buffer = stackalloc byte[100];
