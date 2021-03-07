@@ -44,15 +44,15 @@ namespace PdfLexer
         /// </summary>
         /// <param name="dict">Pdf catalog.</param>
         /// <returns>Page dictionaries.</returns>
-        public static IEnumerable<PdfDictionary> EnumeratePageTree(PdfDictionary dict) => EnumeratePages(dict, null, null, null, null);
-        internal static IEnumerable<PdfDictionary> EnumeratePages(PdfDictionary dict, PdfDictionary resources, PdfArray mediabox, PdfArray cropbox, PdfNumber rotate)
+        public static IEnumerable<PdfDictionary> EnumeratePageTree(PdfDictionary dict) => EnumeratePages(dict, null, null, null, null, new HashSet<object>());
+        internal static IEnumerable<PdfDictionary> EnumeratePages(PdfDictionary dict, PdfDictionary resources, PdfArray mediabox, PdfArray cropbox, PdfNumber rotate, HashSet<object> read)
         {
             // Inheritible items if not provided in page dict:
             // Resources required (dictionary)
             // MediaBox required (rectangle)
             // CropBox => default to MediaBox (rectangle)
             // Rotate (integer)
-
+            read.Add(dict);
             var type = dict.GetRequiredValue<PdfName>(PdfName.TypeName);
             switch (type.Value)
             {
@@ -78,7 +78,14 @@ namespace PdfLexer
                     var kids = dict.GetRequiredValue<PdfArray>(PdfName.Kids);
                     foreach (var child in kids)
                     {
-                        foreach (var pg in EnumeratePages(child.GetValue<PdfDictionary>(), resources, mediabox, cropbox, rotate)) 
+                        var instance = child.GetValue<PdfDictionary>();
+                        if (read.Contains(instance))
+                        {
+                            // TODO warn
+                            continue;
+                        }
+                        
+                        foreach (var pg in EnumeratePages(instance, resources, mediabox, cropbox, rotate, read)) 
                         {
                             yield return pg;
                         }

@@ -66,10 +66,9 @@ namespace PdfLexer.Tests
             // }
         }
 
-        // [Fact]
+        [Fact]
         public async Task It_Reads_All_Pdf_JS()
         {
-            Trace.Listeners.Clear();
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var errors = new List<string>();
@@ -100,6 +99,19 @@ namespace PdfLexer.Tests
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "need_repair", "issue7229.pdf");
+            var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            foreach (var item in doc.XrefEntries)
+            {
+                doc.Context.GetIndirectObject(item.Key);
+            }
+        }
+
+        [Fact]
+        public async Task It_Handles_Looped_Page_Tree()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "Pages-tree-refs.pdf");
             var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
 
             foreach (var item in doc.XrefEntries)

@@ -298,7 +298,8 @@ namespace PdfLexer.Parsers
                     }
                     var stream = new PdfStream(dict, new PdfExistingStreamContents(MainDocSource, offset + i + length, streamLength));
                     i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length + (int)streamLength, out length);
-                    Debug.Assert(type == PdfTokenType.EndStream);
+                    // TODO add logging
+                    // Debug.Assert(type == PdfTokenType.EndStream);
                     return stream;
                 }
             }

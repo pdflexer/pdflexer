@@ -186,7 +186,8 @@ namespace PdfLexer.Parsers.Structure
                     result = await pipe.ReadNextObjectOrToken(_ctx);
                     if (result.Obj?.Type != PdfObjectType.NumericObj)
                     {
-                        throw new ApplicationException("TODO");
+                        // TODO handle mixed XREf
+                        throw new ApplicationException($"Token that /Prev entry pointed to at {strStart} was not a numeric, expected N N obj. Got: " + result.Obj?.Type + result.Type);
                     }
                     original ??= dict;
                 }
@@ -428,7 +429,8 @@ namespace PdfLexer.Parsers.Structure
 
             nextPos = pos + 1;
             CommonUtil.SkipWhiteSpace(data, ref nextPos);
-            Debug.Assert(nextPos - pos == 3, "nextPos - pos == 3, 2 EOL chars");
+            // TODO: add logging
+            // Debug.Assert(nextPos - pos == 3, "nextPos - pos == 3, 2 EOL chars");
 
             return new XRefEntry
             {
