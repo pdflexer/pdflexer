@@ -451,10 +451,33 @@ namespace PdfLexer.Parsers.Structure
         public XRefType Type { get; set; }
         public XRef Reference { get; set; }
         public bool IsFree { get; set; }
+        /// <summary>
+        /// Offset of the start of object. If <see cref="Type"/> is Compressed, this may be 0 if the 
+        /// object stream has not been read.
+        /// </summary>
         public long Offset { get; set; }
+        /// <summary>
+        /// Maximum length of the object data.
+        /// </summary>
         public int MaxLength { get; set; }
+        /// <summary>
+        /// Object number of the object stream the referenced object is contained in.
+        /// </summary>
         public int ObjectStreamNumber { get; set; }
+        /// <summary>
+        /// Index in the object stream.
+        /// </summary>
         public int ObjectIndex { get; set; }
+        /// <summary>
+        /// Data source containing the referenced data.
+        /// This will be the main document source for uncompressed objects.
+        /// For compressed objects it will be a wrapper around the object stream.
+        /// </summary>
+        public IPdfDataSource Source { get; set; }
+
+        public IPdfObject GetObject() => Source.GetIndirectObject(this);
+        public void CopyUnwrappedData(Stream destination) => Source.CopyIndirectObject(this, destination);
+        
     }
 
     public struct XRef

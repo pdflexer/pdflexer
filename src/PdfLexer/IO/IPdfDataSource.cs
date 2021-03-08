@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Parsers;
+using PdfLexer.Parsers.Structure;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -56,5 +57,8 @@ namespace PdfLexer.IO
         /// Associated parsing context.
         /// </summary>
         ParsingContext Context {get;}
+
+        IPdfObject GetIndirectObject(XRefEntry xref);
+        void CopyIndirectObject(XRefEntry xref, Stream destination);
     }
 }

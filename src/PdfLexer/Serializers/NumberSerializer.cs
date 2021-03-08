@@ -9,7 +9,7 @@ namespace PdfLexer.Serializers
 {
     public class NumberSerializer : ISerializer<PdfNumber>
     {
-        private byte[] miniBuffer = new byte[20];
+        private byte[] miniBuffer = new byte[100];
         public void WriteToStream(PdfNumber obj, Stream stream)
         {
             var count = GetBytes(obj, miniBuffer);
@@ -18,8 +18,9 @@ namespace PdfLexer.Serializers
 
         public int GetBytes(PdfNumber obj, Span<byte> data)
         {
-            if (obj is PdfIntNumber integer)
+            if (obj.NumberType == PdfNumberType.Integer)
             {
+                var integer = (PdfIntNumber)obj;
                 if (!Utf8Formatter.TryFormat(integer.Value, data, out var written))
                 {
                     throw new ApplicationException("Unable for write PdfNumber integer: " + Encoding.ASCII.GetString(data));

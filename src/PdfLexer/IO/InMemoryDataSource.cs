@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Parsers;
+using PdfLexer.Parsers.Structure;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ namespace PdfLexer.IO
 {
     public class InMemoryDataSource : IPdfDataSource
     {
+
         private readonly byte[] _data;
         private readonly MemoryStream _ms;
         // TODO in memory larger than int.maxvalue bytes
@@ -77,5 +79,21 @@ namespace PdfLexer.IO
         }
 
         public bool IsDataInMemory(long startPosition, int length) => true;
+
+        public IPdfObject GetIndirectObject(XRefEntry xref)
+        {
+            ReadOnlySpan<byte> buffer = _data;
+            Context.CurrentSource = this;
+            Context.CurrentOffset = xref.Offset;
+            return Context.GetWrappedIndirectObject(xref, buffer.Slice((int)xref.Offset, xref.MaxLength));
+        }
+
+        public void CopyIndirectObject(XRefEntry xref, Stream destination)
+        {
+            ReadOnlySpan<byte> buffer = _data;
+            Context.CurrentSource = this;
+            Context.CurrentOffset = xref.Offset;
+            Context.UnwrapAnyCopyIrObj(buffer.Slice((int)xref.Offset, xref.MaxLength), destination);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Parsers;
+using PdfLexer.Parsers.Structure;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -120,6 +121,26 @@ namespace PdfLexer.IO
         }
 
         public Stream GetDataAsStream(long startPosition, int desiredBytes)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPdfObject GetIndirectObject(XRef xref)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyIndirectObject(XRef xref, Stream destination)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPdfObject GetIndirectObject(XRefEntry xref)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CopyIndirectObject(XRefEntry xref, Stream destination)
         {
             throw new NotImplementedException();
         }

@@ -305,7 +305,7 @@ namespace PdfLexer.Serializers
             Debug.Assert(entry.Reference.ObjectNumber != 0);
             offsets[entry.Reference.ObjectNumber] = Stream.Position;
             WriteObjStart(entry.Reference);
-            ctx.CopyExsitingData(entry, Stream);
+            entry.CopyUnwrappedData(Stream);
             WriteObjEnd();
         }
 

@@ -77,11 +77,7 @@ namespace PdfLexer.Tests
                 try
                 {
                     var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
-
-                    foreach (var item in doc.XrefEntries)
-                    {
-                        doc.Context.GetIndirectObject(item.Key);
-                    }
+                    EnumerateObjects(doc.Trailer, new HashSet<int>());
                 }
                 catch (Exception e)
                 {
@@ -92,6 +88,81 @@ namespace PdfLexer.Tests
             {
                 throw new ApplicationException(string.Join(Environment.NewLine, errors));
             }
+        }
+
+        private void EnumerateObjects(IPdfObject obj, HashSet<int> callStack)
+        {
+            if (obj is PdfIndirectRef ir)
+            {
+                if (callStack.Contains(ir.Reference.ObjectNumber))
+                {
+                    return;
+                }
+                callStack.Add(ir.Reference.ObjectNumber);
+            }
+            obj = obj.Resolve();
+
+            if (obj is PdfArray arr)
+            {
+                foreach (var item in arr)
+                {
+                    EnumerateObjects(item, callStack);
+                }
+            }
+            else if (obj is PdfDictionary dict)
+            {
+                foreach (var item in dict.Values)
+                {
+                    EnumerateObjects(item, callStack);
+                }
+            }
+        }
+
+        [Fact]
+        public async Task It_Reads_And_Writes_All_Pdf_JS()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var errors = new List<string>();
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                try
+                {
+                    using var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+                    using var ms = new MemoryStream();
+                    doc.SaveTo(ms);
+                    using var doc2 = await PdfDocument.Open(ms.ToArray());
+
+                    EnumerateObjects(doc2.Catalog, new HashSet<int>());
+                }
+                catch (Exception e)
+                {
+                    errors.Add(pdf + ": " + e.Message);
+                }
+            }
+            if (errors.Any())
+            {
+                throw new ApplicationException(string.Join(Environment.NewLine, errors));
+            }
+        }
+
+        [Fact]
+        public async Task It_Mega_Merges_Pdf_JS()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var errors = new List<string>();
+            var merged = PdfDocument.Create();
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                using var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+                merged.Pages.AddRange(doc.Pages);
+            }
+            var ms = new MemoryStream();
+            merged.SaveTo(ms);
+            using var doc2 = await PdfDocument.Open(ms.ToArray());
+            EnumerateObjects(doc2.Trailer, new HashSet<int>());
+            File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
         }
 
         // [Fact]
@@ -119,5 +190,71 @@ namespace PdfLexer.Tests
                 doc.Context.GetIndirectObject(item.Key);
             }
         }
+
+
+        [Fact]
+        public async Task It_Handles11()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue918.pdf");
+            var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            var read = new HashSet<int>();
+            EnumerateObjects(doc.Catalog, read);
+            // foreach (var item in doc.XrefEntries)
+            // {
+            //     doc.Context.GetIndirectObject(item.Key);
+            // }
+        }
+
+        [Fact]
+        public async Task It_Handles12()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "annotation-caret-ink.pdf");
+            var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            var read = new HashSet<int>();
+            EnumerateObjects(doc.Catalog, read);
+
+            var copy = PdfDocument.Create();
+            copy.Pages = doc.Pages;
+            var ms = new MemoryStream();
+            copy.SaveTo(ms);
+            File.WriteAllBytes("c:\\temp\\temp.pdf", ms.ToArray());
+            ms = new MemoryStream();
+            doc.SaveTo(ms);
+            using var doc2 = await PdfDocument.Open(ms.ToArray());
+            EnumerateObjects(doc2.Catalog, read);
+            // foreach (var item in doc.XrefEntries)
+            // {
+            //     doc.Context.GetIndirectObject(item.Key);
+            // }
+        }
+        [Fact]
+        public async Task It_Handles13()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "annotation-polyline-polygon.pdf");
+            var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            var read = new HashSet<int>();
+            EnumerateObjects(doc.Catalog, read);
+
+            var copy = PdfDocument.Create();
+            copy.Pages = doc.Pages;
+            var ms = new MemoryStream();
+            copy.SaveTo(ms);
+            File.WriteAllBytes("c:\\temp\\temp.pdf", ms.ToArray());
+            ms = new MemoryStream();
+            doc.SaveTo(ms);
+            using var doc2 = await PdfDocument.Open(ms.ToArray());
+            EnumerateObjects(doc2.Catalog, read);
+            // foreach (var item in doc.XrefEntries)
+            // {
+            //     doc.Context.GetIndirectObject(item.Key);
+            // }
+        }
+        //
     }
 }

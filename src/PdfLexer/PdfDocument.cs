@@ -72,7 +72,12 @@ namespace PdfLexer
         /// <param name="stream"></param>
         public void SaveTo(Stream stream)
         {
-            var nextId =  (XrefEntries?.Values.Select(x=>x.Reference.ObjectNumber).Max() ?? 0) + 1;
+            var nums = XrefEntries?.Values.Select(x=>x.Reference.ObjectNumber).ToList();
+            var nextId = 1;
+            if (nums.Any())
+            {
+                nextId = nums.Max()+1;
+            }
             var ctx = new WritingContext(stream, nextId, DocumentId);
             ctx.Initialize(PdfVersion);
             if (XrefEntries != null)
@@ -124,6 +129,11 @@ namespace PdfLexer
             {
                 if (obj.IsFree)
                 {
+                    continue;
+                }
+                if (obj.Type == XRefType.Normal && obj.Offset == 0)
+                {
+                    // buggy PDFs
                     continue;
                 }
                 if (obj.Type == XRefType.Normal && Context.IsDataCopyable(obj.Reference)) // TODO copying of compressed items

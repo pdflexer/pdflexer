@@ -51,7 +51,7 @@ namespace PdfLexer.Parsers
             NumberParser = new NumberParser(this);
             DecimalParser = new DecimalParser();
             StringParser = new StringParser(this);
-            XRefParser = new XRefParser(this);        
+            XRefParser = new XRefParser(this);
             NestedParser = new NestedParser(this);
             FlateDecoder = new FlateFilter(this);
         }
@@ -75,10 +75,20 @@ namespace PdfLexer.Parsers
                 var ordered = refs.Where(x => x.Type == XRefType.Normal && !x.IsFree).OrderBy(x => x.Offset).ToList();
                 for (var i = 0; i < ordered.Count; i++)
                 {
-                    Debug.Assert(ordered[i].Offset < pdf.TotalBytes);
+                    var entry = ordered[i];
+                    entry.Source = pdf;
+                    Debug.Assert(entry.Offset < pdf.TotalBytes);
                     if (i + 1 < ordered.Count)
                     {
-                        ordered[i].MaxLength = (int)(ordered[i + 1].Offset - ordered[i].Offset);
+                        entry.MaxLength = (int)(ordered[i + 1].Offset - entry.Offset);
+                    }
+                }
+                for (var i = 0; i < ordered.Count; i++)
+                {
+                    // if two have same offset.. fix logic later
+                    if (i + 1 < ordered.Count && ordered[i].MaxLength == 0)
+                    {
+                        ordered[i].MaxLength = ordered[i+1].MaxLength;
                     }
                 }
                 ordered[^1].MaxLength = (int)(MainDocSource.TotalBytes - ordered[^1].Offset - 1);
@@ -90,7 +100,7 @@ namespace PdfLexer.Parsers
             }
             return (entries, trailer);
         }
-         
+
         internal IDecoder GetDecoder(PdfName name)
         {
             switch (name.Value)
@@ -121,77 +131,51 @@ namespace PdfLexer.Parsers
             return true;
         }
 
-        internal IPdfObject GetIndirectObject(PdfIndirectRef ir)
+        internal void UnwrapAnyCopyIrObj(ReadOnlySpan<byte> data, Stream stream)
         {
-            return ir.GetObject(); // Is this needed anymore?
-            // TODO allow lazy loading here -> especially for ShouldLoadIndirects
-            // return GetIndirectObject(ir.Reference);
-        }
+            ReadOnlySpan<byte> buffer = data;
+            // SKIP INDIRECT REF INFO
+            var i = PdfSpanLexer.TryReadNextToken(buffer, out var type, 0, out var length);
+            Debug.Assert(type == PdfTokenType.NumericObj);
+            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
+            Debug.Assert(type == PdfTokenType.NumericObj);
+            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
+            Debug.Assert(type == PdfTokenType.StartObj);
+            var os = i + length;
 
-
-        internal void CopyExsitingData(XRefEntry xref, Stream stream)
-        {
-            // TODO deduplicate with GetIndirectObject
-            ReadOnlySpan<byte> buffer;
-            byte[] rented = null;
-            if (MainDocSource.IsDataInMemory(xref.Offset, xref.MaxLength))
+            length = GetCompleteLength(buffer, ref os, out var objType);
+            var initObj = os;
+            var initLength = length;
+            // GET NEXT TOKEN
+            i = PdfSpanLexer.TryReadNextToken(buffer, out type, os + length, out length);
+            if (type == PdfTokenType.EndObj)
             {
-                MainDocSource.GetData(xref.Offset, xref.MaxLength, out buffer);
+                stream.Write(buffer.Slice(initObj, initLength));
+                return;
             }
-            else
+            else if (type == PdfTokenType.StartStream)
             {
-                rented = ArrayPool<byte>.Shared.Rent(xref.MaxLength);
-                buffer = rented;
-            }
-            try
-            {
-                // SKIP INDIRECT REF INFO
-                var i = PdfSpanLexer.TryReadNextToken(buffer, out var type, 0, out var length);
-                Debug.Assert(type == PdfTokenType.NumericObj);
-                i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
-                Debug.Assert(type == PdfTokenType.NumericObj);
-                i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
-                Debug.Assert(type == PdfTokenType.StartObj);
-                var os = i + length;
-
-                length = GetCompleteLength(buffer, ref os, out var objType);
-                var initObj = os;
-                var initLength = length;
-                // GET NEXT TOKEN
-                i = PdfSpanLexer.TryReadNextToken(buffer, out type, os + length, out length);
-                if (type == PdfTokenType.EndObj)
+                // TODO look into this.. feels wrong parsing dict here
+                var existing = Options.Eagerness;
+                Options.Eagerness = Eagerness.Lazy;
+                var obj = GetKnownPdfItem(PdfObjectType.DictionaryObj, buffer, initObj, initLength);
+                if (!(obj is PdfDictionary dict))
                 {
-                    stream.Write(buffer.Slice(initObj, initLength));
-                    return;
+                    throw new ApplicationException("Indirect object followed by start stream token but was not dictionary.");
                 }
-                else if (type == PdfTokenType.StartStream)
+                if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
                 {
-                    // TODO look into this.. feels wrong parsing dict here
-                    var existing = Options.Eagerness;
-                    Options.Eagerness = Eagerness.Lazy;
-                    var obj = GetKnownPdfItem(PdfObjectType.DictionaryObj, buffer, initObj, initLength);
-                    if (!(obj is PdfDictionary dict))
-                    {
-                        throw new ApplicationException("Indirect object followed by start stream token but was not dictionary.");
-                    }
-                    if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
-                    {
-                        throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
-                    }
-                    var se = i + length + streamLength;
-                    i = PdfSpanLexer.TryReadNextToken(buffer, out type, se, out length);
-                    Debug.Assert(type == PdfTokenType.EndStream);
-                    var cse = i + length;
-                    stream.Write(buffer.Slice(initObj, cse - initObj));
-                    Options.Eagerness = existing;
-                    return;
+                    throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
                 }
+                var se = i + length + streamLength;
+                i = PdfSpanLexer.TryReadNextToken(buffer, out type, se, out length);
+                // TODO logging
+                // Debug.Assert(type == PdfTokenType.EndStream);
+                var cse = i + length;
+                stream.Write(buffer.Slice(initObj, cse - initObj));
+                Options.Eagerness = existing;
+                return;
             }
-            finally
-            {
-                if (rented != null) { ArrayPool<byte>.Shared.Return(rented); }
-            }
-            throw new ApplicationException("Bad");
         }
 
         internal IPdfObject GetIndirectObject(XRef xref) => GetIndirectObject(xref.GetId());
@@ -210,31 +194,27 @@ namespace PdfLexer.Parsers
                 return PdfNull.Value;
             }
 
-            IPdfObject obj;
-            if (value.Type == XRefType.Compressed)
+            if (value.Type == XRefType.Compressed && value.Source == null)
             {
-                obj = GetCompressedIndirectObject(value);
-            } else
-            {
-                obj = GetObjectAtOffset(value.Offset, value.MaxLength);
+                LoadObjectStream(value);
             }
+
+            var obj = value.GetObject();
             IndirectCache[id] = obj;
             return obj;
         }
 
-        internal IPdfObject GetCompressedIndirectObject(XRefEntry entry)
+        internal void LoadObjectStream(XRefEntry entry)
         {
             var wrapper = GetIndirectObject(XRef.GetId(entry.ObjectStreamNumber, 0)).GetValue<PdfStream>();
             var data = wrapper.GetDecodedData(this);
             var os = GetOffsets(data, wrapper.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
             var start = wrapper.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
-            
-            // TODO support lazy in compressed object -> need to implement new IPdfDataSource for each decompressed stream
-            var orig = Options.Eagerness;
-            Options.Eagerness = Eagerness.FullEager;
-            var obj = GetPdfItem(data, start+os[entry.ObjectIndex], out _);
-            Options.Eagerness = orig;
-            return obj;
+            var source = new ObjectStreamDataSource(this, entry.ObjectStreamNumber, data, os, start);
+            foreach (var item in Document.XrefEntries.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
+            {
+                item.Source = source;
+            }
         }
 
         private List<int> GetOffsets(ReadOnlySpan<byte> data, int count)
@@ -310,36 +290,41 @@ namespace PdfLexer.Parsers
             throw new ApplicationException("Indirect object not followed by endobj token.");
         }
 
-        internal void LoadIndirectRefs(PdfDictionary dict)
+        internal IPdfObject GetWrappedIndirectObject(XRefEntry xref, ReadOnlySpan<byte> data)
         {
-            var replacements = new List<KeyValuePair<PdfName, IPdfObject>>();
-            foreach (var kvp in dict)
+            ReadOnlySpan<byte> buffer = data;
+            // SKIP INDIRECT REF INFO
+            var i = PdfSpanLexer.TryReadNextToken(buffer, out var type, 0, out var length);
+            Debug.Assert(type == PdfTokenType.NumericObj);
+            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
+            Debug.Assert(type == PdfTokenType.NumericObj);
+            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
+            Debug.Assert(type == PdfTokenType.StartObj);
+            var os = i + length;
+            var obj = GetPdfItem(buffer, os, out length);
+            // GET NEXT TOKEN
+            i = PdfSpanLexer.TryReadNextToken(buffer, out type, os + length, out length);
+            if (type == PdfTokenType.EndObj)
             {
-                if (kvp.Value is PdfIndirectRef ir)
+                return obj;
+            }
+            else if (type == PdfTokenType.StartStream)
+            {
+                if (!(obj is PdfDictionary dict))
                 {
-                    replacements.Add(new KeyValuePair<PdfName, IPdfObject>(kvp.Key, GetIndirectObject(ir)));
+                    throw new ApplicationException("Indirect object followed by start stream token but was not dictionary.");
                 }
-            }
-            foreach (var item in replacements)
-            {
-                dict[item.Key] = item.Value;
-            }
-        }
-        internal void LoadIndirectRefs(PdfArray array)
-        {
-            var replacements = new List<KeyValuePair<int, IPdfObject>>();
-            for (var i = 0; i < array.Count; i++)
-            {
-                var item = array[i];
-                if (item is PdfIndirectRef ir)
+                if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
                 {
-                    replacements.Add(new KeyValuePair<int, IPdfObject>(i, GetIndirectObject(ir)));
+                    throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
                 }
+                var stream = new PdfStream(dict, new PdfExistingStreamContents(MainDocSource, xref.Offset + i + length, streamLength));
+                i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length + (int)streamLength, out length);
+                // TODO add logging
+                // Debug.Assert(type == PdfTokenType.EndStream);
+                return stream;
             }
-            foreach (var item in replacements)
-            {
-                array[item.Key] = item.Value;
-            }
+            throw new ApplicationException("Indirect object not followed by endobj token.");
         }
 
         internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
@@ -477,103 +462,5 @@ namespace PdfLexer.Parsers
             // CachedNumbers.Clear();
         }
 
-        internal struct CacheItem
-        {
-            internal byte[] Data;
-            internal int Length;
-        }
-        class FNVByteComparison : IEqualityComparer<CacheItem>
-        {
-            public bool Equals(CacheItem x, CacheItem y)
-            {
-                if (x.Length != y.Length)
-                {
-                    return false;
-                }
-
-                for (var i = 0; i < x.Length; i++)
-                {
-                    if (x.Data[i] != y.Data[i])
-                    {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-
-            public int GetHashCode(CacheItem obj)
-            {
-                var hash = FnvHash.Create();
-                int i = 0;
-                foreach (var t in obj.Data)
-                {
-                    hash.Combine(t);
-                    i++;
-                    if (i == obj.Length)
-                    {
-                        return hash.HashCode;
-                    }
-                }
-
-                return hash.HashCode;
-            }
-        }
-
-        /// <summary>
-        /// A hash combiner that is implemented with the Fowler/Noll/Vo algorithm (FNV-1a). This is a mutable struct for performance reasons.
-        /// </summary>
-        struct FnvHash
-        {
-            /// <summary>
-            /// The starting point of the FNV hash.
-            /// </summary>
-            public const int Offset = unchecked((int)2166136261);
-
-            /// <summary>
-            /// The prime number used to compute the FNV hash.
-            /// </summary>
-            private const int Prime = 16777619;
-
-            /// <summary>
-            /// Gets the current result of the hash function.
-            /// </summary>
-            public int HashCode { get; private set; }
-
-            /// <summary>
-            /// Creates a new FNV hash initialized to <see cref="Offset"/>.
-            /// </summary>
-            public static FnvHash Create()
-            {
-                var result = new FnvHash();
-                result.HashCode = Offset;
-                return result;
-            }
-
-            /// <summary>
-            /// Adds the specified byte to the hash.
-            /// </summary>
-            /// <param name="data">The byte to hash.</param>
-            public void Combine(byte data)
-            {
-                unchecked
-                {
-                    HashCode ^= data;
-                    HashCode *= Prime;
-                }
-            }
-
-            /// <summary>
-            /// Adds the specified integer to this hash, in little-endian order.
-            /// </summary>
-            /// <param name="data">The integer to hash.</param>
-            public void Combine(int data)
-            {
-                Combine(unchecked((byte)data));
-                Combine(unchecked((byte)(data >> 8)));
-                Combine(unchecked((byte)(data >> 16)));
-                Combine(unchecked((byte)(data >> 24)));
-            }
-        }
     }
 }
