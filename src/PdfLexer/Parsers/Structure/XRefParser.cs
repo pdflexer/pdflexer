@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PdfLexer.IO;
@@ -33,7 +34,48 @@ namespace PdfLexer.Parsers.Structure
             _ctx = ctx;
         }
 
-        public async ValueTask<(List<XRefEntry>, PdfDictionary)> LoadCrossReference(IPdfDataSource source)
+        // TODO syncronous
+        public async ValueTask<(Dictionary<ulong, XRefEntry>, PdfDictionary)> LoadCrossReferences(IPdfDataSource pdf)
+        {
+            var orig = _ctx.Options.Eagerness;
+            _ctx.Options.Eagerness = Eagerness.FullEager; // lazy objects don't currently work for sequencereader.. need to track offsets.
+            var (refs, trailer) = await LoadCrossReference(pdf);
+            _ctx.Options.Eagerness = orig;
+            var entries = new Dictionary<ulong, XRefEntry>();
+            refs.Reverse(); // oldest prev entries returned first... look into cleaning this up
+            foreach (var entry in refs)
+            {
+                entries[entry.Reference.GetId()] = entry;
+            }
+            if (refs.Any())
+            {
+                var ordered = refs.Where(x => x.Type == XRefType.Normal && !x.IsFree).OrderBy(x => x.Offset).ToList();
+                for (var i = 0; i < ordered.Count; i++)
+                {
+                    var entry = ordered[i];
+                    entry.Source = pdf;
+                    Debug.Assert(entry.Offset < pdf.TotalBytes);
+                    if (i + 1 < ordered.Count)
+                    {
+                        entry.MaxLength = (int)(ordered[i + 1].Offset - entry.Offset);
+                    }
+                }
+                for (var i = 0; i < ordered.Count; i++)
+                {
+                    // if two have same offset.. fix logic later
+                    if (i + 1 < ordered.Count && ordered[i].MaxLength == 0)
+                    {
+                        ordered[i].MaxLength = ordered[i + 1].MaxLength;
+                    }
+                }
+                ordered[^1].MaxLength = (int)(pdf.TotalBytes - ordered[^1].Offset - 1);
+            }
+            return (entries, trailer);
+        }
+
+        // TODO clean this up
+        // TODO add rebuilding
+        internal async ValueTask<(List<XRefEntry>, PdfDictionary)> LoadCrossReference(IPdfDataSource source)
         {
             var readStart = source.TotalBytes - XrefBackScan;
             if (readStart < 0)

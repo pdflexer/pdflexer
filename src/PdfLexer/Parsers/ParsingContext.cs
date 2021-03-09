@@ -22,6 +22,7 @@ namespace PdfLexer.Parsers
         internal IPdfDataSource CurrentSource { get; set; }
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
         internal Dictionary<ulong, IPdfObject> IndirectCache = new Dictionary<ulong, IPdfObject>();
+        internal NumberCache NumberCache = new NumberCache();
         internal NameCache NameCache = new NameCache();
         internal NumberParser NumberParser { get; }
         internal DecimalParser DecimalParser { get; }
@@ -57,44 +58,11 @@ namespace PdfLexer.Parsers
             FlateDecoder = new FlateFilter(this);
         }
 
-        public async ValueTask<(Dictionary<ulong, XRefEntry>, PdfDictionary)> Initialize(IPdfDataSource pdf)
+        public ValueTask<(Dictionary<ulong, XRefEntry>, PdfDictionary)> Initialize(IPdfDataSource pdf)
         {
             MainDocSource = pdf;
             CurrentSource = MainDocSource;
-            var orig = Options.Eagerness;
-            Options.Eagerness = Eagerness.FullEager; // lazy objects don't currently work for sequencereader.. need to track offsets.
-            var (refs, trailer) = await XRefParser.LoadCrossReference(MainDocSource);
-            Options.Eagerness = orig;
-            var entries = new Dictionary<ulong, XRefEntry>();
-            refs.Reverse(); // oldest prev entries returned first... look into cleaning this up
-            foreach (var entry in refs)
-            {
-                entries[entry.Reference.GetId()] = entry;
-            }
-            if (refs.Any())
-            {
-                var ordered = refs.Where(x => x.Type == XRefType.Normal && !x.IsFree).OrderBy(x => x.Offset).ToList();
-                for (var i = 0; i < ordered.Count; i++)
-                {
-                    var entry = ordered[i];
-                    entry.Source = pdf;
-                    Debug.Assert(entry.Offset < pdf.TotalBytes);
-                    if (i + 1 < ordered.Count)
-                    {
-                        entry.MaxLength = (int)(ordered[i + 1].Offset - entry.Offset);
-                    }
-                }
-                for (var i = 0; i < ordered.Count; i++)
-                {
-                    // if two have same offset.. fix logic later
-                    if (i + 1 < ordered.Count && ordered[i].MaxLength == 0)
-                    {
-                        ordered[i].MaxLength = ordered[i + 1].MaxLength;
-                    }
-                }
-                ordered[^1].MaxLength = (int)(MainDocSource.TotalBytes - ordered[^1].Offset - 1);
-            }
-            return (entries, trailer);
+            return XRefParser.LoadCrossReferences(pdf);
         }
 
         internal IDecoder GetDecoder(PdfName name)

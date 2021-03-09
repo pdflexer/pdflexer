@@ -188,14 +188,11 @@ namespace PdfLexer.Serializers
         }
 
         // TODO can we just track SourcedXRef by the ConditionalWeakTable as well?
-        // would there be scenarios ever where there are two object instances of a single IR object?
-        // with caching -> don't think so
         private ConditionalWeakTable<IPdfObject, PdfIndirectRef> localizedObjects = new ConditionalWeakTable<IPdfObject, PdfIndirectRef>();
         private Dictionary<int, Dictionary<ulong, PdfIndirectRef>> localizedXRefs = new Dictionary<int, Dictionary<ulong, PdfIndirectRef>>();
         private int currentExternalId = -1;
         private Dictionary<ulong, PdfIndirectRef> currentDictionary = null;
-        // private Dictionary<SourcedXRef, PdfIndirectRef> localizedXrefs = new Dictionary<SourcedXRef, PdfIndirectRef>();
-        // private ConditionalWeakTable<IPdfObject, PdfIndirectRef> localizedXrefAlt = new ConditionalWeakTable<IPdfObject, PdfIndirectRef>();
+
         private bool TryGetLocalRef(PdfIndirectRef ir, out PdfIndirectRef local)
         {
             if (ir.SourceId == NewDocId)
@@ -218,20 +215,11 @@ namespace PdfLexer.Serializers
                 }
                 currentExternalId = ir.SourceId;
             }
-            ulong id = ((ulong)ir.Reference.ObjectNumber << 16) | ((uint)ir.Reference.Generation & 0xFFFF);
+            ulong id = ir.Reference.GetId();
             return currentDictionary.TryGetValue(id, out local);
-
-            // return localizedObjects.TryGetValue(ir.GetObject(), out local);
-            // if (ir is NewIndirectRef nir)
-            // {
-            //     return localizedObjects.TryGetValue(nir.Object, out local);
-            // } else if (ir is ExistingIndirectRef eir)
-            // {
-            //     var sxr = new SourcedXRef { Reference = eir.Reference, SourceId = eir.SourceId };
-            //     return localizedXrefs.TryGetValue(sxr, out local);
-            // }
             throw new NotImplementedException("TODO");
         }
+
         public PdfIndirectRef Localize(PdfIndirectRef ir)
         {
             if (ir.IsOwned(NewDocId))

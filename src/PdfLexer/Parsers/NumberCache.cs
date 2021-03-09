@@ -4,26 +4,26 @@ using System.Text;
 
 namespace PdfLexer.Parsers
 {
-    public class NameCache
+    public class NumberCache
     {
-        private Dictionary<ulong, PdfName> Cache = new Dictionary<ulong, PdfName>();
-        public NameCache()
+        private Dictionary<ulong, PdfNumber> Cache = new Dictionary<ulong, PdfNumber>();
+        public NumberCache()
         {
-                
+
         }
 
-        public bool TryGetName(ReadOnlySpan<byte> data, out ulong key, out PdfName value)
+        public bool TryGetNumber(ReadOnlySpan<byte> data, out ulong key, out PdfNumber value)
         {
             key = 0;
-            if (data.Length > 9)
+            if (data.Length > 8)
             {
                 value = null;
                 return false;
             }
 
-            for(int i=1;i<data.Length;i++)
+            for (int i = 0; i < data.Length; i++)
             {
-                key = key | ((ulong)data[i] << 8*(i-1));
+                key = key | ((ulong)data[i] << 8 * (i - 1));
             }
 
             if (Cache.TryGetValue(key, out var item))
@@ -34,9 +34,8 @@ namespace PdfLexer.Parsers
             value = null;
             return false;
         }
-        public void AddValue(ulong key, PdfName value)
+        public void AddValue(ulong key, PdfNumber value)
         {
-            value.CacheValue = key;
             Cache[key] = value;
         }
     }

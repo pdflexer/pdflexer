@@ -59,7 +59,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return Run(doc);
         }
 
-        
+
         //[Benchmark()]
         public int LazySmall()
         {
@@ -89,9 +89,9 @@ namespace PdfLexer.Benchmarks.Benchmarks
             var doc = UglyToad.PdfPig.PdfDocument.Open(data);
             ms.Position = 0;
             var builder = new UglyToad.PdfPig.Writer.PdfDocumentBuilder(ms);
-            for (var i=0;i<doc.NumberOfPages;i++)
+            for (var i = 0; i < doc.NumberOfPages; i++)
             {
-                builder.AddPage(doc, i+1);
+                builder.AddPage(doc, i + 1);
             }
             builder.Dispose();
             return 0;
@@ -116,6 +116,16 @@ namespace PdfLexer.Benchmarks.Benchmarks
             writer.Complete(doc.Trailer);
             return 0;
         }
+        [Benchmark()]
+        public int LazyModify()
+        {
+            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
+            ms.Position = 0;
+            doc.Pages[0].Dictionary[PdfName.Colors] = PdfCommonNumbers.Zero; // add dummy data to page
+            doc.SaveTo(ms);
+            return 0;
+        }
+
         //[Benchmark()]
         public int LazyCopyPageTree()
         {
@@ -138,7 +148,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             var doc = UglyToad.PdfPig.PdfDocument.Open(data2);
             return WalkTree(doc.Structure.Catalog.PageTree, null).Count();
         }
-        internal static IEnumerable<(DictionaryToken, IReadOnlyList<DictionaryToken>)> WalkTree(PageTreeNode node, List<DictionaryToken> parents=null)
+        internal static IEnumerable<(DictionaryToken, IReadOnlyList<DictionaryToken>)> WalkTree(PageTreeNode node, List<DictionaryToken> parents = null)
         {
             if (parents == null)
             {

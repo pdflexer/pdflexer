@@ -23,9 +23,10 @@ namespace PdfLexer
         public Eagerness Eagerness { get; set; } = Eagerness.Lazy;
         /// <summary>
         /// If numbers should be cached to reduce object allocations
-        /// Default: true
+        /// Default: false -> benchmarking shows bad for perf, UTF8Parser perf
+        /// is very good for numbers already
         /// </summary>
-        public bool CacheNumbers { get; set; } = true;
+        public bool CacheNumbers { get; set; } = false;
         /// <summary>
         /// If names should be cached to reduce object allocations and 
         /// parsing overhead.

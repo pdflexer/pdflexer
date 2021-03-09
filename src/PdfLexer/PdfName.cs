@@ -11,6 +11,7 @@ namespace PdfLexer
     /// </summary>
     public class PdfName : PdfObject
     {
+        internal ulong CacheValue {get;set;}
         internal bool? NeedsEscaping { get;} 
         /// <summary>
         /// PdfName CTOR

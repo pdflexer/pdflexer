@@ -50,6 +50,11 @@ namespace PdfLexer.Tests
             var bytes = Encoding.ASCII.GetBytes(input);
             var parser = new NumberParser(new ParsingContext(new ParsingOptions { CacheNumbers = true }));
             var result = parser.Parse(bytes);
+            Span<byte> data = new byte[20];
+            var serializer = new NumberSerializer();
+            var i = serializer.GetBytes(result, data);
+            var decoded = Encoding.ASCII.GetString(data.Slice(0,i));
+            Assert.Equal(input, decoded);
             
             Assert.Equal(expected, result.GetType());
             if (result is PdfDecimalNumber dn)

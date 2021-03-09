@@ -22,37 +22,21 @@ namespace PdfLexer.Benchmarks.Benchmarks
     [Config(typeof(BenchmarkConfig))]
     public class MicroCacheBench
     {
-        public static List<string> data = new List<string>
-        {
-            "1", "10", "2", "100", "20131", "121251288"
-        };
         private List<byte[]> samples = new List<byte[]>();
 
-        private char[] chars = new char[10];
         public MicroCacheBench()
         {
-            foreach (var item in data)
+            var rnd = new Random();
+            for (var i = 0; i<20_000;i++)
             {
-                samples.Add(Encoding.ASCII.GetBytes(item));
+                samples.Add(Encoding.ASCII.GetBytes(rnd.Next(0, 9999999).ToString()));
             }
         }
+        private ParsingContext Cacher = new ParsingContext(new ParsingOptions { CacheNumbers = true });
+        private ParsingContext NoCacher = new ParsingContext(new ParsingOptions { CacheNumbers = false });
+
 
         [Benchmark(Baseline = true)]
-        public int JustGetAscii()
-        {
-            var count = 0;
-            foreach (var item in samples)
-            {
-                for (var i = 0; i < item.Length; i++)
-                {
-                    chars[i] = (char) item[i];
-                }
-                count += new String(chars, 0, item.Length).Length;
-            }
-            return count;
-        }
-
-        [Benchmark()]
         public int Utf8Parse()
         {
             var count = 0;
@@ -63,6 +47,28 @@ namespace PdfLexer.Benchmarks.Benchmarks
                     throw new ApplicationException();
                 }
                 count += value;
+            }
+            return count;
+        }
+
+        [Benchmark()]
+        public int Cached()
+        {
+            var count = 0;
+            foreach (var item in samples)
+            {
+                count = unchecked ( count + Cacher.NumberParser.Parse(item));
+            }
+            return count;
+        }
+
+        [Benchmark()]
+        public int NoCached()
+        {
+            var count = 0;
+            foreach (var item in samples)
+            {
+                count = unchecked ( count + NoCacher.NumberParser.Parse(item));
             }
             return count;
         }

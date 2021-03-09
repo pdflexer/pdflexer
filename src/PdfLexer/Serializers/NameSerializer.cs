@@ -27,6 +27,11 @@ namespace PdfLexer.Serializers
 
         public int GetBytes(PdfName obj, Span<byte> data)
         {
+            if (obj.CacheValue > 0)
+            {
+                return WriteCached(obj, data);
+            }
+
             data[0] = (byte)'/';
             var ci = 1; // TODO perf analysis
             for (var i=1;i<obj.Value.Length;i++)
@@ -48,6 +53,23 @@ namespace PdfLexer.Serializers
             }
 
             return ci;
+        }
+
+        public int WriteCached(PdfName obj, Span<byte> data)
+        {
+            data[0] = (byte)'/';
+            ulong val = obj.CacheValue;
+            for (var i=1;i<9;i++)
+            {
+                var cv = (byte)(val & 0xFF);
+                if (cv == 0)
+                {
+                    return i;
+                }
+                data[i] = cv;
+                val = val >> 8;
+            }
+            return 8;
         }
 
         private static char[] needsEscaping = new char[]

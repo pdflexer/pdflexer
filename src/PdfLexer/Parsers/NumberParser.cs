@@ -54,40 +54,30 @@ namespace PdfLexer.Parsers
                 }
             }
 
-            if (buffer.Length == 2 && buffer[0] == (byte)'-' && buffer[1] == (byte)'1') {
+            if (buffer.Length == 2 && buffer[0] == (byte)'-' && buffer[1] == (byte)'1')
+            {
                 return PdfCommonNumbers.MinusOne;
             }
 
-            if (!_ctx.Options.CacheNumbers)
-            {
-                return GetResult(buffer);
-            }
-
-            if (buffer[0] == (byte) '+')
+            if (buffer[0] == (byte)'+')
             {
                 buffer = buffer.Slice(1);
             }
 
-            if (buffer.Length > 9)
+            ulong key = default;
+            if (_ctx.Options.CacheNumbers && _ctx.NumberCache.TryGetNumber(buffer, out key, out var result))
             {
-                return new PdfLongNumber(GetLong(buffer));
-            } else
-            {
-                var val = GetInt(buffer);
-                if (val > 1000)
-                {
-                    return new PdfIntNumber(val);
-                }
-                if (_ctx.CachedInts.TryGetValue(val, out var intObj))
-                {
-                    return intObj;
-                } else
-                {
-                    var obj = new PdfIntNumber(val);
-                    _ctx.CachedInts[val] = obj;
-                    return obj;
-                }
+                return result;
             }
+
+            var value = GetResult(buffer);
+
+            if (key > 0)
+            {
+                _ctx.NumberCache.AddValue(key, value);
+            }
+
+            return value;
         }
 
         private PdfNumber GetResult(ReadOnlySpan<byte> buffer)
@@ -95,7 +85,8 @@ namespace PdfLexer.Parsers
             if (buffer.Length > 9)
             {
                 return new PdfLongNumber(GetLong(buffer));
-            } else
+            }
+            else
             {
                 return new PdfIntNumber(GetInt(buffer));
             }
@@ -135,7 +126,8 @@ namespace PdfLexer.Parsers
                 {
                     isDecimal = true;
                     continue;
-                } else if ((b > 47 && b < 58) || b == '+' || b == '-')
+                }
+                else if ((b > 47 && b < 58) || b == '+' || b == '-')
                 {
                     continue;
                 }
