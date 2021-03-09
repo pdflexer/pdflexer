@@ -69,7 +69,7 @@ namespace PdfLexer.Serializers
                 data[i] = cv;
                 val = val >> 8;
             }
-            return 8;
+            return 9;
         }
 
         private static char[] needsEscaping = new char[]
