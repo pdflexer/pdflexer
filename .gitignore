@@ -11,7 +11,7 @@
 *.sln.docstates
 .vscode
 .test-pdfs
-pnger
+pngjs
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)
