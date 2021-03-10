@@ -189,9 +189,10 @@ namespace PdfLexer.Parsers.Structure
                         var eoss = oss + (stream.Position - strStart) - or;
                         contents = new PdfExistingStreamContents(source, eoss, len);
                     }
-
+                    contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
+                    contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
                     var str = new PdfStream(dict, contents);
-                    var data = str.GetDecodedData(_ctx);
+                    var data = str.Contents.GetDecodedData(_ctx);
 
                     var index = dict.GetOptionalValue<PdfArray>(PdfName.Index);
                     AddEntries(data, dict.GetRequiredValue<PdfArray>(PdfName.W), index, entries);

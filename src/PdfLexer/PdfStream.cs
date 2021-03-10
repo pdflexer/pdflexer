@@ -15,7 +15,6 @@ namespace PdfLexer
     /// </summary>
     public class PdfStream : PdfObject
     {
-        // TODO support external content?
         public PdfStream(PdfDictionary dictionary, PdfStreamContents contents)
         {
             Dictionary = dictionary;
@@ -28,11 +27,80 @@ namespace PdfLexer
         /// <summary>
         /// Stream portion of the Pdf Object
         /// </summary>
-        public PdfStreamContents Contents { get; set; } // TODO clean decoded on set
-        public bool IsIndirect => true;
+        public PdfStreamContents Contents
+        {
+            get => _contents;
+            set
+            {
+                streamModified = true;
+                _contents = value;
+            }
+        }
+        internal bool streamModified { get; set; }
+        internal PdfStreamContents _contents { get; set; }
         public override PdfObjectType Type => PdfObjectType.StreamObj;
-        public override bool IsModified => Dictionary.IsModified; // TODO STREAM SUPPORT
-        public byte[] DecodedData { get; private set; }
+        public override bool IsModified => Dictionary.IsModified || streamModified;
+
+        // /Length required
+        // /Filter /DecodeParms -> if filters
+        // /F, /FFilter, /FDecodeParms -> external file
+    }
+
+    /// <summary>
+    /// Contents of a Pdf stream.
+    /// </summary>
+    public abstract class PdfStreamContents
+    {
+        /// <summary>
+        /// Reads data of the stream.
+        /// </summary>
+        /// <param name="destination"></param>
+        public abstract Stream GetEncodedData();
+        /// <summary>
+        /// Copies contents to the provided stream.
+        /// </summary>
+        /// <param name="destination"></param>
+        public abstract void CopyEncodedData(Stream destination);
+        /// <summary>
+        /// Length of the stream (compressed, if applicable).
+        /// </summary>
+        public abstract int Length { get; }
+        /// <summary>
+        /// Filter entry for Dict.
+        /// </summary>
+        internal IPdfObject Filters { get; set; }
+        /// <summary>
+        /// DecodeParms entry for Dict.
+        /// </summary>
+        internal IPdfObject DecodeParams { get; set; }
+        /// <summary>
+        /// Decoded data cache
+        /// </summary>
+        internal byte[] DecodedData { get; private set; }
+        /// <summary>
+        /// Updates the stream dictionary with this streams filter information
+        /// </summary>
+        /// <param name="dict"></param>
+        internal virtual void UpdateStreamDictionary(PdfDictionary dict)
+        {
+            dict.Remove(PdfName.DecodeParms);
+            dict.Remove(PdfName.Filter);
+            if (DecodeParams != null)
+            {
+                dict[PdfName.DecodeParms] = DecodeParams;
+            }
+            if (Filters != null)
+            {
+                dict[PdfName.Filter] = Filters;
+            }
+            dict[PdfName.Length] = new PdfIntNumber(Length);
+        }
+        /// <summary>
+        /// Gets the decoded data for this stream.
+        /// TODO look into not required context.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         public byte[] GetDecodedData(ParsingContext ctx)
         {
             if (DecodedData != null)
@@ -55,7 +123,8 @@ namespace PdfLexer
                     {
                         pos += read;
                     }
-                } else
+                }
+                else
                 {
                     using var copy = ParsingContext.StreamManager.GetStream();
                     stream.CopyTo(copy);
@@ -66,74 +135,55 @@ namespace PdfLexer
 
             return DecodedData;
         }
+        /// <summary>
+        /// Gets the decoded data as a stream.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
         public Stream GetDecodedStream(ParsingContext ctx)
         {
             if (DecodedData != null)
             {
                 return new MemoryStream(DecodedData);
             }
-            if (!Dictionary.TryGetValue(PdfName.Filter, out var obj))
+            if (Filters == null)
             {
-                return Contents.GetData();
+                return GetEncodedData();
             }
 
-            var source = Contents.GetData();
-            if (source.Length != Contents.Length)
+            var source = GetEncodedData();
+            if (source.Length != Length)
             {
-                source = new SubStream(source, 0, Contents.Length);
+                source = new SubStream(source, 0, Length);
             }
 
             // TODO figure out which streams to dispose, look into usage of the pooled one
-            obj = obj.Resolve();
+            var obj = Filters.Resolve();
+            var parms = DecodeParams?.Resolve();
             if (obj.Type == PdfObjectType.ArrayObj)
             {
                 var arr = obj.GetValue<PdfArray>();
-                foreach (var f in arr)
+                var parmArray = parms?.GetValue<PdfArray>();
+                for (var i = 0; i < arr.Count; i++)
                 {
-                    var filter = f.GetValue<PdfName>();
-                    source = DecodeSingle(filter, source);
+                    var filter = arr[i].GetValue<PdfName>();
+                    var dict = parmArray != null && parmArray.Count > i ? parmArray[i] : null;
+                    source = DecodeSingle(filter, source, dict?.GetValue<PdfDictionary>());
                 }
                 return source;
             }
             else
             {
                 var filter = obj.GetValue<PdfName>();
-                return DecodeSingle(filter, source);
+                return DecodeSingle(filter, source, DecodeParams?.GetValue<PdfDictionary>());
             }
 
-            Stream DecodeSingle(PdfName filterName, Stream input)
+            Stream DecodeSingle(PdfName filterName, Stream input, PdfDictionary decodeParams)
             {
                 var decode = ctx.GetDecoder(filterName);
-                return decode.Decode(input, Dictionary.GetOptionalValue<PdfDictionary>(PdfName.DecodeParms));
+                return decode.Decode(input, decodeParams);
             }
         }
-
-
-        // /Length required
-        // /Filter /DecodeParms -> if filters
-        // /F, /FFilter, /FDecodeParms -> external file
-    }
-
-    /// <summary>
-    /// Contents of a Pdf stream.
-    /// </summary>
-    public abstract class PdfStreamContents
-    {
-        /// <summary>
-        /// Reads data of the stream.
-        /// WARNING: may return data past stream end.
-        /// </summary>
-        /// <param name="destination"></param>
-        public abstract Stream GetData();
-        /// <summary>
-        /// Copies contents to the provided stream.
-        /// </summary>
-        /// <param name="destination"></param>
-        public abstract void CopyRawContents(Stream destination);
-        /// <summary>
-        /// Length of the stream (compressed, if applicable).
-        /// </summary>
-        public abstract int Length { get; }
     }
 
     /// <summary>
@@ -155,12 +205,12 @@ namespace PdfLexer
         /// Copies contents to the provided stream.
         /// </summary>
         /// <param name="destination"></param>
-        public override void CopyRawContents(Stream destination)
+        public override void CopyEncodedData(Stream destination)
         {
             Source.CopyData(Offset, Length, destination);
         }
 
-        public override Stream GetData() => Source.GetDataAsStream(Offset, Length);
+        public override Stream GetEncodedData() => Source.GetDataAsStream(Offset, Length);
     }
 
     /// <summary>
@@ -183,11 +233,40 @@ namespace PdfLexer
         /// Copies contents to the provided stream.
         /// </summary>
         /// <param name="destination"></param>
-        public override void CopyRawContents(Stream destination)
+        public override void CopyEncodedData(Stream destination)
         {
             destination.Write(Contents);
         }
 
-        public override Stream GetData() => new MemoryStream(Contents);
+        public override Stream GetEncodedData() => new MemoryStream(Contents);
+    }
+
+    /// <summary>
+    /// Contents of a Pdf stream represented by an external file.
+    /// TODO
+    /// </summary>
+    public class PdfFileStreamContents : PdfStreamContents
+    {
+        internal IPdfObject Specification;
+        public PdfFileStreamContents(IPdfObject specification)
+        {
+            Specification = specification;
+        }
+
+        /// <summary>
+        /// Length of the stream (compressed, if applicable).
+        /// </summary>
+        public override int Length => 0;
+
+        /// <summary>
+        /// Copies contents to the provided stream.
+        /// </summary>
+        /// <param name="destination"></param>
+        public override void CopyEncodedData(Stream destination)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Stream GetEncodedData() => throw new NotImplementedException();
     }
 }

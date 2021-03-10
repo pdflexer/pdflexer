@@ -147,11 +147,12 @@ namespace PdfLexer.Serializers
                     return;
                 case PdfObjectType.StreamObj:
                     var str = (PdfStream)obj;
+                    str.Contents.UpdateStreamDictionary(str.Dictionary);
                     DictionarySerializer.WriteToStream(str.Dictionary, Stream);
                     Stream.WriteByte((byte)'\n');
                     Stream.Write(IndirectSequences.stream);
                     Stream.WriteByte((byte)'\n');
-                    str.Contents.CopyRawContents(Stream);
+                    str.Contents.CopyEncodedData(Stream);
                     Stream.WriteByte((byte)'\n');
                     Stream.Write(IndirectSequences.endstream);
                     return;
@@ -297,7 +298,6 @@ namespace PdfLexer.Serializers
             WriteObjEnd();
         }
 
-        int test = 0;
         internal PdfIndirectRef WriteIndirectObject(PdfIndirectRef ir, HashSet<PdfIndirectRef> refStack)
         {
             var obj = ir.GetObject();

@@ -162,10 +162,10 @@ namespace PdfLexer.Parsers
 
         internal void LoadObjectStream(XRefEntry entry)
         {
-            var wrapper = GetIndirectObject(XRef.GetId(entry.ObjectStreamNumber, 0)).GetValue<PdfStream>();
-            var data = wrapper.GetDecodedData(this);
-            var os = GetOffsets(data, wrapper.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
-            var start = wrapper.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
+            var stream = GetIndirectObject(XRef.GetId(entry.ObjectStreamNumber, 0)).GetValue<PdfStream>();
+            var data = stream.Contents.GetDecodedData(this);
+            var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
+            var start = stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
             var source = new ObjectStreamDataSource(this, entry.ObjectStreamNumber, data, os, start);
             foreach (var item in Document.XrefEntries.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
             {
@@ -209,7 +209,10 @@ namespace PdfLexer.Parsers
                 {
                     throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
                 }
-                var stream = new PdfStream(dict, new PdfExistingStreamContents(MainDocSource, xref.Offset + scanner.Position + scanner.CurrentLength, streamLength));
+                var contents = new PdfExistingStreamContents(MainDocSource, xref.Offset + scanner.Position + scanner.CurrentLength, streamLength);
+                contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
+                contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+                var stream = new PdfStream(dict, contents);
                 scanner.SkipCurrent();
                 scanner.Advance(streamLength);
                 var endstream = scanner.Peak();

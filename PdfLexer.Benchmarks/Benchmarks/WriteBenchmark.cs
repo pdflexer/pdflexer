@@ -97,7 +97,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return 0;
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public int EagerCopy()
         {
             using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.FullEager }).GetAwaiter().GetResult();
@@ -122,6 +122,16 @@ namespace PdfLexer.Benchmarks.Benchmarks
             using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
             ms.Position = 0;
             doc.Pages[0].Dictionary[PdfName.Colors] = PdfCommonNumbers.Zero; // add dummy data to page
+            doc.SaveTo(ms);
+            return 0;
+        }
+
+        [Benchmark()]
+        public int LazyModifyNoPages()
+        {
+            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
+            ms.Position = 0;
+            doc.Trailer[PdfName.Colors] = PdfCommonNumbers.Zero; // add dummy data to page
             doc.SaveTo(ms);
             return 0;
         }

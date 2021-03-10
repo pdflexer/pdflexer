@@ -43,7 +43,7 @@ namespace PdfLexer.Serializers
                     || cc == '%' || cc == '#')
                 {
                     data[ci++] = (byte) '#';
-                    var hex = ((int)cc).ToString("X2"); // TODO can make this better as well
+                    var hex = ((int)cc).ToString("X2");
                     data[ci++] = (byte) hex[0];
                     data[ci++] = (byte) hex[1];
                 } else
