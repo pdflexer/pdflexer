@@ -30,7 +30,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [Benchmark(Baseline = true)]
         public int LazyCopy()
         {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
+            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
             ms.Position = 0;
             var writer = new WritingContext(ms);
             writer.Complete(doc.Trailer);
@@ -40,7 +40,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [Benchmark()]
         public int LazySave()
         {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy }).GetAwaiter().GetResult();
+            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
             ms.Position = 0;
             doc.SaveTo(ms);
             return 0;

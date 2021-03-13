@@ -6,6 +6,7 @@ using System.IO.Pipelines;
 using System.Text;
 using System.Threading.Tasks;
 using PdfLexer.IO;
+using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Nested;
 using Xunit;
@@ -14,7 +15,7 @@ namespace PdfLexer.Tests
 {
     public class DictionaryTests
     {
-        [InlineData("<</Test false>>  ", true,  "<</Test false>>")]
+        [InlineData("<</Test false>>  ", true, "<</Test false>>")]
         [InlineData("<</Test 1 0 R>>  ", true, "<</Test 1 0 R>>")]
         [InlineData("<</Test 1>>  ", true, "<</Test 1>>")]
         [InlineData("<</Test (string)>>  ", true, "<</Test (string)>>")]
@@ -32,11 +33,12 @@ namespace PdfLexer.Tests
             if (!found)
             {
                 Assert.ThrowsAny<Exception>(() => ctx.DictionaryParser.Parse(buffer));
-            } else
+            }
+            else
             {
                 var result = ctx.DictionaryParser.Parse(buffer);
             }
-            
+
             // Do_Get_Dict(data, found, expected);
         }
 
@@ -101,16 +103,141 @@ namespace PdfLexer.Tests
                     if (item is PdfDictionary d)
                     {
                         lc += GetCounts(d.Values);
-                    } else if (item is PdfArray arr)
+                    }
+                    else if (item is PdfArray arr)
                     {
                         lc += GetCounts(arr);
-                    } else if (item is PdfIntNumber num)
+                    }
+                    else if (item is PdfIntNumber num)
                     {
                         lc += num.Value;
                     }
                 }
                 return lc;
             }
+        }
+
+
+        [InlineData("<</FICL:Enfocus 57 0 R/ViewerPreferences<</Direction/L2R>>/Metadata 2592 0 R/Pages 1 0 R/Type/Catalog/OutputIntents[<</Info(ISO Coated)/S/GTS_PDFX/OutputConditionIdentifier(FOGRA27)/OutputCondition(Offset printing, according to ISO/DIS 12647-2:2003, OFCOM,  paper type 1 or 2 = coated art, 115 g/m2, screen ruling 60 cm-1, positive-acting plates.)/DestOutputProfile 2590 0 R/Type/OutputIntent/RegistryName(http://www.color.org)>>]>>", 42)]
+        [Theory]
+        public void ScannerTests(string data, int count)
+        {
+            var buffer = Encoding.ASCII.GetBytes(data);
+            var ms = new MemoryStream(buffer);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 30, minimumReadSize: 15));
+            var scanner = new PipeScanner(new ParsingContext(), reader);
+            int cnt = 0;
+            while (true)
+            {
+                var token = scanner.Peak();
+                if (token == PdfTokenType.EOS)
+                {
+                    break;
+                }
+                cnt++;
+                scanner.SkipCurrent();
+            }
+            Assert.Equal(count, cnt);
+        }
+
+        [Fact]
+        public void Scanner_Skips_Dict()
+        {
+            var buffer = Encoding.ASCII.GetBytes("[<</Test/Value>>/Name]");
+            var ms = new MemoryStream(buffer);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+            var scanner = new PipeScanner(new ParsingContext(), reader);
+            int cnt = 0;
+            while (true)
+            {
+                var token = scanner.Peak();
+                if (token == PdfTokenType.EOS)
+                {
+                    break;
+                }
+                if (token == PdfTokenType.DictionaryStart)
+                {
+                    scanner.SkipObject();
+                }
+                else
+                {
+                    cnt++;
+                    scanner.SkipCurrent();
+                }
+            }
+            Assert.Equal(3, cnt);
+        }
+
+        [Fact]
+        public void Scanner_Skips_Array()
+        {
+            var buffer = Encoding.ASCII.GetBytes("<</Name[/Test/Value/Test/Value/Test/Value/Test/Value]>>");
+            var ms = new MemoryStream(buffer);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+            var scanner = new PipeScanner(new ParsingContext(), reader);
+            int cnt = 0;
+            while (true)
+            {
+                var token = scanner.Peak();
+                if (token == PdfTokenType.EOS)
+                {
+                    break;
+                }
+                if (token == PdfTokenType.ArrayStart)
+                {
+                    scanner.SkipObject();
+                }
+                else
+                {
+                    cnt++;
+                    scanner.SkipCurrent();
+                }
+            }
+            Assert.Equal(3, cnt);
+        }
+
+        [Fact]
+        public void Scanner_Parses_Array()
+        {
+            var buffer = Encoding.ASCII.GetBytes("<</Name[/Test/Value/Test/Value/Test/Value/Test/Value]>>");
+            var ms = new MemoryStream(buffer);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+            var scanner = new PipeScanner(new ParsingContext(), reader);
+            int cnt = 0;
+            while (true)
+            {
+                var token = scanner.Peak();
+                if (token == PdfTokenType.EOS)
+                {
+                    break;
+                }
+                if (token == PdfTokenType.ArrayStart)
+                {
+                    var obj = scanner.GetCurrentObject();
+                }
+                else
+                {
+                    cnt++;
+                    scanner.SkipCurrent();
+                }
+            }
+            Assert.Equal(3, cnt);
+        }
+
+        [Fact]
+        public void Scanner_Skips_Offset_Returned()
+        {
+            var buffer = Encoding.ASCII.GetBytes("dadf 9 9 sdf0a /df// af0980 1 0 obj\r\n<</Name[/Test/Value]>>");
+            var ms = new MemoryStream(buffer);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+            var scanner = new PipeScanner(new ParsingContext(), reader);
+            Assert.True(scanner.TrySkipTo(Encoding.ASCII.GetBytes("obj"), 5));
+            Assert.Equal(27, scanner.GetOffset());
+            Assert.Equal(PdfTokenType.NumericObj, scanner.Peak());
+            scanner.SkipCurrent();
+            Assert.Equal(PdfTokenType.NumericObj, scanner.Peak());
+            scanner.SkipCurrent();
+            Assert.Equal(PdfTokenType.StartObj, scanner.Peak());
         }
     }
 }

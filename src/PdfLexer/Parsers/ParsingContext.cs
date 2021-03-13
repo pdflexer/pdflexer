@@ -58,7 +58,7 @@ namespace PdfLexer.Parsers
             FlateDecoder = new FlateFilter(this);
         }
 
-        public ValueTask<(Dictionary<ulong, XRefEntry>, PdfDictionary)> Initialize(IPdfDataSource pdf)
+        public (Dictionary<ulong, XRefEntry>, PdfDictionary) Initialize(IPdfDataSource pdf)
         {
             MainDocSource = pdf;
             CurrentSource = MainDocSource;

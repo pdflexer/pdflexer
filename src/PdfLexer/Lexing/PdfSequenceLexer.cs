@@ -32,7 +32,7 @@ namespace PdfLexer.Lexing
         {
             reader.AdvancePastAny(CommonUtil.WhiteSpaces);
 
-            type = PdfTokenType.NullObj;
+            type = PdfTokenType.Unknown;
             if (!reader.TryPeek(out byte b))
             {
                 start = reader.Position;
@@ -68,7 +68,7 @@ namespace PdfLexer.Lexing
                         return true;
                     }
 
-                    if (IsNext(ref reader, XRefParser.trailer, true))
+                    if (IsNext(ref reader, XRefParser.Trailer, true))
                     {
                         type = PdfTokenType.Trailer;
                         return true;

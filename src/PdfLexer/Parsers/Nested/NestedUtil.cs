@@ -29,9 +29,10 @@ namespace PdfLexer.Parsers.Nested
                 {
                     case (byte)'R':
                         {
-                            // TODO -> this logic doesn't work eg. /NameWithR
-                            // need to check for whitespace before
-                            hadIndirectObjects = true;
+                            if (pos > 0 && CommonUtil.IsWhiteSpace(slice[pos-1]))
+                            {
+                                hadIndirectObjects = true;
+                            }
                             i += pos + 1;
                             slice = buffer.Slice(i);
                             continue;
@@ -113,9 +114,10 @@ namespace PdfLexer.Parsers.Nested
                 {
                     case (byte)'R':
                         {
-                            // TODO -> this logic doesn't work eg. /NameWithR
-                            // need to check for whitespace before
-                            hadIndirectObjects = true;
+                            if (pos > 0 && CommonUtil.IsWhiteSpace(slice[pos-1]))
+                            {
+                                hadIndirectObjects = true;
+                            }
                             i += pos + 1;
                             slice = buffer.Slice(i);
                             continue;
@@ -199,9 +201,21 @@ namespace PdfLexer.Parsers.Nested
                 {
                     case (byte)'R':
                         {
-                            // TODO -> this logic doesn't work eg. /NameWithR
-                            // need to check for whitespace before
-                            hadIndirectObjects = true;
+                            if (reader.Consumed > 1)
+                            {
+                                reader.Rewind(2);
+                                if (!reader.TryRead(out var pb))
+                                {
+                                    reader.Advance(2);
+                                    continue;
+                                    
+                                }
+                                if (CommonUtil.IsWhiteSpace(pb))
+                                {
+                                    hadIndirectObjects = true;
+                                }
+                                reader.Advance(1);
+                            }
                             continue;
                         }
                     case (byte)'<':
@@ -280,9 +294,21 @@ namespace PdfLexer.Parsers.Nested
                 {
                     case (byte)'R':
                         {
-                            // TODO -> this logic doesn't work eg. /NameWithR
-                            // need to check for whitespace before
-                            hadIndirectObjects = true;
+                            if (reader.Consumed > 1)
+                            {
+                                reader.Rewind(2);
+                                if (!reader.TryRead(out var pb))
+                                {
+                                    reader.Advance(2);
+                                    continue;
+                                    
+                                }
+                                if (CommonUtil.IsWhiteSpace(pb))
+                                {
+                                    hadIndirectObjects = true;
+                                }
+                                reader.Advance(1);
+                            }
                             continue;
                         }
                     case (byte)'<':

@@ -38,6 +38,15 @@ namespace PdfLexer
                    || c == 0x0D
                    || c == 0x20;
         }
+        public static bool IsWhiteSpace(byte b)
+        {
+            return b == 0x00
+                   || b == 0x09
+                   || b == 0x0A
+                   || b == 0x0C
+                   || b == 0x0D
+                   || b == 0x20;
+        }
 
         /// <summary>
         /// Enumerates the PDF page tree.

@@ -103,7 +103,7 @@ namespace PdfLexer.Serializers
                 Stream.WriteByte((byte)' ');
                 Stream.Write(gen0end);
             }
-            Stream.Write(XRefParser.trailer);
+            Stream.Write(XRefParser.Trailer);
             Stream.WriteByte((byte)'\n');
             trailer["/Size"] = new PdfIntNumber(mos+1);
             DictionarySerializer.WriteToStream(trailer, Stream);

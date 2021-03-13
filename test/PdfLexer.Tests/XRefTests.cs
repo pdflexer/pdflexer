@@ -45,13 +45,13 @@ startxref
 
 ", 6, 15)]
         [Theory]
-        public async Task ItGetsXrefOffset(string input, int objectCount, int lastObjNum)
+        public void ItGetsXrefOffset(string input, int objectCount, int lastObjNum)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
             var ctx = new ParsingContext();
             var parser = new XRefParser(ctx);
             var source = new InMemoryDataSource(ctx, bytes);
-            var data = await parser.LoadCrossReference(source);
+            var data = parser.LoadCrossReference(source);
             Assert.Equal(objectCount, data.Item1.Count);
             Assert.Equal(lastObjNum, data.Item1.Max(x=>x.Reference.ObjectNumber));
         }
@@ -104,13 +104,13 @@ startxref
 0
 %%EOF", 7, 313465, 42)]
         [Theory]
-        public async Task ItGetsXRefTableMultiSection(string input, int entries, long lastOffset, int lastObj)
+        public void ItGetsXRefTableMultiSection(string input, int entries, long lastOffset, int lastObj)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
             var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager });
             var parser = new XRefParser(ctx);
             var source = new InMemoryDataSource(ctx, bytes);
-            var (results, trailer) = await parser.LoadCrossReference(source);
+            var (results, trailer) = parser.LoadCrossReference(source);
             Assert.Equal(entries, results.Count);
             var last = results.OrderByDescending(x=>x.Reference.ObjectNumber).First();
             Assert.Equal(lastOffset, last.Offset);

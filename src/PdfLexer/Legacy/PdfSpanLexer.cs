@@ -67,7 +67,7 @@ namespace PdfLexer.Lexing
                         return -1;
                     }
 
-                    if (buffer.Slice(i).StartsWith(XRefParser.trailer))
+                    if (buffer.Slice(i).StartsWith(XRefParser.Trailer))
                     {
                         type = PdfTokenType.Trailer;
                         length = 7;

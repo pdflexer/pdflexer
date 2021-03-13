@@ -15,21 +15,21 @@ namespace PdfLexer.Tests
     {
         [InlineData("pdfjs/160F-2019.pdf")]
         [Theory]
-        public async Task It_Loads_Pages(string pdfPath)
+        public void It_Loads_Pages(string pdfPath)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", pdfPath);
-            using var doc = await PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { LoadPageTree = true });
+            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { LoadPageTree = true });
 
             var raw = new MemoryStream();
             doc.SaveTo(raw);
             File.WriteAllBytes("c:\\temp\\raw.pdf", raw.ToArray());
-            using var docReRead = await PdfDocument.Open(raw.ToArray(), new ParsingOptions { LoadPageTree = true });
+            using var docReRead = PdfDocument.Open(raw.ToArray(), new ParsingOptions { LoadPageTree = true });
             var ms = new MemoryStream();
             var ctx = new WritingContext(ms);
             ctx.Initialize(1.7m);
             ctx.Complete(doc.Trailer);
-            using var docReRead2 = await PdfDocument.Open(ms.ToArray(), new ParsingOptions { LoadPageTree = true });
+            using var docReRead2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { LoadPageTree = true });
 
             var c1 = GetCount(doc);
             var c2 = GetCount(docReRead);
@@ -67,7 +67,7 @@ namespace PdfLexer.Tests
         }
 
         [Fact]
-        public async Task It_Reads_All_Pdf_JS()
+        public void It_Reads_All_Pdf_JS()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
@@ -76,7 +76,7 @@ namespace PdfLexer.Tests
             {
                 try
                 {
-                    var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+                    var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                     EnumerateObjects(doc.Trailer, new HashSet<int>());
                 }
                 catch (Exception e)
@@ -119,7 +119,7 @@ namespace PdfLexer.Tests
         }
 
         [Fact]
-        public async Task It_Reads_And_Writes_All_Pdf_JS()
+        public void It_Reads_And_Writes_All_Pdf_JS()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
@@ -128,10 +128,10 @@ namespace PdfLexer.Tests
             {
                 try
                 {
-                    using var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                     using var ms = new MemoryStream();
                     doc.SaveTo(ms);
-                    using var doc2 = await PdfDocument.Open(ms.ToArray());
+                    using var doc2 = PdfDocument.Open(ms.ToArray());
 
                     EnumerateObjects(doc2.Catalog, new HashSet<int>());
                 }
@@ -157,7 +157,7 @@ namespace PdfLexer.Tests
             {
                 try
                 {
-                    using var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                     doc.Trailer["/NewKey"] = new PdfString("NewValue");
                     var fn = Path.Combine(temp.TempPath, Path.GetFileName(pdf));
                     using (var fs = File.Create(fn))
@@ -211,7 +211,7 @@ namespace PdfLexer.Tests
         }
 
         [Fact]
-        public async Task It_Mega_Merges_Pdf_JS()
+        public void It_Mega_Merges_Pdf_JS()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
@@ -219,12 +219,12 @@ namespace PdfLexer.Tests
             var merged = PdfDocument.Create();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
-                using var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+                using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                 merged.Pages.AddRange(doc.Pages);
             }
             var ms = new MemoryStream();
             merged.SaveTo(ms);
-            using var doc2 = await PdfDocument.Open(ms.ToArray());
+            using var doc2 = PdfDocument.Open(ms.ToArray());
             EnumerateObjects(doc2.Trailer, new HashSet<int>());
             File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
         }
@@ -234,7 +234,7 @@ namespace PdfLexer.Tests
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "need_repair", "issue7229.pdf");
-            var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
 
             foreach (var item in doc.XrefEntries)
             {
@@ -247,7 +247,7 @@ namespace PdfLexer.Tests
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "Pages-tree-refs.pdf");
-            var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
 
             foreach (var item in doc.XrefEntries)
             {
@@ -261,7 +261,7 @@ namespace PdfLexer.Tests
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue918.pdf");
-            var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
 
             var read = new HashSet<int>();
             EnumerateObjects(doc.Catalog, read);
@@ -276,7 +276,7 @@ namespace PdfLexer.Tests
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "annotation-caret-ink.pdf");
-            var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
 
             var read = new HashSet<int>();
             EnumerateObjects(doc.Catalog, read);
@@ -288,7 +288,7 @@ namespace PdfLexer.Tests
             File.WriteAllBytes("c:\\temp\\temp.pdf", ms.ToArray());
             ms = new MemoryStream();
             doc.SaveTo(ms);
-            using var doc2 = await PdfDocument.Open(ms.ToArray());
+            using var doc2 = PdfDocument.Open(ms.ToArray());
             EnumerateObjects(doc2.Catalog, read);
             // foreach (var item in doc.XrefEntries)
             // {
@@ -300,7 +300,7 @@ namespace PdfLexer.Tests
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "annotation-polyline-polygon.pdf");
-            var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
 
             var read = new HashSet<int>();
             EnumerateObjects(doc.Catalog, read);
@@ -312,7 +312,7 @@ namespace PdfLexer.Tests
             File.WriteAllBytes("c:\\temp\\temp.pdf", ms.ToArray());
             ms = new MemoryStream();
             doc.SaveTo(ms);
-            using var doc2 = await PdfDocument.Open(ms.ToArray());
+            using var doc2 = PdfDocument.Open(ms.ToArray());
             EnumerateObjects(doc2.Catalog, read);
             // foreach (var item in doc.XrefEntries)
             // {

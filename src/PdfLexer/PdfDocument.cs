@@ -166,12 +166,12 @@ namespace PdfLexer
         /// <param name="data">PDF data</param>
         /// <param name="options">Optional parsing options</param>
         /// <returns>PdfDocument</returns>
-        public static async ValueTask<PdfDocument> Open(byte[] data, ParsingOptions options=null)
+        public static PdfDocument Open(byte[] data, ParsingOptions options=null)
         {
             var ctx = new ParsingContext(options);
             
             var source = new InMemoryDataSource(ctx, data);
-            var result = await ctx.Initialize(source);
+            var result = ctx.Initialize(source);
 
 
             var doc = new PdfDocument(ctx, result.Item2, result.Item1);

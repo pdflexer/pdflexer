@@ -1,8 +1,6 @@
 ﻿using PdfLexer.Parsers;
 using PdfLexer.Parsers.Nested;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PdfLexer.Lexing
 {
@@ -107,7 +105,7 @@ namespace PdfLexer.Lexing
                 }
             }
             CurrentLength = 0;
-            return Position-start;
+            return Position - start;
         }
 
         public IPdfObject GetCurrentObject()
