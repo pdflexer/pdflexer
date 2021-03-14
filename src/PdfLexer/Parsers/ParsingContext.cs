@@ -103,7 +103,7 @@ namespace PdfLexer.Parsers
             scanner.SkipExpected(PdfTokenType.StartObj);
             var objLength = scanner.SkipObject();
             var objStart = scanner.Position - objLength;
-            var type = scanner.Peak();
+            var type = scanner.Peek();
             if (type == PdfTokenType.EndObj)
             {
                 stream.Write(data.Slice(objStart, objLength));
@@ -125,7 +125,7 @@ namespace PdfLexer.Parsers
                     throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
                 }
                 scanner.Advance(streamLength);
-                var endstream = scanner.Peak();
+                var endstream = scanner.Peek();
                 // TODO debug
                 scanner.SkipCurrent();
                 stream.Write(data.Slice(objStart, scanner.Position - objStart));
@@ -194,7 +194,7 @@ namespace PdfLexer.Parsers
             scanner.SkipExpected(PdfTokenType.NumericObj);
             scanner.SkipExpected(PdfTokenType.StartObj);
             var obj = scanner.GetCurrentObject();
-            var nxt = scanner.Peak();
+            var nxt = scanner.Peek();
             if (nxt == PdfTokenType.EndObj)
             {
                 return obj;
@@ -215,7 +215,7 @@ namespace PdfLexer.Parsers
                 var stream = new PdfStream(dict, contents);
                 scanner.SkipCurrent();
                 scanner.Advance(streamLength);
-                var endstream = scanner.Peak();
+                var endstream = scanner.Peek();
                 // TODO validated endstream
                 return stream;
             }

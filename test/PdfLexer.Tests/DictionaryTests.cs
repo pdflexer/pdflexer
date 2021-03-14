@@ -129,7 +129,7 @@ namespace PdfLexer.Tests
             int cnt = 0;
             while (true)
             {
-                var token = scanner.Peak();
+                var token = scanner.Peek();
                 if (token == PdfTokenType.EOS)
                 {
                     break;
@@ -150,7 +150,7 @@ namespace PdfLexer.Tests
             int cnt = 0;
             while (true)
             {
-                var token = scanner.Peak();
+                var token = scanner.Peek();
                 if (token == PdfTokenType.EOS)
                 {
                     break;
@@ -178,7 +178,7 @@ namespace PdfLexer.Tests
             int cnt = 0;
             while (true)
             {
-                var token = scanner.Peak();
+                var token = scanner.Peek();
                 if (token == PdfTokenType.EOS)
                 {
                     break;
@@ -206,7 +206,7 @@ namespace PdfLexer.Tests
             int cnt = 0;
             while (true)
             {
-                var token = scanner.Peak();
+                var token = scanner.Peek();
                 if (token == PdfTokenType.EOS)
                 {
                     break;
@@ -231,13 +231,13 @@ namespace PdfLexer.Tests
             var ms = new MemoryStream(buffer);
             var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
             var scanner = new PipeScanner(new ParsingContext(), reader);
-            Assert.True(scanner.TrySkipTo(Encoding.ASCII.GetBytes("obj"), 5));
+            Assert.True(scanner.TrySkipToToken(Encoding.ASCII.GetBytes("obj"), 0));
             Assert.Equal(27, scanner.GetOffset());
-            Assert.Equal(PdfTokenType.NumericObj, scanner.Peak());
+            Assert.Equal(PdfTokenType.NumericObj, scanner.Peek());
             scanner.SkipCurrent();
-            Assert.Equal(PdfTokenType.NumericObj, scanner.Peak());
+            Assert.Equal(PdfTokenType.NumericObj, scanner.Peek());
             scanner.SkipCurrent();
-            Assert.Equal(PdfTokenType.StartObj, scanner.Peak());
+            Assert.Equal(PdfTokenType.StartObj, scanner.Peek());
         }
     }
 }

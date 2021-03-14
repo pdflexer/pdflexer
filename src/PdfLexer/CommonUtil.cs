@@ -48,6 +48,17 @@ namespace PdfLexer
                    || b == 0x20;
         }
 
+        public static bool IsNonBinary(byte b)
+        {
+            return (b < 123 && b > 31)
+                   || b == 0x00
+                   || b == 0x00
+                   || b == 0x0A
+                   || b == 0x0C
+                   || b == 0x0D
+                   || b == 0x20;
+        }
+
         /// <summary>
         /// Enumerates the PDF page tree.
         /// </summary>

@@ -37,12 +37,7 @@ namespace PdfLexer
         public override PdfObjectType Type => PdfObjectType.NameObj;
         public override bool Equals(object obj)
         {
-            if (!(obj is PdfName name))
-            {
-                return false;
-            }
-
-            return Value.Equals(name?.Value);
+            return obj is PdfName name && Value.Equals(name?.Value);
         }
 
         public override int GetHashCode()
@@ -75,6 +70,7 @@ namespace PdfLexer
         public static PdfName First => new PdfName("/First", false);
         public static PdfName Index => new PdfName("/Index", false);
         public static PdfName XRefStrm => new PdfName("/XRefStrm", false);
+        public static PdfName XRef => new PdfName("/XRef", false);
         public static PdfName Parent => new PdfName("/Parent", false);
         //
         

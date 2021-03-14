@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CliWrap;
+using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using Xunit;
 
@@ -227,6 +228,20 @@ namespace PdfLexer.Tests
             using var doc2 = PdfDocument.Open(ms.ToArray());
             EnumerateObjects(doc2.Trailer, new HashSet<int>());
             File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
+        }
+
+        
+        [Fact]
+        public void It_Rebuilds_PDF_JS()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                var fs = File.OpenRead(pdf);
+                var ctx = new ParsingContext();
+                var result = ctx.XRefParser.BuildFromRawData(fs);
+            }
         }
 
         // [Fact]

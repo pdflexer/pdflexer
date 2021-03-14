@@ -85,12 +85,12 @@ namespace PdfLexer.Parsers.Structure
             var stream = source.GetStream(readStart);
             var pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
             var scanner = new PipeScanner(_ctx, pipe);
-            if (!scanner.TrySkipTo(IndirectSequences.strartxref, 0))
+            if (!scanner.TrySkipToToken(IndirectSequences.strartxref, 0))
             {
                 throw new ApplicationException("Unable to find startxref token.");
             }
             scanner.SkipCurrent();
-            var nt = scanner.Peak();
+            var nt = scanner.Peek();
             if (nt != PdfTokenType.NumericObj)
             {
                 throw new ApplicationException("Token following startxref was not numeric.");
@@ -104,7 +104,7 @@ namespace PdfLexer.Parsers.Structure
             stream = source.GetStream(strStart);
             pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
             scanner = new PipeScanner(_ctx, pipe);
-            var result = scanner.Peak();
+            var result = scanner.Peek();
             var entries = new List<XRefEntry>();
             if (result == PdfTokenType.Xref)
             {
@@ -127,7 +127,7 @@ namespace PdfLexer.Parsers.Structure
                     stream = source.GetStream(offset);
                     pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
                     scanner = new PipeScanner(_ctx, pipe);
-                    result = scanner.Peak();
+                    result = scanner.Peek();
                     if (result != PdfTokenType.Xref)
                     {
                         throw new ApplicationException("Prev entry did not point to xref token.");
@@ -159,7 +159,7 @@ namespace PdfLexer.Parsers.Structure
                     scanner.SkipCurrent(); // gen
                     scanner.SkipCurrent(); // R
 
-                    var dt = scanner.Peak();
+                    var dt = scanner.Peek();
                     if (dt != PdfTokenType.DictionaryStart)
                     {
                         throw new ApplicationException("TODO");
@@ -167,7 +167,7 @@ namespace PdfLexer.Parsers.Structure
 
                     var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
 
-                    var nxt = scanner.Peak();
+                    var nxt = scanner.Peek();
                     if (nxt != PdfTokenType.StartStream)
                     {
                         throw new ApplicationException("TODO");
@@ -206,7 +206,7 @@ namespace PdfLexer.Parsers.Structure
                     strStart = oss;
                     pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
                     scanner = new PipeScanner(_ctx, pipe);
-                    result = scanner.Peak();
+                    result = scanner.Peek();
                     if (result != PdfTokenType.NumericObj)
                     {
                         // TODO handle mixed XREf
@@ -220,6 +220,112 @@ namespace PdfLexer.Parsers.Structure
                 throw new ApplicationException("Invalid token found at xref offset: " + result);
             }
         }
+
+        private void AddXRefStream(PdfStream stream, List<XRefEntry> entries)
+        {
+            var data = stream.Contents.GetDecodedData(_ctx);
+            var index = stream.Dictionary.GetOptionalValue<PdfArray>(PdfName.Index);
+            AddEntries(data, stream.Dictionary.GetRequiredValue<PdfArray>(PdfName.W), index, entries);
+        }
+
+
+        public (List<XRefEntry>, PdfDictionary) BuildFromRawData(Stream stream)
+        {
+            var orig = _ctx.Options.Eagerness;
+            _ctx.Options.Eagerness = Eagerness.FullEager;
+            var offsets = new List<XRefEntry>();
+            var pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
+            var scanner = new PipeScanner(_ctx, pipe);
+            while (true)
+            {
+                if (!scanner.TrySkipToToken(IndirectSequences.obj, 40))
+                {
+                    break;
+                }
+
+                var count = scanner.ScanBackTokens(2, 40);
+
+                AddCurrent(ref scanner, count, offsets);
+            }
+
+            stream.Seek(0, SeekOrigin.Begin);
+            pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
+            scanner = new PipeScanner(_ctx, pipe);
+            var trailer = new PdfDictionary();
+            while (true)
+            {
+                if (!scanner.TrySkipToToken(Trailer, 0))
+                {
+                    break;
+                }
+                scanner.SkipCurrent(); // trailer
+                if (scanner.Peek() != PdfTokenType.DictionaryStart)
+                {
+                    continue;
+                }
+
+                var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+                foreach (var item in dict)
+                {
+                    trailer[item.Key] = item.Value;
+                }
+            }
+            _ctx.Options.Eagerness = orig;
+            return (offsets, trailer);
+        }
+
+        private void AddCurrent(ref PipeScanner scanner, int maxScan, List<XRefEntry> entries)
+        {
+            long offset = 0;
+            var start = scanner.GetOffset();
+            while (true)
+            {
+                scanner.Peek();
+
+                for (; scanner.CurrentTokenType != PdfTokenType.NumericObj; scanner.SkipCurrent())
+                { if (scanner.GetOffset() - start > maxScan) { return; } }
+
+                offset = scanner.GetStartOffset();
+                var n = scanner.GetCurrentObject().GetValue<PdfNumber>(); // N
+                if (scanner.Peek() != PdfTokenType.NumericObj)
+                {
+                    continue;
+                }
+                var g = scanner.GetCurrentObject().GetValue<PdfNumber>(); // G
+                if (scanner.Peek() != PdfTokenType.StartObj)
+                {
+                    continue;
+                }
+                scanner.SkipCurrent(); // obj
+
+                entries.Add(new XRefEntry { Offset = offset, Reference = new XRef { ObjectNumber = n, Generation = g } });
+                if (scanner.Peek() == PdfTokenType.DictionaryStart)
+                {
+                    var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+                    var type = dict.GetOptionalValue<PdfName>(PdfName.TypeName);
+                    if (type == null || !type.Equals(PdfName.XRef))
+                    {
+                        return;
+                    }
+                    if (scanner.Peek() != PdfTokenType.StartStream)
+                    {
+                        return;
+                    }
+                    var length = dict.GetRequiredValue<PdfNumber>(PdfName.Length);
+                    scanner.SkipCurrent();
+                    var sequence = scanner.Read(length);
+                    PdfStreamContents contents = new PdfByteArrayStreamContents(sequence.ToArray());
+                    contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
+                    contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+                    var str = new PdfStream(dict, contents);
+                    var data = str.Contents.GetDecodedData(_ctx);
+                    var index = dict.GetOptionalValue<PdfArray>(PdfName.Index);
+                    AddEntries(data, dict.GetRequiredValue<PdfArray>(PdfName.W), index, entries);
+                }
+                return;
+            }
+        }
+
 
         private void AddEntries(Span<byte> xd, PdfArray w, PdfArray index, List<XRefEntry> entries)
         {

@@ -86,7 +86,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [Benchmark(Baseline = true)]
         public int PdfPigCopy()
         {
-            var doc = UglyToad.PdfPig.PdfDocument.Open(data);
+            var doc = UglyToad.PdfPig.PdfDocument.Open(data2);
             ms.Position = 0;
             var builder = new UglyToad.PdfPig.Writer.PdfDocumentBuilder(ms);
             for (var i = 0; i < doc.NumberOfPages; i++)
@@ -110,7 +110,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [Benchmark()]
         public int LazyCopy()
         {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
+            using var doc = PdfDocument.Open(data2, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
             ms.Position = 0;
             var writer = new WritingContext(ms);
             writer.Complete(doc.Trailer);
@@ -119,7 +119,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [Benchmark()]
         public int LazyModify()
         {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy });
+            using var doc = PdfDocument.Open(data2, new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy });
             ms.Position = 0;
             doc.Pages[0].Dictionary[PdfName.Colors] = PdfCommonNumbers.Zero; // add dummy data to page
             doc.SaveTo(ms);
@@ -129,7 +129,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [Benchmark()]
         public int LazyModifyNoPages()
         {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
+            using var doc = PdfDocument.Open(data2, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
             ms.Position = 0;
             doc.Trailer[PdfName.Colors] = PdfCommonNumbers.Zero; // add dummy data to page
             doc.SaveTo(ms);

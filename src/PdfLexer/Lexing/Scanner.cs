@@ -22,7 +22,7 @@ namespace PdfLexer.Lexing
         public int CurrentLength;
         public int Position;
 
-        public PdfTokenType Peak()
+        public PdfTokenType Peek()
         {
             if (CurrentLength == 0)
             {
@@ -35,7 +35,7 @@ namespace PdfLexer.Lexing
         {
             if (CurrentLength == 0)
             {
-                Peak();
+                Peek();
             }
             ThrowIfAtEndOfData();
             Position += CurrentLength;
@@ -46,7 +46,7 @@ namespace PdfLexer.Lexing
         {
             if (CurrentLength == 0)
             {
-                Peak();
+                Peek();
             }
             ThrowIfAtEndOfData();
             if (type != CurrentTokenType)
@@ -77,7 +77,7 @@ namespace PdfLexer.Lexing
         {
             if (CurrentLength == 0)
             {
-                Peak();
+                Peek();
             }
             ThrowIfAtEndOfData();
             if ((int)CurrentTokenType > 7)
@@ -112,7 +112,7 @@ namespace PdfLexer.Lexing
         {
             if (CurrentLength == 0)
             {
-                Peak();
+                Peek();
             }
             ThrowIfAtEndOfData();
             if ((int)CurrentTokenType > 7)

@@ -74,7 +74,7 @@ namespace PdfLexer.Lexing
                         return true;
                     }
 
-                    return false;
+                    break;
                 case (byte)'f':
                     if (IsNext(ref reader, BoolParser.falsebytes, true))
                     {
@@ -82,7 +82,7 @@ namespace PdfLexer.Lexing
                         return true;
                     }
 
-                    return false;
+                    break;
                 case (byte)'n':
                     if (IsNext(ref reader, PdfNull.NullBytes, true))
                     {
@@ -90,7 +90,7 @@ namespace PdfLexer.Lexing
                         return true;
                     }
 
-                    return false;
+                    break;
                 case (byte)'(':
                     type = PdfTokenType.StringStart;
                     return StringParser.TryAdvancePastString(ref reader);
@@ -177,7 +177,9 @@ namespace PdfLexer.Lexing
                         type = PdfTokenType.DictionaryEnd;
                         return true;
                     }
-                    return false;
+                    reader.Advance(1);
+                    type = PdfTokenType.EndString;
+                    return true;
                 case (byte)']':
                     reader.TryRead(out _);
                     type = PdfTokenType.ArrayEnd;
@@ -220,7 +222,7 @@ namespace PdfLexer.Lexing
                         type = PdfTokenType.StartXref;
                         return true;
                     }
-                    return false;
+                    break;
                 case (byte)'e':
                     if (IsNext(ref reader, IndirectSequences.endobj, true))
                     {
@@ -233,26 +235,30 @@ namespace PdfLexer.Lexing
                         type = PdfTokenType.EndStream;
                         return true;
                     }
-                    return false;
+                    break;
                 case (byte)'x':
                     if (IsNext(ref reader, XRefParser.xref, true))
                     {
                         type = PdfTokenType.Xref;
                         return true;
                     }
-
-                    return false;
+                    break;
                 case (byte)'o':
                     if (IsNext(ref reader, IndirectSequences.obj, true))
                     {
                         type = PdfTokenType.StartObj;
                         return true;
                     }
-
-                    return false;
-                default:
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
+                    break;
             }
+
+            if (!reader.TryAdvanceToAny(CommonUtil.Terminators, false))
+            {
+                if (isCompleted) { throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token"); }
+                return false;
+            }
+            type = PdfTokenType.Unknown;
+            return true;
 
             bool IsNext(ref SequenceReader<byte> rdr, ReadOnlySpan<byte> data, bool advancePast = false)
             {

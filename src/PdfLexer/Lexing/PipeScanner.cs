@@ -45,30 +45,37 @@ namespace PdfLexer.Lexing
             return Offset + Reader.Consumed;
         }
 
+        public long GetStartOffset()
+        {
+            return Offset + Reader.Sequence.Slice(Reader.Sequence.Start, CurrentStart).Length; // :(
+        }
+
         private void AdvanceBuffer(SequencePosition pos)
         {
             int count = 0;
             var end = Reader.Sequence.End;
             Offset += Reader.Sequence.Slice(Reader.Sequence.Start, pos).Length; // UGH.. TODO: use GetOffset conditionally for net50
+            Pipe.AdvanceTo(pos, Reader.Sequence.End);
+            InitReader();
+            CurrentStart = Reader.Position;
+            return;
             while (true)
             {
-                Pipe.AdvanceTo(pos, Reader.Sequence.End);
-                InitReader();
-                CurrentStart = Reader.Position;
-                if (!Reader.Sequence.End.Equals(end))
-                {
-                    return;
-                }
-                count++;
-                if (count > 5)
-                {
-                    throw CommonUtil.DisplayDataErrorException(ref Reader, $"Stream did not advance.");
-                }
+
+                // if (IsCompleted || !Reader.Sequence.End.Equals(end))
+                // {
+                //     return;
+                // }
+                // count++;
+                // if (count > 5)
+                // {
+                //     throw CommonUtil.DisplayDataErrorException(ref Reader, $"Stream did not advance.");
+                // }
             }
 
         }
 
-        public PdfTokenType Peak()
+        public PdfTokenType Peek()
         {
             if (CurrentTokenType != PdfTokenType.Unknown)
             {
@@ -83,7 +90,7 @@ namespace PdfLexer.Lexing
                 }
                 CurrentTokenType = PdfTokenType.Unknown;
                 AdvanceBuffer(CurrentStart);
-                Peak();
+                Peek();
             }
             CurrentEnd = Reader.Position;
             return CurrentTokenType;
@@ -91,14 +98,15 @@ namespace PdfLexer.Lexing
 
         public void SkipCurrent()
         {
-            Peak();
+            Peek();
             ThrowIfAtEndOfData();
             CurrentTokenType = PdfTokenType.Unknown;
+            CurrentStart = CurrentEnd;
         }
 
         public void SkipExpected(PdfTokenType type)
         {
-            Peak();
+            Peek();
             ThrowIfAtEndOfData();
             if (type != CurrentTokenType)
             {
@@ -125,7 +133,7 @@ namespace PdfLexer.Lexing
 
         public void SkipObject()
         {
-            Peak();
+            Peek();
             ThrowIfAtEndOfData();
             if ((int)CurrentTokenType > 7)
             {
@@ -144,7 +152,7 @@ namespace PdfLexer.Lexing
 
         private void SkipDict()
         {
-            
+
             while (true)
             {
                 Reader.Advance(2);
@@ -184,7 +192,7 @@ namespace PdfLexer.Lexing
 
         public IPdfObject GetCurrentObject()
         {
-            Peak();
+            Peek();
             ThrowIfAtEndOfData();
             if ((int)CurrentTokenType > 7)
             {
@@ -230,27 +238,74 @@ namespace PdfLexer.Lexing
 
         }
 
-        public bool TrySkipTo(ReadOnlySpan<byte> sequence, int prevBuffer)
+        public ReadOnlySequence<byte> Read(int total)
         {
+            var start = Reader.Position;
+            while (Reader.Remaining < total)
+            {
+                AdvanceBuffer(CurrentStart);
+            }
+            Reader.Advance(total);
+            var data = Reader.Sequence.Slice(CurrentStart, Reader.Position);
+            CurrentStart = Reader.Position;
+            CurrentTokenType = PdfTokenType.Unknown;
+            return data;
+        }
 
+        public bool TrySkipToWhiteSpace()
+        {
             while (true)
             {
-                var start = Reader.Consumed;
+                if (!Reader.TryAdvanceToAny(CommonUtil.WhiteSpaces, true))
+                {
+                    if (IsCompleted)
+                    {
+                        return false;
+                    }
+                    AdvanceBuffer(Reader.Sequence.End);
+                    continue;
+                }
+                CurrentTokenType = PdfTokenType.Unknown;
+                return true;
+            }
+        }
+
+        public bool TrySkipToToken(ReadOnlySpan<byte> sequence, int prevBuffer)
+        {
+            CurrentTokenType = PdfTokenType.Unknown;
+            while (true)
+            {
                 if (!Reader.TryAdvanceTo(sequence[0], false) || Reader.Remaining < sequence.Length)
                 {
                     if (IsCompleted)
                     {
                         return false;
                     }
-                    Reader.Advance(Reader.Remaining - prevBuffer);
+                    var e = Reader.Remaining - prevBuffer;
+                    if (e > 0)
+                    {
+                        Reader.Advance(Reader.Remaining - prevBuffer);
+                    }
+
                     AdvanceBuffer(Reader.Position);
                     continue;
                 }
 
                 if (Reader.IsNext(sequence, false))
                 {
-                    Reader.Rewind(prevBuffer);
-                    Offset += Reader.Consumed - start;
+                    Reader.Rewind(1);
+                    if (!Reader.TryPeek(out var b))
+                    {
+                        Reader.Advance(1);
+                        return false;
+                    }
+
+                    if (!CommonUtil.IsWhiteSpace(b))
+                    {
+                        Reader.Advance(2);
+                        continue;
+                    }
+                    Reader.Advance(1);
                     return true;
                 }
 
@@ -262,6 +317,46 @@ namespace PdfLexer.Lexing
                 Reader.Advance(1);
                 continue;
             }
+        }
+
+        public int ScanBackTokens(int count, int maxScan)
+        {
+            CurrentTokenType = PdfTokenType.Unknown;
+            count += 1;
+            var total = 0;
+            var cnt = 0;
+            var isWhite = false;
+            while (total < maxScan && Reader.Consumed > 0)
+            {
+                Reader.Rewind(1);
+                total++;
+                if (!Reader.TryPeek(out var b))
+                {
+                    break;
+                }
+                if (!CommonUtil.IsNonBinary(b))
+                {
+                    break;
+                }
+                if (CommonUtil.IsWhiteSpace(b))
+                {
+                    if (!isWhite)
+                    {
+                        cnt++;
+                    }
+                    isWhite = true;
+                }
+                else
+                {
+                    isWhite = false;
+                }
+
+                if (cnt >= count)
+                {
+                    return total;
+                }
+            }
+            return -1;
         }
     }
 }
