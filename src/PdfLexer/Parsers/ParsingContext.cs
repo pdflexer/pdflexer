@@ -126,9 +126,18 @@ namespace PdfLexer.Parsers
                 }
                 scanner.Advance(streamLength);
                 var endstream = scanner.Peek();
-                // TODO debug
-                scanner.SkipCurrent();
-                stream.Write(data.Slice(objStart, scanner.Position - objStart));
+                if (endstream == PdfTokenType.EndStream)
+                {
+                    scanner.SkipCurrent();
+                    stream.Write(data.Slice(objStart, scanner.Position - objStart));
+                } else
+                {
+                    // bad existing stream
+                    // TODO attempt to rebuild
+                    stream.Write(data.Slice(objStart, scanner.Position - objStart));
+                    stream.WriteByte((byte)'\n');
+                    stream.Write(IndirectSequences.endstream);
+                }
                 Options.Eagerness = existing;
                 return;
             }

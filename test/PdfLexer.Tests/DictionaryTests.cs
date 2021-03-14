@@ -231,7 +231,9 @@ namespace PdfLexer.Tests
             var ms = new MemoryStream(buffer);
             var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
             var scanner = new PipeScanner(new ParsingContext(), reader);
-            Assert.True(scanner.TrySkipToToken(Encoding.ASCII.GetBytes("obj"), 0));
+            Assert.True(scanner.TrySkipToToken(Encoding.ASCII.GetBytes("obj"), 10));
+            Assert.Equal(32, scanner.GetOffset());
+            scanner.ScanBackTokens(2, 10);
             Assert.Equal(27, scanner.GetOffset());
             Assert.Equal(PdfTokenType.NumericObj, scanner.Peek());
             scanner.SkipCurrent();

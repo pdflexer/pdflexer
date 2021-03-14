@@ -56,7 +56,7 @@ namespace PdfLexer.Tests
             wtx.WriteIndirectObject(ref2);
 
             //var str = Encoding.ASCII.GetString(ms.ToArray());
-            Assert.Equal(2, wtx.offsets.Count);
+            Assert.Equal(2, wtx.writtenObjs.Count);
         }
 
         [Fact]
@@ -86,7 +86,7 @@ namespace PdfLexer.Tests
             wtx.WriteIndirectObject(ref2);
 
             var str = Encoding.ASCII.GetString(ms.ToArray());
-            Assert.Equal(2, wtx.offsets.Count);
+            Assert.Equal(2, wtx.writtenObjs.Count);
         }
 
         [Fact]
@@ -116,7 +116,7 @@ namespace PdfLexer.Tests
             wtx.WriteIndirectObject(ref2);
 
             var str = Encoding.ASCII.GetString(ms.ToArray());
-            Assert.Equal(2, wtx.offsets.Count);
+            Assert.Equal(2, wtx.writtenObjs.Count);
         }
     }
 }

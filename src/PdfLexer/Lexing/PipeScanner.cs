@@ -155,7 +155,6 @@ namespace PdfLexer.Lexing
 
             while (true)
             {
-                Reader.Advance(2);
                 if (!NestedUtil.AdvanceToDictEnd(ref Reader, out _))
                 {
                     if (IsCompleted)
@@ -164,6 +163,7 @@ namespace PdfLexer.Lexing
                         throw CommonUtil.DisplayDataErrorException(ref Reader, $"Unable to find dictionary end");
                     }
                     AdvanceBuffer(CurrentStart);
+                    Reader.Advance(2); // <<
                     continue;
                 }
                 break;
@@ -174,7 +174,7 @@ namespace PdfLexer.Lexing
         {
             while (true)
             {
-                Reader.Advance(1);
+                
                 if (!NestedUtil.AdvanceToArrayEnd(ref Reader, out _))
                 {
                     if (IsCompleted)
@@ -183,6 +183,7 @@ namespace PdfLexer.Lexing
                         throw CommonUtil.DisplayDataErrorException(ref Reader, $"Unable to find array end");
                     }
                     AdvanceBuffer(CurrentStart);
+                    Reader.Advance(1); // [
                     continue;
                 }
                 break;
@@ -272,6 +273,10 @@ namespace PdfLexer.Lexing
 
         public bool TrySkipToToken(ReadOnlySpan<byte> sequence, int prevBuffer)
         {
+            if (prevBuffer < 1)
+            {
+                prevBuffer = 1;
+            }
             CurrentTokenType = PdfTokenType.Unknown;
             while (true)
             {
@@ -293,6 +298,10 @@ namespace PdfLexer.Lexing
 
                 if (Reader.IsNext(sequence, false))
                 {
+                    if (Reader.Consumed == 0) // special handling for match at start of sequence
+                    {
+                        return true;
+                    }
                     Reader.Rewind(1);
                     if (!Reader.TryPeek(out var b))
                     {

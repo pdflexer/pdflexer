@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CliWrap;
+using PdfLexer.IO;
 using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using Xunit;
@@ -170,8 +171,8 @@ namespace PdfLexer.Tests
                     var stdErrBuffer = new StringBuilder();
 
                     var result = await Cli.Wrap("node.exe")
-                        .WithArguments("pdf2png.js " + pdf)
-                        .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pnger")
+                        .WithArguments("pdf2png.js " + pdf + " baseline.png")
+                        .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pngjs")
                         .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
                         .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
                         .ExecuteAsync();
@@ -185,8 +186,8 @@ namespace PdfLexer.Tests
                     stdErrBuffer = new StringBuilder();
 
                     var result2 = await Cli.Wrap("node.exe")
-                        .WithArguments("pdf2png.js " + fn)
-                        .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pnger")
+                        .WithArguments("pdf2png.js " + fn + " modified.png")
+                        .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pngjs")
                         .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
                         .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
                         .ExecuteAsync();
@@ -196,9 +197,42 @@ namespace PdfLexer.Tests
                     var co2 = Regex.Replace(stdOutBuffer.ToString(), "[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\\.[0-9]{0,3}", "");
                     co2 = Regex.Replace(co2, ":[0-9]{1,8}\\)", "");
 
-                    Assert.Equal(ce1, ce2);
-                    Assert.Equal(co1, co2);
+                    stdOutBuffer = new StringBuilder();
 
+                    var result3 = await Cli.Wrap("node.exe")
+                    .WithArguments("pngdiff.js baseline.png modified.png diff.png")
+                    .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pngjs")
+                    .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                    .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                    .ExecuteAsync();
+
+
+                    var error = "";
+                    var diffOut = stdOutBuffer.ToString();
+                    if (diffOut.Trim() != "0")
+                    {
+                        error += "Image Mismatch\n";
+                    }
+
+                    if (ce1 != ce2)
+                    {
+                        error += $"STDERR1:{ce1}\n";
+                        error += $"STDERR2:{ce2}\n";
+                    }
+                    if (co1 != co2)
+                    {
+                        error += $"STDOUT1:{co1}\n";
+                        error += $"STDOUT2:{co2}\n";
+                    }
+
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        errors.Add(error);
+                        File.Copy(fn, $"C:\\source\\Github\\pdflexer\\test\\pngjs\\results\\{Path.GetFileName(pdf)}");
+                        File.Copy(@"C:\source\Github\pdflexer\test\pngjs\diff.png",
+                            $"C:\\source\\Github\\pdflexer\\test\\pngjs\\results\\{Path.GetFileName(pdf)}.png");
+                        File.WriteAllText($"C:\\source\\Github\\pdflexer\\test\\pngjs\\results\\{Path.GetFileName(pdf)}.txt", error);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -230,17 +264,33 @@ namespace PdfLexer.Tests
             File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
         }
 
-        
-        [Fact]
+
+        // [Fact]
         public void It_Rebuilds_PDF_JS()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
-                var fs = File.OpenRead(pdf);
-                var ctx = new ParsingContext();
-                var result = ctx.XRefParser.BuildFromRawData(fs);
+                try
+                {
+                    var contents = File.ReadAllBytes(pdf);
+
+                    var ctx = new ParsingContext();
+                    var source = new InMemoryDataSource(ctx, contents);
+                    var normal = ctx.XRefParser.LoadCrossReference(source);
+                    var ms = new MemoryStream(contents);
+                    var ctx2 = new ParsingContext();
+                    var rebuilt = ctx2.XRefParser.BuildFromRawData(ms);
+                    var nm = normal.Item1.Where(x => !x.IsFree).Select(x => x.Reference.GetId()).OrderBy(x => x).ToList();
+                    var rb = rebuilt.Item1.Where(x => !x.IsFree).Select(x => x.Reference.GetId()).OrderBy(x => x).ToList();
+                    var missing = normal.Item1.Where(x => !x.IsFree && !rebuilt.Item1.Any(y => y.Reference.Equals(x.Reference))).ToList();
+                    Assert.True(nm.SequenceEqual(rb));
+                }
+                catch (Exception e)
+                {
+
+                }
             }
         }
 

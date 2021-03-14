@@ -17,10 +17,12 @@ namespace PdfLexer.Serializers
     {
         private static byte[] zeros = new byte[] { (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0' };
         private static byte[] gen0end = new byte[] { (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)' ', (byte)'n', (byte)' ', (byte)'\n' };
+        private static byte[] refEnd = new byte[] { (byte)' ', (byte)'n', (byte)' ', (byte)'\n' };
         private static byte[] gen1end = new byte[] { (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'1', (byte)' ', (byte)'f', (byte)' ', (byte)'\n' };
         private static byte[] oef = new byte[] { (byte)'%', (byte)'%', (byte)'E', (byte)'O', (byte)'F', (byte)'\n' };
         private static byte[] obj0 = Encoding.ASCII.GetBytes("0000000000 65535 f \n");
-        internal Dictionary<int, long> offsets = new Dictionary<int, long>();
+        // internal Dictionary<ulong, (long OS, XRef Ref)> os = new Dictionary<ulong, (long OS, XRef Ref)>();
+        internal Dictionary<int, (long OS, XRef Ref)> writtenObjs = new Dictionary<int, (long OS, XRef Ref)>();
         internal int NewDocId = PdfDocument.GetNextId();
         internal int NextId = 1;
         internal ArraySerializer ArraySerializer { get; }
@@ -40,7 +42,7 @@ namespace PdfLexer.Serializers
             NumberSerializer = new NumberSerializer();
             StringSerializer = new StringSerializer();
         }
-        
+
         internal WritingContext(Stream stream, int nextId, int docId) : this(stream)
         {
             NextId = nextId;
@@ -62,11 +64,14 @@ namespace PdfLexer.Serializers
         private byte[] miniBuff = new byte[20];
         public void Complete(PdfDictionary trailer)
         {
+            // TODO offset tracking is not very efficient, need to look into fixing.
             //locallize
             reused.Clear();
             Recurse(trailer, reused);
 
-            var mos = offsets.Keys.Max();
+            // var mos = offsets.Keys.Max();
+
+            var mos = writtenObjs.Keys.Max();
 
             Span<byte> z = zeros;
             Span<byte> buff = miniBuff;
@@ -75,18 +80,18 @@ namespace PdfLexer.Serializers
             Stream.WriteByte((byte)'\n');
             Stream.WriteByte((byte)'0');
             Stream.WriteByte((byte)' ');
-            if (!Utf8Formatter.TryFormat(mos+1, buff, out var count))
+            if (!Utf8Formatter.TryFormat(mos + 1, buff, out var count))
             {
                 throw new ApplicationException("TODO");
             }
             Stream.Write(buff.Slice(0, count));
             Stream.WriteByte((byte)'\n');
             Stream.Write(obj0);
-            
-            
-            for (var i = 1; i < mos+1; i++)
+
+
+            for (var i = 1; i < mos + 1; i++)
             {
-                if (!offsets.TryGetValue(i, out var oos))
+                if (!writtenObjs.TryGetValue(i, out var written))
                 {
                     Stream.Write(z);
                     Stream.WriteByte((byte)' ');
@@ -94,18 +99,25 @@ namespace PdfLexer.Serializers
                     continue;
                 }
 
-                if (!Utf8Formatter.TryFormat(oos, buff, out count))
+                if (!Utf8Formatter.TryFormat(written.OS, buff, out count))
                 {
                     throw new ApplicationException("TODO");
                 }
-                Stream.Write(z.Slice(0, 10-count));
+                Stream.Write(z.Slice(0, 10 - count));
                 Stream.Write(buff.Slice(0, count));
                 Stream.WriteByte((byte)' ');
-                Stream.Write(gen0end);
+                if (!Utf8Formatter.TryFormat(written.Ref.Generation, buff, out count))
+                {
+                    throw new ApplicationException("TODO");
+                }
+                Stream.Write(z.Slice(0, 5 - count));
+                Stream.Write(buff.Slice(0, count));
+                Stream.WriteByte((byte)' ');
+                Stream.Write(refEnd);
             }
             Stream.Write(XRefParser.Trailer);
             Stream.WriteByte((byte)'\n');
-            trailer["/Size"] = new PdfIntNumber(mos+1);
+            trailer["/Size"] = new PdfIntNumber(mos + 1);
             DictionarySerializer.WriteToStream(trailer, Stream);
             Stream.WriteByte((byte)'\n');
             Stream.Write(XRefParser.startxref);
@@ -127,7 +139,8 @@ namespace PdfLexer.Serializers
                 if (lz.HasLazyIndirect || lz.IsModified)
                 {
                     obj = lz.Resolve();
-                } else
+                }
+                else
                 {
                     lz.Source.CopyData(lz.Offset, lz.Length, Stream);
                     return;
@@ -178,7 +191,8 @@ namespace PdfLexer.Serializers
                         }
                         WriteObjRef(result.Reference);
                         return;
-                    } else
+                    }
+                    else
                     {
                         WriteObjRef(ir.Reference);
                     }
@@ -232,9 +246,10 @@ namespace PdfLexer.Serializers
                     {
                         ir.Reference = existing.Reference;
                         return ir;
-                    } else
+                    }
+                    else
                     {
-                        ir.Reference = new XRef {  ObjectNumber = NextId++ };
+                        ir.Reference = new XRef { ObjectNumber = NextId++ };
                     }
                     localizedObjects.Add(obj, ir);
                 }
@@ -267,7 +282,8 @@ namespace PdfLexer.Serializers
             }
             {
                 ulong id = ((ulong)ir.Reference.ObjectNumber << 16) | ((uint)ir.Reference.Generation & 0xFFFF);
-                if (currentDictionary.TryGetValue(id, out var existing)) {
+                if (currentDictionary.TryGetValue(id, out var existing))
+                {
                     return existing;
                 }
                 var obj = ir.GetObject();
@@ -292,7 +308,7 @@ namespace PdfLexer.Serializers
         internal void WriteExistingData(ParsingContext ctx, XRefEntry entry)
         {
             Debug.Assert(entry.Reference.ObjectNumber != 0);
-            offsets[entry.Reference.ObjectNumber] = Stream.Position;
+            writtenObjs[entry.Reference.ObjectNumber] = (Stream.Position, entry.Reference);
             WriteObjStart(entry.Reference);
             entry.CopyUnwrappedData(Stream);
             WriteObjEnd();
@@ -301,8 +317,8 @@ namespace PdfLexer.Serializers
         internal PdfIndirectRef WriteIndirectObject(PdfIndirectRef ir, HashSet<PdfIndirectRef> refStack)
         {
             var obj = ir.GetObject();
-Parse:
-            switch (obj) 
+        Parse:
+            switch (obj)
             {
                 case PdfLazyObject lz:
                     if (lz.HasLazyIndirect || lz.IsModified)
@@ -328,11 +344,21 @@ Parse:
             PdfIndirectRef WriteCurrentIfNeeded()
             {
                 var local = Localize(ir);
-                if (offsets.ContainsKey(local.Reference.ObjectNumber))
+                if (writtenObjs.TryGetValue(local.Reference.ObjectNumber, out var info))
                 {
-                    return local;
+                    if (info.Ref.Generation == local.Reference.Generation)
+                    {
+                        return local;
+                    }
+                    else if (info.Ref.Generation > local.Reference.Generation)
+                    {
+                        local.Reference = info.Ref;
+                        return local;
+                    }
+                    // existing less than current, break through and overwrite
                 }
-                offsets[local.Reference.ObjectNumber] = Stream.Position;
+
+                writtenObjs[local.Reference.ObjectNumber] = (Stream.Position, local.Reference);
                 WriteObjStart(local.Reference);
                 SerializeObject(obj);
                 WriteObjEnd();
@@ -367,7 +393,8 @@ Parse:
                 if (lz.HasLazyIndirect || lz.IsModified)
                 {
                     toCheck = lz.Resolve();
-                } else
+                }
+                else
                 {
                     return;
                 }
@@ -394,7 +421,8 @@ Parse:
                 if (refStack.Contains(nir))
                 {
                     Localize(nir);
-                } else
+                }
+                else
                 {
                     refStack.Add(nir);
                     WriteIndirectObject(nir, refStack);
