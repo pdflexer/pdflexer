@@ -55,7 +55,7 @@ namespace PdfLexer.Lexing
             // UGH.. better way? Sequence.GetOffset for net5.0 but not sure how that behaves
             // since we are recreating sequence reader... data is from same pipereader so probably is
             // what we want
-            CurrentOffset += Reader.Sequence.Slice(Reader.Sequence.Start, pos).Length; 
+            CurrentOffset += Reader.Sequence.Slice(Reader.Sequence.Start, pos).Length;
             Pipe.AdvanceTo(pos, Reader.Sequence.End);
             InitReader();
             CurrentStart = Reader.Position;
@@ -277,9 +277,15 @@ namespace PdfLexer.Lexing
                     if (e > 0)
                     {
                         Reader.Advance(Reader.Remaining - prevBuffer);
+                        AdvanceBuffer(Reader.Position);
                     }
-
-                    AdvanceBuffer(Reader.Position);
+                    else
+                    {
+                        // need to keep enough in prevbuffer
+                        Reader.Rewind(-e);
+                        AdvanceBuffer(Reader.Position);
+                        Reader.Advance(-e);
+                    }
                     continue;
                 }
 

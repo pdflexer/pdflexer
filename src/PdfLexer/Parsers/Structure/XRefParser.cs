@@ -36,41 +36,55 @@ namespace PdfLexer.Parsers.Structure
 
         public (Dictionary<ulong, XRefEntry>, PdfDictionary) LoadCrossReferences(IPdfDataSource pdf)
         {
-            var (refs, trailer) = LoadCrossReference(pdf);
+            (List<XRefEntry> Refs, PdfDictionary Trailer) results = default;
+            try
+            {
+                results = LoadCrossReference(pdf);
+            }
+            catch (Exception e)
+            {
+                _ctx.Error("Error during crossref parsing: " + e.Message);
+                results = BuildFromRawData(pdf.GetStream(0));
+            }
+
             var entries = new Dictionary<ulong, XRefEntry>();
-            refs.Reverse(); // oldest prev entries returned first... look into cleaning this up
-            foreach (var entry in refs)
+            results.Refs.Reverse(); // oldest prev entries returned first... look into cleaning this up
+            foreach (var entry in results.Refs)
             {
                 entries[entry.Reference.GetId()] = entry;
             }
-            if (refs.Any())
+            UpdateRefs(results.Refs);
+            return (entries, results.Trailer);
+
+            void UpdateRefs(List<XRefEntry> refs)
             {
-                var ordered = refs.Where(x => x.Type == XRefType.Normal && !x.IsFree).OrderBy(x => x.Offset).ToList();
-                for (var i = 0; i < ordered.Count; i++)
+                if (refs.Any())
                 {
-                    var entry = ordered[i];
-                    entry.Source = pdf;
-                    Debug.Assert(entry.Offset < pdf.TotalBytes);
-                    if (i + 1 < ordered.Count)
+                    var ordered = refs.Where(x => x.Type == XRefType.Normal && !x.IsFree).OrderBy(x => x.Offset).ToList();
+                    for (var i = 0; i < ordered.Count; i++)
                     {
-                        entry.MaxLength = (int)(ordered[i + 1].Offset - entry.Offset);
+                        var entry = ordered[i];
+                        entry.Source = pdf;
+                        Debug.Assert(entry.Offset < pdf.TotalBytes);
+                        if (i + 1 < ordered.Count)
+                        {
+                            entry.MaxLength = (int)(ordered[i + 1].Offset - entry.Offset);
+                        }
                     }
-                }
-                for (var i = 0; i < ordered.Count; i++)
-                {
-                    // if two have same offset.. fix logic later
-                    if (i + 1 < ordered.Count && ordered[i].MaxLength == 0)
+                    for (var i = 0; i < ordered.Count; i++)
                     {
-                        ordered[i].MaxLength = ordered[i + 1].MaxLength;
+                        // if two have same offset.. fix logic later
+                        if (i + 1 < ordered.Count && ordered[i].MaxLength == 0)
+                        {
+                            ordered[i].MaxLength = ordered[i + 1].MaxLength;
+                        }
                     }
+                    ordered[^1].MaxLength = (int)(pdf.TotalBytes - ordered[^1].Offset - 1);
                 }
-                ordered[^1].MaxLength = (int)(pdf.TotalBytes - ordered[^1].Offset - 1);
             }
-            return (entries, trailer);
         }
 
         // TODO clean this up
-        // TODO add rebuilding
         internal (List<XRefEntry>, PdfDictionary) LoadCrossReference(IPdfDataSource source)
         {
             var orig = _ctx.Options.Eagerness;
@@ -253,6 +267,14 @@ namespace PdfLexer.Parsers.Structure
             pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
             scanner = new PipeScanner(_ctx, pipe);
             var trailer = new PdfDictionary();
+            // TODO need determine ordering
+            foreach (var dict in dicts)
+            {
+                foreach (var item in dict)
+                {
+                    trailer[item.Key] = item.Value;
+                }
+            }
             while (true)
             {
                 if (!scanner.TrySkipToToken(Trailer, 0))
@@ -266,6 +288,7 @@ namespace PdfLexer.Parsers.Structure
                 }
 
                 var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+                // TODO need determine ordering
                 foreach (var item in dict)
                 {
                     trailer[item.Key] = item.Value;

@@ -149,8 +149,10 @@ namespace PdfLexer.Tests
             }
         }
 
-        [Fact]
-        public void It_ReWrites_All_Pdf_JS_HashCheck()
+        [InlineData(true)]
+        [InlineData(false)]
+        [Theory]
+        public void It_ReWrites_All_Pdf_JS_HashCheck(bool forceRebuild)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var results = Path.Combine(tp, "results", "pighash");
@@ -195,13 +197,9 @@ namespace PdfLexer.Tests
                     d1 = d2 = d3 = null;
 
                     d1 = File.ReadAllBytes(pdf);
-                    doc = PdfDocument.Open(d1);
-                    if (doc.Trailer.ContainsKey(PdfName.Encrypt))
-                    {
-                        // don't support encryption currently
-                        parseLog.WriteLine("Skipping encrypted.");
-                        continue;
-                    }
+
+
+
                     try
                     {
                         // if pgpig can't read existin just ksip
@@ -213,6 +211,20 @@ namespace PdfLexer.Tests
                         continue;
                     }
 
+                    if (forceRebuild)
+                    {
+                        var copy = new byte[d1.Length + 10];
+                        d1.CopyTo(copy, 10);
+                        d1 = copy;
+                    }
+
+                    doc = PdfDocument.Open(d1);
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt))
+                    {
+                        // don't support encryption currently
+                        parseLog.WriteLine("Skipping encrypted.");
+                        continue;
+                    }
 
                     var ms = new MemoryStream();
                     doc.SaveTo(ms);
@@ -437,6 +449,23 @@ namespace PdfLexer.Tests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "bug900822.pdf");
             var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            foreach (var item in doc.XrefEntries)
+            {
+                doc.Context.GetIndirectObject(item.Key);
+            }
+        }
+
+        [Fact]
+        public void Manual_testing()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "sizes.pdf");
+            var data = File.ReadAllBytes(pdf);
+            var doc = PdfDocument.Open(data);
+            var bad = new byte[data.Length + 10];
+            data.CopyTo(bad, 10);
+            var doc2 = PdfDocument.Open(bad, new ParsingOptions{ LoadPageTree = false });
 
             foreach (var item in doc.XrefEntries)
             {

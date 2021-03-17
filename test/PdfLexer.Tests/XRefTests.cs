@@ -256,5 +256,30 @@ endobj", PdfObjectType.ArrayObj)]
             result = await pipe.ReadNextObjectOrToken(ctx);
             Assert.Equal(obj2, result.Obj.Type);
         }
+
+        [Fact]
+        public void It_Finds_Rebuilt_Objects()
+        {
+            var data = @"
+
+17 0 obj
+<</Font 16 0 R
+/ProcSet[/PDF/Text]
+>>
+endobj
+
+1 0 obj
+<</Type/Page/Parent 10 0 R/Resources 17 0 R/MediaBox[0 0 612 792]/Group<</S/Transparency/CS/DeviceRGB/I true>>/Contents 2 0 R>>
+endobj
+
+4 0 obj
+<</Type/Page/Parent 10 0 R/Resources 17 0 R/MediaBox[0 0 649 323]/Group<</S/Transparency/CS/DeviceRGB/I true>>/Contents 5 0 R>>
+endobj
+";
+            var bytes = Encoding.ASCII.GetBytes(data);
+            var ms = new MemoryStream(bytes);
+            var parser = new XRefParser(new ParsingContext());
+            var results = parser.BuildFromRawData(ms);
+        }
     }
 }
