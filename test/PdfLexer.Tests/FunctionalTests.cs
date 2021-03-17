@@ -154,8 +154,8 @@ namespace PdfLexer.Tests
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var results = Path.Combine(tp, "results", "pighash");
-            using var parseLog = new StreamWriter(Path.Combine(results, "run_log.txt"));
             Directory.CreateDirectory(results);
+            using var parseLog = new StreamWriter(Path.Combine(results, "run_log.txt"));
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var errors = new List<string>();
             PdfDocument doc;
