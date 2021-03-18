@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PdfLexer.Parsers;
@@ -29,16 +30,14 @@ namespace PdfLexer.Tests
         [InlineData("(Test \\\\\\) Test )", "Test \\) Test ")]
         [InlineData("()", "")]
         [InlineData("(\\171)", "y")] // octal
-        [InlineData("( \\1a)", " 1a")] 
-        [InlineData("( \\171a)", " ya")] 
-        // [InlineData("(Test \\\rNext\\334Line)", "Test NextÜLine")] // TODO: enable... issues with linux tests
+        [InlineData("( \\1a)", " 1a")]
+        [InlineData("( \\171a)", " ya")]
         [InlineData("(partial octal \\53\\171)", "partial octal +y")]
         [Theory]
         public void It_Parses_Literals_Reader(string input, string output)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
             var ms = new MemoryStream(bytes);
-            // var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 4, minimumReadSize: 1));
             var parser = new StringParser(new ParsingContext());
             var span = new Span<byte>(bytes);
             var result = parser.Parse(span);
@@ -49,7 +48,6 @@ namespace PdfLexer.Tests
         [InlineData("(Test \\t)", "Test \t")] // tab
         [InlineData("(Test \\n\\r)", "Test \n\r")] // keep new lines by espace
         [InlineData("(Test Test Test )", "Test Test Test ")]
-        // [InlineData("(Test (Test) Test )", "Test (Test) Test ")]
         [InlineData("(Test \\\\\\(Test Test )", "Test \\(Test Test ")]
         [InlineData("(Test \\) Test )", "Test ) Test ")]
         [InlineData("(Test \\\\\\) Test )", "Test \\) Test ")]
@@ -88,18 +86,10 @@ namespace PdfLexer.Tests
         {
             var bytes = Encoding.ASCII.GetBytes(input);
             var ms = new MemoryStream(bytes);
-            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 4, minimumReadSize: 1));
             var parser = new StringParser(new ParsingContext());
             var span = new Span<byte>(bytes);
             var result = parser.Parse(span);
             Assert.Equal(output, result.Value);
-            // var gotit = StringParser.GetString(bytes, out ReadOnlySpan<byte> result);
-            // Assert.True(gotit);
-            // var outputBytes = Encoding.ASCII.GetBytes(output);
-            // for (var i = 0; i < outputBytes.Length; i++)
-            // {
-            //     Assert.Equal(outputBytes[i], result[i]);
-            // }
         }
 
         [InlineData("(Test) ", 6)]
@@ -111,7 +101,7 @@ namespace PdfLexer.Tests
         [InlineData("() ", 2)]
         [InlineData("()", 2)]
         [Theory]
-        public void It_Gets_Literals(string input, int pos)
+        public void It_Skips_String_Literals(string input, int pos)
         {
             var bytes = Encoding.ASCII.GetBytes(input);
             var seq = new ReadOnlySequence<byte>(bytes);
@@ -119,13 +109,39 @@ namespace PdfLexer.Tests
             var result = StringParser.TryAdvancePastString(ref reader);
             Assert.True(result);
             Assert.Equal(seq.GetPosition(pos), reader.Position);
-            // var gotit = StringParser.GetString(bytes, out ReadOnlySpan<byte> result);
-            // Assert.True(gotit);
-            // var outputBytes = Encoding.ASCII.GetBytes(output);
-            // for (var i=0;i<outputBytes.Length;i++)
-            // {
-            //     Assert.Equal(outputBytes[i], result[i]);
-            // }
+        }
+
+        [Fact]
+        public void It_Parses_And_Serialized_Literal_UTF16BE()
+        {
+            var root = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var data = File.ReadAllBytes(Path.Combine(root, "raw-utf16-string-literal.txt"));
+            var parser = new StringParser(new ParsingContext());
+            var result = parser.Parse(data);
+            Assert.Equal(PdfStringType.Literal, result.StringType);
+            Assert.Equal(PdfTextEncodingType.UTF16BE, result.Encoding);
+            var serializer = new StringSerializer();
+            var ms = new MemoryStream();
+            serializer.WriteToStream(result, ms);
+            var output = ms.ToArray();
+            Assert.True(data.SequenceEqual(output));
+        }
+
+        [Fact]
+        public void It_Parses_And_Serialized_Hex_UTF16BE()
+        {
+            var text = "<FEFF00540065007300740069006E006700480065007800550074006600310036>";
+            var data = Encoding.ASCII.GetBytes(text);
+            var parser = new StringParser(new ParsingContext());
+            var result = parser.Parse(data);
+            Assert.Equal("TestingHexUtf16", result.Value);
+            Assert.Equal(PdfStringType.Hex, result.StringType);
+            Assert.Equal(PdfTextEncodingType.UTF16BE, result.Encoding);
+            var serializer = new StringSerializer();
+            var ms = new MemoryStream();
+            serializer.WriteToStream(result, ms);
+            var output = ms.ToArray();
+            Assert.True(data.SequenceEqual(output));
         }
     }
 }

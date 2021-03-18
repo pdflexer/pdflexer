@@ -20,7 +20,7 @@ namespace PdfLexer.Parsers.Nested
             bool completed = false;
             var lastStart = 0;
             itemEnd = 0;
-            while ((startAt = PdfSpanLexer.TryReadNextToken(buffer, out var tokenType, lastStart=startAt, out var currentLength)) != -1)
+            while ((startAt = PdfSpanLexer.TryReadNextToken(buffer, out var tokenType, lastStart = startAt, out var currentLength)) != -1)
             {
                 switch (tokenType)
                 {
@@ -29,7 +29,7 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.NullObj:
                     case PdfTokenType.DecimalObj:
                     case PdfTokenType.NumericObj:
-                        CurrentState.Bag.Add(_ctx.GetKnownPdfItem((PdfObjectType) tokenType, buffer, startAt, currentLength));
+                        CurrentState.Bag.Add(_ctx.GetKnownPdfItem((PdfObjectType)tokenType, buffer, startAt, currentLength));
                         startAt += currentLength;
                         continue;
                     case PdfTokenType.StringStart:
@@ -57,7 +57,7 @@ namespace PdfLexer.Parsers.Nested
                                 default:
                                     StateStack.Add(CurrentState);
                                     CurrentState = default;
-                                    CurrentState.State = ParseState.ReadDictKey;
+                                    CurrentState.State = ParseState.ReadDict;
                                     CurrentState.Dict = new PdfDictionary();
                                     CurrentState.Bag ??= new List<IPdfObject>();
                                     CurrentState.Bag.Clear();
@@ -65,7 +65,7 @@ namespace PdfLexer.Parsers.Nested
                                     continue;
                             }
                         }
-                        CurrentState.State = ParseState.ReadDictKey;
+                        CurrentState.State = ParseState.ReadDict;
                         CurrentState.Dict = new PdfDictionary();
                         CurrentState.Bag ??= new List<IPdfObject>();
                         CurrentState.Bag.Clear();
@@ -82,7 +82,7 @@ namespace PdfLexer.Parsers.Nested
                                     var end = startAt;
                                     if (!NestedUtil.AdvanceToArrayEnd(buffer, ref end, out var hadIndirect))
                                     {
-                                       goto Done;
+                                        goto Done;
                                     }
 
                                     AddLazyValue(originalStart, end - originalStart, PdfTokenType.ArrayStart, hadIndirect);
@@ -111,13 +111,19 @@ namespace PdfLexer.Parsers.Nested
                         startAt += 1;
                         continue;
                     case PdfTokenType.DictionaryEnd:
+                        if (CurrentState.State != ParseState.ReadDict)
+                        {
+                            // TODO more advanced repair
+                            startAt += currentLength;
+                            continue;
+                        }
                         CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx);
                         if (StateStack.Count > 0)
                         {
                             var last = StateStack[^1];
                             last.Bag.Add(CurrentState.Dict);
                             CurrentState = last;
-                            StateStack.RemoveAt(StateStack.Count-1);
+                            StateStack.RemoveAt(StateStack.Count - 1);
                             startAt += currentLength;
                             break;
                         }
@@ -128,13 +134,19 @@ namespace PdfLexer.Parsers.Nested
                             goto Done;
                         }
                     case PdfTokenType.ArrayEnd:
+                        if (CurrentState.State != ParseState.ReadArray)
+                        {
+                            // TODO more advanced repair
+                            startAt += currentLength;
+                            continue;
+                        }
                         CurrentState.Array = CurrentState.GetArrayFromBag(_ctx);
                         if (StateStack.Count > 0)
                         {
                             var last = StateStack[^1];
                             last.Bag.Add(CurrentState.Array);
                             CurrentState = last;
-                            StateStack.RemoveAt(StateStack.Count-1);
+                            StateStack.RemoveAt(StateStack.Count - 1);
                             startAt += currentLength;
                             break;
                         }
@@ -143,23 +155,37 @@ namespace PdfLexer.Parsers.Nested
                             completed = true;
                             goto Done;
                         }
-                        
+
                     default:
-                        throw CommonUtil.DisplayDataErrorException(buffer, lastStart, "Unknown token encountered parsing nested item");
+                        var info = CommonUtil.GetDataErrorInfo(buffer, lastStart);
+                        _ctx.Error("Unknown token encountered parsing nested item: " + info);
+                        if (tokenType == PdfTokenType.StartObj)
+                        {
+                            // special case.. we known we've over read
+                            goto Done;
+                        }
+                        if (currentLength <= 0)
+                        {
+                            startAt += 1;
+                        }
+                        else
+                        {
+                            startAt += currentLength;
+                        }
+                        continue;
                 }
 
 
             }
 
-            Done:
+        Done:
 
             if (!completed)
             {
-                throw CommonUtil.DisplayDataErrorException(buffer, lastStart,
-                    $"Parsing ended unexpectedly for looking for {CurrentState.State.ToString()} or Dict End, remaining data");
+                return AttemptRepairCurrentState(buffer, lastStart);
             }
-            
-            IPdfObject obj = (IPdfObject) CurrentState.Dict ?? CurrentState.Array;
+
+            IPdfObject obj = (IPdfObject)CurrentState.Dict ?? CurrentState.Array;
             CurrentState = default;
 
             return obj;
@@ -172,11 +198,46 @@ namespace PdfLexer.Parsers.Nested
                     Offset = _ctx.CurrentOffset + startPos,
                     Length = length,
                     HasLazyIndirect = hadIndirect,
-                    LazyObjectType = (PdfObjectType) type
+                    LazyObjectType = (PdfObjectType)type
                 };
                 CurrentState.Bag.Add(lazy);
             }
 
+        }
+
+        private IPdfObject AttemptRepairCurrentState(ReadOnlySpan<byte> buffer, int lastStart)
+        {
+            var info = CommonUtil.GetDataErrorInfo(buffer, lastStart);
+            _ctx.Error("Parsing ended unexpectedly for looking nested item end: " + info);
+            if (CurrentState.State == ParseState.ReadDict)
+            {
+                CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx);
+            }
+            else
+            {
+                CurrentState.Array = CurrentState.GetArrayFromBag(_ctx);
+            }
+
+            while (StateStack.Count > 0)
+            {
+                var last = StateStack[^1];
+                last.Bag.Add(CurrentState.Array == null ? (IPdfObject)CurrentState.Dict : (IPdfObject)CurrentState.Array);
+                CurrentState = last;
+                StateStack.RemoveAt(StateStack.Count - 1);
+
+                if (CurrentState.State == ParseState.ReadDict)
+                {
+                    CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx);
+                }
+                else
+                {
+                    CurrentState.Array = CurrentState.GetArrayFromBag(_ctx);
+                }
+            }
+            IPdfObject obj = (IPdfObject)CurrentState.Dict ?? CurrentState.Array;
+            CurrentState = default;
+
+            return obj;
         }
     }
 }

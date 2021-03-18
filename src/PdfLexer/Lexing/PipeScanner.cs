@@ -47,6 +47,7 @@ namespace PdfLexer.Lexing
 
         public long GetStartOffset()
         {
+            Peek();
             return CurrentOffset + Reader.Sequence.Slice(Reader.Sequence.Start, CurrentStart).Length; // :(
         }
 
@@ -113,8 +114,13 @@ namespace PdfLexer.Lexing
 
         public void Advance(int cnt)
         {
+            
+            while (Reader.Remaining < cnt)
+            {
+                cnt -= (int)Reader.Remaining;
+                AdvanceBuffer(Reader.Sequence.End);
+            }
             Reader.Advance(cnt);
-            CurrentOffset += cnt;
             CurrentTokenType = PdfTokenType.Unknown;
         }
 
@@ -146,8 +152,9 @@ namespace PdfLexer.Lexing
                 {
                     if (IsCompleted)
                     {
-                        Reader.Rewind(10);
-                        throw CommonUtil.DisplayDataErrorException(ref Reader, $"Unable to find dictionary end");
+                        Context.Error("Found end of data before dictionary end" + CommonUtil.GetDataErrorInfo(ref Reader));
+                        CurrentEnd = Reader.Sequence.End;
+                        return;
                     }
                     AdvanceBuffer(CurrentStart);
                     Reader.Advance(2); // <<
@@ -166,8 +173,9 @@ namespace PdfLexer.Lexing
                 {
                     if (IsCompleted)
                     {
-                        Reader.Rewind(10);
-                        throw CommonUtil.DisplayDataErrorException(ref Reader, $"Unable to find array end");
+                        Context.Error("Found end of data before array end" + CommonUtil.GetDataErrorInfo(ref Reader));
+                        CurrentEnd = Reader.Sequence.End;
+                        return;
                     }
                     AdvanceBuffer(CurrentStart);
                     Reader.Advance(1); // [

@@ -242,7 +242,7 @@ namespace PdfLexer.Parsers
             var scanner = new Scanner(this, data, 0);
             scanner.SkipExpected(PdfTokenType.NumericObj);
             scanner.SkipExpected(PdfTokenType.NumericObj);
-            scanner.SkipExpected(PdfTokenType.StartObj);
+            scanner.SkipExpected(PdfTokenType.StartObj); // TODO repair
             var obj = scanner.GetCurrentObject();
             var nxt = scanner.Peek();
             if (nxt == PdfTokenType.EndObj)
@@ -253,11 +253,13 @@ namespace PdfLexer.Parsers
             {
                 if (!(obj is PdfDictionary dict))
                 {
-                    throw new ApplicationException("Indirect object followed by start stream token but was not dictionary.");
+                    Error($"Pdf dictionary followed by startstream was {obj.Type} instead of dictionary.");
+                    return obj;
                 }
                 if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
                 {
-                    throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
+                    Error("Pdf dictionary followed by start stream token did not contain /Length.");
+                    streamLength = PdfCommonNumbers.Zero;
                 }
 
                 var startPos = scanner.Position + scanner.CurrentLength;
@@ -279,10 +281,10 @@ namespace PdfLexer.Parsers
                 contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
                 var stream = new PdfStream(dict, contents);
 
-                // TODO validated endstream and repair
                 return stream;
             }
-            throw new ApplicationException("Indirect object not followed by endobj token.");
+            Error("Indirect object not follwoed by endobj token: " + CommonUtil.GetDataErrorInfo(data, scanner.Position));
+            return obj;
         }
 
         internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)

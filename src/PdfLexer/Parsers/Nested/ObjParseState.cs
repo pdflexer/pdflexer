@@ -6,12 +6,8 @@ namespace PdfLexer.Parsers.Nested
 {
     internal enum ParseState
     {
-        None,
-        ReadDictKey,
-        ReadDictValue,
         ReadArray,
-        SkipDict,
-        SkipArray
+        ReadDict
     }
 
     internal struct ObjParseState
@@ -61,7 +57,8 @@ namespace PdfLexer.Parsers.Nested
                         name = nm;
                     } else
                     {
-                        throw new ApplicationException("");
+                        ctx.Error($"Pdf dictionary was malformed, expected PdfName for key, got {item.Type}");
+                        continue;
                     }
                 } else
                 {

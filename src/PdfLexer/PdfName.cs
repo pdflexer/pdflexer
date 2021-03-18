@@ -74,6 +74,7 @@ namespace PdfLexer
         public static PdfName Parent => new PdfName("/Parent", false);
         public static PdfName ObjStm => new PdfName("/ObjStm", false);
         public static PdfName Encrypt => new PdfName("/Encrypt", false);
+        public static PdfName Size => new PdfName("/Size", false);
         
         public static implicit operator PdfName(string name)
         {

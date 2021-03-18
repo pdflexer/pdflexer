@@ -92,6 +92,39 @@ namespace PdfLexer.Tests
             }
         }
 
+        [Fact]
+        public void It_Reads_All_Pdf_JS_Rebuild()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs", "need_repair");
+            var errors = new List<string>();
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                var name = Path.GetFileNameWithoutExtension(pdf);
+                if (name == "bug1020226" //
+                    || name == "issue3371" || name == "pr6531_1" // bad compression
+                    || name == "issue7229" || name == "ThuluthFeatures" // bad start stream TODO
+                    || name == "issue9418" // need xref repair
+                        )
+                {
+                    continue;
+                }
+                try
+                {
+                    var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    EnumerateObjects(doc.Trailer, new HashSet<int>());
+                }
+                catch (Exception e)
+                {
+                    errors.Add(pdf + ": " + e.Message);
+                }
+            }
+            if (errors.Any())
+            {
+                throw new ApplicationException(string.Join(Environment.NewLine, errors));
+            }
+        }
+
         private void EnumerateObjects(IPdfObject obj, HashSet<int> callStack)
         {
             if (obj is PdfIndirectRef ir)
@@ -274,7 +307,7 @@ namespace PdfLexer.Tests
         //     var hc3 = Util.GetDocumentHashCode(d3);
         // }
 
-        // [Fact]
+        //[Fact]
         public async Task It_ReWrites_PDF_JS()
         {
             bool copyPages = true;
@@ -460,14 +493,17 @@ namespace PdfLexer.Tests
         public void Manual_testing()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "sizes.pdf");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "annotation-fileattachment.pdf");
             var data = File.ReadAllBytes(pdf);
             var doc = PdfDocument.Open(data);
             var bad = new byte[data.Length + 10];
             data.CopyTo(bad, 10);
-            var doc2 = PdfDocument.Open(bad, new ParsingOptions{ LoadPageTree = false });
-
-            foreach (var item in doc.XrefEntries)
+            var doc2 = PdfDocument.Open(bad);
+            var doc3 = PdfDocument.Create();
+            doc3.Pages = doc2.Pages;
+            var ms = new MemoryStream();
+            doc3.SaveTo(ms);
+            foreach (var item in doc2.XrefEntries)
             {
                 doc.Context.GetIndirectObject(item.Key);
             }

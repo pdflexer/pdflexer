@@ -8,6 +8,7 @@ namespace PdfLexer.Serializers
 {
     public class StringSerializer : ISerializer<PdfString>
     {
+        private static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1");
         private static int[] escapeNeeded = new int[]
         {
             '\r', '\n', '\t', '\b', '\f', '\\'
@@ -20,7 +21,7 @@ namespace PdfLexer.Serializers
         // TODO open up support for writing raw bytes for specific use cases
         public void WriteToStream(PdfString obj, Stream stream)
         {
-            var buffer = ArrayPool<byte>.Shared.Rent((obj.Value?.Length ?? 0)*3+2); // overkill find better solution
+            var buffer = ArrayPool<byte>.Shared.Rent((obj.Value?.Length ?? 0) * 8 + 16); // overkill find better solution
             var i = GetBytes(obj, buffer);
             stream.Write(buffer, 0, i);
         }
@@ -32,28 +33,31 @@ namespace PdfLexer.Serializers
             //ReadOnlySpan<char> chars = obj.Value.AsSpan();
             data[ri++] = (byte)'(';
             int ei = 0;
-            for (var i=0;i<obj.Value.Length;i++)
+            for (var i = 0; i < obj.Value.Length; i++)
             {
                 var c = (int)obj.Value[i];
                 if (c == (int)'(' || c == (int)')') // wastes a little space if escaping not needed but better than forward searching
                 {
                     data[ri++] = (byte)'\\';
                     data[ri++] = (byte)c;
-                } else if ((ei = escapes.IndexOf(c)) > -1)
+                }
+                else if ((ei = escapes.IndexOf(c)) > -1)
                 {
                     data[ri++] = (byte)'\\';
                     data[ri++] = (byte)escaped[ei];
-                } else if (c < 32 || c > 127) // non printable
+                }
+                else if (c < 32 || c > 127) // non printable
                 {
-                    var b3 = c/64;
-                    var b2 = (c - b3*64)/8;
-                    var b1 = c%8;
+                    var b3 = c / 64;
+                    var b2 = (c - b3 * 64) / 8;
+                    var b1 = c % 8;
                     data[ri++] = (byte)'\\';
-                    data[ri++] = (byte)(b3+'0');
-                    data[ri++] = (byte)(b2+'0');
-                    data[ri++] = (byte)(b1+'0');
+                    data[ri++] = (byte)(b3 + '0');
+                    data[ri++] = (byte)(b2 + '0');
+                    data[ri++] = (byte)(b1 + '0');
 
-                } else 
+                }
+                else
                 {
                     data[ri++] = (byte)c;
                 }
@@ -62,19 +66,97 @@ namespace PdfLexer.Serializers
             return ri;
         }
 
+        private int ConvertLiteralBytes(ReadOnlySpan<byte> data, Span<byte> output, bool escapeNonPrintable)
+        {
+            var ri = 0;
+            ReadOnlySpan<int> escapes = escapeNeeded;
+            output[ri++] = (byte)'(';
+            int ei = 0;
+            for (var i = 0; i < data.Length; i++)
+            {
+                var b = data[i];
+                if (b == '(' || b == ')') // wastes a little space if escaping not needed but better than forward searching
+                {
+                    output[ri++] = (byte)'\\';
+                    output[ri++] = (byte)b;
+                }
+                else if ((ei = escapes.IndexOf(b)) > -1)
+                {
+                    output[ri++] = (byte)'\\';
+                    output[ri++] = (byte)escaped[ei];
+                }
+                else if (escapeNonPrintable && (b < 32 || b > 127)) // non printable
+                {
+                    var b3 = b / 64;
+                    var b2 = (b - b3 * 64) / 8;
+                    var b1 = b % 8;
+                    output[ri++] = (byte)'\\';
+                    output[ri++] = (byte)(b3 + '0');
+                    output[ri++] = (byte)(b2 + '0');
+                    output[ri++] = (byte)(b1 + '0');
+                }
+                else
+                {
+                    output[ri++] = (byte)b;
+                }
+            }
+            output[ri++] = (byte)')';
+            return ri;
+        }
+
         public int GetBytes(PdfString obj, Span<byte> data)
         {
+            // TODO perf analysis
+            var rented = ArrayPool<byte>.Shared.Rent(data.Length); // todo clean up... don't need this much
+            Span<byte> existing = rented;
+            if (obj.Encoding == PdfTextEncodingType.UTF16BE)
+            {
+                existing[0] = 0xFE;
+                existing[1] = 0xFF;
+                var count = Encoding.BigEndianUnicode.GetBytes(obj.Value, existing.Slice(2));
+                existing = existing.Slice(0, count + 2);
+            }
+            else
+            {
+                // TODO real pdf doc encoding
+                // TODO encoding guessing / calculation
+                var count = Iso88591.GetBytes(obj.Value, existing);
+                existing = existing.Slice(0, count);
+            }
+
             if (obj.StringType == PdfStringType.Hex)
             {
-                return GetHexBytes(obj, data);
-            } else
+                var val = ConvertHexBytes(existing, data);
+                ArrayPool<byte>.Shared.Return(rented);
+                return val;
+            }
+            else
             {
-                 return GetLiteralBytes(obj, data);
+                var val = ConvertLiteralBytes(existing, data, obj.Encoding != PdfTextEncodingType.UTF16BE);
+                ArrayPool<byte>.Shared.Return(rented);
+                return val;
             }
         }
 
         private static byte[] hexVals = { (byte) '0',(byte) '1',(byte) '2', (byte) '3',(byte) '4', (byte)'5',(byte) '6',(byte) '7', (byte)'8',(byte) '9',
                     (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F' };
+
+        private int ConvertHexBytes(ReadOnlySpan<byte> data, Span<byte> output)
+        {
+            var di = 0;
+            output[di++] = (byte)'<';
+            for (var i = 0; i < data.Length; i++)
+            {
+                var b = data[i];
+                int high = ((b & 0xf0) >> 4);
+                int low = (b & 0x0f);
+                output[di++] = hexVals[high];
+                output[di++] = hexVals[low];
+            }
+            output[di++] = (byte)'>';
+            return di;
+        }
+
         private int GetHexBytes(PdfString obj, Span<byte> data)
         {
             var di = 0;

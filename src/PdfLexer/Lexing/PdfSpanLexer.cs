@@ -99,7 +99,10 @@ namespace PdfLexer.Lexing
                         var se = i;
                         if (!StringParser.AdvancePastStringLiteral(buffer, ref se))
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"String literal end not found.");
+                            length = buffer.Length - 1 - se;
+                            return -1;
+                            // TODO warning to CTX
+                            // throw CommonUtil.DisplayDataErrorException(buffer, i, $"String literal end not found.");
                         }
                         type = PdfTokenType.StringStart;
                         length = se - i;
@@ -118,7 +121,10 @@ namespace PdfLexer.Lexing
                         var se = i;
                         if (!StringParser.AdvancePastHexString(buffer, ref se))
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"Hex string end not found.");
+                            length = buffer.Length - 1 - se;
+                            return -1;
+                            // TODO warning to CTX
+                            // throw CommonUtil.DisplayDataErrorException(buffer, i, $"Hex string end not found.");
                         }
                         type = PdfTokenType.StringStart;
                         length = se - i;

@@ -104,8 +104,8 @@ namespace PdfLexer
                             // TODO warn
                             continue;
                         }
-                        
-                        foreach (var pg in EnumeratePages(instance, resources, mediabox, cropbox, rotate, read)) 
+
+                        foreach (var pg in EnumeratePages(instance, resources, mediabox, cropbox, rotate, read))
                         {
                             yield return pg;
                         }
@@ -139,10 +139,26 @@ namespace PdfLexer
             return new PdfLexerException(prefixInfo + ": '" + Encoding.ASCII.GetString(data.Slice(i, count)) + "'");
         }
 
+        internal static string GetDataErrorInfo(ReadOnlySpan<byte> data, int i)
+        {
+            if (i + 1 > data.Length || i < 0)
+            {
+                i = Math.Max(data.Length-10, 0);
+            }
+            var count = data.Length > i + 25 ? 25 : data.Length - i;
+            return Encoding.ASCII.GetString(data.Slice(i, count));
+        }
+
         internal static Exception DisplayDataErrorException(ref SequenceReader<byte> reader, string prefixInfo)
         {
             var count = reader.Remaining > 25 ? 25 : reader.Remaining;
             return new PdfLexerException(prefixInfo + ": '" + Encoding.ASCII.GetString(reader.Sequence.Slice(reader.Position, count).ToArray()) + "'");
+        }
+
+        internal static string GetDataErrorInfo(ref SequenceReader<byte> reader)
+        {
+            var count = reader.Remaining > 25 ? 25 : reader.Remaining;
+            return Encoding.ASCII.GetString(reader.Sequence.Slice(reader.Position, count).ToArray());
         }
 
         internal static Exception DisplayDataErrorException(ReadOnlySequence<byte> sequence, SequencePosition position, string prefixInfo)

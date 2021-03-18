@@ -40,6 +40,7 @@ namespace PdfLexer.Parsers.Structure
             try
             {
                 results = LoadCrossReference(pdf);
+                results.Refs.Reverse(); // oldest prev entries returned first... look into cleaning this up
             }
             catch (Exception e)
             {
@@ -48,7 +49,6 @@ namespace PdfLexer.Parsers.Structure
             }
 
             var entries = new Dictionary<ulong, XRefEntry>();
-            results.Refs.Reverse(); // oldest prev entries returned first... look into cleaning this up
             foreach (var entry in results.Refs)
             {
                 entries[entry.Reference.GetId()] = entry;
@@ -257,10 +257,18 @@ namespace PdfLexer.Parsers.Structure
                 {
                     break;
                 }
+                var pos = scanner.GetStartOffset();
 
                 var count = scanner.ScanBackTokens(2, 40);
 
                 AddCurrent(ref scanner, count, offsets, dicts);
+
+                // special handling in case malformed dictionary / array made us read past obj
+                // TODO see if this can be more efficient
+                stream.Seek(0, SeekOrigin.Begin);
+                pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
+                scanner = new PipeScanner(_ctx, pipe);
+                scanner.Advance((int)(pos+1));
             }
 
             stream.Seek(0, SeekOrigin.Begin);

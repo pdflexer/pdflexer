@@ -29,7 +29,7 @@ namespace PdfLexer.Tests
         public void It_Gets_Dict_Basic(string data, bool found, string expected)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
-            var ctx = new ParsingContext();
+            var ctx = new ParsingContext(new ParsingOptions { ThrowOnErrors = true });
             if (!found)
             {
                 Assert.ThrowsAny<Exception>(() => ctx.DictionaryParser.Parse(buffer));
@@ -115,6 +115,58 @@ namespace PdfLexer.Tests
                 }
                 return lc;
             }
+        }
+
+        [Fact]
+        public void It_Repairs_Nested_Bad_Data()
+        {
+            var text = @"<<
+/Root 1 0 R
+/Size 6
+/ID [<904e5a162f03815bfbf836e313c7e¤Iž@Á#Ø½÷PÓyq`z÷ëRÎŽZ6äqÎÖ„ìDX€T»‘ƒÆ3õ§™@;#‰ÏÞž ¨Qæ|¨?7lU";
+            var data = Encoding.ASCII.GetBytes(text);
+            var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
+            var dict = parser.Parse(data);
+            Assert.Equal(6, dict.GetRequiredValue<PdfNumber>(PdfName.Size));
+        }
+
+        [Fact]
+        public void It_Repairs_Nested_Bad_Data2()
+        {
+            var text = @"<<
+/Length 10 
+/Size <</One/Two
+/ID [] >>";
+            var data = Encoding.ASCII.GetBytes(text);
+            var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
+            var dict = parser.Parse(data);
+            Assert.Equal(10, dict.GetRequiredValue<PdfNumber>(PdfName.Length));
+        }
+
+        [Fact]
+        public void It_Repairs_Imbalanced_Dict()
+        {
+            var text = @"<<
+1 /Two 2
+>>";
+            var data = Encoding.ASCII.GetBytes(text);
+            var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
+            var dict = parser.Parse(data);
+            Assert.Equal(2, dict.GetRequiredValue<PdfNumber>(new PdfName("/Two")));
+        }
+
+        [Fact]
+        public void It_Repairs_Dict_With_End_IndirectRef()
+        {
+            var text = @"
+<<
+/Pages 2 0 R
+";
+            var data = Encoding.ASCII.GetBytes(text);
+            var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
+            var dict = parser.Parse(data);
+            var ir = dict[PdfName.Pages] as PdfIndirectRef;
+            Assert.Equal(2, ir.Reference.ObjectNumber);
         }
 
 
