@@ -101,10 +101,11 @@ namespace PdfLexer.Tests
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 var name = Path.GetFileNameWithoutExtension(pdf);
-                if (name == "bug1020226" //
+                if (name == "bug1020226" // bad page tree / structure, don't think this is something to handle by default
                     || name == "issue3371" || name == "pr6531_1" // bad compression
-                    || name == "issue7229" || name == "ThuluthFeatures" // bad start stream TODO
-                    || name == "issue9418" // need xref repair
+                    || name == "issue7229" // XRef table points to wrong object ... rebuilding might work but other pdfs have
+                                           // refs to objects with incorret object number that are correct
+                    || name == "issue9418" // need xref repair, os doesn't point to object
                         )
                 {
                     continue;
@@ -197,9 +198,11 @@ namespace PdfLexer.Tests
             byte[] d1 = null;
             byte[] d2 = null;
             byte[] d3 = null;
+            byte[] d4 = null;
             decimal hc = 0;
             decimal hc2 = 0;
             decimal hc3 = 0;
+            decimal hc4 = 0;
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 try
@@ -226,8 +229,8 @@ namespace PdfLexer.Tests
                     }
                     parseLog.WriteLine(pdf);
                     parseLog.Flush();
-                    hc = hc2 = hc3 = 0;
-                    d1 = d2 = d3 = null;
+                    hc = hc2 = hc3 = hc4 = 0;
+                    d1 = d2 = d3 = d4 = null;
 
                     d1 = File.ReadAllBytes(pdf);
 
@@ -258,7 +261,6 @@ namespace PdfLexer.Tests
                         parseLog.WriteLine("Skipping encrypted.");
                         continue;
                     }
-
                     var ms = new MemoryStream();
                     doc.SaveTo(ms);
                     d2 = ms.ToArray();
@@ -267,10 +269,16 @@ namespace PdfLexer.Tests
                     ms = new MemoryStream();
                     doc2.SaveTo(ms);
                     d3 = ms.ToArray();
+                    doc.Context.Options.ForceSerialize = true;
+                    ms = new MemoryStream();
+                    doc.SaveTo(ms);
+                    d4 = ms.ToArray();
                     hc2 = Util.GetDocumentHashCode(d2);
                     hc3 = Util.GetDocumentHashCode(d3);
+                    hc4 = Util.GetDocumentHashCode(d4);
                     Assert.Equal(hc, hc2);
                     Assert.Equal(hc, hc3);
+                    Assert.Equal(hc, hc4);
                 }
                 catch (Exception e)
                 {
@@ -279,6 +287,7 @@ namespace PdfLexer.Tests
                     File.WriteAllBytes(bp + "_input.pdf", d1 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_quicksave.pdf", d2 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_pagecopy.pdf", d3 ?? new byte[0]);
+                    File.WriteAllBytes(bp + "_rewrite.pdf", d4 ?? new byte[0]);
                     errors.Add(pdf + ": " + e.Message);
                 }
             }

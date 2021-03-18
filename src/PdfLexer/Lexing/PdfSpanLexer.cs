@@ -198,12 +198,15 @@ namespace PdfLexer.Lexing
                 case (byte)'s':
                     if (buffer.Slice(i).StartsWith(IndirectSequences.stream))
                     {
-                        if (!(buffer.Length > i + 6))
+                        type = PdfTokenType.StartStream;
+                        if (buffer.Length <= i + 6)
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"Stream not followed by \\r\\n or \\n.");
+                            // TODO warning to CTX, invalid: Stream not followed by \\r\\n or \\n.
+                            length = 6;
+                            return i;
                         }
 
-                        type = PdfTokenType.StartStream;
+
                         var nxt = buffer[i + 6];
                         if (nxt == (byte)'\n')
                         {
@@ -214,18 +217,24 @@ namespace PdfLexer.Lexing
 
                         if (nxt != (byte)'\r')
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"Stream not followed by \\r\\n or \\n.");
+                            // TODO warning to CTX, invalid: Stream not followed by \\r\\n or \\n.
+                            length = 6;
+                            return i;
                         }
 
                         if (!(buffer.Length > i + 7))
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"Stream not followed by \\r\\n or \\n.");
+                            // TODO warning to CTX, invalid: Stream not followed by \\r\\n or \\n.
+                            length = 7; // consider \r part of token even though not really valid
+                            return i;
                         }
 
                         nxt = buffer[i + 7];
                         if (nxt != (byte)'\n')
                         {
-                            throw CommonUtil.DisplayDataErrorException(buffer, i, $"Stream not followed by \\r\\n or \\n.");
+                            // TODO warning to CTX, invalid: Stream not followed by \\r\\n or \\n.
+                            length = 7; // consider \r part of token even though not really valid
+                            return i;
                         }
 
                         length = 8;

@@ -90,7 +90,7 @@ namespace PdfLexer.Parsers
 
         internal bool IsDataCopyable(XRef entry)
         {
-            if (IsEncrypted)
+            if (IsEncrypted || Options.ForceSerialize)
             {
                 return false;
             }
