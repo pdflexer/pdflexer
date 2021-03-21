@@ -461,34 +461,6 @@ namespace PdfLexer.Tests
             }
         }
 
-        //C:\source\Github\pdflexer\test\pdfs\pdfjs\bug900822.pdf
-        // [Fact] this was due to encryption in PDF...
-        public void It_Handles_Writing_Pages_From_bug900822()
-        {
-            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "bug900822.pdf");
-            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
-
-            foreach (var item in doc.XrefEntries)
-            {
-                doc.Context.GetIndirectObject(item.Key);
-            }
-        }
-
-        [Fact]
-        public void Manual_testing()
-        {
-            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            
-            // var pdf = Path.Combine(tp, "pdfs", "pdfjs", "annotation-fileattachment.pdf");
-            var data = File.ReadAllBytes("C:\\temp\\test-pdfs\\kjped-53-661.pdf");
-            var doc = PdfDocument.Open(data);
-            foreach (var item in doc.XrefEntries)
-            {
-                doc.Context.GetIndirectObject(item.Key);
-            }
-        }
-
         [Fact]
         public void It_Handles_Looped_Page_Tree()
         {
@@ -523,12 +495,12 @@ namespace PdfLexer.Tests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "need_repair", "issue9418.pdf");
             var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
-            Assert.Equal(1, doc.Pages.Count);
+            Assert.Single(doc.Pages);
         }
 
 
         [Fact]
-        public async Task It_Handles11()
+        public void It_Handles11()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue918.pdf");
@@ -542,7 +514,7 @@ namespace PdfLexer.Tests
             // }
         }
 
-        [Fact]
+        // [Fact]
         public async Task It_Handles12()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -566,7 +538,8 @@ namespace PdfLexer.Tests
             //     doc.Context.GetIndirectObject(item.Key);
             // }
         }
-        [Fact]
+
+        // [Fact]
         public async Task It_Handles13()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
