@@ -50,9 +50,10 @@ namespace PdfLexer.IO
         /// <summary>
         /// Associated parsing context.
         /// </summary>
-        ParsingContext Context {get;}
-
+        ParsingContext Context { get; }
         IPdfObject GetIndirectObject(XRefEntry xref);
         void CopyIndirectObject(XRefEntry xref, WritingContext destination);
+
+        IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher);
     }
 }

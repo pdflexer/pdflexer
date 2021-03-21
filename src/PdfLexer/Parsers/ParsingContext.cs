@@ -112,6 +112,11 @@ namespace PdfLexer.Parsers
             return true;
         }
 
+        internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
+        {
+            return MainDocSource.RepairFindLastMatching(type, matcher);
+        }
+
         internal void UnwrapAndCopyObjData(ReadOnlySpan<byte> data, WritingContext wtx)
         {
             if (IsEncrypted)
@@ -242,7 +247,7 @@ namespace PdfLexer.Parsers
             var scanner = new Scanner(this, data, 0);
             scanner.SkipExpected(PdfTokenType.NumericObj);
             scanner.SkipExpected(PdfTokenType.NumericObj);
-            scanner.SkipExpected(PdfTokenType.StartObj); // TODO repair
+            scanner.SkipExpected(PdfTokenType.StartObj);
             var obj = scanner.GetCurrentObject();
             var nxt = scanner.Peek();
             if (nxt == PdfTokenType.EndObj)

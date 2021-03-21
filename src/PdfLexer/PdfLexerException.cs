@@ -21,4 +21,12 @@ namespace PdfLexer
 
         }
     }
+
+    public class PdfTokenMismatchException : PdfLexerException
+    {
+        public PdfTokenMismatchException(string message) : base(message)
+        {
+
+        }
+    }
 }

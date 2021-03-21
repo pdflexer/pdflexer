@@ -62,10 +62,6 @@ namespace PdfLexer.Tests
                 }
                 return total;
             }
-
-
-
-            // }
         }
 
         [Fact]
@@ -105,7 +101,7 @@ namespace PdfLexer.Tests
                     || name == "issue3371" || name == "pr6531_1" // bad compression
                     || name == "issue7229" // XRef table points to wrong object ... rebuilding might work but other pdfs have
                                            // refs to objects with incorret object number that are correct
-                    || name == "issue9418" // need xref repair, os doesn't point to object
+                    // name == "issue9418" // need xref repair, os doesn't point to object
                         )
                 {
                     continue;
@@ -297,25 +293,6 @@ namespace PdfLexer.Tests
             }
         }
 
-        // [Fact]
-        // public void It_Compares_vertical_pagecopy_pdf()
-        // {
-        //     var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-        //     var pdf = Path.Combine(tp, "pdfs", "pdfjs", "vertical.pdf");
-        //     var d1 = File.ReadAllBytes(pdf);
-        //     var doc = PdfDocument.Open(d1);
-        //     var ms = new MemoryStream();
-        //     doc.SaveTo(ms);
-        //     var d2 = ms.ToArray();
-        //     using var doc2 = PdfDocument.Create();
-        //     doc2.Pages = doc.Pages;
-        //     doc2.SaveTo(ms);
-        //     var d3 = ms.ToArray();
-        //     var hc1 = Util.GetDocumentHashCode(d1);
-        //     var hc2 = Util.GetDocumentHashCode(d2);
-        //     var hc3 = Util.GetDocumentHashCode(d3);
-        // }
-
         //[Fact]
         public async Task It_ReWrites_PDF_JS()
         {
@@ -502,29 +479,10 @@ namespace PdfLexer.Tests
         public void Manual_testing()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "annotation-fileattachment.pdf");
-            var data = File.ReadAllBytes(pdf);
+            
+            // var pdf = Path.Combine(tp, "pdfs", "pdfjs", "annotation-fileattachment.pdf");
+            var data = File.ReadAllBytes("C:\\temp\\test-pdfs\\kjped-53-661.pdf");
             var doc = PdfDocument.Open(data);
-            var bad = new byte[data.Length + 10];
-            data.CopyTo(bad, 10);
-            var doc2 = PdfDocument.Open(bad);
-            var doc3 = PdfDocument.Create();
-            doc3.Pages = doc2.Pages;
-            var ms = new MemoryStream();
-            doc3.SaveTo(ms);
-            foreach (var item in doc2.XrefEntries)
-            {
-                doc.Context.GetIndirectObject(item.Key);
-            }
-        }
-
-        // [Fact]
-        public void It_Repairs_Bad_Stream_Start()
-        {
-            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "need_repair", "issue7229.pdf");
-            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
-
             foreach (var item in doc.XrefEntries)
             {
                 doc.Context.GetIndirectObject(item.Key);
@@ -542,6 +500,30 @@ namespace PdfLexer.Tests
             {
                 doc.Context.GetIndirectObject(item.Key);
             }
+        }
+
+        [Fact]
+        public void It_Tracks_Generations_Quicksaved()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "doc_actions.pdf");
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+            doc.Trailer["/Dummy"] = PdfName.Count;
+            var count = doc.XrefEntries.Where(x=>x.Value.Reference.Generation > 0).Count();
+            var ms = new MemoryStream();
+            doc.SaveTo(ms);
+            var saved = PdfDocument.Open(ms.ToArray());
+            var count2 = doc.XrefEntries.Where(x=>x.Value.Reference.Generation > 0).Count();
+            Assert.Equal(count, count2);
+        }
+
+        [Fact]
+        public void It_Repairs_Bad_Catalog_Ref()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "need_repair", "issue9418.pdf");
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+            Assert.Equal(1, doc.Pages.Count);
         }
 
 

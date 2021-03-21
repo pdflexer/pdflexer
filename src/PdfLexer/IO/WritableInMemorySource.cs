@@ -9,6 +9,10 @@ using System.Text;
 
 namespace PdfLexer.IO
 {
+    /// <summary>
+    /// TODO
+    /// will eventually be for copying tokens from one PDF to another and allowing initial pdf to be disposed.
+    /// </summary>
     public class WritableInMemorySource : IPdfDataSource
     {
         public Stream Stream = new MemoryStream();
@@ -24,6 +28,8 @@ namespace PdfLexer.IO
         public bool SupportsCloning =>  false;
 
         public ParsingContext Context {get;}
+
+        public bool SupportsXRefRepair => throw new NotImplementedException();
 
         public IPdfDataSource Clone()
         {
@@ -142,6 +148,16 @@ namespace PdfLexer.IO
         }
 
         public void CopyIndirectObject(XRefEntry xref, WritingContext destination)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryRepairXRef(XRefEntry entry, out XRefEntry repaired)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
         {
             throw new NotImplementedException();
         }

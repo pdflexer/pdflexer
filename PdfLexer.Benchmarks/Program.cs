@@ -16,7 +16,7 @@ namespace PdfLexer.Benchmarks
         public BenchmarkConfig()
         {
             AddDiagnoser(MemoryDiagnoser.Default);
-            AddJob(Job.ShortRun.WithWarmupCount(5).WithIterationCount(12));
+            AddJob(Job.ShortRun.WithWarmupCount(5).WithIterationCount(25));
         }
     }
 

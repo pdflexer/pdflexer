@@ -45,7 +45,8 @@ namespace PdfLexer.Lexing
             ThrowIfAtEndOfData();
             if (type != CurrentTokenType)
             {
-                throw CommonUtil.DisplayDataErrorException(Data, Position, $"Mismatched token, found {CurrentTokenType}, expected {type}");
+                var info = CommonUtil.GetDataErrorInfo(Data, Position);
+                throw new PdfTokenMismatchException($"Mismatched token, found {CurrentTokenType}, expected {type}: " + info);
             }
             Position += CurrentLength;
             CurrentTokenType = PdfTokenType.Unknown;
@@ -101,14 +102,14 @@ namespace PdfLexer.Lexing
 
         public void ScanToToken(ReadOnlySpan<byte> token)
         {
-            var loc = Data.IndexOf(token);
+            var loc = Data.Slice(Position).IndexOf(token);
             if (loc == -1)
             {
                 CurrentTokenType = PdfTokenType.EOS;
             }
             else
             {
-                Position = loc;
+                Position = Position+loc;
                 CurrentTokenType = PdfTokenType.Unknown;
             }
         }
@@ -163,6 +164,43 @@ namespace PdfLexer.Lexing
                 Position--;
             }
             return true;
+        }
+
+        public bool TryScanBackTokens(int count, int maxScan)
+        {
+            CurrentTokenType = PdfTokenType.Unknown;
+            count += 1;
+            var total = 0;
+            var cnt = 0;
+            var isWhite = false;
+            while (total < maxScan && Position > 0)
+            {
+                Position--;
+                total++;
+                var b = Data[Position];
+                if (!CommonUtil.IsNonBinary(b))
+                {
+                    break;
+                }
+                if (CommonUtil.IsWhiteSpace(b))
+                {
+                    if (!isWhite)
+                    {
+                        cnt++;
+                    }
+                    isWhite = true;
+                }
+                else
+                {
+                    isWhite = false;
+                }
+
+                if (cnt >= count)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

@@ -30,6 +30,8 @@ namespace PdfLexer.IO
 
         public ParsingContext Context { get;}
 
+        public bool SupportsXRefRepair => false;
+
         public IPdfDataSource Clone()
         {
             throw new NotImplementedException();
@@ -78,6 +80,16 @@ namespace PdfLexer.IO
             Context.CurrentOffset = os;
             ReadOnlySpan<byte> data = _data;
             Context.UnwrapAndCopyObjData(data.Slice(os), destination);
+        }
+
+        public bool TryRepairXRef(XRefEntry entry, out XRefEntry repaired)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -48,15 +48,16 @@ namespace PdfLexer
         /// XRef entries of this document. May be internalized at some point.
         /// Will be null on new documents.
         /// </summary>
-        public IReadOnlyDictionary<ulong, XRefEntry> XrefEntries { get; }
-        
+        public IReadOnlyDictionary<ulong, XRefEntry> XrefEntries => xrefEntries;
+        internal Dictionary<ulong, XRefEntry> xrefEntries { get; set; }
+
 
         internal PdfDocument(ParsingContext ctx, PdfDictionary trailer, Dictionary<ulong, XRefEntry> entries)
         {
             Context = ctx;
             ctx.SourceId = DocumentId;
             ctx.Document = this;
-            XrefEntries = entries;
+            xrefEntries = entries;
             Trailer = trailer;
         }
 
@@ -72,11 +73,11 @@ namespace PdfLexer
         /// <param name="stream"></param>
         public void SaveTo(Stream stream)
         {
-            var nums = XrefEntries?.Values.Select(x=>x.Reference.ObjectNumber).ToList();
+            var nums = XrefEntries?.Values.Select(x => x.Reference.ObjectNumber).ToList();
             var nextId = 1;
             if (nums.Any())
             {
-                nextId = nums.Max()+1;
+                nextId = nums.Max() + 1;
             }
             var ctx = new WritingContext(stream, nextId, DocumentId);
             ctx.Initialize(PdfVersion);
@@ -87,12 +88,17 @@ namespace PdfLexer
             // create clones of these in case they were
             // copied from another doc, don't want to modify existing
             var catalog = Catalog.CloneShallow();
+            var trailer = Trailer.CloneShallow();
+
+            // remove page tree specific items
             catalog.Remove("/Names");
             catalog.Remove("/Outlines");
             catalog.Remove("/StructTreeRoot");
-            var trailer = Trailer.CloneShallow();
-            var cir =  PdfIndirectRef.Create(catalog);
+
+            var cir = PdfIndirectRef.Create(catalog);
             trailer[PdfName.Root] = cir;
+
+            // remove page tree specific items
             trailer.Remove(PdfName.DecodeParms);
             trailer.Remove(PdfName.Filter);
             trailer.Remove(PdfName.Length);
@@ -111,7 +117,7 @@ namespace PdfLexer
             var dict = new PdfDictionary();
             var arr = new PdfArray();
             var ir = PdfIndirectRef.Create(dict);
-            foreach(var page in Pages)
+            foreach (var page in Pages)
             {
                 var pg = page.Dictionary.CloneShallow();
                 pg[PdfName.Parent] = ir;
@@ -139,7 +145,8 @@ namespace PdfLexer
                 if (obj.Type == XRefType.Normal && Context.IsDataCopyable(obj.Reference)) // TODO copying of compressed items
                 {
                     ctx.WriteExistingData(Context, obj);
-                } else
+                }
+                else
                 {
                     ctx.WriteIndirectObject(new ExistingIndirectRef(Context, obj.Reference));
                 }
@@ -166,10 +173,10 @@ namespace PdfLexer
         /// <param name="data">PDF data</param>
         /// <param name="options">Optional parsing options</param>
         /// <returns>PdfDocument</returns>
-        public static PdfDocument Open(byte[] data, ParsingOptions options=null)
+        public static PdfDocument Open(byte[] data, ParsingOptions options = null)
         {
             var ctx = new ParsingContext(options);
-            
+
             var source = new InMemoryDataSource(ctx, data);
             var result = ctx.Initialize(source);
 
@@ -184,11 +191,40 @@ namespace PdfLexer
                     eir.SourceId = doc.DocumentId;
                 }
             }
-            doc.Catalog = doc.Trailer.GetRequiredValue<PdfDictionary>(PdfName.Root);
-            var pages = doc.Catalog.GetRequiredValue<PdfDictionary>(PdfName.Pages);
+            doc.Catalog = doc.Trailer.GetOptionalValue<PdfDictionary>(PdfName.Root);
+            if (doc.Catalog == null ||
+                (doc.Catalog.GetOptionalValue<PdfName>(PdfName.TypeName) != PdfName.Catalog && !doc.Catalog.ContainsKey(PdfName.Pages)))
+            {
+                var matched = doc.Context.RepairFindLastMatching(PdfTokenType.DictionaryStart, x =>
+                {
+                    if (x.Type != PdfObjectType.DictionaryObj)
+                    {
+                        return false;
+                    }
+                    var dict = x.GetValue<PdfDictionary>();
+                    if (dict.GetOptionalValue<PdfName>(PdfName.TypeName)?.Value == PdfName.Catalog.Value)
+                    {
+                        return true;
+                    }
+                    return false;
+                })?.GetValue<PdfDictionary>();
+                if (matched != null && doc.Catalog == null)
+                {
+                    doc.Catalog = matched;
+                }
+                else if (matched != null && matched.ContainsKey(PdfName.Pages))
+                {
+                    doc.Catalog = matched;
+                }
+            }
+            var pages = doc.Catalog.GetOptionalValue<PdfDictionary>(PdfName.Pages);
             if (ctx.Options.LoadPageTree)
             {
                 doc.Pages = new List<PdfPage>();
+                if (pages == null)
+                {
+                    return doc;
+                }
                 foreach (var pg in CommonUtil.EnumeratePageTree(pages))
                 {
                     doc.Pages.Add(pg);

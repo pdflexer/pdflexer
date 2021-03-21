@@ -98,16 +98,22 @@ namespace PdfLexer
                     var kids = dict.GetRequiredValue<PdfArray>(PdfName.Kids);
                     foreach (var child in kids)
                     {
-                        var instance = child.GetValue<PdfDictionary>();
+                        var pg = child.Resolve();
+                        if (pg.Type != PdfObjectType.DictionaryObj)
+                        {
+                            // TODO warn
+                            continue;
+                        }
+                        var instance = pg.GetValue<PdfDictionary>();
                         if (read.Contains(instance))
                         {
                             // TODO warn
                             continue;
                         }
 
-                        foreach (var pg in EnumeratePages(instance, resources, mediabox, cropbox, rotate, read))
+                        foreach (var npg in EnumeratePages(instance, resources, mediabox, cropbox, rotate, read))
                         {
-                            yield return pg;
+                            yield return npg;
                         }
                     }
                     break;

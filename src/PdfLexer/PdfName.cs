@@ -9,7 +9,7 @@ namespace PdfLexer
     /// <summary>
     /// PDF Name Object
     /// </summary>
-    public class PdfName : PdfObject
+    public class PdfName : PdfObject, IEquatable<PdfName>
     {
         internal ulong CacheValue {get;set;}
         internal bool? NeedsEscaping { get;} 
@@ -38,6 +38,11 @@ namespace PdfLexer
         public override bool Equals(object obj)
         {
             return obj is PdfName name && Value.Equals(name?.Value);
+        }
+
+        public virtual bool Equals(PdfName other)
+        {
+            return Value.Equals(other?.Value);
         }
 
         public override int GetHashCode()
@@ -93,5 +98,7 @@ namespace PdfLexer
         {
             return Value;
         }
+
+
     }
 }
