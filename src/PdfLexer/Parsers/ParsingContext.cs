@@ -114,6 +114,7 @@ namespace PdfLexer.Parsers
 
         internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
         {
+            // TODO add support here for object streams?
             return MainDocSource.RepairFindLastMatching(type, matcher);
         }
 

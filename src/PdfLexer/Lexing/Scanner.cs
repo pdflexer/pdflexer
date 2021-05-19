@@ -14,7 +14,7 @@ namespace PdfLexer.Lexing
             Context = ctx;
             Data = data;
             Position = startAt;
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             CurrentLength = 0;
         }
 
@@ -24,7 +24,7 @@ namespace PdfLexer.Lexing
 
         public PdfTokenType Peek()
         {
-            if (CurrentTokenType == PdfTokenType.Unknown)
+            if (CurrentTokenType == PdfTokenType.TBD)
             {
                 Position = PdfSpanLexer.TryReadNextToken(Data, out CurrentTokenType, Position, out CurrentLength);
             }
@@ -36,7 +36,7 @@ namespace PdfLexer.Lexing
             Peek();
             ThrowIfAtEndOfData();
             Position += CurrentLength;
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
         }
 
         public void SkipExpected(PdfTokenType type)
@@ -49,7 +49,7 @@ namespace PdfLexer.Lexing
                 throw new PdfTokenMismatchException($"Mismatched token, found {CurrentTokenType}, expected {type}: " + info);
             }
             Position += CurrentLength;
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
         }
 
         private void ThrowIfAtEndOfData()
@@ -65,7 +65,7 @@ namespace PdfLexer.Lexing
         public void Advance(int cnt)
         {
             Position += cnt;
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
         }
 
         public int SkipObject()
@@ -96,7 +96,7 @@ namespace PdfLexer.Lexing
                     throw CommonUtil.DisplayDataErrorException(Data, pos, $"Unable to find dictionary end");
                 }
             }
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             return Position - start;
         }
 
@@ -110,7 +110,7 @@ namespace PdfLexer.Lexing
             else
             {
                 Position = Position+loc;
-                CurrentTokenType = PdfTokenType.Unknown;
+                CurrentTokenType = PdfTokenType.TBD;
             }
         }
 
@@ -124,7 +124,7 @@ namespace PdfLexer.Lexing
             }
             var obj = Context.GetPdfItem(Data, Position, out var length);
             Position += length;
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             return obj;
         }
 
@@ -168,7 +168,7 @@ namespace PdfLexer.Lexing
 
         public bool TryScanBackTokens(int count, int maxScan)
         {
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             count += 1;
             var total = 0;
             var cnt = 0;

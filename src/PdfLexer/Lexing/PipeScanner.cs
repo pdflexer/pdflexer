@@ -19,7 +19,7 @@ namespace PdfLexer.Lexing
             Context = ctx;
             Pipe = pipe;
             IsCompleted = false;
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             Reader = default;
             CurrentStart = default;
             CurrentEnd = default;
@@ -65,7 +65,7 @@ namespace PdfLexer.Lexing
 
         public PdfTokenType Peek()
         {
-            if (CurrentTokenType != PdfTokenType.Unknown)
+            if (CurrentTokenType != PdfTokenType.TBD)
             {
                 return CurrentTokenType;
             }
@@ -76,7 +76,7 @@ namespace PdfLexer.Lexing
                     CurrentTokenType = PdfTokenType.EOS;
                     return CurrentTokenType;
                 }
-                CurrentTokenType = PdfTokenType.Unknown;
+                CurrentTokenType = PdfTokenType.TBD;
                 AdvanceBuffer(CurrentStart);
                 Peek();
             }
@@ -88,7 +88,7 @@ namespace PdfLexer.Lexing
         {
             Peek();
             ThrowIfAtEndOfData();
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             CurrentStart = CurrentEnd;
         }
 
@@ -100,7 +100,7 @@ namespace PdfLexer.Lexing
             {
                 throw CommonUtil.DisplayDataErrorException(ref Reader, $"Mismatched token, found {CurrentTokenType}, expected {type}");
             }
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
         }
 
         private void ThrowIfAtEndOfData()
@@ -121,7 +121,7 @@ namespace PdfLexer.Lexing
                 AdvanceBuffer(Reader.Sequence.End);
             }
             Reader.Advance(cnt);
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
         }
 
         public void SkipObject()
@@ -140,7 +140,7 @@ namespace PdfLexer.Lexing
             {
                 SkipDict();
             }
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
         }
 
         private void SkipDict()
@@ -204,7 +204,7 @@ namespace PdfLexer.Lexing
             }
 
             var obj = Context.GetPdfItem((PdfObjectType)CurrentTokenType, Reader.Sequence, CurrentStart, CurrentEnd);
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             return obj;
         }
 
@@ -244,7 +244,7 @@ namespace PdfLexer.Lexing
             Reader.Advance(total);
             var data = Reader.Sequence.Slice(CurrentStart, Reader.Position);
             CurrentStart = Reader.Position;
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             return data;
         }
 
@@ -261,7 +261,7 @@ namespace PdfLexer.Lexing
                     AdvanceBuffer(Reader.Sequence.End);
                     continue;
                 }
-                CurrentTokenType = PdfTokenType.Unknown;
+                CurrentTokenType = PdfTokenType.TBD;
                 return true;
             }
         }
@@ -272,7 +272,7 @@ namespace PdfLexer.Lexing
             {
                 prevBuffer = 1;
             }
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             while (true)
             {
                 if (!Reader.TryAdvanceTo(sequence[0], false) || Reader.Remaining < sequence.Length)
@@ -331,7 +331,7 @@ namespace PdfLexer.Lexing
 
         public int ScanBackTokens(int count, int maxScan)
         {
-            CurrentTokenType = PdfTokenType.Unknown;
+            CurrentTokenType = PdfTokenType.TBD;
             count += 1;
             var total = 0;
             var cnt = 0;

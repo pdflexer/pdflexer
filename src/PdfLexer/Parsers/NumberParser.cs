@@ -7,11 +7,6 @@ using System.Text;
 
 namespace PdfLexer.Parsers
 {
-    public enum NumberType
-    {
-        Integer,
-        Real
-    }
     public class NumberParser : Parser<PdfNumber>
     {
         private static readonly byte[] numberTerminators = new byte[17] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20, (byte)'.',

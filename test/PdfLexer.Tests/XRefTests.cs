@@ -163,99 +163,7 @@ startxref
             Assert.Equal(lastObj, last.Reference.ObjectNumber);
         }
 
-        [InlineData(@"0 1 1 R", 4, 1)]
-        [Theory]
-        public async Task ItReadsTokenSequences(string input, int entries, int nullEntries)
-        {
-            var bytes = Encoding.ASCII.GetBytes(input);
-            var ms = new MemoryStream(bytes);
-            var results = new List<IPdfObject>();
-            var ctx = new ParsingContext();
-            var pipe = PipeReader.Create(ms);
-            var result = await pipe.ReadTokenSequence(ctx, ParseOp.IndirectReference, results);
-            Assert.Equal(entries, results.Count);
-            Assert.Equal(nullEntries, results.Count(x => x==null));
-        }
 
-        [InlineData(@"0 1 obj
-<</Key/Value>>
-endobj", PdfObjectType.DictionaryObj)]
-        [InlineData(@"0 1 obj
-<</Key(this is a (nested) long\) string)>>
-endobj", PdfObjectType.DictionaryObj)]
-        [InlineData(@"1001 0 obj
-[1 0 3 <</Key/Value>>]
-endobj", PdfObjectType.ArrayObj)]
-        [Theory]
-        public async Task ItReadsIndirectObjectsUsingMultiSequences(string input, PdfObjectType type)
-        {
-            var bytes = Encoding.ASCII.GetBytes(input);
-            var ms = new MemoryStream(bytes);
-            var results = new List<IPdfObject>();
-            var ctx = new ParsingContext();
-            var pipe = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 1));
-            var result = await pipe.ReadTokenSequence(ctx, ParseOp.IndirectObject, results);
-            Assert.Equal(5, results.Count);
-            var item = results[3];
-            Assert.Equal(type, item.Type);
-        }
-
-        [InlineData(@"0 1 obj
-<</Key/Value>>
-endobj", PdfObjectType.DictionaryObj)]
-        [InlineData(@"1001 0 obj
-[1 0 3 <</Key/Value>>]
-endobj", PdfObjectType.ArrayObj)]
-        [Theory]
-        public async Task ItReadsIndirectObjectsUsingSequences(string input, PdfObjectType type)
-        {
-            var bytes = Encoding.ASCII.GetBytes(input);
-            var ms = new MemoryStream(bytes);
-            var results = new List<IPdfObject>();
-            var ctx = new ParsingContext();
-            var pipe = PipeReader.Create(ms);
-            var result = await pipe.ReadTokenSequence(ctx, ParseOp.IndirectObject, results);
-            Assert.Equal(5, results.Count);
-            var item = results[3];
-            Assert.Equal(type, item.Type);
-        }
-
-        [InlineData(@"<</Key/Value/Key1/Value/Key2/Value>>", PdfTokenType.DictionaryStart, PdfObjectType.DictionaryObj)]
-        [InlineData(@"/Name", PdfTokenType.NameObj, PdfObjectType.NameObj)]
-        [InlineData(@"xref",PdfTokenType.Xref, PdfObjectType.NullObj)]
-        [Theory]
-        public async Task ItReadsNextObject(string input, PdfTokenType token, PdfObjectType type)
-        {
-            var bytes = Encoding.ASCII.GetBytes(input);
-            var ms = new MemoryStream(bytes);
-            var results = new List<IPdfObject>();
-            var ctx = new ParsingContext();
-            var pipe = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 1));
-            var result = await pipe.ReadNextObjectOrToken(ctx);
-            if (type != PdfObjectType.NullObj)
-            {
-                Assert.Equal(type, result.Obj.Type);
-            } else
-            {
-                Assert.Equal(token, result.Type);
-            }
-        }
-
-        [InlineData(@"<</Key/Value/Key1/Value/Key2/Value>>             <</Key/Value>>", PdfObjectType.DictionaryObj, PdfObjectType.DictionaryObj)]
-        [InlineData(@"/Name                 10", PdfObjectType.NameObj, PdfObjectType.NumericObj)]
-        [Theory]
-        public async Task ItReadsMultipleObject(string input, PdfObjectType obj1, PdfObjectType obj2)
-        {
-            var bytes = Encoding.ASCII.GetBytes(input);
-            var ms = new MemoryStream(bytes);
-            var results = new List<IPdfObject>();
-            var ctx = new ParsingContext();
-            var pipe = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 1));
-            var result = await pipe.ReadNextObjectOrToken(ctx);
-            Assert.Equal(obj1, result.Obj.Type);
-            result = await pipe.ReadNextObjectOrToken(ctx);
-            Assert.Equal(obj2, result.Obj.Type);
-        }
 
         [Fact]
         public void It_Finds_Rebuilt_Objects()
@@ -279,7 +187,11 @@ endobj
             var bytes = Encoding.ASCII.GetBytes(data);
             var ms = new MemoryStream(bytes);
             var parser = new XRefParser(new ParsingContext());
-            var results = parser.BuildFromRawData(ms);
+            var (xrefs, trailer) = parser.BuildFromRawData(ms);
+            Assert.Contains(xrefs, x =>x.Reference.ObjectNumber == 17);
+            Assert.Contains(xrefs, x =>x.Reference.ObjectNumber == 1);
+            Assert.Contains(xrefs, x =>x.Reference.ObjectNumber == 4);
+            
         }
     }
 }

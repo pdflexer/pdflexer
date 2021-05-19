@@ -426,7 +426,7 @@ namespace PdfLexer.Tests
             }
             var ms = new MemoryStream();
             merged.SaveTo(ms);
-            using var doc2 = PdfDocument.Open(ms.ToArray());
+            using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = true });
             EnumerateObjects(doc2.Trailer, new HashSet<int>());
             File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
         }
