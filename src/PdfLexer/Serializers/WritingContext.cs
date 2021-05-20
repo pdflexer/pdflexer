@@ -25,22 +25,13 @@ namespace PdfLexer.Serializers
         internal Dictionary<int, (long OS, XRef Ref)> writtenObjs = new Dictionary<int, (long OS, XRef Ref)>();
         internal int NewDocId = PdfDocument.GetNextId();
         internal int NextId = 1;
-        internal ArraySerializer ArraySerializer { get; }
-        internal BoolSerializer BoolSerializer { get; }
-        internal DictionarySerializer DictionarySerializer { get; }
-        internal NumberSerializer NumberSerializer { get; }
-        internal NameSerializer NameSerializer { get; }
-        internal StringSerializer StringSerializer { get; }
         internal Stream Stream { get; }
+        internal Serializers Serializers { get; }
+
         public WritingContext(Stream stream)
         {
             Stream = stream;
-            ArraySerializer = new ArraySerializer(this);
-            BoolSerializer = new BoolSerializer();
-            DictionarySerializer = new DictionarySerializer(this);
-            NameSerializer = new NameSerializer();
-            NumberSerializer = new NumberSerializer();
-            StringSerializer = new StringSerializer();
+            Serializers = new Serializers();
         }
 
         internal WritingContext(Stream stream, int nextId, int docId) : this(stream)
@@ -117,7 +108,7 @@ namespace PdfLexer.Serializers
             Stream.Write(XRefParser.Trailer);
             Stream.WriteByte((byte)'\n');
             trailer["/Size"] = new PdfIntNumber(mos + 1);
-            DictionarySerializer.WriteToStream(trailer, Stream);
+            Serializers.DictionarySerializer.WriteToStream(trailer, Stream, Resolve);
             Stream.WriteByte((byte)'\n');
             Stream.Write(XRefParser.startxref);
             Stream.WriteByte((byte)'\n');
@@ -130,7 +121,7 @@ namespace PdfLexer.Serializers
             Stream.Write(oef);
         }
 
-        public void SerializeObject(IPdfObject obj, bool writeAnyIr=false)
+        public void SerializeObject(IPdfObject obj, bool writeAnyIr = false)
         {
             if (obj.IsLazy)
             {
@@ -145,22 +136,26 @@ namespace PdfLexer.Serializers
                     return;
                 }
             }
-
+            Func<PdfIndirectRef, PdfIndirectRef> resolver = Resolve;
+            if (writeAnyIr)
+            {
+                resolver = ResolveAsIs;
+            }
             switch (obj.Type)
             {
                 case PdfObjectType.ArrayObj:
-                    ArraySerializer.WriteToStream((PdfArray)obj, Stream);
+                    Serializers.ArraySerializer.WriteToStream((PdfArray)obj, Stream, resolver);
                     return;
                 case PdfObjectType.NullObj:
                     Stream.Write(PdfNull.NullBytes);
                     return;
                 case PdfObjectType.BooleanObj:
-                    BoolSerializer.WriteToStream((PdfBoolean)obj, Stream);
+                     Serializers.BoolSerializer.WriteToStream((PdfBoolean)obj, Stream);
                     return;
                 case PdfObjectType.StreamObj:
                     var str = (PdfStream)obj;
                     str.Contents.UpdateStreamDictionary(str.Dictionary);
-                    DictionarySerializer.WriteToStream(str.Dictionary, Stream);
+                     Serializers.DictionarySerializer.WriteToStream(str.Dictionary, Stream, resolver);
                     Stream.WriteByte((byte)'\n');
                     Stream.Write(IndirectSequences.stream);
                     Stream.WriteByte((byte)'\n');
@@ -169,16 +164,16 @@ namespace PdfLexer.Serializers
                     Stream.Write(IndirectSequences.endstream);
                     return;
                 case PdfObjectType.DictionaryObj:
-                    DictionarySerializer.WriteToStream((PdfDictionary)obj, Stream);
+                     Serializers.DictionarySerializer.WriteToStream((PdfDictionary)obj, Stream, resolver);
                     return;
                 case PdfObjectType.NameObj:
-                    NameSerializer.WriteToStream((PdfName)obj, Stream);
+                     Serializers.NameSerializer.WriteToStream((PdfName)obj, Stream);
                     return;
                 case PdfObjectType.NumericObj:
-                    NumberSerializer.WriteToStream((PdfNumber)obj, Stream);
+                     Serializers.NumberSerializer.WriteToStream((PdfNumber)obj, Stream);
                     return;
                 case PdfObjectType.StringObj:
-                    StringSerializer.WriteToStream((PdfString)obj, Stream);
+                     Serializers.StringSerializer.WriteToStream((PdfString)obj, Stream);
                     return;
                 case PdfObjectType.IndirectRefObj:
                     var ir = (PdfIndirectRef)obj;
@@ -204,6 +199,24 @@ namespace PdfLexer.Serializers
 
             }
             throw new NotImplementedException($"Requested to write pdf object of type {obj.GetType()}.");
+        }
+
+        private PdfIndirectRef ResolveAsIs(PdfIndirectRef ir) => ir;
+        private PdfIndirectRef Resolve(PdfIndirectRef ir)
+        {
+            if (!ir.IsOwned(NewDocId))
+            {
+                if (!TryGetLocalRef(ir, out var result))
+                {
+                    throw new ApplicationException("Attempted to write external indirect reference that had not been localized in this context: " + ir.Reference);
+                }
+                return result;
+
+            }
+            else
+            {
+                return ir;
+            }
         }
 
         // TODO can we just track SourcedXRef by the ConditionalWeakTable as well?

@@ -1,5 +1,7 @@
 ﻿using PdfLexer.Lexing;
 using PdfLexer.Operators;
+using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Xunit;
 
@@ -63,6 +65,33 @@ f";
             Assert.Equal(PdfOperatorType.f, scanner.Peek());
             Assert.Empty(scanner.Operands);
             scanner.SkipCurrent();
+        }
+
+        [Fact]
+        public void It_Reads_And_Writes_Stream()
+        {
+            var text = "q\n0.06000 0 0 -0.06000 1 594 cm\n870 1095 768 176 re\nh\nW*\nn\nQ\nf\n";
+            var data = Encoding.ASCII.GetBytes(text);
+
+            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var ops = new List<IPdfOperation>();
+            PdfOperatorType nxt = PdfOperatorType.Unknown;
+            while ((nxt = scanner.Peek()) != PdfOperatorType.EOC)
+            {
+                ops.Add(scanner.GetCurrentOperation());
+                scanner.SkipCurrent();
+            }
+
+            Assert.Equal(8, ops.Count);
+
+            var str = new MemoryStream();
+            foreach (var op in ops)
+            {
+                op.Serialize(str);
+                str.WriteByte((byte)'\n');
+            }
+            var contents = Encoding.ASCII.GetString(str.ToArray());
+            Assert.Equal(text, contents);
         }
     }
 }

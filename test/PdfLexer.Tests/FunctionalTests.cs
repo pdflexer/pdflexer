@@ -7,6 +7,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CliWrap;
 using PdfLexer.IO;
+using PdfLexer.Lexing;
+using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using Xunit;
@@ -101,7 +103,7 @@ namespace PdfLexer.Tests
                     || name == "issue3371" || name == "pr6531_1" // bad compression
                     || name == "issue7229" // XRef table points to wrong object ... rebuilding might work but other pdfs have
                                            // refs to objects with incorret object number that are correct
-                    // name == "issue9418" // need xref repair, os doesn't point to object
+                                           // name == "issue9418" // need xref repair, os doesn't point to object
                         )
                 {
                     continue;
@@ -147,6 +149,75 @@ namespace PdfLexer.Tests
                 {
                     EnumerateObjects(item, callStack);
                 }
+            }
+        }
+
+        // [Fact]
+        public void It_Reads_And_Writes_All_Pdf_JS_Content_Streams()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var errors = new List<string>();
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                try
+                {
+                    var data = File.ReadAllBytes(pdf);
+                    using var doc = PdfDocument.Open(data);
+                    foreach (var page in doc.Pages)
+                    {
+                        if (!page.Dictionary.TryGetValue(PdfName.Contents, out var value))
+                        {
+                            continue;
+                        }
+
+                        var obj = value.Resolve();
+                        switch (obj)
+                        {
+                            case PdfStream strObj:
+                                CheckStream(strObj);
+                                break;
+                            case PdfArray arrObj:
+                                foreach (var item in arrObj)
+                                {
+                                    var arStr = item.Resolve();
+                                    if (arStr is PdfStream matched)
+                                    {
+                                        CheckStream(matched);
+                                    } else
+                                    {
+                                        throw new ApplicationException("Non stream object found in contents array: " + arStr.Type);
+                                    }
+                                }
+                                break;
+                            default:
+                                 throw new ApplicationException("Non stream or array object found in contents array:" + obj.Type);
+                        }
+
+                        void CheckStream(PdfStream str)
+                        {
+                            var pgStream = str.Contents.GetDecodedData(doc.Context);
+                            var txt = Encoding.ASCII.GetString(pgStream);
+                            var scanner = new ContentScanner(doc.Context, pgStream);
+                            var ops = new List<IPdfOperation>();
+                            PdfOperatorType nxt = PdfOperatorType.Unknown;
+                            while ((nxt = scanner.Peek()) != PdfOperatorType.EOC)
+                            {
+                                ops.Add(scanner.GetCurrentOperation());
+                                scanner.SkipCurrent();
+                            }
+                        }
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    errors.Add(pdf + ": " + e.Message);
+                }
+            }
+            if (errors.Any())
+            {
+                throw new ApplicationException(string.Join(Environment.NewLine, errors));
             }
         }
 
@@ -481,11 +552,11 @@ namespace PdfLexer.Tests
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "doc_actions.pdf");
             var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
             doc.Trailer["/Dummy"] = PdfName.Count;
-            var count = doc.XrefEntries.Where(x=>x.Value.Reference.Generation > 0).Count();
+            var count = doc.XrefEntries.Where(x => x.Value.Reference.Generation > 0).Count();
             var ms = new MemoryStream();
             doc.SaveTo(ms);
             var saved = PdfDocument.Open(ms.ToArray());
-            var count2 = doc.XrefEntries.Where(x=>x.Value.Reference.Generation > 0).Count();
+            var count2 = doc.XrefEntries.Where(x => x.Value.Reference.Generation > 0).Count();
             Assert.Equal(count, count2);
         }
 

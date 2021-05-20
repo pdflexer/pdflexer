@@ -24,7 +24,7 @@ namespace PdfLexer.Lexing
         {
             ReadOnlySpan<byte> buffer = bytes;
             var buffMax = buffer.Length - 1;
-            type = PdfTokenType.NullObj;
+            type = PdfTokenType.EOS;
 
             var i = startAt;
 

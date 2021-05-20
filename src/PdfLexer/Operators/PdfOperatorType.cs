@@ -1,6 +1,7 @@
 ﻿using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using System;
+using System.IO;
 using System.Collections.Generic;
 
 /// <summary>
@@ -73,7 +74,7 @@ namespace PdfLexer.Operators
         // Close subpath
         h = 104,
         // Set flatness tolerance
-        I = 73,
+        i = 105,
         // Begin inline image data
         ID = 17481,
         // Set line join style
@@ -105,7 +106,7 @@ namespace PdfLexer.Operators
         // Set RGB color for nonstroking operations
         rg = 26482,
         // Set color rendering intent
-        rl = 27762,
+        ri = 26994,
         // Close and stroke path
         s = 115,
         // Stroke path
@@ -194,7 +195,7 @@ namespace PdfLexer.Operators
             [103] =  g_Op.Parse, 
             [29543] =  gs_Op.Parse, 
             [104] =  h_Op.Parse, 
-            [73] =  I_Op.Parse, 
+            [105] =  i_Op.Parse, 
             [17481] =  ID_Op.Parse, 
             [106] =  j_Op.Parse, 
             [74] =  J_Op.Parse, 
@@ -210,7 +211,7 @@ namespace PdfLexer.Operators
             [25970] =  re_Op.Parse, 
             [18258] =  RG_Op.Parse, 
             [26482] =  rg_Op.Parse, 
-            [27762] =  rl_Op.Parse, 
+            [26994] =  ri_Op.Parse, 
             [115] =  s_Op.Parse, 
             [83] =  S_Op.Parse, 
             [17235] =  PdfOperator.ParseSC, 
@@ -243,50 +244,67 @@ namespace PdfLexer.Operators
 
     public partial class b_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'b' };
         public PdfOperatorType Type => PdfOperatorType.b;
         public static b_Op Value = new b_Op();
         public b_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static b_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class B_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'B' };
         public PdfOperatorType Type => PdfOperatorType.B;
         public static B_Op Value = new B_Op();
         public B_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static B_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class b_Star_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'b', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.b_Star;
         public static b_Star_Op Value = new b_Star_Op();
         public b_Star_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static b_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class B_Star_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'B', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.B_Star;
         public static B_Star_Op Value = new B_Star_Op();
         public B_Star_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static B_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class BDC_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'D', (byte) 'C' };
         public PdfOperatorType Type => PdfOperatorType.BDC;
         public PdfName tag { get; set; }
         public PdfObject props { get; set; }
@@ -298,23 +316,36 @@ namespace PdfLexer.Operators
     }
     public partial class BI_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'I' };
         public PdfOperatorType Type => PdfOperatorType.BI;
         public static BI_Op Value = new BI_Op();
         public BI_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static BI_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class BMC_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'M', (byte) 'C' };
         public PdfOperatorType Type => PdfOperatorType.BMC;
         public PdfName tag { get; set; }
         public BMC_Op(PdfName tag)
         {
             this.tag = tag;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfName(tag, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static BMC_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
@@ -324,28 +355,37 @@ namespace PdfLexer.Operators
     }
     public partial class BT_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'T' };
         public PdfOperatorType Type => PdfOperatorType.BT;
         public static BT_Op Value = new BT_Op();
         public BT_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static BT_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class BX_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'X' };
         public PdfOperatorType Type => PdfOperatorType.BX;
         public static BX_Op Value = new BX_Op();
         public BX_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static BX_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class c_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'c' };
         public PdfOperatorType Type => PdfOperatorType.c;
         public decimal x1 { get; set; }
         public decimal y1 { get; set; }
@@ -362,6 +402,24 @@ namespace PdfLexer.Operators
             this.x3 = x3;
             this.y3 = y3;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x1, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y1, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(x2, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y2, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(x3, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y3, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static c_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -376,6 +434,7 @@ namespace PdfLexer.Operators
     }
     public partial class cm_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'c', (byte) 'm' };
         public PdfOperatorType Type => PdfOperatorType.cm;
         public decimal a { get; set; }
         public decimal b { get; set; }
@@ -392,6 +451,24 @@ namespace PdfLexer.Operators
             this.e = e;
             this.f = f;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(a, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(b, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(c, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(d, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(e, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(f, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static cm_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -406,12 +483,21 @@ namespace PdfLexer.Operators
     }
     public partial class CS_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'C', (byte) 'S' };
         public PdfOperatorType Type => PdfOperatorType.CS;
         public PdfName name { get; set; }
         public CS_Op(PdfName name)
         {
             this.name = name;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfName(name, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static CS_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
@@ -421,12 +507,21 @@ namespace PdfLexer.Operators
     }
     public partial class cs_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'c', (byte) 's' };
         public PdfOperatorType Type => PdfOperatorType.cs;
         public PdfName name { get; set; }
         public cs_Op(PdfName name)
         {
             this.name = name;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfName(name, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static cs_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
@@ -436,50 +531,81 @@ namespace PdfLexer.Operators
     }
     public partial class d_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'd' };
         public PdfOperatorType Type => PdfOperatorType.d;
-        public static d_Op Value = new d_Op();
-        public d_Op()
+        public PdfArray dashArray { get; set; }
+        public int dashPhase { get; set; }
+        public d_Op(PdfArray dashArray, int dashPhase)
         {
-
+            this.dashArray = dashArray;
+            this.dashPhase = dashPhase;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfArray(dashArray, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writeint(dashPhase, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static d_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-            => Value;
+        {
+            var a0 = PdfOperator.ParsePdfArray(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parseint(ctx, data, operands[1]);
+    
+            return new d_Op(a0, a1);
+        }
     }
     public partial class d0_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'd', (byte) '0' };
         public PdfOperatorType Type => PdfOperatorType.d0;
         public static d0_Op Value = new d0_Op();
         public d0_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static d0_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class d1_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'd', (byte) '1' };
         public PdfOperatorType Type => PdfOperatorType.d1;
         public static d1_Op Value = new d1_Op();
         public d1_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static d1_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class Do_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'D', (byte) 'o' };
         public PdfOperatorType Type => PdfOperatorType.Do;
         public static Do_Op Value = new Do_Op();
         public Do_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static Do_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class DP_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'D', (byte) 'P' };
         public PdfOperatorType Type => PdfOperatorType.DP;
         public PdfName tag { get; set; }
         public PdfObject props { get; set; }
@@ -491,193 +617,289 @@ namespace PdfLexer.Operators
     }
     public partial class EI_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'E', (byte) 'I' };
         public PdfOperatorType Type => PdfOperatorType.EI;
         public static EI_Op Value = new EI_Op();
         public EI_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static EI_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class EMC_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'E', (byte) 'M', (byte) 'C' };
         public PdfOperatorType Type => PdfOperatorType.EMC;
         public static EMC_Op Value = new EMC_Op();
         public EMC_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static EMC_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class ET_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'E', (byte) 'T' };
         public PdfOperatorType Type => PdfOperatorType.ET;
         public static ET_Op Value = new ET_Op();
         public ET_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static ET_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class EX_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'E', (byte) 'X' };
         public PdfOperatorType Type => PdfOperatorType.EX;
         public static EX_Op Value = new EX_Op();
         public EX_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static EX_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class f_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'f' };
         public PdfOperatorType Type => PdfOperatorType.f;
         public static f_Op Value = new f_Op();
         public f_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static f_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class F_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'F' };
         public PdfOperatorType Type => PdfOperatorType.F;
         public static F_Op Value = new F_Op();
         public F_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static F_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class f_Star_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'f', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.f_Star;
         public static f_Star_Op Value = new f_Star_Op();
         public f_Star_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static f_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class G_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'G' };
         public PdfOperatorType Type => PdfOperatorType.G;
         public static G_Op Value = new G_Op();
         public G_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static G_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class g_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'g' };
         public PdfOperatorType Type => PdfOperatorType.g;
         public static g_Op Value = new g_Op();
         public g_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static g_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class gs_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'g', (byte) 's' };
         public PdfOperatorType Type => PdfOperatorType.gs;
         public static gs_Op Value = new gs_Op();
         public gs_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static gs_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class h_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'h' };
         public PdfOperatorType Type => PdfOperatorType.h;
         public static h_Op Value = new h_Op();
         public h_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static h_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
-    }
-    public partial class I_Op : IPdfOperation
-    {
-        public PdfOperatorType Type => PdfOperatorType.I;
-        public static I_Op Value = new I_Op();
-        public I_Op()
-        {
 
+    }
+    public partial class i_Op : IPdfOperation
+    {
+        public static byte[] OpData = new byte[] { (byte) 'i' };
+        public PdfOperatorType Type => PdfOperatorType.i;
+        public int flatness { get; set; }
+        public i_Op(int flatness)
+        {
+            this.flatness = flatness;
         }
-        public static I_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-            => Value;
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writeint(flatness, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static i_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        {
+            var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
+    
+            return new i_Op(a0);
+        }
     }
     public partial class ID_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'I', (byte) 'D' };
         public PdfOperatorType Type => PdfOperatorType.ID;
         public static ID_Op Value = new ID_Op();
         public ID_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static ID_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class j_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'j' };
         public PdfOperatorType Type => PdfOperatorType.j;
-        public static j_Op Value = new j_Op();
-        public j_Op()
+        public int lineJoin { get; set; }
+        public j_Op(int lineJoin)
         {
-
+            this.lineJoin = lineJoin;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writeint(lineJoin, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static j_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-            => Value;
+        {
+            var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
+    
+            return new j_Op(a0);
+        }
     }
     public partial class J_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'J' };
         public PdfOperatorType Type => PdfOperatorType.J;
-        public static J_Op Value = new J_Op();
-        public J_Op()
+        public int lineCap { get; set; }
+        public J_Op(int lineCap)
         {
-
+            this.lineCap = lineCap;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writeint(lineCap, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static J_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-            => Value;
+        {
+            var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
+    
+            return new J_Op(a0);
+        }
     }
     public partial class K_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'K' };
         public PdfOperatorType Type => PdfOperatorType.K;
         public static K_Op Value = new K_Op();
         public K_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static K_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class k_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'k' };
         public PdfOperatorType Type => PdfOperatorType.k;
         public static k_Op Value = new k_Op();
         public k_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static k_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class l_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'l' };
         public PdfOperatorType Type => PdfOperatorType.l;
         public decimal x { get; set; }
         public decimal y { get; set; }
@@ -686,6 +908,16 @@ namespace PdfLexer.Operators
             this.x = x;
             this.y = y;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static l_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -696,6 +928,7 @@ namespace PdfLexer.Operators
     }
     public partial class m_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'm' };
         public PdfOperatorType Type => PdfOperatorType.m;
         public decimal x { get; set; }
         public decimal y { get; set; }
@@ -704,6 +937,16 @@ namespace PdfLexer.Operators
             this.x = x;
             this.y = y;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static m_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -714,23 +957,45 @@ namespace PdfLexer.Operators
     }
     public partial class M_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'M' };
         public PdfOperatorType Type => PdfOperatorType.M;
-        public static M_Op Value = new M_Op();
-        public M_Op()
+        public decimal miterLimit { get; set; }
+        public M_Op(decimal miterLimit)
         {
-
+            this.miterLimit = miterLimit;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(miterLimit, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static M_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-            => Value;
+        {
+            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+    
+            return new M_Op(a0);
+        }
     }
     public partial class MP_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'M', (byte) 'P' };
         public PdfOperatorType Type => PdfOperatorType.MP;
         public PdfName tag { get; set; }
         public MP_Op(PdfName tag)
         {
             this.tag = tag;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfName(tag, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static MP_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
@@ -740,39 +1005,52 @@ namespace PdfLexer.Operators
     }
     public partial class n_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'n' };
         public PdfOperatorType Type => PdfOperatorType.n;
         public static n_Op Value = new n_Op();
         public n_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static n_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class q_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'q' };
         public PdfOperatorType Type => PdfOperatorType.q;
         public static q_Op Value = new q_Op();
         public q_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static q_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class Q_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'Q' };
         public PdfOperatorType Type => PdfOperatorType.Q;
         public static Q_Op Value = new Q_Op();
         public Q_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static Q_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class re_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'r', (byte) 'e' };
         public PdfOperatorType Type => PdfOperatorType.re;
         public decimal x { get; set; }
         public decimal y { get; set; }
@@ -785,6 +1063,20 @@ namespace PdfLexer.Operators
             this.width = width;
             this.height = height;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(width, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(height, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static re_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -797,61 +1089,91 @@ namespace PdfLexer.Operators
     }
     public partial class RG_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'R', (byte) 'G' };
         public PdfOperatorType Type => PdfOperatorType.RG;
         public static RG_Op Value = new RG_Op();
         public RG_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static RG_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class rg_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'r', (byte) 'g' };
         public PdfOperatorType Type => PdfOperatorType.rg;
         public static rg_Op Value = new rg_Op();
         public rg_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static rg_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
-    }
-    public partial class rl_Op : IPdfOperation
-    {
-        public PdfOperatorType Type => PdfOperatorType.rl;
-        public static rl_Op Value = new rl_Op();
-        public rl_Op()
-        {
 
+    }
+    public partial class ri_Op : IPdfOperation
+    {
+        public static byte[] OpData = new byte[] { (byte) 'r', (byte) 'i' };
+        public PdfOperatorType Type => PdfOperatorType.ri;
+        public PdfName intent { get; set; }
+        public ri_Op(PdfName intent)
+        {
+            this.intent = intent;
         }
-        public static rl_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-            => Value;
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfName(intent, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static ri_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        {
+            var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
+    
+            return new ri_Op(a0);
+        }
     }
     public partial class s_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 's' };
         public PdfOperatorType Type => PdfOperatorType.s;
         public static s_Op Value = new s_Op();
         public s_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static s_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class S_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'S' };
         public PdfOperatorType Type => PdfOperatorType.S;
         public static S_Op Value = new S_Op();
         public S_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static S_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class SC_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'S', (byte) 'C' };
         public PdfOperatorType Type => PdfOperatorType.SC;
         public List<decimal> colorInfo { get; set; }
         public SC_Op(List<decimal> colorInfo)
@@ -861,72 +1183,97 @@ namespace PdfLexer.Operators
     }
     public partial class sc_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 's', (byte) 'c' };
         public PdfOperatorType Type => PdfOperatorType.sc;
         public static sc_Op Value = new sc_Op();
         public sc_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static sc_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class SCN_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'S', (byte) 'C', (byte) 'N' };
         public PdfOperatorType Type => PdfOperatorType.SCN;
         public static SCN_Op Value = new SCN_Op();
         public SCN_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static SCN_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class scn_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 's', (byte) 'c', (byte) 'n' };
         public PdfOperatorType Type => PdfOperatorType.scn;
         public static scn_Op Value = new scn_Op();
         public scn_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static scn_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class sh_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 's', (byte) 'h' };
         public PdfOperatorType Type => PdfOperatorType.sh;
         public static sh_Op Value = new sh_Op();
         public sh_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static sh_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class T_Star_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.T_Star;
         public static T_Star_Op Value = new T_Star_Op();
         public T_Star_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static T_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class Tc_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'c' };
         public PdfOperatorType Type => PdfOperatorType.Tc;
         public static Tc_Op Value = new Tc_Op();
         public Tc_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static Tc_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class Td_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'd' };
         public PdfOperatorType Type => PdfOperatorType.Td;
         public decimal tx { get; set; }
         public decimal ty { get; set; }
@@ -935,6 +1282,16 @@ namespace PdfLexer.Operators
             this.tx = tx;
             this.ty = ty;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(tx, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(ty, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static Td_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -945,6 +1302,7 @@ namespace PdfLexer.Operators
     }
     public partial class TD_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'D' };
         public PdfOperatorType Type => PdfOperatorType.TD;
         public decimal tx { get; set; }
         public decimal ty { get; set; }
@@ -953,6 +1311,16 @@ namespace PdfLexer.Operators
             this.tx = tx;
             this.ty = ty;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(tx, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(ty, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static TD_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -963,23 +1331,36 @@ namespace PdfLexer.Operators
     }
     public partial class Tf_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'f' };
         public PdfOperatorType Type => PdfOperatorType.Tf;
         public static Tf_Op Value = new Tf_Op();
         public Tf_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static Tf_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class Tj_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'j' };
         public PdfOperatorType Type => PdfOperatorType.Tj;
         public PdfString text { get; set; }
         public Tj_Op(PdfString text)
         {
             this.text = text;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfString(text, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static Tj_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParsePdfString(ctx, data, operands[0]);
@@ -989,28 +1370,37 @@ namespace PdfLexer.Operators
     }
     public partial class TJ_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'J' };
         public PdfOperatorType Type => PdfOperatorType.TJ;
         public static TJ_Op Value = new TJ_Op();
         public TJ_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static TJ_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class TL_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'L' };
         public PdfOperatorType Type => PdfOperatorType.TL;
         public static TL_Op Value = new TL_Op();
         public TL_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static TL_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class Tm_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'm' };
         public PdfOperatorType Type => PdfOperatorType.Tm;
         public decimal a { get; set; }
         public decimal b { get; set; }
@@ -1027,6 +1417,24 @@ namespace PdfLexer.Operators
             this.e = e;
             this.f = f;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(a, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(b, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(c, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(d, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(e, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(f, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static Tm_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -1041,50 +1449,67 @@ namespace PdfLexer.Operators
     }
     public partial class Tr_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'r' };
         public PdfOperatorType Type => PdfOperatorType.Tr;
         public static Tr_Op Value = new Tr_Op();
         public Tr_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static Tr_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class Ts_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 's' };
         public PdfOperatorType Type => PdfOperatorType.Ts;
         public static Ts_Op Value = new Ts_Op();
         public Ts_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static Ts_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class Tw_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'w' };
         public PdfOperatorType Type => PdfOperatorType.Tw;
         public static Tw_Op Value = new Tw_Op();
         public Tw_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static Tw_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class Tz_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'z' };
         public PdfOperatorType Type => PdfOperatorType.Tz;
         public static Tz_Op Value = new Tz_Op();
         public Tz_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static Tz_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class v_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'v' };
         public PdfOperatorType Type => PdfOperatorType.v;
         public decimal x2 { get; set; }
         public decimal y2 { get; set; }
@@ -1097,6 +1522,20 @@ namespace PdfLexer.Operators
             this.x3 = x3;
             this.y3 = y3;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x2, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y2, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(x3, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y3, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static v_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -1109,39 +1548,61 @@ namespace PdfLexer.Operators
     }
     public partial class w_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'w' };
         public PdfOperatorType Type => PdfOperatorType.w;
-        public static w_Op Value = new w_Op();
-        public w_Op()
+        public int lineWidth { get; set; }
+        public w_Op(int lineWidth)
         {
-
+            this.lineWidth = lineWidth;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writeint(lineWidth, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static w_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-            => Value;
+        {
+            var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
+    
+            return new w_Op(a0);
+        }
     }
     public partial class W_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'W' };
         public PdfOperatorType Type => PdfOperatorType.W;
         public static W_Op Value = new W_Op();
         public W_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static W_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class W_Star_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'W', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.W_Star;
         public static W_Star_Op Value = new W_Star_Op();
         public W_Star_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static W_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
     public partial class y_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) 'y' };
         public PdfOperatorType Type => PdfOperatorType.y;
         public decimal x1 { get; set; }
         public decimal y1 { get; set; }
@@ -1154,6 +1615,20 @@ namespace PdfLexer.Operators
             this.x3 = x3;
             this.y3 = y3;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x1, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y1, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(x3, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y3, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static y_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
@@ -1166,12 +1641,21 @@ namespace PdfLexer.Operators
     }
     public partial class singlequote_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) '\'' };
         public PdfOperatorType Type => PdfOperatorType.singlequote;
         public PdfString text { get; set; }
         public singlequote_Op(PdfString text)
         {
             this.text = text;
         }
+
+        public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfString(text, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         public static singlequote_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParsePdfString(ctx, data, operands[0]);
@@ -1181,13 +1665,17 @@ namespace PdfLexer.Operators
     }
     public partial class doublequote_Op : IPdfOperation
     {
+        public static byte[] OpData = new byte[] { (byte) '"' };
         public PdfOperatorType Type => PdfOperatorType.doublequote;
         public static doublequote_Op Value = new doublequote_Op();
         public doublequote_Op()
         {
 
         }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
         public static doublequote_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
+
     }
 }

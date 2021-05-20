@@ -4,25 +4,25 @@ using System.IO;
 
 namespace PdfLexer.Serializers
 {
-    public class ArraySerializer : ISerializer<PdfArray>
+    public class ArraySerializer //: ISerializer<PdfArray>
     {
-        private WritingContext _ctx;
+        private Serializers _serializers;
 
-        public ArraySerializer(WritingContext ctx)
+        public ArraySerializer(Serializers serializers)
         {
-            _ctx = ctx;
+            _serializers = serializers;
         }
         public int GetBytes(PdfArray obj, Span<byte> data)
         {
             throw new NotImplementedException();
         }
 
-        public void WriteToStream(PdfArray obj, Stream stream)
+        public void WriteToStream(PdfArray obj, Stream stream, Func<PdfIndirectRef,PdfIndirectRef> resolver)
         {
             stream.WriteByte((byte)'[');
             for (var i = 0;i<obj.Count;i++)
             {
-                _ctx.SerializeObject(obj[i]);
+                _serializers.SerializeObject(stream, obj[i], resolver);
                 if (i+1<obj.Count)
                 {
                     var nxt = obj[i+1];

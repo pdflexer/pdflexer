@@ -6,31 +6,31 @@ using System.Text;
 
 namespace PdfLexer.Serializers
 {
-    public class DictionarySerializer : ISerializer<PdfDictionary>
+    public class DictionarySerializer // : ISerializer<PdfDictionary>
     {
-        private WritingContext _ctx;
+        private Serializers _serializers;
 
-        public DictionarySerializer(WritingContext ctx)
+        public DictionarySerializer(Serializers serializers)
         {
-            _ctx = ctx;
+            _serializers = serializers;
         }
         public int GetBytes(PdfDictionary obj, Span<byte> data)
         {
             throw new NotImplementedException();
         }
 
-        public void WriteToStream(PdfDictionary obj, Stream stream)
+        public void WriteToStream(PdfDictionary obj, Stream stream, Func<PdfIndirectRef,PdfIndirectRef> resolver)
         {
             stream.WriteByte((byte)'<');
             stream.WriteByte((byte)'<');
             foreach (var item in obj)
             {
-                _ctx.SerializeObject(item.Key);
+                _serializers.SerializeObject(stream, item.Key, resolver);
                 if (item.Value.Type != PdfObjectType.NameObj && item.Value.Type != PdfObjectType.StringObj && item.Value.Type != PdfObjectType.ArrayObj && item.Value.Type != PdfObjectType.DictionaryObj)
                 {
                         stream.WriteByte((byte)' ');
                 }
-                _ctx.SerializeObject(item.Value);
+                _serializers.SerializeObject(stream, item.Value, resolver);
             }
             stream.WriteByte((byte)'>');
             stream.WriteByte((byte)'>');
