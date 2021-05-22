@@ -89,6 +89,31 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
     }
+
+    public partial class TJ_Op
+    {
+        public void Serialize(Stream stream)
+        {
+            stream.WriteByte((byte)'[');
+            foreach (var item in info)
+            {
+                if (item.Text != null) 
+                {
+                    PdfOperator.Shared.StringSerializer.WriteToStream(item.Text, stream);
+                } else
+                {
+                    PdfOperator.Writedecimal(item.Shift, stream);
+                }
+                stream.WriteByte((byte)' ');
+            }
+            stream.WriteByte((byte)']');
+            stream.Write(OpData);
+        }
+    }
     
-    
+    public class TJ_Item
+    {
+        public decimal Shift;
+        public PdfString Text;
+    }
 }

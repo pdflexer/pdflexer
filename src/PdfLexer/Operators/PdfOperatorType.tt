@@ -64,7 +64,7 @@
     ("TD", null, "Move text position and set leading", new List<(string, string)> { ("decimal", "tx"), ("decimal", "ty") }, false),
     ("Tf", null, "Set text font and size", new List<(string, string)>{ ("PdfName", "font"), ("decimal", "size") }, false),
     ("Tj", null, "Show text", new List<(string, string)> { ("PdfString", "text") }, false),
-    ("TJ", null, "Show text, allowing individual glyph positioning", new List<(string, string)> { ("PdfArray", "text") }, false),
+    ("TJ", null, "Show text, allowing individual glyph positioning", new List<(string, string)> { ("List<TJ_Item>", "info") }, true),
     ("TL", null, "Set text leading", new List<(string, string)>{ ("decimal", "leading") }, false),
     ("Tm", null, "Set text matrix and text line matrix", new List<(string, string)>{ ("decimal", "a"), ("decimal", "b"), ("decimal", "c"), ("decimal", "d"), ("decimal", "e"), ("decimal", "f")}, false),
     ("Tr", null, "Set text rendering mode", new List<(string, string)>{ ("int", "render") }, false),

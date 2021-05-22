@@ -26,6 +26,13 @@ namespace PdfLexer.Serializers
             stream.Write(buffer, 0, i);
         }
 
+        public void WriteToStream(PdfTextEncodingType encoding, PdfStringType type, string value, Stream stream)
+        {
+            var buffer = ArrayPool<byte>.Shared.Rent((value?.Length ?? 0) * 8 + 16); // overkill find better solution
+            var i = GetBytes(encoding, type, value, buffer);
+            stream.Write(buffer, 0, i);
+        }
+
         public int GetLiteralBytes(PdfString obj, Span<byte> data)
         {
             var ri = 0;
@@ -133,6 +140,40 @@ namespace PdfLexer.Serializers
             else
             {
                 var val = ConvertLiteralBytes(existing, data, obj.Encoding != PdfTextEncodingType.UTF16BE);
+                ArrayPool<byte>.Shared.Return(rented);
+                return val;
+            }
+        }
+
+        public int GetBytes(PdfTextEncodingType encoding, PdfStringType type, string value, Span<byte> data)
+        {
+            // TODO perf analysis
+            var rented = ArrayPool<byte>.Shared.Rent(data.Length); // todo clean up... don't need this much
+            Span<byte> existing = rented;
+            if (encoding == PdfTextEncodingType.UTF16BE)
+            {
+                existing[0] = 0xFE;
+                existing[1] = 0xFF;
+                var count = Encoding.BigEndianUnicode.GetBytes(value, existing.Slice(2));
+                existing = existing.Slice(0, count + 2);
+            }
+            else
+            {
+                // TODO real pdf doc encoding
+                // TODO encoding guessing / calculation
+                var count = Iso88591.GetBytes(value, existing);
+                existing = existing.Slice(0, count);
+            }
+
+            if (type == PdfStringType.Hex)
+            {
+                var val = ConvertHexBytes(existing, data);
+                ArrayPool<byte>.Shared.Return(rented);
+                return val;
+            }
+            else
+            {
+                var val = ConvertLiteralBytes(existing, data, encoding != PdfTextEncodingType.UTF16BE);
                 ArrayPool<byte>.Shared.Return(rented);
                 return val;
             }

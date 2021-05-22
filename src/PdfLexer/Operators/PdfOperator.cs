@@ -13,8 +13,8 @@ namespace PdfLexer.Operators
     {
         public PdfOperatorType Type => PdfOperatorType.Unknown;
 
-        public string op {get;}
-        public byte[] allData {get;}
+        public string op { get; }
+        public byte[] allData { get; }
         public Unkown_Op(string op, byte[] allData)
         {
             this.op = op;
@@ -30,9 +30,9 @@ namespace PdfLexer.Operators
     {
         public PdfOperatorType Type => PdfOperatorType.Unknown;
 
-        public string op {get;}
-        public PdfArray header {get;}
-        public byte[] allData {get;}
+        public string op { get; }
+        public PdfArray header { get; }
+        public byte[] allData { get; }
         public InlineImage_Op(PdfArray header, byte[] allData)
         {
             this.op = op;
@@ -43,9 +43,9 @@ namespace PdfLexer.Operators
         {
             stream.Write(BI_Op.OpData);
             stream.WriteByte((byte)'\n');
-            foreach(var item in header)
+            foreach (var item in header)
             {
-                PdfOperator.Shared.SerializeObject(stream, item, x=>x);
+                PdfOperator.Shared.SerializeObject(stream, item, x => x);
                 stream.WriteByte((byte)' ');
             }
             stream.Write(ID_Op.OpData);
@@ -60,7 +60,7 @@ namespace PdfLexer.Operators
         public static PdfOperatorType GetType(ReadOnlySpan<byte> data, int startAt, int length)
         {
             int key = 0;
-            var end = startAt+length;
+            var end = startAt + length;
             var pos = 1;
             CommonUtil.SkipWhiteSpace(data, ref startAt);
             for (int i = startAt; i < end; i++)
@@ -71,12 +71,12 @@ namespace PdfLexer.Operators
             return (PdfOperatorType)key;
         }
         public delegate IPdfOperation ParseOp(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands);
-        internal static IPdfOperation NotImplementedParseOp(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        internal static IPdfOperation NotImplementedParseOp(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
             throw new NotImplementedException();
         }
 
-        internal static IPdfOperation ParseBDC(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        internal static IPdfOperation ParseBDC(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
             if (operands.Count == 0)
             {
@@ -105,7 +105,7 @@ namespace PdfLexer.Operators
             return new BDC_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetKnownPdfItem((PdfObjectType)di.Type, data, di.StartAt, di.Length));
         }
 
-        internal static DP_Op ParseDP(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        internal static DP_Op ParseDP(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
             if (operands.Count == 0)
             {
@@ -129,7 +129,7 @@ namespace PdfLexer.Operators
             return new DP_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetKnownPdfItem((PdfObjectType)di.Type, data, di.StartAt, di.Length));
         }
 
-        internal static SC_Op ParseSC(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        internal static SC_Op ParseSC(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
             var colors = new List<decimal>();
             foreach (var val in operands)
@@ -139,7 +139,7 @@ namespace PdfLexer.Operators
             return new SC_Op(colors);
         }
 
-        internal static sc_Op Parsesc(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        internal static sc_Op Parsesc(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
             var colors = new List<decimal>();
             foreach (var val in operands)
@@ -149,16 +149,17 @@ namespace PdfLexer.Operators
             return new sc_Op(colors);
         }
 
-        internal static scn_Op Parsescn(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        internal static scn_Op Parsescn(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
             PdfName name = null;
             var colors = new List<decimal>();
-            for (var i=0; i<operands.Count;i++)
+            for (var i = 0; i < operands.Count; i++)
             {
                 if (i == operands.Count - 1 && operands[i].Type == PdfTokenType.NameObj)
                 {
                     name = ParsePdfName(ctx, data, operands[i]);
-                } else
+                }
+                else
                 {
                     colors.Add(ParseDecimal(ctx, data, operands[i]));
                 }
@@ -166,21 +167,47 @@ namespace PdfLexer.Operators
             return new scn_Op(colors, name);
         }
 
-        internal static SCN_Op ParseSCN(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        internal static SCN_Op ParseSCN(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
             PdfName name = null;
             var colors = new List<decimal>();
-            for (var i=0; i<operands.Count;i++)
+            for (var i = 0; i < operands.Count; i++)
             {
                 if (i == operands.Count - 1 && operands[i].Type == PdfTokenType.NameObj)
                 {
                     name = ParsePdfName(ctx, data, operands[i]);
-                } else
+                }
+                else
                 {
                     colors.Add(ParseDecimal(ctx, data, operands[i]));
                 }
             }
             return new SCN_Op(colors, name);
+        }
+
+        internal static TJ_Op ParseTJ(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
+        {
+            var items = new List<TJ_Item>(operands.Count - 2);
+            foreach (var op in operands)
+            {
+                if (op.Type == PdfTokenType.StringStart)
+                {
+                    items.Add(
+                        new TJ_Item
+                        {
+                            Text = ctx.StringParser.Parse(data.Slice(op.StartAt, op.Length))
+                        });
+                }
+                else if (op.Type == PdfTokenType.NumericObj || op.Type == PdfTokenType.DecimalObj)
+                {
+                    items.Add(
+                        new TJ_Item
+                        {
+                            Shift = ParseDecimal(ctx, data, op)
+                        });
+                }
+            }
+            return new TJ_Op(items);
         }
 
         public static decimal ParseDecimal(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
@@ -210,7 +237,7 @@ namespace PdfLexer.Operators
                 ctx.Error("Bad array found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
                 return new PdfArray();
             }
-            return (PdfArray) obj;
+            return (PdfArray)obj;
         }
 
         public static int Parseint(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
@@ -251,7 +278,7 @@ namespace PdfLexer.Operators
 
         public static void WritePdfArray(PdfArray val, Stream stream)
         {
-            Shared.ArraySerializer.WriteToStream(val, stream, x=>x);
+            Shared.ArraySerializer.WriteToStream(val, stream, x => x);
         }
 
         public static void WritePdfString(PdfString val, Stream stream)
@@ -262,7 +289,7 @@ namespace PdfLexer.Operators
 
     public interface IPdfOperation
     {
-        public PdfOperatorType Type {get;}
+        public PdfOperatorType Type { get; }
         public void Serialize(Stream stream);
     }
 

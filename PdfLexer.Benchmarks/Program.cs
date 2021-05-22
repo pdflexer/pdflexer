@@ -30,8 +30,13 @@ namespace PdfLexer.Benchmarks
             //var data = File.ReadAllBytes("C:\\temp\\PRIV\\Origrk.pdf");
             //var doc = await PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.FullEager });
             //var ms = new MemoryStream();
-            //for (var i = 0; i < 1000; i++)
-            //{
+            // var cs = new ContentStreamBenchmark();
+            // var total = 0;
+            // for (var i = 0; i < 100000; i++)
+            // {
+            //     total  += cs.PdfLexerSpan();
+            // }
+            // Console.WriteLine(total);
             //    ms.Position = 0;
             //    var ctx = new WritingContext(ms);
             //    ctx.Initialize(1.7m);

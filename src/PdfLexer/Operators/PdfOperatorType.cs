@@ -225,7 +225,7 @@ namespace PdfLexer.Operators
             [17492] =  TD_Op.Parse, 
             [26196] =  Tf_Op.Parse, 
             [27220] =  Tj_Op.Parse, 
-            [19028] =  TJ_Op.Parse, 
+            [19028] =  PdfOperator.ParseTJ, 
             [19540] =  TL_Op.Parse, 
             [27988] =  Tm_Op.Parse, 
             [29268] =  Tr_Op.Parse, 
@@ -1563,24 +1563,10 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'J' };
         public PdfOperatorType Type => PdfOperatorType.TJ;
-        public PdfArray text { get; set; }
-        public TJ_Op(PdfArray text)
+        public List<TJ_Item> info { get; set; }
+        public TJ_Op(List<TJ_Item> info)
         {
-            this.text = text;
-        }
-
-        public void Serialize(Stream stream) 
-        {
-            PdfOperator.WritePdfArray(text, stream);
-            stream.WriteByte((byte)' ');
-            stream.Write(OpData);
-        }
-
-        public static TJ_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-        {
-            var a0 = PdfOperator.ParsePdfArray(ctx, data, operands[0]);
-    
-            return new TJ_Op(a0);
+            this.info = info;
         }
     }
     public partial class TL_Op : IPdfOperation
