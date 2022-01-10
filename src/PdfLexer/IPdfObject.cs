@@ -38,6 +38,12 @@ namespace PdfLexer
             }
             return item;
         }
+        
+        public static PdfObjectType GetType(this IPdfObject item)
+        {
+            item = item.Resolve();
+            return item.Type;
+        }
 
         public static T GetValue<T>(this IPdfObject item) where T : IPdfObject
         {
