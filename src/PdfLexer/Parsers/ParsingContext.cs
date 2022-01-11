@@ -15,11 +15,15 @@ namespace PdfLexer.Parsers
     public class ParsingContext
     {
         internal int SourceId { get; set; }
+
+        // not yet set anywhere, just putting flow / checks in place
         internal bool IsEncrypted { get; set; } = false;
 
-        internal ulong CurrentIndirectObject { get; set; }
+        // tracked here to support lazy parsing
         internal long CurrentOffset { get; set; }
+        // tracked here to support lazy parsing
         internal IPdfDataSource CurrentSource { get; set; }
+
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
         internal Dictionary<ulong, IPdfObject> IndirectCache = new Dictionary<ulong, IPdfObject>();
         internal NumberCache NumberCache = new NumberCache();
@@ -215,7 +219,8 @@ namespace PdfLexer.Parsers
                 LoadObjectStream(value);
             }
 
-            CurrentIndirectObject = id;
+            // CurrentIndirectObject = id;
+
             var obj = value.GetObject();
             IndirectCache[id] = obj;
             return obj;
@@ -227,7 +232,24 @@ namespace PdfLexer.Parsers
             var data = stream.Contents.GetDecodedData(this);
             var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
             var start = stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
-            var source = new ObjectStreamDataSource(this, entry.ObjectStreamNumber, data, os, start);
+            var ctx = this;
+            if (IsEncrypted)
+            {
+                // create new ctx for object stream as it's contents won't be encrypted
+                // may be better way to handle this but should work for now
+                ctx = new ParsingContext(Options)
+                {
+                    MainDocSource = MainDocSource,
+                    CurrentSource = MainDocSource,
+                    IsEncrypted = false,
+                    Document = Document,
+                    CachedInts = CachedInts,
+                    NameCache = NameCache,
+                    NumberCache = NumberCache
+                };
+
+            }
+            var source = new ObjectStreamDataSource(ctx, entry.ObjectStreamNumber, data, os, start);
             foreach (var item in Document.XrefEntries.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
             {
                 item.Source = source;
@@ -300,6 +322,7 @@ namespace PdfLexer.Parsers
 
         internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
         {
+            // NOTE: this is on used during XRef Parsing -> no decryption support
             switch (type)
             {
                 // TODO ? switch parser to take positions for no slice if not needed?

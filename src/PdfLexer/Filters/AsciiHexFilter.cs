@@ -27,6 +27,8 @@ namespace PdfLexer.Filters
             var eof = false;
             var firstDigit = -1;
             int ch;
+
+            // TODO create real stream implementation
             var ms = new MemoryStream();
             while ((ch = stream.ReadByte()) != -1)
             {

@@ -73,6 +73,12 @@ namespace PdfLexer.Parsers
         {
             var length = ConvertBytes(input, output);
 
+            if (_ctx.IsEncrypted)
+            {
+                // DECRYPTION TODO
+                throw new NotImplementedException("Encryption not supported.");
+            }
+
             var encoding = PdfTextEncodingType.PdfDocument;
             if (length > 1 && output[0] == 0xFE && output[1] == 0xFF)
             {

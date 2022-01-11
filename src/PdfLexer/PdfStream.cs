@@ -199,7 +199,7 @@ namespace PdfLexer
     /// <summary>
     /// Contents of a Pdf stream.
     /// </summary>
-    public class PdfExistingStreamContents : PdfStreamContents
+    internal class PdfExistingStreamContents : PdfStreamContents
     {
         internal IPdfDataSource Source { get; }
         internal long Offset { get; }
@@ -217,10 +217,21 @@ namespace PdfLexer
         /// <param name="destination"></param>
         public override void CopyEncodedData(Stream destination)
         {
+            if (Source.Context.IsEncrypted)
+            {
+                throw new NotImplementedException("Encryption not implemented.");
+            }
             Source.CopyData(Offset, Length, destination);
         }
 
-        public override Stream GetEncodedData() => Source.GetDataAsStream(Offset, Length);
+        public override Stream GetEncodedData()
+        {
+            if (Source.Context.IsEncrypted)
+            {
+                throw new NotImplementedException("Encryption not implemented.");
+            }
+            return Source.GetDataAsStream(Offset, Length);
+        }
     }
 
     /// <summary>

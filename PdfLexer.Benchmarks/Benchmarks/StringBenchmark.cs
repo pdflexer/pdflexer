@@ -31,6 +31,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         private List<byte[]> samples = new List<byte[]>();
         private List<MemoryStream> mss = new List<MemoryStream>();
         private MemoryStream allMs;
+        private List<int> numbers = new List<int>();
         public StringBenchmark()
         {
             foreach (var item in data)
@@ -43,6 +44,15 @@ namespace PdfLexer.Benchmarks.Benchmarks
             }
             var all = string.Join("", data);
             allMs = new MemoryStream(Encoding.ASCII.GetBytes(all));
+            var rnd = new Random();
+            for (var i = 0; i<1000;i++)
+            {
+                // 0-31 127-255
+                var n = rnd.Next(161);
+                if (n > 31) { n += 95; }
+                numbers.Add(n);
+            }
+
         }
         private StringParser parser = new StringParser(new ParsingContext());
         private List<PdfString> results = new List<PdfString>(10);
@@ -53,7 +63,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             (byte) '(', (byte) ')', (byte) '\\'
         };
 
-        [Benchmark(Baseline = true)]
+        //[Benchmark(Baseline = true)]
         public List<PdfString> SpanString()
         {
             results.Clear();
@@ -64,7 +74,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return results;
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public List<PdfString> JustUtf()
         {
             results.Clear();
@@ -87,7 +97,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return results;
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public int ScanOverData()
         {
             var count = 0;
@@ -105,7 +115,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return count;
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public int SkipOverData()
         {
             var count = 0;
@@ -150,6 +160,38 @@ namespace PdfLexer.Benchmarks.Benchmarks
             }
             return results;
         }
+
+
+        [Benchmark(Baseline = true)]
+        public void CalcBytes()
+        {
+            var data = new int[numbers.Count*4];
+            var ri = 0;
+            foreach (var c in numbers) {
+                    var b3 = c / 64;
+                    var b2 = (c - b3 * 64) / 8;
+                    var b1 = c % 8;
+                    data[ri++] = (byte)'\\';
+                    data[ri++] = (byte)(b3 + '0');
+                    data[ri++] = (byte)(b2 + '0');
+                    data[ri++] = (byte)(b1 + '0');
+            }
+        }
+
+        [Benchmark()]
+        public void CalcBitShift()
+        {
+            var ZeroChar = (byte)'0';
+            var data = new int[numbers.Count*4];
+            var ri = 0;
+            foreach (var c in numbers) {
+                data[ri++] = (byte)'\\';
+                data[ri++] = (byte)((c >> 6) | ZeroChar); // = (c / 64) + 48
+                data[ri++] = ((byte)(((c >> 3) & 0b_0000_0111) | ZeroChar)); // = (c / 8) % 8 + 48
+                data[ri++] = ((byte)((c & 0b_0000_0111) | ZeroChar)); // = (c % 8) + 48
+            }
+        }
+
         // LEGACY
         // [Benchmark()]
         // public List<PdfString> PipeReaderMs()

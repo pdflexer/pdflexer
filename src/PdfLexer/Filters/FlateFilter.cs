@@ -75,6 +75,8 @@ namespace PdfLexer.Filters
          */
         internal Stream PngDecode(Stream stream, int bpc, int colors, int columns)
         {
+
+            // TODO create real stream implementation
             var ms = ParsingContext.StreamManager.GetStream();
             var pixBytes = (colors * bpc + 7) >> 3;
             var rowBytes = (columns * colors * bpc + 7) >> 3;

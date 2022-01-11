@@ -29,6 +29,7 @@ namespace PdfLexer.Filters
             var Z_LOWER_CHAR = 0x7a; // 'z'
             var EOF = -1;
 
+            // TODO create real stream implementation
             var ms = new MemoryStream();
             int i;
             while ((i = stream.ReadByte()) != -1)

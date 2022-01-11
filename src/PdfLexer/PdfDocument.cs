@@ -67,6 +67,13 @@ namespace PdfLexer
             // context disposing -> currently in memory only
         }
 
+        public byte[] Save()
+        {
+            using var ms = new MemoryStream();
+            SaveTo(ms);
+            return ms.ToArray();
+        }
+
         /// <summary>
         /// Saves the document to the provided stream.
         /// </summary>

@@ -1,10 +1,8 @@
 using System;
 using System.Buffers;
 using System.IO;
-using System.IO.Pipelines;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using Xunit;
@@ -141,6 +139,22 @@ namespace PdfLexer.Tests
             var ms = new MemoryStream();
             serializer.WriteToStream(result, ms);
             var output = ms.ToArray();
+            Assert.True(data.SequenceEqual(output));
+        }
+
+        [Fact]
+        public void It_Parses_And_Serializes_Raw_Bytes()
+        {
+            var root = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var data = File.ReadAllBytes(Path.Combine(root, "raw-byte-string.txt"));
+            var parser = new StringParser(new ParsingContext());
+            var result = parser.Parse(data);
+            Assert.Equal(PdfStringType.Literal, result.StringType);
+            var serializer = new StringSerializer();
+            var ms = new MemoryStream();
+            serializer.WriteToStream(result, ms);
+            var output = ms.ToArray();
+            File.WriteAllBytes(Path.Combine(root, "raw-byte-string-out.txt"), output);
             Assert.True(data.SequenceEqual(output));
         }
     }

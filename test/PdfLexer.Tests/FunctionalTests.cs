@@ -90,6 +90,43 @@ namespace PdfLexer.Tests
             }
         }
 
+        //[Fact]
+        public void Manual_Test()
+        {
+            using var doc = PdfDocument.Open(File.ReadAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111.pdf"));
+            using var doc2 = PdfDocument.Create();
+            var pg = doc.Pages[0];
+            using var doc3 = PdfDocument.Create();
+            doc3.Pages.Add(pg);
+            var str = pg.Dictionary.GetRequiredValue<PdfStream>(PdfName.Contents);
+            var copy = pg.Dictionary.CloneShallow();
+            pg.Dictionary.Remove(new PdfName("Annots"));
+            var decoded = str.Contents.GetDecodedData(doc.Context);
+            var strCopy = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(decoded));
+            copy[PdfName.Contents] = PdfIndirectRef.Create(strCopy);
+            doc2.Pages.Add(copy);
+            File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-flat.pdf", doc2.Save());
+            
+            File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-cp2.pdf", doc3.Save());
+            doc.Trailer.Remove(new PdfName("/ID"));
+            doc.Trailer.Remove(new PdfName("/Info"));
+            var res = doc.Pages[0].Dictionary.GetRequiredValue<PdfDictionary>(PdfName.Resources);
+            var fonts = res.GetRequiredValue<PdfDictionary>("/Font");
+            res["/Font"] = new PdfDictionary {
+                ["/wspe_F1"] = fonts["/wspe_F1"],
+                // ["/wspe_F2"] = fonts["/wspe_F2"],
+                // ["/wspe_F3"] = fonts["/wspe_F3"],
+                ["/wspe_F4"] = fonts["/wspe_F4"],
+                };
+            // var empty = new DOM.PdfPage(new PdfDictionary());
+            // empty.Dictionary[PdfName.Contents] = 
+            //     PdfIndirectRef.Create(new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(new byte[]{ })));
+            // doc.Pages.Add(empty);
+            File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-cp3.pdf", doc.Save());
+            // File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-cp.pdf", doc.Save());
+            
+        }
+
         [Fact]
         public void It_Reads_All_Pdf_JS_Rebuild()
         {

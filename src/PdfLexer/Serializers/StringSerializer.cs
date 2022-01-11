@@ -33,6 +33,7 @@ namespace PdfLexer.Serializers
             stream.Write(buffer, 0, i);
         }
 
+        [Obsolete]
         public int GetLiteralBytes(PdfString obj, Span<byte> data)
         {
             var ri = 0;
@@ -53,15 +54,19 @@ namespace PdfLexer.Serializers
                     data[ri++] = (byte)'\\';
                     data[ri++] = (byte)escaped[ei];
                 }
-                else if (c < 32 || c > 127) // non printable
+                else if (c < 32 || c > 126) // non printable
                 {
-                    var b3 = c / 64;
-                    var b2 = (c - b3 * 64) / 8;
-                    var b1 = c % 8;
+                    // var b3 = c / 64;
+                    // var b2 = (c - b3 * 64) / 8;
+                    // var b1 = c % 8;
+                    // data[ri++] = (byte)'\\';
+                    // data[ri++] = (byte)(b3 + '0');
+                    // data[ri++] = (byte)(b2 + '0');
+                    // data[ri++] = (byte)(b1 + '0');
                     data[ri++] = (byte)'\\';
-                    data[ri++] = (byte)(b3 + '0');
-                    data[ri++] = (byte)(b2 + '0');
-                    data[ri++] = (byte)(b1 + '0');
+                    data[ri++] = (byte)((c >> 6) | '0'); // = (c / 64) + 48
+                    data[ri++] = (byte)(((c >> 3) & 0b_0000_0111) | '0'); // = (c / 8) % 8 + 48
+                    data[ri++] = (byte)((c & 0b_0000_0111) | '0'); // = (c % 8) + 48
 
                 }
                 else
@@ -92,15 +97,19 @@ namespace PdfLexer.Serializers
                     output[ri++] = (byte)'\\';
                     output[ri++] = (byte)escaped[ei];
                 }
-                else if (escapeNonPrintable && (b < 32 || b > 127)) // non printable
+                else if (escapeNonPrintable && (b < 32 || b > 126)) // non printable
                 {
-                    var b3 = b / 64;
-                    var b2 = (b - b3 * 64) / 8;
-                    var b1 = b % 8;
+                    // var b3 = b / 64;
+                    // var b2 = (b - b3 * 64) / 8;
+                    // var b1 = b % 8;
+                    // output[ri++] = (byte)'\\';
+                    // output[ri++] = (byte)(b3 + '0');
+                    // output[ri++] = (byte)(b2 + '0');
+                    // output[ri++] = (byte)(b1 + '0');
                     output[ri++] = (byte)'\\';
-                    output[ri++] = (byte)(b3 + '0');
-                    output[ri++] = (byte)(b2 + '0');
-                    output[ri++] = (byte)(b1 + '0');
+                    output[ri++] = (byte)((b >> 6) | '0'); // = (c / 64) + 48
+                    output[ri++] = (byte)(((b >> 3) & 0b_0000_0111) | '0'); // = (c / 8) % 8 + 48
+                    output[ri++] = (byte)((b & 0b_0000_0111) | '0'); // = (c % 8) + 48
                 }
                 else
                 {
