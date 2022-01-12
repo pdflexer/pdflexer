@@ -22,7 +22,6 @@ namespace PdfLexer.IO
         /// <param name="buffer">Filled buffer of at least required bytes size.</param>
         void GetData(long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer);
         Stream GetDataAsStream(long startPosition, int desiredBytes);
-
         /// <summary>
         /// If the data source supports cloning for concurrent processing.
         /// </summary>
@@ -35,7 +34,6 @@ namespace PdfLexer.IO
         IPdfDataSource Clone();
         /// <summary>
         /// Gets a readable stream.
-        /// Reader MUST NOT dispose stream.
         /// </summary>
         /// <param name="startPosition">Position of stream in current data source</param>
         /// <returns>Stream</returns>

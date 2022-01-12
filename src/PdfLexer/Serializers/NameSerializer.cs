@@ -41,9 +41,12 @@ namespace PdfLexer.Serializers
                 return Iso88591.GetBytes(chars.Slice(0, count), data);
             } else
             {
-                Span<char> buffer = ArrayPool<char>.Shared.Rent(data.Length);
+                var array = ArrayPool<char>.Shared.Rent(data.Length);
+                Span<char> buffer = array;
                 var count = ReplaceChars(obj, buffer);
-                return Iso88591.GetBytes(buffer.Slice(0, count), data);
+                var result = Iso88591.GetBytes(buffer.Slice(0, count), data);
+                ArrayPool<char>.Shared.Return(array);
+                return result;
             }
         }
 

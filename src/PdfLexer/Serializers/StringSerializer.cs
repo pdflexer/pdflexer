@@ -24,6 +24,7 @@ namespace PdfLexer.Serializers
             var buffer = ArrayPool<byte>.Shared.Rent((obj.Value?.Length ?? 0) * 8 + 16); // overkill find better solution
             var i = GetBytes(obj, buffer);
             stream.Write(buffer, 0, i);
+            ArrayPool<byte>.Shared.Return(buffer);
         }
 
         public void WriteToStream(PdfTextEncodingType encoding, PdfStringType type, string value, Stream stream)
@@ -31,6 +32,7 @@ namespace PdfLexer.Serializers
             var buffer = ArrayPool<byte>.Shared.Rent((value?.Length ?? 0) * 8 + 16); // overkill find better solution
             var i = GetBytes(encoding, type, value, buffer);
             stream.Write(buffer, 0, i);
+            ArrayPool<byte>.Shared.Return(buffer);
         }
 
         [Obsolete]

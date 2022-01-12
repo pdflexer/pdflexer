@@ -72,7 +72,7 @@ namespace PdfLexer.IO
             var start = (int)startPosition;
             if (requiredBytes > _data.Length - start)
             {
-                throw new ApplicationException();
+                throw new ApplicationException("More data requested from data source than available.");
             }
             stream.Write(_data, (int)startPosition, requiredBytes);
         }

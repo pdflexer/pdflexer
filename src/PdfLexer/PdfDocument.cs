@@ -173,6 +173,23 @@ namespace PdfLexer
             return doc;
         }
 
+
+        /// <summary>
+        /// Opens a PDF document from the provided seekable strea.
+        /// TODO turn this into sync code.
+        /// </summary>
+        /// <param name="data">PDF data</param>
+        /// <param name="options">Optional parsing options</param>
+        /// <returns>PdfDocument</returns>
+        public static PdfDocument Open(Stream data, ParsingOptions options = null)
+        {
+            var ctx = new ParsingContext(options);
+
+            var source = new StreamDataSource(ctx, data);
+            var result = ctx.Initialize(source);
+            return Open(ctx, result.XRefs, result.Trailer);
+        }
+
         /// <summary>
         /// Opens a PDF document from the provided byte array.
         /// TODO turn this into sync code.
@@ -186,11 +203,14 @@ namespace PdfLexer
 
             var source = new InMemoryDataSource(ctx, data);
             var result = ctx.Initialize(source);
+            return Open(ctx, result.XRefs, result.Trailer);
+        }
 
-
-            var doc = new PdfDocument(ctx, result.Item2, result.Item1);
+        private static PdfDocument Open(ParsingContext ctx, Dictionary<ulong, XRefEntry> xrefs, PdfDictionary trailer)
+        {
+            var doc = new PdfDocument(ctx, trailer, xrefs);
             // TODO: clean the existing ref ID up
-            foreach (var item in result.Item2.Values)
+            foreach (var item in trailer.Values)
             {
                 if (item.Type == PdfObjectType.IndirectRefObj)
                 {
@@ -240,6 +260,8 @@ namespace PdfLexer
 
             return doc;
         }
+
+
 
         private static int docId = 0;
         internal static int GetNextId() => Interlocked.Increment(ref docId);

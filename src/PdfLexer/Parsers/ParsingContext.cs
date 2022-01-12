@@ -65,7 +65,7 @@ namespace PdfLexer.Parsers
             AsciiHexDecoder = new AsciiHexFilter();
         }
 
-        public (Dictionary<ulong, XRefEntry>, PdfDictionary) Initialize(IPdfDataSource pdf)
+        public (Dictionary<ulong, XRefEntry> XRefs, PdfDictionary Trailer) Initialize(IPdfDataSource pdf)
         {
             MainDocSource = pdf;
             CurrentSource = MainDocSource;

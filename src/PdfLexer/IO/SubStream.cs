@@ -11,7 +11,10 @@ namespace PdfLexer.IO
         private Stream baseStream;
         private readonly long length;
         private long position;
-        public SubStream(Stream baseStream, long offset, long length)
+        private long subOffset;
+        private bool disposeMain;
+
+        public SubStream(Stream baseStream, long offset, long length, bool disposeMain)
         {
             if (baseStream == null) throw new ArgumentNullException("baseStream");
             if (!baseStream.CanRead) throw new ArgumentException("can't read base stream");
@@ -19,21 +22,26 @@ namespace PdfLexer.IO
 
             this.baseStream = baseStream;
             this.length = length;
+            this.disposeMain = disposeMain;
+            this.subOffset = offset;
 
             if (baseStream.CanSeek)
             {
-                baseStream.Seek(offset, SeekOrigin.Current);
+                baseStream.Seek(offset, SeekOrigin.Begin);
+            } else
+            {
+                throw new NotImplementedException("substream on unseekable");
             }
-            else
-            { // read it manually...
-                const int BUFFER_SIZE = 512;
-                byte[] buffer = new byte[BUFFER_SIZE];
-                while (offset > 0)
-                {
-                    int read = baseStream.Read(buffer, 0, offset < BUFFER_SIZE ? (int)offset : BUFFER_SIZE);
-                    offset -= read;
-                }
-            }
+            // else
+            // { // read it manually...
+            //     const int BUFFER_SIZE = 512;
+            //     byte[] buffer = new byte[BUFFER_SIZE];
+            //     while (offset > 0)
+            //     {
+            //         int read = baseStream.Read(buffer, 0, offset < BUFFER_SIZE ? (int)offset : BUFFER_SIZE);
+            //         offset -= read;
+            //     }
+            // }
         }
         public override int Read(byte[] buffer, int offset, int count)
         {
@@ -63,7 +71,7 @@ namespace PdfLexer.IO
         }
         public override bool CanSeek
         {
-            get { CheckDisposed(); return false; }
+            get { CheckDisposed(); return baseStream.CanSeek; }
         }
         public override long Position
         {
@@ -76,7 +84,13 @@ namespace PdfLexer.IO
         }
         public override long Seek(long offset, SeekOrigin origin)
         {
-            throw new NotSupportedException();
+            if (origin == SeekOrigin.Begin)
+            {
+                offset += subOffset;
+            }
+            var result = baseStream.Seek(offset, origin);
+            return result - subOffset;
+            
         }
         public override void SetLength(long value)
         {
@@ -91,12 +105,12 @@ namespace PdfLexer.IO
             base.Dispose(disposing);
             if (disposing)
             {
-                if (baseStream != null)
+                if (baseStream != null && disposeMain)
                 {
                     try { baseStream.Dispose(); }
                     catch { }
-                    baseStream = null;
                 }
+                baseStream = null;
             }
         }
         public override void Write(byte[] buffer, int offset, int count)

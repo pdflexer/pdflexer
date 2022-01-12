@@ -90,6 +90,31 @@ namespace PdfLexer.Tests
             }
         }
 
+        [Fact]
+        public void It_Reads_All_Pdf_JS_Streamed()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var errors = new List<string>();
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                try
+                {
+                    using var fs = File.OpenRead(pdf);
+                    var doc = PdfDocument.Open(fs);
+                    EnumerateObjects(doc.Trailer, new HashSet<int>());
+                }
+                catch (Exception e)
+                {
+                    errors.Add(pdf + ": " + e.Message);
+                }
+            }
+            if (errors.Any())
+            {
+                throw new ApplicationException(string.Join(Environment.NewLine, errors));
+            }
+        }
+
         //[Fact]
         public void Manual_Test()
         {
@@ -360,11 +385,13 @@ namespace PdfLexer.Tests
             byte[] d3 = null;
             byte[] d4 = null;
             byte[] d5 = null;
+            byte[] d6 = null;
             decimal hc = 0;
             decimal hc2 = 0;
             decimal hc3 = 0;
             decimal hc4 = 0;
             decimal hc5 = 0;
+            decimal hc6 = 0;
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 try
@@ -398,7 +425,7 @@ namespace PdfLexer.Tests
 
                     try
                     {
-                        // if pgpig can't read existin just ksip
+                        // if pgpig can't read existin just skip
                         hc = Util.GetDocumentHashCode(d1);
                     }
                     catch (Exception)
@@ -421,6 +448,22 @@ namespace PdfLexer.Tests
                         parseLog.WriteLine("Skipping encrypted.");
                         continue;
                     }
+
+                    bool skipStream = false;
+                    using var fs = File.OpenRead(pdf);
+                    
+                    try
+                    {
+                        PdfDocument streamedDoc = PdfDocument.Open(fs);
+                        using var sd = PdfDocument.Create();
+                        sd.Pages = streamedDoc.Pages;
+                        d6 = sd.Save();
+                    } catch (NotImplementedException)
+                    {
+                        // haven't done repairs yet
+                        skipStream = true;
+                    }
+
                     var ms = new MemoryStream();
                     doc.SaveTo(ms);
                     d2 = ms.ToArray();
@@ -449,16 +492,22 @@ namespace PdfLexer.Tests
                     Assert.Equal(hc, hc3);
                     Assert.Equal(hc, hc4);
                     Assert.Equal(hc, hc5);
+                    if (!skipStream)
+                    {
+                        hc6 = Util.GetDocumentHashCode(d6);
+                        Assert.Equal(hc, hc6);
+                    }
                 }
                 catch (Exception e)
                 {
-                    parseLog.WriteLine($"{hc} {hc2} {hc3} {hc4} {hc5}");
+                    parseLog.WriteLine($"{hc} {hc2} {hc3} {hc4} {hc5} {hc6}");
                     var bp = Path.Combine(results, Path.GetFileNameWithoutExtension(pdf));
                     File.WriteAllBytes(bp + "_input.pdf", d1 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_quicksave.pdf", d2 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_pagecopy.pdf", d3 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_rewrite.pdf", d4 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_cstreams.pdf", d5 ?? new byte[0]);
+                    File.WriteAllBytes(bp + "_fromStream.pdf", d6 ?? new byte[0]);
                     errors.Add(pdf + ": " + e.Message);
                 }
             }
@@ -603,7 +652,7 @@ namespace PdfLexer.Tests
             merged.SaveTo(ms);
             using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = true });
             EnumerateObjects(doc2.Trailer, new HashSet<int>());
-            File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
+            // File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
         }
 
 

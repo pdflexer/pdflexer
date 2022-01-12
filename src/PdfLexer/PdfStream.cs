@@ -149,7 +149,7 @@ namespace PdfLexer
             var source = GetEncodedData();
             if (source.Length != Length)
             {
-                source = new SubStream(source, 0, Length);
+                source = new SubStream(source, 0, Length, true);
             }
 
             // TODO figure out which streams to dispose, look into usage of the pooled one
