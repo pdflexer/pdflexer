@@ -80,7 +80,11 @@ namespace PdfLexer
         public static PdfName ObjStm => new PdfName("/ObjStm", false);
         public static PdfName Encrypt => new PdfName("/Encrypt", false);
         public static PdfName Size => new PdfName("/Size", false);
-        
+        public static PdfName Annots => new PdfName("/Annots", false);
+        public static PdfName Subtype => new PdfName("/Subtype", false);
+        public static PdfName Link => new PdfName("/Link", false);
+        public static PdfName Dest => new PdfName("/Dest", false);
+
         public static implicit operator PdfName(string name)
         {
             // TODO common lookups for above?

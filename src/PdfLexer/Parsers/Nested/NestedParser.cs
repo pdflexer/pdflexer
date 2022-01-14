@@ -33,7 +33,13 @@ namespace PdfLexer.Parsers.Nested
                         startAt += currentLength;
                         continue;
                     case PdfTokenType.StringStart:
-                        CurrentState.Bag.Add(_ctx.StringParser.Parse(buffer, startAt, currentLength));
+                        if (!_ctx.Options.LazyStrings)
+                        {
+                            CurrentState.Bag.Add(_ctx.StringParser.Parse(buffer, startAt, currentLength));
+                        } else
+                        {
+                            AddLazyValue(startAt, startAt, PdfTokenType.StringStart, false);
+                        }
                         startAt += currentLength;
                         break;
                     case PdfTokenType.DictionaryStart:

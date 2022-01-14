@@ -124,9 +124,11 @@ namespace PdfLexer
             var dict = new PdfDictionary();
             var arr = new PdfArray();
             var ir = PdfIndirectRef.Create(dict);
+            var pageDicts = Pages.Select(x => x.Dictionary).ToList();
             foreach (var page in Pages)
             {
                 var pg = page.Dictionary.CloneShallow();
+                RemovedUnusedLinks(pg, pageDicts);
                 pg[PdfName.Parent] = ir;
                 arr.Add(PdfIndirectRef.Create(pg));
             }
@@ -134,6 +136,58 @@ namespace PdfLexer
             dict[PdfName.TypeName] = PdfName.Pages;
             dict[PdfName.Count] = new PdfIntNumber(Pages.Count);
             return PdfIndirectRef.Create(dict);
+        }
+
+        private void RemovedUnusedLinks(PdfDictionary page, List<PdfDictionary> pages)
+        {
+            if (!page.TryGetValue<PdfArray>(PdfName.Annots, out var data, false))
+            {
+                return;
+            }
+            List<IPdfObject> toRemove = null;
+            foreach (var annot in data)
+            {
+                if (annot is PdfDictionary annotDict)
+                {
+                    if (!annotDict.TryGetValue<PdfName>(PdfName.Subtype, out var val, false) || val != PdfName.Link)
+                    {
+                        continue;
+                    }
+
+                    if (!annotDict.TryGetValue(PdfName.Dest, out var dest))
+                    {
+                        continue;
+                    }
+
+                    bool remove = false;
+                    if (dest is PdfName named)
+                    {
+                        // TODO check if exists -> just remove for now
+                        remove = true;
+                    } else if (dest is PdfString stringed)
+                    {
+                        remove = true;
+                    } else if (dest is PdfArray array && array.Count > 0 && array[0] is PdfIndirectRef xref)
+                    {
+                        var destPage = xref.GetObject() as PdfDictionary;
+                        if (destPage == null || !pages.Contains(destPage))
+                        {
+                            remove = true;
+                        }
+                    }
+                    if (remove)
+                    {
+                        toRemove ??= new List<IPdfObject>();
+                        toRemove.Add(annot);
+                    }
+                }
+            }
+            if (toRemove != null)
+            {
+                data = data.CloneShallow();
+                toRemove.ForEach(x => data.Remove(x));
+                page[PdfName.Annots] = data;
+            }
         }
 
         private void SaveExistingObjects(WritingContext ctx)

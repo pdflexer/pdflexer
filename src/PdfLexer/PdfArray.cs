@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace PdfLexer
@@ -110,6 +111,16 @@ namespace PdfLexer
                 ArrayModified = true;
                 internalList[index] = value;
             }
+        }
+
+
+        /// <summary>
+        /// Creates a new dictionary with the same contents.
+        /// </summary>
+        /// <returns></returns>
+        public PdfArray CloneShallow()
+        {
+            return new PdfArray(internalList.ToList());
         }
     }
 }

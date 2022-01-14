@@ -107,5 +107,22 @@ namespace PdfLexer.Benchmarks.Benchmarks
             }
             return results;
         }
+
+        [Benchmark()]
+        public List<byte[]> SplitPdfLexerLazyStrings()
+        {
+            var results = new List<byte[]>();
+            foreach (var pdf in pdfs)
+            {
+                var doc = PdfDocument.Open(pdf, new ParsingOptions() { LazyStrings = true });
+                for (var i = 0; i < doc.Pages.Count; i++)
+                {
+                    var output = PdfDocument.Create();
+                    output.Pages.Add(doc.Pages[i]);
+                    results.Add(output.Save());
+                }
+            }
+            return results;
+        }
     }
 }
