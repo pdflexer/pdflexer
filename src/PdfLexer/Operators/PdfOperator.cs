@@ -269,7 +269,7 @@ namespace PdfLexer.Operators
             stream.Write(buffer.Slice(0, bytes));
         }
 
-        internal static Serializers.Serializers Shared => new Serializers.Serializers();
+        internal static Serializers.Serializers Shared { get; } = new Serializers.Serializers();
 
         public static void WritePdfName(PdfName val, Stream stream)
         {

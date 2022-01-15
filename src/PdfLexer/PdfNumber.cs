@@ -67,17 +67,17 @@ namespace PdfLexer
 
     public static class PdfCommonNumbers
     {
-        public static PdfIntNumber Zero => new PdfIntNumber(0);
-        public static PdfIntNumber One => new PdfIntNumber(1);
-        public static PdfIntNumber Two => new PdfIntNumber(2);
-        public static PdfIntNumber Three => new PdfIntNumber(3);
-        public static PdfIntNumber Four => new PdfIntNumber(4);
-        public static PdfIntNumber Five => new PdfIntNumber(5);
-        public static PdfIntNumber Six => new PdfIntNumber(6);
-        public static PdfIntNumber Seven => new PdfIntNumber(7);
-        public static PdfIntNumber Eight => new PdfIntNumber(8);
-        public static PdfIntNumber Nine => new PdfIntNumber(9);
-        public static PdfIntNumber MinusOne => new PdfIntNumber(-1);
+        public static readonly PdfIntNumber Zero = new PdfIntNumber(0);
+        public static readonly PdfIntNumber One = new PdfIntNumber(1);
+        public static readonly PdfIntNumber Two = new PdfIntNumber(2);
+        public static readonly PdfIntNumber Three = new PdfIntNumber(3);
+        public static readonly PdfIntNumber Four = new PdfIntNumber(4);
+        public static readonly PdfIntNumber Five = new PdfIntNumber(5);
+        public static readonly PdfIntNumber Six = new PdfIntNumber(6);
+        public static readonly PdfIntNumber Seven = new PdfIntNumber(7);
+        public static readonly PdfIntNumber Eight = new PdfIntNumber(8);
+        public static readonly PdfIntNumber Nine = new PdfIntNumber(9);
+        public static readonly PdfIntNumber MinusOne = new PdfIntNumber(-1);
     }
 
     /// <summary>

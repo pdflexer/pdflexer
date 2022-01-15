@@ -150,7 +150,7 @@ namespace PdfLexer
     // this is just used to simplify parsing dictionary and arrays
     internal class IndirectRefToken : IPdfObject
     {
-        public static IndirectRefToken Value => new IndirectRefToken();
+        public static IndirectRefToken Value { get; } = new IndirectRefToken();
         public bool IsIndirect => throw new NotImplementedException();
         public PdfObjectType Type => throw new NotImplementedException();
         public bool IsLazy => throw new NotImplementedException();
