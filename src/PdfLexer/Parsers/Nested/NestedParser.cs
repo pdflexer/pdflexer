@@ -7,8 +7,13 @@ namespace PdfLexer.Parsers.Nested
 {
     internal class NestedParser
     {
-        private List<ObjParseState> StateStack = new List<ObjParseState>(10);
         private ObjParseState CurrentState = default;
+        private List<ObjParseState> StateStack = new List<ObjParseState>(10);
+
+        // TODO re-use bags
+        // private List<List<IPdfObject>> Bags = new List<List<IPdfObject>>(10);
+        // private List<IPdfObject> CurrentBag = default;
+        
         private readonly ParsingContext _ctx;
         public NestedParser(ParsingContext ctx)
         {
@@ -66,16 +71,14 @@ namespace PdfLexer.Parsers.Nested
                                     StateStack.Add(CurrentState);
                                     CurrentState = default;
                                     CurrentState.State = ParseState.ReadDict;
-                                    CurrentState.Dict = new PdfDictionary();
-                                    CurrentState.Bag ??= new List<IPdfObject>();
+                                    CurrentState.Bag ??= new List<IPdfObject>(10);
                                     CurrentState.Bag.Clear();
                                     startAt += currentLength;
                                     continue;
                             }
                         }
                         CurrentState.State = ParseState.ReadDict;
-                        CurrentState.Dict = new PdfDictionary();
-                        CurrentState.Bag ??= new List<IPdfObject>();
+                        CurrentState.Bag ??= new List<IPdfObject>(10);
                         CurrentState.Bag.Clear();
                         startAt += currentLength;
                         continue;
@@ -103,16 +106,14 @@ namespace PdfLexer.Parsers.Nested
                                     StateStack.Add(CurrentState);
                                     CurrentState = default;
                                     CurrentState.State = ParseState.ReadArray;
-                                    CurrentState.Array = new PdfArray();
-                                    CurrentState.Bag ??= new List<IPdfObject>();
+                                    CurrentState.Bag ??= new List<IPdfObject>(10);
                                     CurrentState.Bag.Clear();
                                     startAt += currentLength;
                                     continue;
                             }
                         }
-                        CurrentState.Array = new PdfArray();
                         CurrentState.State = ParseState.ReadArray;
-                        CurrentState.Bag ??= new List<IPdfObject>();
+                        CurrentState.Bag ??= new List<IPdfObject>(10);
                         CurrentState.Bag.Clear();
                         startAt += currentLength;
                         continue;

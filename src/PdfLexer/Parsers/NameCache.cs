@@ -4,9 +4,9 @@ using System.Text;
 
 namespace PdfLexer.Parsers
 {
-    public class NameCache
+    internal class NameCache
     {
-        private Dictionary<ulong, PdfName> Cache = new Dictionary<ulong, PdfName>();
+        internal Dictionary<ulong, PdfName> Cache = new Dictionary<ulong, PdfName>();
         public NameCache()
         {
                 

@@ -50,6 +50,16 @@ namespace PdfLexer
             return Value.GetHashCode();
         }
 
+        public static bool operator ==(PdfName n1, PdfName n2)
+        {
+            if (ReferenceEquals(n1, n2)) { return true; }
+            if (ReferenceEquals(n1, null)) { return false; }
+            if (ReferenceEquals(n2, null)) { return false; }
+            return n1.Equals(n2);
+        }
+
+        public static bool operator !=(PdfName n1, PdfName n2) => !(n1 == n2);
+
         public static readonly PdfName Prev = new PdfName("/Prev", false);
         public static readonly PdfName Length = new PdfName("/Length", false);
         public static readonly PdfName Root = new PdfName("/Root", false);

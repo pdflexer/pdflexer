@@ -83,7 +83,7 @@ namespace PdfLexer
     /// <summary>
     /// Pdf number object represented by a c# int.
     /// </summary>
-    public class PdfIntNumber : PdfNumber
+    public class PdfIntNumber : PdfNumber, IEquatable<PdfIntNumber>
     {
         /// <summary>
         /// Value of pdf object.
@@ -95,12 +95,37 @@ namespace PdfLexer
         }
 
         public override PdfNumberType NumberType => PdfNumberType.Integer;
+
+        public override bool Equals(object obj)
+        {
+            return obj is PdfIntNumber num && Value.Equals(num?.Value);
+        }
+
+        public virtual bool Equals(PdfIntNumber other)
+        {
+            return Value.Equals(other?.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public static bool operator ==(PdfIntNumber n1, PdfIntNumber n2)
+        {
+            if (ReferenceEquals(n1, n2)) { return true; }
+            if (ReferenceEquals(n1, null)) { return false; }
+            if (ReferenceEquals(n2, null)) { return false; }
+            return n1.Equals(n2);
+        }
+
+        public static bool operator !=(PdfIntNumber n1, PdfIntNumber n2) => !(n1 == n2);
     }
 
     /// <summary>
     /// Pdf number object represented by a c# long
     /// </summary>
-    public class PdfLongNumber : PdfNumber
+    public class PdfLongNumber : PdfNumber, IEquatable<PdfLongNumber>
     {
         /// <summary>
         /// Value of pdf object.
@@ -112,12 +137,36 @@ namespace PdfLexer
         }
 
         public override PdfNumberType NumberType => PdfNumberType.Long;
+        public override bool Equals(object obj)
+        {
+            return obj is PdfLongNumber num && Value.Equals(num?.Value);
+        }
+
+        public virtual bool Equals(PdfLongNumber other)
+        {
+            return Value.Equals(other?.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public static bool operator ==(PdfLongNumber n1, PdfLongNumber n2)
+        {
+            if (ReferenceEquals(n1, n2)) { return true; }
+            if (ReferenceEquals(n1, null)) { return false; }
+            if (ReferenceEquals(n2, null)) { return false; }
+            return n1.Equals(n2);
+        }
+
+        public static bool operator !=(PdfLongNumber n1, PdfLongNumber n2) => !(n1 == n2);
     }
 
     /// <summary>
     /// Pdf number object represented by a c# double
     /// </summary>
-    public class PdfDoubleNumber : PdfNumber
+    public class PdfDoubleNumber : PdfNumber, IEquatable<PdfDoubleNumber>
     {
         /// <summary>
         /// Value of pdf object.
@@ -129,12 +178,36 @@ namespace PdfLexer
         }
 
         public override PdfNumberType NumberType => PdfNumberType.Double;
+        public override bool Equals(object obj)
+        {
+            return obj is PdfLongNumber num && Value.Equals(num?.Value);
+        }
+
+        public virtual bool Equals(PdfDoubleNumber other)
+        {
+            return Value.Equals(other?.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public static bool operator ==(PdfDoubleNumber n1, PdfDoubleNumber n2)
+        {
+            if (ReferenceEquals(n1, n2)) { return true; }
+            if (ReferenceEquals(n1, null)) { return false; }
+            if (ReferenceEquals(n2, null)) { return false; }
+            return n1.Equals(n2);
+        }
+
+        public static bool operator !=(PdfDoubleNumber n1, PdfDoubleNumber n2) => !(n1 == n2);
     }
 
     /// <summary>
     /// Pdf number object represented by a c# decimal
     /// </summary>
-    public class PdfDecimalNumber : PdfNumber
+    public class PdfDecimalNumber : PdfNumber, IEquatable<PdfDecimalNumber>
     {
         /// <summary>
         /// Value of pdf object.
@@ -146,5 +219,30 @@ namespace PdfLexer
         }
 
         public override PdfNumberType NumberType => PdfNumberType.Decimal;
+
+        public override bool Equals(object obj)
+        {
+            return obj is PdfLongNumber num && Value.Equals(num?.Value);
+        }
+
+        public virtual bool Equals(PdfDecimalNumber other)
+        {
+            return Value.Equals(other?.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public static bool operator ==(PdfDecimalNumber n1, PdfDecimalNumber n2)
+        {
+            if (ReferenceEquals(n1, n2)) { return true; }
+            if (ReferenceEquals(n1, null)) { return false; }
+            if (ReferenceEquals(n2, null)) { return false; }
+            return n1.Equals(n2);
+        }
+
+        public static bool operator !=(PdfDecimalNumber n1, PdfDecimalNumber n2) => !(n1 == n2);
     }
 }

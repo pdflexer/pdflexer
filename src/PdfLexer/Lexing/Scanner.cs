@@ -46,7 +46,7 @@ namespace PdfLexer.Lexing
             if (type != CurrentTokenType)
             {
                 var info = CommonUtil.GetDataErrorInfo(Data, Position);
-                throw new PdfTokenMismatchException($"Mismatched token, found {CurrentTokenType}, expected {type}: " + info);
+                throw new PdfLexerTokenMismatchException($"Mismatched token, found {CurrentTokenType}, expected {type}: " + info);
             }
             Position += CurrentLength;
             CurrentTokenType = PdfTokenType.TBD;

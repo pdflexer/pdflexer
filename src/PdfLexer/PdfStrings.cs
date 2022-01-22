@@ -4,36 +4,11 @@ using System.Text;
 
 namespace PdfLexer
 {
-
-    // public class PdfByteString : PdfObject
-    // {
-    //     public PdfStringType StringType {get; set; }
-    //     // TODO support lazy writing
-    //     public PdfByteString(string value)
-    //     {
-    //         Value = value;
-    //     }
-    //     public string Value { get; }
-    //     public override PdfObjectType Type => PdfObjectType.StringObj;
-    // }
-    // 
-    // public class PdfAsciiString : PdfObject
-    // {
-    //     public PdfStringType StringType {get; set; }
-    //     // TODO support lazy writing
-    //     public PdfAsciiString(string value)
-    //     {
-    //         Value = value;
-    //     }
-    //     public string Value { get; }
-    //     public override PdfObjectType Type => PdfObjectType.StringObj;
-    // }
-
     // TODO support binary data
     /// <summary>
     /// Pdf string object.
     /// </summary>
-    public class PdfString : PdfObject
+    public class PdfString : PdfObject, IEquatable<PdfString>
     {
         /// <summary>
         /// Type of Pdf string.
@@ -71,6 +46,31 @@ namespace PdfLexer
         }
         public string Value { get; }
         public override PdfObjectType Type => PdfObjectType.StringObj;
+
+        public override bool Equals(object obj)
+        {
+            return obj is PdfString str && Value.Equals(str?.Value);
+        }
+
+        public virtual bool Equals(PdfString other)
+        {
+            return Value.Equals(other?.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
+
+        public static bool operator ==(PdfString n1, PdfString n2)
+        {
+            if (ReferenceEquals(n1, n2)) { return true; }
+            if (ReferenceEquals(n1, null)) { return false; }
+            if (ReferenceEquals(n2, null)) { return false; }
+            return n1.Equals(n2);
+        }
+
+        public static bool operator !=(PdfString n1, PdfString n2) => !(n1 == n2);
 
     }
 

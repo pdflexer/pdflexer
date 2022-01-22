@@ -101,7 +101,7 @@ namespace PdfLexer.IO
                 ArrayPool<byte>.Shared.Return(buffer);
                 return result;
             }
-            catch (PdfTokenMismatchException e)
+            catch (PdfLexerTokenMismatchException e)
             {
                 throw new NotImplementedException("Repairs not implemented for FileStream.", e);
                 // Context.Error($"XRef offset for {xref.Reference} was not valid.");
@@ -139,7 +139,7 @@ namespace PdfLexer.IO
                 Context.UnwrapAndCopyObjData(buffer, destination);
                 ArrayPool<byte>.Shared.Return(buffer);
             }
-            catch (PdfTokenMismatchException e)
+            catch (PdfLexerTokenMismatchException e)
             {
                 throw new NotImplementedException("Repairs not implemented for FileStream.", e);
                 // Context.Error($"XRef offset for {xref.Reference} was not valid.");

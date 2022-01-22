@@ -22,6 +22,11 @@ namespace PdfLexer.Parsers
 
         public override PdfNumber Parse(ReadOnlySpan<byte> buffer)
         {
+            if (buffer[0] == (byte)'+')
+            {
+                buffer = buffer.Slice(1);
+            }
+
             if (buffer.Length == 1)
             {
                 switch (buffer[0])
@@ -52,11 +57,6 @@ namespace PdfLexer.Parsers
             if (buffer.Length == 2 && buffer[0] == (byte)'-' && buffer[1] == (byte)'1')
             {
                 return PdfCommonNumbers.MinusOne;
-            }
-
-            if (buffer[0] == (byte)'+')
-            {
-                buffer = buffer.Slice(1);
             }
 
             ulong key = default;

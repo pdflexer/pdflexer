@@ -24,6 +24,19 @@ namespace PdfLexer.Benchmarks
     {
         static async Task Main(string[] args)
         {
+            
+            
+            // var bench = new MergeBenchmark();
+            // var total = 0;
+            // for (var i = 0; i < 100000; i++)
+            // {
+            //     total += bench.MergePdfLexer().Length;
+            // }
+            // 
+            // Console.WriteLine(total);
+            // return;
+            
+            
             // var bench = new NameCacheBench();
             // bench.Casting();
             // var bench = new FuncBenchmark();

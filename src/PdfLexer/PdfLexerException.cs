@@ -22,9 +22,17 @@ namespace PdfLexer
         }
     }
 
-    public class PdfTokenMismatchException : PdfLexerException
+    public class PdfLexerObjectMismatchException : PdfLexerException
     {
-        public PdfTokenMismatchException(string message) : base(message)
+        public PdfLexerObjectMismatchException(string message) : base(message)
+        {
+
+        }
+    }
+
+    public class PdfLexerTokenMismatchException : PdfLexerException
+    {
+        public PdfLexerTokenMismatchException(string message) : base(message)
         {
 
         }

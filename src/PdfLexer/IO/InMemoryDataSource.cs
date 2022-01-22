@@ -86,7 +86,7 @@ namespace PdfLexer.IO
             {
                 return Context.GetWrappedIndirectObject(xref, buffer.Slice((int)xref.Offset, xref.MaxLength));
             }
-            catch (PdfTokenMismatchException)
+            catch (PdfLexerTokenMismatchException)
             {
                 Context.Error($"XRef offset for {xref.Reference} was not valid.");
                 if (!TryRepairXRef(xref, out var repaired))
@@ -114,7 +114,7 @@ namespace PdfLexer.IO
             {
                 Context.UnwrapAndCopyObjData(buffer.Slice((int)xref.Offset, xref.MaxLength), destination);
             }
-            catch (PdfTokenMismatchException)
+            catch (PdfLexerTokenMismatchException)
             {
                 Context.Error($"XRef offset for {xref.Reference} was not valid.");
                 if (!TryRepairXRef(xref, out var repaired))

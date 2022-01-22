@@ -15,8 +15,9 @@ namespace PdfLexer.Parsers
     public class StringParser : Parser<PdfString>
     {
         private static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
-        private static Encoding Win1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252); // WinAnsiEncoding
-        private static Encoding MacRoman = CodePagesEncodingProvider.Instance.GetEncoding("macintosh"); // WinAnsiEncoding
+        // Require codepages nuget package... determine if really needed
+        // private static Encoding Win1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252); // WinAnsiEncoding
+        // private static Encoding MacRoman = CodePagesEncodingProvider.Instance.GetEncoding("macintosh"); // WinAnsiEncoding
                                                                                                         // PdfEncoding : ???-255 same, 20-126 same, 127 undefined, 0-21 same
                                                                                                         // MaxExpert??
 

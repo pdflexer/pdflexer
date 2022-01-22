@@ -6,6 +6,7 @@ namespace PdfLexer.Parsers.Nested
 {
     internal enum ParseState
     {
+        None,
         ReadArray,
         ReadDict
     }
@@ -20,11 +21,12 @@ namespace PdfLexer.Parsers.Nested
 
         public bool IsParsing()
         {
-            return Dict != null || Array != null;
+            return State != ParseState.None;
         }
 
         public PdfArray GetArrayFromBag(ParsingContext ctx)
         {
+            var arr = new PdfArray(new List<IPdfObject>(Bag.Count));
             for (var i=0;i<Bag.Count;i++)
             {
                 var item = Bag[i];
@@ -33,18 +35,19 @@ namespace PdfLexer.Parsers.Nested
                     && Bag[i+1] is PdfIntNumber num2
                     && Bag[i+2] is IndirectRefToken)
                 {
-                    Array.Add(new ExistingIndirectRef(ctx, (long)num, num2.Value));
+                    arr.Add(new ExistingIndirectRef(ctx, (long)num, num2.Value));
                     i+=2;
                 } else
                 {
-                    Array.Add(item);
+                    arr.Add(item);
                 }
             }
-            return Array;
+            return arr;
         }
 
         public PdfDictionary GetDictionaryFromBag(ParsingContext ctx)
         {
+            var dict = new PdfDictionary(Bag.Count / 2);
             bool key = true;
             PdfName name = null;
             for (var i=0;i<Bag.Count;i++)
@@ -67,18 +70,18 @@ namespace PdfLexer.Parsers.Nested
                         && Bag[i+1] is PdfIntNumber num2
                         && Bag[i+2] is IndirectRefToken)
                     {
-                        Dict[name] = new ExistingIndirectRef(ctx, (long)num, num2.Value);
+                        dict[name] = new ExistingIndirectRef(ctx, (long)num, num2.Value);
                         i+=2;
                     } else
                     {
-                        Dict[name] = item;
+                        dict[name] = item;
                     }
                     
                 }
                 key = !key;
             }
-            Dict.DictionaryModified = false;
-            return Dict;
+            dict.DictionaryModified = false;
+            return dict;
         }
     }
 }

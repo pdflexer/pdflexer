@@ -442,5 +442,8 @@ namespace PdfLexer.Parsers
             // CachedNumbers.Clear();
         }
 
+
+        public List<string> GetCachedNames() => NameCache.Cache.Select(x => x.Value.Value).ToList();
+
     }
 }

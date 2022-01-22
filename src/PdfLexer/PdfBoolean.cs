@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace PdfLexer
 {
@@ -6,7 +7,7 @@ namespace PdfLexer
     /// Pdf bool object type.
     /// Use <see cref="PdfBoolean.True"/> or <see cref="PdfBoolean.False"/> to access values.
     /// </summary>
-    public class PdfBoolean : PdfObject
+    public class PdfBoolean : PdfObject // we do not need equitable / overloads since all objects will be equal by reference
     {
         /// <summary>
         /// Pdf True object
