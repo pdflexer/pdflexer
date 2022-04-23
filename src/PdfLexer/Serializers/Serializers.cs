@@ -88,21 +88,21 @@ namespace PdfLexer.Serializers
             throw new NotImplementedException($"Requested to write pdf object of type {obj.GetType()}.");
         }
 
-        private byte[] miniBuff = new byte[20];
         private void WriteObjRef(Stream stream, XRef xref)
         {
+            Span<byte> miniBuff = stackalloc byte[20];
             Debug.Assert(xref.ObjectNumber != 0);
             if (!Utf8Formatter.TryFormat(xref.ObjectNumber, miniBuff, out var written))
             {
                 throw new ApplicationException("Unable for write Object number integer: " + xref);
             }
-            stream.Write(miniBuff, 0, written);
+            stream.Write(miniBuff.Slice(0, written));
             stream.WriteByte((byte)' ');
             if (!Utf8Formatter.TryFormat(xref.Generation, miniBuff, out written))
             {
                 throw new ApplicationException("Unable for write generation integer: " + xref);
             }
-            stream.Write(miniBuff, 0, written);
+            stream.Write(miniBuff.Slice(0, written));
             stream.WriteByte((byte)' ');
             stream.WriteByte((byte)'R');
         }

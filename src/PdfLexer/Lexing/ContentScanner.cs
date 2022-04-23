@@ -14,7 +14,7 @@ namespace PdfLexer.Lexing
     }
     public ref struct ContentScanner
     {
-        public ReadOnlySpan<byte> Data;
+        public readonly ReadOnlySpan<byte> Data;
         private Scanner Scanner;
         private ParsingContext _ctx;
         public ContentScanner(ParsingContext ctx, ReadOnlySpan<byte> data)
@@ -76,7 +76,7 @@ namespace PdfLexer.Lexing
             }
 
             var oi = (int)CurrentOperator;
-            if (!ParseOpMapping.Parsers.ContainsKey(oi))
+            if (!ParseOpMapping.Parsers.TryGetValue(oi, out var parser))
             {
                 var op = Encoding.ASCII.GetString(Data.Slice(Scanner.Position, Scanner.CurrentLength));
                 _ctx.Error("Unkown operator found: " + op);
@@ -91,13 +91,13 @@ namespace PdfLexer.Lexing
                 }
                 return new Unkown_Op(op, data);
             }
-            var parser = ParseOpMapping.Parsers[oi];
             try
             {
                 return parser(_ctx, Data, Operands);
             }
             catch (Exception e)
             {
+                // TODO: how should we handle errors here, don't want to have to null check each time?
                 var st = Operands.Count > 0 ? Operands[0].StartAt : Scanner.Position;
                 var len = Scanner.Position + Scanner.CurrentLength - st;
                 var op = Encoding.ASCII.GetString(Data.Slice(st, len));

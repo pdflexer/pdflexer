@@ -75,9 +75,8 @@ namespace PdfLexer.Filters
          */
         internal Stream PngDecode(Stream stream, int bpc, int colors, int columns)
         {
-
             // TODO create real stream implementation
-            var ms = ParsingContext.StreamManager.GetStream();
+            var output = _ctx.GetTemporaryStream();
             var pixBytes = (colors * bpc + 7) >> 3;
             var rowBytes = (columns * colors * bpc + 7) >> 3;
 
@@ -96,7 +95,7 @@ namespace PdfLexer.Filters
                 switch (predictor)
                 {
                     case 0:
-                        ms.Write(rawBytes);
+                        output.Write(rawBytes);
                         break;
                     case 1:
                         j = 0;
@@ -110,7 +109,7 @@ namespace PdfLexer.Filters
                             buffer[j] = (byte)((buffer[j - pixBytes] + rawBytes[i]) & 0xff);
                             j++;
                         }
-                        ms.Write(buffer, 0, j);
+                        output.Write(buffer, 0, j);
                         break;
                     case 2:
                         j = 0;
@@ -118,7 +117,7 @@ namespace PdfLexer.Filters
                         {
                             buffer[j++] = (byte)((prevRow[i] + rawBytes[i]) & 0xff);
                         }
-                        ms.Write(buffer, 0, j);
+                        output.Write(buffer, 0, j);
                         break;
                     case 3:
                         j = 0;
@@ -132,7 +131,7 @@ namespace PdfLexer.Filters
                               ((((prevRow[i] + buffer[j - pixBytes]) >> 1) + rawBytes[i]) & 0xff);
                             j++;
                         }
-                        ms.Write(buffer, 0, j);
+                        output.Write(buffer, 0, j);
                         break;
                     case 4:
                         j = 0;
@@ -188,8 +187,8 @@ namespace PdfLexer.Filters
                 prevRow = pr;
                 predictor = (int)stream.ReadByte();
             }
-            ms.Position = 0;
-            return ms;
+            output.Position = 0;
+            return output;
         }
 
 

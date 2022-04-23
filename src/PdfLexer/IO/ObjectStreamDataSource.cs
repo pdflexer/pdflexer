@@ -5,11 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
 namespace PdfLexer.IO
 {
-    public class ObjectStreamDataSource : IPdfDataSource
+    internal class ObjectStreamDataSource : IPdfDataSource
     {
         private byte[] _data;
         private List<int> _offsets;
@@ -26,8 +25,7 @@ namespace PdfLexer.IO
         }
         public long TotalBytes => _data.Length;
 
-        public bool SupportsCloning => throw new NotImplementedException();
-
+        public bool SupportsCloning => false;
         public ParsingContext Context { get;}
 
         public bool SupportsXRefRepair => false;
@@ -90,6 +88,11 @@ namespace PdfLexer.IO
         public IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
         {
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            _data = null;
         }
     }
 }

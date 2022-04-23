@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfLexer.Parsers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,6 +8,12 @@ namespace PdfLexer.Filters
 {
     public class AsciiHexFilter : IDecoder
     {
+        private readonly ParsingContext _ctx;
+
+        public AsciiHexFilter(ParsingContext ctx)
+        {
+            _ctx = ctx;
+        }
         // Decode FUNCTION PORTED FROM PDF.JS, PDF.JS is licensed as follows:
         /* Copyright 2012 Mozilla Foundation
          *
@@ -29,7 +36,7 @@ namespace PdfLexer.Filters
             int ch;
 
             // TODO create real stream implementation
-            var ms = new MemoryStream();
+            var output = _ctx.GetTemporaryStream();
             while ((ch = stream.ReadByte()) != -1)
             {
                 int digit;
@@ -60,7 +67,7 @@ namespace PdfLexer.Filters
                 }
                 else
                 {
-                    ms.WriteByte((byte) ((firstDigit << 4) | digit));
+                    output.WriteByte((byte) ((firstDigit << 4) | digit));
                     firstDigit = -1;
                 }
             }
@@ -68,10 +75,10 @@ namespace PdfLexer.Filters
             if (firstDigit >= 0 && eof)
             {
                 // incomplete byte
-                ms.WriteByte((byte) (firstDigit << 4));
+                output.WriteByte((byte) (firstDigit << 4));
             }
-            ms.Position = 0;
-            return ms;
+            output.Position = 0;
+            return output;
         }
     }
 }

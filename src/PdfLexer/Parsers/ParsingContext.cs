@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Microsoft.IO;
 using PdfLexer.Filters;
@@ -63,8 +64,8 @@ namespace PdfLexer.Parsers
             NestedParser = new NestedParser(this);
 
             FlateDecoder = new FlateFilter(this);
-            AsciiHexDecoder = new AsciiHexFilter();
-            Ascii58Decoder = new Ascii85Filter();
+            AsciiHexDecoder = new AsciiHexFilter(this);
+            Ascii58Decoder = new Ascii85Filter(this);
         }
 
         public (Dictionary<ulong, XRefEntry> XRefs, PdfDictionary Trailer) Initialize(IPdfDataSource pdf)
@@ -84,6 +85,18 @@ namespace PdfLexer.Parsers
                 throw new PdfLexerException(info);
             }
             Errors.Add(info);
+        }
+
+        internal Stream GetTemporaryStream()
+        {
+            if (Options.LowMemoryMode)
+            {
+                var path = Path.Combine(Path.GetTempPath(), "pdflexer_" + Guid.NewGuid().ToString());
+                return new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096);
+            } else
+            {
+                return StreamManager.GetStream();
+            }
         }
 
         internal IDecoder GetDecoder(PdfName name)
@@ -227,15 +240,15 @@ namespace PdfLexer.Parsers
 
             var obj = value.GetObject();
             IndirectCache[id] = obj;
+            
             return obj;
         }
 
         internal void LoadObjectStream(XRefEntry entry)
         {
             var stream = GetIndirectObject(XRef.GetId(entry.ObjectStreamNumber, 0)).GetValue<PdfStream>();
-            var data = stream.Contents.GetDecodedData(this);
-            var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
             var start = stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
+
             var ctx = this;
             if (IsEncrypted)
             {
@@ -251,14 +264,40 @@ namespace PdfLexer.Parsers
                     NameCache = NameCache,
                     NumberCache = NumberCache
                 };
-
             }
-            var source = new ObjectStreamDataSource(ctx, entry.ObjectStreamNumber, data, os, start);
+
+            IPdfDataSource source = null;
+            if (Options.LowMemoryMode)
+            {
+                // TODO allow streams for offsets
+                var data = ArrayPool<byte>.Shared.Rent(start);
+                var decodedStream = stream.Contents.GetDecodedStream(this);
+                if (!decodedStream.CanSeek)
+                {
+                    var str = GetTemporaryStream();
+                    decodedStream.CopyTo(str);
+                    decodedStream.Dispose();
+                    decodedStream = str;
+                    decodedStream.Seek(0, SeekOrigin.Begin);
+                }
+                decodedStream.FillArray(data, start);
+                var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
+                ArrayPool<byte>.Shared.Return(data);
+                source = new ObjectStreamFileDataSource(ctx, entry.ObjectStreamNumber, decodedStream, os, start);
+            } else
+            {
+                var data = stream.Contents.GetDecodedData(this);
+                var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
+                source = new ObjectStreamDataSource(ctx, entry.ObjectStreamNumber, data, os, start);
+            }
+            
             foreach (var item in Document.XrefEntries.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
             {
                 item.Source = source;
             }
         }
+
+
 
         private List<int> GetOffsets(ReadOnlySpan<byte> data, int count)
         {
@@ -320,7 +359,7 @@ namespace PdfLexer.Parsers
 
                 return stream;
             }
-            Error("Indirect object not follwoed by endobj token: " + CommonUtil.GetDataErrorInfo(data, scanner.Position));
+            Error("Indirect object not followed by endobj token: " + CommonUtil.GetDataErrorInfo(data, scanner.Position));
             return obj;
         }
 

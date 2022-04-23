@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfLexer.Parsers;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -7,7 +8,12 @@ namespace PdfLexer.Filters
 {
     public class Ascii85Filter : IDecoder
     {
+        private readonly ParsingContext _ctx;
         private byte[] input = new byte[5];
+        public Ascii85Filter(ParsingContext ctx)
+        {
+            _ctx = ctx;
+        }
         // Decode FUNCTION PORTED FROM PDF.JS, PDF.JS is licensed as follows:
         /* Copyright 2012 Mozilla Foundation
          *
@@ -30,7 +36,7 @@ namespace PdfLexer.Filters
             var EOF = -1;
 
             // TODO create real stream implementation
-            var ms = new MemoryStream();
+            var output = _ctx.GetTemporaryStream();
             int i;
             while ((i = stream.ReadByte()) != -1)
             {
@@ -42,15 +48,15 @@ namespace PdfLexer.Filters
 
                 if (c == TILDA_CHAR)
                 {
-                    ms.Position = 0;
-                    return ms;
+                    output.Position = 0;
+                    return output;
                 }
 
                 if (c == Z_LOWER_CHAR)
                 {
                     for (i = 0; i < 4; ++i)
                     {
-                        ms.WriteByte((byte)0);
+                        output.WriteByte((byte)0);
                     }
                     continue;
                 }
@@ -89,13 +95,13 @@ namespace PdfLexer.Filters
 
                 for (i = 3; i >= 0; --i)
                 {
-                    ms.WriteByte((byte)(t & 0xff));
+                    output.WriteByte((byte)(t & 0xff));
                     t >>= 8;
                 }
             }
 
-            ms.Position = 0;
-            return ms;
+            output.Position = 0;
+            return output;
         }
     }
 }

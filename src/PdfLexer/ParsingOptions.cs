@@ -38,6 +38,7 @@ namespace PdfLexer
         public bool ForceSerialize { get;set;} = false;
         // for perf testing
         public bool LazyStrings { get; set; } = false;
+        public bool LowMemoryMode { get; set; } = false;
     }
 
     public enum Eagerness

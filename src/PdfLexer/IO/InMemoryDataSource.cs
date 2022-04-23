@@ -3,10 +3,7 @@ using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 using System;
-using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace PdfLexer.IO
 {
@@ -236,6 +233,10 @@ namespace PdfLexer.IO
             }
 
             return repaired.Offset != 0;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

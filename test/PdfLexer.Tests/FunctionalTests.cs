@@ -386,12 +386,14 @@ namespace PdfLexer.Tests
             byte[] d4 = null;
             byte[] d5 = null;
             byte[] d6 = null;
+            byte[] d7 = null;
             decimal hc = 0;
             decimal hc2 = 0;
             decimal hc3 = 0;
             decimal hc4 = 0;
             decimal hc5 = 0;
             decimal hc6 = 0;
+            decimal hc7 = 0;
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 try
@@ -464,6 +466,15 @@ namespace PdfLexer.Tests
                         skipStream = true;
                     }
 
+                    if (!skipStream)
+                    {
+                        using var fs2 = File.OpenRead(pdf);
+                        using var lm = PdfDocument.OpenLowMemory(fs2);
+                        using var sd = PdfDocument.Create();
+                        sd.Pages = lm.Pages;
+                        d7 = sd.Save();
+                    }
+
                     var ms = new MemoryStream();
                     doc.SaveTo(ms);
                     d2 = ms.ToArray();
@@ -496,11 +507,13 @@ namespace PdfLexer.Tests
                     {
                         hc6 = Util.GetDocumentHashCode(d6);
                         Assert.Equal(hc, hc6);
+                        hc7 = Util.GetDocumentHashCode(d7);
+                        Assert.Equal(hc, hc7);
                     }
                 }
                 catch (Exception e)
                 {
-                    parseLog.WriteLine($"{hc} {hc2} {hc3} {hc4} {hc5} {hc6}");
+                    parseLog.WriteLine($"{hc} {hc2} {hc3} {hc4} {hc5} {hc6} {hc7}");
                     var bp = Path.Combine(results, Path.GetFileNameWithoutExtension(pdf));
                     File.WriteAllBytes(bp + "_input.pdf", d1 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_quicksave.pdf", d2 ?? new byte[0]);
@@ -508,6 +521,7 @@ namespace PdfLexer.Tests
                     File.WriteAllBytes(bp + "_rewrite.pdf", d4 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_cstreams.pdf", d5 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_fromStream.pdf", d6 ?? new byte[0]);
+                    File.WriteAllBytes(bp + "_fromLMStream.pdf", d7 ?? new byte[0]);
                     errors.Add(pdf + ": " + e.Message);
                 }
             }

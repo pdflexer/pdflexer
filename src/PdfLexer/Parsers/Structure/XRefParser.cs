@@ -340,7 +340,9 @@ namespace PdfLexer.Parsers.Structure
                         return;
                     }
 
-                    if (type.Equals(PdfName.XRef))
+
+
+                    if (type.Equals(PdfName.XRef)) // ignoring xref entries (raw rebuild) and just use for trailer
                     {
                         dicts.Add(dict);
                         return;
@@ -353,6 +355,9 @@ namespace PdfLexer.Parsers.Structure
                     {
                         return;
                     }
+
+                    // TODO low memory mode
+
                     var length = dict.GetRequiredValue<PdfNumber>(PdfName.Length);
                     scanner.SkipCurrent();
                     var sequence = scanner.Read(length);

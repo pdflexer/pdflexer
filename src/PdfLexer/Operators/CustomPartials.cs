@@ -9,9 +9,9 @@ namespace PdfLexer.Operators
     {
         public void Serialize(Stream stream)
         {
-            PdfOperator.Shared.SerializeObject(stream, tag, x=>x);
+            PdfOperator.Shared.SerializeObject(stream, tag, x => x);
             stream.WriteByte((byte)' ');
-            PdfOperator.Shared.SerializeObject(stream, props, x=>x);
+            PdfOperator.Shared.SerializeObject(stream, props, x => x);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
@@ -20,9 +20,9 @@ namespace PdfLexer.Operators
     {
         public void Serialize(Stream stream)
         {
-            PdfOperator.Shared.SerializeObject(stream, tag, x=>x);
+            PdfOperator.Shared.SerializeObject(stream, tag, x => x);
             stream.WriteByte((byte)' ');
-            PdfOperator.Shared.SerializeObject(stream, props, x=>x);
+            PdfOperator.Shared.SerializeObject(stream, props, x => x);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
@@ -97,10 +97,11 @@ namespace PdfLexer.Operators
             stream.WriteByte((byte)'[');
             foreach (var item in info)
             {
-                if (item.Text != null) 
+                if (item.Text != null)
                 {
                     PdfOperator.Shared.StringSerializer.WriteToStream(item.Text, stream);
-                } else
+                }
+                else
                 {
                     PdfOperator.Writedecimal(item.Shift, stream);
                 }
@@ -110,10 +111,21 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
     }
-    
-    public class TJ_Item
+
+    public struct TJ_Item
     {
         public decimal Shift;
         public PdfString Text;
+    }
+
+    public partial class Td_Op
+    {
+        public void Apply(ITextState state)
+        {
+            // Tm = Tlm = [ 1  0  0 ] x Tlm
+            //              0  1  0
+            //              tx ty 1
+        }
+
     }
 }

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace PdfLexer.IO
 {
-    public interface IPdfDataSource
+    public interface IPdfDataSource : IDisposable
     {
         /// <summary>
         /// Total bytes contained in the PDF data source

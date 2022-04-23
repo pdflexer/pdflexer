@@ -2,6 +2,7 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using PdfLexer.Parsers;
@@ -12,8 +13,9 @@ using PdfLexer.Parsers;
 namespace PdfLexer
 {
 
-    public class CommonUtil
+    public static class CommonUtil
     {
+
         internal static byte[] Terminators = new byte[16] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
             (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
 
@@ -38,6 +40,22 @@ namespace PdfLexer
                    || c == 0x0D
                    || c == 0x20;
         }
+
+        public static void FillArray(this Stream stream, byte[] array, int requiredBytes=-1)
+        {
+            if (requiredBytes < 0) { requiredBytes = array.Length; }
+            int total = 0;
+            int read;
+            while ((read = stream.Read(array, total, requiredBytes - total)) > 0)
+            {
+                total += read;
+            }
+            if (total != requiredBytes)
+            {
+                throw new PdfLexerException("unable to fill array from stream");
+            }
+        }
+
         public static bool IsWhiteSpace(byte b)
         {
             return b == 0x00

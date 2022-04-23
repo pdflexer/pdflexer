@@ -230,13 +230,31 @@ namespace PdfLexer
 
         /// <summary>
         /// Opens a PDF document from the provided seekable strea.
-        /// TODO turn this into sync code.
         /// </summary>
         /// <param name="data">PDF data</param>
         /// <param name="options">Optional parsing options</param>
         /// <returns>PdfDocument</returns>
         public static PdfDocument Open(Stream data, ParsingOptions options = null)
         {
+            var ctx = new ParsingContext(options);
+
+            var source = new StreamDataSource(ctx, data);
+            var result = ctx.Initialize(source);
+            return Open(ctx, result.XRefs, result.Trailer);
+        }
+
+        /// <summary>
+        /// Opens a PDF document from the provided seekable strea.
+        /// </summary>
+        /// <param name="data">PDF data</param>
+        /// <param name="options">Optional parsing options</param>
+        /// <returns>PdfDocument</returns>
+        public static PdfDocument OpenLowMemory(Stream data, ParsingOptions options = null)
+        {
+            options ??= new ParsingOptions();
+            options.CacheNames = false;
+            options.CacheNumbers = false;
+            options.LowMemoryMode = true;
             var ctx = new ParsingContext(options);
 
             var source = new StreamDataSource(ctx, data);
