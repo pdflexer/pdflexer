@@ -55,10 +55,13 @@ namespace PdfLexer.Serializers
         private byte[] miniBuff = new byte[20];
         public void Complete(PdfDictionary trailer)
         {
+            completing = true;
             // TODO offset tracking is not very efficient, need to look into fixing.
             //locallize
             reused.Clear();
             Recurse(trailer, reused);
+
+            WriteDeferred();
 
             // var mos = offsets.Keys.Max();
 
@@ -380,12 +383,29 @@ namespace PdfLexer.Serializers
                     }
                     // existing less than current, break through and overwrite
                 }
-
+                if (local.DeferWriting && !completing)
+                {
+                    deferedObjects.Add((obj, local));
+                    return local;
+                }
                 writtenObjs[local.Reference.ObjectNumber] = (Stream.Position, local.Reference);
                 WriteObjStart(local.Reference);
                 SerializeObject(obj);
                 WriteObjEnd();
                 return local;
+            }
+        }
+        private bool completing = false;
+        private List<(IPdfObject obj, PdfIndirectRef iref)> deferedObjects = new List<(IPdfObject obj, PdfIndirectRef iref)>();
+
+        private void WriteDeferred()
+        {
+            foreach (var (obj, local) in deferedObjects)
+            {
+                writtenObjs[local.Reference.ObjectNumber] = (Stream.Position, local.Reference);
+                WriteObjStart(local.Reference);
+                SerializeObject(obj);
+                WriteObjEnd();
             }
         }
 

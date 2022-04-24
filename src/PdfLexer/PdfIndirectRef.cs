@@ -25,7 +25,8 @@ namespace PdfLexer
         internal abstract bool IsOwned(int sourceId);
         internal abstract XRef Reference { get; set; }
         internal abstract int SourceId { get; set; }
-        
+        internal abstract bool DeferWriting { get; set; }
+
     }
 
     /// <summary>
@@ -66,6 +67,7 @@ namespace PdfLexer
         internal override bool IsOwned(int sourceId) => SourceId == sourceId;
 
         internal IPdfObject Object {get;set;}
+        internal override bool DeferWriting { get; set; }
 
         public override int GetHashCode()
         {
@@ -99,6 +101,8 @@ namespace PdfLexer
         internal bool IsDefined => Reference.ObjectNumber != 0;
         internal override XRef Reference { get; set; }
         internal override int SourceId { get; set; }
+
+        internal override bool DeferWriting { get; set; }
         public IPdfObject Object { get; internal set; }
 
         internal override bool IsOwned(int sourceId) 

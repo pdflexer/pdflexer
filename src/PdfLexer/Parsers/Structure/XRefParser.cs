@@ -243,6 +243,11 @@ namespace PdfLexer.Parsers.Structure
         }
 
 
+        /// <summary>
+        /// Builds xref table by scanning through pdf and looking for obj sequences
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
         public (List<XRefEntry>, PdfDictionary) BuildFromRawData(Stream stream)
         {
             var orig = _ctx.Options.Eagerness;
@@ -306,6 +311,7 @@ namespace PdfLexer.Parsers.Structure
             return (offsets, trailer);
         }
 
+        // adds xref entry for object at current location
         private void AddCurrent(ref PipeScanner scanner, int maxScan, List<XRefEntry> entries, List<PdfDictionary> dicts)
         {
             long offset = 0;
@@ -340,13 +346,12 @@ namespace PdfLexer.Parsers.Structure
                         return;
                     }
 
-
-
-                    if (type.Equals(PdfName.XRef)) // ignoring xref entries (raw rebuild) and just use for trailer
+                    if (type.Equals(PdfName.XRef)) // ignoring xref entries (raw rebuild) and just use for trailer info
                     {
                         dicts.Add(dict);
                         return;
                     }
+
                     if (!type.Equals(PdfName.ObjStm))
                     {
                         return;
@@ -356,6 +361,7 @@ namespace PdfLexer.Parsers.Structure
                         return;
                     }
 
+                    // this object is an object stream, need to grab xref entries for it
                     // TODO low memory mode
 
                     var length = dict.GetRequiredValue<PdfNumber>(PdfName.Length);

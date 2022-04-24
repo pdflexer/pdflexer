@@ -420,8 +420,8 @@ namespace PdfLexer.Tests
                     }
                     parseLog.WriteLine(pdf);
                     parseLog.Flush();
-                    hc = hc2 = hc3 = hc4 = 0;
-                    d1 = d2 = d3 = d4 = null;
+                    hc = hc2 = hc3 = hc4 = hc5 = hc6 = hc7 = 0;
+                    d1 = d2 = d3 = d4 = d5 = d6 = d7 = null;
 
                     d1 = File.ReadAllBytes(pdf);
 
@@ -470,9 +470,14 @@ namespace PdfLexer.Tests
                     {
                         using var fs2 = File.OpenRead(pdf);
                         using var lm = PdfDocument.OpenLowMemory(fs2);
-                        using var sd = PdfDocument.Create();
-                        sd.Pages = lm.Pages;
-                        d7 = sd.Save();
+                        var mssw = new MemoryStream();
+                        var writer = new StreamingWriter(mssw);
+                        foreach (var page in lm.Pages)
+                        {
+                            writer.AddPage(page);
+                        }
+                        writer.Complete(new PdfDictionary());
+                        d7 = mssw.ToArray();
                     }
 
                     var ms = new MemoryStream();
