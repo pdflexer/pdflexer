@@ -490,9 +490,6 @@ namespace PdfLexer.Parsers
 
         public void Dispose()
         {
-            CachedInts = null;
-            NameCache = null;
-            NumberCache = null;
             foreach (var disp in disposables)
             {
                 disp.Dispose();

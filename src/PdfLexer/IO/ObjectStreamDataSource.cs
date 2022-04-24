@@ -92,7 +92,6 @@ namespace PdfLexer.IO
 
         public void Dispose()
         {
-            _data = null;
         }
     }
 }
