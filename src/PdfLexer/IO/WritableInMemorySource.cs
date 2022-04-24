@@ -31,6 +31,8 @@ namespace PdfLexer.IO
 
         public bool SupportsXRefRepair => throw new NotImplementedException();
 
+        public bool Disposed => throw new NotImplementedException();
+
         public IPdfDataSource Clone()
         {
             throw new NotImplementedException();

@@ -46,10 +46,13 @@ namespace PdfLexer.IO
             sub.CopyTo(stream);
         }
 
+        public bool Disposed { get; private set; }
 
         public void Dispose()
         {
             if (!_leaveOpen) { _stream.Dispose(); }
+            _stream = null;
+            Disposed = true;
         }
 
         public void GetData(long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer)

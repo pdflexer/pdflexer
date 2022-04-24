@@ -681,6 +681,7 @@ namespace PdfLexer.Tests
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.Dictionary); }
                 merged.Pages.AddRange(doc.Pages);
             }
             var ms = new MemoryStream();

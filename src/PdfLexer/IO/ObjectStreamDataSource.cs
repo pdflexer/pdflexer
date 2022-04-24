@@ -28,6 +28,8 @@ namespace PdfLexer.IO
         public bool SupportsCloning => false;
         public ParsingContext Context { get;}
 
+        public bool Disposed { get; private set; }
+
         public bool SupportsXRefRepair => false;
 
         public IPdfDataSource Clone()
@@ -92,6 +94,8 @@ namespace PdfLexer.IO
 
         public void Dispose()
         {
+            _data = null;
+            Disposed = true;
         }
     }
 }

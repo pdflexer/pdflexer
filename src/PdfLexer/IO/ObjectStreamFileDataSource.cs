@@ -15,7 +15,6 @@ namespace PdfLexer.IO
         private List<int> _offsets;
         private int _start;
         private int SourceObject;
-
         public ObjectStreamFileDataSource(ParsingContext ctx, int sourceObject, Stream data, List<int> oss, int start) : base(ctx, data, false)
         {
             SourceObject = sourceObject;

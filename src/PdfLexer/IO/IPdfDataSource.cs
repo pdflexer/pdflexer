@@ -10,6 +10,7 @@ namespace PdfLexer.IO
 {
     public interface IPdfDataSource : IDisposable
     {
+        bool Disposed { get; }
         /// <summary>
         /// Total bytes contained in the PDF data source
         /// </summary>

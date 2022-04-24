@@ -77,6 +77,54 @@ namespace PdfLexer
                    || b == 0x20;
         }
 
+        public static void RecursiveLoad(IPdfObject obj) => RecursiveLoad(obj, new HashSet<object>());
+        internal static void RecursiveLoad(IPdfObject obj, HashSet<object> refStack)
+        {
+            if (refStack.Contains(obj)) 
+            {
+                if (obj is ExistingIndirectRef eir)
+                {
+                    _ = eir.GetObject();
+                }
+                return; 
+            }
+            refStack.Add(obj);
+            switch (obj)
+            {
+                case PdfIndirectRef ir:
+                    obj = ir.GetObject();
+                    RecursiveLoad(obj, refStack);
+                    return;
+                case PdfLazyObject lz:
+                    obj = lz.Resolve();
+                    RecursiveLoad(obj, refStack);
+                    break;
+                case PdfStream str:
+                    {
+                        RecursiveLoad(str.Dictionary, refStack);
+                        var ms = new MemoryStream();
+                        using var data = str.Contents.GetEncodedData();
+                        data.CopyTo(ms);
+                        str.Contents = new PdfByteArrayStreamContents(ms.ToArray());
+                        break;
+                    }
+                case PdfDictionary dict:
+                    foreach (var (_,v) in dict)
+                    {
+                        RecursiveLoad(v, refStack);
+                    }
+                    break;
+                case PdfArray array:
+                    foreach (var v in array)
+                    {
+                        RecursiveLoad(v, refStack);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
         /// <summary>
         /// Enumerates the PDF page tree.
         /// </summary>

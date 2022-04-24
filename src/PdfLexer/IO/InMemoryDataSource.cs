@@ -10,7 +10,7 @@ namespace PdfLexer.IO
     public class InMemoryDataSource : IPdfDataSource
     {
 
-        private readonly byte[] _data;
+        private byte[] _data;
         // TODO in memory larger than int.maxvalue bytes
         // TODO -> Memory<byte>??
         public InMemoryDataSource(ParsingContext ctx, byte[] data)
@@ -25,6 +25,7 @@ namespace PdfLexer.IO
 
         public ParsingContext Context { get; }
 
+        public bool Disposed { get; private set; }
         public IPdfDataSource Clone() => throw new NotImplementedException(); // TODO currently setting Context.Current* on source so not sharable
 
         public Stream GetStream(long startPosition)
@@ -237,6 +238,8 @@ namespace PdfLexer.IO
 
         public void Dispose()
         {
+            _data = null;
+            Disposed = true;
         }
     }
 }

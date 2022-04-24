@@ -44,7 +44,7 @@ namespace PdfLexer.Serializers
             if (obj.IsLazy)
             {
                 var lz = (PdfLazyObject)obj;
-                if (lz.HasLazyIndirect || lz.IsModified)
+                if (lz.HasLazyIndirect || lz.IsModified || lz.Source.Disposed)
                 {
                     obj = lz.Resolve();
                 }
