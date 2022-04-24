@@ -13,7 +13,7 @@ using PdfLexer.Serializers;
 
 namespace PdfLexer.Parsers
 {
-    public class ParsingContext
+    public class ParsingContext : IDisposable
     {
         internal int SourceId { get; set; }
 
@@ -40,7 +40,7 @@ namespace PdfLexer.Parsers
         internal DictionaryParser DictionaryParser { get; }
         internal StringParser StringParser { get; }
         internal static readonly RecyclableMemoryStreamManager StreamManager = new RecyclableMemoryStreamManager();
-
+        internal List<IDisposable> disposables = new List<IDisposable>();
         internal XRefParser XRefParser { get; }
 
         public ParsingOptions Options { get; }
@@ -72,6 +72,7 @@ namespace PdfLexer.Parsers
         {
             MainDocSource = pdf;
             CurrentSource = MainDocSource;
+            disposables.Add(MainDocSource);
             return XRefParser.LoadCrossReferences(pdf);
         }
 
@@ -92,7 +93,7 @@ namespace PdfLexer.Parsers
             if (Options.LowMemoryMode)
             {
                 var path = Path.Combine(Path.GetTempPath(), "pdflexer_" + Guid.NewGuid().ToString());
-                return new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096);
+                return new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
             } else
             {
                 return StreamManager.GetStream();
@@ -290,7 +291,9 @@ namespace PdfLexer.Parsers
                 var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
                 source = new ObjectStreamDataSource(ctx, entry.ObjectStreamNumber, data, os, start);
             }
-            
+
+            disposables.Add(source);
+
             foreach (var item in Document.XrefEntries.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
             {
                 item.Source = source;
@@ -313,6 +316,7 @@ namespace PdfLexer.Parsers
             return offsets;
         }
 
+        // TODO low memory / stream support
         internal IPdfObject GetWrappedIndirectObject(XRefEntry xref, ReadOnlySpan<byte> data)
         {
             var scanner = new Scanner(this, data, 0);
@@ -484,5 +488,15 @@ namespace PdfLexer.Parsers
 
         public List<string> GetCachedNames() => NameCache.Cache.Select(x => x.Value.Value).ToList();
 
+        public void Dispose()
+        {
+            CachedInts = null;
+            NameCache = null;
+            NumberCache = null;
+            foreach (var disp in disposables)
+            {
+                disp.Dispose();
+            }
+        }
     }
 }

@@ -63,8 +63,7 @@ namespace PdfLexer
 
         public void Dispose()
         {
-            // TODO
-            // context disposing -> currently in memory only
+            Context.Dispose();
         }
 
         public byte[] Save()

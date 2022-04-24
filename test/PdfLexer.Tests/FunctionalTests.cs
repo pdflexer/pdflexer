@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CliWrap;
+using PdfLexer.DOM;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
 using PdfLexer.Operators;
@@ -259,83 +260,97 @@ namespace PdfLexer.Tests
             }
         }
 
+        private static PdfPage ReWriteStream(PdfDocument doc, PdfPage page, bool clone)
+        {
+            if (!page.Dictionary.TryGetValue(PdfName.Contents, out var value))
+            {
+                return page;
+            }
+
+            var streamObj = value.Resolve();
+            byte[] newData = null;
+            switch (streamObj)
+            {
+                case PdfStream strObj:
+                    {
+                        using var str = strObj.Contents.GetDecodedStream(doc.Context);
+                        var msc = new MemoryStream();
+                        str.CopyTo(msc);
+                        newData = CheckStreamData(msc.ToArray());
+                        break;
+                    }
+                case PdfArray arrObj:
+                    var streams = new List<PdfStream>();
+                    foreach (var item in arrObj)
+                    {
+                        var arStr = item.Resolve();
+                        if (arStr is PdfStream matched)
+                        {
+                            streams.Add(matched);
+                        }
+                        else
+                        {
+                            throw new ApplicationException("Non stream object found in contents array: " + arStr.Type);
+                        }
+                    }
+                    // TODO support for split streams
+                    var ms = new MemoryStream();
+                    foreach (var str in streams)
+                    {
+                        str.Contents.GetDecodedStream(doc.Context).CopyTo(ms);
+                        ms.WriteByte((byte)' ');
+                    }
+                    newData = CheckStreamData(ms.ToArray());
+                    break;
+                default:
+                    throw new ApplicationException("Non stream or array object found in contents array:" + streamObj.Type);
+            }
+
+            if (clone)
+            {
+                page = page.Dictionary.CloneShallow();
+            }
+            var updatedStr = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(newData));
+            page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+            return page;
+
+            byte[] CheckStreamData(byte[] pgStream)
+            {
+                //var txt = Encoding.ASCII.GetString(pgStream);
+                var scanner = new ContentScanner(doc.Context, pgStream);
+                var ops = new List<IPdfOperation>();
+                PdfOperatorType nxt = PdfOperatorType.Unknown;
+                while ((nxt = scanner.Peek()) != PdfOperatorType.EOC)
+                {
+                    var op = scanner.GetCurrentOperation();
+                    if (op == null)
+                    {
+
+                    }
+                    else
+                    {
+                        ops.Add(op);
+
+                    }
+                    scanner.SkipCurrent();
+                }
+                var ms = new MemoryStream();
+                foreach (var op in ops)
+                {
+                    op.Serialize(ms);
+                    ms.WriteByte((byte)'\n');
+                }
+                var rewritten = ms.ToArray();
+                // var txt2 = Encoding.ASCII.GetString(rewritten);
+                return rewritten;
+            }
+        }
+
         private static void ReWriteStreams(string pdf, PdfDocument doc)
         {
             foreach (var page in doc.Pages)
             {
-                if (!page.Dictionary.TryGetValue(PdfName.Contents, out var value))
-                {
-                    continue;
-                }
-
-                var streamObj = value.Resolve();
-                byte[] newData = null;
-                switch (streamObj)
-                {
-                    case PdfStream strObj:
-                        newData = CheckStreamData(strObj.Contents.GetDecodedData(doc.Context));
-                        break;
-                    case PdfArray arrObj:
-                        var streams = new List<PdfStream>();
-                        foreach (var item in arrObj)
-                        {
-                            var arStr = item.Resolve();
-                            if (arStr is PdfStream matched)
-                            {
-                                streams.Add(matched);
-                            }
-                            else
-                            {
-                                throw new ApplicationException("Non stream object found in contents array: " + arStr.Type);
-                            }
-                        }
-                        // TODO support for split streams
-                        var ms = new MemoryStream();
-                        foreach (var str in streams)
-                        {
-                            str.Contents.GetDecodedStream(doc.Context).CopyTo(ms);
-                            ms.WriteByte((byte)' ');
-                        }
-                        newData = CheckStreamData(ms.ToArray());
-                        break;
-                    default:
-                        throw new ApplicationException("Non stream or array object found in contents array:" + streamObj.Type);
-                }
-
-                var updatedStr = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(newData));
-                page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
-
-                byte[] CheckStreamData(byte[] pgStream)
-                {
-                    var nm = pdf;
-                    var txt = Encoding.ASCII.GetString(pgStream);
-                    var scanner = new ContentScanner(doc.Context, pgStream);
-                    var ops = new List<IPdfOperation>();
-                    PdfOperatorType nxt = PdfOperatorType.Unknown;
-                    while ((nxt = scanner.Peek()) != PdfOperatorType.EOC)
-                    {
-                        var op = scanner.GetCurrentOperation();
-                        if (op == null)
-                        {
-
-                        }
-                        else
-                        {
-                            ops.Add(op);
-
-                        }
-                        scanner.SkipCurrent();
-                    }
-                    var ms = new MemoryStream();
-                    foreach (var op in ops)
-                    {
-                        op.Serialize(ms);
-                        ms.WriteByte((byte)'\n');
-                    }
-                    var rewritten = ms.ToArray();
-                    var txt2 = Encoding.ASCII.GetString(rewritten);
-                    return rewritten;
-                }
+                ReWriteStream(doc, page, false);
             }
         }
 
@@ -474,7 +489,8 @@ namespace PdfLexer.Tests
                         var writer = new StreamingWriter(mssw);
                         foreach (var page in lm.Pages)
                         {
-                            writer.AddPage(page);
+                            var modified = ReWriteStream(lm, page, true);
+                            writer.AddPage(modified);
                         }
                         writer.Complete(new PdfDictionary());
                         d7 = mssw.ToArray();
