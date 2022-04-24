@@ -19,18 +19,20 @@ namespace PdfLexer.Serializers
             throw new NotImplementedException();
         }
 
-        public void WriteToStream(PdfDictionary obj, Stream stream, Func<PdfIndirectRef,PdfIndirectRef> resolver)
+        public void WriteToStream(PdfDictionary obj, Stream stream) => WriteToStream(obj, stream, _serializers.WriteRefAsIs);
+
+        public void WriteToStream(PdfDictionary obj, Stream stream, Action<Stream, PdfIndirectRef> handler)
         {
             stream.WriteByte((byte)'<');
             stream.WriteByte((byte)'<');
             foreach (var item in obj)
             {
-                _serializers.SerializeObject(stream, item.Key, resolver);
+                _serializers.SerializeObject(stream, item.Key, handler);
                 if (item.Value.Type != PdfObjectType.NameObj && item.Value.Type != PdfObjectType.StringObj && item.Value.Type != PdfObjectType.ArrayObj && item.Value.Type != PdfObjectType.DictionaryObj)
                 {
-                        stream.WriteByte((byte)' ');
+                    stream.WriteByte((byte)' ');
                 }
-                _serializers.SerializeObject(stream, item.Value, resolver);
+                _serializers.SerializeObject(stream, item.Value, handler);
             }
             stream.WriteByte((byte)'>');
             stream.WriteByte((byte)'>');

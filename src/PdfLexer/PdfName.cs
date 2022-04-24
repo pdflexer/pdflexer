@@ -94,6 +94,8 @@ namespace PdfLexer
         public static readonly PdfName Subtype = new PdfName("/Subtype", false);
         public static readonly PdfName Link = new PdfName("/Link", false);
         public static readonly PdfName Dest = new PdfName("/Dest", false);
+        public static readonly PdfName XObject = new PdfName("/XObject", false);
+        
 
         public static implicit operator PdfName(string name)
         {

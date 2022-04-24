@@ -371,7 +371,7 @@ namespace PdfLexer.Operators
 
         public static void WritePdfArray(PdfArray val, Stream stream)
         {
-            Shared.ArraySerializer.WriteToStream(val, stream, x => x);
+            Shared.ArraySerializer.WriteToStream(val, stream);
         }
 
         public static void WritePdfString(PdfString val, Stream stream)

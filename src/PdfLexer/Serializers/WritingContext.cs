@@ -57,13 +57,12 @@ namespace PdfLexer.Serializers
         {
             completing = true;
             // TODO offset tracking is not very efficient, need to look into fixing.
-            //locallize
+            
+            // locallize
             reused.Clear();
             Recurse(trailer, reused);
 
             WriteDeferred();
-
-            // var mos = offsets.Keys.Max();
 
             var mos = writtenObjs.Keys.Max();
 
@@ -111,7 +110,7 @@ namespace PdfLexer.Serializers
             Stream.Write(XRefParser.Trailer);
             Stream.WriteByte((byte)'\n');
             trailer["/Size"] = new PdfIntNumber(mos + 1);
-            Serializers.DictionarySerializer.WriteToStream(trailer, Stream, Resolve);
+            Serializers.DictionarySerializer.WriteToStream(trailer, Stream, SerializeRef);
             Stream.WriteByte((byte)'\n');
             Stream.Write(XRefParser.startxref);
             Stream.WriteByte((byte)'\n');
@@ -124,84 +123,20 @@ namespace PdfLexer.Serializers
             Stream.Write(oef);
         }
 
-        public void SerializeObject(IPdfObject obj, bool writeAnyIr = false)
+        internal void SerializeRef(Stream str, PdfIndirectRef ir)
         {
-            if (obj.IsLazy)
-            {
-                var lz = (PdfLazyObject)obj;
-                if (lz.HasLazyIndirect || lz.IsModified)
-                {
-                    obj = lz.Resolve();
-                }
-                else
-                {
-                    lz.Source.CopyData(lz.Offset, lz.Length, Stream);
-                    return;
-                }
-            }
+            ir = Resolve(ir);
+            Serializers.WriteRefAsIs(str, ir);
+        }
+        internal void SerializeObject(IPdfObject obj, bool writeAnyIr = false)
+        {
             Func<PdfIndirectRef, PdfIndirectRef> resolver = Resolve;
             if (writeAnyIr)
             {
                 resolver = ResolveAsIs;
             }
-            switch (obj.Type)
-            {
-                case PdfObjectType.ArrayObj:
-                    Serializers.ArraySerializer.WriteToStream((PdfArray)obj, Stream, resolver);
-                    return;
-                case PdfObjectType.NullObj:
-                    Stream.Write(PdfNull.NullBytes);
-                    return;
-                case PdfObjectType.BooleanObj:
-                     Serializers.BoolSerializer.WriteToStream((PdfBoolean)obj, Stream);
-                    return;
-                case PdfObjectType.StreamObj:
-                    var str = (PdfStream)obj;
-                    str.Contents.UpdateStreamDictionary(str.Dictionary);
-                     Serializers.DictionarySerializer.WriteToStream(str.Dictionary, Stream, resolver);
-                    Stream.WriteByte((byte)'\n');
-                    Stream.Write(IndirectSequences.stream);
-                    Stream.WriteByte((byte)'\n');
-                    str.Contents.CopyEncodedData(Stream);
-                    Stream.WriteByte((byte)'\n');
-                    Stream.Write(IndirectSequences.endstream);
-                    return;
-                case PdfObjectType.DictionaryObj:
-                     Serializers.DictionarySerializer.WriteToStream((PdfDictionary)obj, Stream, resolver);
-                    return;
-                case PdfObjectType.NameObj:
-                     Serializers.NameSerializer.WriteToStream((PdfName)obj, Stream);
-                    return;
-                case PdfObjectType.NumericObj:
-                     Serializers.NumberSerializer.WriteToStream((PdfNumber)obj, Stream);
-                    return;
-                case PdfObjectType.StringObj:
-                     Serializers.StringSerializer.WriteToStream((PdfString)obj, Stream);
-                    return;
-                case PdfObjectType.IndirectRefObj:
-                    var ir = (PdfIndirectRef)obj;
-                    if (writeAnyIr)
-                    {
-                        WriteObjRef(ir.Reference);
-                        return;
-                    }
-                    if (!ir.IsOwned(NewDocId))
-                    {
-                        if (!TryGetLocalRef(ir, out var result))
-                        {
-                            throw new ApplicationException("Attempted to write external indirect reference that had not been localized in this context: " + ir.Reference);
-                        }
-                        WriteObjRef(result.Reference);
-                        return;
-                    }
-                    else
-                    {
-                        WriteObjRef(ir.Reference);
-                    }
-                    return;
 
-            }
-            throw new NotImplementedException($"Requested to write pdf object of type {obj.GetType()}.");
+            Serializers.SerializeObject(Stream, obj, resolver);
         }
 
         private PdfIndirectRef ResolveAsIs(PdfIndirectRef ir) => ir;
@@ -330,6 +265,39 @@ namespace PdfLexer.Serializers
             reused.Clear();
             return WriteIndirectObject(ir, reused);
         }
+
+        internal PdfIndirectRef WritePageAndDedupResources(ParsingContext ctx, PdfIndirectRef ir, PdfDictionary page)
+        {
+            reused.Clear();
+            if (page.TryGetValue<PdfDictionary>(PdfName.Resources, out var value) 
+                && value.TryGetValue<PdfDictionary>(PdfName.XObject, out var resources))
+            {
+                foreach (var (k,v) in resources)
+                {
+                    
+                }
+            }
+            return WriteIndirectObject(ir, reused);
+        }
+
+        // private string GetObjectHash(ParsingContext ctx, IPdfObject obj)
+        // {
+        //     obj = obj.Resolve();
+        //     switch (obj)
+        //     {
+        //         case PdfStream str:
+        //             Recurse(str.Dictionary, refStack);
+        //             break;
+        //         case PdfDictionary dict:
+        //             Recurse(dict, refStack);
+        //             break;
+        //         case PdfArray array:
+        //             Recurse(array, refStack);
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // }
 
         internal void WriteExistingData(ParsingContext ctx, XRefEntry entry)
         {
@@ -496,23 +464,6 @@ namespace PdfLexer.Serializers
             Stream.WriteByte((byte)'\n');
             Stream.Write(IndirectSequences.endobj);
             Stream.WriteByte((byte)'\n');
-        }
-        private void WriteObjRef(XRef xref)
-        {
-            Debug.Assert(xref.ObjectNumber != 0);
-            if (!Utf8Formatter.TryFormat(xref.ObjectNumber, miniBuff, out var written))
-            {
-                throw new ApplicationException("Unable for write Object number integer: " + xref);
-            }
-            Stream.Write(miniBuff, 0, written);
-            Stream.WriteByte((byte)' ');
-            if (!Utf8Formatter.TryFormat(xref.Generation, miniBuff, out written))
-            {
-                throw new ApplicationException("Unable for write generation integer: " + xref);
-            }
-            Stream.Write(miniBuff, 0, written);
-            Stream.WriteByte((byte)' ');
-            Stream.WriteByte((byte)'R');
         }
     }
 }

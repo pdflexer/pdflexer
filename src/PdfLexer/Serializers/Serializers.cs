@@ -30,6 +30,17 @@ namespace PdfLexer.Serializers
 
         public void SerializeObject(Stream stream, IPdfObject obj, Func<PdfIndirectRef,PdfIndirectRef> resolver)
         {
+            SerializeObject(stream, obj, HandleWithResolver);
+
+            void HandleWithResolver(Stream str, PdfIndirectRef ir)
+            {
+                var resolved = resolver(ir);
+                WriteObjRef(str, resolved.Reference);
+            }
+        }
+
+        public void SerializeObject(Stream stream, IPdfObject obj, Action<Stream, PdfIndirectRef> handler)
+        {
             if (obj.IsLazy)
             {
                 var lz = (PdfLazyObject)obj;
@@ -47,7 +58,7 @@ namespace PdfLexer.Serializers
             switch (obj.Type)
             {
                 case PdfObjectType.ArrayObj:
-                    ArraySerializer.WriteToStream((PdfArray)obj, stream, resolver);
+                    ArraySerializer.WriteToStream((PdfArray)obj, stream, handler);
                     return;
                 case PdfObjectType.NullObj:
                     stream.Write(PdfNull.NullBytes);
@@ -58,7 +69,7 @@ namespace PdfLexer.Serializers
                 case PdfObjectType.StreamObj:
                     var str = (PdfStream)obj;
                     str.Contents.UpdateStreamDictionary(str.Dictionary);
-                    DictionarySerializer.WriteToStream(str.Dictionary, stream, resolver);
+                    DictionarySerializer.WriteToStream(str.Dictionary, stream, handler);
                     stream.WriteByte((byte)'\n');
                     stream.Write(IndirectSequences.stream);
                     stream.WriteByte((byte)'\n');
@@ -67,7 +78,7 @@ namespace PdfLexer.Serializers
                     stream.Write(IndirectSequences.endstream);
                     return;
                 case PdfObjectType.DictionaryObj:
-                    DictionarySerializer.WriteToStream((PdfDictionary)obj, stream, resolver);
+                    DictionarySerializer.WriteToStream((PdfDictionary)obj, stream, handler);
                     return;
                 case PdfObjectType.NameObj:
                     NameSerializer.WriteToStream((PdfName)obj, stream);
@@ -80,14 +91,14 @@ namespace PdfLexer.Serializers
                     return;
                 case PdfObjectType.IndirectRefObj:
                     var ir = (PdfIndirectRef)obj;
-                    var resolved = resolver(ir);
-                    WriteObjRef(stream, resolved.Reference);
+                    handler(stream, ir);
                     return;
 
             }
             throw new NotImplementedException($"Requested to write pdf object of type {obj.GetType()}.");
         }
 
+        internal void WriteRefAsIs(Stream stream, PdfIndirectRef ir) => WriteObjRef(stream, ir.Reference);
         private void WriteObjRef(Stream stream, XRef xref)
         {
             Span<byte> miniBuff = stackalloc byte[20];

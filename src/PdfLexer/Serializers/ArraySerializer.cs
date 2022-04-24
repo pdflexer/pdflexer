@@ -17,15 +17,16 @@ namespace PdfLexer.Serializers
             throw new NotImplementedException();
         }
 
-        public void WriteToStream(PdfArray obj, Stream stream, Func<PdfIndirectRef,PdfIndirectRef> resolver)
+        public void WriteToStream(PdfArray obj, Stream stream) => WriteToStream(obj, stream, _serializers.WriteRefAsIs);
+        public void WriteToStream(PdfArray obj, Stream stream, Action<Stream, PdfIndirectRef> handler)
         {
             stream.WriteByte((byte)'[');
-            for (var i = 0;i<obj.Count;i++)
+            for (var i = 0; i < obj.Count; i++)
             {
-                _serializers.SerializeObject(stream, obj[i], resolver);
-                if (i+1<obj.Count)
+                _serializers.SerializeObject(stream, obj[i], handler);
+                if (i + 1 < obj.Count)
                 {
-                    var nxt = obj[i+1];
+                    var nxt = obj[i + 1];
                     if (nxt.Type == PdfObjectType.NameObj || nxt.Type == PdfObjectType.ArrayObj || nxt.Type == PdfObjectType.DictionaryObj
                         || nxt.Type == PdfObjectType.StringObj)
                     {
