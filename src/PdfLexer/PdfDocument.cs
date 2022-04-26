@@ -112,12 +112,12 @@ namespace PdfLexer
             trailer.Remove(PdfName.XRefStm);
             if (Pages != null)
             {
-                catalog[PdfName.Pages] = BuildPageTree();
+                catalog[PdfName.Pages] = BuildPageTree(ctx);
             }
             ctx.Complete(trailer);
         }
 
-        private IPdfObject BuildPageTree()
+        private IPdfObject BuildPageTree(WritingContext ctx)
         {
             // TODO page tree
             var dict = new PdfDictionary();
@@ -129,7 +129,13 @@ namespace PdfLexer
                 var pg = page.Dictionary.CloneShallow();
                 WritingUtil.RemovedUnusedLinks(pg, ir => pageDicts.Contains(ir.GetObject()));
                 pg[PdfName.Parent] = ir;
-                arr.Add(PdfIndirectRef.Create(pg));
+                if (page.SourceRef != null)
+                {
+                    //page.SourceRef.Object = pg;
+                }
+                var nir = PdfIndirectRef.Create(pg);
+                arr.Add(nir);
+                // ctx.WriteIndirectObject(nir);
             }
             dict[PdfName.Kids] = arr;
             dict[PdfName.TypeName] = PdfName.Pages;

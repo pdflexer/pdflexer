@@ -26,7 +26,8 @@ namespace PdfLexer.Parsers
         internal IPdfDataSource CurrentSource { get; set; }
 
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
-        internal Dictionary<ulong, IPdfObject> IndirectCache = new Dictionary<ulong, IPdfObject>();
+        // internal Dictionary<ulong, IPdfObject> IndirectCache = new Dictionary<ulong, IPdfObject>();
+        internal Dictionary<ulong, WeakReference<IPdfObject>> IndirectCache = new Dictionary<ulong, WeakReference<IPdfObject>>();
         internal NumberCache NumberCache = new NumberCache();
         internal NameCache NameCache = new NameCache();
         internal NumberParser NumberParser { get; }
@@ -123,7 +124,7 @@ namespace PdfLexer.Parsers
             }
 
             ulong id = ((ulong)entry.ObjectNumber << 16) | ((uint)entry.Generation & 0xFFFF);
-            if (IndirectCache.TryGetValue(id, out var value))
+            if (IndirectCache.TryGetValue(id, out var weak) && weak.TryGetTarget(out var value))
             {
                 switch (value.Type)
                 {
@@ -220,7 +221,7 @@ namespace PdfLexer.Parsers
 
         internal IPdfObject GetIndirectObject(ulong id)
         {
-            if (IndirectCache.TryGetValue(id, out var cached))
+            if (IndirectCache.TryGetValue(id, out var weak) && weak.TryGetTarget(out var cached))
             {
                 return cached;
             }
@@ -240,7 +241,7 @@ namespace PdfLexer.Parsers
             // CurrentIndirectObject = id;
 
             var obj = value.GetObject();
-            IndirectCache[id] = obj;
+            IndirectCache[id] = new WeakReference<IPdfObject>(obj);
             
             return obj;
         }
@@ -493,7 +494,7 @@ namespace PdfLexer.Parsers
             CachedInts = null;
             NameCache = null;
             NumberCache = null;
-            IndirectCache = null;
+            // IndirectCache = null;
             foreach (var disp in disposables)
             {
                 disp.Dispose();

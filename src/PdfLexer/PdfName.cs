@@ -64,6 +64,7 @@ namespace PdfLexer
         public static readonly PdfName Length = new PdfName("/Length", false);
         public static readonly PdfName Root = new PdfName("/Root", false);
         public static readonly PdfName Pages = new PdfName("/Pages", false);
+        public static readonly PdfName Page = new PdfName("/Page", false);
         public static readonly PdfName TypeName = new PdfName("/Type", false);
         public static readonly PdfName Count = new PdfName("/Count", false);
         public static readonly PdfName Kids = new PdfName("/Kids", false);

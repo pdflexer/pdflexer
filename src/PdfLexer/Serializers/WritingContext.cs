@@ -21,8 +21,7 @@ namespace PdfLexer.Serializers
         private static byte[] gen1end = new byte[] { (byte)'0', (byte)'0', (byte)'0', (byte)'0', (byte)'1', (byte)' ', (byte)'f', (byte)' ', (byte)'\n' };
         private static byte[] oef = new byte[] { (byte)'%', (byte)'%', (byte)'E', (byte)'O', (byte)'F', (byte)'\n' };
         private static byte[] obj0 = Encoding.ASCII.GetBytes("0000000000 65535 f \n");
-        // internal Dictionary<ulong, (long OS, XRef Ref)> os = new Dictionary<ulong, (long OS, XRef Ref)>();
-        internal Dictionary<int, (long OS, XRef Ref)> writtenObjs = new Dictionary<int, (long OS, XRef Ref)>();
+
         internal int NewDocId = PdfDocument.GetNextId();
         internal int NextId = 1;
         internal Stream Stream { get; }
@@ -57,10 +56,10 @@ namespace PdfLexer.Serializers
         {
             completing = true;
             // TODO offset tracking is not very efficient, need to look into fixing.
-            
+
             // locallize
             reused.Clear();
-            Recurse(trailer, reused);
+            Recurse(trailer, reused, true);
 
             WriteDeferred();
 
@@ -156,49 +155,76 @@ namespace PdfLexer.Serializers
                 return ir;
             }
         }
+        internal void RegisterReplacedObject(int sourceId, XRef eir, IPdfObject obj)
+        {
+            EnsureCurrentDoc(sourceId);
 
-        // TODO can we just track SourcedXRef by the ConditionalWeakTable as well?
+            var eid = eir.GetId();
+            if (currentDictionary.ContainsKey(eid))
+            {
+                throw new ApplicationException("Attempted to register replacement for already written object");
+            }
+
+            if (localizedObjects.TryGetValue(obj, out var local))
+            {
+                currentDictionary[eid] = local;
+            }
+            else
+            {
+                var ir = PdfIndirectRef.Create(obj);
+                ir.Reference = new XRef { ObjectNumber = NextId++ };
+                ir.SourceId = NewDocId;
+                localizedObjects.Add(obj, ir);
+            }
+        }
+
+        // objects that have been localized
+        // can be from external doc but important to track as we need to dedup objects from new xrefs
         private ConditionalWeakTable<IPdfObject, PdfIndirectRef> localizedObjects = new ConditionalWeakTable<IPdfObject, PdfIndirectRef>();
+
+        // objects that have been written
+        internal Dictionary<int, (long OS, XRef Ref)> writtenObjs = new Dictionary<int, (long OS, XRef Ref)>();
+
+        // xrefs for external documents that have been localized and have a local xref committed
         private Dictionary<int, Dictionary<ulong, PdfIndirectRef>> localizedXRefs = new Dictionary<int, Dictionary<ulong, PdfIndirectRef>>();
         private int currentExternalId = -1;
         private Dictionary<ulong, PdfIndirectRef> currentDictionary = null;
 
         private bool TryGetLocalRef(PdfIndirectRef ir, out PdfIndirectRef local)
         {
-            if (ir.SourceId == NewDocId)
+            if (ir.IsOwned(NewDocId)) // for new xrefs we will own them if unowned
             {
                 local = ir;
                 return true;
             }
 
-            if (ir is NewIndirectRef nir)
+            var obj = ir.GetObject();
+            if (localizedObjects.TryGetValue(obj, out local))
             {
-                return localizedObjects.TryGetValue(nir.Object, out local);
-            }
-
-            if (currentExternalId != ir.SourceId || currentDictionary == null)
-            {
-                if (!localizedXRefs.TryGetValue(ir.SourceId, out currentDictionary))
+                if (ir is NewIndirectRef)
                 {
-                    local = null;
-                    return false;
+                    return true;
                 }
-                currentExternalId = ir.SourceId;
+
+                var id = ir.Reference.GetId();
+                EnsureCurrentDoc(ir.SourceId);
+                currentDictionary[id] = local;
+
+                return true;
             }
 
-            ulong id = ir.Reference.GetId();
-            return currentDictionary.TryGetValue(id, out local);
-            throw new NotImplementedException("TODO");
+            EnsureCurrentDoc(ir.SourceId);
+            return currentDictionary.TryGetValue(ir.Reference.GetId(), out local);
         }
 
         public PdfIndirectRef Localize(PdfIndirectRef ir)
         {
-            if (ir.IsOwned(NewDocId))
+            if (ir.IsOwned(NewDocId)) // if unowned this will trigger owning it but won't have ref
             {
                 if (ir.Reference.ObjectNumber == 0)
                 {
                     var obj = ir.GetObject();
-                    if (localizedObjects.TryGetValue(obj, out var existing))
+                    if (localizedObjects.TryGetValue(obj, out var existing)) // check if already localized
                     {
                         ir.Reference = existing.Reference;
                         return ir;
@@ -212,92 +238,75 @@ namespace PdfLexer.Serializers
                 return ir;
             }
 
-            if (ir is NewIndirectRef nir)
+            if (ir is NewIndirectRef nir) // owned by someone else, have to track solely through lookup
             {
-                var obj = nir.Object;
+                var obj = nir.GetObject();
                 if (localizedObjects.TryGetValue(obj, out var existing))
                 {
                     return existing;
                 }
-                var dummy = PdfIndirectRef.Create(null); // TODO look into this;
-                dummy.SourceId = NewDocId;
-                dummy.Reference = new XRef { ObjectNumber = NextId++ };
-                localizedObjects.Add(obj, dummy);
+
+                // first time seeing, just through dummy into tracker
+                var dummy = CreateAndSetDummyPointer(obj);
                 return dummy;
             }
 
+            EnsureCurrentDoc(ir.SourceId);
 
-            if (currentExternalId != ir.SourceId)
             {
-                if (!localizedXRefs.TryGetValue(ir.SourceId, out currentDictionary))
-                {
-                    currentDictionary = new Dictionary<ulong, PdfIndirectRef>();
-                    localizedXRefs[ir.SourceId] = currentDictionary;
-                }
-                currentExternalId = ir.SourceId;
-            }
-            {
-                if (currentDictionary == null)
-                {
-                    currentDictionary = new Dictionary<ulong, PdfIndirectRef>();
-                    localizedXRefs[currentExternalId] = currentDictionary;
-                }
-                ulong id = ((ulong)ir.Reference.ObjectNumber << 16) | ((uint)ir.Reference.Generation & 0xFFFF);
+                var id = ir.Reference.GetId();
                 if (currentDictionary.TryGetValue(id, out var existing))
                 {
-                    return existing;
+                    return existing; // already tracked
                 }
                 var obj = ir.GetObject();
-                var dummy = PdfIndirectRef.Create(null); // TODO look into this;
-                dummy.SourceId = NewDocId;
-                dummy.Reference = new XRef { ObjectNumber = NextId++ };
-                localizedObjects.AddOrUpdate(obj, dummy);
+                var dummy = CreateAndSetDummyPointer(obj);
                 currentDictionary[id] = dummy;
                 return dummy;
             }
+        }
 
-            throw new NotImplementedException("TODO");
+        private PdfIndirectRef CreateAndSetDummyPointer(IPdfObject obj)
+        {
+            var dummy = PdfIndirectRef.Create(null); // TODO look into this, can maybe hold actual ref
+            dummy.SourceId = NewDocId;
+            dummy.Reference = new XRef { ObjectNumber = NextId++ };
+            localizedObjects.AddOrUpdate(obj, dummy);
+            return dummy;
+        }
+        private void EnsureCurrentDoc(int sourceId)
+        {
+            if (currentExternalId != sourceId)
+            {
+                if (!localizedXRefs.TryGetValue(sourceId, out currentDictionary))
+                {
+                    currentDictionary = new Dictionary<ulong, PdfIndirectRef>();
+                    localizedXRefs[sourceId] = currentDictionary;
+                }
+                currentExternalId = sourceId;
+            }
+
+            if (currentDictionary == null)
+            {
+                currentDictionary = new Dictionary<ulong, PdfIndirectRef>();
+                localizedXRefs[currentExternalId] = currentDictionary;
+            }
         }
 
         private HashSet<PdfIndirectRef> reused = new HashSet<PdfIndirectRef>();
         public PdfIndirectRef WriteIndirectObject(PdfIndirectRef ir)
         {
             reused.Clear();
-            return WriteIndirectObject(ir, reused);
+            // reused.Add(ir);
+            return WriteIndirectObject(ir, reused, true);
         }
 
-        internal PdfIndirectRef WritePageAndDedupResources(ParsingContext ctx, PdfIndirectRef ir, PdfDictionary page)
+        public void LocalizeIdirect(PdfIndirectRef ir)
         {
             reused.Clear();
-            if (page.TryGetValue<PdfDictionary>(PdfName.Resources, out var value) 
-                && value.TryGetValue<PdfDictionary>(PdfName.XObject, out var resources))
-            {
-                foreach (var (k,v) in resources)
-                {
-                    
-                }
-            }
-            return WriteIndirectObject(ir, reused);
+            // reused.Add(ir);
+            WriteIndirectObject(ir, reused, false);
         }
-
-        // private string GetObjectHash(ParsingContext ctx, IPdfObject obj)
-        // {
-        //     obj = obj.Resolve();
-        //     switch (obj)
-        //     {
-        //         case PdfStream str:
-        //             Recurse(str.Dictionary, refStack);
-        //             break;
-        //         case PdfDictionary dict:
-        //             Recurse(dict, refStack);
-        //             break;
-        //         case PdfArray array:
-        //             Recurse(array, refStack);
-        //             break;
-        //         default:
-        //             break;
-        //     }
-        // }
 
         internal void WriteExistingData(ParsingContext ctx, XRefEntry entry)
         {
@@ -308,7 +317,7 @@ namespace PdfLexer.Serializers
             WriteObjEnd();
         }
 
-        internal PdfIndirectRef WriteIndirectObject(PdfIndirectRef ir, HashSet<PdfIndirectRef> refStack)
+        internal PdfIndirectRef WriteIndirectObject(PdfIndirectRef ir, HashSet<PdfIndirectRef> refStack, bool writeNonDeferred)
         {
             var obj = ir.GetObject();
         Parse:
@@ -322,13 +331,13 @@ namespace PdfLexer.Serializers
                     }
                     break;
                 case PdfStream str:
-                    Recurse(str.Dictionary, refStack);
+                    Recurse(str.Dictionary, refStack, writeNonDeferred);
                     break;
                 case PdfDictionary dict:
-                    Recurse(dict, refStack);
+                    Recurse(dict, refStack, writeNonDeferred);
                     break;
                 case PdfArray array:
-                    Recurse(array, refStack);
+                    Recurse(array, refStack, writeNonDeferred);
                     break;
                 default:
                     break;
@@ -338,6 +347,11 @@ namespace PdfLexer.Serializers
             PdfIndirectRef WriteCurrentIfNeeded()
             {
                 var local = Localize(ir);
+                if (!writeNonDeferred)
+                {
+                    return local;
+                }
+
                 if (writtenObjs.TryGetValue(local.Reference.ObjectNumber, out var info))
                 {
                     if (info.Ref.Generation == local.Reference.Generation)
@@ -351,6 +365,7 @@ namespace PdfLexer.Serializers
                     }
                     // existing less than current, break through and overwrite
                 }
+                if (obj.Type == PdfObjectType.NullObj) { return local; }
                 if (local.DeferWriting && !completing)
                 {
                     deferedObjects.Add((obj, local));
@@ -377,25 +392,25 @@ namespace PdfLexer.Serializers
             }
         }
 
-        private void Recurse(PdfDictionary obj, HashSet<PdfIndirectRef> refStack)
+        private void Recurse(PdfDictionary obj, HashSet<PdfIndirectRef> refStack, bool writeNonDeferred)
         {
             foreach (var item in obj.Values)
             {
                 Debug.Assert(item != null);
-                CheckSingle(item, refStack);
+                CheckSingle(item, refStack, writeNonDeferred);
             }
         }
 
-        private void Recurse(PdfArray arr, HashSet<PdfIndirectRef> refStack)
+        private void Recurse(PdfArray arr, HashSet<PdfIndirectRef> refStack, bool writeNonDeferred)
         {
             for (var i = 0; i < arr.Count; i++)
             {
                 Debug.Assert(arr[i] != null);
-                CheckSingle(arr[i], refStack);
+                CheckSingle(arr[i], refStack, writeNonDeferred);
             }
         }
 
-        private void CheckSingle(IPdfObject obj, HashSet<PdfIndirectRef> refStack)
+        private void CheckSingle(IPdfObject obj, HashSet<PdfIndirectRef> refStack, bool writeNonDeferred)
         {
             var toCheck = obj;
             if (obj.IsLazy)
@@ -413,10 +428,10 @@ namespace PdfLexer.Serializers
             switch (toCheck.Type)
             {
                 case PdfObjectType.DictionaryObj:
-                    Recurse((PdfDictionary)toCheck, refStack);
+                    Recurse((PdfDictionary)toCheck, refStack, writeNonDeferred);
                     return;
                 case PdfObjectType.ArrayObj:
-                    Recurse((PdfArray)toCheck, refStack);
+                    Recurse((PdfArray)toCheck, refStack, writeNonDeferred);
                     return;
                 case PdfObjectType.IndirectRefObj:
                     HandleNestedIndirect((PdfIndirectRef)toCheck);
@@ -425,19 +440,19 @@ namespace PdfLexer.Serializers
 
             void HandleNestedIndirect(PdfIndirectRef nir)
             {
-                if (TryGetLocalRef(nir, out _))
+                if (TryGetLocalRef(nir, out var lr) && writtenObjs.ContainsKey(lr.Reference.ObjectNumber))
                 {
                     return;
                 }
+
                 if (refStack.Contains(nir))
                 {
-                    Localize(nir);
+                    Localize(nir); // we've hit this reference before but this occurence may not be localized
+                    return;
                 }
-                else
-                {
-                    refStack.Add(nir);
-                    WriteIndirectObject(nir, refStack);
-                }
+
+                refStack.Add(nir);
+                WriteIndirectObject(nir, refStack, writeNonDeferred);
             }
         }
 

@@ -7,6 +7,14 @@ namespace PdfLexer.DOM
     public class PdfPage
     {
         public PdfDictionary Dictionary { get; }
+        internal ExistingIndirectRef SourceRef { get; }
+
+        internal PdfPage(PdfDictionary page, ExistingIndirectRef ir)
+        {
+            Dictionary = page;
+            SourceRef = ir;
+        }
+
         public PdfPage(PdfDictionary page)
         {
             Dictionary = page;

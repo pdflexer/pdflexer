@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
+using PdfLexer.DOM;
 using PdfLexer.Parsers;
 
 [assembly: InternalsVisibleTo("PdfLexer.Tests")]
@@ -109,8 +110,13 @@ namespace PdfLexer
                         break;
                     }
                 case PdfDictionary dict:
-                    foreach (var (_,v) in dict)
+                    dict.TryGetValue<PdfName>(PdfName.TypeName, out var type, false);
+                    foreach (var (k,v) in dict)
                     {
+                        if (type == PdfName.Page && k == PdfName.Parent) 
+                        { 
+                            continue; 
+                        }
                         RecursiveLoad(v, refStack);
                     }
                     break;
@@ -130,8 +136,10 @@ namespace PdfLexer
         /// </summary>
         /// <param name="dict">Pdf catalog.</param>
         /// <returns>Page dictionaries.</returns>
-        public static IEnumerable<PdfDictionary> EnumeratePageTree(PdfDictionary dict) => EnumeratePages(dict, null, null, null, null, new HashSet<object>());
-        internal static IEnumerable<PdfDictionary> EnumeratePages(PdfDictionary dict, PdfDictionary resources, PdfArray mediabox, PdfArray cropbox, PdfNumber rotate, HashSet<object> read)
+        public static IEnumerable<PdfPage> EnumeratePageTree(PdfDictionary dict) => EnumeratePages(dict, null, null, null, null, null, new HashSet<object>());
+        internal static IEnumerable<PdfPage> EnumeratePages(PdfDictionary dict, 
+            PdfDictionary resources, PdfArray mediabox, PdfArray cropbox, PdfNumber rotate, ExistingIndirectRef irf,
+            HashSet<object> read)
         {
             // Inheritible items if not provided in page dict:
             // Resources required (dictionary)
@@ -164,6 +172,7 @@ namespace PdfLexer
                     var kids = dict.GetRequiredValue<PdfArray>(PdfName.Kids);
                     foreach (var child in kids)
                     {
+                        var ir = child as ExistingIndirectRef;
                         var pg = child.Resolve();
                         if (pg.Type != PdfObjectType.DictionaryObj)
                         {
@@ -177,7 +186,7 @@ namespace PdfLexer
                             continue;
                         }
 
-                        foreach (var npg in EnumeratePages(instance, resources, mediabox, cropbox, rotate, read))
+                        foreach (var npg in EnumeratePages(instance, resources, mediabox, cropbox, rotate, ir, read))
                         {
                             yield return npg;
                         }
@@ -200,7 +209,8 @@ namespace PdfLexer
                     {
                         dict[PdfName.Rotate] = rotate;
                     }
-                    yield return dict;
+                    var pgg = irf == null ? new PdfPage(dict) : new PdfPage(dict, irf);
+                    yield return pgg;
                     break;
             }
         }

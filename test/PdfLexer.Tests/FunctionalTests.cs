@@ -383,6 +383,24 @@ namespace PdfLexer.Tests
             }
         }
 
+        [Fact]
+        public void It_Reads_And_Writes_Zapf()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var results = Path.Combine(tp, "results", "pighash");
+            var result = Path.Combine(results, "ZapfDingbats_rewrite.pdf");
+            Directory.CreateDirectory(results);
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "ZapfDingbats.pdf");
+            var data = File.ReadAllBytes(pdf);
+            using var doc = PdfDocument.Open(data);
+            using var ms = new MemoryStream();
+            doc.SaveTo(ms);
+            using var doc2 = PdfDocument.Open(ms.ToArray());
+
+            EnumerateObjects(doc2.Catalog, new HashSet<int>());
+            File.WriteAllBytes(result, ms.ToArray());
+        }
+
         [InlineData(true)]
         [InlineData(false)]
         [Theory]
