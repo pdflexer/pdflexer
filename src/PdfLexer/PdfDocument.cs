@@ -25,7 +25,7 @@ namespace PdfLexer
         /// <summary>
         /// Parsing context for this PDF. May be internalized but may provide external access to allow parallel processing at some point.
         /// </summary>
-        public ParsingContext Context { get; }
+        public ParsingContext Context { get; private set; }
         /// <summary>
         /// Version of the PDF document.
         /// </summary>
@@ -34,7 +34,7 @@ namespace PdfLexer
         /// PDF trailer dictionary.
         /// Note: The /Root entry pointing to the PDF catalog will be overwritten if PDF is saved.
         /// </summary>
-        public PdfDictionary Trailer { get; }
+        public PdfDictionary Trailer { get; private set; }
         /// <summary>
         /// PDF catalog dictionary.
         /// Note: The /Pages entry pointing to the page tree will be overwritten if PDF is saved and <see cref="Pages"/> is not null.
@@ -64,6 +64,11 @@ namespace PdfLexer
         public void Dispose()
         {
             Context.Dispose();
+            xrefEntries = null;
+            Pages = null;
+            Catalog = null;
+            Trailer = null;
+            Context = null;
         }
 
         public byte[] Save()
@@ -87,7 +92,7 @@ namespace PdfLexer
             }
             var ctx = new WritingContext(stream, nextId, DocumentId);
             ctx.Initialize(PdfVersion);
-            if (XrefEntries != null)
+            if (XrefEntries?.Count > 0)
             {
                 SaveExistingObjects(ctx);
             }

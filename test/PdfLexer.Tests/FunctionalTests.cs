@@ -504,11 +504,11 @@ namespace PdfLexer.Tests
                         using var fs2 = File.OpenRead(pdf);
                         using var lm = PdfDocument.OpenLowMemory(fs2);
                         var mssw = new MemoryStream();
-                        var writer = new StreamingWriter(mssw);
+                        var writer = new StreamingWriter(mssw, false);
                         foreach (var page in lm.Pages)
                         {
-                            var modified = ReWriteStream(lm, page, true);
-                            writer.AddPage(modified);
+                            // var modified = ReWriteStream(lm, page, true);
+                            writer.AddPage(page);
                         }
                         writer.Complete(new PdfDictionary());
                         d7 = mssw.ToArray();
@@ -568,6 +568,27 @@ namespace PdfLexer.Tests
             {
                 throw new ApplicationException(string.Join(Environment.NewLine, errors));
             }
+        }
+
+        [Fact]
+        public async Task It_Dedups_FreeCulture()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var results = Path.Combine(tp, "results", "pighash");
+            Directory.CreateDirectory(results);
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdf = Path.Combine(pdfRoot, "freeculture.pdf");
+            using var fs2 = File.OpenRead(pdf);
+            using var lm = PdfDocument.OpenLowMemory(fs2);
+            var mssw = new MemoryStream();
+            var writer = new StreamingWriter(mssw, true);
+            foreach (var page in lm.Pages)
+            {
+                // var modified = ReWriteStream(lm, page, true);
+                writer.AddPage(page);
+            }
+            writer.Complete(new PdfDictionary());
+            File.WriteAllBytes(Path.Combine(results, "freeculture_out.pdf"), mssw.ToArray());
         }
 
         //[Fact]
@@ -709,7 +730,6 @@ namespace PdfLexer.Tests
             // File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
         }
 
-
         // [Fact]
         public void It_Rebuilds_PDF_JS()
         {
@@ -745,6 +765,11 @@ namespace PdfLexer.Tests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "Pages-tree-refs.pdf");
             var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            var hasher = new TreeHasher();
+            var result = hasher.GetHash(doc.Trailer);
+            var result2 = hasher.GetHash(doc.Trailer);
+            Assert.Equal(result, result2);
 
             foreach (var item in doc.XrefEntries)
             {

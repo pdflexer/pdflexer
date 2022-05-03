@@ -7,13 +7,24 @@ namespace PdfLexer.Serializers
     public class StreamingWriter
     {
         private readonly WritingContext _ctx;
+        private readonly bool dedup;
+        private readonly TreeHasher hasher;
+        private readonly Dictionary<string, PdfIndirectRef> refs;
 
-        public StreamingWriter(Stream stream)
+
+        public StreamingWriter(Stream stream, bool dedupXobj)
         {
             _ctx = new WritingContext(stream);
             _ctx.Initialize(1.7m);
             CreateBag();
+            dedup = dedupXobj;
+            if (dedup)
+            {
+                hasher = new TreeHasher();
+                refs = new Dictionary<string, PdfIndirectRef>();
+            }
         }
+        public StreamingWriter(Stream stream) : this(stream, false) { }
 
         private List<(PdfDictionary Bag, PdfIndirectRef BagRef)> bags = new List<(PdfDictionary Bag, PdfIndirectRef BagRef)>();
 
@@ -27,6 +38,41 @@ namespace PdfLexer.Serializers
             var pg = page.Dictionary.CloneShallow();
             WritingUtil.RemovedUnusedLinks(pg, ir => false);
             pg[PdfName.Parent] = currentBagRef;
+
+            // 
+            if (dedup 
+                && pg.TryGetValue<PdfDictionary>(PdfName.Resources, out var res) 
+                && res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobjs)
+                )
+            {
+                var resC = res.CloneShallow();
+                var xC = xobjs.CloneShallow();
+                resC[PdfName.XObject] = xC;
+                pg[PdfName.Resources] = resC;
+                foreach (var (k,v) in xC)
+                {
+                    if (!(v is PdfIndirectRef vr)) {
+                        continue;
+                    }
+                    
+                    if (_ctx.IsKnown(vr))
+                    {
+                        continue;
+                    }
+
+                    var hash = hasher.GetHash(v);
+                    if (refs.TryGetValue(hash, out var xr))
+                    {
+                        xC[k] = xr;
+                    } else
+                    {
+                        var ir = _ctx.WriteIndirectObject(vr);
+                        xC[k] = ir;
+                        refs[hash] = ir;
+                    }
+                }
+            }
+
             var pgRef = PdfIndirectRef.Create(pg);
             currentBagArray.Add(pgRef);
             _ctx.WriteIndirectObject(pgRef);
@@ -36,6 +82,10 @@ namespace PdfLexer.Serializers
                 CreateBag();
             }
         }
+
+        // dedup
+        // Type XObject (optional) // Subtype Form (required
+
 
         public void Complete(PdfDictionary trailer)
         {

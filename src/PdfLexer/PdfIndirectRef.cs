@@ -22,7 +22,7 @@ namespace PdfLexer
         /// <param name="obj">Object to point to</param>
         /// <returns>PdfIndirectRef</returns>
         public static PdfIndirectRef Create(IPdfObject obj) => new NewIndirectRef(obj);
-        internal abstract bool IsOwned(int sourceId);
+        internal abstract bool IsOwned(int sourceId, bool attemptOwnership);
         internal abstract XRef Reference { get; set; }
         internal abstract int SourceId { get; set; }
         internal abstract bool DeferWriting { get; set; }
@@ -64,7 +64,7 @@ namespace PdfLexer
             }
             return Object;
         } 
-        internal override bool IsOwned(int sourceId) => SourceId == sourceId;
+        internal override bool IsOwned(int sourceId, bool attemptOwnership) => SourceId == sourceId;
 
         internal IPdfObject Object {get;set;}
         internal override bool DeferWriting { get; set; }
@@ -105,9 +105,9 @@ namespace PdfLexer
         internal override bool DeferWriting { get; set; }
         public IPdfObject Object { get; internal set; }
 
-        internal override bool IsOwned(int sourceId) 
+        internal override bool IsOwned(int sourceId, bool attemptOwnership) 
         {
-            if (SourceId == 0)
+            if (SourceId == 0 && attemptOwnership)
             {
                 SourceId = sourceId;
                 return true;

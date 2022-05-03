@@ -226,7 +226,7 @@ namespace PdfLexer.Parsers
                 return cached;
             }
 
-            if (!Document.XrefEntries.TryGetValue(id, out var value) || value.IsFree)
+            if (Document.XrefEntries == null || !Document.XrefEntries.TryGetValue(id, out var value) || value.IsFree)
             {
                 // A indirect reference to an undefined object shall not be considered an error by
                 // a conforming reader; it shall be treated as a reference to the null object.

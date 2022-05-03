@@ -93,7 +93,7 @@ namespace PdfLexer.IO
                 }
             } else if (obj is PdfIndirectRef ir)
             {
-                if (ir.IsOwned(Context.SourceId)) { return ir; }
+                if (ir.IsOwned(Context.SourceId, true)) { return ir; }
                 if (refStack.TryGetValue(ir, out var copied))
                 {
                     return copied;

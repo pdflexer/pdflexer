@@ -3,6 +3,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using PdfLexer.DOM;
@@ -128,6 +129,123 @@ namespace PdfLexer
                     break;
                 default:
                     break;
+            }
+        }
+
+
+        internal static void Recurse(IPdfObject obj, HashSet<PdfIndirectRef> refStack, Action<IPdfObject, PdfIndirectRef?> pre, Action<IPdfObject, PdfIndirectRef?> post, bool ordered = false, PdfIndirectRef? irRef = null)
+        {
+            if (refStack.Contains(obj))
+            {
+                return;
+            }
+
+            pre(obj, irRef);
+
+            switch (obj)
+            {
+                case PdfIndirectRef ir:
+                    refStack.Add(ir);
+                    obj = ir.GetObject();
+                    Recurse(obj, refStack, pre, post, ordered, ir);
+                    return;
+                case PdfLazyObject lz:
+                    obj = lz.Resolve();
+                    Recurse(obj, refStack, pre, post, ordered);
+                    break;
+                case PdfStream str:
+                    DoDict(str.Dictionary);
+                    break;
+                case PdfDictionary dict:
+                    DoDict(dict);
+                    break;
+                case PdfArray array:
+                    foreach (var v in array)
+                    {
+                        Recurse(v, refStack, pre, post, ordered);
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            post(obj, irRef);
+
+            void DoDict(PdfDictionary d)
+            {
+                if (ordered)
+                {
+                    foreach (var k in d.Keys.OrderBy(x => x.Value))
+                    {
+                        Recurse(d[k], refStack, pre, post, ordered);
+                    }
+
+                }
+                else
+                {
+                    foreach (var v in d.Values)
+                    {
+                        Recurse(v, refStack, pre, post, ordered);
+                    }
+
+                }
+            }
+        }
+
+        internal static void Recurse(IPdfObject obj, HashSet<PdfIndirectRef> refStack, Func<IPdfObject, bool> skip, Action<IPdfObject, PdfIndirectRef?> objWork, bool ordered=false, PdfIndirectRef? irRef=null)
+        {
+            if (refStack.Contains(obj) || skip(obj))
+            {
+                return;
+            }
+
+            switch (obj)
+            {
+                case PdfIndirectRef ir:
+                    refStack.Add(ir);
+                    obj = ir.GetObject();
+                    Recurse(obj, refStack, skip, objWork, ordered, ir);
+                    return;
+                case PdfLazyObject lz:
+                    obj = lz.Resolve();
+                    Recurse(obj, refStack, skip, objWork, ordered);
+                    break;
+                case PdfStream str:
+                    DoDict(str.Dictionary);
+                    break;
+                case PdfDictionary dict:
+                    DoDict(dict);
+                    break;
+                case PdfArray array:
+                    foreach (var v in array)
+                    {
+                        Recurse(v, refStack, skip, objWork, ordered);
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            objWork(obj, irRef);
+
+            void DoDict(PdfDictionary d)
+            {
+                if (ordered)
+                {
+                    foreach (var k in d.Keys.OrderBy(x => x.Value))
+                    {
+                        Recurse(d[k], refStack, skip, objWork, ordered);
+                    }
+
+                }
+                else
+                {
+                    foreach (var v in d.Values)
+                    {
+                        Recurse(v, refStack, skip, objWork, ordered);
+                    }
+
+                }
             }
         }
 
