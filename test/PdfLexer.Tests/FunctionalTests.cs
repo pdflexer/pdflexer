@@ -413,7 +413,7 @@ namespace PdfLexer.Tests
             using var fs2 = File.OpenRead(pdf);
             using var lm = PdfDocument.OpenLowMemory(fs2);
             var mssw = new MemoryStream();
-            var writer = new StreamingWriter(mssw, true);
+            using var writer = new StreamingWriter(mssw, true, true);
             foreach (var page in lm.Pages)
             {
                 writer.AddPage(page);
@@ -425,8 +425,10 @@ namespace PdfLexer.Tests
             Assert.Equal(orig, ah);
         }
 
-        [Fact]
-        public void It_Dedups_Same_Images()
+        [InlineData(true)]
+        [InlineData(false)]
+        [Theory]
+        public void It_Dedups_Same_Images(bool inMemory)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue1905.pdf");
@@ -434,7 +436,7 @@ namespace PdfLexer.Tests
 
             using var doc = PdfDocument.Create();
             var mssw = new MemoryStream();
-            var writer = new StreamingWriter(mssw, true);
+            using var writer = new StreamingWriter(mssw, true, inMemory);
 
             // write same file twice
             using var fs = File.OpenRead(pdf);
@@ -571,7 +573,7 @@ namespace PdfLexer.Tests
                         using var fs2 = File.OpenRead(pdf);
                         using var lm = PdfDocument.OpenLowMemory(fs2);
                         var mssw = new MemoryStream();
-                        var writer = new StreamingWriter(mssw, false);
+                        using var writer = new StreamingWriter(mssw);
                         foreach (var page in lm.Pages)
                         {
                             // var modified = ReWriteStream(lm, page, true);
@@ -648,7 +650,7 @@ namespace PdfLexer.Tests
             using var fs2 = File.OpenRead(pdf);
             using var lm = PdfDocument.OpenLowMemory(fs2);
             var mssw = new MemoryStream();
-            var writer = new StreamingWriter(mssw, true);
+            using var writer = new StreamingWriter(mssw, true, true);
             foreach (var page in lm.Pages)
             {
                 // var modified = ReWriteStream(lm, page, true);

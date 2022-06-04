@@ -1,30 +1,34 @@
 ﻿using PdfLexer.DOM;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace PdfLexer.Serializers
 {
-    public class StreamingWriter
+    public class StreamingWriter : IDisposable
     {
         private readonly WritingContext _ctx;
         private readonly bool dedup;
+        private readonly bool memoryDedup;
         private readonly TreeHasher hasher;
         private readonly Dictionary<PdfStreamHash, PdfIndirectRef> refs;
 
 
-        public StreamingWriter(Stream stream, bool dedupXobj)
+        public StreamingWriter(Stream stream, bool dedupXobj, bool inMemoryDedup)
         {
             _ctx = new WritingContext(stream);
             _ctx.Initialize(1.7m);
             CreateBag();
             dedup = dedupXobj;
+            memoryDedup = inMemoryDedup;
             if (dedup)
             {
                 hasher = new TreeHasher();
                 refs = new Dictionary<PdfStreamHash, PdfIndirectRef>(new FNVStreamComparison());
             }
         }
-        public StreamingWriter(Stream stream) : this(stream, false) { }
+        public StreamingWriter(Stream stream) : this(stream, false, false) { }
 
         private List<(PdfDictionary Bag, PdfIndirectRef BagRef)> bags = new List<(PdfDictionary Bag, PdfIndirectRef BagRef)>();
 
@@ -67,6 +71,26 @@ namespace PdfLexer.Serializers
             }
         }
 
+        private Stream CopyStream(Stream stream)
+        {
+            if (memoryDedup)
+            {
+                var ms = new MemoryStream((int)stream.Length);
+                stream.Position = 0;
+                stream.CopyTo(ms);
+                ms.Position = 0;
+                return ms;
+            } else
+            {
+                var tempFile = Path.Combine(Path.GetTempPath(), "pdflexer_" + Guid.NewGuid().ToString());
+                var fs = new FileStream(tempFile, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
+                stream.Position = 0;
+                stream.CopyTo(fs);
+                fs.Seek(0, SeekOrigin.Begin);
+                return fs;
+            }
+        }
+
         private PdfDictionary DedupSingle(PdfDictionary dict)
         {
             var res = dict.CloneShallow();
@@ -97,10 +121,7 @@ namespace PdfLexer.Serializers
             {
                 var ir = _ctx.WriteIndirectObject(vr);
                 parent[key] = ir;
-                var ms = new MemoryStream((int)hash.Stream.Length);
-                hash.Stream.Position = 0;
-                hash.Stream.CopyTo(ms);
-                hash.Stream = ms;
+                hash.Stream = CopyStream(hash.Stream);
                 refs[hash] = ir;
             }
         }
@@ -159,6 +180,15 @@ namespace PdfLexer.Serializers
             currentBag[PdfName.TypeName] = PdfName.Pages;
             currentBagRef = PdfIndirectRef.Create(currentBag);
             currentBagRef.DeferWriting = true;
+        }
+
+        public void Dispose()
+        {
+            foreach (var item in refs?.Keys ?? Enumerable.Empty<PdfStreamHash>())
+            {
+                item.Stream.Dispose();
+            }
+            refs?.Clear();
         }
     }
 }

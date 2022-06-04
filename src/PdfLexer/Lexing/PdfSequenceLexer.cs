@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.IO.Pipelines;
-using System.Threading.Tasks;
 using PdfLexer.Parsers;
-using PdfLexer.Parsers.Nested;
 using PdfLexer.Parsers.Structure;
 
 namespace PdfLexer.Lexing
