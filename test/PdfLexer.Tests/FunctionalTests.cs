@@ -571,7 +571,7 @@ namespace PdfLexer.Tests
                         using var fs2 = File.OpenRead(pdf);
                         using var lm = PdfDocument.OpenLowMemory(fs2);
                         var mssw = new MemoryStream();
-                        var writer = new StreamingWriter(mssw, true);
+                        var writer = new StreamingWriter(mssw, false);
                         foreach (var page in lm.Pages)
                         {
                             // var modified = ReWriteStream(lm, page, true);
