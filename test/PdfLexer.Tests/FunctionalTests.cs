@@ -401,6 +401,73 @@ namespace PdfLexer.Tests
             File.WriteAllBytes(result, ms.ToArray());
         }
 
+        [Fact]
+        public void It_Doesnt_Dedup_Different_Images()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue1905.pdf");
+
+            var orig = Util.GetDocumentHashCode(pdf);
+            
+
+            using var fs2 = File.OpenRead(pdf);
+            using var lm = PdfDocument.OpenLowMemory(fs2);
+            var mssw = new MemoryStream();
+            var writer = new StreamingWriter(mssw, true);
+            foreach (var page in lm.Pages)
+            {
+                writer.AddPage(page);
+            }
+            writer.Complete(new PdfDictionary());
+            var after = mssw.ToArray();
+            var ah = Util.GetDocumentHashCode(after);
+
+            Assert.Equal(orig, ah);
+        }
+
+        [Fact]
+        public void It_Dedups_Same_Images()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue1905.pdf");
+            var orig = File.ReadAllBytes(pdf);
+
+            using var doc = PdfDocument.Create();
+            var mssw = new MemoryStream();
+            var writer = new StreamingWriter(mssw, true);
+
+            // write same file twice
+            using var fs = File.OpenRead(pdf);
+            using var lm = PdfDocument.OpenLowMemory(fs);
+            foreach (var page in lm.Pages)
+            {
+                writer.AddPage(page);
+            }
+            doc.Pages.AddRange(lm.Pages);
+            using var second = PdfDocument.Open(orig);
+            foreach (var page in second.Pages)
+            {
+                writer.AddPage(page);
+            }
+            doc.Pages.AddRange(second.Pages);
+            
+            writer.Complete(new PdfDictionary());
+            var deDuped = mssw.ToArray();
+            var nonDeDuped = doc.Save();
+
+            var dd = Util.GetDocumentHashCode(deDuped);
+            var ndd = Util.GetDocumentHashCode(nonDeDuped);
+
+            Assert.Equal(dd, ndd);
+
+            var or = Util.CountResources(orig);
+            var ddr = Util.CountResources(deDuped);
+            var nddr = Util.CountResources(nonDeDuped);
+            Assert.Equal(or, ddr);
+            Assert.Equal(nddr, ddr*2);
+            Assert.True(deDuped.Length < nonDeDuped.Length);
+        }
+
         [InlineData(true)]
         [InlineData(false)]
         [Theory]
@@ -504,7 +571,7 @@ namespace PdfLexer.Tests
                         using var fs2 = File.OpenRead(pdf);
                         using var lm = PdfDocument.OpenLowMemory(fs2);
                         var mssw = new MemoryStream();
-                        var writer = new StreamingWriter(mssw, false);
+                        var writer = new StreamingWriter(mssw, true);
                         foreach (var page in lm.Pages)
                         {
                             // var modified = ReWriteStream(lm, page, true);

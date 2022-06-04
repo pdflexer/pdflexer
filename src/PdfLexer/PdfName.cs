@@ -96,7 +96,14 @@ namespace PdfLexer
         public static readonly PdfName Link = new PdfName("/Link", false);
         public static readonly PdfName Dest = new PdfName("/Dest", false);
         public static readonly PdfName XObject = new PdfName("/XObject", false);
-        
+        public static readonly PdfName ProcSet = new PdfName("/ProcSet", false);
+        public static readonly PdfName Font = new PdfName("/Font", false);
+        public static readonly PdfName Shading = new PdfName("/Shading", false);
+        public static readonly PdfName Pattern = new PdfName("/Pattern", false);
+        public static readonly PdfName ColorSpace = new PdfName("/ColorSpace", false);
+        public static readonly PdfName ExtGState = new PdfName("/ExtGState", false);
+
+
 
         public static implicit operator PdfName(string name)
         {

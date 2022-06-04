@@ -9,7 +9,7 @@ namespace PdfLexer.Serializers
         private readonly WritingContext _ctx;
         private readonly bool dedup;
         private readonly TreeHasher hasher;
-        private readonly Dictionary<string, PdfIndirectRef> refs;
+        private readonly Dictionary<PdfStreamHash, PdfIndirectRef> refs;
 
 
         public StreamingWriter(Stream stream, bool dedupXobj)
@@ -21,7 +21,7 @@ namespace PdfLexer.Serializers
             if (dedup)
             {
                 hasher = new TreeHasher();
-                refs = new Dictionary<string, PdfIndirectRef>();
+                refs = new Dictionary<PdfStreamHash, PdfIndirectRef>(new FNVStreamComparison());
             }
         }
         public StreamingWriter(Stream stream) : this(stream, false) { }
@@ -41,35 +41,19 @@ namespace PdfLexer.Serializers
 
             // 
             if (dedup 
-                && pg.TryGetValue<PdfDictionary>(PdfName.Resources, out var res) 
-                && res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobjs)
+                && pg.TryGetValue<PdfDictionary>(PdfName.Resources, out var res)
                 )
             {
                 var resC = res.CloneShallow();
-                var xC = xobjs.CloneShallow();
-                resC[PdfName.XObject] = xC;
                 pg[PdfName.Resources] = resC;
-                foreach (var (k,v) in xC)
-                {
-                    if (!(v is PdfIndirectRef vr)) {
-                        continue;
-                    }
-                    
-                    if (_ctx.IsKnown(vr))
-                    {
-                        continue;
-                    }
 
-                    var hash = hasher.GetHash(v);
-                    if (refs.TryGetValue(hash, out var xr))
-                    {
-                        xC[k] = xr;
-                    } else
-                    {
-                        var ir = _ctx.WriteIndirectObject(vr);
-                        xC[k] = ir;
-                        refs[hash] = ir;
-                    }
+                if (res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobjs))
+                {
+                    resC[PdfName.XObject] = DedupSingle(xobjs);
+                }
+                if (res.TryGetValue<PdfDictionary>(PdfName.Font, out var fonts))
+                {
+                    resC[PdfName.Font] = DedupSingle(fonts);
                 }
             }
 
@@ -83,9 +67,43 @@ namespace PdfLexer.Serializers
             }
         }
 
-        // dedup
-        // Type XObject (optional) // Subtype Form (required
+        private PdfDictionary DedupSingle(PdfDictionary dict)
+        {
+            var res = dict.CloneShallow();
+            foreach (var (k, v) in res)
+            {
+                DedupSingle(res, k, v);
+            }
+            return res;
+        }
+        private void DedupSingle(PdfDictionary parent, PdfName key, IPdfObject v)
+        {
+            if (!(v is PdfIndirectRef vr))
+            {
+                return;
+            }
 
+            if (_ctx.IsKnown(vr))
+            {
+                return;
+            }
+
+            var hash = hasher.GetHash(v);
+            if (refs.TryGetValue(hash, out var xr))
+            {
+                parent[key] = xr;
+            }
+            else
+            {
+                var ir = _ctx.WriteIndirectObject(vr);
+                parent[key] = ir;
+                var ms = new MemoryStream((int)hash.Stream.Length);
+                hash.Stream.Position = 0;
+                hash.Stream.CopyTo(ms);
+                hash.Stream = ms;
+                refs[hash] = ir;
+            }
+        }
 
         public void Complete(PdfDictionary trailer)
         {

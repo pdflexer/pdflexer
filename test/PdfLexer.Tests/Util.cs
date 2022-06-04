@@ -24,7 +24,29 @@ namespace PdfLexer.Tests
             return hc;
         }
 
-        public static decimal GetPageHashCode(UglyToad.PdfPig.Content.Page page)
+        public static int CountResources(byte[] pdfDoc)
+        {
+            var found = new HashSet<ulong>();
+            using var doc = PdfDocument.Open(pdfDoc);
+            foreach (var page in doc.Pages)
+            {
+                if (page.Dictionary.TryGetValue<PdfDictionary>(PdfName.Resources, out var res))
+                {
+                    foreach (var kvp in res.Where(x=>x.Key == PdfName.Font || x.Key == PdfName.XObject))
+                    {
+                        var inner = kvp.Value.GetValue<PdfDictionary>();
+                        foreach (var kvpRes in inner)
+                        {
+                            var ir = kvpRes.Value as PdfIndirectRef;
+                            found.Add(ir.Reference.GetId());
+                        }
+                    }
+                }
+            }
+            return found.Count;
+        }
+
+            public static decimal GetPageHashCode(UglyToad.PdfPig.Content.Page page)
         {
             decimal hc = 0;
             foreach (var letter in page.Letters)
