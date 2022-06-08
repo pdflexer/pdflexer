@@ -3,6 +3,7 @@ using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace PdfLexer.Content
 {
@@ -21,6 +22,7 @@ namespace PdfLexer.Content
     }
     internal ref struct PageContentScanner
     {
+        private bool FlattenForms;
         private PdfDictionary Page;
         private ParsingContext Context;
         private List<PdfStream> NextStreams;
@@ -28,8 +30,9 @@ namespace PdfLexer.Content
         private List<ScannerInfo> Scanners;
         private PdfStream CurrentStream;
         private PdfStream NextForm;
-        public PageContentScanner(ParsingContext ctx, PdfDictionary page)
+        public PageContentScanner(ParsingContext ctx, PdfDictionary page, bool flattenForms=false)
         {
+            FlattenForms = flattenForms;
             State = MultiPageState.Reading;
             Page = page;
             Context = ctx;
@@ -38,6 +41,7 @@ namespace PdfLexer.Content
             CurrentForm = null;
             NextForm = null;
             CurrentStream = null;
+            SkipBytes = 0;
             if (!page.TryGetValue(PdfName.Contents, out var contents))
             {
                 Scanner = new ContentScanner(ctx, new byte[0]);
@@ -70,14 +74,14 @@ namespace PdfLexer.Content
         public PdfOperatorType CurrentOperator => Scanner.CurrentOperator;
         public List<OperandInfo> Operands => Scanner.Operands;
         public PdfDictionary CurrentForm;
-
+        private int SkipBytes;
         public PdfOperatorType Peek()
         {
             var nxt = Scanner.Peek();
             if (nxt == PdfOperatorType.Do)
             {
                 var doOp = (Do_Op)Scanner.GetCurrentOperation();
-                if (!TryGetForm(doOp.name, out var form))
+                if (!FlattenForms || !TryGetForm(doOp.name, out var form))
                 {
                     return nxt;
                 }
@@ -92,10 +96,36 @@ namespace PdfLexer.Content
                     return PdfOperatorType.Q;
                 } else if (NextStreams.Count > 0)
                 {
-                    CurrentStream = NextStreams[0];
-                    NextStreams.RemoveAt(0);
-                    Scanner = new ContentScanner(Context, CurrentStream.Contents.GetDecodedData(Context));
-                    return Scanner.Peek();
+
+                    if (Scanner.Operands.Count > 0)
+                    {
+                        // hack to deal with ops split across stream
+                        // - need to revisit this, could be easily solved by
+                        //   Operands having reference to their data but don't think
+                        //   that is good idea since data is a span
+                        // - this would likely blow up if the data that was split
+                        //   is a /Form Do
+                        var str = NextStreams[0];
+                        var data = str.Contents.GetDecodedData(Context);
+                        var temp = new ContentScanner(Context, data, SkipBytes);
+                        temp.Peek();
+                        var length = temp.Position + temp.CurrentLength;
+                        var prev = Scanner.Data.Length - Scanner.Operands[0].StartAt;
+                        System.Span<byte> tempData = new byte[length + prev + 1];
+                        Scanner.Data.Slice(Scanner.Operands[0].StartAt).CopyTo(tempData);
+                        tempData[prev] = (byte)' ';
+                        temp.Data.Slice(SkipBytes, length).CopyTo(tempData.Slice(prev + 1));
+                        SkipBytes = length+1;
+                        Scanner = new ContentScanner(Context, tempData);
+                        return Scanner.Peek();
+                    } else
+                    {
+                        CurrentStream = NextStreams[0];
+                        NextStreams.RemoveAt(0);
+                        Scanner = new ContentScanner(Context, CurrentStream.Contents.GetDecodedData(Context), SkipBytes);
+                        SkipBytes = 0;
+                        return Scanner.Peek();
+                    }
                 }
             }
             return nxt;

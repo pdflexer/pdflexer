@@ -347,11 +347,42 @@ namespace PdfLexer.Tests
             }
         }
 
+        private static PdfPage ReWriteStream2(PdfDocument doc, PdfPage page, bool clone)
+        {
+            var scanner = new PageContentScanner(doc.Context, page, false);
+            var ms = new MemoryStream();
+
+            while (scanner.Peek() != PdfOperatorType.EOC)
+            {
+                var op = scanner.GetCurrentOperation();
+                if (op != null)
+                {
+                    op.Serialize(ms);
+                    ms.WriteByte((byte)'\n');
+                } else
+                {
+
+                }
+                
+                scanner.SkipCurrent();
+            }
+            
+
+            if (clone)
+            {
+                page = page.Dictionary.CloneShallow();
+            }
+
+            var updatedStr = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(ms.ToArray()));
+            page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+            return page;
+        }
+
         private static void ReWriteStreams(string pdf, PdfDocument doc)
         {
             foreach (var page in doc.Pages)
             {
-                ReWriteStream(doc, page, false);
+                ReWriteStream2(doc, page, false);
             }
         }
 

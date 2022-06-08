@@ -29,6 +29,7 @@ namespace PdfLexer.Lexing
         public PdfOperatorType CurrentOperator;
         public List<OperandInfo> Operands;
         public int Position => Scanner.Position;
+        public int CurrentLength => Scanner.CurrentLength;
 
         public PdfOperatorType Peek()
         {
