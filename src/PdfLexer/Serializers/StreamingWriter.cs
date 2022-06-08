@@ -14,7 +14,6 @@ namespace PdfLexer.Serializers
         private readonly TreeHasher hasher;
         private readonly Dictionary<PdfStreamHash, PdfIndirectRef> refs;
 
-
         public StreamingWriter(Stream stream, bool dedupXobj, bool inMemoryDedup)
         {
             _ctx = new WritingContext(stream);

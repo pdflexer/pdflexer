@@ -70,6 +70,24 @@ namespace PdfLexer.Parsers
             return result;
         }
 
+        public byte[] ParseRaw(ReadOnlySpan<byte> buffer)
+        {
+            if (buffer.Length < 200)
+            {
+                Span<byte> writeBuffer = stackalloc byte[buffer.Length];
+                var l = ConvertBytes(buffer, writeBuffer);
+                return writeBuffer.Slice(0, l).ToArray();
+            } else 
+            {
+                var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
+                var l = ConvertBytes(buffer, rented);
+                var result = new byte[l];
+                Array.Copy(rented, result, l);
+                ArrayPool<byte>.Shared.Return(rented);
+                return result;
+            }
+        }
+
         private PdfString Parse(ReadOnlySpan<byte> input, Span<byte> output)
         {
             var length = ConvertBytes(input, output);

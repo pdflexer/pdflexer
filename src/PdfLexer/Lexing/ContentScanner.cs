@@ -17,17 +17,18 @@ namespace PdfLexer.Lexing
         public readonly ReadOnlySpan<byte> Data;
         private Scanner Scanner;
         private ParsingContext _ctx;
-        public ContentScanner(ParsingContext ctx, ReadOnlySpan<byte> data)
+        public ContentScanner(ParsingContext ctx, ReadOnlySpan<byte> data, int position=0)
         {
             Data = data;
             _ctx = ctx;
-            Scanner = new Scanner(ctx, data);
+            Scanner = new Scanner(ctx, data, position);
             CurrentOperator = PdfOperatorType.Unknown;
             Operands = new List<OperandInfo>(6);
         }
 
         public PdfOperatorType CurrentOperator;
         public List<OperandInfo> Operands;
+        public int Position => Scanner.Position;
 
         public PdfOperatorType Peek()
         {

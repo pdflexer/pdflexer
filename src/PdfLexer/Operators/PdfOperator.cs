@@ -1,4 +1,5 @@
-﻿using PdfLexer.Lexing;
+﻿using PdfLexer.Content;
+using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using System;
 using System.Buffers;
@@ -12,49 +13,8 @@ using System.Text;
 
 namespace PdfLexer.Operators
 {
-    public class Unkown_Op : IPdfOperation
-    {
-        public PdfOperatorType Type => PdfOperatorType.Unknown;
 
-        public string op { get; }
-        public byte[] allData { get; }
-        public Unkown_Op(string op, byte[] allData)
-        {
-            this.op = op;
-            this.allData = allData;
-        }
-        public void Serialize(Stream stream)
-        {
-            stream.Write(allData);
-        }
-    }
 
-    public class InlineImage_Op : IPdfOperation
-    {
-        public PdfOperatorType Type => PdfOperatorType.Unknown;
-
-        public PdfArray header { get; }
-        public byte[] allData { get; }
-        public InlineImage_Op(PdfArray header, byte[] allData)
-        {
-            this.header = header;
-            this.allData = allData;
-        }
-        public void Serialize(Stream stream)
-        {
-            stream.Write(BI_Op.OpData);
-            stream.WriteByte((byte)'\n');
-            foreach (var item in header)
-            {
-                PdfOperator.Shared.SerializeObject(stream, item, x => x);
-                stream.WriteByte((byte)' ');
-            }
-            stream.Write(ID_Op.OpData);
-            stream.WriteByte((byte)'\n');
-            stream.Write(allData);
-            stream.Write(EI_Op.OpData);
-        }
-    }
 
     public interface IPdfOperationHandler
     {
@@ -67,7 +27,9 @@ namespace PdfLexer.Operators
         public char C { get; internal set; }
         public float w0 { get; internal set; }
         public float w1 { get; internal set; }
-        public bool IsWordSpace { get; internal set; }
+        public bool IsWordSpace { get; internal set; } // single byte character code 32 when simple font
+                                                       // composite font if 32 is single byte code
+
 
         // originalCharCode,
         // fontChar,
@@ -288,7 +250,10 @@ namespace PdfLexer.Operators
                     items.Add(
                         new TJ_Item
                         {
-                            Text = ctx.StringParser.Parse(data.Slice(op.StartAt, op.Length))
+                            Data = ctx.StringParser.ParseRaw(data.Slice(op.StartAt, op.Length)) // TODO don't allocate arrays here, need to 
+                                                                                                // find solution for Writing since it won't 
+                                                                                                // have access to source data span if we just 
+                                                                                                // track refs
                         });
                 }
                 else if (op.Type == PdfTokenType.NumericObj || op.Type == PdfTokenType.DecimalObj)
@@ -342,6 +307,15 @@ namespace PdfLexer.Operators
             return val;
         }
 
+        public static float Parsefloat(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
+        {
+            if (!Utf8Parser.TryParse(data.Slice(op.StartAt, op.Length), out float val, out int consumed))
+            {
+                ctx.Error("Bad float found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
+            }
+            return val;
+        }
+
         public static void Writedecimal(decimal val, Stream stream)
         {
             Span<byte> buffer = stackalloc byte[35];
@@ -351,6 +325,17 @@ namespace PdfLexer.Operators
             }
             stream.Write(buffer.Slice(0, bytes));
         }
+
+        public static void Writefloat(float val, Stream stream)
+        {
+            Span<byte> buffer = stackalloc byte[35];
+            if (!Utf8Formatter.TryFormat(val, buffer, out int bytes))
+            {
+                throw new ApplicationException("TODO: Unable to write float: " + val.ToString());
+            }
+            stream.Write(buffer.Slice(0, bytes));
+        }
+
 
         public static void Writeint(int val, Stream stream)
         {
@@ -384,8 +369,8 @@ namespace PdfLexer.Operators
     {
         public PdfOperatorType Type { get; }
         public void Serialize(Stream stream);
-        public void Apply(IGraphicsState state) { }
-        public void Apply(ITextState state) { }
+        public void Apply(GraphicsState state) { }
+        public void Apply(TextState state) { }
     }
 
     public interface IGraphicsState
@@ -420,177 +405,5 @@ namespace PdfLexer.Operators
 
 
     }
-    public class TextState
-    {
-        int Mode { get; set; }
-        float FontSize { get; set; }
-        float HorizontalScaling { get; set; }
-        float CharSpacing { get; set; }
-        float WordSpacing { get; set; }
-        float TextLeading { get; set; }
-        Matrix4x4 TextMatrix { get; set; }
-        Matrix4x4 TextRenderingMatrix { get; set; } // todo
-                                                    // Tm = Tlm = [ T_fs*T_h  0       0 ] x Tm x CTM
-                                                    //              0         T_fs    0
-                                                    //              0         T_rise  1
-        Matrix4x4 TextLineMatrix { get; set; }
-
-        public TextState()
-        {
-            TextMatrix = Matrix4x4.Identity;
-            TextLineMatrix = Matrix4x4.Identity;
-        }
-
-        public int GetGlyph(ReadOnlySpan<byte> data, int pos, out Glyph info)
-        {
-            info = default;
-            return 0;
-        }
-
-        public void ApplyTj(float tj)
-        {
-            if (tj == 0f) { return; }
-            float tx = 0f;
-            float ty = 0f;
-            if (Mode == 0)
-            {
-                tx = (-tj / 1000) * FontSize * HorizontalScaling;
-            }
-            else
-            {
-                var s = (-tj / 1000) * FontSize;
-                ty = s;
-            }
-
-            ShiftTextMatrix(tx, ty);
-        }
-
-        public void Apply(UnappliedGlyph glyph)
-        {
-            if (glyph.Shift != 0) { ApplyTj(glyph.Shift); }
-            Apply(glyph.Glyph);
-        }
-
-        public void Apply(Glyph info)
-        {
-            // shift
-            float tx = 0f;
-            float ty = 0f;
-            if (Mode == 0)
-            {
-                // tx = ((w0-Tj/1000) * T_fs + T_c + T_w?) * Th
-                // var s = (info.w0 - tj / 1000) * FontSize + CharSpacing; // Tj pre applied
-                var s = (info.w0) * FontSize + CharSpacing;
-                if (info.IsWordSpace) { s += WordSpacing; }
-                tx = s * HorizontalScaling;
-            }
-            else
-            {
-                // ty = (w1-Tj/1000) * T_fs + T_c + T_w?)
-                var s = (info.w1) * FontSize + CharSpacing;
-                if (info.IsWordSpace) { s += WordSpacing; }
-                ty = s;
-            }
-
-            ShiftTextMatrix(tx, ty);
-        }
-
-        private void ShiftTextMatrix(float tx, float ty)
-        {
-            // Tm = [ 1  0  0 ] x Tm
-            //        0  1  0
-            //        tx ty 1
-
-            TextMatrix = new Matrix4x4(
-              1f, 0f, 0f, 0f,
-              0f, 1f, 0f, 0f,
-              tx, ty, 1f, 0f,
-              0f, 0f, 0f, 1f) * TextMatrix;
-        }
-
-        public void Apply(Td_Op op)
-        {
-            // Tm = Tlm = [ 1  0  0 ] x Tlm
-            //              0  1  0
-            //              tx ty 1
-
-            TextLineMatrix = new Matrix4x4(
-                          1f, 0f, 0f, 0f,
-                          0f, 1f, 0f, 0f,
-                          (float)op.tx, (float)op.ty, 1f, 0f,
-                          0f, 0f, 0f, 1f) * TextLineMatrix;
-
-            TextMatrix = TextLineMatrix;
-        }
-
-        public void Apply(TD_Op op)
-        {
-            // -ty TL
-            // tx, ty Td
-
-            TextLineMatrix = new Matrix4x4(
-                          1f, 0f, 0f, 0f,
-                          0f, 1f, 0f, 0f,
-                          (float)op.tx, (float)op.ty, 1f, 0f,
-                          0f, 0f, 0f, 1f) * TextLineMatrix;
-
-            TextMatrix = TextLineMatrix;
-        }
-
-        public void Apply(Tm_Op op)
-        {
-            TextLineMatrix = new Matrix4x4(
-                          (float)op.a, (float)op.b, 0f, 0f,
-                          (float)op.c, (float)op.d, 0f, 0f,
-                          (float)op.e, (float)op.f, 1f, 0f,
-                          0f, 0f, 0f, 1f);
-
-            TextMatrix = TextLineMatrix;
-        }
-
-        public void Apply(T_Star_Op op)
-        {
-            TextLineMatrix = new Matrix4x4(
-                          1f, 0f, 0f, 0f,
-                          0f, 1f, 0f, 0f,
-                          0f, -TextLeading, 1f, 0f,
-                          0f, 0f, 0f, 1f) * TextLineMatrix;
-
-            TextMatrix = TextLineMatrix;
-        }
-
-
-        public void Apply(Tj_Op op)
-        {
-            // TODO
-        }
-
-        public void Apply(doublequote_Op op)
-        {
-            WordSpacing = (float)op.aw;
-            CharSpacing = (float)op.ac;
-            Apply(new singlequote_Op(op.text));
-        }
-
-        public void Apply(singlequote_Op op)
-        {
-            // TODO
-        }
-
-        public void Apply(TJ_Op op)
-        {
-            foreach (var item in op.info)
-            {
-                if (item.Shift != 0m)
-                {
-                    // shift
-                }
-                else
-                {
-                    // string
-                }
-            }
-        }
-
-    }
+    
 }

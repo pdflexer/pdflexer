@@ -24,8 +24,14 @@ namespace PdfLexer.Benchmarks
     {
         static async Task Main(string[] args)
         {
-            
-            
+
+            // var test = new ContentStreamBenchmark();
+            // var total = 0;
+            // for (var i = 0; i < 100000; i++)
+            // {
+            //     total += test.PdfLexer();
+            // }
+            // return;
             // var bench = new MergeBenchmark();
             // var total = 0;
             // for (var i = 0; i < 100000; i++)

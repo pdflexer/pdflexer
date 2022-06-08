@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CliWrap;
+using PdfLexer.Content;
 using PdfLexer.DOM;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
@@ -399,6 +400,23 @@ namespace PdfLexer.Tests
 
             EnumerateObjects(doc2.Catalog, new HashSet<int>());
             File.WriteAllBytes(result, ms.ToArray());
+        }
+
+        [Fact]
+        public void It_Enumerates_Stream()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue1905.pdf");
+
+            using var fs2 = File.OpenRead(pdf);
+            using var doc = PdfDocument.Open(fs2);
+            var pg = doc.Pages.First();
+            var reader = new PageContentScanner(doc.Context, pg);
+            while (reader.Peek() != PdfOperatorType.EOC)
+            {
+                var op = reader.GetCurrentOperation();
+                reader.SkipCurrent();
+            }
         }
 
         [Fact]

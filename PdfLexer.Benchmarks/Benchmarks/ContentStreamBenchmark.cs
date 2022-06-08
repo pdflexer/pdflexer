@@ -5,6 +5,8 @@ using BenchmarkDotNet.Jobs;
 using PdfLexer.Lexing;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
+using PdfSharp.Pdf.Content;
+using PdfSharp.Pdf.Content.Objects;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -255,7 +257,7 @@ Q"
         }
 
         [Benchmark()]
-        public int PdfLexerSkipTJ()
+        public int PdfLexerJustScan()
         {
             int i = 0;
             foreach (var item in samples)
@@ -264,16 +266,8 @@ Q"
                 PdfOperatorType nxt;
                 while ((nxt = scanner.Peek()) != PdfOperatorType.EOC)
                 {
-                    if (nxt != PdfOperatorType.TJ)
-                    {
-                        var op = scanner.GetCurrentOperation();
-                        if (op != null)
-                        {
-                            i++;
-                        }
-                    }
-
                     scanner.SkipCurrent();
+                    i += 1;
                 }
             }
             //Console.WriteLine(i);
@@ -281,6 +275,19 @@ Q"
         }
 
 
+        [Benchmark()]
+        public int PdfSharp()
+        {
+            int i = 0;
+            foreach (var item in samples)
+            {
+                var parser = new CParser(item);
+                var content = parser.ReadContent();
+                i += content.Count;
+            }
+            //Console.WriteLine(i);
+            return i;
+        }
 
         [Benchmark(Baseline = true)]
         public int PdfPig()

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfLexer.Content;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -97,9 +98,10 @@ namespace PdfLexer.Operators
             stream.WriteByte((byte)'[');
             foreach (var item in info)
             {
-                if (item.Text != null)
+                if (item.Data != null)
                 {
-                    PdfOperator.Shared.StringSerializer.WriteToStream(item.Text, stream);
+                    stream.Write(item.Data);
+                    // PdfOperator.Shared.StringSerializer.WriteToStream(item.Text, stream);
                 }
                 else
                 {
@@ -115,17 +117,69 @@ namespace PdfLexer.Operators
     public struct TJ_Item
     {
         public decimal Shift;
-        public PdfString Text;
+        public byte[] Data;
     }
 
     public partial class Td_Op
     {
-        public void Apply(ITextState state)
+        public void Apply(TextState state)
         {
-            // Tm = Tlm = [ 1  0  0 ] x Tlm
-            //              0  1  0
-            //              tx ty 1
+            state.Apply(this);
         }
+    }
+    public partial class TD_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
 
+    public partial class Tm_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class T_Star_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class Tj_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class doublequote_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class singlequote_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class TJ_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
     }
 }

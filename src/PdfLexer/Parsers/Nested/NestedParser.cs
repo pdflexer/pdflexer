@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using PdfLexer.IO;
 using PdfLexer.Lexing;
 
 namespace PdfLexer.Parsers.Nested
