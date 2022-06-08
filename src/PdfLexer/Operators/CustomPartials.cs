@@ -100,7 +100,7 @@ namespace PdfLexer.Operators
             {
                 if (item.Data != null)
                 {
-                    stream.Write(item.Data);
+                    PdfOperator.Shared.StringSerializer.WriteToStream(item.Data, stream);
                     // PdfOperator.Shared.StringSerializer.WriteToStream(item.Text, stream);
                 }
                 else

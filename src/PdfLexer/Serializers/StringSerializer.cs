@@ -35,6 +35,14 @@ namespace PdfLexer.Serializers
             ArrayPool<byte>.Shared.Return(buffer);
         }
 
+        public void WriteToStream(ReadOnlySpan<byte> data, Stream stream)
+        {
+            var buffer = ArrayPool<byte>.Shared.Rent((data.Length) * 8 + 16); // overkill find better solution
+            var i = ConvertLiteralBytes(data, buffer, true);
+            stream.Write(buffer, 0, i);
+            ArrayPool<byte>.Shared.Return(buffer);
+        }
+
         [Obsolete]
         public int GetLiteralBytes(PdfString obj, Span<byte> data)
         {
@@ -80,7 +88,7 @@ namespace PdfLexer.Serializers
             return ri;
         }
 
-        private int ConvertLiteralBytes(ReadOnlySpan<byte> data, Span<byte> output, bool escapeNonPrintable)
+        internal static int ConvertLiteralBytes(ReadOnlySpan<byte> data, Span<byte> output, bool escapeNonPrintable)
         {
             var ri = 0;
             ReadOnlySpan<int> escapes = escapeNeeded;
