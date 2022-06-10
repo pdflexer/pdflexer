@@ -1,8 +1,5 @@
 ﻿using PdfLexer.Content;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 
 namespace PdfLexer.Operators
 {
@@ -114,10 +111,100 @@ namespace PdfLexer.Operators
         }
     }
 
+    public partial class Tj_Op
+    {
+        public void Serialize(Stream stream)
+        {
+            PdfOperator.Shared.StringSerializer.WriteToStream(text, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+    }
+
+    public partial class singlequote_Op
+    {
+        public void Serialize(Stream stream)
+        {
+            PdfOperator.Shared.StringSerializer.WriteToStream(text, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+    }
+
+    public partial class doublequote_Op
+    {
+        public void Serialize(Stream stream)
+        {
+            PdfOperator.Writedecimal(aw, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(ac, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Shared.StringSerializer.WriteToStream(text, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+    }
+
     public struct TJ_Item
     {
         public decimal Shift;
         public byte[] Data;
+    }
+
+    public partial class Tc_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class Tw_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class Tz_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class TL_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class Tf_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class Tr_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
+    }
+
+    public partial class Ts_Op
+    {
+        public void Apply(TextState state)
+        {
+            state.Apply(this);
+        }
     }
 
     public partial class Td_Op
@@ -180,6 +267,19 @@ namespace PdfLexer.Operators
         public void Apply(TextState state)
         {
             state.Apply(this);
+        }
+    }
+
+    public partial class NoOp_Op : IPdfOperation
+    {
+        public NoOp_Op Value { get; } = new NoOp_Op();
+        public PdfOperatorType Type => PdfOperatorType.NoOp;
+        public NoOp_Op()
+        {
+        }
+
+        public void Serialize(Stream stream)
+        {
         }
     }
 }

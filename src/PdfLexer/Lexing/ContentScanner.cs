@@ -80,18 +80,9 @@ namespace PdfLexer.Lexing
             var oi = (int)CurrentOperator;
             if (!ParseOpMapping.Parsers.TryGetValue(oi, out var parser))
             {
-                var op = Encoding.ASCII.GetString(Data.Slice(Scanner.Position, Scanner.CurrentLength));
-                _ctx.Error("Unkown operator found: " + op);
-                byte[] data;
-                if (Operands.Count > 0)
-                {
-                    data = Data.Slice(Operands[0].StartAt, Scanner.Position - Operands[0].StartAt + Scanner.CurrentLength).ToArray();
-                }
-                else
-                {
-                    data = Data.Slice(Scanner.Position, Scanner.CurrentLength).ToArray();
-                }
-                return new Unkown_Op(op, data);
+                var uko = GetUnknown(Scanner, Operands, Data);
+                _ctx.Error("Unkown operator found: " + uko.op);
+                return uko;
             }
             try
             {
@@ -104,7 +95,22 @@ namespace PdfLexer.Lexing
                 var len = Scanner.Position + Scanner.CurrentLength - st;
                 var op = Encoding.ASCII.GetString(Data.Slice(st, len));
                 _ctx.Error($"Failure parsing op ({e.Message}): " + op);
-                return null;
+                return GetUnknown(Scanner, Operands, Data);
+            }
+
+            Unkown_Op GetUnknown(Scanner scanner, List<OperandInfo> ops, ReadOnlySpan<byte> data)
+            {
+                byte[] opData;
+                var op = Encoding.ASCII.GetString(data.Slice(scanner.Position, scanner.CurrentLength));
+                if (ops.Count > 0)
+                {
+                    opData = data.Slice(ops[0].StartAt, scanner.Position - ops[0].StartAt + scanner.CurrentLength).ToArray();
+                }
+                else
+                {
+                    opData = data.Slice(scanner.Position, scanner.CurrentLength).ToArray();
+                }
+                return new Unkown_Op(op, opData);
             }
         }
 

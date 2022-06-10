@@ -117,6 +117,58 @@ namespace PdfLexer.Tests
             }
         }
 
+        [Fact]
+        public void It_Reads_Text()
+        {
+            var errors = new List<string>();
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                var name = Path.GetFileNameWithoutExtension(pdf);
+                if (name == "bug1020226" // bad page tree / structure, don't think this is something to handle by default
+                    || name == "issue3371" || name == "pr6531_1" // bad compression
+                    || name == "issue7229" // XRef table points to wrong object ... rebuilding might work but other pdfs have
+                                           // refs to objects with incorret object number that are correct
+                                           // name == "issue9418" // need xref repair, os doesn't point to object
+                        )
+                {
+                    continue;
+                }
+
+
+                try
+                {
+                    var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt))
+                    {
+                        // don't support encryption currently
+                        continue;
+                    }
+
+                    foreach (var page in doc.Pages)
+                    {
+                        var reader = new TextScanner(doc.Context, page);
+                        var sb = new StringBuilder();
+                        while (reader.Advance())
+                        {
+                            sb.Append(reader.Glyph.C);
+                        }
+                        var str = sb.ToString();
+                    }
+
+                }
+                catch (Exception e)
+                {
+                    errors.Add(pdf + ": " + e.Message);
+                }
+            }
+            if (errors.Any())
+            {
+                throw new ApplicationException(string.Join(Environment.NewLine, errors));
+            }
+        }
+
         //[Fact]
         public void Manual_Test()
         {
@@ -172,6 +224,8 @@ namespace PdfLexer.Tests
                 {
                     continue;
                 }
+
+
                 try
                 {
                     var doc = PdfDocument.Open(File.ReadAllBytes(pdf));

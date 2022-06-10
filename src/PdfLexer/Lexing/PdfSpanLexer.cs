@@ -160,9 +160,15 @@ namespace PdfLexer.Lexing
                     length = nume - i;
                     return i;
                 case (byte)'R':
-                    type = PdfTokenType.IndirectRef;
-                    length = 1;
-                    return i;
+                    if (
+                        buffer.Length == i + 1 ||
+                        (buffer.Length > i + 1 && CommonUtil.IsEndOfToken(buffer[i + 1])))
+                    {
+                        type = PdfTokenType.IndirectRef;
+                        length = 1;
+                        return i;
+                    }
+                    break;
                 case (byte)'>':
                     if (buffer.Length > i + 1 && buffer[i + 1] == (byte)'>')
                     {
@@ -262,7 +268,7 @@ namespace PdfLexer.Lexing
             }
 
             // Default tokenization
-            var end = i;
+            var end = i+1;
             CommonUtil.ScanTokenEnd(buffer, ref end);
             length = end - i;
             type = PdfTokenType.Unknown;

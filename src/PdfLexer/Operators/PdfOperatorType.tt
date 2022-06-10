@@ -63,7 +63,7 @@
     ("Td", null, "Move text position", new List<(string, string)> { ("decimal", "tx"), ("decimal", "ty") }, false),
     ("TD", null, "Move text position and set leading", new List<(string, string)> { ("decimal", "tx"), ("decimal", "ty") }, false),
     ("Tf", null, "Set text font and size", new List<(string, string)>{ ("PdfName", "font"), ("decimal", "size") }, false),
-    ("Tj", null, "Show text", new List<(string, string)> { ("PdfString", "text") }, false),
+    ("Tj", null, "Show text", new List<(string, string)> { ("byte[]", "text") }, true),
     ("TJ", null, "Show text, allowing individual glyph positioning", new List<(string, string)> { ("List<TJ_Item>", "info") }, true),
     ("TL", null, "Set text leading", new List<(string, string)>{ ("decimal", "leading") }, false),
     ("Tm", null, "Set text matrix and text line matrix", new List<(string, string)>{ ("decimal", "a"), ("decimal", "b"), ("decimal", "c"), ("decimal", "d"), ("decimal", "e"), ("decimal", "f")}, false),
@@ -76,8 +76,8 @@
     ("W", null, "Set clipping path using nonzero winding number rule", null, false), // no ops
     ("W*", "W_Star", "Set clipping path using even-odd rule", null, false), // no ops
     ("y", null, "Append curved segment to path (final point replicated)", new List<(string, string)>{ ("decimal", "x1"), ("decimal", "y1"), ("decimal", "x3"), ("decimal", "y3")}, false),
-    ("'", "singlequote", "Move to next line and show text", new List<(string, string)> { ("PdfString", "text") }, false),
-    ("\"", "doublequote", "Set word and character spacing, move to next line, and show text", new List<(string, string)> { ("decimal", "aw"), ("decimal", "ac"), ("PdfString", "text") }, false),
+    ("'", "singlequote", "Move to next line and show text", new List<(string, string)> { ("byte[]", "text") }, true),
+    ("\"", "doublequote", "Set word and character spacing, move to next line, and show text", new List<(string, string)> { ("decimal", "aw"), ("decimal", "ac"), ("byte[]", "text") }, true),
 
 }; #>
 using PdfLexer.Lexing;
@@ -95,6 +95,8 @@ namespace PdfLexer.Operators
     public enum PdfOperatorType
     {
         Unknown,
+        NoOp,
+        RawOp,
         // End of content
         EOC,
 <#

@@ -9,10 +9,11 @@ namespace PdfLexer.Content
 {
     public ref struct TextScanner
     {
-        private readonly ParsingContext Context;
-        private readonly PageContentScanner Scanner;
-        public readonly TextState TextState;
-        public readonly GraphicsState GraphicsState;
+        private ParsingContext Context;
+        private PageContentScanner Scanner;
+        public TextState TextState;
+        public GraphicsState GraphicsState;
+        public Glyph Glyph;
 
         public TextScanner(ParsingContext ctx, PdfDictionary page)
         {
@@ -20,67 +21,149 @@ namespace PdfLexer.Content
             Scanner = new PageContentScanner(ctx, page);
             TextState = new TextState();
             GraphicsState = new GraphicsState();
-            CurrentText = null;
-            // while ((nxt = scanner.Peek()) != PdfOperatorType.EOC)
-            // {
-            //     var op = scanner.GetCurrentOperation();
-            //     if (op != null)
-            //     {
-            //         i++;
-            //     }
-            //     scanner.SkipCurrent();
-            // }
+            CurrentTextPos = 0;
+            ReadState = TextReadState.Normal;
+            CurrentGlyphs = new List<UnappliedGlyph>();
+            CurrentGlyph = default;
+            Glyph = default;
         }
 
         public bool Advance()
         {
-            var nxt = Scanner.Peek();
-            if (nxt == PdfOperatorType.EOC)
+            if (ReadState == TextReadState.ReadingOp)
             {
-                return false;
-            }
-            if (nxt == PdfOperatorType.q || nxt == PdfOperatorType.Q || nxt == PdfOperatorType.cm)
-            {
-                var gso = Scanner.GetCurrentOperation();
-                gso.Apply(GraphicsState);
-            }
-            var b = Scanner.Scanner.Data[Scanner.Scanner.Position];
-            if (b == (byte)'T' || b == (byte)'\'' || b == (byte)'"')
-            {
-                var tso = Scanner.GetCurrentOperation();
-                tso.Apply(TextState);
-            } else
-            {
-                // non text
+                var result = ReadCurrent();
+                if (result) return true;
             }
 
-            // text showing
-            // Tj ' " TJ
-
-            return true;
-        }
-
-        private bool ReadNextFromCurrent()
-        {
-            // don't think we want to do it this way
-            switch (CurrentText.Type)
+            while (true)
             {
-                case PdfOperatorType.singlequote:
-                case PdfOperatorType.doublequote:
-                case PdfOperatorType.Tj:
-                case PdfOperatorType.TJ:
-                    var tj = (TJ_Op)CurrentText;
-                    foreach (var item in tj.info)
+                var nxt = Scanner.Peek();
+
+                switch (nxt)
+                {
+                    case PdfOperatorType.EOC:
+                        Glyph = null;
+                        return false;
+                    case PdfOperatorType.BT:
+                        ReadState = TextReadState.ReadingText;
+                        Scanner.SkipCurrent();
+                        // todo reset text state
+                        continue;
+                    case PdfOperatorType.ET:
+                        ReadState = TextReadState.Normal;
+                        Scanner.SkipCurrent();
+                        continue;
+                    case PdfOperatorType.q:
+                    case PdfOperatorType.Q:
+                    case PdfOperatorType.cm:
+                        var gso = Scanner.GetCurrentOperation();
+                        gso.Apply(GraphicsState);
+                        Scanner.SkipCurrent();
+                        continue;
+                }
+
+                var b = Scanner.Scanner.Data[Scanner.Scanner.Position];
+                if (b == (byte)'T' || b == (byte)'\'' || b == (byte)'"')
+                {
+                    switch (nxt)
                     {
-                        // item.
+                        case PdfOperatorType.singlequote:
+                            {
+                                var op = (singlequote_Op)Scanner.GetCurrentOperation();
+                                TextState.Apply(T_Star_Op.Value);
+                                TextState.FillGlyphs(op.text, CurrentGlyphs);
+                                CurrentTextPos = 0;
+                                ReadState = TextReadState.ReadingOp;
+                                break;
+                            }
+                        case PdfOperatorType.doublequote:
+                            {
+                                var op = (doublequote_Op)Scanner.GetCurrentOperation();
+                                TextState.WordSpacing = (float)op.aw;
+                                TextState.CharSpacing = (float)op.ac;
+                                TextState.Apply(T_Star_Op.Value);
+                                TextState.FillGlyphs(op.text, CurrentGlyphs);
+                                CurrentTextPos = 0;
+                                ReadState = TextReadState.ReadingOp;
+                                break;
+                            }
+                        case PdfOperatorType.Tj:
+                            {
+                                var op = (Tj_Op)Scanner.GetCurrentOperation();
+                                TextState.FillGlyphs(op, CurrentGlyphs);
+                                CurrentTextPos = 0;
+                                ReadState = TextReadState.ReadingOp;
+                                break;
+                            }
+                        case PdfOperatorType.TJ:
+                            {
+                                var op = (TJ_Op)Scanner.GetCurrentOperation();
+                                TextState.FillGlyphs(op, CurrentGlyphs);
+                                CurrentTextPos = 0;
+                                ReadState = TextReadState.ReadingOp;
+                                break;
+                            }
+                        default:
+                            var tso = Scanner.GetCurrentOperation();
+                            tso.Apply(TextState);
+                            Scanner.SkipCurrent();
+                            continue;
                     }
-                    break;
+
+                    // text creating ops (default breaks through)
+                    Scanner.SkipCurrent();
+                    var result = ReadCurrent();
+                    if (!result) { continue; }
+                    return true;
+                }
+
+                // non-text affecting op
+                Scanner.SkipCurrent();
             }
-            return false;
         }
 
-        IPdfOperation CurrentText; // Tj ' " TJ
+        int CurrentTextPos;
+        TextReadState ReadState;
+        List<UnappliedGlyph> CurrentGlyphs;
+        UnappliedGlyph CurrentGlyph;
+        public enum TextReadState
+        {
+            Normal,
+            ReadingText,
+            ReadingOp
+        }
 
+        private bool ReadCurrent()
+        {
+            if (CurrentGlyph.Glyph != null)
+            {
+                TextState.ApplyCharShift(CurrentGlyph); // apply previous glyph to shift char size
+            }
 
+            while (true)
+            {
+                if (CurrentTextPos >= CurrentGlyphs.Count)
+                {
+                    CurrentGlyph = default;
+                    ReadState = TextReadState.ReadingText;
+                    return false;
+                }
+
+                CurrentGlyph = CurrentGlyphs[CurrentTextPos];
+                CurrentTextPos++;
+
+                if (CurrentGlyph.Shift != 0)
+                {
+                    TextState.ApplyShift(CurrentGlyph);
+                }
+
+                if (CurrentGlyph.Glyph != null)
+                {
+                    Glyph = CurrentGlyph.Glyph;
+                    return true;
+                }
+            }
+        }
     }
 }

@@ -8,18 +8,27 @@ namespace PdfLexer.Content
 {
     public class TextState
     {
-        int Mode { get; set; }
-        float FontSize { get; set; }
-        float HorizontalScaling { get; set; }
-        float CharSpacing { get; set; }
-        float WordSpacing { get; set; }
-        float TextLeading { get; set; }
+        public int Mode { get; internal set; }
+        public float FontSize { get; internal set; }
+        public float HorizontalScaling { get; internal set; }
+        public float CharSpacing { get; internal set; }
+        public float WordSpacing { get; internal set; }
+        public float TextLeading { get; internal set; }
+        public float TextHScale { get; internal set; }
+        public float TextRise { get; internal set; }
+        public PdfName FontName { get; internal set; }
+        public object Font { get; internal set; } // todo
+        // fontMatrix ??
+
+        // marked content?
+        // will need Apply for BMC BMCProps EMC
+
         Matrix4x4 TextMatrix { get; set; }
         Matrix4x4 TextRenderingMatrix { get; set; } // todo
-                                                    // Tm = Tlm = [ T_fs*T_h  0       0 ] x Tm x CTM
+                                                    //      Trm = [ T_fs*T_h  0       0 ] x Tm x CTM
                                                     //              0         T_fs    0
                                                     //              0         T_rise  1
-        Matrix4x4 TextLineMatrix { get; set; }
+        Matrix4x4 TextLineMatrix { get; set; } // set to Tm at beginning of a line of text
 
         public TextState()
         {
@@ -29,8 +38,50 @@ namespace PdfLexer.Content
 
         public int GetGlyph(ReadOnlySpan<byte> data, int pos, out Glyph info)
         {
-            info = default;
-            return 0;
+            // TODO
+            info = new Glyph
+            {
+                C = (char)data[pos]
+            };
+            return 1;
+        }
+
+        public void FillGlyphs(Tj_Op op, List<UnappliedGlyph> glyphs) => FillGlyphs(op.text, glyphs);
+
+        public void FillGlyphs(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+        {
+            glyphs.Clear();
+            int i = 0;
+            int u = 0;
+            while (i < data.Length && (u = GetGlyph(data, i, out var glyph)) > 0)
+            {
+                glyphs.Add(new UnappliedGlyph(glyph, 0f));
+                i += u;
+            }
+        }
+
+        public void FillGlyphs(TJ_Op op, List<UnappliedGlyph> glyphs)
+        {
+            float offset = 0f;
+            glyphs.Clear();
+            foreach (var info in op.info)
+            {
+                if (info.Data != null)
+                {
+                    int i = 0;
+                    int u = 0;
+                    while (i < info.Data.Length && (u = GetGlyph(info.Data, i, out var glyph)) > 0)
+                    {
+                        glyphs.Add(new UnappliedGlyph(glyph, offset));
+                        offset = 0f;
+                        i += u;
+                    }
+                }
+                else if (info.Shift != 0)
+                {
+                    offset += (float)info.Shift;
+                }
+            }
         }
 
         public void ApplyTj(float tj)
@@ -54,6 +105,16 @@ namespace PdfLexer.Content
         public void Apply(UnappliedGlyph glyph)
         {
             if (glyph.Shift != 0) { ApplyTj(glyph.Shift); }
+            Apply(glyph.Glyph);
+        }
+
+        public void ApplyShift(UnappliedGlyph glyph)
+        {
+            ApplyTj(glyph.Shift);
+        }
+
+        public void ApplyCharShift(UnappliedGlyph glyph)
+        {
             Apply(glyph.Glyph);
         }
 
@@ -176,6 +237,54 @@ namespace PdfLexer.Content
                     // string
                 }
             }
+        }
+
+        public void Apply(Ts_Op op)
+        {
+            TextRise = (float)op.rise;
+        }
+
+        public void Apply(TL_Op op)
+        {
+            TextLeading = (float)op.leading;
+        }
+
+        public void Apply(Tr_Op op)
+        {
+            Mode = op.render;
+        }
+
+        public void Apply(Tw_Op op)
+        {
+            WordSpacing = (float)op.wordSpace;
+        }
+
+        public void Apply(Tc_Op op)
+        {
+            CharSpacing = (float)op.charSpace;
+        }
+
+        public void Apply(Tz_Op op)
+        {
+            TextHScale = (float)op.scale;
+        }
+
+        public void Apply(gs_Op op)
+        {
+            // TODO -> check Resources/ExtGState/{Name}/Font
+            // holds array of [ font_iref size ] -> similar to Tf but iref instead of name
+        }
+
+        public void Apply(Tf_Op op)
+        {
+            FontSize = (float)op.size;
+            if (Font != null && FontName == op.font)
+            {
+                return;
+            }
+            // TODO
+            FontName = op.font;
+            
         }
 
     }

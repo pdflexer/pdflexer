@@ -426,6 +426,21 @@ namespace PdfLexer
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal static bool IsEndOfToken(byte b)
+        {
+            // ugly but benched better than Span IndexOf / IndexOfAny alternatives
+            if (
+                b == 0x00 || b == 0x09 || b == 0x0A || b == 0x0C || b == 0x0D || b == 0x20
+                || b == (byte)'(' || b == (byte)')' || b == (byte)'<' || b == (byte)'>'
+                || b == (byte)'[' || b == (byte)']' || b == (byte)'{' || b == (byte)'}'
+                || b == (byte)'/' || b == (byte)'%')
+            {
+                return true;
+            }
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static int SkipWhiteSpaces(ReadOnlySpan<byte> bytes, int location)
         {
             ReadOnlySpan<byte> localBuffer = bytes;

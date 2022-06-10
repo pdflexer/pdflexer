@@ -19,7 +19,7 @@ namespace PdfLexer.Operators
     public interface IPdfOperationHandler
     {
         IPdfOperation ParseOp(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands);
-        void Apply(ParsingContext ctx, TextState txt, IGraphicsState gfx, ReadOnlySpan<byte> data, List<OperandInfo> operands);
+        void Apply(ParsingContext ctx, TextState txt, GraphicsState gfx, ReadOnlySpan<byte> data, List<OperandInfo> operands);
     }
 
     public class Glyph
@@ -100,7 +100,7 @@ namespace PdfLexer.Operators
                 }
             }
         }
-        public void Apply(ParsingContext ctx, TextState txt, IGraphicsState gfx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
+        public void Apply(ParsingContext ctx, TextState txt, GraphicsState gfx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
 
         }
@@ -240,6 +240,13 @@ namespace PdfLexer.Operators
             return new SCN_Op(colors, name);
         }
 
+        internal static Tj_Op ParseTj(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
+        {
+            var op = operands[0];
+            var text = ctx.StringParser.ParseRaw(data.Slice(op.StartAt, op.Length));
+            return new Tj_Op(text);
+        }
+
         internal static TJ_Op ParseTJ(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
             var items = new List<TJ_Item>(operands.Count - 2);
@@ -266,6 +273,22 @@ namespace PdfLexer.Operators
                 }
             }
             return new TJ_Op(items);
+        }
+
+        internal static singlequote_Op Parsesinglequote(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
+        {
+            var op = operands[0];
+            var text = ctx.StringParser.ParseRaw(data.Slice(op.StartAt, op.Length));
+            return new singlequote_Op(text);
+        }
+
+        internal static doublequote_Op Parsedoublequote(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
+        {
+            var aw = ParseDecimal(ctx, data, operands[0]);
+            var ac = ParseDecimal(ctx, data, operands[1]);
+            var op = operands[2];
+            var text = ctx.StringParser.ParseRaw(data.Slice(op.StartAt, op.Length));
+            return new doublequote_Op(aw,ac,text);
         }
 
         public static decimal ParseDecimal(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
@@ -373,10 +396,6 @@ namespace PdfLexer.Operators
         public void Apply(TextState state) { }
     }
 
-    public interface IGraphicsState
-    {
-
-    }
     public interface ITextState
     {
         Matrix4x4 TextMatrix { get; set; }

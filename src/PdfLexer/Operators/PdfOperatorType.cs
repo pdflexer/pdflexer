@@ -13,6 +13,8 @@ namespace PdfLexer.Operators
     public enum PdfOperatorType
     {
         Unknown,
+        NoOp,
+        RawOp,
         // End of content
         EOC,
         // Close, fill, and stroke path using nonzero winding number rule
@@ -224,7 +226,7 @@ namespace PdfLexer.Operators
             [25684] =  Td_Op.Parse, 
             [17492] =  TD_Op.Parse, 
             [26196] =  Tf_Op.Parse, 
-            [27220] =  Tj_Op.Parse, 
+            [27220] =  PdfOperator.ParseTj, 
             [19028] =  PdfOperator.ParseTJ, 
             [19540] =  TL_Op.Parse, 
             [27988] =  Tm_Op.Parse, 
@@ -237,8 +239,8 @@ namespace PdfLexer.Operators
             [87] =  W_Op.Parse, 
             [10839] =  W_Star_Op.Parse, 
             [121] =  y_Op.Parse, 
-            [39] =  singlequote_Op.Parse, 
-            [34] =  doublequote_Op.Parse, 
+            [39] =  PdfOperator.Parsesinglequote, 
+            [34] =  PdfOperator.Parsedoublequote, 
         };
     }
 
@@ -1539,24 +1541,10 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'j' };
         public PdfOperatorType Type => PdfOperatorType.Tj;
-        public PdfString text { get; set; }
-        public Tj_Op(PdfString text)
+        public byte[] text { get; set; }
+        public Tj_Op(byte[] text)
         {
             this.text = text;
-        }
-
-        public void Serialize(Stream stream) 
-        {
-            PdfOperator.WritePdfString(text, stream);
-            stream.WriteByte((byte)' ');
-            stream.Write(OpData);
-        }
-
-        public static Tj_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-        {
-            var a0 = PdfOperator.ParsePdfString(ctx, data, operands[0]);
-    
-            return new Tj_Op(a0);
         }
     }
     public partial class TJ_Op : IPdfOperation
@@ -1874,24 +1862,10 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData = new byte[] { (byte) '\'' };
         public PdfOperatorType Type => PdfOperatorType.singlequote;
-        public PdfString text { get; set; }
-        public singlequote_Op(PdfString text)
+        public byte[] text { get; set; }
+        public singlequote_Op(byte[] text)
         {
             this.text = text;
-        }
-
-        public void Serialize(Stream stream) 
-        {
-            PdfOperator.WritePdfString(text, stream);
-            stream.WriteByte((byte)' ');
-            stream.Write(OpData);
-        }
-
-        public static singlequote_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-        {
-            var a0 = PdfOperator.ParsePdfString(ctx, data, operands[0]);
-    
-            return new singlequote_Op(a0);
         }
     }
     public partial class doublequote_Op : IPdfOperation
@@ -1900,32 +1874,12 @@ namespace PdfLexer.Operators
         public PdfOperatorType Type => PdfOperatorType.doublequote;
         public decimal aw { get; set; }
         public decimal ac { get; set; }
-        public PdfString text { get; set; }
-        public doublequote_Op(decimal aw, decimal ac, PdfString text)
+        public byte[] text { get; set; }
+        public doublequote_Op(decimal aw, decimal ac, byte[] text)
         {
             this.aw = aw;
             this.ac = ac;
             this.text = text;
-        }
-
-        public void Serialize(Stream stream) 
-        {
-            PdfOperator.Writedecimal(aw, stream);
-            stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(ac, stream);
-            stream.WriteByte((byte)' ');
-            PdfOperator.WritePdfString(text, stream);
-            stream.WriteByte((byte)' ');
-            stream.Write(OpData);
-        }
-
-        public static doublequote_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-        {
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParsePdfString(ctx, data, operands[2]);
-    
-            return new doublequote_Op(a0, a1, a2);
         }
     }
 }
