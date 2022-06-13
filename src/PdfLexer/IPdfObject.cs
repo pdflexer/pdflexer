@@ -59,7 +59,7 @@ namespace PdfLexer
         /// <param name="item"></param>
         /// <returns></returns>
         /// <exception cref="PdfLexerObjectMismatchException">Excetion if <see cref="item"/> is not of type <see cref="T"/></exception>
-        public static T GetValue<T>(this IPdfObject item) where T : IPdfObject
+        public static T GetValue<T>(this IPdfObject item, bool errorOnMismatch=true) where T : IPdfObject
         {
             item = item.Resolve();
 
@@ -67,9 +67,11 @@ namespace PdfLexer
             {
                 return retyped;
             }
-
+            if (!errorOnMismatch) { return default(T); }
             throw new PdfLexerObjectMismatchException($"Mismatched data type requested, got {item.Type} expected {typeof(T)}");
         }
+
+
 
         /// <summary>
         /// ADVANCED USAGE

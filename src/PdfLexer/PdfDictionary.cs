@@ -172,6 +172,29 @@ namespace PdfLexer
         }
 
         /// <summary>
+        /// Returns value for key if exists and matches type.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns>Result or null if not found or does not match</returns>
+        public T Get<T>(PdfName key) where T : IPdfObject
+        {
+            _ = TryGetValue<T>(key, out T value, false);
+            return value;
+        }
+
+        /// <summary>
+        /// Returns value for key if exists and matches type.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns>Result or null if not found or does not match</returns>
+        public IPdfObject Get(PdfName key)
+        {
+            _ = TryGetValue(key, out IPdfObject value, false);
+            return value;
+        }
+
+        /// <summary>
         /// Tries to get the PdfObject with the given key.
         /// </summary>
         /// <typeparam name="T">Expected type of object</typeparam>

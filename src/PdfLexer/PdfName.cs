@@ -105,6 +105,28 @@ namespace PdfLexer
         public static readonly PdfName Form = new PdfName("/Form", false);
 
 
+        public static readonly PdfName Widths = new PdfName("/Widths", false);
+        public static readonly PdfName FontName = new PdfName("/FontName", false);
+        public static readonly PdfName FontBBox = new PdfName("/FontBBox", false);
+        public static readonly PdfName Type0 = new PdfName("/Type0", false);
+        public static readonly PdfName Type3 = new PdfName("/Type3", false);
+        public static readonly PdfName DescendantFonts = new PdfName("/DescendantFonts", false);
+        public static readonly PdfName BaseFont = new PdfName("/BaseFont", false);
+        public static readonly PdfName FontFile = new PdfName("/FontFile", false);
+        public static readonly PdfName FontFile2 = new PdfName("/FontFile2", false);
+        public static readonly PdfName FontFile3 = new PdfName("/FontFile3", false);
+        public static readonly PdfName Length1 = new PdfName("/Length1", false);
+        public static readonly PdfName Length2 = new PdfName("/Length2", false);
+        public static readonly PdfName Length3 = new PdfName("/Length3", false);
+        public static readonly PdfName FontMatrix = new PdfName("/FontMatrix", false);
+        public static readonly PdfName Ascent = new PdfName("/Ascent", false);
+        public static readonly PdfName Descent = new PdfName("/Descent", false);
+        public static readonly PdfName XHeight = new PdfName("/XHeight", false);
+        public static readonly PdfName CapHeight = new PdfName("/CapHeight", false);
+        public static readonly PdfName Flags = new PdfName("/Flags", false);
+        public static readonly PdfName ItalicAngle = new PdfName("/ItalicAngle", false);
+
+        public static readonly PdfName Encoding = new PdfName("/Encoding", false);
 
         public static implicit operator PdfName(string name)
         {
