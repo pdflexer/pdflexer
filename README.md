@@ -130,4 +130,3 @@ note: may be unrealistic, need to do more varied scenarios
 |   SplitPdfPig | 8.546 ms | 0.3733 ms | 0.4721 ms |  1.26 |    0.12 | 1609.3750 | 765.6250 | 484.3750 |      8 MB |
 | SplitPdfLexer | 2.513 ms | 0.0585 ms | 0.0718 ms |  0.37 |    0.04 |  707.0313 | 535.1563 | 269.5313 |      4 MB |
 ```
-
