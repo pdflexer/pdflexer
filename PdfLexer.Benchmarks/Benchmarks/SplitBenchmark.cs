@@ -74,21 +74,22 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return results;
         }
 
-        // [Benchmark()]
-        // public byte[] MergePdfPig()
-        // {
-        //     var finished = new UglyToad.PdfPig.Writer.PdfDocumentBuilder();
-        //     
-        //     foreach (var pdf in pdfs)
-        //     {
-        //         var doc = UglyToad.PdfPig.PdfDocument.Open(pdf);
-        //         for (var i=0;i<doc.NumberOfPages;i++)
-        //         {
-        //             finished.AddPage(doc, i+1);
-        //         } 
-        //     }
-        //     return finished.Build(); 
-        // }
+        [Benchmark()]
+        public List<byte[]> SplitPdfPig()
+        {
+            var results = new List<byte[]>();
+            foreach (var pdf in pdfs)
+            {
+                var doc = UglyToad.PdfPig.PdfDocument.Open(pdf);
+                for (var i = 0; i < doc.NumberOfPages; i++)
+                {
+                    var output = new UglyToad.PdfPig.Writer.PdfDocumentBuilder();
+                    output.AddPage(doc, i+1);
+                    results.Add(output.Build());
+                }
+            }
+            return results;
+        }
 
         [Benchmark()]
         public List<byte[]> SplitPdfLexer()
