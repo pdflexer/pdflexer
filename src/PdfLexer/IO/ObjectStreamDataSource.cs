@@ -1,5 +1,6 @@
 ﻿using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
+using PdfLexer.Serializers;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -70,7 +71,7 @@ namespace PdfLexer.IO
             throw new NotImplementedException();
         }
 
-        public void CopyIndirectObject(XRefEntry xref, Stream destination)
+        public void CopyIndirectObject(XRefEntry xref, WritingContext destination)
         {
             var os = _offsets[xref.ObjectIndex] + _start;
             Context.CurrentSource = this;

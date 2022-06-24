@@ -136,20 +136,20 @@ namespace PdfLexer
         internal static Exception DisplayDataErrorException(ReadOnlySpan<byte> data, int i, string prefixInfo)
         {
             var count = data.Length > i + 25 ? 25 : data.Length - i;
-            return new ApplicationException(prefixInfo + ": '" + Encoding.ASCII.GetString(data.Slice(i, count)) + "'");
+            return new PdfLexerException(prefixInfo + ": '" + Encoding.ASCII.GetString(data.Slice(i, count)) + "'");
         }
 
         internal static Exception DisplayDataErrorException(ref SequenceReader<byte> reader, string prefixInfo)
         {
             var count = reader.Remaining > 25 ? 25 : reader.Remaining;
-            return new ApplicationException(prefixInfo + ": '" + Encoding.ASCII.GetString(reader.Sequence.Slice(reader.Position, count).ToArray()) + "'");
+            return new PdfLexerException(prefixInfo + ": '" + Encoding.ASCII.GetString(reader.Sequence.Slice(reader.Position, count).ToArray()) + "'");
         }
 
         internal static Exception DisplayDataErrorException(ReadOnlySequence<byte> sequence, SequencePosition position, string prefixInfo)
         {
             var count = sequence.Length > 25 ? 25 : sequence.Length;
 
-            return new ApplicationException(prefixInfo + ": '" + Encoding.ASCII.GetString(sequence.Slice(position, count).ToArray()) + "'");
+            return new PdfLexerException(prefixInfo + ": '" + Encoding.ASCII.GetString(sequence.Slice(position, count).ToArray()) + "'");
         }
 
 

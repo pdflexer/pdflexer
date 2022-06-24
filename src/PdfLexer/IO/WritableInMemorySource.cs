@@ -1,5 +1,6 @@
 ﻿using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
+using PdfLexer.Serializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -140,7 +141,7 @@ namespace PdfLexer.IO
             throw new NotImplementedException();
         }
 
-        public void CopyIndirectObject(XRefEntry xref, Stream destination)
+        public void CopyIndirectObject(XRefEntry xref, WritingContext destination)
         {
             throw new NotImplementedException();
         }

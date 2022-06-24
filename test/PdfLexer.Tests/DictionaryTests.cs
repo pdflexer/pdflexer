@@ -225,6 +225,56 @@ namespace PdfLexer.Tests
         }
 
         [Fact]
+        public void Scanner_Finds_Endstream_After()
+        {
+            var buffer = Encoding.ASCII.GetBytes("123456789endstream123456789");
+            var scanner = new Scanner(new ParsingContext(), buffer, 4);
+            var result = scanner.TryFindEndStream();
+            Assert.True(result);
+            Assert.Equal(9, scanner.Position);
+        }
+
+        [Fact]
+        public void Scanner_Finds_Endstream_Adjusts_For_NewLine()
+        {
+            var buffer = Encoding.ASCII.GetBytes("12345678\nendstream123456789");
+            var scanner = new Scanner(new ParsingContext(), buffer, 4);
+            var result = scanner.TryFindEndStream();
+            Assert.True(result);
+            Assert.Equal(8, scanner.Position);
+        }
+
+        [Fact]
+        public void Scanner_Finds_Endstream_After_Multiple()
+        {
+            var buffer = Encoding.ASCII.GetBytes("123456789endstream123456789endstream");
+            var scanner = new Scanner(new ParsingContext(), buffer, 4);
+            var result = scanner.TryFindEndStream();
+            Assert.True(result);
+            Assert.Equal(9, scanner.Position);
+        }
+
+        [Fact]
+        public void Scanner_Finds_Endstream_Before()
+        {
+            var buffer = Encoding.ASCII.GetBytes("123456789endstream123456789123456789");
+            var scanner = new Scanner(new ParsingContext(), buffer, 22);
+            var result = scanner.TryFindEndStream();
+            Assert.True(result);
+            Assert.Equal(9, scanner.Position);
+        }
+
+        [Fact]
+        public void Scanner_Finds_Endstream_Before_Closest()
+        {
+            var buffer = Encoding.ASCII.GetBytes("123456789endstream12345678endstream9123456789");
+            var scanner = new Scanner(new ParsingContext(), buffer, 33);
+            var result = scanner.TryFindEndStream();
+            Assert.True(result);
+            Assert.Equal(26, scanner.Position);
+        }
+
+        [Fact]
         public void Scanner_Skips_Offset_Returned()
         {
             var buffer = Encoding.ASCII.GetBytes("dadf 9 9 sdf0a /df// af0980 1 0 obj\r\n<</Name[/Test/Value]>>");

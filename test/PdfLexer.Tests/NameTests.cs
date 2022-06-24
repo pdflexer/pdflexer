@@ -1,6 +1,7 @@
 using System;
 using System.Buffers;
 using System.IO;
+using System.Linq;
 using System.Text;
 using PdfLexer.Lexing;
 using PdfLexer.Parsers;
@@ -22,6 +23,7 @@ namespace PdfLexer.Tests
         [InlineData("/paired#28#29parentheses ", "/paired()parentheses", -1)]
         [InlineData("/The_Key_of_F#23_Minor ", "/The_Key_of_F#_Minor", -1)]
         [InlineData("/A#42 ", "/AB", -1)]
+        // /ºÚÌå-GBKp-EUC-H
         [Theory]
         public void It_Gets_Name_Span(string input, string output, int length)
         {
@@ -52,7 +54,19 @@ namespace PdfLexer.Tests
             Assert.False(Object.ReferenceEquals(result, result3));
             Assert.Equal(key, result.Value);
             Assert.Equal(key2, result3.Value);
+        }
 
+        [Fact]
+        public void It_Reads_Non_ASCII()
+        {
+            var root = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var data = File.ReadAllBytes(Path.Combine(root, "raw-name.txt"));
+            var parser = new NameParser(new ParsingContext(new ParsingOptions { CacheNames = false }));
+            var result = parser.Parse(data);
+            var serializer = new NameSerializer();
+            Span<byte> buffer = new byte[100];
+            var c = serializer.GetBytes(result, buffer);
+            Assert.True(data.SequenceEqual(buffer.Slice(0, c).ToArray()));
         }
 
         [InlineData("/Test", "/Test")]
@@ -75,7 +89,7 @@ namespace PdfLexer.Tests
             var data = new Span<byte>(new byte[50]);
             var count = serializer.GetBytes(new PdfName(input), data);
 
-            return Encoding.ASCII.GetString(data.Slice(0, count));
+            return Encoding.UTF8.GetString(data.Slice(0, count));
         }
 
         private string Serialize_With_Stream(string input)
@@ -84,7 +98,7 @@ namespace PdfLexer.Tests
             var ms = new MemoryStream();
             serializer.WriteToStream(new PdfName(input), ms);
 
-            return Encoding.ASCII.GetString(ms.ToArray());
+            return Encoding.UTF8.GetString(ms.ToArray());
         }
     }
 }

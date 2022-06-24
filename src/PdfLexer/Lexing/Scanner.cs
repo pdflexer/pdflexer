@@ -24,7 +24,7 @@ namespace PdfLexer.Lexing
 
         public PdfTokenType Peek()
         {
-            if (CurrentLength == 0)
+            if (CurrentTokenType == PdfTokenType.Unknown)
             {
                 Position = PdfSpanLexer.TryReadNextToken(Data, out CurrentTokenType, Position, out CurrentLength);
             }
@@ -33,28 +33,22 @@ namespace PdfLexer.Lexing
 
         public void SkipCurrent()
         {
-            if (CurrentLength == 0)
-            {
-                Peek();
-            }
+            Peek();
             ThrowIfAtEndOfData();
             Position += CurrentLength;
-            CurrentLength = 0;
+            CurrentTokenType = PdfTokenType.Unknown;
         }
 
         public void SkipExpected(PdfTokenType type)
         {
-            if (CurrentLength == 0)
-            {
-                Peek();
-            }
+            Peek();
             ThrowIfAtEndOfData();
             if (type != CurrentTokenType)
             {
                 throw CommonUtil.DisplayDataErrorException(Data, Position, $"Mismatched token, found {CurrentTokenType}, expected {type}");
             }
             Position += CurrentLength;
-            CurrentLength = 0;
+            CurrentTokenType = PdfTokenType.Unknown;
         }
 
         private void ThrowIfAtEndOfData()
@@ -70,15 +64,12 @@ namespace PdfLexer.Lexing
         public void Advance(int cnt)
         {
             Position += cnt;
-            CurrentLength = 0;
+            CurrentTokenType = PdfTokenType.Unknown;
         }
 
         public int SkipObject()
         {
-            if (CurrentLength == 0)
-            {
-                Peek();
-            }
+            Peek();
             ThrowIfAtEndOfData();
             if ((int)CurrentTokenType > 7)
             {
@@ -104,16 +95,27 @@ namespace PdfLexer.Lexing
                     throw CommonUtil.DisplayDataErrorException(Data, pos, $"Unable to find dictionary end");
                 }
             }
-            CurrentLength = 0;
+            CurrentTokenType = PdfTokenType.Unknown;
             return Position - start;
+        }
+
+        public void ScanToToken(ReadOnlySpan<byte> token)
+        {
+            var loc = Data.IndexOf(token);
+            if (loc == -1)
+            {
+                CurrentTokenType = PdfTokenType.EOS;
+            }
+            else
+            {
+                Position = loc;
+                CurrentTokenType = PdfTokenType.Unknown;
+            }
         }
 
         public IPdfObject GetCurrentObject()
         {
-            if (CurrentLength == 0)
-            {
-                Peek();
-            }
+            Peek();
             ThrowIfAtEndOfData();
             if ((int)CurrentTokenType > 7)
             {
@@ -122,8 +124,45 @@ namespace PdfLexer.Lexing
             var obj = Context.GetPdfItem(Data, Position, out var length);
             Position += length;
             CurrentTokenType = PdfTokenType.Unknown;
-            CurrentLength = 0;
             return obj;
+        }
+
+        public bool TryFindEndStream()
+        {
+            var pos = Data.Slice(Position).IndexOf(IndirectSequences.endstream);
+            if (pos != -1)
+            {
+                Position += pos;
+                if (Data[Position - 1] == (byte)'\n')
+                {
+                    Position--;
+                }
+                return true;
+            }
+
+            var original = Position;
+            Position = 0;
+            pos = 0;
+            var lastPos = 0;
+
+            while (pos < original - Position && (pos = Data.Slice(Position).IndexOf(IndirectSequences.endstream)) != -1)
+            {
+                lastPos = Position + pos;
+                Position += pos + 1;
+            }
+
+            if (lastPos == 0)
+            {
+                Position = original;
+                return false;
+            }
+
+            Position = lastPos;
+            if (Data[Position - 1] == (byte)'\n')
+            {
+                Position--;
+            }
+            return true;
         }
     }
 }

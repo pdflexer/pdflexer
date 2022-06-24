@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.IO;
 using PdfLexer.Filters;
 using PdfLexer.IO;
@@ -18,6 +15,9 @@ namespace PdfLexer.Parsers
     public class ParsingContext
     {
         internal int SourceId { get; set; }
+        internal bool IsEncrypted { get; set; } = false;
+
+        internal ulong CurrentIndirectObject { get; set; }
         internal long CurrentOffset { get; set; }
         internal IPdfDataSource CurrentSource { get; set; }
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
@@ -65,6 +65,18 @@ namespace PdfLexer.Parsers
             return XRefParser.LoadCrossReferences(pdf);
         }
 
+        internal List<string> Errors { get; set; } = new List<string>();
+        public IReadOnlyList<string> ParsingErrors => Errors;
+
+        internal void Error(string info)
+        {
+            if (Options.ThrowOnErrors)
+            {
+                throw new PdfLexerException(info);
+            }
+            Errors.Add(info);
+        }
+
         internal IDecoder GetDecoder(PdfName name)
         {
             switch (name.Value)
@@ -78,6 +90,11 @@ namespace PdfLexer.Parsers
 
         internal bool IsDataCopyable(XRef entry)
         {
+            if (IsEncrypted)
+            {
+                return false;
+            }
+
             ulong id = ((ulong)entry.ObjectNumber << 16) | ((uint)entry.Generation & 0xFFFF);
             if (IndirectCache.TryGetValue(id, out var value))
             {
@@ -95,8 +112,12 @@ namespace PdfLexer.Parsers
             return true;
         }
 
-        internal void UnwrapAndCopyObjData(ReadOnlySpan<byte> data, Stream stream)
+        internal void UnwrapAndCopyObjData(ReadOnlySpan<byte> data, WritingContext wtx)
         {
+            if (IsEncrypted)
+            {
+                throw new NotSupportedException("Copying raw data from encrypted PDF is not supported.");
+            }
             var scanner = new Scanner(this, data, 0);
             scanner.SkipExpected(PdfTokenType.NumericObj);
             scanner.SkipExpected(PdfTokenType.NumericObj);
@@ -106,13 +127,14 @@ namespace PdfLexer.Parsers
             var type = scanner.Peek();
             if (type == PdfTokenType.EndObj)
             {
-                stream.Write(data.Slice(objStart, objLength));
+                wtx.Stream.Write(data.Slice(objStart, objLength));
                 return;
             }
             else if (type == PdfTokenType.StartStream)
             {
-                scanner.SkipCurrent();
                 // TODO look into this.. feels wrong parsing dict here
+                scanner.SkipCurrent(); // startstream
+                var startPos = scanner.Position;
                 var existing = Options.Eagerness;
                 Options.Eagerness = Eagerness.Lazy;
                 var obj = GetKnownPdfItem(PdfObjectType.DictionaryObj, data, objStart, objLength);
@@ -124,19 +146,37 @@ namespace PdfLexer.Parsers
                 {
                     throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
                 }
+
                 scanner.Advance(streamLength);
+                var eosByLength = scanner.Position;
                 var endstream = scanner.Peek();
                 if (endstream == PdfTokenType.EndStream)
                 {
                     scanner.SkipCurrent();
-                    stream.Write(data.Slice(objStart, scanner.Position - objStart));
-                } else
+                    wtx.Stream.Write(data.Slice(objStart, scanner.Position - objStart));
+                }
+                else
                 {
-                    // bad existing stream
-                    // TODO attempt to rebuild
-                    stream.Write(data.Slice(objStart, scanner.Position - objStart));
-                    stream.WriteByte((byte)'\n');
-                    stream.Write(IndirectSequences.endstream);
+                    Error("Endstream not found at end of stream when parsing when copying data.");
+                    if (!scanner.TryFindEndStream())
+                    {
+                        Error("Unable to find endstream in contents, writing provided length.");
+                        // no way to repair this.. simply write existing data length
+                        wtx.Stream.Write(data.Slice(objStart, eosByLength - objStart));
+                        wtx.Stream.WriteByte((byte)'\n');
+                        wtx.Stream.Write(IndirectSequences.endstream);
+                        Options.Eagerness = existing;
+                        return;
+                    }
+
+                    Error("Found endstream in contents, using repaired length.");
+                    streamLength = new PdfIntNumber(scanner.Position - startPos);
+                    dict[PdfName.Length] = streamLength;
+                    var contents = new PdfByteArrayStreamContents(data.Slice(startPos, scanner.Position - startPos).ToArray());
+                    var stream = new PdfStream(dict, contents);
+                    contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
+                    contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+                    wtx.SerializeObject(stream, true);
                 }
                 Options.Eagerness = existing;
                 return;
@@ -164,6 +204,7 @@ namespace PdfLexer.Parsers
                 LoadObjectStream(value);
             }
 
+            CurrentIndirectObject = id;
             var obj = value.GetObject();
             IndirectCache[id] = obj;
             return obj;
@@ -218,14 +259,27 @@ namespace PdfLexer.Parsers
                 {
                     throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
                 }
-                var contents = new PdfExistingStreamContents(MainDocSource, xref.Offset + scanner.Position + scanner.CurrentLength, streamLength);
+
+                var startPos = scanner.Position + scanner.CurrentLength;
+                scanner.SkipCurrent(); // start stream
+                scanner.Advance(streamLength);
+                var endstream = scanner.Peek();
+                if (endstream != PdfTokenType.EndStream)
+                {
+                    Error("Endstream not found at end of stream when parsing indirect object.");
+                    if (scanner.TryFindEndStream())
+                    {
+                        Error("Found endstream in contents, using repaired length.");
+                        streamLength = new PdfIntNumber(scanner.Position - startPos);
+                        dict[PdfName.Length] = streamLength;
+                    }
+                }
+                var contents = new PdfExistingStreamContents(MainDocSource, xref.Offset + startPos, streamLength);
                 contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
                 contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
                 var stream = new PdfStream(dict, contents);
-                scanner.SkipCurrent();
-                scanner.Advance(streamLength);
-                var endstream = scanner.Peek();
-                // TODO validated endstream
+
+                // TODO validated endstream and repair
                 return stream;
             }
             throw new ApplicationException("Indirect object not followed by endobj token.");

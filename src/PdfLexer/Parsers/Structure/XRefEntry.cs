@@ -1,4 +1,5 @@
 ﻿using PdfLexer.IO;
+using PdfLexer.Serializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -83,6 +84,6 @@ namespace PdfLexer.Parsers.Structure
         /// Excludes object header and trailer (obj/endobj).
         /// </summary>
         /// <param name="destination">Stream to write to</param>
-        public void CopyUnwrappedData(Stream destination) => Source.CopyIndirectObject(this, destination);
+        public void CopyUnwrappedData(WritingContext destination) => Source.CopyIndirectObject(this, destination);
     }
 }

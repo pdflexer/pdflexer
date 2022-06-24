@@ -12,7 +12,7 @@ namespace PdfLexer.Lexing
         private ParsingContext Context;
         private PipeReader Pipe;
         private SequenceReader<byte> Reader;
-        public long Offset;
+        public long CurrentOffset;
 
         public PipeScanner(ParsingContext ctx, PipeReader pipe)
         {
@@ -23,7 +23,7 @@ namespace PdfLexer.Lexing
             Reader = default;
             CurrentStart = default;
             CurrentEnd = default;
-            Offset = 0;
+            CurrentOffset = 0;
             InitReader();
         }
 
@@ -42,37 +42,24 @@ namespace PdfLexer.Lexing
 
         public long GetOffset()
         {
-            return Offset + Reader.Consumed;
+            return CurrentOffset + Reader.Consumed;
         }
 
         public long GetStartOffset()
         {
-            return Offset + Reader.Sequence.Slice(Reader.Sequence.Start, CurrentStart).Length; // :(
+            return CurrentOffset + Reader.Sequence.Slice(Reader.Sequence.Start, CurrentStart).Length; // :(
         }
 
         private void AdvanceBuffer(SequencePosition pos)
         {
-            int count = 0;
-            var end = Reader.Sequence.End;
-            Offset += Reader.Sequence.Slice(Reader.Sequence.Start, pos).Length; // UGH.. TODO: use GetOffset conditionally for net50
+            // UGH.. better way? Sequence.GetOffset for net5.0 but not sure how that behaves
+            // since we are recreating sequence reader... data is from same pipereader so probably is
+            // what we want
+            CurrentOffset += Reader.Sequence.Slice(Reader.Sequence.Start, pos).Length; 
             Pipe.AdvanceTo(pos, Reader.Sequence.End);
             InitReader();
             CurrentStart = Reader.Position;
             return;
-            while (true)
-            {
-
-                // if (IsCompleted || !Reader.Sequence.End.Equals(end))
-                // {
-                //     return;
-                // }
-                // count++;
-                // if (count > 5)
-                // {
-                //     throw CommonUtil.DisplayDataErrorException(ref Reader, $"Stream did not advance.");
-                // }
-            }
-
         }
 
         public PdfTokenType Peek()
@@ -127,7 +114,7 @@ namespace PdfLexer.Lexing
         public void Advance(int cnt)
         {
             Reader.Advance(cnt);
-            Offset += cnt;
+            CurrentOffset += cnt;
             CurrentTokenType = PdfTokenType.Unknown;
         }
 
@@ -174,7 +161,7 @@ namespace PdfLexer.Lexing
         {
             while (true)
             {
-                
+
                 if (!NestedUtil.AdvanceToArrayEnd(ref Reader, out _))
                 {
                     if (IsCompleted)

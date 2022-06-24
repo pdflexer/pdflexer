@@ -197,7 +197,7 @@ namespace PdfLexer.Lexing
                         {
                             return true;
                         }
-
+                        
                         if (nxt != (byte)'\r')
                         {
                             throw CommonUtil.DisplayDataErrorException(ref reader, "Stream not followed by \\r\\n or \\n.");

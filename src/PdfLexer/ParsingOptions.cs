@@ -33,6 +33,8 @@ namespace PdfLexer
         /// Default: true
         /// </summary>
         public bool CacheNames { get; set; } = true;
+
+        public bool ThrowOnErrors { get;set;} = false;
     }
 
     public enum Eagerness

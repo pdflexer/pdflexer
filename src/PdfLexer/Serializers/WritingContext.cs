@@ -112,7 +112,6 @@ namespace PdfLexer.Serializers
                 }
                 Stream.Write(z.Slice(0, 5 - count));
                 Stream.Write(buff.Slice(0, count));
-                Stream.WriteByte((byte)' ');
                 Stream.Write(refEnd);
             }
             Stream.Write(XRefParser.Trailer);
@@ -131,7 +130,7 @@ namespace PdfLexer.Serializers
             Stream.Write(oef);
         }
 
-        public void SerializeObject(IPdfObject obj)
+        public void SerializeObject(IPdfObject obj, bool writeAnyIr=false)
         {
             if (obj.IsLazy)
             {
@@ -183,6 +182,11 @@ namespace PdfLexer.Serializers
                     return;
                 case PdfObjectType.IndirectRefObj:
                     var ir = (PdfIndirectRef)obj;
+                    if (writeAnyIr)
+                    {
+                        WriteObjRef(ir.Reference);
+                        return;
+                    }
                     if (!ir.IsOwned(NewDocId))
                     {
                         if (!TryGetLocalRef(ir, out var result))
@@ -310,7 +314,7 @@ namespace PdfLexer.Serializers
             Debug.Assert(entry.Reference.ObjectNumber != 0);
             writtenObjs[entry.Reference.ObjectNumber] = (Stream.Position, entry.Reference);
             WriteObjStart(entry.Reference);
-            entry.CopyUnwrappedData(Stream);
+            entry.CopyUnwrappedData(this);
             WriteObjEnd();
         }
 

@@ -69,10 +69,11 @@ namespace PdfLexer
         public static PdfName N => new PdfName("/N", false);
         public static PdfName First => new PdfName("/First", false);
         public static PdfName Index => new PdfName("/Index", false);
-        public static PdfName XRefStrm => new PdfName("/XRefStrm", false);
+        public static PdfName XRefStm => new PdfName("/XRefStm", false);
         public static PdfName XRef => new PdfName("/XRef", false);
         public static PdfName Parent => new PdfName("/Parent", false);
         public static PdfName ObjStm => new PdfName("/ObjStm", false);
+        public static PdfName Encrypt => new PdfName("/Encrypt", false);
         
         public static implicit operator PdfName(string name)
         {

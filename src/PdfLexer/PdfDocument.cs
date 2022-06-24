@@ -97,7 +97,7 @@ namespace PdfLexer
             trailer.Remove(PdfName.Filter);
             trailer.Remove(PdfName.Length);
             trailer.Remove(PdfName.Prev);
-            trailer.Remove(PdfName.XRefStrm);
+            trailer.Remove(PdfName.XRefStm);
             if (Pages != null)
             {
                 catalog[PdfName.Pages] = BuildPageTree();

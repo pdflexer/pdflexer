@@ -130,7 +130,8 @@ namespace PdfLexer.Tests
             {
                 try
                 {
-                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    var data = File.ReadAllBytes(pdf);
+                    using var doc = PdfDocument.Open(data);
                     using var ms = new MemoryStream();
                     doc.SaveTo(ms);
                     using var doc2 = PdfDocument.Open(ms.ToArray());
@@ -148,11 +149,129 @@ namespace PdfLexer.Tests
             }
         }
 
+        [Fact]
+        public void It_ReWrites_All_Pdf_JS_HashCheck()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var results = Path.Combine(tp, "results", "pighash");
+            using var parseLog = new StreamWriter(Path.Combine(results, "run_log.txt"));
+            Directory.CreateDirectory(results);
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var errors = new List<string>();
+            PdfDocument doc;
+            byte[] d1 = null;
+            byte[] d2 = null;
+            byte[] d3 = null;
+            decimal hc = 0;
+            decimal hc2 = 0;
+            decimal hc3 = 0;
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                try
+                {
+                    if (pdf.Contains("Pages-tree-refs"))
+                    {
+                        // pdfpig can't handle the loop
+                        continue;
+                    }
+                    if (pdf.Contains("xobject-image"))
+                    {
+                        // pdfpig misses contents due to bad stream length
+                        continue;
+                    }
+                    if (pdf.Contains("issue5954"))
+                    {
+                        // known issue
+                        continue;
+                    }
+                    if (pdf.Contains("issue6108"))
+                    {
+                        // pdfpig misses contents due to bad stream length
+                        continue;
+                    }
+                    parseLog.WriteLine(pdf);
+                    parseLog.Flush();
+                    hc = hc2 = hc3 = 0;
+                    d1 = d2 = d3 = null;
+
+                    d1 = File.ReadAllBytes(pdf);
+                    doc = PdfDocument.Open(d1);
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt))
+                    {
+                        // don't support encryption currently
+                        parseLog.WriteLine("Skipping encrypted.");
+                        continue;
+                    }
+                    try
+                    {
+                        // if pgpig can't read existin just ksip
+                        hc = Util.GetDocumentHashCode(d1);
+                    }
+                    catch (Exception)
+                    {
+                        parseLog.WriteLine("Skipping PDF Pig exception.");
+                        continue;
+                    }
+
+
+                    var ms = new MemoryStream();
+                    doc.SaveTo(ms);
+                    d2 = ms.ToArray();
+                    using var doc2 = PdfDocument.Create();
+                    doc2.Pages = doc.Pages;
+                    ms = new MemoryStream();
+                    doc2.SaveTo(ms);
+                    d3 = ms.ToArray();
+                    hc2 = Util.GetDocumentHashCode(d2);
+                    hc3 = Util.GetDocumentHashCode(d3);
+                    Assert.Equal(hc, hc2);
+                    Assert.Equal(hc, hc3);
+                }
+                catch (Exception e)
+                {
+                    parseLog.WriteLine($"{hc} {hc2} {hc3}");
+                    var bp = Path.Combine(results, Path.GetFileNameWithoutExtension(pdf));
+                    File.WriteAllBytes(bp + "_input.pdf", d1 ?? new byte[0]);
+                    File.WriteAllBytes(bp + "_quicksave.pdf", d2 ?? new byte[0]);
+                    File.WriteAllBytes(bp + "_pagecopy.pdf", d3 ?? new byte[0]);
+                    errors.Add(pdf + ": " + e.Message);
+                }
+            }
+            if (errors.Any())
+            {
+                throw new ApplicationException(string.Join(Environment.NewLine, errors));
+            }
+        }
+
+        // [Fact]
+        // public void It_Compares_vertical_pagecopy_pdf()
+        // {
+        //     var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+        //     var pdf = Path.Combine(tp, "pdfs", "pdfjs", "vertical.pdf");
+        //     var d1 = File.ReadAllBytes(pdf);
+        //     var doc = PdfDocument.Open(d1);
+        //     var ms = new MemoryStream();
+        //     doc.SaveTo(ms);
+        //     var d2 = ms.ToArray();
+        //     using var doc2 = PdfDocument.Create();
+        //     doc2.Pages = doc.Pages;
+        //     doc2.SaveTo(ms);
+        //     var d3 = ms.ToArray();
+        //     var hc1 = Util.GetDocumentHashCode(d1);
+        //     var hc2 = Util.GetDocumentHashCode(d2);
+        //     var hc3 = Util.GetDocumentHashCode(d3);
+        // }
+
         // [Fact]
         public async Task It_ReWrites_PDF_JS()
         {
+            bool copyPages = true;
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var results = Path.Combine(tp, "results", "pngjs");
+            Directory.CreateDirectory(results);
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pngRoot = Path.Combine(tp, "pngjs");
+
             var errors = new List<string>();
             using var temp = new TemporaryWorkspace();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
@@ -160,19 +279,36 @@ namespace PdfLexer.Tests
                 try
                 {
                     using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt))
+                    {
+                        continue;
+                    }
                     doc.Trailer["/NewKey"] = new PdfString("NewValue");
                     var fn = Path.Combine(temp.TempPath, Path.GetFileName(pdf));
-                    using (var fs = File.Create(fn))
+                    if (copyPages)
                     {
-                        doc.SaveTo(fs);
+                        using var d2 = PdfDocument.Create();
+                        d2.Pages = doc.Pages;
+                        using (var fs = File.Create(fn))
+                        {
+                            d2.SaveTo(fs);
+                        }
                     }
+                    else
+                    {
+                        using (var fs = File.Create(fn))
+                        {
+                            doc.SaveTo(fs);
+                        }
+                    }
+
 
                     var stdOutBuffer = new StringBuilder();
                     var stdErrBuffer = new StringBuilder();
 
                     var result = await Cli.Wrap("node.exe")
                         .WithArguments("pdf2png.js " + pdf + " baseline.png")
-                        .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pngjs")
+                        .WithWorkingDirectory(pngRoot)
                         .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
                         .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
                         .ExecuteAsync();
@@ -187,7 +323,7 @@ namespace PdfLexer.Tests
 
                     var result2 = await Cli.Wrap("node.exe")
                         .WithArguments("pdf2png.js " + fn + " modified.png")
-                        .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pngjs")
+                        .WithWorkingDirectory(pngRoot)
                         .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
                         .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
                         .ExecuteAsync();
@@ -201,7 +337,7 @@ namespace PdfLexer.Tests
 
                     var result3 = await Cli.Wrap("node.exe")
                     .WithArguments("pngdiff.js baseline.png modified.png diff.png")
-                    .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pngjs")
+                    .WithWorkingDirectory(pngRoot)
                     .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
                     .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
                     .ExecuteAsync();
@@ -228,10 +364,10 @@ namespace PdfLexer.Tests
                     if (!string.IsNullOrEmpty(error))
                     {
                         errors.Add(error);
-                        File.Copy(fn, $"C:\\source\\Github\\pdflexer\\test\\pngjs\\results\\{Path.GetFileName(pdf)}");
-                        File.Copy(@"C:\source\Github\pdflexer\test\pngjs\diff.png",
-                            $"C:\\source\\Github\\pdflexer\\test\\pngjs\\results\\{Path.GetFileName(pdf)}.png");
-                        File.WriteAllText($"C:\\source\\Github\\pdflexer\\test\\pngjs\\results\\{Path.GetFileName(pdf)}.txt", error);
+                        File.Copy(fn, Path.Combine(results, Path.GetFileName(pdf)));
+                        File.Copy(Path.Combine(pngRoot, "diff.png"),
+                            Path.Combine(results, Path.GetFileName(pdf) + ".png"));
+                        File.WriteAllText(Path.Combine(results, Path.GetFileName(pdf) + ".txt"), error);
                     }
                 }
                 catch (Exception e)
@@ -294,8 +430,22 @@ namespace PdfLexer.Tests
             }
         }
 
+        //C:\source\Github\pdflexer\test\pdfs\pdfjs\bug900822.pdf
+        // [Fact] this was due to encryption in PDF...
+        public void It_Handles_Writing_Pages_From_bug900822()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "bug900822.pdf");
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            foreach (var item in doc.XrefEntries)
+            {
+                doc.Context.GetIndirectObject(item.Key);
+            }
+        }
+
         // [Fact]
-        public async Task It_Repairs_Bad_Stream_Start()
+        public void It_Repairs_Bad_Stream_Start()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "need_repair", "issue7229.pdf");
@@ -308,7 +458,7 @@ namespace PdfLexer.Tests
         }
 
         [Fact]
-        public async Task It_Handles_Looped_Page_Tree()
+        public void It_Handles_Looped_Page_Tree()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "Pages-tree-refs.pdf");

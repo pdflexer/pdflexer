@@ -11,6 +11,7 @@ namespace PdfLexer.Parsers
 {
     public class NameParser : Parser<PdfName>
     {
+        private static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
         internal static byte[] NameTerminators = new byte[16] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
             (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
         private ParsingContext _ctx;
@@ -40,20 +41,28 @@ namespace PdfLexer.Parsers
 
         private PdfName ParseFastNoHex(ReadOnlySpan<byte> buffer)
         {
-            // TODO Perf testing..
-            var buff = ArrayPool<char>.Shared.Rent(buffer.Length);
-            Span<char> chars = buff;
-            var i = Encoding.ASCII.GetChars(buffer, chars);
-            var str = new PdfName(chars.Slice(0, i).ToString(), false);
-            ArrayPool<char>.Shared.Return(buff);
-            return str;
+            // note, pdf1.7 spec names should be treated at utf-8 for cases where they need a text representation
+            return new PdfName(Iso88591.GetString(buffer), false);
         }
 
         private PdfName ParseWithHex(ReadOnlySpan<byte> buffer, int start, int length)
         {
+            if (buffer.Length < 50)
+            {
+                Span<byte> write = stackalloc byte[buffer.Length];
+                return ParseWithHex(buffer, write, start, length);
+            }
+
+            var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
+            var name = ParseWithHex(buffer, rented, start, length);
+            ArrayPool<byte>.Shared.Return(rented);
+            return name;
+        }
+
+        private PdfName ParseWithHex(ReadOnlySpan<byte> buffer, Span<byte> writebuffer, int start, int length)
+        {
             var ci = 0;
-            var rented = ArrayPool<char>.Shared.Rent(buffer.Length);
-            Span<char> chars = rented;
+            Span<byte> bytes = writebuffer;
             for (var i = start; i < start + length; i++)
             {
                 var c = buffer[i];
@@ -65,15 +74,16 @@ namespace PdfLexer.Parsers
                     }
                     Debug.Assert(ic == 2);
                     i += 2;
-                    chars[ci++] = (char)v;
+                    bytes[ci++] = v;
                 }
                 else
                 {
-                    chars[ci++] = (char)c;
+                    bytes[ci++] = c;
                 }
             }
-            var name = new PdfName(chars.Slice(0, ci).ToString(), true);
-            ArrayPool<char>.Shared.Return(rented);
+            ;
+            // note, pdf1.7 spec names should be treated at utf-8 for cases where they need a text representation
+            var name = new PdfName(Iso88591.GetString(bytes.Slice(0, ci)), true);
             return name;
         }
 

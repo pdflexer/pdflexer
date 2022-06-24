@@ -1,5 +1,6 @@
 ﻿using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
+using PdfLexer.Serializers;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -83,7 +84,7 @@ namespace PdfLexer.IO
             return Context.GetWrappedIndirectObject(xref, buffer.Slice((int)xref.Offset, xref.MaxLength));
         }
 
-        public void CopyIndirectObject(XRefEntry xref, Stream destination)
+        public void CopyIndirectObject(XRefEntry xref, WritingContext destination)
         {
             ReadOnlySpan<byte> buffer = _data;
             Context.CurrentSource = this;

@@ -12,144 +12,144 @@ namespace PdfLexer.Lexing
 {
     public static class SequenceExtensions
     {
-        internal static long GetExtraReadCount(this PipeReader reader)
-        {
-            if (!reader.TryRead(out var result))
-            {
-                return 0;
-            }
-
-            return result.Buffer.Length; 
-        }
-
-        internal static byte[] GetExtraReadData(this PipeReader reader, int length)
-        {
-            if (!reader.TryRead(out var result))
-            {
-                throw new NotSupportedException("Tried reading remaining data out of reader that did not have data.");
-            }
-            return result.Buffer.Slice(0, length).ToArray();
-        }
-
-        internal static async ValueTask<(int length, bool WasStream)> GetIndirectObjectData(this PipeReader reader, ParsingContext ctx)
-        {
-            SequencePosition lastPos = default;
-            int count = 0;
-            int stage = 0;
-            while (true)
-            {
-                var result = await reader.ReadAsync().ConfigureAwait(false);
-                if (result.TryReadToIndirectEnd(ctx, result.IsCompleted, ref stage, out var pos))
-                {
-                    reader.AdvanceTo(pos);
-                    return ((int)result.Buffer.Slice(result.Buffer.Start, pos).Length, stage == 2);
-                }
-
-                if (result.IsCompleted || result.IsCanceled)
-                {
-                    throw CommonUtil.DisplayDataErrorException(result.Buffer, pos, "Unable to read token sequence");
-                }
-                if (pos.Equals(lastPos))
-                {
-                    count++;
-                    if (count > 5)
-                    {
-                        throw CommonUtil.DisplayDataErrorException(result.Buffer, pos, "Sequence positions did not advance, buffer likely too small.");
-                    }
-                }
-                else
-                {
-                    count = 0;
-                    lastPos = pos;
-                }
-
-                reader.AdvanceTo(result.Buffer.Start, result.Buffer.End);
-            }
-        }
-
-        private static bool TryReadToIndirectEnd(this ReadResult read, ParsingContext ctx, bool isCompleted, ref int stage, out SequencePosition readTo)
-        {
-            var reader = new SequenceReader<byte>(read.Buffer);
-            readTo = reader.Position;
-            if (stage == 0)
-            {
-                if (!reader.TryReadNextToken(read.IsCompleted, out var type, out var pos))
-                {
-                    return false;
-                }
-                if (type != PdfTokenType.NumericObj)
-                {
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
-                }
-                if (!reader.TryReadNextToken(read.IsCompleted, out type, out pos))
-                {
-                    return false;
-                }
-                if (type != PdfTokenType.NumericObj)
-                {
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
-                }
-                if (!reader.TryReadNextToken(read.IsCompleted, out type, out pos))
-                {
-                    return false;
-                }
-                if (type != PdfTokenType.StartObj)
-                {
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
-                }
-                stage++;
-            }
-            readTo = reader.Position;
-            if (stage == 1)
-            {
-                if (!reader.TryReadNextToken(read.IsCompleted, out var type, out var pos))
-                {
-                    return false;
-                }
-                if (type == PdfTokenType.DictionaryStart )
-                {
-                    if (!reader.AdvanceToDictEnd(out _))
-                    {
-                        return false;
-                    }
-                    if (!reader.TryReadNextToken(read.IsCompleted, out type, out pos))
-                    {
-                        return false;
-                    }
-                    if (type == PdfTokenType.StartStream)
-                    {
-                        stage++;
-                        return true;
-                        
-                    } else if (type == PdfTokenType.EndObj)
-                    {
-                        readTo = reader.Position;
-                        return true;
-                    } else
-                    {
-                        throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
-                    }
-                }
-                else
-                {
-                    if (type == PdfTokenType.ArrayStart && !reader.AdvanceToArrayEnd(out _))
-                    {
-                        return false;
-                    }
-                    if (!reader.TryReadNextToken(read.IsCompleted, out type, out pos))
-                    {
-                        return false;
-                    }
-                    if (type != PdfTokenType.EndObj)
-                    {
-                        throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
-                    }
-                    readTo = reader.Position;
-                    return true;
-                }
-            }
-            throw new ApplicationException("Unknown parse stage: " + stage);
-        }
+        // internal static long GetExtraReadCount(this PipeReader reader)
+        // {
+        //     if (!reader.TryRead(out var result))
+        //     {
+        //         return 0;
+        //     }
+        // 
+        //     return result.Buffer.Length; 
+        // }
+        // 
+        // internal static byte[] GetExtraReadData(this PipeReader reader, int length)
+        // {
+        //     if (!reader.TryRead(out var result))
+        //     {
+        //         throw new NotSupportedException("Tried reading remaining data out of reader that did not have data.");
+        //     }
+        //     return result.Buffer.Slice(0, length).ToArray();
+        // }
+        // 
+        // internal static async ValueTask<(int length, bool WasStream)> GetIndirectObjectData(this PipeReader reader, ParsingContext ctx)
+        // {
+        //     SequencePosition lastPos = default;
+        //     int count = 0;
+        //     int stage = 0;
+        //     while (true)
+        //     {
+        //         var result = await reader.ReadAsync().ConfigureAwait(false);
+        //         if (result.TryReadToIndirectEnd(ctx, result.IsCompleted, ref stage, out var pos))
+        //         {
+        //             reader.AdvanceTo(pos);
+        //             return ((int)result.Buffer.Slice(result.Buffer.Start, pos).Length, stage == 2);
+        //         }
+        // 
+        //         if (result.IsCompleted || result.IsCanceled)
+        //         {
+        //             throw CommonUtil.DisplayDataErrorException(result.Buffer, pos, "Unable to read token sequence");
+        //         }
+        //         if (pos.Equals(lastPos))
+        //         {
+        //             count++;
+        //             if (count > 5)
+        //             {
+        //                 throw CommonUtil.DisplayDataErrorException(result.Buffer, pos, "Sequence positions did not advance, buffer likely too small.");
+        //             }
+        //         }
+        //         else
+        //         {
+        //             count = 0;
+        //             lastPos = pos;
+        //         }
+        // 
+        //         reader.AdvanceTo(result.Buffer.Start, result.Buffer.End);
+        //     }
+        // }
+        // 
+        // private static bool TryReadToIndirectEnd(this ReadResult read, ParsingContext ctx, bool isCompleted, ref int stage, out SequencePosition readTo)
+        // {
+        //     var reader = new SequenceReader<byte>(read.Buffer);
+        //     readTo = reader.Position;
+        //     if (stage == 0)
+        //     {
+        //         if (!reader.TryReadNextToken(read.IsCompleted, out var type, out var pos))
+        //         {
+        //             return false;
+        //         }
+        //         if (type != PdfTokenType.NumericObj)
+        //         {
+        //             throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
+        //         }
+        //         if (!reader.TryReadNextToken(read.IsCompleted, out type, out pos))
+        //         {
+        //             return false;
+        //         }
+        //         if (type != PdfTokenType.NumericObj)
+        //         {
+        //             throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
+        //         }
+        //         if (!reader.TryReadNextToken(read.IsCompleted, out type, out pos))
+        //         {
+        //             return false;
+        //         }
+        //         if (type != PdfTokenType.StartObj)
+        //         {
+        //             throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
+        //         }
+        //         stage++;
+        //     }
+        //     readTo = reader.Position;
+        //     if (stage == 1)
+        //     {
+        //         if (!reader.TryReadNextToken(read.IsCompleted, out var type, out var pos))
+        //         {
+        //             return false;
+        //         }
+        //         if (type == PdfTokenType.DictionaryStart )
+        //         {
+        //             if (!reader.AdvanceToDictEnd(out _))
+        //             {
+        //                 return false;
+        //             }
+        //             if (!reader.TryReadNextToken(read.IsCompleted, out type, out pos))
+        //             {
+        //                 return false;
+        //             }
+        //             if (type == PdfTokenType.StartStream)
+        //             {
+        //                 stage++;
+        //                 return true;
+        //                 
+        //             } else if (type == PdfTokenType.EndObj)
+        //             {
+        //                 readTo = reader.Position;
+        //                 return true;
+        //             } else
+        //             {
+        //                 throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
+        //             }
+        //         }
+        //         else
+        //         {
+        //             if (type == PdfTokenType.ArrayStart && !reader.AdvanceToArrayEnd(out _))
+        //             {
+        //                 return false;
+        //             }
+        //             if (!reader.TryReadNextToken(read.IsCompleted, out type, out pos))
+        //             {
+        //                 return false;
+        //             }
+        //             if (type != PdfTokenType.EndObj)
+        //             {
+        //                 throw CommonUtil.DisplayDataErrorException(ref reader, "Unexpected token when trying to read indirect object");
+        //             }
+        //             readTo = reader.Position;
+        //             return true;
+        //         }
+        //     }
+        //     throw new ApplicationException("Unknown parse stage: " + stage);
+        // }
 
 
         /// <summary>
