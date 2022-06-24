@@ -5,7 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using PdfLexer.Parsers;
 
-[assembly:InternalsVisibleTo("PdfLexer.Tests")]
+[assembly: InternalsVisibleTo("PdfLexer.Tests")]
 
 namespace PdfLexer
 {
@@ -17,8 +17,8 @@ namespace PdfLexer
 
         internal static byte[] WhiteSpaces = new byte[6] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20 };
 
-        internal static byte[] EOLs = new byte[2] {(byte)'\r', (byte)'n' };
-        
+        internal static byte[] EOLs = new byte[2] { (byte)'\r', (byte)'n' };
+
         public static byte[] numeric = new byte[13] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
         (byte)'7', (byte)'8', (byte)'9', (byte)'.', (byte)'-', (byte)'+'};
         public static byte[] ints = new byte[12] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
@@ -52,7 +52,7 @@ namespace PdfLexer
         public static Exception DisplayDataErrorException(ReadOnlySequence<byte> sequence, SequencePosition position, string prefixInfo)
         {
             var count = sequence.Length > 25 ? 25 : sequence.Length;
-            
+
             return new ApplicationException(prefixInfo + ": '" + Encoding.ASCII.GetString(sequence.Slice(position, count).ToArray()) + "'");
         }
 
@@ -106,7 +106,8 @@ namespace PdfLexer
             ReadOnlySpan<byte> whitespaces = WhiteSpaces;
             for (; i < local.Length; i++)
             {
-                if (whitespaces.IndexOf(local[i]) > -1) {
+                if (whitespaces.IndexOf(local[i]) > -1)
+                {
                     continue;
                 }
 
@@ -124,8 +125,8 @@ namespace PdfLexer
                 var b = local[pos];
                 if (
                     b == 0x00 || b == 0x09 || b == 0x0A || b == 0x0C || b == 0x0D || b == 0x20
-                    || b == (byte)'(' || b == (byte)')' || b == (byte)'<' || b == (byte)'>' 
-                    || b == (byte)'[' || b == (byte)']' || b == (byte)'{' || b == (byte)'}' 
+                    || b == (byte)'(' || b == (byte)')' || b == (byte)'<' || b == (byte)'>'
+                    || b == (byte)'[' || b == (byte)']' || b == (byte)'{' || b == (byte)'}'
                     || b == (byte)'/' || b == (byte)'%')
                 {
                     return;
@@ -159,10 +160,12 @@ namespace PdfLexer
             if (type == typeof(PdfNumber))
             {
                 return PdfObjectType.NumericObj;
-            } else if (type == typeof(PdfDictionary))
+            }
+            else if (type == typeof(PdfDictionary))
             {
                 return PdfObjectType.DictionaryObj;
-            } else if (type == typeof(PdfArray))
+            }
+            else if (type == typeof(PdfArray))
             {
                 return PdfObjectType.ArrayObj;
             }

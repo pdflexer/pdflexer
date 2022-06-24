@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Buffers;
 using System.Buffers.Text;
 using System.IO;
 using System.Text;
@@ -16,8 +17,10 @@ namespace PdfLexer.Serializers
         }
         public void WriteToStream(PdfNumber obj, Stream stream)
         {
-            var count = GetBytes(obj, _ctx.Buffer);
-            stream.Write(_ctx.Buffer, 0, count);
+            var buff = ArrayPool<byte>.Shared.Rent(20);
+            var count = GetBytes(obj, buff);
+            stream.Write(buff, 0, count);
+            ArrayPool<byte>.Shared.Return(buff);
         }
 
         public int GetBytes(PdfNumber obj, Span<byte> data)

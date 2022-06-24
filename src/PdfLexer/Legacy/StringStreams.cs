@@ -3,6 +3,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO.Pipelines;
 using System.Text;
 using System.Threading;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 namespace PdfLexer.Legacy
 {
     [Obsolete]
+    [ExcludeFromCodeCoverage]
     internal class StringStreams
     {
         private StringStatus Status = StringStatus.None;

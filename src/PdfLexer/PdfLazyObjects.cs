@@ -13,6 +13,16 @@ namespace PdfLexer
         public PdfLazyObject Wrapper { get; }
     }
 
+    // public abstract class ParsedLazyObj : PdfObject //, IParsedLazyObj
+    // {
+    //     public abstract bool IsModified { get; }
+    // 
+    //     public abstract bool HasLazyIndirect { get; }
+    // 
+    //     public abstract IPdfLazyObject Wrapper { get; }
+    // 
+    // }
+
     internal class PdfLazyObject : PdfObject
     {
         public override PdfObjectType Type => LazyObjectType;

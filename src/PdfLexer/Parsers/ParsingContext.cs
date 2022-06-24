@@ -17,15 +17,13 @@ namespace PdfLexer.Parsers
     {
         public bool ShouldLoadIndirects { get; set; } = true;
         public bool CacheObjects { get; set; } = true;
+                public bool CacheNumbers { get; set; } = true;
         // TODO different types
         public bool IsEager { get; set; } = true;
-        internal List<IPdfObject> ObjectBag = new List<IPdfObject>();
-        internal byte[] Buffer = new byte[5000];
+        // internal List<IPdfObject> ObjectBag = new List<IPdfObject>();
+        // internal byte[] Buffer = new byte[5000];
         internal long CurrentOffset { get; set; }
         internal IPdfDataSource CurrentSource { get; set; }
-        public bool CacheNumbers { get; set; } = true;
-        internal PdfDictionary Trailer { get; } // move to pdf doc
-
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
         internal Dictionary<XRef, IPdfObject> IndirectCache = new Dictionary<XRef, IPdfObject>();
 
@@ -35,7 +33,8 @@ namespace PdfLexer.Parsers
         internal BoolParser BoolParser { get; }
         internal BoolSerializer BoolSerializer { get; }
         internal NameParser NameParser { get; }
-        public IPdfDataSource MainDocument { get; private set; }
+        public IPdfDataSource MainDocSource { get; private set; }
+        public PdfDocument Document { get; internal set; }
         internal NestedParser NestedParser { get; }
         internal DictionaryParser DictionaryParser { get; }
         internal StringParser StringParser { get; }
@@ -72,16 +71,16 @@ namespace PdfLexer.Parsers
             NestedParser = new NestedParser(this);
         }
 
-        public async ValueTask Initialize(IPdfDataSource pdf)
+        public async ValueTask<(Dictionary<XRef, XRefEntry>, PdfDictionary)> Initialize(IPdfDataSource pdf)
         {
             var initial = ShouldLoadIndirects;
             ShouldLoadIndirects = false;
-            MainDocument = pdf;
-            var (refs, trailer) = await XRefParser.LoadCrossReference(MainDocument);
-            XrefEntries = new Dictionary<XRef, XRefEntry>();
+            MainDocSource = pdf;
+            var (refs, trailer) = await XRefParser.LoadCrossReference(MainDocSource);
+            var entries = new Dictionary<XRef, XRefEntry>();
             foreach (var entry in refs.OrderBy(x => x.Reference.ObjectNumber))
             {
-                XrefEntries[entry.Reference] = entry;
+                entries[entry.Reference] = entry;
             }
             if (refs.Any())
             {
@@ -94,12 +93,11 @@ namespace PdfLexer.Parsers
                         ordered[i].MaxLength = (int)(ordered[i + 1].Offset - ordered[i].Offset);
                     }
                 }
-                ordered[^1].MaxLength = (int)(MainDocument.TotalBytes - ordered[^1].Offset - 1);
+                ordered[^1].MaxLength = (int)(MainDocSource.TotalBytes - ordered[^1].Offset - 1);
             }
             ShouldLoadIndirects = initial;
+            return (entries, trailer);
         }
-
-        internal Dictionary<XRef, XRefEntry> XrefEntries;
 
         internal IPdfObject GetIndirectObject(PdfIndirectRef ir)
         {
@@ -113,7 +111,7 @@ namespace PdfLexer.Parsers
                 return cached;
             }
 
-            if (!XrefEntries.TryGetValue(xref, out var value) || value.IsFree)
+            if (!Document.XrefEntries.TryGetValue(xref, out var value) || value.IsFree)
             {
                 // A indirect reference to an undefined object shall not be considered an error by
                 // a conforming reader; it shall be treated as a reference to the null object.
@@ -126,7 +124,7 @@ namespace PdfLexer.Parsers
             }
 
             // TODO split data sources
-            MainDocument.FillData(value.Offset, value.MaxLength, out var buffer);
+            MainDocSource.FillData(value.Offset, value.MaxLength, out var buffer);
 
 
             // SKIP INDIRECT REF INFO
@@ -138,6 +136,7 @@ namespace PdfLexer.Parsers
             Debug.Assert(type == PdfTokenType.StartObj);
             var os = i + length;
             var obj = GetPdfItem(buffer, os, out length);
+            obj.IndirectRef = xref;
             // GET NEXT TOKEN
             i = PdfSpanLexer.TryReadNextToken(buffer, out type, os+length, out length);
             if (type == PdfTokenType.EndObj)
@@ -167,7 +166,7 @@ namespace PdfLexer.Parsers
                 {
                     throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
                 }
-                var stream = new PdfStream(dict, new PdfStreamContents(MainDocument, value.Offset + i + length, streamLength));
+                var stream = new PdfStream(dict, new PdfStreamContents(MainDocSource, value.Offset + i + length, streamLength));
                 i = PdfSpanLexer.TryReadNextToken(buffer, out type, i+length+(int)streamLength, out length);
                 Debug.Assert(type == PdfTokenType.EndStream);
                 if (CacheObjects)
@@ -270,7 +269,7 @@ namespace PdfLexer.Parsers
             return null;
         }
 
-        internal IPdfObject GetPdfItem(ReadOnlySpan<byte> data, int start, out int length)
+        internal PdfObject GetPdfItem(ReadOnlySpan<byte> data, int start, out int length)
         {
             var next = PdfSpanLexer.TryReadNextToken(data, out var type, start, out length);
             if (next == -1)
@@ -300,7 +299,7 @@ namespace PdfLexer.Parsers
             return item;
         }
 
-        internal IPdfObject GetKnownPdfItem(PdfObjectType type, ReadOnlySpan<byte> data, int start, int length)
+        internal PdfObject GetKnownPdfItem(PdfObjectType type, ReadOnlySpan<byte> data, int start, int length)
         {
             switch (type)
             {
@@ -322,20 +321,9 @@ namespace PdfLexer.Parsers
                     }
                 case PdfObjectType.DictionaryObj:
                 case PdfObjectType.ArrayObj:
-                    return NestedParser.ParseNestedItem(data, start, out _); // TODO lazy support
+                    return (PdfObject)NestedParser.ParseNestedItem(data, start, out _); // TODO lazy support
             }
             return null;
-        }
-
-        internal PdfLazyObject CreateLazy(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
-        {
-            return new PdfLazyObject
-            {
-                Offset = 0,
-                Length = 0,
-                LazyObjectType = type,
-                Source = CurrentSource
-            };
         }
 
         public void Clear()

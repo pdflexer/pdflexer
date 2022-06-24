@@ -6,17 +6,18 @@ using System.Text;
 
 namespace PdfLexer
 {
-    public class PdfDictionary : IDictionary<PdfName, IPdfObject>, IParsedLazyObj
+    public class PdfDictionary : PdfObject, IDictionary<PdfName, IPdfObject>, IParsedLazyObj
     {
         internal static readonly byte[] start = new byte[2] {(byte) '<', (byte) '<'};
         internal static readonly byte[] end = new byte[2] {(byte) '>', (byte) '>'};
 
+        public override PdfObjectType Type => PdfObjectType.DictionaryObj;
+
         private readonly IDictionary<PdfName, IPdfObject> _dictionary;
         internal bool DictionaryModified { get;set; }
         internal PdfLazyObject LazyWrapper { get;set; }
+        
         PdfLazyObject IParsedLazyObj.Wrapper => LazyWrapper;
-
-        public bool IsIndirect { get; set; }
 
         public PdfDictionary()
         {
@@ -114,6 +115,15 @@ namespace PdfLexer
             return _dictionary.TryGetValue(key, out value);
         }
 
+        public T GetRequiredValue<T>(PdfName key) where T : IPdfObject
+        {
+            if (!TryGetValue<T>(key, out T value))
+            {
+                throw new ApplicationException("Todo");
+            }
+            return value;
+        }
+
         public bool TryGetValue<T>(PdfName key, out T value, bool errorOnMismatch=true) where T : IPdfObject
         {
             if (!_dictionary.TryGetValue(key, out var item))
@@ -174,6 +184,6 @@ namespace PdfLexer
             }
             set => DictionaryModified = value;
         }
-        public PdfObjectType Type => PdfObjectType.DictionaryObj;
+
     }
 }

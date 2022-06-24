@@ -168,8 +168,8 @@ namespace PdfLexer.Parsers.Nested
             {
                 var lazy = new PdfLazyObject
                 {
-                    Source = null,
-                    Offset = 0 + startPos, // TODO
+                    Source = _ctx.CurrentSource,
+                    Offset = _ctx.CurrentOffset + startPos,
                     Length = length,
                     HasLazyIndirect = hadIndirect,
                     LazyObjectType = (PdfObjectType) type

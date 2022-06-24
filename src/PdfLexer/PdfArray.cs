@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PdfLexer
 {
-    public class PdfArray : IList<IPdfObject>, IParsedLazyObj
+    public class PdfArray : PdfObject, IList<IPdfObject>, IParsedLazyObj
     {
         internal List<IPdfObject> internalList = new List<IPdfObject>();
 
@@ -14,6 +14,7 @@ namespace PdfLexer
         public bool IsModified { get; set; }
         internal PdfLazyObject LazyWrapper { get;set; }
         PdfLazyObject IParsedLazyObj.Wrapper => LazyWrapper;
+        public override PdfObjectType Type => PdfObjectType.ArrayObj;
 
         bool IParsedLazyObj.HasLazyIndirect
         {
@@ -42,9 +43,8 @@ namespace PdfLexer
             internalList = items;
         }
 
-        public bool IsIndirect { get; set; }
 
-        public PdfObjectType Type => PdfObjectType.ArrayObj;
+
 
         public IEnumerator<IPdfObject> GetEnumerator() => internalList.GetEnumerator();
 
@@ -78,6 +78,7 @@ namespace PdfLexer
 
         public int Count => internalList.Count;
         public bool IsReadOnly => false;
+
         public int IndexOf(IPdfObject item) => internalList.IndexOf(item);
 
         public void Insert(int index, IPdfObject item)

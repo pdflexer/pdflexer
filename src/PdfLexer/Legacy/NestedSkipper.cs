@@ -4,10 +4,12 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PdfLexer.Legacy
 {
+    [ExcludeFromCodeCoverage]
     public class NestedSkipper
     {
         internal int ArrayDepth = 0;

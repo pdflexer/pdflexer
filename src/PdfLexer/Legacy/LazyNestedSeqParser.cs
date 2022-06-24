@@ -4,10 +4,12 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PdfLexer.Legacy
 {
     [Obsolete("No longer in use", false)]
+    [ExcludeFromCodeCoverage]
     internal struct ObjParseState
     {
         public ParseState State { get; set; }
@@ -90,6 +92,7 @@ namespace PdfLexer.Legacy
     }
 
     [Obsolete("No longer in use", false)]
+    [ExcludeFromCodeCoverage]
     internal class LazyNestedSeqParser
     {
         private readonly ParsingContext _ctx;
@@ -209,7 +212,7 @@ namespace PdfLexer.Legacy
                                     return false;
                                 }
                                 endPos = reader.Position;
-                                CurrentState.Bag.Add(_ctx.CreateLazy((PdfObjectType) tokenType, sequence, startPos, endPos));
+                                //CurrentState.Bag.Add(_ctx.CreateLazy((PdfObjectType) tokenType, sequence, startPos, endPos));
                                 continue;
                             }
                         }
@@ -241,7 +244,7 @@ namespace PdfLexer.Legacy
                                     return false;
                                 }
                                 endPos = reader.Position;
-                                CurrentState.Bag.Add(_ctx.CreateLazy((PdfObjectType) tokenType, sequence, startPos, endPos));
+                                //CurrentState.Bag.Add(_ctx.CreateLazy((PdfObjectType) tokenType, sequence, startPos, endPos));
                                 continue;
                             }
                         }

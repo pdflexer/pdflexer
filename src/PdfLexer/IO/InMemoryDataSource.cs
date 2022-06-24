@@ -27,7 +27,7 @@ namespace PdfLexer.IO
 
         public ParsingContext Context {get;}
 
-        public IPdfDataSource Clone() => this;
+        public IPdfDataSource Clone() => throw new NotImplementedException(); // TODO currently setting Context.Current* on source so not sharable
 
         public Stream GetStream(long startPosition)
         {
@@ -47,6 +47,8 @@ namespace PdfLexer.IO
             {
                 throw new ApplicationException("More data requested from data source than available.");
             }
+            Context.CurrentSource = this;
+            Context.CurrentOffset = startPosition; // TODO move this somewhere else
             data = new Span<byte>(_data, start, _data.Length - start);
         }
 

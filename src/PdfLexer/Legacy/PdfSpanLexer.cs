@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 
 namespace PdfLexer.Lexing
 {
+    [ExcludeFromCodeCoverage]
     public class PdfSpanLexer_Previous
     {
         /// <summary>
