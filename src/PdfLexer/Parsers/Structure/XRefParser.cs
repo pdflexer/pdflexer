@@ -2,7 +2,9 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.IO.Pipelines;
+using System.Text;
 using System.Threading.Tasks;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
@@ -25,7 +27,6 @@ namespace PdfLexer.Parsers.Structure
             (byte)'\r',(byte)'\n',(byte)'e',(byte)'f'
         };
         private readonly ParsingContext _ctx;
-
 
         public XRefParser(ParsingContext ctx)
         {
@@ -65,6 +66,7 @@ namespace PdfLexer.Parsers.Structure
                     throw new ApplicationException("Invalid object after offset: " + num.GetType());
             }
 
+            var strStart = stream.Position;
             pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
 
             var result = await pipe.ReadNextObjectOrToken(_ctx);
@@ -111,13 +113,187 @@ namespace PdfLexer.Parsers.Structure
                 }
 
                 return (data, original);
-            } else if (result.Obj?.Type == PdfObjectType.NumericObj)
+            }
+            else if (result.Obj?.Type == PdfObjectType.NumericObj)
             {
-                throw new NotImplementedException("PDF 1.5 Cross-Reference Streams not yet implemented.");
+                var objs = new List<IPdfObject>();
+                var oss = num.GetValue<PdfNumber>();
 
-            } else
+                var entries = new List<XRefEntry>();
+                PdfDictionary original = null;
+                while (true)
+                {
+                    objs.Clear();
+                    var pos = await pipe.ReadTokenSequence(_ctx, ParseOp.PartialIndirectStream, objs);
+                    if (objs[2].Type != PdfObjectType.DictionaryObj)
+                    {
+                        throw new ApplicationException("TODO");
+                    }
+                    var dict = objs[2].GetValue<PdfDictionary>();
+
+                    var nxt = await pipe.ReadNextObjectOrToken(_ctx);
+                    if (nxt.Type != PdfTokenType.StartStream)
+                    {
+                        throw new ApplicationException("TODO");
+                    }
+                    var len = dict.GetRequiredValue<PdfNumber>(PdfName.Length);
+                    var or = pipe.GetExtraReadCount();
+                    PdfStreamContents contents;
+                    if (or > len)
+                    {
+                        contents = new PdfByteArrayStreamContents(pipe.GetExtraReadData(len));
+                    } else
+                    {
+                        var eoss = oss + (stream.Position - strStart) - or;
+                        contents = new PdfExistingStreamContents(source, eoss, len);
+                    }
+
+                    var str = new PdfStream(dict, contents);
+                    var decoded = str.GetDecodedStream(_ctx);
+                    byte[] data;
+                    if (decoded is MemoryStream ms)
+                    {
+                        data = ms.ToArray();
+                    } else
+                    {                    
+                        ms = new MemoryStream();
+                        decoded.CopyTo(ms);
+                        data = ms.ToArray();
+                    }
+
+                    var index = dict.GetOptionalValue<PdfArray>(PdfName.Index);
+                    AddEntries(data, dict.GetRequiredValue<PdfArray>(PdfName.W), index, entries);
+                    oss = dict.GetOptionalValue<PdfNumber>(PdfName.Prev);
+
+                    if (original != null)
+                    {
+                        foreach (var item in dict)
+                        {
+                            if (!original.ContainsKey(item.Key))
+                            {
+                                original[item.Key] = item.Value;
+                            }
+                        }
+                    }
+                    if (oss == null)
+                    {
+                        return (entries, dict);
+                    }
+
+                    stream = source.GetStream(oss);
+                    strStart = stream.Position;
+                    pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
+                    result = await pipe.ReadNextObjectOrToken(_ctx);
+                    if (result.Obj?.Type != PdfObjectType.NumericObj)
+                    {
+                        throw new ApplicationException("TODO");
+                    }
+                    original ??= dict;
+                }
+            }
+            else
             {
                 throw new ApplicationException("Invalid token found at xref offset: " + result.Type);
+            }
+        }
+
+        private void AddEntries(Span<byte> xd, PdfArray w, PdfArray index, List<XRefEntry> entries)
+        {
+            int l1 = w[0].GetValue<PdfNumber>();
+            int l2 = w[1].GetValue<PdfNumber>();
+            int l3 = w[2].GetValue<PdfNumber>();
+            var lt = l1 + l2 + l3;
+            var recCount = xd.Length / lt;
+            var section = 0;
+            var sectionObjectStart = 0;
+            var sectionCount = 0;
+            if (index == null)
+            {
+                sectionObjectStart = 0;
+                sectionCount = recCount;
+            }
+            else
+            {
+                sectionObjectStart = (int)index[0].GetValue<PdfNumber>();
+                sectionCount = (int)index[1].GetValue<PdfNumber>();
+            }
+
+            var total = 0;
+            while (total < recCount)
+            {
+                for (var i = 0; i < sectionCount; i++)
+                {
+                    var os = lt * total;
+                    var f1t = 0;
+                    for (var b = 0; b < l1; b++)
+                    {
+                        f1t += xd[os + b] << (l1 - 1 - b) * 8;
+                    }
+                    var f2t = 0;
+                    for (var b = 0; b < l2; b++)
+                    {
+                        f2t += xd[os + l1 + b] << (l2 - 1 - b) * 8;
+                    }
+                    var f3t = 0;
+                    for (var b = 0; b < l3; b++)
+                    {
+                        f3t += xd[os + l1 + l2 + b] << (l3 - 1 - b) * 8;
+                    }
+                    switch (f1t)
+                    {
+                        case 0:
+                            entries.Add(new XRefEntry
+                            {
+                                IsFree = true,
+                                Type = XRefType.Normal,
+                                Reference = new XRef
+                                {
+                                    ObjectNumber = f2t,
+                                    Generation = f3t
+                                }
+                            });
+                            break;
+                        case 1:
+                            entries.Add(new XRefEntry
+                            {
+                                IsFree = false,
+                                Type = XRefType.Normal,
+                                Offset = f2t,
+                                Reference = new XRef
+                                {
+                                    ObjectNumber = sectionObjectStart + i,
+                                    Generation = f3t
+                                }
+                            });
+                            break;
+                        case 2:
+                            entries.Add(new XRefEntry
+                            {
+                                IsFree = false,
+                                Type = XRefType.Compressed,
+                                ObjectStreamNumber = f2t,
+                                ObjectIndex = f3t,
+                                Reference = new XRef
+                                {
+                                    ObjectNumber = sectionObjectStart + i,
+                                    Generation = 0
+                                }
+                            });
+                            break;
+                        default:
+                            // ignore... will turn into null object by spec
+                            break;
+                    }
+
+                    total++;
+                }
+                section++;
+                if (index != null && section * 2 < index.Count - 1)
+                {
+                    sectionObjectStart = (int)index[section * 2].GetValue<PdfNumber>();
+                    sectionCount = (int)index[section * 2 + 1].GetValue<PdfNumber>();
+                }
+
             }
         }
 
@@ -183,7 +359,7 @@ namespace PdfLexer.Parsers.Structure
             }
             var num1 = _ctx.NumberParser.Parse(data, first, length);
 
-            var second = PdfSpanLexer.TryReadNextToken(data, out type, first+length, out length);
+            var second = PdfSpanLexer.TryReadNextToken(data, out type, first + length, out length);
             if (second == -1 || type != PdfTokenType.NumericObj)
             {
                 throw CommonUtil.DisplayDataErrorException(data, position, "Bad xref header entry");
@@ -191,18 +367,13 @@ namespace PdfLexer.Parsers.Structure
 
             var num2 = _ctx.NumberParser.Parse(data, second, length);
 
-            if (!(num1 is PdfIntNumber fn) || !(num2 is PdfIntNumber sn))
-            {
-                throw CommonUtil.DisplayDataErrorException(data, position, "Bad xref entry header, items not int");
-            }
-
             position = second + length;
-            return (fn.Value, sn.Value);
+            return (num1, num2);
         }
 
         private void GetSection(int firtObjectNum, int totalCount, List<XRefEntry> entries, ReadOnlySpan<byte> data, ref int position)
         {
-            for (var i=0;i<totalCount;i++)
+            for (var i = 0; i < totalCount; i++)
             {
                 var entry = GetSingleEntry(data, firtObjectNum + i, position, out int nextPos);
                 position = nextPos;
@@ -220,7 +391,7 @@ namespace PdfLexer.Parsers.Structure
             Debug.Assert(length == 10, "Xref offset is 10 bytes");
             var num1 = _ctx.NumberParser.Parse(data, first, length);
 
-            var second = PdfSpanLexer.TryReadNextToken(data, out type, first+length, out length);
+            var second = PdfSpanLexer.TryReadNextToken(data, out type, first + length, out length);
             if (second == -1 || type != PdfTokenType.NumericObj)
             {
                 throw CommonUtil.DisplayDataErrorException(data, startPos, "Bad xref entry");
@@ -233,13 +404,15 @@ namespace PdfLexer.Parsers.Structure
 
             bool isFree = false;
             var b = data[pos];
-            if (b == (byte) 'f')
+            if (b == (byte)'f')
             {
                 isFree = true;
-            } else if (b == (byte) 'n')
+            }
+            else if (b == (byte)'n')
             {
                 isFree = false;
-            } else
+            }
+            else
             {
                 throw CommonUtil.DisplayDataErrorException(data, startPos, "Bad xref entry");
             }
@@ -273,8 +446,8 @@ namespace PdfLexer.Parsers.Structure
     }
     public class XRefEntry
     {
-        public XRefType Type { get;set; }
-        public XRef Reference { get;set; }
+        public XRefType Type { get; set; }
+        public XRef Reference { get; set; }
         public bool IsFree { get; set; }
         public long Offset { get; set; }
         public int MaxLength { get; set; }
@@ -309,5 +482,8 @@ namespace PdfLexer.Parsers.Structure
         {
             return $"{ObjectNumber} {Generation}";
         }
+
+        public ulong GetId() => ((ulong)ObjectNumber << 16) | ((uint)Generation & 0xFFFF);
+        public static ulong GetId(int objectNumber, int generation) => ((ulong)objectNumber << 16) | ((uint)generation & 0xFFFF);
     }
 }

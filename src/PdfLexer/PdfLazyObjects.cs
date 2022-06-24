@@ -25,7 +25,7 @@ namespace PdfLexer
             {
                 return Parsed;
             }
-            Source.FillData(Offset, Length, out var buffer);
+            Source.GetData(Offset, Length, out var buffer);
             Parsed = Source.Context.GetKnownPdfItem(LazyObjectType, buffer, 0, Length);
             return Parsed;
         }

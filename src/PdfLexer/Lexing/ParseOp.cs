@@ -17,6 +17,13 @@ namespace PdfLexer.Lexing
             new ParseOp { Type = ParseOpType.ReadToken, Token = PdfTokenType.EndObj }
         };
 
+        public static List<ParseOp> PartialIndirectStream = new List<ParseOp>
+        {
+            new ParseOp { Type = ParseOpType.ReadToken, Token = PdfTokenType.NumericObj },
+            new ParseOp { Type = ParseOpType.ReadToken, Token = PdfTokenType.StartObj },
+            new ParseOp { Type = ParseOpType.ReadToken, Token = PdfTokenType.WildCard },
+        };
+
         public static List<ParseOp> IndirectReference = new List<ParseOp>
         {
             new ParseOp { Type = ParseOpType.ReadToken, Token = PdfTokenType.NumericObj },

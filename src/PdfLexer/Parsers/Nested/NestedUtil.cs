@@ -59,7 +59,8 @@ namespace PdfLexer.Parsers.Nested
                             }
 
                             // just hex string
-                            i += pos + 1;
+                            StringParser.AdvancePastHexString(slice, ref pos);
+                            i += pos;
                             slice = buffer.Slice(i);
                             continue;
                         }
@@ -134,13 +135,14 @@ namespace PdfLexer.Parsers.Nested
                                 {
                                     hadIndirectObjects = true;
                                 }
-                            } else
+                            }
+                            else
                             {
                                 // just hex string
                                 i += pos + 1;
                             }
 
-                            
+
                             slice = buffer.Slice(i);
                             continue;
                         }
@@ -296,8 +298,16 @@ namespace PdfLexer.Parsers.Nested
                                     hadIndirectObjects = true;
                                 }
                             }
+                            else
+                            {
+                                // hex string
+                                if (!reader.TryAdvanceTo((byte)'>', true))
+                                {
+                                    return false;
+                                }
+                            }
 
-                            // just hex string
+
                         }
                         continue;
                     case (byte)'>':

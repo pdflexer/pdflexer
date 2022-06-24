@@ -48,10 +48,10 @@ namespace PdfLexer
         /// XRef entries of this document. May be internalized at some point.
         /// Will be null on new documents.
         /// </summary>
-        public IReadOnlyDictionary<XRef, XRefEntry> XrefEntries { get; }
+        public IReadOnlyDictionary<ulong, XRefEntry> XrefEntries { get; }
         
 
-        internal PdfDocument(ParsingContext ctx, PdfDictionary trailer, Dictionary<XRef, XRefEntry> entries)
+        internal PdfDocument(ParsingContext ctx, PdfDictionary trailer, Dictionary<ulong, XRefEntry> entries)
         {
             Context = ctx;
             ctx.SourceId = DocumentId;
@@ -72,16 +72,61 @@ namespace PdfLexer
         /// <param name="stream"></param>
         public void SaveTo(Stream stream)
         {
-            var nextId =  XrefEntries.Keys.Select(x=>x.ObjectNumber).Max() + 1;
+            var nextId =  (XrefEntries?.Values.Select(x=>x.Reference.ObjectNumber).Max() ?? 0) + 1;
             var ctx = new WritingContext(stream, nextId, DocumentId);
             ctx.Initialize(PdfVersion);
+            if (XrefEntries != null)
+            {
+                SaveExistingObjects(ctx);
+            }
+            // create clones of these in case they were
+            // copied from another doc, don't want to modify existing
+            var catalog = Catalog.CloneShallow();
+            catalog.Remove("/Names");
+            catalog.Remove("/Outlines");
+            catalog.Remove("/StructTreeRoot");
+            var trailer = Trailer.CloneShallow();
+            var cir =  PdfIndirectRef.Create(catalog);
+            trailer[PdfName.Root] = cir;
+            trailer.Remove(PdfName.DecodeParms);
+            trailer.Remove(PdfName.Filter);
+            trailer.Remove(PdfName.Length);
+            trailer.Remove(PdfName.Prev);
+            trailer.Remove(PdfName.XRefStrm);
+            if (Pages != null)
+            {
+                catalog[PdfName.Pages] = BuildPageTree();
+            }
+            ctx.Complete(trailer);
+        }
+
+        private IPdfObject BuildPageTree()
+        {
+            // TODO page tree
+            var dict = new PdfDictionary();
+            var arr = new PdfArray();
+            var ir = PdfIndirectRef.Create(dict);
+            foreach(var page in Pages)
+            {
+                var pg = page.Dictionary.CloneShallow();
+                pg[PdfName.Parent] = ir;
+                arr.Add(PdfIndirectRef.Create(pg));
+            }
+            dict[PdfName.Kids] = arr;
+            dict[PdfName.TypeName] = PdfName.Pages;
+            dict[PdfName.Count] = new PdfIntNumber(Pages.Count);
+            return PdfIndirectRef.Create(dict);
+        }
+
+        private void SaveExistingObjects(WritingContext ctx)
+        {
             foreach (var obj in XrefEntries.Values)
             {
                 if (obj.IsFree)
                 {
                     continue;
                 }
-                if (IsDataCopyable(obj.Reference))
+                if (obj.Type == XRefType.Normal && Context.IsDataCopyable(obj.Reference)) // TODO copying of compressed items
                 {
                     ctx.WriteExistingData(Context, obj);
                 } else
@@ -89,27 +134,6 @@ namespace PdfLexer
                     ctx.WriteIndirectObject(new ExistingIndirectRef(Context, obj.Reference));
                 }
             }
-            ctx.Complete(Trailer);
-        }
-
-        // TODO move elsewhere
-        private bool IsDataCopyable(XRef entry)
-        {
-                ulong id = ((ulong)entry.ObjectNumber << 16) | ((uint)entry.Generation & 0xFFFF);
-                if (Context.IndirectCache.TryGetValue(id, out var value))
-                {
-                    switch (value.Type)
-                    {
-                        case PdfObjectType.ArrayObj:
-                            var arr = (PdfArray)value;
-                            return !arr.IsModified;
-                        case PdfObjectType.DictionaryObj:
-                            var dict = (PdfDictionary)value;
-                            return !dict.IsModified;
-                    }
-                    return true;
-                }
-                return true;
         }
 
         /// <summary>
@@ -118,7 +142,7 @@ namespace PdfLexer
         /// <returns>PdfDocument</returns>
         public static PdfDocument Create()
         {
-            var doc = new PdfDocument(new ParsingContext(), new PdfDictionary(), new Dictionary<XRef, XRefEntry>());
+            var doc = new PdfDocument(new ParsingContext(), new PdfDictionary(), new Dictionary<ulong, XRefEntry>());
             doc.Catalog = new PdfDictionary();
             doc.Catalog[PdfName.TypeName] = PdfName.Catalog;
             doc.Pages = new List<PdfPage>();
@@ -152,79 +176,16 @@ namespace PdfLexer
             }
             doc.Catalog = doc.Trailer.GetRequiredValue<PdfDictionary>(PdfName.Root);
             var pages = doc.Catalog.GetRequiredValue<PdfDictionary>(PdfName.Pages);
-
             if (ctx.Options.LoadPageTree)
             {
                 doc.Pages = new List<PdfPage>();
-                foreach (var pg in EnumeratePages(pages, null, null, null, null))
+                foreach (var pg in CommonUtil.EnumeratePageTree(pages))
                 {
                     doc.Pages.Add(pg);
                 }
             }
 
             return doc;
-
-            // TODO move somewhere else
-            IEnumerable<PdfDictionary> EnumeratePages(PdfDictionary dict, PdfDictionary resources, PdfArray mediabox, PdfArray cropbox, PdfNumber rotate)
-            {
-                var type = dict.GetRequiredValue<PdfName>(PdfName.TypeName);
-                switch (type.Value)
-                {
-                    case "/Pages":
-                        if (dict.TryGetValue<PdfDictionary>(PdfName.Resources, out var next))
-                        {
-                            resources = next;
-                        }
-                        if (dict.TryGetValue<PdfArray>(PdfName.MediaBox, out var thisMediaBox))
-                        {
-                            mediabox = thisMediaBox;
-                        }
-                        if (dict.TryGetValue<PdfArray>(PdfName.CropBox, out var thisCropBox))
-                        {
-                            cropbox = thisCropBox;
-                        }
-                        if (dict.TryGetValue<PdfNumber>(PdfName.Rotate, out var thisRotate))
-                        {
-                            rotate = thisRotate;
-                        }
-
-
-                        var kids = dict.GetRequiredValue<PdfArray>(PdfName.Kids);
-                        foreach (var child in kids)
-                        {
-                            foreach (var pg in EnumeratePages(child.GetValue<PdfDictionary>(), resources, mediabox, cropbox, rotate)) 
-                            {
-                                yield return pg;
-                            }
-                        }
-                        break;
-                    case "/Page":
-                        if (!dict.ContainsKey(PdfName.Resources) && resources != null)
-                        {
-                            dict[PdfName.Resources] = resources;
-                        }
-                        if (!dict.ContainsKey(PdfName.MediaBox) && mediabox != null)
-                        {
-                            dict[PdfName.MediaBox] = mediabox;
-                        }
-                        if (!dict.ContainsKey(PdfName.CropBox) && cropbox != null)
-                        {
-                            dict[PdfName.CropBox] = cropbox;
-                        }
-                        if (!dict.ContainsKey(PdfName.Rotate) && rotate != null)
-                        {
-                            dict[PdfName.Rotate] = rotate;
-                        }
-                        yield return dict;
-                        break;
-                }
-            }
-
-            // inheritable
-            // Resources required (dictionary)
-            // MediaBox required (rectangle)
-            // CropBox => default to MediaBox (rectangle)
-            // Rotate (integer)
         }
 
         private static int docId = 0;

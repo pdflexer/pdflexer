@@ -6,7 +6,6 @@ namespace PdfLexer
 {
     public interface IPdfObject
     {
-        // public bool IsIndirect { get; }
         public PdfObjectType Type { get; }
         public bool IsLazy { get; }
         public bool IsModified { get; }

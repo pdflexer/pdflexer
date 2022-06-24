@@ -131,14 +131,13 @@ namespace PdfLexer.Parsers
             ReadOnlySpan<byte> terms = numberTerminators;
             for (; i < local.Length; i++)
             {
-                byte b = local[i];
-                if (terms.IndexOf(b) == -1)
-                {
-                    continue;
-                }
+                var b = local[i];
                 if (b == (byte)'.')
                 {
                     isDecimal = true;
+                    continue;
+                } else if ((b > 47 && b < 58) || b == '+' || b == '-')
+                {
                     continue;
                 }
 

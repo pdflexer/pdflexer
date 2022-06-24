@@ -13,10 +13,21 @@ namespace PdfLexer.IO
         /// </summary>
         long TotalBytes { get; }
         /// <summary>
-        /// If the buffer returned by <see cref="FillData"/> contains all data till end of
-        /// data source. Optimization. 
+        /// Determines if the data source has section in memory
         /// </summary>
-        bool ReturnsCompleteData { get; }
+        /// <param name="startPosition"></param>
+        /// <param name="length"></param>
+        /// <returns></returns>
+        bool IsDataInMemory(long startPosition, int length);
+        /// <summary>
+        /// Returns data already in memory.
+        /// </summary>
+        /// <param name="startPosition">Starting position in data source for buffer</param>
+        /// <param name="requiredBytes">Number of required bytes.</param>
+        /// <param name="buffer">Filled buffer of at least required bytes size.</param>
+        void GetData(long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer);
+        Stream GetDataAsStream(long startPosition, int desiredBytes);
+
         /// <summary>
         /// If the data source supports cloning for concurrent processing.
         /// </summary>
@@ -34,13 +45,6 @@ namespace PdfLexer.IO
         /// <param name="startPosition">Position of stream in current data source</param>
         /// <returns>Stream</returns>
         Stream GetStream(long startPosition);
-        /// <summary>
-        /// Fills a buffer with the requested data.
-        /// </summary>
-        /// <param name="startPosition">Starting position in data source for buffer</param>
-        /// <param name="requiredBytes">Number of required bytes.</param>
-        /// <param name="buffer">Filled buffer of at least required bytes size.</param>
-        void FillData(long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer);
         /// <summary>
         /// Copies data from data source to stream.
         /// </summary>

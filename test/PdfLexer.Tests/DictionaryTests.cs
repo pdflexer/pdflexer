@@ -65,6 +65,9 @@ namespace PdfLexer.Tests
         [InlineData("<</Test (string)/Test2 (string2)>>")]
         [InlineData("<</Test <AAAFF>/Test2 <AAAFF>>>")]
         [InlineData("<</Key (Test \\\\(Test) Test )/Key2 (\\216\\217)/Key3 (Test \\\rNextLine Test \\\rNextLine Test \\\rNextLine Test \\\rNextLine Test \\\rNextLine Test \\\rNextLineTest \\\rNextLineTest \\\rNextLine)>>")]
+        [InlineData(@"<</CapHeight 709/Ascent 723/Descent -241/StemV 69/FontBBox[-170 -331 1024 903]/ItalicAngle
+0/Flags 6/Style<</Panose<010502020300000000000000>>>/Type/FontDescriptor/FontName/Ryumin-Light>>")]
+        [InlineData("<</Length    55/Type/XRef/Root 308 0 R/Info 306 0 R/ID[<6A30A00E31C4B9E6B2A80F691B5E16F3><3441BE26705B2D4D3B19FE454BA2778E>]/Size 547/Prev 116/Index[7 1 306 1 308 1 396 1 540 2 543 4]/W[1 3 1]/DecodeParms<</Columns 5/Predictor 12>>/Filter/FlateDecode>>stream")]
         [Theory]
         public void It_Gets_Real_Dicts(string data)
         {

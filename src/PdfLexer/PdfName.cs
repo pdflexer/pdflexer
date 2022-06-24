@@ -62,7 +62,21 @@ namespace PdfLexer
         public static PdfName CropBox => new PdfName("/CropBox", false);
         public static PdfName Rotate => new PdfName("/Rotate", false);
         public static PdfName Catalog => new PdfName("/Catalog", false);
-
+        public static PdfName Filter => new PdfName("/Filter", false);
+        public static PdfName Predictor => new PdfName("/Predictor", false);
+        public static PdfName Columns => new PdfName("/Columns", false);
+        public static PdfName Colors => new PdfName("/Colors", false);
+        public static PdfName BitsPerComponent => new PdfName("/BitsPerComponent", false);
+        public static PdfName EarlyChange => new PdfName("/EarlyChange", false);
+        public static PdfName DecodeParms => new PdfName("/DecodeParms", false);
+        public static PdfName W => new PdfName("/W", false);
+        public static PdfName N => new PdfName("/N", false);
+        public static PdfName First => new PdfName("/First", false);
+        public static PdfName Index => new PdfName("/Index", false);
+        public static PdfName XRefStrm => new PdfName("/XRefStrm", false);
+        public static PdfName Parent => new PdfName("/Parent", false);
+        //
+        
         public static implicit operator PdfName(string name)
         {
             // TODO common lookups for above?
@@ -75,6 +89,10 @@ namespace PdfLexer
             }
             
         }
-        
+
+        public override string ToString()
+        {
+            return Value;
+        }
     }
 }

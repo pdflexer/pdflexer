@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace PdfLexer
@@ -32,6 +33,15 @@ namespace PdfLexer
         internal PdfDictionary(IEnumerable<KeyValuePair<PdfName, IPdfObject>> items)
         {
             _dictionary = new Dictionary<PdfName, IPdfObject>(items);
+        }
+
+        /// <summary>
+        /// Creates a new dictionary with the same contents.
+        /// </summary>
+        /// <returns></returns>
+        public PdfDictionary CloneShallow()
+        {
+            return new PdfDictionary(_dictionary);
         }
 
 
@@ -106,7 +116,8 @@ namespace PdfLexer
         {
             if (!TryGetValue<T>(key, out T value))
             {
-                throw new ApplicationException("Todo");
+                throw new ApplicationException($"Required value not present in dictionary for key {key.Value}, available keys: " 
+                    + string.Join(", ", Keys.Select(x=>x.Value)));
             }
             return value;
         }
@@ -122,17 +133,11 @@ namespace PdfLexer
             return value;
         }
 
-
-        // private static Type dictType = typeof(PdfDictionary);
-        // private PdfObjectType GetType<T>() where T : IPdfObject
-        // {
-        //     var type = typeof(T);
-        //     switch (type)
-        //     {
-        //         case PdfDictionary:
-        // 
-        //     }
-        // }
+        public T GetOptionalValue<T>(PdfName key) where T : IPdfObject
+        {
+            _ = TryGetValue<T>(key, out T value);
+            return value;
+        }
 
         public bool TryGetValue<T>(PdfName key, out T value, bool errorOnMismatch=true) where T : IPdfObject
         {
@@ -187,6 +192,5 @@ namespace PdfLexer
                 return false;
             }
         }
-
     }
 }

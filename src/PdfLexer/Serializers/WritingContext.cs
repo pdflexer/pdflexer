@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -65,6 +66,8 @@ namespace PdfLexer.Serializers
             reused.Clear();
             Recurse(trailer, reused);
 
+            var mos = offsets.Keys.Max();
+
             Span<byte> z = zeros;
             Span<byte> buff = miniBuff;
             var os = Stream.Position;
@@ -72,16 +75,18 @@ namespace PdfLexer.Serializers
             Stream.WriteByte((byte)'\n');
             Stream.WriteByte((byte)'0');
             Stream.WriteByte((byte)' ');
-            if (!Utf8Formatter.TryFormat(offsets.Count+1, buff, out var count))
+            if (!Utf8Formatter.TryFormat(mos+1, buff, out var count))
             {
                 throw new ApplicationException("TODO");
             }
             Stream.Write(buff.Slice(0, count));
             Stream.WriteByte((byte)'\n');
             Stream.Write(obj0);
-            for (var i = 0; i < offsets.Count; i++)
+            
+            
+            for (var i = 1; i < mos+1; i++)
             {
-                if (!offsets.TryGetValue(i+1, out var oos))
+                if (!offsets.TryGetValue(i, out var oos))
                 {
                     Stream.Write(z);
                     Stream.WriteByte((byte)' ');
@@ -100,7 +105,7 @@ namespace PdfLexer.Serializers
             }
             Stream.Write(XRefParser.trailer);
             Stream.WriteByte((byte)'\n');
-            trailer["/Size"] = new PdfIntNumber(offsets.Count+1);
+            trailer["/Size"] = new PdfIntNumber(mos+1);
             DictionarySerializer.WriteToStream(trailer, Stream);
             Stream.WriteByte((byte)'\n');
             Stream.Write(XRefParser.startxref);
@@ -351,6 +356,7 @@ Parse:
         {
             foreach (var item in obj.Values)
             {
+                Debug.Assert(item != null);
                 CheckSingle(item, refStack);
             }
         }
@@ -359,6 +365,7 @@ Parse:
         {
             for (var i = 0; i < arr.Count; i++)
             {
+                Debug.Assert(arr[i] != null);
                 CheckSingle(arr[i], refStack);
             }
         }

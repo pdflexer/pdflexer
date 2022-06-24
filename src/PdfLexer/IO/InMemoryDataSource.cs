@@ -20,7 +20,6 @@ namespace PdfLexer.IO
             _ms = new MemoryStream(_data);
         }
 
-
         public long TotalBytes => _data.LongLength;
         public bool ReturnsCompleteData => true;
         public bool SupportsCloning => true;
@@ -31,11 +30,20 @@ namespace PdfLexer.IO
 
         public Stream GetStream(long startPosition)
         {
+            Context.CurrentSource = this;
+            Context.CurrentOffset = startPosition; // TODO move this somewhere else
             _ms.Seek(startPosition, SeekOrigin.Begin);
             return _ms;
         }
 
-        public void FillData(long startPosition, int desiredBytes, out ReadOnlySpan<byte> data)
+        public Stream GetDataAsStream(long startPosition, int desiredBytes)
+        {
+            Context.CurrentSource = this;
+            Context.CurrentOffset = startPosition; // TODO move this somewhere else
+            return new MemoryStream(_data, (int)startPosition, desiredBytes, false, true);
+        }
+
+        public void GetData(long startPosition, int desiredBytes, out ReadOnlySpan<byte> data)
         {
             if (startPosition > int.MaxValue)
             {
@@ -67,5 +75,7 @@ namespace PdfLexer.IO
             }
             stream.Write(_data, (int) startPosition, requiredBytes);
         }
+
+        public bool IsDataInMemory(long startPosition, int length) => true;
     }
 }

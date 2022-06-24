@@ -33,7 +33,7 @@ namespace PdfLexer.IO
             throw new NotImplementedException();
         }
 
-        public void FillData(long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer)
+        public void GetData(long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer)
         {
             throw new NotImplementedException();
         }
@@ -112,6 +112,16 @@ namespace PdfLexer.IO
             }
             // rest are immutable
             return obj;
+        }
+
+        public bool IsDataInMemory(long startPosition, int length)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Stream GetDataAsStream(long startPosition, int desiredBytes)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -145,7 +145,7 @@ namespace PdfLexer.Parsers.Nested
                         }
                         
                     default:
-                        throw new ApplicationException("Unknown object encountered.");
+                        throw CommonUtil.DisplayDataErrorException(buffer, lastStart, "Unknown token encountered parsing nested item");
                 }
 
 
