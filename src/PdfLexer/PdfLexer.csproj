@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.1;net5.0;net6.0</TargetFrameworks>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/plaisted/pdflexer</PackageProjectUrl>
+    <Authors>Michael Plaisted</Authors>
+    <Company></Company>
+    <Product />
+    <Description>Lower level PDF parsing library.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.0.2-preview</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
+    <PackageReference Include="System.IO.Pipelines" Version="6.0.1" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Operators\PdfOperatorType.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>PdfOperatorType.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Operators\PdfOperatorType.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>PdfOperatorType.tt</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,222 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ output extension=".cs" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<# var operators = new List<(string, string, string, List<(string, string)>, bool)> {
+    ("b", null, "Close, fill, and stroke path using nonzero winding number rule", null, false), // no ops
+    ("B", null, "Fill and stroke path using nonzero winding number rule", null, false), // no ops
+    ("b*", "b_Star", "Close, fill, and stroke path using even-odd rule", null, false), // no ops
+    ("B*", "B_Star", "Fill and stroke path using even-odd rule", null, false), // no ops
+    ("BDC", null, "Begin marked-content sequence with property list", new List<(string, string)>{ ("PdfName", "tag"), ("PdfObject", "props") }, true),
+    ("BI", null, "Begin inline image object", null, false), // no ops
+    ("BMC", null, "Begin marked-content sequence", new List<(string, string)>{ ("PdfName", "tag") }, false),
+    ("BT", null, "Begin text object", null, false), // no ops
+    ("BX", null, "Begin compatibility section", null, false), // no ops
+    ("c", null, "Append curved segment to path (three control points)", new List<(string, string)>{ ("decimal", "x1"), ("decimal", "y1"), ("decimal", "x2"), ("decimal", "y2"), ("decimal", "x3"), ("decimal", "y3")}, false),
+    ("cm", null, "Concatenate matrix to current transformation matrix", new List<(string, string)>{ ("decimal", "a"), ("decimal", "b"), ("decimal", "c"), ("decimal", "d"), ("decimal", "e"), ("decimal", "f")}, false),
+    ("CS", null, "Set color space for stroking operations", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("cs", null, "Set color space for nonstroking operations", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("d", null, "Set line dash pattern", new List<(string, string)>{ ("PdfArray", "dashArray"), ("int", "dashPhase") } , false),
+    ("d0", null, "Set glyph width in Type 3 font", new List<(string, string)>{ ("decimal", "wx"), ("decimal", "wy") }, false),
+    ("d1", null, "Set glyph width and bounding box in Type 3 font", new List<(string, string)>{ ("decimal", "wx"), ("decimal", "wy"), ("decimal", "llx"), ("decimal", "lly"), ("decimal", "urx"), ("decimal", "ury") }, false),
+    ("Do", null, "Invoke named XObject", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("DP", null, "Define marked-content point with property list", new List<(string, string)>{ ("PdfName", "tag"), ("PdfObject", "props") }, true),
+    ("EI", null, "End inline image object", null, false), // no ops
+    ("EMC", null, "End marked-content sequence", null, false), // no ops
+    ("ET", null, "End text object", null, false), // no ops
+    ("EX", null, "End compatibility section", null, false), // no ops
+    ("f", null, "Fill path using nonzero winding number rule", null, false), // no ops
+    ("F", null, "Fill path using nonzero winding number rule (obsolete)", null, false), // no ops
+    ("f*", "f_Star", "Fill path using even-odd rule", null, false), // no ops
+    ("G", null, "Set gray level for stroking operations", new List<(string, string)>{ ("decimal", "gray") }, false),
+    ("g", null, "Set gray level for nonstroking operations", new List<(string, string)>{ ("decimal", "gray") }, false),
+    ("gs", null, "Set parameters from graphics state parameter dictionary", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("h", null, "Close subpath", null, false), // no ops
+    ("i", null, "Set flatness tolerance", new List<(string, string)>{ ("int", "flatness") }, false),
+    ("ID", null, "Begin inline image data", null, false), // no ops
+    ("j", null, "Set line join style", new List<(string, string)>{ ("int", "lineJoin") }, false),
+    ("J", null, "Set line capstyle", new List<(string, string)>{ ("int", "lineCap") }, false),
+    ("K", null, "Set CMYK color for stroking operations", new List<(string, string)>{ ("decimal", "c"), ("decimal", "m"), ("decimal", "y"), ("decimal", "k") }, false),
+    ("k", null, "Set CMYK color for nonstroking operations", new List<(string, string)>{ ("decimal", "c"), ("decimal", "m"), ("decimal", "y"), ("decimal", "k") }, false),
+    ("l", null, "Append straight line segment to path", new List<(string, string)>{ ("decimal", "x"), ("decimal", "y")}, false),
+    ("m", null, "Begin new subpath", new List<(string, string)>{ ("decimal", "x"), ("decimal", "y")}, false),
+    ("M", null, "Set miter limit", new List<(string, string)>{ ("decimal", "miterLimit") }, false),
+    ("MP", null, "Define marked-content point", new List<(string, string)>{ ("PdfName", "tag") }, false),
+    ("n", null, "End path without filling or stroking", null, false), // no ops
+    ("q", null, "Save graphics state", null, false), // no ops
+    ("Q", null, "Restore graphics state", null, false),  // no ops
+    ("re", null, "Append rectangle to path", new List<(string, string)>{ ("decimal", "x"), ("decimal", "y"), ("decimal", "width"), ("decimal", "height") }, false),
+    ("RG", null, "Set RGB color for stroking operations", new List<(string, string)>{ ("decimal", "r"), ("decimal", "g"), ("decimal", "b") }, false),
+    ("rg", null, "Set RGB color for nonstroking operations", new List<(string, string)>{ ("decimal", "r"), ("decimal", "g"), ("decimal", "b") }, false),
+    ("ri", null, "Set color rendering intent", new List<(string, string)>{ ("PdfName", "intent") }, false),
+    ("s", null, "Close and stroke path", null, false), // no ops
+    ("S", null, "Stroke path", null, false), // no ops
+    ("SC", null, "Set color for stroking operations", new List<(string, string)>{ ("List<decimal>", "colorInfo") }, true),
+    ("sc", null, "Set color for nonstroking operations", new List<(string, string)>{ ("List<decimal>", "colorInfo") }, true),
+    ("SCN", null, "Set color for stroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<decimal>", "colorInfo"), ("PdfName", "name") }, true),
+    ("scn", null, "Set color for nonstroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<decimal>", "colorInfo"), ("PdfName", "name") }, true),
+    ("sh", null, "Paint area defined by shading pattern", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("T*", "T_Star", "Move to start of next text line", null, false), // no ops
+    ("Tc", null, "Set character spacing", new List<(string, string)>{ ("decimal", "charSpace") }, false),
+    ("Td", null, "Move text position", new List<(string, string)> { ("decimal", "tx"), ("decimal", "ty") }, false),
+    ("TD", null, "Move text position and set leading", new List<(string, string)> { ("decimal", "tx"), ("decimal", "ty") }, false),
+    ("Tf", null, "Set text font and size", new List<(string, string)>{ ("PdfName", "font"), ("decimal", "size") }, false),
+    ("Tj", null, "Show text", new List<(string, string)> { ("byte[]", "text") }, true),
+    ("TJ", null, "Show text, allowing individual glyph positioning", new List<(string, string)> { ("List<TJ_Item>", "info") }, true),
+    ("TL", null, "Set text leading", new List<(string, string)>{ ("decimal", "leading") }, false),
+    ("Tm", null, "Set text matrix and text line matrix", new List<(string, string)>{ ("decimal", "a"), ("decimal", "b"), ("decimal", "c"), ("decimal", "d"), ("decimal", "e"), ("decimal", "f")}, false),
+    ("Tr", null, "Set text rendering mode", new List<(string, string)>{ ("int", "render") }, false),
+    ("Ts", null, "Set text rise", new List<(string, string)>{ ("decimal", "rise") }, false),
+    ("Tw", null, "Set word spacing", new List<(string, string)>{ ("decimal", "wordSpace") }, false),
+    ("Tz", null, "Set horizontal text scaling", new List<(string, string)>{ ("decimal", "scale") }, false),
+    ("v", null, "Append curved segment to path (initial point replicated)", new List<(string, string)>{ ("decimal", "x2"), ("decimal", "y2"), ("decimal", "x3"), ("decimal", "y3")}, false),
+    ("w", null, "Set line width", new List<(string, string)>{ ("int", "lineWidth") }, false),
+    ("W", null, "Set clipping path using nonzero winding number rule", null, false), // no ops
+    ("W*", "W_Star", "Set clipping path using even-odd rule", null, false), // no ops
+    ("y", null, "Append curved segment to path (final point replicated)", new List<(string, string)>{ ("decimal", "x1"), ("decimal", "y1"), ("decimal", "x3"), ("decimal", "y3")}, false),
+    ("'", "singlequote", "Move to next line and show text", new List<(string, string)> { ("byte[]", "text") }, true),
+    ("\"", "doublequote", "Set word and character spacing, move to next line, and show text", new List<(string, string)> { ("decimal", "aw"), ("decimal", "ac"), ("byte[]", "text") }, true),
+
+}; #>
+using PdfLexer.Lexing;
+using PdfLexer.Parsers;
+using System;
+using System.IO;
+using System.Collections.Generic;
+
+/// <summary>
+/// Auto-generated, do not modify.
+/// </summary>
+
+namespace PdfLexer.Operators
+{
+    public enum PdfOperatorType
+    {
+        Unknown,
+        NoOp,
+        RawOp,
+        // End of content
+        EOC,
+<#
+foreach (var op in operators) 
+{
+    var bytes = Encoding.ASCII.GetBytes(op.Item1);
+    int key = 0;
+    for (int i = 0; i < bytes.Length; i++)
+    {
+        key = key | (bytes[i] << 8 * i);
+    } #>
+        // <#= op.Item3 #>
+        <#= op.Item2 == null ? op.Item1 : op.Item2 #> = <#= key #>,
+<#
+}
+#>
+    }
+
+    public static class ParseOpMapping
+    {
+        public static Dictionary<int, PdfOperator.ParseOp> Parsers = new Dictionary<int, PdfOperator.ParseOp> {
+<#
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+    var bytes = Encoding.ASCII.GetBytes(op.Item1);
+    int key = 0;
+    for (int i = 0; i < bytes.Length; i++)
+    {
+        key = key | (bytes[i] << 8 * i);
+    }
+#>
+            [<#=key#>] = <# if (op.Item5) { #> PdfOperator.Parse<#= name #>, <# } else { #> <#= name #>_Op.Parse, <# } #>
+
+<#
+}
+#>
+        };
+    }
+
+<#
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+#>
+    public partial class <#= name #>_Op : IPdfOperation
+    {
+        public static byte[] OpData = new byte[] { <#= string.Join(", ", op.Item1.Select(x=> "(byte) '" + (x == '\'' ? "\\'" : x) + "'")) #> };
+        public PdfOperatorType Type => PdfOperatorType.<#= name #>;
+<# if (op.Item4 == null) { #>
+        public static <#= name #>_Op Value = new <#= name #>_Op();
+        public <#= name #>_Op()
+        {
+
+        }
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
+<# if (!op.Item5) { #>
+        public static <#= name #>_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+            => Value;
+
+<# } #>
+<# } else { #>
+<#     foreach (var prop in op.Item4) { #>
+        public <#= prop.Item1 #> <#= prop.Item2 #> { get; set; }
+<#     } #>
+        public <#= name #>_Op(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item1} {i.Item2}")) #>)
+        {
+<#     
+       foreach (var prop in op.Item4) { 
+#>
+            this.<#= prop.Item2 #> = <#= prop.Item2 #>;
+<#     } #>
+        }
+<# if (!op.Item5) { #>
+
+        public void Serialize(Stream stream) 
+        {
+<#     var ii = 0;
+       foreach (var prop in op.Item4) { 
+            var serializer = $"PdfOperator.Write{prop.Item1}({prop.Item2}, stream)";
+#>
+            <#= serializer #>;
+            stream.WriteByte((byte)' ');
+<#         ii++;
+       }
+#>
+            stream.Write(OpData);
+        }
+
+        public static <#= name #>_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        {
+<#     var i = 0;
+       var a = "";
+
+       foreach (var prop in op.Item4) { 
+            var parser = "throw new NotImplementedException()";
+            switch (prop.Item1) {
+                case "decimal":
+                    parser = $"PdfOperator.ParseDecimal(ctx, data, operands[{i}])";
+                    break;
+                default:
+                    parser = $"PdfOperator.Parse{prop.Item1}(ctx, data, operands[{i}])";
+                    break;
+            }
+            a += $"a{i}, ";
+#>
+            var a<#= i #> = <#= parser #>;
+<#         i++; #>
+<#     }
+       a = a.Trim().TrimEnd(',');
+#>
+    
+            return new <#= name #>_Op(<#= a #>);
+        }
+<# } #>
+<# } #>
+    }
+<#
+}
+
+#>
+}
