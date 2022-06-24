@@ -303,12 +303,12 @@ namespace PdfLexer.Content
             var toUnicode = dict.Get("/ToUnicode") ?? baseDict.Get("/ToUnicode");
             // hash
 
-            var widths = dict.Get("/Widths") ?? baseDict.Get("/Widths");
+            var widths = dict.Get(PdfName.Widths) ?? baseDict.Get(PdfName.Widths);
             // hash
 
             if (composite)
             {
-                var compositeWidths = dict.Get("/W") ?? baseDict.Get("/W");
+                var compositeWidths = dict.Get(PdfName.W) ?? baseDict.Get(PdfName.W);
                 // hash
 
                 var cidToGidMap = dict.Get("CIDToGIDMap") ?? baseDict.Get("CIDToGIDMap");

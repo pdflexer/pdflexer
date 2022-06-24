@@ -63,7 +63,7 @@ namespace PdfLexer
 
         public void Dispose()
         {
-            Context.Dispose();
+            Context?.Dispose();
             xrefEntries = null;
             Pages = null;
             Catalog = null;

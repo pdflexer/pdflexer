@@ -103,13 +103,25 @@ namespace PdfLexer.Parsers
 
         internal IDecoder GetDecoder(PdfName name)
         {
+            // Not technically valid outside of inline image
+            // but used (eg. ghostscript)
+            //   AHx -> ASCIIHexDecode
+            //   A85 -> ASCII85Decode
+            //   LZW -> LZWDecode
+            //   Fl -> FlateDecode
+            //   RL -> RunLengthDecode
+            //   CCF -> CCITTFaxDecode
+            //   DCT -> DCTDecode
             switch (name.Value)
             {
                 case "/FlateDecode":
+                case "/Fl":
                     return FlateDecoder;
                 case "/ASCIIHexDecode":
+                case "/AHx":
                     return AsciiHexDecoder;
                 case "/ASCII85Decode":
+                case "/A85":
                     return Ascii58Decoder;
                 default:
                     throw new NotImplementedException($"Stream decoding of type {name.Value} has not been implemented.");

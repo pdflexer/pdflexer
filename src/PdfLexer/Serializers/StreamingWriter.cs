@@ -34,7 +34,9 @@ namespace PdfLexer.Serializers
         private PdfDictionary currentBag;
         private PdfArray currentBagArray;
         private PdfIndirectRef currentBagRef;
+        private int pageCount = 0;
 
+        public int PageCount { get => pageCount; }
 
         public void AddPage(PdfPage page)
         {
@@ -63,6 +65,7 @@ namespace PdfLexer.Serializers
             var pgRef = PdfIndirectRef.Create(pg);
             currentBagArray.Add(pgRef);
             _ctx.WriteIndirectObject(pgRef);
+            pageCount++;
             if (currentBagArray.Count >= 25)
             {
                 CompleteBag();
