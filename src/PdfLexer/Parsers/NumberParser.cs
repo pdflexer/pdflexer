@@ -48,6 +48,7 @@ namespace PdfLexer.Parsers
                 return cached;
             }
 
+            // could keep rented array... pool will re-allocate as needed
             key.Data = buffer.ToArray();
             ArrayPool<byte>.Shared.Return(array);
 

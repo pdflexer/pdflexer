@@ -114,6 +114,28 @@ namespace PdfLexer
             return _dictionary.TryGetValue(key, out value);
         }
 
+        public bool TryGetValue<T>(PdfName key, out T value, bool errorOnMismatch=true) where T : IPdfObject
+        {
+            if (!_dictionary.TryGetValue(key, out var item))
+            {
+                value = default(T);
+                return false;
+            }
+
+            if (item is T typed)
+            {
+                value = typed;
+                return true;
+            }
+
+            if (errorOnMismatch)
+            {
+                throw new ApplicationException($"Unexpected data type in dictionary for key {key.Value}, got {item.Type} expected {typeof(T)}");
+            }
+            value = default(T);
+            return false;
+        }
+
         public IPdfObject this[PdfName key]
         {
             get => _dictionary[key];

@@ -43,17 +43,24 @@ namespace PdfLexer.Parsers
             }
 
             var stream = source.GetStream(readStart);
-            int stage = 0;
             var pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
             var results = new List<IPdfObject>();
-            var pos = await pipe.ReadTokenSequence(_ctx, ParseOp.FindXrefOffset, results);
+            _ = await pipe.ReadTokenSequence(_ctx, ParseOp.FindXrefOffset, results);
             var num = results[1];
             switch (num)
             {
                 case PdfIntNumber intNum:
+                    if (intNum.Value > source.TotalBytes)
+                    {
+                        throw new ApplicationException($"XRef offset larger than document size, {intNum.Value} ({source.TotalBytes} size)");
+                    }
                     stream = source.GetStream(intNum.Value);
                     break;
                 case PdfLongNumber longNum:
+                    if (longNum.Value > source.TotalBytes)
+                    {
+                        throw new ApplicationException($"XRef offset larger than document size, {longNum.Value} ({source.TotalBytes} size)");
+                    }
                     stream = source.GetStream(longNum.Value);
                     break;
                 default:
@@ -62,16 +69,50 @@ namespace PdfLexer.Parsers
 
             pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
 
-            var result = await pipe.ReadNextObject(_ctx);
+            var result = await pipe.ReadNextObjectOrToken(_ctx);
             if (result.Type == PdfTokenType.Xref)
             {
                 var data = await GetEntries(pipe);
-                var trailer = await pipe.ReadNextObject(_ctx);
+                var trailer = await pipe.ReadNextObjectOrToken(_ctx);
                 if (trailer.Obj?.Type != PdfObjectType.DictionaryObj)
                 {
                     throw new ApplicationException("Object following trailer was not a dictionary.");
                 }
-                return (data, trailer.Obj as PdfDictionary);
+
+                var dict = trailer.Obj as PdfDictionary;
+                var original = dict;
+                while (true)
+                {
+                    if (!dict.TryGetValue<PdfNumber>(PdfName.Prev, out var lastOffset))
+                    {
+                        break;
+                    }
+
+                    var offset = (long)lastOffset;
+                    stream = source.GetStream(offset);
+                    pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
+                    result = await pipe.ReadNextObjectOrToken(_ctx);
+                    if (result.Type != PdfTokenType.Xref)
+                    {
+                        throw new ApplicationException("Prev entry did not point to xref token.");
+                    }
+                    data.AddRange(await GetEntries(pipe));
+                    trailer = await pipe.ReadNextObjectOrToken(_ctx);
+                    if (trailer.Obj?.Type != PdfObjectType.DictionaryObj)
+                    {
+                        throw new ApplicationException("Object following trailer was not a dictionary.");
+                    }
+                    dict = trailer.Obj as PdfDictionary;
+                    foreach (var item in dict)
+                    {
+                        if (!original.ContainsKey(item.Key))
+                        {
+                            original[item.Key] = item.Value;
+                        }
+                    }
+                }
+
+                return (data, original);
             } else if (result.Obj?.Type == PdfObjectType.NumericObj)
             {
                 throw new NotImplementedException("PDF 1.5 Cross-Reference Streams not yet implemented.");
@@ -80,8 +121,6 @@ namespace PdfLexer.Parsers
             {
                 throw new ApplicationException("Invalid token found at xref offset: " + result.Type);
             }
-            
-            
         }
 
         private async ValueTask<List<XRefEntry>> GetEntries(PipeReader pipe)
@@ -756,5 +795,34 @@ namespace PdfLexer.Parsers
         public int MaxLength { get; set; }
         public int ObjectStreamNumber { get; set; }
         public int ObjectIndex { get; set; }
+    }
+
+    public struct XRef
+    {
+        public XRef(int objectNumber, int generation)
+        {
+            ObjectNumber = objectNumber;
+            Generation = generation;
+        }
+        public int ObjectNumber {get;}
+        public int Generation {get;}
+        public override int GetHashCode()
+        {
+            return unchecked(ObjectNumber.GetHashCode() + Generation.GetHashCode());
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is XRef key)
+            {
+                return key.ObjectNumber.Equals(ObjectNumber) && key.Generation.Equals(Generation);
+            }
+            return false;
+        }
+
+        public override string ToString()
+        {
+            return $"{ObjectNumber} {Generation}";
+        }
     }
 }

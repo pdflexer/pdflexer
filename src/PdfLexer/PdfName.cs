@@ -39,5 +39,7 @@ namespace PdfLexer
         {
             return Value.GetHashCode();
         }
+
+        public static PdfName Prev => new PdfName("/Prev");
     }
 }

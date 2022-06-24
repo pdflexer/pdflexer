@@ -34,7 +34,7 @@ namespace PdfLexer.Lexing
                
                 if (result.IsCompleted || result.IsCanceled)
                 {
-                    throw CommonUtil.DisplayDataErrorException(result.Buffer, pos, "Unable to read token sequence.");
+                    throw CommonUtil.DisplayDataErrorException(result.Buffer, pos, "Unable to read token sequence");
                 }
                 if (pos.Equals(lastPos))
                 {
@@ -87,32 +87,37 @@ namespace PdfLexer.Lexing
                 case ParseOpType.ReadToken:
                     break;
                 case ParseOpType.ScanToAndSkip:
-                    if (!reader.TryAdvanceTo(op.ScanSequence[0], false))
+                    while (true)
                     {
-                        reader.Advance(reader.Remaining);
-                        pos = reader.Position;
-                        return false;
-                    }
-
-                    if (reader.Remaining < op.ScanSequence.Length)
-                    {
-                        reader.Advance(reader.Remaining);
-                        pos = reader.Position;
-                        return false;
-                    }
-
-                    if (reader.IsNext(op.ScanSequence, true))
-                    {
-                        results.Add(null);
-                        pos = reader.Position;
-                        if (results.Count >= ops.Count)
+                        if (!reader.TryAdvanceTo(op.ScanSequence[0], false))
                         {
-                            return true;
+                            reader.Advance(reader.Remaining);
+                            pos = reader.Position;
+                            return false;
                         }
-                        return false;
+
+                        if (reader.Remaining < op.ScanSequence.Length)
+                        {
+                            reader.Advance(reader.Remaining);
+                            pos = reader.Position;
+                            return false;
+                        }
+
+                        if (reader.IsNext(op.ScanSequence, true))
+                        {
+                            results.Add(null);
+                            pos = reader.Position;
+                            if (results.Count >= ops.Count)
+                            {
+                                return true;
+                            }
+                            return false;
+                        }
+                        reader.Advance(1);
                     }
-                    pos = reader.Position;
-                    return false; // todo could recurse here;
+
+                    //pos = reader.Position;
+                    //return TryReadTokenSequence(read, ctx, ops, results, out pos);
             }
 
             while (reader.TryReadNextToken(read.IsCompleted, out var type, out var start))
@@ -162,7 +167,7 @@ namespace PdfLexer.Lexing
         }
 
 
-        internal static async ValueTask<(PdfTokenType Type, IPdfObject Obj)> ReadNextObject(this PipeReader pipe, ParsingContext ctx)
+        internal static async ValueTask<(PdfTokenType Type, IPdfObject Obj)> ReadNextObjectOrToken(this PipeReader pipe, ParsingContext ctx)
         {
             while (true)
             {

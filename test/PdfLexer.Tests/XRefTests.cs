@@ -274,7 +274,7 @@ endobj", PdfObjectType.ArrayObj)]
             var results = new List<IPdfObject>();
             var ctx = new ParsingContext();
             var pipe = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 1));
-            var result = await pipe.ReadNextObject(ctx);
+            var result = await pipe.ReadNextObjectOrToken(ctx);
             if (type != PdfObjectType.NullObj)
             {
                 Assert.Equal(type, result.Obj.Type);
@@ -294,9 +294,9 @@ endobj", PdfObjectType.ArrayObj)]
             var results = new List<IPdfObject>();
             var ctx = new ParsingContext();
             var pipe = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 1));
-            var result = await pipe.ReadNextObject(ctx);
+            var result = await pipe.ReadNextObjectOrToken(ctx);
             Assert.Equal(obj1, result.Obj.Type);
-            result = await pipe.ReadNextObject(ctx);
+            result = await pipe.ReadNextObjectOrToken(ctx);
             Assert.Equal(obj2, result.Obj.Type);
         }
     }

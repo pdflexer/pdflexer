@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Pipelines;
 using System.Linq;
@@ -53,26 +54,34 @@ namespace PdfLexer.Parsers
         {
             MainDocument = pdf;
             var (refs, trailer) = await XRefParser.LoadCrossReference(MainDocument);
-            XrefEntries = refs.Where(x=>!x.IsFree).ToDictionary(x=>x.ObjectNumber, x=>x);
-            var ordered = refs.Where(x=>x.Type == XRefType.Normal).OrderBy(x=>x.Offset).ToList();
-            for (var i = 0; i < ordered.Count; i++)
+            XrefEntries = new Dictionary<XRef, XRefEntry>();
+            foreach (var entry in refs.Where(x=>!x.IsFree).OrderBy(x=>x.ObjectNumber))
             {
-                if (i + 1 < ordered.Count)
-                {
-                    ordered[i].MaxLength = (int)(ordered[i+1].Offset-ordered[i].Offset);
-                }
+                XrefEntries[new XRef(entry.ObjectNumber, entry.Generation)] = entry;
             }
-            ordered[^1].MaxLength = (int)(MainDocument.TotalBytes -ordered[^2].Offset);
+            if (refs.Any())
+            {
+                var ordered = refs.Where(x=>x.Type == XRefType.Normal && !x.IsFree).OrderBy(x=>x.Offset).ToList();
+                for (var i = 0; i < ordered.Count; i++)
+                {
+                    Debug.Assert(ordered[i].Offset < pdf.TotalBytes);
+                    if (i + 1 < ordered.Count)
+                    {
+                        ordered[i].MaxLength = (int)(ordered[i+1].Offset-ordered[i].Offset);
+                    }
+                }
+                ordered[^1].MaxLength = (int)(MainDocument.TotalBytes-ordered[^1].Offset-1);
+            }
         }
 
-        internal Dictionary<int, XRefEntry> XrefEntries;
+        internal Dictionary<XRef, XRefEntry> XrefEntries;
 
 
-        internal IPdfObject GetIndirectObject(int objectNumber)
+        internal IPdfObject GetIndirectObject(XRef xref)
         {
-            if (!XrefEntries.TryGetValue(objectNumber, out var value))
+            if (!XrefEntries.TryGetValue(xref, out var value))
             {
-                throw new ApplicationException($"Unknown indirect object {objectNumber}");
+                throw new ApplicationException($"Unknown indirect object {xref}");
             }
             if (value.Type == XRefType.Compressed)
             {
