@@ -72,7 +72,7 @@ namespace PdfLexer.Lexing
 
             if (CurrentOperator == PdfOperatorType.BI)
             {
-
+                return GetImage();
             }
 
             var oi = (int)CurrentOperator;
@@ -92,11 +92,23 @@ namespace PdfLexer.Lexing
                 return new Unkown_Op(op, data);
             }
             var parser = ParseOpMapping.Parsers[oi];
-            return parser(_ctx, Data, Operands);
+            try
+            {
+                return parser(_ctx, Data, Operands);
+            }
+            catch (Exception e)
+            {
+                var st = Operands.Count > 0 ? Operands[0].StartAt : Scanner.Position;
+                var len = Scanner.Position + Scanner.CurrentLength - st;
+                var op = Encoding.ASCII.GetString(Data.Slice(st, len));
+                _ctx.Error($"Failure parsing op ({e.Message}): " + op);
+                return null;
+            }
         }
 
         private IPdfOperation GetImage()
         {
+            var sp = Scanner.Position;
             Scanner.SkipCurrent();
 
             // skip dict info
@@ -107,33 +119,57 @@ namespace PdfLexer.Lexing
                 Scanner.SkipCurrent();
             }
 
-            var sp = Scanner.Position;
             var id = PdfOperator.GetType(Data, Scanner.Position, Scanner.CurrentLength);
             if (id != PdfOperatorType.ID)
             {
                 _ctx.Error("Inline image did not contain ID op.");
             }
-
+            var header = new PdfArray();
+            for (var i = 0; i < Operands.Count; i++)
+            {
+                var op = Operands[i];
+                if (op.Type == PdfTokenType.ArrayStart || op.Type == PdfTokenType.DictionaryStart)
+                {
+                    header.Add(_ctx.GetPdfItem(Data, op.StartAt, out var len));
+                    var end = op.StartAt + len;
+                    for (;i<Operands.Count;i++)
+                    {
+                        if (Operands[i].StartAt >= end)
+                        {
+                            i--;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    header.Add(_ctx.GetKnownPdfItem((PdfObjectType)op.Type, Data, op.StartAt, op.Length));
+                }
+            }
+            var start = Scanner.Position + Scanner.CurrentLength;
             while (true)
             {
-                var start = Scanner.Position + Scanner.CurrentLength;
                 var i = Data.Slice(start).IndexOf(EI);
                 if (i == -1)
                 {
                     _ctx.Error("End of image not found, assuming rest of content is data.");
-                    return new InlineImage_Op(null, Data.Slice(start).ToArray());
+                    return new InlineImage_Op(header, Data.Slice(start).ToArray());
                 }
+                i = i + start; // correct for slice offset
 
-                if (IsEndOfToken(Data, i+1) && NoBinaryData(Data, i + 2, 5))
+                if (IsEndOfToken(Data, i + 1) && NoBinaryData(Data, i + 2, 5))
                 {
+                    // to allow GetCurrentData() to work
+                    Operands.Clear();
+                    Operands.Add(new OperandInfo { Type = PdfTokenType.Unknown, StartAt = sp, Length = i - sp });
                     CurrentOperator = PdfOperatorType.EI;
+                    // get skipCurrent to work
                     Scanner.Position = i;
                     Scanner.CurrentLength = 2;
-                    return new InlineImage_Op(null, Data.Slice(start, i-start).ToArray());
+                    return new InlineImage_Op(header, Data.Slice(start, i - start).ToArray());
                 }
+                start = i + 2;
             }
-
-
 
             bool NoBinaryData(ReadOnlySpan<byte> input, int pos, int length)
             {

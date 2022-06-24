@@ -1,10 +1,7 @@
 ﻿using PdfLexer.Parsers;
 using System;
-using System.Buffers;
-using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Text;
 
 namespace PdfLexer.Filters
 {
@@ -33,6 +30,7 @@ namespace PdfLexer.Filters
             source.ReadByte();
             source.ReadByte();
             var deflated = new DeflateStream(source, CompressionMode.Decompress, true);
+
             if (decodeParms == null) { return deflated; }
 
             int predictor = decodeParms.GetOptionalValue<PdfNumber>(PdfName.Predictor) ?? DefaultPredictor;

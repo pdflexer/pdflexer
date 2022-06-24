@@ -40,6 +40,55 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
     }
+
+    public partial class sc_Op
+    {
+        public void Serialize(Stream stream)
+        {
+            foreach (var dec in colorInfo)
+            {
+                PdfOperator.Writedecimal(dec, stream);
+                stream.WriteByte((byte)' ');
+            }
+            stream.Write(OpData);
+        }
+    }
+
+    public partial class SCN_Op
+    {
+        public void Serialize(Stream stream)
+        {
+            foreach (var dec in colorInfo)
+            {
+                PdfOperator.Writedecimal(dec, stream);
+                stream.WriteByte((byte)' ');
+            }
+            if (name != null)
+            {
+                PdfOperator.WritePdfName(name, stream);
+                stream.WriteByte((byte)' ');
+            }
+            stream.Write(OpData);
+        }
+    }
+
+    public partial class scn_Op
+    {
+        public void Serialize(Stream stream)
+        {
+            foreach (var dec in colorInfo)
+            {
+                PdfOperator.Writedecimal(dec, stream);
+                stream.WriteByte((byte)' ');
+            }
+            if (name != null)
+            {
+                PdfOperator.WritePdfName(name, stream);
+                stream.WriteByte((byte)' ');
+            }
+            stream.Write(OpData);
+        }
+    }
     
     
 }

@@ -31,15 +31,27 @@ namespace PdfLexer.Operators
         public PdfOperatorType Type => PdfOperatorType.Unknown;
 
         public string op {get;}
+        public PdfArray header {get;}
         public byte[] allData {get;}
-        public InlineImage_Op(PdfDictionary header, byte[] allData)
+        public InlineImage_Op(PdfArray header, byte[] allData)
         {
             this.op = op;
+            this.header = header;
             this.allData = allData;
         }
         public void Serialize(Stream stream)
         {
+            stream.Write(BI_Op.OpData);
+            stream.WriteByte((byte)'\n');
+            foreach(var item in header)
+            {
+                PdfOperator.Shared.SerializeObject(stream, item, x=>x);
+                stream.WriteByte((byte)' ');
+            }
+            stream.Write(ID_Op.OpData);
+            stream.WriteByte((byte)'\n');
             stream.Write(allData);
+            stream.Write(EI_Op.OpData);
         }
     }
 
@@ -64,12 +76,12 @@ namespace PdfLexer.Operators
             throw new NotImplementedException();
         }
 
-        internal static BDC_Op ParseBDC(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        internal static IPdfOperation ParseBDC(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             if (operands.Count == 0)
             {
-                ctx.Error("BDC had no operands.");
-                return null;
+                ctx.Error("BDC had no operands, falling back to BMC w/ unknown.");
+                return new BMC_Op(new PdfName("/Unknown"));
             }
             if (operands.Count == 1)
             {
@@ -80,11 +92,16 @@ namespace PdfLexer.Operators
                 }
                 return null;
             }
-            if (operands.Count > 2)
+            if (operands.Count > 2 && (operands[1].Type != PdfTokenType.ArrayStart && operands[1].Type != PdfTokenType.DictionaryStart))
             {
-                ctx.Error("BDC only had more than two operands, using first two.");
+                ctx.Error("BDC had more than two operands, using first two.");
             }
             var di = operands[1];
+            ctx.CurrentSource = null; // force no lazy
+            if (di.Type != PdfTokenType.ArrayStart || di.Type != PdfTokenType.DictionaryStart)
+            {
+                return new BDC_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetPdfItem(data, di.StartAt, out _));
+            }
             return new BDC_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetKnownPdfItem((PdfObjectType)di.Type, data, di.StartAt, di.Length));
         }
 
@@ -122,6 +139,50 @@ namespace PdfLexer.Operators
             return new SC_Op(colors);
         }
 
+        internal static sc_Op Parsesc(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        {
+            var colors = new List<decimal>();
+            foreach (var val in operands)
+            {
+                colors.Add(ParseDecimal(ctx, data, val));
+            }
+            return new sc_Op(colors);
+        }
+
+        internal static scn_Op Parsescn(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        {
+            PdfName name = null;
+            var colors = new List<decimal>();
+            for (var i=0; i<operands.Count;i++)
+            {
+                if (i == operands.Count - 1 && operands[i].Type == PdfTokenType.NameObj)
+                {
+                    name = ParsePdfName(ctx, data, operands[i]);
+                } else
+                {
+                    colors.Add(ParseDecimal(ctx, data, operands[i]));
+                }
+            }
+            return new scn_Op(colors, name);
+        }
+
+        internal static SCN_Op ParseSCN(ParsingContext ctx,  ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        {
+            PdfName name = null;
+            var colors = new List<decimal>();
+            for (var i=0; i<operands.Count;i++)
+            {
+                if (i == operands.Count - 1 && operands[i].Type == PdfTokenType.NameObj)
+                {
+                    name = ParsePdfName(ctx, data, operands[i]);
+                } else
+                {
+                    colors.Add(ParseDecimal(ctx, data, operands[i]));
+                }
+            }
+            return new SCN_Op(colors, name);
+        }
+
         public static decimal ParseDecimal(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
         {
             if (!Utf8Parser.TryParse(data.Slice(op.StartAt, op.Length), out decimal val, out int consumed))
@@ -130,8 +191,6 @@ namespace PdfLexer.Operators
             }
             return val;
         }
-
-        // private static string test = string.Join(", ", "abc".Select(x=> "(byte) '" + x + "'"))
 
         public static PdfName ParsePdfName(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
         {

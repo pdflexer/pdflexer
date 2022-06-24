@@ -238,7 +238,7 @@ namespace PdfLexer.Serializers
                 return localizedObjects.TryGetValue(nir.Object, out local);
             }
 
-            if (currentExternalId != ir.SourceId)
+            if (currentExternalId != ir.SourceId || currentDictionary == null)
             {
                 if (!localizedXRefs.TryGetValue(ir.SourceId, out currentDictionary))
                 {
@@ -247,6 +247,7 @@ namespace PdfLexer.Serializers
                 }
                 currentExternalId = ir.SourceId;
             }
+
             ulong id = ir.Reference.GetId();
             return currentDictionary.TryGetValue(id, out local);
             throw new NotImplementedException("TODO");
@@ -298,6 +299,11 @@ namespace PdfLexer.Serializers
                 currentExternalId = ir.SourceId;
             }
             {
+                if (currentDictionary == null)
+                {
+                    currentDictionary = new Dictionary<ulong, PdfIndirectRef>();
+                    localizedXRefs[currentExternalId] = currentDictionary;
+                }
                 ulong id = ((ulong)ir.Reference.ObjectNumber << 16) | ((uint)ir.Reference.Generation & 0xFFFF);
                 if (currentDictionary.TryGetValue(id, out var existing))
                 {

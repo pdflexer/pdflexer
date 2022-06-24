@@ -152,11 +152,14 @@ namespace PdfLexer.Tests
             }
         }
 
-        // [Fact]
+        // TODO remove? isn't testing anything really
+        [Fact]
         public void It_Reads_And_Writes_All_Pdf_JS_Content_Streams()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var output = Path.Combine(pdfRoot, "outputStreams");
+            Directory.CreateDirectory(output);
             var errors = new List<string>();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
@@ -164,51 +167,24 @@ namespace PdfLexer.Tests
                 {
                     var data = File.ReadAllBytes(pdf);
                     using var doc = PdfDocument.Open(data);
-                    foreach (var page in doc.Pages)
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt))
                     {
-                        if (!page.Dictionary.TryGetValue(PdfName.Contents, out var value))
-                        {
-                            continue;
-                        }
-
-                        var obj = value.Resolve();
-                        switch (obj)
-                        {
-                            case PdfStream strObj:
-                                CheckStream(strObj);
-                                break;
-                            case PdfArray arrObj:
-                                foreach (var item in arrObj)
-                                {
-                                    var arStr = item.Resolve();
-                                    if (arStr is PdfStream matched)
-                                    {
-                                        CheckStream(matched);
-                                    } else
-                                    {
-                                        throw new ApplicationException("Non stream object found in contents array: " + arStr.Type);
-                                    }
-                                }
-                                break;
-                            default:
-                                 throw new ApplicationException("Non stream or array object found in contents array:" + obj.Type);
-                        }
-
-                        void CheckStream(PdfStream str)
-                        {
-                            var pgStream = str.Contents.GetDecodedData(doc.Context);
-                            var txt = Encoding.ASCII.GetString(pgStream);
-                            var scanner = new ContentScanner(doc.Context, pgStream);
-                            var ops = new List<IPdfOperation>();
-                            PdfOperatorType nxt = PdfOperatorType.Unknown;
-                            while ((nxt = scanner.Peek()) != PdfOperatorType.EOC)
-                            {
-                                ops.Add(scanner.GetCurrentOperation());
-                                scanner.SkipCurrent();
-                            }
-                        }
+                        // don't support encryption currently
+                        continue;
                     }
 
+                    ReWriteStreams(pdf, doc);
+
+                    using var fs = File.Create(Path.Combine(output, Path.GetFileName(pdf)));
+                    using var doc2 = PdfDocument.Create();
+
+                    foreach (var kvp in doc.Trailer)
+                    {
+                        doc2.Trailer[kvp.Key] = kvp.Value;
+                    }
+                    doc2.Catalog = doc.Catalog;
+                    doc2.Pages = doc.Pages;
+                    doc2.SaveTo(fs);
                 }
                 catch (Exception e)
                 {
@@ -218,6 +194,86 @@ namespace PdfLexer.Tests
             if (errors.Any())
             {
                 throw new ApplicationException(string.Join(Environment.NewLine, errors));
+            }
+        }
+
+        private static void ReWriteStreams(string pdf, PdfDocument doc)
+        {
+            foreach (var page in doc.Pages)
+            {
+                if (!page.Dictionary.TryGetValue(PdfName.Contents, out var value))
+                {
+                    continue;
+                }
+
+                var streamObj = value.Resolve();
+                byte[] newData = null;
+                switch (streamObj)
+                {
+                    case PdfStream strObj:
+                        newData = CheckStreamData(strObj.Contents.GetDecodedData(doc.Context));
+                        break;
+                    case PdfArray arrObj:
+                        var streams = new List<PdfStream>();
+                        foreach (var item in arrObj)
+                        {
+                            var arStr = item.Resolve();
+                            if (arStr is PdfStream matched)
+                            {
+                                streams.Add(matched);
+                            }
+                            else
+                            {
+                                throw new ApplicationException("Non stream object found in contents array: " + arStr.Type);
+                            }
+                        }
+                        // TODO support for split streams
+                        var ms = new MemoryStream();
+                        foreach (var str in streams)
+                        {
+                            str.Contents.GetDecodedStream(doc.Context).CopyTo(ms);
+                            ms.WriteByte((byte)' ');
+                        }
+                        newData = CheckStreamData(ms.ToArray());
+                        break;
+                    default:
+                        throw new ApplicationException("Non stream or array object found in contents array:" + streamObj.Type);
+                }
+
+                var updatedStr = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(newData));
+                page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+
+                byte[] CheckStreamData(byte[] pgStream)
+                {
+                    var nm = pdf;
+                    var txt = Encoding.ASCII.GetString(pgStream);
+                    var scanner = new ContentScanner(doc.Context, pgStream);
+                    var ops = new List<IPdfOperation>();
+                    PdfOperatorType nxt = PdfOperatorType.Unknown;
+                    while ((nxt = scanner.Peek()) != PdfOperatorType.EOC)
+                    {
+                        var op = scanner.GetCurrentOperation();
+                        if (op == null)
+                        {
+
+                        }
+                        else
+                        {
+                            ops.Add(op);
+
+                        }
+                        scanner.SkipCurrent();
+                    }
+                    var ms = new MemoryStream();
+                    foreach (var op in ops)
+                    {
+                        op.Serialize(ms);
+                        ms.WriteByte((byte)'\n');
+                    }
+                    var rewritten = ms.ToArray();
+                    var txt2 = Encoding.ASCII.GetString(rewritten);
+                    return rewritten;
+                }
             }
         }
 
@@ -266,10 +322,12 @@ namespace PdfLexer.Tests
             byte[] d2 = null;
             byte[] d3 = null;
             byte[] d4 = null;
+            byte[] d5 = null;
             decimal hc = 0;
             decimal hc2 = 0;
             decimal hc3 = 0;
             decimal hc4 = 0;
+            decimal hc5 = 0;
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 try
@@ -300,8 +358,6 @@ namespace PdfLexer.Tests
                     d1 = d2 = d3 = d4 = null;
 
                     d1 = File.ReadAllBytes(pdf);
-
-
 
                     try
                     {
@@ -340,21 +396,32 @@ namespace PdfLexer.Tests
                     ms = new MemoryStream();
                     doc.SaveTo(ms);
                     d4 = ms.ToArray();
+                    doc = PdfDocument.Open(d1);
+                    ReWriteStreams(pdf, doc);
+                    ms = new MemoryStream();
+                    using var doc4 = PdfDocument.Create();
+                    doc4.Pages = doc.Pages;
+                    doc4.SaveTo(ms);
+                    d5 = ms.ToArray();
+
                     hc2 = Util.GetDocumentHashCode(d2);
                     hc3 = Util.GetDocumentHashCode(d3);
                     hc4 = Util.GetDocumentHashCode(d4);
+                    hc5 = Util.GetDocumentHashCode(d5);
                     Assert.Equal(hc, hc2);
                     Assert.Equal(hc, hc3);
                     Assert.Equal(hc, hc4);
+                    Assert.Equal(hc, hc5);
                 }
                 catch (Exception e)
                 {
-                    parseLog.WriteLine($"{hc} {hc2} {hc3}");
+                    parseLog.WriteLine($"{hc} {hc2} {hc3} {hc4} {hc5}");
                     var bp = Path.Combine(results, Path.GetFileNameWithoutExtension(pdf));
                     File.WriteAllBytes(bp + "_input.pdf", d1 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_quicksave.pdf", d2 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_pagecopy.pdf", d3 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_rewrite.pdf", d4 ?? new byte[0]);
+                    File.WriteAllBytes(bp + "_cstreams.pdf", d5 ?? new byte[0]);
                     errors.Add(pdf + ": " + e.Message);
                 }
             }

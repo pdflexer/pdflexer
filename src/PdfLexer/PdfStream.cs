@@ -170,7 +170,22 @@ namespace PdfLexer
             else
             {
                 var filter = obj.GetValue<PdfName>();
-                return DecodeSingle(filter, source, DecodeParams?.GetValue<PdfDictionary>());
+                PdfDictionary currentParms = null;
+
+                switch (DecodeParams?.Type)
+                {
+                    case PdfObjectType.DictionaryObj:
+                        currentParms = DecodeParams.GetValue<PdfDictionary>();
+                        break;
+                    case PdfObjectType.ArrayObj:
+                        var arr = DecodeParams.GetValue<PdfArray>();
+                        if (arr.Resolve().Type == PdfObjectType.DictionaryObj)
+                        {
+                            currentParms = arr.GetValue<PdfDictionary>();
+                        }
+                        break;
+                }
+                return DecodeSingle(filter, source, currentParms ?? new PdfDictionary());
             }
 
             Stream DecodeSingle(PdfName filterName, Stream input, PdfDictionary decodeParams)

@@ -39,7 +39,9 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.DictionaryStart:
                         if (CurrentState.IsParsing())
                         {
-                            switch (_ctx.Options.Eagerness)
+                            var eager = _ctx.Options.Eagerness;
+                            if (_ctx.CurrentSource == null) { eager = Eagerness.FullEager; }
+                            switch (eager)
                             {
                                 case Eagerness.Lazy:
                                     var originalStart = startAt;
@@ -74,7 +76,9 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.ArrayStart:
                         if (CurrentState.IsParsing())
                         {
-                            switch (_ctx.Options.Eagerness)
+                            var eager = _ctx.Options.Eagerness;
+                            if (_ctx.CurrentSource == null) { eager = Eagerness.FullEager; }
+                            switch (eager)
                             {
                                 case Eagerness.Lazy:
                                     var originalStart = startAt;

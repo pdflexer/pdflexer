@@ -41,6 +41,7 @@ namespace PdfLexer.Parsers
         public ParsingOptions Options { get; }
 
         private IDecoder FlateDecoder;
+        private IDecoder AsciiHexDecoder;
         public ParsingContext(ParsingOptions options = null)
         {
             Options = options;
@@ -55,7 +56,9 @@ namespace PdfLexer.Parsers
             StringParser = new StringParser(this);
             XRefParser = new XRefParser(this);
             NestedParser = new NestedParser(this);
+
             FlateDecoder = new FlateFilter(this);
+            AsciiHexDecoder = new AsciiHexFilter();
         }
 
         public (Dictionary<ulong, XRefEntry>, PdfDictionary) Initialize(IPdfDataSource pdf)
@@ -83,6 +86,8 @@ namespace PdfLexer.Parsers
             {
                 case "/FlateDecode":
                     return FlateDecoder;
+                case "/ASCIIHexDecode":
+                    return AsciiHexDecoder;
                 default:
                     throw new NotImplementedException($"Stream decoding of type {name.Value} has not been implemented.");
             }
