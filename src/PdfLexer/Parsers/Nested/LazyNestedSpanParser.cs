@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.Text;
 using PdfLexer.Lexing;
 
 namespace PdfLexer.Parsers.Nested
 {
+    /// <summary>
+    /// Todo: clean this up.. mirrors the re-entrant sequence setup but doesn't need to as all data
+    /// is supposed to be in memory for this
+    /// </summary>
     internal class LazyNestedSpanParser
     {
         private readonly ParsingContext _ctx;
@@ -13,19 +14,19 @@ namespace PdfLexer.Parsers.Nested
         {
             _ctx = ctx;
         }
-        private ParseState currentState = ParseState.Unknown;
+        private ParseState currentState = ParseState.None;
         private bool completed = false;
 
         private PdfName currentKey;
         private IParsedLazyObj obj = null;
 
-        public IParsedLazyObj GetCompletedObject()
+        internal IParsedLazyObj GetCompletedObject()
         {
             if (!completed)
             {
                 throw new InvalidOperationException("GetCompletedObject() called before parsing was finished.");
             }
-            currentState = ParseState.Unknown;
+            currentState = ParseState.None;
             currentKey = null;
             startPos = default;
             currentLength = default;
@@ -35,9 +36,16 @@ namespace PdfLexer.Parsers.Nested
             return toReturn;
         }
 
+        public IParsedLazyObj ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt)
+        {
+            while (ParseNestedItemPart(buffer, startAt)) { }
+
+            return GetCompletedObject();
+        }
+
         private int startPos;
         private int currentLength;
-        public bool ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt)
+        internal bool ParseNestedItemPart(ReadOnlySpan<byte> buffer, int startAt)
         {
             startPos = startAt;
             var lastStart = 0;
@@ -67,7 +75,7 @@ namespace PdfLexer.Parsers.Nested
                             startPos += currentLength;
                             continue;
                         }
-                        currentState = ParseState.DictKey;
+                        currentState = ParseState.ReadDictKey;
                         obj = new PdfDictionary();
                         startPos += currentLength;
                         continue;
@@ -87,7 +95,7 @@ namespace PdfLexer.Parsers.Nested
                             continue;
                         }
                         obj = new PdfArray();
-                        currentState = ParseState.Array;
+                        currentState = ParseState.ReadArray;
                         startPos += currentLength;
                         continue;
                     case PdfTokenType.NumericObj:
@@ -153,19 +161,19 @@ namespace PdfLexer.Parsers.Nested
         {
             switch (currentState)
             {
-                case ParseState.DictKey:
+                case ParseState.ReadDictKey:
                     currentKey = _ctx.NameParser.Parse(buffer, startPos, currentLength);
-                    currentState = ParseState.DictValue;
+                    currentState = ParseState.ReadDictValue;
                     return;
-                case ParseState.DictValue:
+                case ParseState.ReadDictValue:
                 {
                     var item = _ctx.GetPdfItem((PdfObjectType) type, buffer, startPos, currentLength);
                     (obj as PdfDictionary)[currentKey] = item;
                     currentKey = null;
-                    currentState = ParseState.DictKey;
+                    currentState = ParseState.ReadDictKey;
                     return;
                 }
-                case ParseState.Array:
+                case ParseState.ReadArray:
                 {
                     var item = _ctx.GetPdfItem((PdfObjectType) type, buffer, startPos, currentLength);
                     (obj as PdfArray).Add(item);

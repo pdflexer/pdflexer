@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO.Pipelines;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,12 +11,22 @@ namespace PdfLexer.Lexing
 {
     public static class SequenceExtensions
     {
-         internal static async Task<SequencePosition> ReadTokenSequence(this PipeReader reader, ParsingContext ctx, List<IPdfObject> results, params PdfTokenType[] tokens)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <param name="ctx"></param>
+        /// <param name="results"></param>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
+        internal static async Task<SequencePosition> ReadTokenSequence(this PipeReader reader, ParsingContext ctx, List<IPdfObject> results, params PdfTokenType[] tokens)
         {
+            Debug.Assert(ctx.ParseState == ParseState.None);
+            SequencePosition lastPos = default;
+            int count = 0;
             while (true)
             {
                 var result = await reader.ReadAsync();
-
                 if (result.TryReadTokenSequence(ctx, tokens, results, out var pos))
                 {
                     return pos;
@@ -25,13 +36,52 @@ namespace PdfLexer.Lexing
                 {
                     throw CommonUtil.DisplayDataErrorException(result.Buffer, pos, "Unable to read token sequence.");
                 }
-                reader.AdvanceTo(pos);
+                if (pos.Equals(lastPos))
+                {
+                    count++;
+                    if (count > 5)
+                    {
+                        throw CommonUtil.DisplayDataErrorException(result.Buffer, pos, "Sequence positions did not advance, buffer likely too small.");
+                    }
+                }
+                else
+                {
+                    count = 0;
+                    lastPos = pos;
+                }
+
+                reader.AdvanceTo(pos, result.Buffer.End);
             }
         }
 
         private static bool TryReadTokenSequence(this ReadResult read, ParsingContext ctx, PdfTokenType[] tokens, List<IPdfObject> results, out SequencePosition pos)
         {
             var reader = new SequenceReader<byte>(read.Buffer);
+            switch (ctx.ParseState)
+            {
+                case ParseState.None:
+                    break;
+                case ParseState.Nested:
+                    while (ctx.NestedSeqParser.ParseNestedItem(ref reader, read.IsCompleted)) { }
+                    if (ctx.NestedSeqParser.completed)
+                    {
+                        results.Add(ctx.NestedSeqParser.GetCompletedObject());
+                        ctx.ParseState = ParseState.None;
+                    } else
+                    {
+                        pos = reader.Position;
+                        ctx.ParseState = ParseState.Nested;
+                        return false;
+                    }
+
+                    if (results.Count >= tokens.Length)
+                    {
+                        pos = reader.Position;
+                        return true;
+                    }
+                    break;
+            }
+            
             while (reader.TryReadNextToken(read.IsCompleted, out var type, out var start))
             {
                 var expected = tokens[results.Count];
@@ -52,7 +102,8 @@ namespace PdfLexer.Lexing
                         continue;
                     } else
                     {
-                        pos = start;
+                        ctx.ParseState = ParseState.Nested;
+                        pos = reader.Position;
                         return false;
                     }
                 }
@@ -73,6 +124,7 @@ namespace PdfLexer.Lexing
             }
             pos = reader.Position;
             return false;
+
         }
 
         internal static async Task<ReadOnlySequence<byte>> LocateXrefTableAndTrailer(this PipeReader reader)

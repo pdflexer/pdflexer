@@ -19,8 +19,7 @@ namespace PdfLexer.Parsers
 
         public PdfDictionary Parse(ReadOnlySpan<byte> buffer, int start, int length)
         {
-            while (_ctx.NestedSpanParser.ParseNestedItem(buffer, start)) { }
-            var dict = _ctx.NestedSpanParser.GetCompletedObject() as PdfDictionary;
+            var dict = _ctx.NestedSpanParser.ParseNestedItem(buffer, start) as PdfDictionary;
             return dict;
         }
 

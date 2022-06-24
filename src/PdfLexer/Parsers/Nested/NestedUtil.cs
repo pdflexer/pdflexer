@@ -5,22 +5,16 @@ using System.Text;
 
 namespace PdfLexer.Parsers.Nested
 {
-    internal enum ParseState
-    {
-        Unknown,
-        DictKey,
-        DictValue,
-        Array
-    }
+
 
     internal static class NestedUtil
     {
-        private static byte[] dictScanTerms = new byte[4]
+        internal static byte[] dictScanTerms = new byte[4]
         {
             (byte) '<', (byte) '>', (byte) '(', (byte) 'R'
         };
 
-        private static byte[] arrayScanTerms = new byte[5]
+        internal static byte[] arrayScanTerms = new byte[5]
         {
             (byte) '<', (byte) '(', (byte) '[', (byte) ']', (byte) 'R'
         };

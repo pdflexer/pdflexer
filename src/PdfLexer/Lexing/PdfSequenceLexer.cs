@@ -109,12 +109,13 @@ namespace PdfLexer.Lexing
                     throw CommonUtil.DisplayDataErrorException(ref reader, "Unknown / invalid token");
                 case (byte) '(':
                     type = PdfTokenType.StringObj;
-                    if (StringParser.AdvancePastString(ref reader))
-                    {
-                        return true;
-                    }
+                    return reader.TryRead(out _);
+                    // if (StringParser.AdvancePastString(ref reader))
+                    // {
+                    //     return true;
+                    // }
 
-                    return false;
+                    // return false;
                 case (byte) '<':
                     if (reader.Remaining < 2)
                     {
@@ -128,7 +129,8 @@ namespace PdfLexer.Lexing
                         return true;
                     }
                     type = PdfTokenType.StringObj;
-                    return StringParser.AdvancePastString(ref reader);
+                    return reader.TryRead(out _); // allow streaming read
+                        //StringParser.AdvancePastString(ref reader);
                 case (byte) '/':
                     reader.TryRead(out _);
                     type = PdfTokenType.NameObj;

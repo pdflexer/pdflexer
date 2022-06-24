@@ -8,8 +8,18 @@ using PdfLexer.Parsers.Nested;
 
 namespace PdfLexer.Parsers
 {
+    public enum ParseState 
+    {
+        None,
+        Nested,
+    }
     public class ParsingContext
     {
+        // TODO different types
+        internal bool IsEager { get; set; } = true;
+        internal NestedSkipper Skipper { get; } = new NestedSkipper();
+        internal ParseState ParseState { get; set; }
+        internal List<IPdfObject> ObjectBag = new List<IPdfObject>();
         internal byte[] Buffer = new byte[5000];
         internal long CurrentOffset { get; set; }
         internal IPdfDataSource CurrentSource { get; set; }

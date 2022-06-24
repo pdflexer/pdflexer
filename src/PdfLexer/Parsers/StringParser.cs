@@ -6,10 +6,177 @@ using System.Text;
 
 namespace PdfLexer.Parsers
 {
+    internal enum StringStatus
+    {
+        None,
+        ParsingLiteral,
+        ParsingHex
+    }
     public class StringParser
     {
+        private StringStatus Status = StringStatus.None;
+        public StringParser(ParsingContext ctx)
+        {
+            _ctx = ctx;
+        }
+
+        
+        public bool TryReadString(ref SequenceReader<byte> reader)
+        {
+            switch (Status)
+            {
+                case StringStatus.None:
+                    break;
+                case StringStatus.ParsingLiteral:
+                    if (TryReadStringLiteral(ref reader))
+                    {
+                        Status = StringStatus.None;
+                        return true;
+                    }
+                    return false;
+                case StringStatus.ParsingHex:
+                    if (TryReadStringHex(ref reader))
+                    {
+                        Status = StringStatus.None;
+                        return true;
+                    }
+                    return false;
+            }
+
+            if (!reader.TryPeek(out byte b))
+            {
+                return false;
+            }
+
+            if (b == (byte)'(')
+            {
+                if (!TryReadStringLiteral(ref reader))
+                {
+                    Status = StringStatus.ParsingLiteral;
+                    return false;
+                }
+                return true;
+            } else if (b == (byte)'<')
+            {
+                if (!TryReadStringHex(ref reader))
+                {
+                    Status = StringStatus.ParsingHex;
+                    return false;
+                }
+                return true;
+            }
+
+            throw new ApplicationException("Invalid string, first char not ( or <.");
+        }
+
+        private int stringDepth = 0;
+        private static byte[] stringLiteralTerms = new byte[]
+        {
+            (byte) '(', (byte) ')', (byte) '\\'
+        };
+        private StringBuilder builder = new StringBuilder();
+        private bool TryReadStringLiteral(ref SequenceReader<byte> reader)
+        {
+            var start = reader.Position;
+            var initial = reader.Consumed;
+            while (reader.TryAdvanceToAny(stringLiteralTerms, false))
+            {
+                if (!reader.TryRead(out byte b))
+                {
+                    return false;
+                }
+                switch (b)
+                {
+                    case (byte)'\\':
+                        if (!reader.TryRead(out var b2))
+                        {
+                            reader.Rewind(1);
+                            return false;
+                        }
+                        switch (b2)
+                        {
+                            case (byte)'n':
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                builder.Append('\n');
+                                break;
+                            case (byte)'r':
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                builder.Append('\r');
+                                break;
+                            case (byte)'t':
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                builder.Append('\t');
+                                break;
+                            case (byte)'b':
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                builder.Append('\b');
+                                break;
+                            case (byte)'f':
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                builder.Append('\f');
+                                break;
+                            case (byte)'(':
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                builder.Append('(');
+                                break;
+                            case (byte)')':
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                builder.Append(')');
+                                break;
+                            case (byte)'\\':
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                builder.Append('\\');
+                                break;
+                            default:
+                                // TODO check for octals
+                                break;
+                        }
+                        break;
+                    case (byte)'(':
+                        
+                        stringDepth++;
+                        if (stringDepth != 1)
+                        {
+                            AddToBuilder(reader.Sequence.Slice(start, reader.Position));
+                        }
+                        break;
+                    case (byte)')':
+                        AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                        stringDepth--;
+                        if (stringDepth == 0)
+                        {
+                            AddToBuilder(reader.Sequence.Slice(start, reader.Consumed-initial-1));
+                            return true;
+                        } else
+                        {
+                            AddToBuilder(reader.Sequence.Slice(start, reader.Position));
+                        }
+                        break;
+                }
+                start = reader.Position;
+                initial = reader.Consumed;
+            }
+            reader.Advance(reader.Remaining);
+            AddToBuilder(reader.Sequence.Slice(start, reader.Position));
+            return false;
+        }
+        private void AddToBuilder(in ReadOnlySequence<byte> data)
+        {
+            // TODO optimize.. for now this is easy
+            foreach (var seg in data)
+            {
+                builder.Append(Encoding.ASCII.GetString(seg.Span));
+            }
+        }
+        private bool TryReadStringHex(ref SequenceReader<byte> reader)
+        {
+            return true;
+        }
 
         // TODO string literal octal (\0053) = \005, (\053) = \053, (\53) = \053
+        // TODO ignore escape \ if not followed by allowable chars
+        // TODO escape before end of line for line splitting
+        // TODO end of line conversion from what's in string to just \n
         public static bool AdvancePastString(ref SequenceReader<byte> reader)
         {
             if (!reader.TryPeek(out byte b))
@@ -245,6 +412,7 @@ namespace PdfLexer.Parsers
             return end + 1;
         }
         private static char[] numeric = new char[10] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9' };
+        private readonly ParsingContext _ctx;
         // private static void ReplaceEspacedChars(Span<char> chars, out Span<char> results)
         // {
         //     var espace = chars.IndexOf('\\');

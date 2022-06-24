@@ -207,6 +207,30 @@ trailer
         [InlineData(@"0 1 obj
 <</Key/Value>>
 endobj", PdfObjectType.DictionaryObj)]
+        [InlineData(@"0 1 obj
+<</Key(this is a (nested) long\) string)>>
+endobj", PdfObjectType.DictionaryObj)]
+        [InlineData(@"1001 0 obj
+[1 0 3 <</Key/Value>>]
+endobj", PdfObjectType.ArrayObj)]
+        [Theory]
+        public async Task ItReadsIndirectObjectsUsingMultiSequences(string input, PdfObjectType type)
+        {
+            var bytes = Encoding.ASCII.GetBytes(input);
+            var ms = new MemoryStream(bytes);
+            var results = new List<IPdfObject>();
+            var ctx = new ParsingContext();
+            var pipe = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 1));
+            var result = await pipe.ReadTokenSequence(ctx, results, PdfTokenType.NumericObj, PdfTokenType.NumericObj,
+                PdfTokenType.StartObj, PdfTokenType.WildCard, PdfTokenType.EndObj);
+            Assert.Equal(5, results.Count);
+            var item = results[3];
+            Assert.Equal(type, item.Type);
+        }
+
+        [InlineData(@"0 1 obj
+<</Key/Value>>
+endobj", PdfObjectType.DictionaryObj)]
         [InlineData(@"1001 0 obj
 [1 0 3 <</Key/Value>>]
 endobj", PdfObjectType.ArrayObj)]

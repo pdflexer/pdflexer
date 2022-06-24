@@ -44,6 +44,7 @@ namespace PdfLexer.Parsers
             int stage = 0;
             var pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
             var item = await pipe.ReadNextObject(_ctx);
+            // pipe.ReadTokenSequence(_ctx, _ctx.ObjectBag, )
             while (true)
             {
                 var result = await pipe.ReadAsync();

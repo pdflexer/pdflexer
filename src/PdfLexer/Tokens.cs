@@ -5,8 +5,8 @@ namespace PdfLexer
         NullObj,
         BooleanObj,
         NumericObj,
-        StringObj,
         NameObj,
+        StringObj,
         ArrayStart,
         DictionaryStart,
         IndirectRef,
@@ -18,6 +18,7 @@ namespace PdfLexer
         StartObj,
         EndObj,
         Xref,
+        StartXref,
         WildCard // dummy
     }
 
@@ -26,8 +27,8 @@ namespace PdfLexer
         NullObj,
         BooleanObj,
         NumericObj,
-        StringObj,
         NameObj,
+        StingObj,
         ArrayObj,
         DictionaryObj,
         StreamObj,
