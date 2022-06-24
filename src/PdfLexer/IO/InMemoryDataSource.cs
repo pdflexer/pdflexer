@@ -12,14 +12,12 @@ namespace PdfLexer.IO
     {
 
         private readonly byte[] _data;
-        private readonly MemoryStream _ms;
         // TODO in memory larger than int.maxvalue bytes
         // TODO -> Memory<byte>??
         public InMemoryDataSource(ParsingContext ctx, byte[] data)
         {
             Context = ctx;
             _data = data;
-            _ms = new MemoryStream(_data);
         }
 
         public long TotalBytes => _data.LongLength;
@@ -34,8 +32,7 @@ namespace PdfLexer.IO
         {
             Context.CurrentSource = this;
             Context.CurrentOffset = startPosition; // TODO move this somewhere else
-            _ms.Seek(startPosition, SeekOrigin.Begin);
-            return _ms;
+            return new MemoryStream(_data, (int)startPosition, _data.Length-(int)startPosition, false, true);
         }
 
         public Stream GetDataAsStream(long startPosition, int desiredBytes)
@@ -78,8 +75,6 @@ namespace PdfLexer.IO
             stream.Write(_data, (int) startPosition, requiredBytes);
         }
 
-        public bool IsDataInMemory(long startPosition, int length) => true;
-
         public IPdfObject GetIndirectObject(XRefEntry xref)
         {
             ReadOnlySpan<byte> buffer = _data;
@@ -93,7 +88,7 @@ namespace PdfLexer.IO
             ReadOnlySpan<byte> buffer = _data;
             Context.CurrentSource = this;
             Context.CurrentOffset = xref.Offset;
-            Context.UnwrapAnyCopyIrObj(buffer.Slice((int)xref.Offset, xref.MaxLength), destination);
+            Context.UnwrapAndCopyObjData(buffer.Slice((int)xref.Offset, xref.MaxLength), destination);
         }
     }
 }

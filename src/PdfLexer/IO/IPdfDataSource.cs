@@ -14,13 +14,6 @@ namespace PdfLexer.IO
         /// </summary>
         long TotalBytes { get; }
         /// <summary>
-        /// Determines if the data source has section in memory
-        /// </summary>
-        /// <param name="startPosition"></param>
-        /// <param name="length"></param>
-        /// <returns></returns>
-        bool IsDataInMemory(long startPosition, int length);
-        /// <summary>
         /// Returns data already in memory.
         /// </summary>
         /// <param name="startPosition">Starting position in data source for buffer</param>

@@ -154,8 +154,9 @@ namespace PdfLexer.Lexing
                     {
                         return true;
                     }
+                    reader.Advance(1);
                     type = PdfTokenType.DecimalObj;
-                    reader.AdvancePastAny(CommonUtil.numeric);
+                    reader.AdvancePastAny(CommonUtil.ints);
                     if (reader.End && isCompleted)
                     {
                         return true;

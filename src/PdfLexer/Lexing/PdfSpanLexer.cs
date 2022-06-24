@@ -23,13 +23,16 @@ namespace PdfLexer.Lexing
         public static int TryReadNextToken(ReadOnlySpan<byte> bytes, out PdfTokenType type, int startAt, out int length)
         {
             ReadOnlySpan<byte> buffer = bytes;
+            var buffMax = buffer.Length - 1;
             type = PdfTokenType.NullObj;
+
             var i = startAt;
 
             CommonUtil.SkipWhiteSpace(buffer, ref i);
-            if (i > buffer.Length - 1)
+            if (i > buffMax)
             {
-
+                length = 0;
+                return -1;
             }
             byte b = buffer[i];
             while (b == (byte)'%')
@@ -44,9 +47,10 @@ namespace PdfLexer.Lexing
                 i += eol;
 
                 CommonUtil.SkipWhiteSpace(buffer, ref i);
-                if (i > buffer.Length - 1)
+                if (i > buffMax)
                 {
-
+                    length = 0;
+                    return -1;
                 }
                 b = buffer[i];
             }
@@ -243,7 +247,6 @@ namespace PdfLexer.Lexing
             }
 
             // Default tokenization
-            ReadOnlySpan<byte> terms = CommonUtil.Terminators;
             var end = i;
             CommonUtil.ScanTokenEnd(buffer, ref end);
             length = end - i;

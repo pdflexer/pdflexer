@@ -39,7 +39,7 @@ namespace PdfLexer
             {
                 return DecodedData;
             }
-            var stream = GetDecodedStream(ctx);
+            var stream = GetDecodedStream(ctx); // TODO figure out which streams to dispose;
             if (stream is MemoryStream ms)
             {
                 DecodedData = ms.ToArray();
@@ -57,7 +57,7 @@ namespace PdfLexer
                     }
                 } else
                 {
-                    var copy = ParsingContext.StreamManager.GetStream();
+                    using var copy = ParsingContext.StreamManager.GetStream();
                     stream.CopyTo(copy);
                     DecodedData = copy.ToArray(); // this may not make sense... ToArray allocates anyway, why use stream manager?
                 }
@@ -83,6 +83,7 @@ namespace PdfLexer
                 source = new SubStream(source, 0, Contents.Length);
             }
 
+            // TODO figure out which streams to dispose, look into usage of the pooled one
             obj = obj.Resolve();
             if (obj.Type == PdfObjectType.ArrayObj)
             {

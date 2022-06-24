@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using PdfLexer.IO;
-using PdfLexer.Parsers;
+using CliWrap;
 using PdfLexer.Serializers;
 using Xunit;
 
@@ -134,6 +134,70 @@ namespace PdfLexer.Tests
                     using var doc2 = await PdfDocument.Open(ms.ToArray());
 
                     EnumerateObjects(doc2.Catalog, new HashSet<int>());
+                }
+                catch (Exception e)
+                {
+                    errors.Add(pdf + ": " + e.Message);
+                }
+            }
+            if (errors.Any())
+            {
+                throw new ApplicationException(string.Join(Environment.NewLine, errors));
+            }
+        }
+
+        // [Fact]
+        public async Task It_ReWrites_PDF_JS()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var errors = new List<string>();
+            using var temp = new TemporaryWorkspace();
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                try
+                {
+                    using var doc = await PdfDocument.Open(File.ReadAllBytes(pdf));
+                    doc.Trailer["/NewKey"] = new PdfString("NewValue");
+                    var fn = Path.Combine(temp.TempPath, Path.GetFileName(pdf));
+                    using (var fs = File.Create(fn))
+                    {
+                        doc.SaveTo(fs);
+                    }
+
+                    var stdOutBuffer = new StringBuilder();
+                    var stdErrBuffer = new StringBuilder();
+
+                    var result = await Cli.Wrap("node.exe")
+                        .WithArguments("pdf2png.js " + pdf)
+                        .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pnger")
+                        .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                        .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+                        .ExecuteAsync();
+
+                    var ce1 = Regex.Replace(stdErrBuffer.ToString(), "[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\\.[0-9]{0,3}", "");
+                    ce1 = Regex.Replace(ce1, ":[0-9]{1,8}\\)", "");
+                    var co1 = Regex.Replace(stdOutBuffer.ToString(), "[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\\.[0-9]{0,3}", "");
+                    co1 = Regex.Replace(co1, ":[0-9]{1,8}\\)", "");
+
+                    stdOutBuffer = new StringBuilder();
+                    stdErrBuffer = new StringBuilder();
+
+                    var result2 = await Cli.Wrap("node.exe")
+                        .WithArguments("pdf2png.js " + fn)
+                        .WithWorkingDirectory(@"C:\source\Github\pdflexer\test\pnger")
+                        .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                        .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+                        .ExecuteAsync();
+
+                    var ce2 = Regex.Replace(stdErrBuffer.ToString(), "[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\\.[0-9]{0,3}", "");
+                    ce2 = Regex.Replace(ce2, ":[0-9]{1,8}\\)", "");
+                    var co2 = Regex.Replace(stdOutBuffer.ToString(), "[0-9]{1,2}:[0-9]{1,2}:[0-9]{1,2}\\.[0-9]{0,3}", "");
+                    co2 = Regex.Replace(co2, ":[0-9]{1,8}\\)", "");
+
+                    Assert.Equal(ce1, ce2);
+                    Assert.Equal(co1, co2);
+
                 }
                 catch (Exception e)
                 {

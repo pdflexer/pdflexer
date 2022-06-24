@@ -116,9 +116,6 @@ namespace PdfLexer.Filters
                         j = 0;
                         for (i = 0; i < rowBytes; ++i)
                         {
-                            var b = (prevRow[i] + rawBytes[i]);
-                            var bs = b & 0xFF;
-                            var bf = (byte)bs;
                             buffer[j++] = (byte)((prevRow[i] + rawBytes[i]) & 0xff);
                         }
                         ms.Write(buffer, 0, j);

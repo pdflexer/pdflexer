@@ -21,13 +21,13 @@ namespace PdfLexer
 
         internal static byte[] EOLs = new byte[2] { (byte)'\r', (byte)'n' };
 
-        internal static byte[] numeric = new byte[13] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
-        (byte)'7', (byte)'8', (byte)'9', (byte)'.', (byte)'-', (byte)'+'};
+        // internal static byte[] numeric = new byte[13] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
+        // (byte)'7', (byte)'8', (byte)'9', (byte)'.', (byte)'-', (byte)'+'};
         internal static byte[] ints = new byte[12] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
-        (byte)'7', (byte)'8', (byte)'9', (byte)'-', (byte)'+'};
+         (byte)'7', (byte)'8', (byte)'9', (byte)'-', (byte)'+'};
         // special characters that allow us to stop scanning and confirm the token is a numeric
-        internal static byte[] numTers = new byte[11] { (byte)'.',
-            (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
+        // internal static byte[] numTers = new byte[11] { (byte)'.',
+        //     (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%' };
         public static bool IsWhiteSpace(ReadOnlySpan<char> chars, int location)
         {
             var c = chars[location];
@@ -132,27 +132,6 @@ namespace PdfLexer
             return new ApplicationException(prefixInfo + ": '" + Encoding.ASCII.GetString(sequence.Slice(position, count).ToArray()) + "'");
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsWhiteSpace(ReadOnlySpan<byte> bytes, int location)
-        {
-            var b = bytes[location];
-            return b == 0x00
-                   || b == 0x09
-                   || b == 0x0A
-                   || b == 0x0C
-                   || b == 0x0D
-                   || b == 0x20;
-        }
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static bool IsWhiteSpace(byte item)
-        {
-            return item == 0x00 ||
-                   item == 0x09 ||
-                   item == 0x0A ||
-                   item == 0x0C ||
-                   item == 0x0D ||
-                   item == 0x20;
-        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void SkipWhiteSpace(ReadOnlySpan<byte> bytes, ref int i)

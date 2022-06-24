@@ -25,7 +25,8 @@ namespace PdfLexer
         Xref,
         StartXref,
         WildCard, // dummy
-        Unknown
+        Unknown,
+        EOS
     }
 
     /// <summary>

@@ -42,7 +42,8 @@ namespace PdfLexer.Parsers
         private IDecoder FlateDecoder;
         public ParsingContext(ParsingOptions options = null)
         {
-            Options = options ??= new ParsingOptions();
+            Options = options;
+            Options ??= new ParsingOptions();
 
             ArrayParser = new ArrayParser(this);
             BoolParser = new BoolParser();
@@ -88,15 +89,10 @@ namespace PdfLexer.Parsers
                     // if two have same offset.. fix logic later
                     if (i + 1 < ordered.Count && ordered[i].MaxLength == 0)
                     {
-                        ordered[i].MaxLength = ordered[i+1].MaxLength;
+                        ordered[i].MaxLength = ordered[i + 1].MaxLength;
                     }
                 }
                 ordered[^1].MaxLength = (int)(MainDocSource.TotalBytes - ordered[^1].Offset - 1);
-
-                foreach (var stream in refs.Where(x => x.Type == XRefType.Compressed).GroupBy(x => x.ObjectStreamNumber))
-                {
-
-                }
             }
             return (entries, trailer);
         }
@@ -131,48 +127,40 @@ namespace PdfLexer.Parsers
             return true;
         }
 
-        internal void UnwrapAnyCopyIrObj(ReadOnlySpan<byte> data, Stream stream)
+        internal void UnwrapAndCopyObjData(ReadOnlySpan<byte> data, Stream stream)
         {
-            ReadOnlySpan<byte> buffer = data;
-            // SKIP INDIRECT REF INFO
-            var i = PdfSpanLexer.TryReadNextToken(buffer, out var type, 0, out var length);
-            Debug.Assert(type == PdfTokenType.NumericObj);
-            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
-            Debug.Assert(type == PdfTokenType.NumericObj);
-            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
-            Debug.Assert(type == PdfTokenType.StartObj);
-            var os = i + length;
-
-            length = GetCompleteLength(buffer, ref os, out var objType);
-            var initObj = os;
-            var initLength = length;
-            // GET NEXT TOKEN
-            i = PdfSpanLexer.TryReadNextToken(buffer, out type, os + length, out length);
+            var scanner = new Scanner(this, data, 0);
+            scanner.SkipExpected(PdfTokenType.NumericObj);
+            scanner.SkipExpected(PdfTokenType.NumericObj);
+            scanner.SkipExpected(PdfTokenType.StartObj);
+            var objLength = scanner.SkipObject();
+            var objStart = scanner.Position - objLength;
+            var type = scanner.Peak();
             if (type == PdfTokenType.EndObj)
             {
-                stream.Write(buffer.Slice(initObj, initLength));
+                stream.Write(data.Slice(objStart, objLength));
                 return;
             }
             else if (type == PdfTokenType.StartStream)
             {
+                scanner.SkipCurrent();
                 // TODO look into this.. feels wrong parsing dict here
                 var existing = Options.Eagerness;
                 Options.Eagerness = Eagerness.Lazy;
-                var obj = GetKnownPdfItem(PdfObjectType.DictionaryObj, buffer, initObj, initLength);
+                var obj = GetKnownPdfItem(PdfObjectType.DictionaryObj, data, objStart, objLength);
                 if (!(obj is PdfDictionary dict))
                 {
-                    throw new ApplicationException("Indirect object followed by start stream token but was not dictionary.");
+                    throw CommonUtil.DisplayDataErrorException(data, scanner.Position, "Indirect object followed by start stream token but was not dictionary");
                 }
                 if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
                 {
                     throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
                 }
-                var se = i + length + streamLength;
-                i = PdfSpanLexer.TryReadNextToken(buffer, out type, se, out length);
-                // TODO logging
-                // Debug.Assert(type == PdfTokenType.EndStream);
-                var cse = i + length;
-                stream.Write(buffer.Slice(initObj, cse - initObj));
+                scanner.Advance(streamLength);
+                var endstream = scanner.Peak();
+                // TODO debug
+                scanner.SkipCurrent();
+                stream.Write(data.Slice(objStart, scanner.Position - objStart));
                 Options.Eagerness = existing;
                 return;
             }
@@ -221,94 +209,29 @@ namespace PdfLexer.Parsers
         {
             var offsets = new List<int>(count);
             var c = 0;
-            var i = 0;
+            var scanner = new Scanner(this, data, 0);
             while (c < count)
             {
-                i = PdfSpanLexer.TryReadNextToken(data, out var type, i, out int len);
-                var on = GetKnownPdfItem((PdfObjectType)type, data, i, len);
-                i += len;
-                i = PdfSpanLexer.TryReadNextToken(data, out type, i, out len);
-                var os = GetKnownPdfItem((PdfObjectType)type, data, i, len);
-                i += len;
-                offsets.Add(os.GetValue<PdfNumber>());
+                scanner.SkipObject(); // don't use object numbers currently
+                offsets.Add(scanner.GetCurrentObject().GetValue<PdfNumber>());
                 c++;
             }
             return offsets;
         }
 
-        internal IPdfObject GetObjectAtOffset(long offset, int maxLength)
-        {
-            ReadOnlySpan<byte> buffer;
-            byte[] rented = null;
-            if (MainDocSource.IsDataInMemory(offset, maxLength))
-            {
-                MainDocSource.GetData(offset, maxLength, out buffer);
-            }
-            else
-            {
-                rented = ArrayPool<byte>.Shared.Rent(maxLength);
-                buffer = rented;
-            }
-            try
-            {
-                // SKIP INDIRECT REF INFO
-                var i = PdfSpanLexer.TryReadNextToken(buffer, out var type, 0, out var length);
-                Debug.Assert(type == PdfTokenType.NumericObj);
-                i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
-                Debug.Assert(type == PdfTokenType.NumericObj);
-                i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
-                Debug.Assert(type == PdfTokenType.StartObj);
-                var os = i + length;
-                var obj = GetPdfItem(buffer, os, out length);
-                // GET NEXT TOKEN
-                i = PdfSpanLexer.TryReadNextToken(buffer, out type, os + length, out length);
-                if (type == PdfTokenType.EndObj)
-                {
-                    return obj;
-                }
-                else if (type == PdfTokenType.StartStream)
-                {
-                    if (!(obj is PdfDictionary dict))
-                    {
-                        throw new ApplicationException("Indirect object followed by start stream token but was not dictionary.");
-                    }
-                    if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
-                    {
-                        throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
-                    }
-                    var stream = new PdfStream(dict, new PdfExistingStreamContents(MainDocSource, offset + i + length, streamLength));
-                    i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length + (int)streamLength, out length);
-                    // TODO add logging
-                    // Debug.Assert(type == PdfTokenType.EndStream);
-                    return stream;
-                }
-            }
-            finally
-            {
-                if (rented != null) { ArrayPool<byte>.Shared.Return(rented); }
-            }
-            throw new ApplicationException("Indirect object not followed by endobj token.");
-        }
-
         internal IPdfObject GetWrappedIndirectObject(XRefEntry xref, ReadOnlySpan<byte> data)
         {
-            ReadOnlySpan<byte> buffer = data;
-            // SKIP INDIRECT REF INFO
-            var i = PdfSpanLexer.TryReadNextToken(buffer, out var type, 0, out var length);
-            Debug.Assert(type == PdfTokenType.NumericObj);
-            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
-            Debug.Assert(type == PdfTokenType.NumericObj);
-            i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length, out length);
-            Debug.Assert(type == PdfTokenType.StartObj);
-            var os = i + length;
-            var obj = GetPdfItem(buffer, os, out length);
-            // GET NEXT TOKEN
-            i = PdfSpanLexer.TryReadNextToken(buffer, out type, os + length, out length);
-            if (type == PdfTokenType.EndObj)
+            var scanner = new Scanner(this, data, 0);
+            scanner.SkipExpected(PdfTokenType.NumericObj);
+            scanner.SkipExpected(PdfTokenType.NumericObj);
+            scanner.SkipExpected(PdfTokenType.StartObj);
+            var obj = scanner.GetCurrentObject();
+            var nxt = scanner.Peak();
+            if (nxt == PdfTokenType.EndObj)
             {
                 return obj;
             }
-            else if (type == PdfTokenType.StartStream)
+            else if (nxt == PdfTokenType.StartStream)
             {
                 if (!(obj is PdfDictionary dict))
                 {
@@ -318,10 +241,11 @@ namespace PdfLexer.Parsers
                 {
                     throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
                 }
-                var stream = new PdfStream(dict, new PdfExistingStreamContents(MainDocSource, xref.Offset + i + length, streamLength));
-                i = PdfSpanLexer.TryReadNextToken(buffer, out type, i + length + (int)streamLength, out length);
-                // TODO add logging
-                // Debug.Assert(type == PdfTokenType.EndStream);
+                var stream = new PdfStream(dict, new PdfExistingStreamContents(MainDocSource, xref.Offset + scanner.Position + scanner.CurrentLength, streamLength));
+                scanner.SkipCurrent();
+                scanner.Advance(streamLength);
+                var endstream = scanner.Peak();
+                // TODO validated endstream
                 return stream;
             }
             throw new ApplicationException("Indirect object not followed by endobj token.");
@@ -419,41 +343,23 @@ namespace PdfLexer.Parsers
         {
             switch (type)
             {
-                // TODO ? switch parser to take positions for no slice if not needed?
                 case PdfObjectType.NullObj:
-                    {
-                        return PdfNull.Value;
-                    }
+                    return PdfNull.Value;
                 case PdfObjectType.NumericObj:
-                    {
-                        var slice = data.Slice(start, length);
-                        return NumberParser.Parse(slice);
-                    }
+                    return NumberParser.Parse(data, start, length);
                 case PdfObjectType.DecimalObj:
-                    {
-                        var slice = data.Slice(start, length);
-                        return DecimalParser.Parse(slice);
-                    }
+                    return DecimalParser.Parse(data, start, length);
                 case PdfObjectType.NameObj:
-                    {
-                        var slice = data.Slice(start, length);
-                        return NameParser.Parse(slice);
-                    }
+                    return NameParser.Parse(data, start, length);
                 case PdfObjectType.BooleanObj:
-                    {
-                        var slice = data.Slice(start, length);
-                        return BoolParser.Parse(slice);
-                    }
+                    return BoolParser.Parse(data, start, length);
                 case PdfObjectType.StringObj:
-                    {
-                        var slice = data.Slice(start, length);
-                        return StringParser.Parse(slice);
-                    }
+                    return StringParser.Parse(data, start, length);
                 case PdfObjectType.DictionaryObj:
                 case PdfObjectType.ArrayObj:
-                    return (PdfObject)NestedParser.ParseNestedItem(data, start, out _); // TODO lazy support
+                    return (PdfObject)NestedParser.ParseNestedItem(data, start, out _); // TODO lazy support?
             }
-            return null;
+            throw new NotImplementedException($"Pdf Object type {type} was passed for parsing but is not known.");
         }
 
         public void Clear()

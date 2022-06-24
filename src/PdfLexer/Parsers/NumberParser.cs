@@ -128,7 +128,6 @@ namespace PdfLexer.Parsers
         {
             ReadOnlySpan<byte> local = bytes;
             isDecimal = false;
-            ReadOnlySpan<byte> terms = numberTerminators;
             for (; i < local.Length; i++)
             {
                 var b = local[i];

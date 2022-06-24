@@ -22,7 +22,5 @@ namespace PdfLexer.Parsers
             var dict = _ctx.NestedParser.ParseNestedItem(buffer, start, out _) as PdfDictionary;
             return dict;
         }
-
-
     }
 }

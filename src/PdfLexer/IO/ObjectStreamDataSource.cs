@@ -2,6 +2,7 @@
 using PdfLexer.Parsers.Structure;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 
@@ -12,10 +13,12 @@ namespace PdfLexer.IO
         private byte[] _data;
         private List<int> _offsets;
         private int _start;
+        private int SourceObject;
 
         public ObjectStreamDataSource(ParsingContext ctx, int sourceObject, byte[] data, List<int> oss, int start)
         {
             Context = ctx;
+            SourceObject = sourceObject;
             _data = data;
             _offsets = oss;
             _start = start;
@@ -36,8 +39,6 @@ namespace PdfLexer.IO
             stream.Write(_data, (int)startPosition, requiredBytes);
         }
 
-
-
         public void GetData(long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer)
         {
             buffer = _data;
@@ -51,13 +52,14 @@ namespace PdfLexer.IO
 
         public IPdfObject GetIndirectObject(XRefEntry xref)
         {
+            Debug.Assert(xref.ObjectStreamNumber == SourceObject);
             var os = _offsets[xref.ObjectIndex] + _start;
             Context.CurrentSource = this;
             Context.CurrentOffset = os;
             ReadOnlySpan<byte> data = _data;
             data = data.Slice(os);
             var orig = Context.Options.Eagerness;
-            Context.Options.Eagerness = Eagerness.FullEager; // TODO fix so this works
+            Context.Options.Eagerness = Eagerness.FullEager; // TODO fix so this works lazy
             var obj = Context.GetPdfItem(data, 0, out _);
             Context.Options.Eagerness = orig;
             return obj;
@@ -68,18 +70,13 @@ namespace PdfLexer.IO
             throw new NotImplementedException();
         }
 
-        public bool IsDataInMemory(long startPosition, int length)
-        {
-            throw new NotImplementedException();
-        }
-
         public void CopyIndirectObject(XRefEntry xref, Stream destination)
         {
             var os = _offsets[xref.ObjectIndex] + _start;
             Context.CurrentSource = this;
             Context.CurrentOffset = os;
             ReadOnlySpan<byte> data = _data;
-            Context.UnwrapAnyCopyIrObj(data.Slice(os), destination);
+            Context.UnwrapAndCopyObjData(data.Slice(os), destination);
         }
     }
 }
