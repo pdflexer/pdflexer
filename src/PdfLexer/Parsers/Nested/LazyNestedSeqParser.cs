@@ -16,7 +16,7 @@ namespace PdfLexer.Parsers.Nested
         ReadArray,
         SkipDict,
         SkipArray,
-        SkipString
+        ReadString
     }
 
     internal struct ObjParseState
@@ -75,8 +75,8 @@ namespace PdfLexer.Parsers.Nested
                 case ParseState.ReadDictKey:
                 case ParseState.ReadDictValue:
                     break;
-                case ParseState.SkipString:
-                    if (!_ctx.Skipper.TryScanToEndOfString(ref reader))
+                case ParseState.ReadString:
+                    if (!_ctx.StringParser.TryReadString(ref reader))
                     {
                         return false;
                     }
@@ -111,8 +111,18 @@ namespace PdfLexer.Parsers.Nested
                     case PdfTokenType.NameObj:
                     case PdfTokenType.BooleanObj:
                     case PdfTokenType.NullObj:
-                    case PdfTokenType.StringObj:
                         AddValue(in sequence, tokenType);
+                        break;
+                    case PdfTokenType.StringObj:
+                        reader.Rewind(1);
+                        if (!_ctx.StringParser.TryReadString(ref reader))
+                        {
+                            StateStack.Add(CurrentState);
+                            CurrentState = default;
+                            CurrentState.State = ParseState.ReadString;
+                            return false;
+                        }
+                        AddCurrentString();
                         break;
                     case PdfTokenType.DictionaryStart:
                         if (CurrentState.Object != null)
@@ -255,6 +265,25 @@ namespace PdfLexer.Parsers.Nested
             }
 
             return false;
+        }
+
+        void AddCurrentString()
+        {
+            switch (CurrentState.State)
+            {
+                case ParseState.ReadDictValue:
+                {
+                    (CurrentState.Object as PdfDictionary)[CurrentState.CurrentKey] = new PdfString(_ctx.StringParser.GetCurrentString());
+                    CurrentState.CurrentKey = null;
+                    CurrentState.State = ParseState.ReadDictKey;
+                    return;
+                }
+                case ParseState.ReadArray:
+                {
+                    (CurrentState.Object as PdfArray).Add(new PdfString(_ctx.StringParser.GetCurrentString()));
+                    return;
+                }
+            }
         }
 
         void AddLazyValue(in ReadOnlySequence<byte> sequence, PdfTokenType type)

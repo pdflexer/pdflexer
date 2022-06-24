@@ -5,8 +5,6 @@ using System.Text;
 
 namespace PdfLexer.Parsers.Nested
 {
-
-
     internal static class NestedUtil
     {
         internal static byte[] dictScanTerms = new byte[4]

@@ -19,7 +19,7 @@ namespace PdfLexer.Lexing
         /// <param name="results"></param>
         /// <param name="tokens"></param>
         /// <returns></returns>
-        internal static async Task<SequencePosition> ReadTokenSequence(this PipeReader reader, ParsingContext ctx, List<IPdfObject> results, params PdfTokenType[] tokens)
+        internal static async Task<SequencePosition> ReadTokenSequence(this PipeReader reader, ParsingContext ctx, IReadOnlyList<ParseOp> ops, List<IPdfObject> results)
         {
             Debug.Assert(ctx.ParseState == ParseState.None);
             SequencePosition lastPos = default;
@@ -27,7 +27,7 @@ namespace PdfLexer.Lexing
             while (true)
             {
                 var result = await reader.ReadAsync();
-                if (result.TryReadTokenSequence(ctx, tokens, results, out var pos))
+                if (result.TryReadTokenSequence(ctx, ops, results, out var pos))
                 {
                     return pos;
                 }
@@ -54,7 +54,7 @@ namespace PdfLexer.Lexing
             }
         }
 
-        private static bool TryReadTokenSequence(this ReadResult read, ParsingContext ctx, PdfTokenType[] tokens, List<IPdfObject> results, out SequencePosition pos)
+        private static bool TryReadTokenSequence(this ReadResult read, ParsingContext ctx, IReadOnlyList<ParseOp> ops, List<IPdfObject> results, out SequencePosition pos)
         {
             var reader = new SequenceReader<byte>(read.Buffer);
             switch (ctx.ParseState)
@@ -74,17 +74,50 @@ namespace PdfLexer.Lexing
                         return false;
                     }
 
-                    if (results.Count >= tokens.Length)
+                    if (results.Count >= ops.Count)
                     {
                         pos = reader.Position;
                         return true;
                     }
                     break;
             }
-            
+            var op = ops[results.Count];
+            switch (op.Type)
+            {
+                case ParseOpType.ReadToken:
+                    break;
+                case ParseOpType.ScanToAndSkip:
+                    if (!reader.TryAdvanceTo(op.ScanSequence[0], false))
+                    {
+                        reader.Advance(reader.Remaining);
+                        pos = reader.Position;
+                        return false;
+                    }
+
+                    if (reader.Remaining < op.ScanSequence.Length)
+                    {
+                        reader.Advance(reader.Remaining);
+                        pos = reader.Position;
+                        return false;
+                    }
+
+                    if (reader.IsNext(op.ScanSequence, true))
+                    {
+                        results.Add(null);
+                        pos = reader.Position;
+                        if (results.Count >= ops.Count)
+                        {
+                            return true;
+                        }
+                        return false;
+                    }
+                    pos = reader.Position;
+                    return false; // todo could recurse here;
+            }
+
             while (reader.TryReadNextToken(read.IsCompleted, out var type, out var start))
             {
-                var expected = tokens[results.Count];
+                var expected = op.Token;
                 if (expected != PdfTokenType.WildCard && type != expected)
                 {
                     throw CommonUtil.DisplayDataErrorException(ref reader, $"Unexpected token type, got {type} instead of {expected}");
@@ -116,148 +149,99 @@ namespace PdfLexer.Lexing
                 {
                     results.Add(null);
                 }
-                if (results.Count >= tokens.Length)
+                if (results.Count >= ops.Count)
                 {
                     pos = reader.Position;
                     return true;
                 }
+                op = ops[results.Count];
             }
             pos = reader.Position;
             return false;
 
         }
 
-        internal static async Task<ReadOnlySequence<byte>> LocateXrefTableAndTrailer(this PipeReader reader)
+
+        internal static async ValueTask<(PdfTokenType Type, IPdfObject Obj)> ReadNextObject(this PipeReader pipe, ParsingContext ctx)
         {
-            SequencePosition firstStart = default;
-            int stage = 0;
             while (true)
             {
-                var result = await reader.ReadAsync();
-                var before = stage;
-                if (result.TryReadXrefData(ref stage, out var thisStart, out var end))
+                var result = await pipe.ReadAsync();
+                if (TryReadNextObject(result, ctx, out var pos, out var type, out var obj))
                 {
-                    if (before == 0)
-                    {
-                        return result.Buffer.Slice(thisStart, end);
-                    }
-                    else
-                    {
-                        return result.Buffer.Slice(firstStart, end);
-                    }
-                    
+                    pipe.AdvanceTo(pos);
+                    return (type, obj);
                 }
 
-                if (stage == 1 && before == 0)
-                {
-                    firstStart = thisStart;
-                }
-               
                 if (result.IsCompleted || result.IsCanceled)
                 {
-                    throw CommonUtil.DisplayDataErrorException(result.Buffer, thisStart, "Unable to read xref table.");
+                    throw CommonUtil.DisplayDataErrorException(result.Buffer, pos, "Unable to read object");
                 }
-                reader.AdvanceTo(thisStart);
+
+                pipe.AdvanceTo(pos, result.Buffer.End);
             }
         }
 
-        private static bool TryReadXrefData(this ReadResult read, ref int stage, out SequencePosition start,
-            out SequencePosition end)
+        internal static bool TryReadNextObject(this ReadResult read, ParsingContext ctx, out SequencePosition pos, out PdfTokenType type, out IPdfObject obj)
         {
             var reader = new SequenceReader<byte>(read.Buffer);
-            if (stage == 0)
+            switch (ctx.ParseState)
             {
-                if (!reader.TryReadNextToken(read.IsCompleted, out var type, out start))
-                {
-                    end = reader.Position;
-                    return false;
-                }
-                if (type != PdfTokenType.Xref)
-                {
-                    throw CommonUtil.DisplayDataErrorException(ref reader, "Xref statement not found");
-                }
-                stage++;
+                case ParseState.None:
+                    break;
+                case ParseState.Nested:
+                    while (ctx.NestedSeqParser.ParseNestedItem(ref reader, read.IsCompleted)) { }
+                    pos = reader.Position;
+                    if (ctx.NestedSeqParser.completed)
+                    {
+                        obj = ctx.NestedSeqParser.GetCompletedObject();
+                        type = (PdfTokenType)obj.Type;
+                        ctx.ParseState = ParseState.None;
+                        return true;
+                    } else {
+                        ctx.ParseState = ParseState.Nested;
+                        obj = null;
+                        type = default;
+                        return false;
+                    }
             }
-            else
-            {
-                start = reader.Position;
-            }
-            if (stage == 1)
-            {
-                if (!reader.TryAdvanceTo((byte) 't', false))
-                {
-                    end = reader.Position;
-                    return false;
-                }
-                if (reader.Remaining < 6)
-                {
-                    end = reader.Position;
-                    return false;
-                }
 
-                if (reader.IsNext(XRefParser.trailer, false))
+            if (!reader.TryReadNextToken(read.IsCompleted, out type, out var start)) {
+                obj = null;
+                pos = start;
+                return false;
+            }
+
+
+            if (type == PdfTokenType.DictionaryStart || type == PdfTokenType.ArrayStart)
+            {
+                // special case for nested
+                reader.Rewind(type == PdfTokenType.DictionaryStart ? 2 : 1);
+                while (ctx.NestedSeqParser.ParseNestedItem(ref reader, read.IsCompleted)) { }
+
+                pos = reader.Position;
+                if (ctx.NestedSeqParser.completed)
                 {
-                    end = reader.Position;
+                    obj = ctx.NestedSeqParser.GetCompletedObject();
                     return true;
-                }
-
-                throw CommonUtil.DisplayDataErrorException(ref reader, "Trailer");
-            }
-
-            throw new ApplicationException("Unknown stage for Xref parsing.");
-        }
-
-        
-
-        internal static async ValueTask<IPdfObject> ReadNextObject(this PipeReader reader, ParsingContext ctx)
-        {
-            while (true)
-            {
-                var result = await reader.ReadAsync();
-                if (result.TryReadNextToken(out var type, out var start, out var end ))
+                } else
                 {
-                    if (type == PdfTokenType.NumericObj)
-                    {
-
-                    }
-                    var buffer = result.Buffer;
-                    var item = ctx.GetPdfItem((PdfObjectType)type, in buffer, start, end);
-                    reader.AdvanceTo(end);
-                    return item;
+                    obj = null;
+                    ctx.ParseState = ParseState.Nested;
+                    return false;
                 }
-                if (result.IsCompleted || result.IsCanceled)
+            } else { 
+                pos = reader.Position;
+                
+                if ((int)type < 7) // objects to parse
                 {
-                    throw CommonUtil.DisplayDataErrorException(result.Buffer, start, "Unable to read object");
+                    obj = ctx.GetPdfItem((PdfObjectType) type, reader.Sequence, start, reader.Position);
+                } else
+                {
+                    obj = null;
                 }
-                reader.AdvanceTo(start);
-            }
-        }
-
-        internal static bool TryReadNextToken(this ReadResult read, out PdfTokenType type,
-            out SequencePosition start, out SequencePosition end)
-        {
-            var reader = new SequenceReader<byte>(read.Buffer);
-            var result = reader.TryReadNextToken(read.IsCompleted, out type, out start);
-            end = reader.Position;
-            if (!result || type != PdfTokenType.NumericObj)
-            {
-                return result;
-            }
-
-            result = reader.TryReadNextToken(read.IsCompleted, out var secondType, out _);
-            if (!result || secondType != PdfTokenType.NumericObj)
-            {
-                return result;
-            }
-
-            result = reader.TryReadNextToken(read.IsCompleted, out var thirdType, out _);
-            if (!result || thirdType != PdfTokenType.IndirectRef)
-            {
-                return result;
-            }
-            end = reader.Position;
-            type = PdfTokenType.IndirectRef;
-            return true;
+                return true;
+            } 
         }
     }
 }

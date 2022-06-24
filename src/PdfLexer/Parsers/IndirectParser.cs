@@ -13,6 +13,8 @@ namespace PdfLexer.Parsers
             (byte)'e', (byte)'a', (byte)'m' };
         public static byte[] length = new byte[] { (byte)'/', (byte)'L', (byte)'e',
             (byte)'n', (byte)'g', (byte)'t', (byte)'h' };
+        public static byte[] strartxref = new byte[] { (byte)'s', (byte)'t', (byte)'a',
+            (byte)'r', (byte)'t', (byte)'x', (byte)'r', (byte)'e', (byte)'f' };
     }
 
     public struct IndirectReference

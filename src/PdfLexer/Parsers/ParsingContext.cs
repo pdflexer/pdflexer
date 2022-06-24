@@ -30,21 +30,31 @@ namespace PdfLexer.Parsers
         internal LazyNestedSeqParser NestedSeqParser { get; }
         internal LazyNestedSpanParser NestedSpanParser { get; }
         internal DictionaryParser DictionaryParser { get; }
+        internal StringParser StringParser {get;}
         public ParsingContext()
         {
             NestedSeqParser = new LazyNestedSeqParser(this);
             NestedSpanParser = new LazyNestedSpanParser(this);
             DictionaryParser = new DictionaryParser(this);
             NumberParser =  new NumberParser(this);
+            StringParser = new StringParser(this);
         }
 
         internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
         {
             switch (type)
             {
+                // TODO ? switch parser to take positions for no slice if not needed?
                 case PdfObjectType.NumericObj:
-                    var slice = data.Slice(start, end); // TODO ? switch parser to take positions?
+                    {
+                    var slice = data.Slice(start, end); 
                     return NumberParser.Parse(in slice);
+                    }
+                case PdfObjectType.NameObj:
+                    {
+                    var slice = data.Slice(start, end);
+                    return NameParser.Parse(in slice);
+                    }
             }
             return null;
         }

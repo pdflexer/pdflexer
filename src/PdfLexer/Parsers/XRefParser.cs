@@ -23,6 +23,9 @@ namespace PdfLexer.Parsers
         public static byte[] xref = new byte[4] {
             (byte)'x',(byte)'r',(byte)'e',(byte)'f'
         };
+        public static byte[] oel = new byte[] {
+            (byte)'\r',(byte)'\n',(byte)'e',(byte)'f'
+        };
         private readonly ParsingContext _ctx;
 
 
@@ -31,7 +34,7 @@ namespace PdfLexer.Parsers
             _ctx = ctx;
         }
 
-        public async Task LoadCrossReference(IPdfDataSource source)
+        public async ValueTask<List<XRefEntry>> LoadCrossReference(IPdfDataSource source)
         {
             var readStart = source.TotalBytes - XrefBackScan;
             if (readStart < 0)
@@ -39,53 +42,84 @@ namespace PdfLexer.Parsers
                 readStart = 0;
             }
 
-            long offset = 0;
             var stream = source.GetStream(readStart);
             int stage = 0;
             var pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
-            var item = await pipe.ReadNextObject(_ctx);
-            // pipe.ReadTokenSequence(_ctx, _ctx.ObjectBag, )
+            var results = new List<IPdfObject>();
+            var pos = await pipe.ReadTokenSequence(_ctx, ParseOp.FindXrefOffset, results);
+            var num = results[1];
+            switch (num)
+            {
+                case PdfIntNumber intNum:
+                    stream = source.GetStream(intNum.Value);
+                    break;
+                case PdfLongNumber longNum:
+                    stream = source.GetStream(longNum.Value);
+                    break;
+                default:
+                    throw new ApplicationException("Invalid object after offset: " + num.GetType());
+            }
+
+            pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
+
+            var result = await pipe.ReadNextObject(_ctx);
+            if (result.Type == PdfTokenType.Xref)
+            {
+                return await GetEntries(pipe);
+            } else if (result.Obj?.Type == PdfObjectType.NumericObj)
+            {
+                throw new NotImplementedException("PDF 1.5 Cross-Reference Streams not yet implemented.");
+
+            } else
+            {
+                throw new ApplicationException("Invalid token found at xref offset: " + result.Type);
+            }
+            
+            
+        }
+
+        private async ValueTask<List<XRefEntry>> GetEntries(PipeReader pipe)
+        {
+            var entries = new List<XRefEntry>();
             while (true)
             {
                 var result = await pipe.ReadAsync();
-                if (TryGetOffset(result.Buffer, result.IsCompleted, ref stage, out offset, out var pos))
+                if (TryProcess(result, entries, out var pos))
                 {
-                    break;
+                    pipe.AdvanceTo(pos);
+                    return entries;
                 }
-                pipe.AdvanceTo(pos);
 
-                if (result.IsCompleted || result.IsCanceled)
+                if (result.IsCanceled || result.IsCompleted)
                 {
-                    throw new ApplicationException("Unable to find xref offset.");
+                    throw new ApplicationException("Unable to find end of xref table.");
                 }
-            }
-            pipe.Complete();
 
-            stream = source.GetStream(offset);
-            pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
-            var peak = await pipe.ReadAsync();
-            var start = PdfSpanLexer.TryReadNextToken(peak.Buffer.FirstSpan, out var type, 0, out int length);
-            if (start == -1)
-            {
-                throw new ApplicationException("Unable to read data to determine Xref catalog type");
-            }
-
-            if (type == PdfTokenType.NumericObj)
-            {
-                throw new NotImplementedException("PDF 1.5 Cross-Reference Streams not yet implemented.");
-            } else if (type == PdfTokenType.Xref)
-            {
-                var sequence = await pipe.LocateXrefTableAndTrailer();
-                if (sequence.IsSingleSegment)
-                {
-
-                }
+                pipe.AdvanceTo(pos, result.Buffer.End);
             }
         }
 
-        internal List<XRefEntry> GetEntries(ReadOnlySpan<byte> data)
+        private bool TryProcess(ReadResult result, List<XRefEntry> entries, out SequencePosition position)
         {
-            var entries = new List<XRefEntry>();
+            // TODO optimize... easy for now
+            var reader = new SequenceReader<byte>(result.Buffer);
+            var start = reader.Position;
+            while (reader.TryAdvanceTo((byte)'t', false))
+            {
+                if (reader.IsNext(trailer, false))
+                {
+                    GetEntries(result.Buffer.Slice(start, reader.Position).ToArray(), entries);
+                    reader.Advance(7); // trailer
+                    position = reader.Position;
+                    return true;
+                }
+            }
+            position = start;
+            return false;
+        }
+
+        internal List<XRefEntry> GetEntries(ReadOnlySpan<byte> data, List<XRefEntry> entries)
+        {
             var i = 0;
             while (data.Length > i)
             {
@@ -195,7 +229,7 @@ namespace PdfLexer.Parsers
             var reader = new SequenceReader<byte>(buffer);
             if (stage == 0)
             {
-                if (!reader.TryAdvanceTo((byte) 's'))
+                if (!reader.TryAdvanceTo((byte) 's', false))
                 {
                     pos = reader.Position;
                     return false;
@@ -701,11 +735,19 @@ namespace PdfLexer.Parsers
             return -1;
         }
     }
+    public enum XRefType
+    {
+        Normal,
+        Compressed
+    }
     public class XRefEntry
     {
+        public XRefType Type { get;set; }
         public int ObjectNumber { get; set; }
-        public long Offset { get; set; }
         public int Generation { get; set; }
         public bool IsFree { get; set; }
+        public long Offset { get; set; }
+        public int ObjectStreamNumber { get; set; }
+        public int ObjectIndex { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace PdfLexer.Parsers
             switch (Status)
             {
                 case StringStatus.None:
+                    builder.Clear();
                     break;
                 case StringStatus.ParsingLiteral:
                     if (TryReadStringLiteral(ref reader))
@@ -74,8 +75,14 @@ namespace PdfLexer.Parsers
         {
             (byte) '(', (byte) ')', (byte) '\\'
         };
-        private StringBuilder builder = new StringBuilder();
-        private bool TryReadStringLiteral(ref SequenceReader<byte> reader)
+        internal StringBuilder builder = new StringBuilder();
+        public string GetCurrentString()
+        {
+            var value = builder.ToString();
+            builder.Clear();
+            return value;
+        }
+        internal bool TryReadStringLiteral(ref SequenceReader<byte> reader)
         {
             var start = reader.Position;
             var initial = reader.Consumed;
@@ -127,7 +134,25 @@ namespace PdfLexer.Parsers
                                 AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
                                 builder.Append('\\');
                                 break;
+                            case (byte)'\r':
+                                if (reader.TryPeek(out var b3))
+                                {
+                                    if (b3 == (byte)'\n')
+                                    {
+                                        AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                        reader.Advance(1);
+                                        break;
+                                    }
+                                    AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                    break;
+                                }
+                                return false;
+                            case (byte)'\n':
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                break;
                             default:
+                                AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
+                                reader.Rewind(1);
                                 // TODO check for octals
                                 break;
                         }
@@ -135,23 +160,19 @@ namespace PdfLexer.Parsers
                     case (byte)'(':
                         
                         stringDepth++;
-                        if (stringDepth != 1)
+                        if (stringDepth == 1)
                         {
-                            AddToBuilder(reader.Sequence.Slice(start, reader.Position));
+                            break;
                         }
-                        break;
+                        continue;
                     case (byte)')':
-                        AddToBuilder(reader.Sequence.Slice(start,reader.Consumed-initial-2));
                         stringDepth--;
                         if (stringDepth == 0)
                         {
                             AddToBuilder(reader.Sequence.Slice(start, reader.Consumed-initial-1));
                             return true;
-                        } else
-                        {
-                            AddToBuilder(reader.Sequence.Slice(start, reader.Position));
                         }
-                        break;
+                        continue;
                 }
                 start = reader.Position;
                 initial = reader.Consumed;
