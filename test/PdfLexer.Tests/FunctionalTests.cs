@@ -403,7 +403,7 @@ namespace PdfLexer.Tests
 
         private static PdfPage ReWriteStream2(PdfDocument doc, PdfPage page, bool clone)
         {
-            var scanner = new PageContentScanner(doc.Context, page, false);
+            var scanner = new PageContentScanner(doc.Context, page, flattenForms:true);
             var ms = new MemoryStream();
 
             while (scanner.Peek() != PdfOperatorType.EOC)

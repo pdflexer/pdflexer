@@ -1,6 +1,7 @@
 ﻿using PdfLexer.Lexing;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,20 +15,21 @@ namespace PdfLexer.Content
         StartForm,
         EndForm,
     }
-    internal struct ScannerInfo
+    public struct ScannerInfo
     {
-        public PdfStream Contents { get; set; }
-        public int Position { get; set; }
-        public bool Form { get; set; }
+        public PdfStream Contents { get; internal set; }
+        public int Position { get; internal set; }
+        public bool Form { get; internal set; }
+        public string FormName { get; internal set; }
     }
-    internal ref struct PageContentScanner
+    public ref struct PageContentScanner
     {
         private bool FlattenForms;
         private PdfDictionary Page;
         private ParsingContext Context;
         private List<PdfStream> NextStreams;
         private MultiPageState State;
-        private List<ScannerInfo> Scanners;
+        
         private PdfStream CurrentStream;
         private PdfStream NextForm;
         public PageContentScanner(ParsingContext ctx, PdfDictionary page, bool flattenForms=false)
@@ -36,7 +38,7 @@ namespace PdfLexer.Content
             State = MultiPageState.Reading;
             Page = page;
             Context = ctx;
-            Scanners =  new List<ScannerInfo>();
+            stack =  new List<ScannerInfo>();
             NextStreams = new List<PdfStream>();
             CurrentForm = null;
             NextForm = null;
@@ -70,6 +72,8 @@ namespace PdfLexer.Content
             Scanner = new ContentScanner(ctx, CurrentStream.Contents.GetDecodedData(ctx));
         }
 
+        private List<ScannerInfo> stack;
+        public IReadOnlyList<ScannerInfo> FormStack { get => stack; }
         public ContentScanner Scanner;
         public PdfOperatorType CurrentOperator => Scanner.CurrentOperator;
         public List<OperandInfo> Operands => Scanner.Operands;
@@ -83,6 +87,12 @@ namespace PdfLexer.Content
                 var doOp = (Do_Op)Scanner.GetCurrentOperation();
                 if (!FlattenForms || !TryGetForm(doOp.name, out var form))
                 {
+                    return nxt;
+                }
+                if (stack.Any(x => Object.ReferenceEquals(x.Contents, form)))
+                {
+                    // cyclic
+                    Context.Error("Cyclic form reference: " + doOp.name);
                     return nxt;
                 }
                 NextForm = form;
@@ -152,11 +162,14 @@ namespace PdfLexer.Content
         private void PushForm()
         {
             State = MultiPageState.ReadingForm;
+            var op = Scanner.GetCurrentOperation();
             Scanner.SkipCurrent(); // Do
-            Scanners.Add(new ScannerInfo
+            stack.Add(new ScannerInfo
             {
                 Contents = CurrentStream,
-                Position = Scanner.Position
+                Position = Scanner.Position,
+                Form = true,
+                FormName = (op as Do_Op)?.name?.Value
             });
             CurrentStream = NextForm;
             CurrentForm = NextForm.Dictionary;
@@ -167,21 +180,28 @@ namespace PdfLexer.Content
         private void PopForm()
         {
             State = MultiPageState.Reading;
-            var prev = Scanners.Last();
+            var prev = stack.Last();
             State = prev.Form ? MultiPageState.ReadingForm : MultiPageState.Reading;
-            Scanners.Remove(prev);
+            stack.Remove(prev);
             CurrentStream = prev.Contents;
             Scanner = new ContentScanner(Context, prev.Contents.Contents.GetDecodedData(Context), prev.Position);
         }
 
         private bool TryGetForm(PdfName name, out PdfStream found)
         {
-            if (CurrentForm != null && TryGetForm(CurrentForm, out found))
+            if (CurrentForm != null && TryGetForm(CurrentForm, out found, out var isForm))
             {
-                return true;
+                if (isForm)
+                {
+                    return true;
+                } else
+                {
+                    found = null;
+                    return false;
+                }
             }
 
-            if (TryGetForm(Page, out found))
+            if (TryGetForm(Page, out found, out isForm) && isForm)
             {
                 return true;
             }
@@ -189,14 +209,19 @@ namespace PdfLexer.Content
             found = null;
             return false;
 
-            bool TryGetForm(PdfDictionary obj, out PdfStream form)
+            bool TryGetForm(PdfDictionary obj, out PdfStream form, out bool isForm)
             {
+                isForm = false;
                 if (obj.TryGetValue<PdfDictionary>(PdfName.Resources, out var res) &&
                     res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobj) &&
-                    xobj.TryGetValue<PdfStream>(name, out form, errorOnMismatch:false) &&
-                    form.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
-                          st == PdfName.Form)
+                    xobj.TryGetValue<PdfStream>(name, out form, errorOnMismatch:false)
+                    )
                 {
+                    if (form.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
+                          st == PdfName.Form)
+                    {
+                        isForm = true;
+                    }
                     return true;
                 }
                 form = null;

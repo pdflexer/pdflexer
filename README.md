@@ -11,12 +11,12 @@ pdflexer differs from existing .net libraries in that it:
 | Feature         | WIP | Alpha | Beta | Release |
 | ---------       | ----| ----- | ---- | ----    |
 | Document access |  |     |      |  :heavy_check_mark:  |
-| Stream based access |  |     |  :heavy_check_mark:  |    |
+|  Stream based access |  |     |  :heavy_check_mark:  |    |
 | General modification <br> (non page content) |  |     |  :heavy_check_mark:  |    |
 | Merging / splitting |  | |:heavy_check_mark: |  |
-| Streaming writer | |  |:heavy_check_mark: |  |
-| Resource dedup | | :heavy_check_mark:  | |  |
-| Page content access | :heavy_check_mark: |   | |  |
+| [Streaming writer](docs/streaming_writer.md#section)  | |  |:heavy_check_mark: |  |
+| [Resource dedup](docs/streaming_writer.md#resource-deduplication) | | :heavy_check_mark:  | |  |
+| [Page content access](docs/page_content.md) | :heavy_check_mark: |   | |  |
 | Text extraction | |  | |  |
 | Image extraction | |  | |  |
 | Page content modification | |  | |  |
