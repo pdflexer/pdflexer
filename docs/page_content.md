@@ -1,5 +1,7 @@
 # Page Content
 
+Note: Alpha quality
+
 Higher level page content access methods have not been completed (eg. read text, read images, etc). The `PageContentScanner` allows access to the raw content stream operations. When the `flattenForms` argument is true the scanner will read operations recursively from any referenced forms as well, simplifying use cases where all page content is desired (note: the form calling eg. `/F1 Do` operation is not returned by the scanner when `flattenForms` is true).
 
 ```csharp

@@ -135,7 +135,7 @@ namespace PdfLexer
         {
             if (!TryGetValue<T>(key, out T value))
             {
-                throw new ApplicationException($"Required value not present in dictionary for key {key.Value}, available keys: " 
+                throw new PdfLexerException($"Required value not present in dictionary for key {key.Value}, available keys: " 
                     + string.Join(", ", Keys.Select(x=>x.Value)));
             }
             return value;
@@ -191,6 +191,21 @@ namespace PdfLexer
         public IPdfObject Get(PdfName key)
         {
             _ = TryGetValue(key, out IPdfObject value, false);
+            return value;
+        }
+
+        /// <summary>
+        /// Returns value for key if exists and matches type.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns>Result or null if not found or does not match</returns>
+        public IPdfObject GetRequiredValue(PdfName key)
+        {
+            if (!TryGetValue(key, out IPdfObject value, true))
+            {
+                throw new PdfLexerException($"Required value not present in dictionary for key {key.Value}, available keys: "
+                    + string.Join(", ", Keys.Select(x => x.Value)));
+            }
             return value;
         }
 
