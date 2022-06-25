@@ -7,6 +7,20 @@ pdflexer differs from existing .net libraries in that it:
 * Designed for direct access to the native PDF objects types. Any higher level objects are simple wrappers areound the native pdf object types (eg `PdfPage` is a wrapper around a `PdfDictionary`. The `PdfDictionary` can be directly modified for features not implemented on `PdfPage`)
 * Attempts to be performant / efficient. Not a ton of effort has been put in here but it is a goal to keep this in mind.
 
+### State of library
+| Feature         | WIP | Alpha | Beta | Release |
+| ---------       | ----| ----- | ---- | ----    |
+| Document access |  |     |      |  :heavy_check_mark:  |
+| Stream based access |  |     |  :heavy_check_mark:  |    |
+| General modification <br> (non page content) |  |     |  :heavy_check_mark:  |    |
+| Merging / splitting |  | |:heavy_check_mark: |  |
+| Streaming writer | |  |:heavy_check_mark: |  |
+| Resource dedup | | :heavy_check_mark:  | |  |
+| Page content access | :heavy_check_mark: |   | |  |
+| Text extraction | |  | |  |
+| Image extraction | |  | |  |
+| Page content modification | |  | |  |
+
 ### Major Gaps
 - [ ] PDF encryption support
 - [ ] Filter support (deflate, ascii85, asciihex completed)
