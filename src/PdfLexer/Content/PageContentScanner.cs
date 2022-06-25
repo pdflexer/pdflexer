@@ -32,6 +32,9 @@ namespace PdfLexer.Content
         
         private PdfStream CurrentStream;
         private PdfStream NextForm;
+        private string NextFormName;
+        private string CurrentFormName;
+
         public PageContentScanner(ParsingContext ctx, PdfDictionary page, bool flattenForms=false)
         {
             FlattenForms = flattenForms;
@@ -42,7 +45,9 @@ namespace PdfLexer.Content
             NextStreams = new List<PdfStream>();
             CurrentForm = null;
             NextForm = null;
+            NextFormName = null;
             CurrentStream = null;
+            CurrentFormName = null;
             SkipBytes = 0;
             if (!page.TryGetValue(PdfName.Contents, out var contents))
             {
@@ -73,7 +78,8 @@ namespace PdfLexer.Content
         }
 
         private List<ScannerInfo> stack;
-        public IReadOnlyList<ScannerInfo> FormStack { get => stack; }
+        public IReadOnlyList<ScannerInfo> ReadStack { get => stack; }
+        public string FormName { get => CurrentFormName; }
         public ContentScanner Scanner;
         public PdfOperatorType CurrentOperator => Scanner.CurrentOperator;
         public List<OperandInfo> Operands => Scanner.Operands;
@@ -96,6 +102,7 @@ namespace PdfLexer.Content
                     return nxt;
                 }
                 NextForm = form;
+                NextFormName = doOp.name.Value;
                 State = MultiPageState.StartForm;
                 return PdfOperatorType.q;
             } else if (nxt == PdfOperatorType.EOC)
@@ -161,20 +168,21 @@ namespace PdfLexer.Content
 
         private void PushForm()
         {
-            State = MultiPageState.ReadingForm;
-            var op = Scanner.GetCurrentOperation();
             Scanner.SkipCurrent(); // Do
             stack.Add(new ScannerInfo
             {
                 Contents = CurrentStream,
                 Position = Scanner.Position,
-                Form = true,
-                FormName = (op as Do_Op)?.name?.Value
+                Form = CurrentFormName != null,
+                FormName = CurrentFormName
             });
+            State = MultiPageState.ReadingForm;
             CurrentStream = NextForm;
             CurrentForm = NextForm.Dictionary;
+            CurrentFormName = NextFormName;
             Scanner = new ContentScanner(Context, NextForm.Contents.GetDecodedData(Context));
             NextForm = null;
+            NextFormName = null;
         }
 
         private void PopForm()
@@ -184,6 +192,8 @@ namespace PdfLexer.Content
             State = prev.Form ? MultiPageState.ReadingForm : MultiPageState.Reading;
             stack.Remove(prev);
             CurrentStream = prev.Contents;
+            CurrentForm = prev.Form ? prev.Contents.Dictionary : null;
+            CurrentFormName = prev.FormName;
             Scanner = new ContentScanner(Context, prev.Contents.Contents.GetDecodedData(Context), prev.Position);
         }
 
