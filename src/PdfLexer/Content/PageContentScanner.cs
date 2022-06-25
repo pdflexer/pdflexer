@@ -1,6 +1,7 @@
 ﻿using PdfLexer.Lexing;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,33 +15,39 @@ namespace PdfLexer.Content
         StartForm,
         EndForm,
     }
-    internal struct ScannerInfo
+    public struct ScannerInfo
     {
-        public PdfStream Contents { get; set; }
-        public int Position { get; set; }
-        public bool Form { get; set; }
+        public PdfStream Contents { get; internal set; }
+        public int Position { get; internal set; }
+        public bool Form { get; internal set; }
+        public string FormName { get; internal set; }
     }
-    internal ref struct PageContentScanner
+    public ref struct PageContentScanner
     {
         private bool FlattenForms;
         private PdfDictionary Page;
         private ParsingContext Context;
         private List<PdfStream> NextStreams;
         private MultiPageState State;
-        private List<ScannerInfo> Scanners;
+        
         private PdfStream CurrentStream;
         private PdfStream NextForm;
+        private string NextFormName;
+        private string CurrentFormName;
+
         public PageContentScanner(ParsingContext ctx, PdfDictionary page, bool flattenForms=false)
         {
             FlattenForms = flattenForms;
             State = MultiPageState.Reading;
             Page = page;
             Context = ctx;
-            Scanners =  new List<ScannerInfo>();
+            stack =  new List<ScannerInfo>();
             NextStreams = new List<PdfStream>();
             CurrentForm = null;
             NextForm = null;
+            NextFormName = null;
             CurrentStream = null;
+            CurrentFormName = null;
             SkipBytes = 0;
             if (!page.TryGetValue(PdfName.Contents, out var contents))
             {
@@ -70,6 +77,9 @@ namespace PdfLexer.Content
             Scanner = new ContentScanner(ctx, CurrentStream.Contents.GetDecodedData(ctx));
         }
 
+        private List<ScannerInfo> stack;
+        public IReadOnlyList<ScannerInfo> ReadStack { get => stack; }
+        public string FormName { get => CurrentFormName; }
         public ContentScanner Scanner;
         public PdfOperatorType CurrentOperator => Scanner.CurrentOperator;
         public List<OperandInfo> Operands => Scanner.Operands;
@@ -85,7 +95,14 @@ namespace PdfLexer.Content
                 {
                     return nxt;
                 }
+                if (stack.Any(x => Object.ReferenceEquals(x.Contents, form)))
+                {
+                    // cyclic
+                    Context.Error("Cyclic form reference: " + doOp.name);
+                    return nxt;
+                }
                 NextForm = form;
+                NextFormName = doOp.name.Value;
                 State = MultiPageState.StartForm;
                 return PdfOperatorType.q;
             } else if (nxt == PdfOperatorType.EOC)
@@ -151,37 +168,50 @@ namespace PdfLexer.Content
 
         private void PushForm()
         {
-            State = MultiPageState.ReadingForm;
             Scanner.SkipCurrent(); // Do
-            Scanners.Add(new ScannerInfo
+            stack.Add(new ScannerInfo
             {
                 Contents = CurrentStream,
-                Position = Scanner.Position
+                Position = Scanner.Position,
+                Form = CurrentFormName != null,
+                FormName = CurrentFormName
             });
+            State = MultiPageState.ReadingForm;
             CurrentStream = NextForm;
             CurrentForm = NextForm.Dictionary;
+            CurrentFormName = NextFormName;
             Scanner = new ContentScanner(Context, NextForm.Contents.GetDecodedData(Context));
             NextForm = null;
+            NextFormName = null;
         }
 
         private void PopForm()
         {
             State = MultiPageState.Reading;
-            var prev = Scanners.Last();
+            var prev = stack.Last();
             State = prev.Form ? MultiPageState.ReadingForm : MultiPageState.Reading;
-            Scanners.Remove(prev);
+            stack.Remove(prev);
             CurrentStream = prev.Contents;
+            CurrentForm = prev.Form ? prev.Contents.Dictionary : null;
+            CurrentFormName = prev.FormName;
             Scanner = new ContentScanner(Context, prev.Contents.Contents.GetDecodedData(Context), prev.Position);
         }
 
         private bool TryGetForm(PdfName name, out PdfStream found)
         {
-            if (CurrentForm != null && TryGetForm(CurrentForm, out found))
+            if (CurrentForm != null && TryGetForm(CurrentForm, out found, out var isForm))
             {
-                return true;
+                if (isForm)
+                {
+                    return true;
+                } else
+                {
+                    found = null;
+                    return false;
+                }
             }
 
-            if (TryGetForm(Page, out found))
+            if (TryGetForm(Page, out found, out isForm) && isForm)
             {
                 return true;
             }
@@ -189,14 +219,19 @@ namespace PdfLexer.Content
             found = null;
             return false;
 
-            bool TryGetForm(PdfDictionary obj, out PdfStream form)
+            bool TryGetForm(PdfDictionary obj, out PdfStream form, out bool isForm)
             {
+                isForm = false;
                 if (obj.TryGetValue<PdfDictionary>(PdfName.Resources, out var res) &&
                     res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobj) &&
-                    xobj.TryGetValue<PdfStream>(name, out form, errorOnMismatch:false) &&
-                    form.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
-                          st == PdfName.Form)
+                    xobj.TryGetValue<PdfStream>(name, out form, errorOnMismatch:false)
+                    )
                 {
+                    if (form.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
+                          st == PdfName.Form)
+                    {
+                        isForm = true;
+                    }
                     return true;
                 }
                 form = null;

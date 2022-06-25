@@ -18,7 +18,7 @@ namespace PdfLexer.Content
         public TextScanner(ParsingContext ctx, PdfDictionary page)
         {
             Context = ctx;
-            Scanner = new PageContentScanner(ctx, page);
+            Scanner = new PageContentScanner(ctx, page, true);
             TextState = new TextState();
             GraphicsState = new GraphicsState();
             CurrentTextPos = 0;
