@@ -291,7 +291,7 @@ namespace PdfLexer.Tests
                         continue;
                     }
 
-                    ReWriteStreams(pdf, doc);
+                    ReWriteStreams(pdf, doc, false);
 
                     using var fs = File.Create(Path.Combine(output, Path.GetFileName(pdf)));
                     using var doc2 = PdfDocument.Create();
@@ -401,9 +401,9 @@ namespace PdfLexer.Tests
             }
         }
 
-        private static PdfPage ReWriteStream2(PdfDocument doc, PdfPage page, bool clone)
+        private static PdfPage ReWriteStream2(PdfDocument doc, PdfPage page, bool clone, bool flatten)
         {
-            var scanner = new PageContentScanner(doc.Context, page, flattenForms:true);
+            var scanner = new PageContentScanner(doc.Context, page, flattenForms: flatten);
             var ms = new MemoryStream();
 
             while (scanner.Peek() != PdfOperatorType.EOC)
@@ -432,11 +432,11 @@ namespace PdfLexer.Tests
             return page;
         }
 
-        private static void ReWriteStreams(string pdf, PdfDocument doc)
+        private static void ReWriteStreams(string pdf, PdfDocument doc, bool flatten)
         {
             foreach (var page in doc.Pages)
             {
-                ReWriteStream2(doc, page, false);
+                ReWriteStream2(doc, page, false, flatten);
             }
         }
 
@@ -699,7 +699,7 @@ namespace PdfLexer.Tests
                     doc.SaveTo(ms);
                     d4 = ms.ToArray();
                     doc = PdfDocument.Open(d1);
-                    ReWriteStreams(pdf, doc);
+                    ReWriteStreams(pdf, doc, false);
                     ms = new MemoryStream();
                     using var doc4 = PdfDocument.Create();
                     doc4.Pages = doc.Pages;
