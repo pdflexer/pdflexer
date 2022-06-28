@@ -49,6 +49,41 @@ namespace PdfLexer.Tests
                 long total = 0;
                 foreach (PdfDictionary page in toCount.Pages)
                 {
+                    
+                    var val = page.GetRequiredValue(PdfName.Contents).Resolve();
+                    switch (val.GetPdfObjType())
+                    {
+                        case PdfObjectType.ArrayObj:
+                            var arr = val.GetValue<PdfArray>();
+                            foreach (var str in arr)
+                            {
+                                var stream = str.GetValue<PdfStream>();
+                                total += stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
+                            }
+                            break;
+                        case PdfObjectType.StreamObj:
+                            var single = val.GetValue<PdfStream>();
+                            total += single.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
+                            break;
+                        default:
+                            throw new ApplicationException("Invalid Contents value in page");
+                    }
+                    switch (val)
+                    {
+                        case PdfArray arr:
+                            foreach (var str in arr)
+                            {
+                                var stream = str.GetValue<PdfStream>();
+                                total += stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
+                            }
+                            break;
+                        case PdfStream single:
+                            total += single.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
+                            break;
+                        default:
+                            throw new ApplicationException("Invalid Contents value in page");
+                    }
+                    
                     var content = page[PdfName.Contents];
                     content = content.Resolve();
                     if (content is PdfArray contentArray)
@@ -152,7 +187,7 @@ namespace PdfLexer.Tests
                         var sb = new StringBuilder();
                         while (reader.Advance())
                         {
-                            sb.Append(reader.Glyph.C);
+                            sb.Append(reader.Glyph.Char);
                         }
                         var str = sb.ToString();
                     }

@@ -24,7 +24,7 @@ namespace PdfLexer.Operators
 
     public class Glyph
     {
-        public char C { get; internal set; }
+        public char Char { get; internal set; }
         public float w0 { get; internal set; }
         public float w1 { get; internal set; }
         public bool IsWordSpace { get; internal set; } // single byte character code 32 when simple font

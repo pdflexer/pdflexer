@@ -101,5 +101,20 @@ namespace PdfLexer.Benchmarks.Benchmarks
             }
             return finished.Save();
         }
+        [Benchmark()]
+        public byte[] MergePdfLexerLazy()
+        {
+            var finished = PdfDocument.Create();
+            var opts = new ParsingOptions
+            {
+                LazyStrings = true
+            };
+            foreach (var pdf in pdfs)
+            {
+                var doc = PdfDocument.Open(pdf, opts);
+                finished.Pages.AddRange(doc.Pages);
+            }
+            return finished.Save();
+        }
     }
 }

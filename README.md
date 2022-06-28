@@ -17,7 +17,7 @@ pdflexer differs from existing .net libraries in that it:
 | [Streaming writer](docs/streaming_writer.md)  | |  |:heavy_check_mark: |  |
 | [Resource dedup](docs/streaming_writer.md#resource-deduplication) | | :heavy_check_mark:  | |  |
 | [Page content access](docs/page_content.md) | :heavy_check_mark: |   | |  |
-| Text extraction | |  | |  |
+| [Text extraction](docs/text_extraction.md) | |  | |  |
 | Image extraction | |  | |  |
 | Page content modification | |  | |  |
 
@@ -28,5 +28,3 @@ pdflexer differs from existing .net libraries in that it:
 - [ ] Higher level utility functions (eg. image / text extraction), currently all APIs are through the raw PdfObjects requiring extensive knowledge of the PDF spec to use pdflexer for most tasks.
 - [ ] Public API cleanup / documentation. Lots of classes / properties exposed that will likely be internalized.
 - [ ] Documentation / examples
-
-### Splitting / Merging
