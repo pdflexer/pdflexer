@@ -41,7 +41,7 @@ namespace PdfLexer.Content
             // TODO
             info = new Glyph
             {
-                C = (char)data[pos]
+                Char = (char)data[pos]
             };
             return 1;
         }

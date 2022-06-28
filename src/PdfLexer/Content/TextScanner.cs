@@ -1,4 +1,5 @@
-﻿using PdfLexer.Lexing;
+﻿using PdfLexer.DOM;
+using PdfLexer.Lexing;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using System;
@@ -26,6 +27,7 @@ namespace PdfLexer.Content
             CurrentGlyphs = new List<UnappliedGlyph>();
             CurrentGlyph = default;
             Glyph = default;
+            Position = null;
         }
 
         public bool Advance()
@@ -127,6 +129,7 @@ namespace PdfLexer.Content
         TextReadState ReadState;
         List<UnappliedGlyph> CurrentGlyphs;
         UnappliedGlyph CurrentGlyph;
+        PdfRectangle Position;
         public enum TextReadState
         {
             Normal,
