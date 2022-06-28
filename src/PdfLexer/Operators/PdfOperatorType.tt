@@ -72,7 +72,7 @@
     ("Tw", null, "Set word spacing", new List<(string, string)>{ ("decimal", "wordSpace") }, false),
     ("Tz", null, "Set horizontal text scaling", new List<(string, string)>{ ("decimal", "scale") }, false),
     ("v", null, "Append curved segment to path (initial point replicated)", new List<(string, string)>{ ("decimal", "x2"), ("decimal", "y2"), ("decimal", "x3"), ("decimal", "y3")}, false),
-    ("w", null, "Set line width", new List<(string, string)>{ ("int", "lineWidth") }, false),
+    ("w", null, "Set line width", new List<(string, string)>{ ("decimal", "lineWidth") }, false),
     ("W", null, "Set clipping path using nonzero winding number rule", null, false), // no ops
     ("W*", "W_Star", "Set clipping path using even-odd rule", null, false), // no ops
     ("y", null, "Append curved segment to path (final point replicated)", new List<(string, string)>{ ("decimal", "x1"), ("decimal", "y1"), ("decimal", "x3"), ("decimal", "y3")}, false),

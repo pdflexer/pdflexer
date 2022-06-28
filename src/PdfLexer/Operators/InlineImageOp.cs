@@ -17,14 +17,20 @@ namespace PdfLexer.Operators
         {
             stream.Write(BI_Op.OpData);
             stream.WriteByte((byte)'\n');
-            foreach (var item in header)
+            for (var i = 0; i < header.Count; i++)
             {
+                var item = header[i];
                 PdfOperator.Shared.SerializeObject(stream, item, x => x);
-                stream.WriteByte((byte)' ');
+                if (i < header.Count - 1)
+                {
+                    stream.WriteByte((byte)' ');
+                }
             }
+            stream.WriteByte((byte)'\n');
             stream.Write(ID_Op.OpData);
             stream.WriteByte((byte)'\n');
             stream.Write(allData);
+            stream.WriteByte((byte)'\n');
             stream.Write(EI_Op.OpData);
         }
     }

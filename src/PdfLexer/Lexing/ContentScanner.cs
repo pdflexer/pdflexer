@@ -17,19 +17,21 @@ namespace PdfLexer.Lexing
         public readonly ReadOnlySpan<byte> Data;
         private Scanner Scanner;
         private ParsingContext _ctx;
-        public ContentScanner(ParsingContext ctx, ReadOnlySpan<byte> data, int position=0)
+        public ContentScanner(ParsingContext ctx, ReadOnlySpan<byte> data, int position = 0)
         {
             Data = data;
             _ctx = ctx;
             Scanner = new Scanner(ctx, data, position);
             CurrentOperator = PdfOperatorType.Unknown;
             Operands = new List<OperandInfo>(6);
+            ImageScanned = false;
         }
 
         public PdfOperatorType CurrentOperator;
         public List<OperandInfo> Operands;
         public int Position => Scanner.Position;
         public int CurrentLength => Scanner.CurrentLength;
+        private bool ImageScanned;
 
         public PdfOperatorType Peek()
         {
@@ -38,6 +40,7 @@ namespace PdfLexer.Lexing
                 return CurrentOperator;
             }
 
+            ImageScanned = false;
             PdfTokenType nxt = PdfTokenType.TBD;
             while ((nxt = Scanner.Peek()) != PdfTokenType.Unknown && nxt != PdfTokenType.EOS)
             {
@@ -54,8 +57,6 @@ namespace PdfLexer.Lexing
                 CurrentOperator = PdfOperator.GetType(Data, Scanner.Position, Scanner.CurrentLength);
             }
 
-
-
             return CurrentOperator;
         }
         private const byte lastPlainText = 127;
@@ -63,6 +64,7 @@ namespace PdfLexer.Lexing
 
         public void SkipCurrent()
         {
+            if (CurrentOperator == PdfOperatorType.BI && !ImageScanned ) { GetImage(true); }
             CurrentOperator = PdfOperatorType.Unknown;
             Scanner.SkipCurrent();
             Operands.Clear();
@@ -90,7 +92,6 @@ namespace PdfLexer.Lexing
             }
             catch (Exception e)
             {
-                // TODO: how should we handle errors here, don't want to have to null check each time?
                 var st = Operands.Count > 0 ? Operands[0].StartAt : Scanner.Position;
                 var len = Scanner.Position + Scanner.CurrentLength - st;
                 var op = Encoding.ASCII.GetString(Data.Slice(st, len));
@@ -114,8 +115,13 @@ namespace PdfLexer.Lexing
             }
         }
 
-        private IPdfOperation GetImage()
+        private IPdfOperation GetImage(bool justSkip = false)
         {
+            if (ImageScanned)
+            {
+                throw new NotSupportedException("Image unable to be scanned multiple times. TODO, simplify this");
+            }
+            ImageScanned = true;
             var sp = Scanner.Position;
             Scanner.SkipCurrent();
 
@@ -123,7 +129,10 @@ namespace PdfLexer.Lexing
             PdfTokenType nxt = PdfTokenType.TBD;
             while ((nxt = Scanner.Peek()) != PdfTokenType.Unknown && nxt != PdfTokenType.EOS)
             {
-                Operands.Add(new OperandInfo { Type = nxt, StartAt = Scanner.Position, Length = Scanner.CurrentLength });
+                if (!justSkip)
+                {
+                    Operands.Add(new OperandInfo { Type = nxt, StartAt = Scanner.Position, Length = Scanner.CurrentLength });
+                }
                 Scanner.SkipCurrent();
             }
 
@@ -133,50 +142,74 @@ namespace PdfLexer.Lexing
                 _ctx.Error("Inline image did not contain ID op.");
             }
             var header = new PdfArray();
-            for (var i = 0; i < Operands.Count; i++)
+            if (!justSkip)
             {
-                var op = Operands[i];
-                if (op.Type == PdfTokenType.ArrayStart || op.Type == PdfTokenType.DictionaryStart)
+                for (var i = 0; i < Operands.Count; i++)
                 {
-                    header.Add(_ctx.GetPdfItem(Data, op.StartAt, out var len));
-                    var end = op.StartAt + len;
-                    for (;i<Operands.Count;i++)
+                    var op = Operands[i];
+                    if (op.Type == PdfTokenType.ArrayStart || op.Type == PdfTokenType.DictionaryStart)
                     {
-                        if (Operands[i].StartAt >= end)
+                        header.Add(_ctx.GetPdfItem(Data, op.StartAt, out var len));
+                        var end = op.StartAt + len;
+                        for (; i < Operands.Count; i++)
                         {
-                            i--;
-                            break;
+                            if (Operands[i].StartAt >= end)
+                            {
+                                i--;
+                                break;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    header.Add(_ctx.GetKnownPdfItem((PdfObjectType)op.Type, Data, op.StartAt, op.Length));
+                    else
+                    {
+                        header.Add(_ctx.GetKnownPdfItem((PdfObjectType)op.Type, Data, op.StartAt, op.Length));
+                    }
                 }
             }
+
             var start = Scanner.Position + Scanner.CurrentLength;
+            // follow beginstream semantics
+            if (Data.Length > start + 1 && Data[start] == '\n') { start++; }
+            else if (Data.Length > start + 2 && Data[start] == '\r' && Data[start + 1] == '\n')
+            {
+                start += 2;
+            } else if (Data.Length > start + 1 && CommonUtil.IsWhiteSpace(Data[start])) { 
+                // this isn't beginstream allowed but seen in inline images
+                start++;
+            }
+            var current = start;
             while (true)
             {
-                var i = Data.Slice(start).IndexOf(EI);
+                var i = Data.Slice(current).IndexOf(EI);
                 if (i == -1)
                 {
                     _ctx.Error("End of image not found, assuming rest of content is data.");
-                    return new InlineImage_Op(header, Data.Slice(start).ToArray());
-                }
-                i = i + start; // correct for slice offset
-
-                if (IsEndOfToken(Data, i + 1) && NoBinaryData(Data, i + 2, 5))
-                {
                     // to allow GetCurrentData() to work
                     Operands.Clear();
-                    Operands.Add(new OperandInfo { Type = PdfTokenType.Unknown, StartAt = sp, Length = i - sp });
-                    CurrentOperator = PdfOperatorType.EI;
+                    Operands.Add(new OperandInfo { Type = PdfTokenType.Unknown, StartAt = sp, Length = Data.Length - sp });
+                    // CurrentOperator = PdfOperatorType.EI;
+                    // get skipCurrent to work
+                    Scanner.Position = Data.Length;
+                    Scanner.CurrentLength = 0;
+                    return justSkip ? null : new InlineImage_Op(header, Data.Slice(start).ToArray());
+                }
+                i = i + current; // correct for slice offset
+
+                if (IsStartOfToken(Data, i) && IsEndOfToken(Data, i + 1) && NoBinaryData(Data, i + 2, 5))
+                {
+                    var wsCount = 0;
+                    if (Data[i - 1] == '\n') { wsCount++; }
+                    if (Data[i - 2] == '\r') { wsCount++; }
+                    // to allow GetCurrentData() to work
+                    Operands.Clear();
+                    Operands.Add(new OperandInfo { Type = PdfTokenType.Unknown, StartAt = sp, Length = i - sp + 2 }); //+2 for EI
+                    // CurrentOperator = PdfOperatorType.EI;
                     // get skipCurrent to work
                     Scanner.Position = i;
                     Scanner.CurrentLength = 2;
-                    return new InlineImage_Op(header, Data.Slice(start, i - start).ToArray());
+                    return justSkip ? null : new InlineImage_Op(header, Data.Slice(start, i - start - wsCount).ToArray());
                 }
-                start = i + 2;
+                current = i + 2;
             }
 
             bool NoBinaryData(ReadOnlySpan<byte> input, int pos, int length)
@@ -201,11 +234,18 @@ namespace PdfLexer.Lexing
                 var next = pos + 1;
                 return next >= input.Length || CommonUtil.IsWhiteSpace(input[next]);
             }
+
+            bool IsStartOfToken(ReadOnlySpan<byte> input, int pos)
+            {
+                var prev = pos - 1;
+                return prev < 0 || CommonUtil.IsWhiteSpace(input[prev]);
+            }
         }
 
         public ReadOnlySpan<byte> GetCurrentData()
         {
             Peek();
+            if (CurrentOperator == PdfOperatorType.BI && !ImageScanned) { GetImage(true); }
             if (Operands.Count > 0)
             {
                 var sp = Operands[0].StartAt;
