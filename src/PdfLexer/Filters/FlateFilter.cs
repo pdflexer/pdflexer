@@ -27,8 +27,8 @@ namespace PdfLexer.Filters
         public Stream Decode(Stream source, PdfDictionary decodeParms)
         {
             // remove header
-            source.ReadByte();
-            source.ReadByte();
+            var cmf = source.ReadByte();
+            var flg = source.ReadByte();
             var deflated = new DeflateStream(source, CompressionMode.Decompress, true);
 
             if (decodeParms == null) { return deflated; }
