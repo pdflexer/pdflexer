@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "pdflexer.PdfiumRegressionTester": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs C:\\source\\Github\\pdflexer\\test\\results\\pdfium"
+    }
+  }
+}

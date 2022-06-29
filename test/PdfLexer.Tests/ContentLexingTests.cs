@@ -93,5 +93,100 @@ f";
             var contents = Encoding.ASCII.GetString(str.ToArray());
             Assert.Equal(text, contents);
         }
+
+        [InlineData(true)]
+        [InlineData(false)]
+        [Theory]
+        public void It_Hanldes_Inline(bool crlf)
+        {
+            var txt = @"100 0 0 100 0 0 cm
+BI /W 4 /H 4 /CS /RGB /BPC 8
+ID
+00000z0z00zzz00z0zzz0zzzEI aazazaazzzaazazzzazzz
+EI
+100 0 0 100 0 0 cm";
+            if (crlf)
+            {
+                txt = txt.Replace("\r\n", "\n");
+                txt = txt.Replace("\n", "\r\n");
+            } else
+            {
+                txt = txt.Replace("\r\n", "\n");
+            }
+            var data = Encoding.ASCII.GetBytes(txt);
+
+            // read then skip
+            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var cm = scanner.Peek();
+            Assert.Equal(PdfOperatorType.cm, cm);
+            scanner.SkipCurrent();
+            var bi = scanner.Peek();
+            Assert.Equal(PdfOperatorType.BI, bi);
+            var img = scanner.GetCurrentOperation();
+            scanner.SkipCurrent();
+            cm = scanner.Peek();
+            Assert.Equal(PdfOperatorType.cm, cm);
+
+            // just skip
+            scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            cm = scanner.Peek();
+            Assert.Equal(PdfOperatorType.cm, cm);
+            scanner.SkipCurrent();
+            bi = scanner.Peek();
+            Assert.Equal(PdfOperatorType.BI, bi);
+            scanner.SkipCurrent();
+            cm = scanner.Peek();
+            Assert.Equal(PdfOperatorType.cm, cm);
+
+            // just data
+            scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            cm = scanner.Peek();
+            Assert.Equal(PdfOperatorType.cm, cm);
+            scanner.SkipCurrent();
+            bi = scanner.Peek();
+            Assert.Equal(PdfOperatorType.BI, bi);
+            var imgData = scanner.GetCurrentData();
+            Assert.Equal(crlf ? 86 : 83, imgData.Length);
+            bi = scanner.Peek();
+            Assert.Equal(PdfOperatorType.BI, bi);
+            scanner.SkipCurrent();
+            cm = scanner.Peek();
+            Assert.Equal(PdfOperatorType.cm, cm);
+        }
+
+        [Fact]
+        public void It_Hanldes_Inline_At_End()
+        {
+            var txt = @"100 0 0 100 0 0 cm
+BI /W 4 /H 4 /CS /RGB /BPC 8
+ID
+00000z0z00zzz00z0zzz0zzzEI aazazaazzzaazazzzazzz
+EI";
+            txt = txt.Replace("\r\n", "\n");
+            var data = Encoding.ASCII.GetBytes(txt);
+
+            // read then skip
+            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var cm = scanner.Peek();
+            Assert.Equal(PdfOperatorType.cm, cm);
+            scanner.SkipCurrent();
+            Assert.Equal(PdfOperatorType.BI, scanner.Peek());
+            var imgData = scanner.GetCurrentData();
+            Assert.Equal(83, imgData.Length);
+            scanner.SkipCurrent();
+            Assert.Equal(PdfOperatorType.EOC, scanner.Peek());
+
+            // read data
+            scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            cm = scanner.Peek();
+            Assert.Equal(PdfOperatorType.cm, cm);
+            scanner.SkipCurrent();
+            Assert.Equal(PdfOperatorType.BI, scanner.Peek());
+            var op = scanner.GetCurrentOperation();
+            var opImage = op as InlineImage_Op;
+            Assert.Equal(48, opImage?.allData?.Length ?? 0);
+            scanner.SkipCurrent();
+            Assert.Equal(PdfOperatorType.EOC, scanner.Peek());
+        }
     }
 }

@@ -1769,22 +1769,22 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData = new byte[] { (byte) 'w' };
         public PdfOperatorType Type => PdfOperatorType.w;
-        public int lineWidth { get; set; }
-        public w_Op(int lineWidth)
+        public decimal lineWidth { get; set; }
+        public w_Op(decimal lineWidth)
         {
             this.lineWidth = lineWidth;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writeint(lineWidth, stream);
+            PdfOperator.Writedecimal(lineWidth, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
         public static w_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
-            var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
+            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new w_Op(a0);
         }

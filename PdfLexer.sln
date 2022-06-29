@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer", "src\PdfLexer\PdfLexer.csproj", "{9CD808F3-DEE5-4D81-93CC-EB9BB1E9AE8B}"
 EndProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pdflexer.PdfiumRegressionTester", "util\pdflexer.PdfiumRegressionTester\pdflexer.PdfiumRegressionTester.csproj", "{39094293-ADE2-4D9E-BEB7-9713642D12B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39094293-ADE2-4D9E-BEB7-9713642D12B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39094293-ADE2-4D9E-BEB7-9713642D12B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39094293-ADE2-4D9E-BEB7-9713642D12B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39094293-ADE2-4D9E-BEB7-9713642D12B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -43,6 +49,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{3483147C-037D-47AB-972D-F95EE245F114} = {255B3635-FE74-4930-ABE3-4927692218F6}
 		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755} = {582EC350-900E-4119-B8EB-4ED6DD02D45F}
+		{39094293-ADE2-4D9E-BEB7-9713642D12B0} = {255B3635-FE74-4930-ABE3-4927692218F6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CA4BE97-518D-4374-BAC7-469AFC1F69AF}

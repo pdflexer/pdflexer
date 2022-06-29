@@ -128,10 +128,10 @@ namespace PdfLexer.Serializers
             }
         }
 
-        public void Complete(PdfDictionary trailer)
+        public void Complete(PdfDictionary trailer, PdfDictionary? catalog=null)
         {
             CompleteBag();
-            var catalog = new PdfDictionary();
+            catalog ??= new PdfDictionary();
             catalog[PdfName.TypeName] = PdfName.Catalog;
             var catRef = PdfIndirectRef.Create(catalog);
             trailer[PdfName.Root] = catRef;

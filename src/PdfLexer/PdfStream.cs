@@ -245,6 +245,16 @@ namespace PdfLexer
             Contents = contents;
         }
 
+        public PdfByteArrayStreamContents(byte[] contents, PdfName filter, PdfDictionary decodeParams)
+        {
+            Contents = contents;
+            Filters = new PdfArray { filter };
+            if (decodeParams != null)
+            {
+                DecodeParams = new PdfArray { decodeParams };
+            }
+        }
+
         /// <summary>
         /// Length of the stream (compressed, if applicable).
         /// </summary>
