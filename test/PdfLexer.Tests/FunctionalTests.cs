@@ -305,51 +305,6 @@ namespace PdfLexer.Tests
             }
         }
 
-        // TODO remove? isn't testing anything really
-        [Fact]
-        public void It_Reads_And_Writes_All_Pdf_JS_Content_Streams()
-        {
-            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
-            var output = Path.Combine(pdfRoot, "outputStreams");
-            Directory.CreateDirectory(output);
-            var errors = new List<string>();
-            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
-            {
-                try
-                {
-                    var data = File.ReadAllBytes(pdf);
-                    using var doc = PdfDocument.Open(data);
-                    if (doc.Trailer.ContainsKey(PdfName.Encrypt))
-                    {
-                        // don't support encryption currently
-                        continue;
-                    }
-
-                    ReWriteStreams(pdf, doc, false);
-
-                    using var fs = File.Create(Path.Combine(output, Path.GetFileName(pdf)));
-                    using var doc2 = PdfDocument.Create();
-
-                    foreach (var kvp in doc.Trailer)
-                    {
-                        doc2.Trailer[kvp.Key] = kvp.Value;
-                    }
-                    doc2.Catalog = doc.Catalog;
-                    doc2.Pages = doc.Pages;
-                    doc2.SaveTo(fs);
-                }
-                catch (Exception e)
-                {
-                    errors.Add(pdf + ": " + e.Message);
-                }
-            }
-            if (errors.Any())
-            {
-                throw new ApplicationException(string.Join(Environment.NewLine, errors));
-            }
-        }
-
         private static PdfPage ReWriteStream(PdfDocument doc, PdfPage page, bool clone)
         {
             if (!page.Dictionary.TryGetValue(PdfName.Contents, out var value))

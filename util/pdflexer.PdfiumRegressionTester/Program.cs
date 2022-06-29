@@ -7,9 +7,7 @@ using PdfLexer.Operators;
 using PdfLexer.Serializers;
 using System.CommandLine;
 
-
-
-StreamWriter writer = null;
+StreamWriter? writer = null;
 
 void Log(string message)
 {
@@ -29,28 +27,79 @@ var type = new Option<string>(
             name: "--type",
             description: "Type of test to run, merge or rebuild.");
 
+
+var download = new Option<bool>(
+            name: "--download",
+            getDefaultValue: () => false,
+            description: "Download missing links.");
+
 var rootCommand = new RootCommand("PDF regression testing");
 rootCommand.AddOption(pdfRoot);
 rootCommand.AddOption(output);
 rootCommand.AddOption(type);
+rootCommand.AddOption(download);
 
 int returnCode = 0;
 
-rootCommand.SetHandler((type, root, prefix) =>
+rootCommand.SetHandler(async (type, root, prefix, dl) =>
 {
-    returnCode = RunBase(type, root, prefix);
-}, type, pdfRoot, output);
+    returnCode = await RunBase(type, root, prefix, dl);
+}, type, pdfRoot, output, download);
 
 await rootCommand.InvokeAsync(args);
 
 return returnCode;
 
-int RunBase(string type, string pdfRoot, string output)
+async Task<int> RunBase(string type, string pdfRoot, string output, bool download)
 {
     Directory.CreateDirectory(output);
     using var lo = File.Create(Path.Combine(output, type.ToLower() + ".log"));
     writer = new StreamWriter(lo);
     using var _ = writer;
+
+    if (download)
+    {
+        var client = new HttpClient();
+        foreach (var link in Directory.GetFiles(pdfRoot, "*.link"))
+        {
+            var pdf = Path.ChangeExtension(link, ".pdf");
+            pdf = Path.Combine(pdfRoot, "__" + Path.GetFileName(pdf));
+            if (File.Exists(pdf))
+            {
+                continue;
+            }
+
+            var url = File.ReadAllText(link).Trim();
+            if (url.ToLower().StartsWith("https://web.archive.org/"))
+            {
+                var segs = url.Split("/http://");
+                if (segs.Length == 2)
+                {
+                    url = segs[0] + "id_/http://" + segs[1];
+                }
+                else
+                {
+                    segs = url.Split("/https://");
+                    if (segs.Length == 2)
+                    {
+                        url = segs[0] + "id_/https://" + segs[1];
+                    }
+                }
+
+            }
+            try
+            {
+                using var t = await client.GetStreamAsync(url);
+                using var fo = File.Create(pdf);
+                await t.CopyToAsync(fo);
+            }
+            catch (Exception e)
+            {
+                Log($"[DLFailed] {Path.GetFileName(link)} ({url}): {e.Message}");
+            }
+        }
+    }
+
     switch (type.ToUpper())
     {
         case "MERGE":
@@ -63,14 +112,14 @@ int RunBase(string type, string pdfRoot, string output)
     }
 }
 
-bool RunMergeTests(string pdfRoot, string output) 
+bool RunMergeTests(string pdfRoot, string output)
 {
     bool success = true;
     var merged = Path.Combine(output, "all.pdf");
 
     var counts = new List<(string, int, int)>();
     {
-        
+
         using var fo = File.Create(merged);
         using var sw = new StreamingWriter(fo);
 
@@ -145,25 +194,35 @@ bool RunRebuildTests(string pdfRoot, string output)
 
     foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
     {
+        var nm = Path.GetFileName(pdf);
         var comparer = new Compare(Path.Combine(output, Path.GetFileNameWithoutExtension(pdf)), 2);
         var modified = Path.Combine(output, Path.GetFileName(pdf));
         {
-            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
-            if (doc.Trailer.Get(PdfName.Encrypt) != null)
+            try
             {
+                using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                if (doc.Trailer.Get(PdfName.Encrypt) != null)
+                {
+                    continue;
+                }
+                using var fo = File.Create(modified);
+                var sw = new StreamingWriter(fo, true, true);
+                foreach (var pg in doc.Pages)
+                {
+                    var np = ReWriteStream(doc, pg);
+                    sw.AddPage(np);
+                }
+                sw.Complete(doc.Trailer.CloneShallow(), doc.Catalog.CloneShallow());
+            }
+            catch (Exception ex)
+            {
+                Log($"[{nm}] pdflexer failure: {ex.Message}");
                 continue;
             }
-            using var fo = File.Create(modified);
-            var sw = new StreamingWriter(fo, true, true);
-            foreach (var pg in doc.Pages)
-            {
-                var np = ReWriteStream(doc, pg);
-                sw.AddPage(np);
-            }
-            sw.Complete(doc.Trailer.CloneShallow(), doc.Catalog.CloneShallow());
+
         }
         var pgs = comparer.CompareAllPages(pdf, modified);
-        var nm = Path.GetFileName(pdf);
+
         bool changes = false;
         for (var i = 0; i < pgs.Count; i++)
         {
@@ -173,12 +232,12 @@ bool RunRebuildTests(string pdfRoot, string output)
                 if (pg.Type == ChangeType.ErrorBaseline)
                 {
                     Log($"[{nm}] pdfium failed to open pg on baseline{i}");
-                } else
+                }
+                else
                 {
                     changes = true;
                     Log($"[{nm}] failed pg {i} -> {pg.Type.ToString()}");
                 }
-                
             }
         }
         if (!changes)

@@ -536,8 +536,8 @@ namespace PdfLexer.Operators
         public static byte[] OpData = new byte[] { (byte) 'd' };
         public PdfOperatorType Type => PdfOperatorType.d;
         public PdfArray dashArray { get; set; }
-        public int dashPhase { get; set; }
-        public d_Op(PdfArray dashArray, int dashPhase)
+        public decimal dashPhase { get; set; }
+        public d_Op(PdfArray dashArray, decimal dashPhase)
         {
             this.dashArray = dashArray;
             this.dashPhase = dashPhase;
@@ -547,7 +547,7 @@ namespace PdfLexer.Operators
         {
             PdfOperator.WritePdfArray(dashArray, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writeint(dashPhase, stream);
+            PdfOperator.Writedecimal(dashPhase, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
@@ -555,7 +555,7 @@ namespace PdfLexer.Operators
         public static d_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             var a0 = PdfOperator.ParsePdfArray(ctx, data, operands[0]);
-            var a1 = PdfOperator.Parseint(ctx, data, operands[1]);
+            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
     
             return new d_Op(a0, a1);
         }
@@ -870,22 +870,22 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData = new byte[] { (byte) 'i' };
         public PdfOperatorType Type => PdfOperatorType.i;
-        public int flatness { get; set; }
-        public i_Op(int flatness)
+        public decimal flatness { get; set; }
+        public i_Op(decimal flatness)
         {
             this.flatness = flatness;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writeint(flatness, stream);
+            PdfOperator.Writedecimal(flatness, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
         public static i_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
-            var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
+            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new i_Op(a0);
         }
