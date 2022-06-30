@@ -14,6 +14,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
     }
+
+    public partial class d_Op
+    {
+        public void Serialize(Stream stream)
+        {
+            PdfOperator.Shared.SerializeObject(stream, dashArray, x => x);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(dashPhase, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+    }
+
     public partial class DP_Op
     {
         public void Serialize(Stream stream)

@@ -233,6 +233,7 @@ namespace PdfLexer
 
             var source = new InMemoryDataSource(ctx, data);
             var result = ctx.Initialize(source);
+            ctx.IsEncrypted = result.Trailer.ContainsKey(PdfName.Encrypt);
             return Open(ctx, result.XRefs, result.Trailer);
         }
 

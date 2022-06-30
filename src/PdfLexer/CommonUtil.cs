@@ -413,12 +413,16 @@ namespace PdfLexer
             for (; pos < local.Length; pos++)
             {
                 // ugly but benched better than Span IndexOf / IndexOfAny alternatives
+                // TODO rebench with extra number chars
                 var b = local[pos];
                 if (
                     b == 0x00 || b == 0x09 || b == 0x0A || b == 0x0C || b == 0x0D || b == 0x20
                     || b == (byte)'(' || b == (byte)')' || b == (byte)'<' || b == (byte)'>'
                     || b == (byte)'[' || b == (byte)']' || b == (byte)'{' || b == (byte)'}'
-                    || b == (byte)'/' || b == (byte)'%')
+                    || b == (byte)'/' || b == (byte)'%' 
+                    || (b > 47 && b < 58) // number start
+                    || b == (byte)'+' || b == (byte)'-' || b == (byte)'.'
+                    )
                 {
                     return;
                 }
@@ -429,11 +433,14 @@ namespace PdfLexer
         internal static bool IsEndOfToken(byte b)
         {
             // ugly but benched better than Span IndexOf / IndexOfAny alternatives
+            // TODO rebench with extra number chars
             if (
                 b == 0x00 || b == 0x09 || b == 0x0A || b == 0x0C || b == 0x0D || b == 0x20
                 || b == (byte)'(' || b == (byte)')' || b == (byte)'<' || b == (byte)'>'
                 || b == (byte)'[' || b == (byte)']' || b == (byte)'{' || b == (byte)'}'
-                || b == (byte)'/' || b == (byte)'%')
+                || b == (byte)'/' || b == (byte)'%'
+                || (b > 47 && b < 58) // number start
+                || b == (byte)'+' || b == (byte)'-' || b == (byte)'.')
             {
                 return true;
             }

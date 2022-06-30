@@ -112,6 +112,7 @@ namespace PdfLexer.Parsers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SkipNumber(ReadOnlySpan<byte> bytes, ref int i, out bool isDecimal)
         {
+            var start = i;
             ReadOnlySpan<byte> local = bytes;
             isDecimal = false;
             for (; i < local.Length; i++)
@@ -119,14 +120,20 @@ namespace PdfLexer.Parsers
                 var b = local[i];
                 if (b == (byte)'.')
                 {
-                    isDecimal = true;
-                    continue;
+                    if (!isDecimal)
+                    {
+                        isDecimal = true;
+                        continue;
+                    }
+                    return;
                 }
-                else if ((b > 47 && b < 58) || b == '+' || b == '-')
+                else if (b > 47 && b < 58)
+                {
+                    continue;
+                } else if ((b == '+' || b == '-') && start == i)
                 {
                     continue;
                 }
-
                 return;
             }
         }

@@ -70,33 +70,44 @@ namespace PdfLexer.Lexing
             Operands.Clear();
         }
 
-        public IPdfOperation GetCurrentOperation()
+
+        public bool TryGetCurrentOperation(out IPdfOperation op)
         {
             Peek();
 
             if (CurrentOperator == PdfOperatorType.BI)
             {
-                return GetImage();
+                op = GetImage();
+                return true;
             }
 
             var oi = (int)CurrentOperator;
             if (!ParseOpMapping.Parsers.TryGetValue(oi, out var parser))
             {
-                var uko = GetUnknown(Scanner, Operands, Data);
-                _ctx.Error("Unkown operator found: " + uko.op);
-                return uko;
+                var uk = GetUnknown(Scanner, Operands, Data);
+                op = uk;
+                _ctx.Error("Unkown operator found: " + uk.op);
+                return false;
             }
+
             try
             {
-                return parser(_ctx, Data, Operands);
+                op = parser(_ctx, Data, Operands);
+                if (op == null)
+                {
+                    op = GetUnknown(Scanner, Operands, Data);
+                    return false;
+                }
+                return true;
             }
             catch (Exception e)
             {
                 var st = Operands.Count > 0 ? Operands[0].StartAt : Scanner.Position;
                 var len = Scanner.Position + Scanner.CurrentLength - st;
-                var op = Encoding.ASCII.GetString(Data.Slice(st, len));
-                _ctx.Error($"Failure parsing op ({e.Message}): " + op);
-                return GetUnknown(Scanner, Operands, Data);
+                var opTxt = Encoding.ASCII.GetString(Data.Slice(st, len));
+                _ctx.Error($"Failure parsing op ({e.Message}): " + opTxt);
+                op = GetUnknown(Scanner, Operands, Data);
+                return false;
             }
 
             Unkown_Op GetUnknown(Scanner scanner, List<OperandInfo> ops, ReadOnlySpan<byte> data)
@@ -113,6 +124,12 @@ namespace PdfLexer.Lexing
                 }
                 return new Unkown_Op(op, opData);
             }
+        }
+
+        public IPdfOperation GetCurrentOperation()
+        {
+            _ = TryGetCurrentOperation(out var op);
+            return op;
         }
 
         private IPdfOperation GetImage(bool justSkip = false)

@@ -60,11 +60,25 @@ namespace PdfLexer.Content
                 var array = contents.GetValue<PdfArray>();
                 foreach (var item in array)
                 {
-                    NextStreams.Add(item.GetValue<PdfStream>());
+                    var str = item.GetValue<PdfStream>(false);
+                    if (str == null)
+                    {
+                        ctx.Error("Page scanning encounted missing or null content reference: " + str?.Type);
+                        continue;
+                    }
+                    NextStreams.Add(str);
                 }
             } else
             {
-                NextStreams.Add(contents.GetValue<PdfStream>());
+                var str = contents.GetValue<PdfStream>(false);
+                if (str == null)
+                {
+                    ctx.Error("Page scanning encounted missing or null content reference: " + str?.Type);
+                } else
+                {
+                    NextStreams.Add(str);
+                }
+                
             }
             if (NextStreams.Count == 0)
             {
@@ -87,10 +101,17 @@ namespace PdfLexer.Content
         private int SkipBytes;
         public PdfOperatorType Peek()
         {
+        start:
             var nxt = Scanner.Peek();
             if (nxt == PdfOperatorType.Do)
             {
-                var doOp = (Do_Op)Scanner.GetCurrentOperation();
+                if (!Scanner.TryGetCurrentOperation(out var op))
+                {
+                    Context.Error("Bad do op, skipping");
+                    Scanner.SkipCurrent();
+                    goto start;
+                }
+                var doOp = (Do_Op)op;
                 if (!FlattenForms || !TryGetForm(doOp.name, out var form))
                 {
                     return nxt;
@@ -164,6 +185,20 @@ namespace PdfLexer.Content
             if (State == MultiPageState.StartForm) { return q_Op.Value; }
             if (State == MultiPageState.EndForm) { return Q_Op.Value; }
             return Scanner.GetCurrentOperation();
+        }
+
+        public bool TryGetCurrentOperation(out IPdfOperation op)
+        {
+            if (State == MultiPageState.StartForm) { op = q_Op.Value; return true; }
+            if (State == MultiPageState.EndForm) { op = Q_Op.Value; return true; }
+            return Scanner.TryGetCurrentOperation(out op);
+        }
+
+        public ReadOnlySpan<byte> GetCurrentData()
+        {
+            if (State == MultiPageState.StartForm) { throw new NotSupportedException("Get current data not currently supported in form flattening"); }
+            if (State == MultiPageState.EndForm) { throw new NotSupportedException("Get current data not currently supported in form flattening"); }
+            return Scanner.GetCurrentData();
         }
 
         private void PushForm()
