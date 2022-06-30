@@ -49,7 +49,7 @@ namespace PdfLexer.Tests
                 long total = 0;
                 foreach (PdfDictionary page in toCount.Pages)
                 {
-                    
+
                     var val = page.GetRequiredValue(PdfName.Contents).Resolve();
                     switch (val.GetPdfObjType())
                     {
@@ -83,7 +83,7 @@ namespace PdfLexer.Tests
                         default:
                             throw new ApplicationException("Invalid Contents value in page");
                     }
-                    
+
                     var content = page[PdfName.Contents];
                     content = content.Resolve();
                     if (content is PdfArray contentArray)
@@ -111,10 +111,20 @@ namespace PdfLexer.Tests
             var errors = new List<string>();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
+
                 try
                 {
-                    var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
                     EnumerateObjects(doc.Trailer, new HashSet<int>());
+                }
+                catch (NotSupportedException ex)
+                {
+                    // for compressed object streams
+                    if (ex.Message.Contains("encryption"))
+                    {
+                        continue;
+                    }
                 }
                 catch (Exception e)
                 {
@@ -174,24 +184,34 @@ namespace PdfLexer.Tests
 
                 try
                 {
-                    var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
-                    if (doc.Trailer.ContainsKey(PdfName.Encrypt))
+                    try
                     {
-                        // don't support encryption currently
-                        continue;
-                    }
-
-                    foreach (var page in doc.Pages)
-                    {
-                        var reader = new TextScanner(doc.Context, page);
-                        var sb = new StringBuilder();
-                        while (reader.Advance())
+                        var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                        if (doc.Trailer.ContainsKey(PdfName.Encrypt))
                         {
-                            sb.Append(reader.Glyph.Char);
+                            // don't support encryption currently
+                            continue;
                         }
-                        var str = sb.ToString();
-                    }
 
+                        foreach (var page in doc.Pages)
+                        {
+                            var reader = new TextScanner(doc.Context, page);
+                            var sb = new StringBuilder();
+                            while (reader.Advance())
+                            {
+                                sb.Append(reader.Glyph.Char);
+                            }
+                            var str = sb.ToString();
+                        }
+                    }
+                    catch (NotSupportedException ex)
+                    {
+                        // for compressed object streams
+                        if (ex.Message.Contains("encryption"))
+                        {
+                            continue;
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
@@ -220,25 +240,26 @@ namespace PdfLexer.Tests
             copy[PdfName.Contents] = PdfIndirectRef.Create(strCopy);
             doc2.Pages.Add(copy);
             File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-flat.pdf", doc2.Save());
-            
+
             File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-cp2.pdf", doc3.Save());
             doc.Trailer.Remove(new PdfName("/ID"));
             doc.Trailer.Remove(new PdfName("/Info"));
             var res = doc.Pages[0].Dictionary.GetRequiredValue<PdfDictionary>(PdfName.Resources);
             var fonts = res.GetRequiredValue<PdfDictionary>("/Font");
-            res["/Font"] = new PdfDictionary {
+            res["/Font"] = new PdfDictionary
+            {
                 ["/wspe_F1"] = fonts["/wspe_F1"],
                 // ["/wspe_F2"] = fonts["/wspe_F2"],
                 // ["/wspe_F3"] = fonts["/wspe_F3"],
                 ["/wspe_F4"] = fonts["/wspe_F4"],
-                };
+            };
             // var empty = new DOM.PdfPage(new PdfDictionary());
             // empty.Dictionary[PdfName.Contents] = 
             //     PdfIndirectRef.Create(new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(new byte[]{ })));
             // doc.Pages.Add(empty);
             File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-cp3.pdf", doc.Save());
             // File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-cp.pdf", doc.Save());
-            
+
         }
 
         [Fact]
@@ -403,14 +424,15 @@ namespace PdfLexer.Tests
                 {
                     op.Serialize(ms);
                     ms.WriteByte((byte)'\n');
-                } else
+                }
+                else
                 {
 
                 }
-                
+
                 scanner.SkipCurrent();
             }
-            
+
 
             if (clone)
             {
@@ -438,15 +460,32 @@ namespace PdfLexer.Tests
             var errors = new List<string>();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
+
                 try
                 {
-                    var data = File.ReadAllBytes(pdf);
-                    using var doc = PdfDocument.Open(data);
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
                     using var ms = new MemoryStream();
                     doc.SaveTo(ms);
                     using var doc2 = PdfDocument.Open(ms.ToArray());
-
                     EnumerateObjects(doc2.Catalog, new HashSet<int>());
+                }
+                catch (NotSupportedException ex)
+                {
+                    // for compressed object streams
+                    if (ex.Message.Contains("encryption"))
+                    {
+                        continue;
+                    }
+                }
+                catch (Exception e)
+                {
+                    errors.Add(pdf + ": " + e.Message);
+                }
+
+                try
+                {
+
                 }
                 catch (Exception e)
                 {
@@ -501,7 +540,7 @@ namespace PdfLexer.Tests
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue1905.pdf");
 
             var orig = Util.GetDocumentHashCode(pdf);
-            
+
 
             using var fs2 = File.OpenRead(pdf);
             using var lm = PdfDocument.OpenLowMemory(fs2);
@@ -545,7 +584,7 @@ namespace PdfLexer.Tests
                 writer.AddPage(page);
             }
             doc.Pages.AddRange(second.Pages);
-            
+
             writer.Complete(new PdfDictionary());
             var deDuped = mssw.ToArray();
             var nonDeDuped = doc.Save();
@@ -559,7 +598,7 @@ namespace PdfLexer.Tests
             var ddr = Util.CountResources(deDuped);
             var nddr = Util.CountResources(nonDeDuped);
             Assert.Equal(or, ddr);
-            Assert.Equal(nddr, ddr*2);
+            Assert.Equal(nddr, ddr * 2);
             Assert.True(deDuped.Length < nonDeDuped.Length);
         }
 
@@ -648,14 +687,15 @@ namespace PdfLexer.Tests
 
                     bool skipStream = false;
                     using var fs = File.OpenRead(pdf);
-                    
+
                     try
                     {
                         PdfDocument streamedDoc = PdfDocument.Open(fs);
                         using var sd = PdfDocument.Create();
                         sd.Pages = streamedDoc.Pages;
                         d6 = sd.Save();
-                    } catch (NotImplementedException)
+                    }
+                    catch (NotImplementedException)
                     {
                         // haven't done repairs yet
                         skipStream = true;
@@ -881,9 +921,22 @@ namespace PdfLexer.Tests
             var merged = PdfDocument.Create();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
-                using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
-                foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.Dictionary); }
-                merged.Pages.AddRange(doc.Pages);
+                try
+                {
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
+                    foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.Dictionary); }
+                    merged.Pages.AddRange(doc.Pages);
+                }
+                catch (NotSupportedException ex)
+                {
+                    // for compressed object streams
+                    if (ex.Message.Contains("encryption"))
+                    {
+                        continue;
+                    }
+                }
+
             }
             var ms = new MemoryStream();
             merged.SaveTo(ms);
