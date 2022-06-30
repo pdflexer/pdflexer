@@ -35,6 +35,7 @@ namespace PdfLexer
         public bool CacheNames { get; set; } = true;
 
         public bool ThrowOnErrors { get;set;} = false;
+        public bool AttemptOperatorRepair { get; set; } = true;
         public bool ForceSerialize { get;set;} = false;
         // for perf testing
         public bool LazyStrings { get; set; } = false;

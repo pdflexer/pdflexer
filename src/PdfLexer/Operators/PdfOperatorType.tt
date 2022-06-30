@@ -18,7 +18,7 @@
     ("cm", null, "Concatenate matrix to current transformation matrix", new List<(string, string)>{ ("decimal", "a"), ("decimal", "b"), ("decimal", "c"), ("decimal", "d"), ("decimal", "e"), ("decimal", "f")}, false),
     ("CS", null, "Set color space for stroking operations", new List<(string, string)>{ ("PdfName", "name") }, false),
     ("cs", null, "Set color space for nonstroking operations", new List<(string, string)>{ ("PdfName", "name") }, false),
-    ("d", null, "Set line dash pattern", new List<(string, string)>{ ("PdfArray", "dashArray"), ("decimal", "dashPhase") } , false),
+    ("d", null, "Set line dash pattern", new List<(string, string)>{ ("PdfArray", "dashArray"), ("decimal", "dashPhase") } , true),
     ("d0", null, "Set glyph width in Type 3 font", new List<(string, string)>{ ("decimal", "wx"), ("decimal", "wy") }, false),
     ("d1", null, "Set glyph width and bounding box in Type 3 font", new List<(string, string)>{ ("decimal", "wx"), ("decimal", "wy"), ("decimal", "llx"), ("decimal", "lly"), ("decimal", "urx"), ("decimal", "ury") }, false),
     ("Do", null, "Invoke named XObject", new List<(string, string)>{ ("PdfName", "name") }, false),
@@ -187,8 +187,19 @@ foreach (var op in operators)
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "<#= string.Join("\", \"", op.Item4.Select(x=>x.Item1)) #>"  };
+
         public static <#= name #>_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != <#=op.Item4.Count#>) 
+            {
+                ctx.Error($"Incorrect operand count for <#= name #>, got {operands.Count}, expected <#=op.Item4.Count#>.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
 <#     var i = 0;
        var a = "";
 

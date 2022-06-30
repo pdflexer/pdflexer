@@ -53,6 +53,7 @@ return returnCode;
 async Task<int> RunBase(string type, string pdfRoot, string output, bool download)
 {
     Directory.CreateDirectory(output);
+
     using var lo = File.Create(Path.Combine(output, type.ToLower() + ".log"));
     writer = new StreamWriter(lo);
     using var _ = writer;
@@ -109,6 +110,47 @@ async Task<int> RunBase(string type, string pdfRoot, string output, bool downloa
         default:
             Console.WriteLine("Unknown test type: " + type);
             return 1;
+    }
+}
+
+void DumpPageContent(PdfDocument doc, int pg, Stream output)
+{
+    if (doc.Pages.Count <= pg) { return; }
+    var scanner = new PageContentScanner(doc.Context, doc.Pages[pg]);
+    while (scanner.Peek() != PdfOperatorType.EOC)
+    {
+        output.Write(scanner.GetCurrentData());
+        output.WriteByte((byte)'\n');
+        scanner.SkipCurrent();
+    }
+}
+
+void DumpRawPageContent(PdfDocument doc, int pg, Stream output)
+{
+    if (doc.Pages.Count <= pg) { return; }
+    var page = doc.Pages[pg];
+    var contents = page.Dictionary.Get(PdfName.Contents).Resolve();
+    switch (contents)
+    {
+        case PdfArray arr:
+            foreach (var item in arr)
+            {
+                var str = item.GetValue<PdfStream>(false);
+                if (str != null)
+                {
+                    using var wo = str.Contents.GetDecodedStream(doc.Context);
+                    wo.CopyTo(output);
+                    output.WriteByte((byte)'\n');
+                }
+            }
+            break;
+        case PdfStream stream:
+            {
+                using var wo = stream.Contents.GetDecodedStream(doc.Context);
+                wo.CopyTo(output);
+                output.WriteByte((byte)'\n');
+            }
+            break;
     }
 }
 
@@ -237,6 +279,16 @@ bool RunRebuildTests(string pdfRoot, string output)
                 {
                     changes = true;
                     Log($"[{nm}] failed pg {i} -> {pg.Type.ToString()}");
+
+                    var bn = Path.GetFileNameWithoutExtension(pdf);
+                    using var fco = File.Create(Path.Combine(output, $"{bn}_c{i}.txt"));
+                    using var fc = PdfDocument.Open(File.ReadAllBytes(modified));
+                    DumpPageContent(fc, i, fco);
+                    using var fbo = File.Create(Path.Combine(output, $"{bn}_b{i}.txt"));
+                    using var fb = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    DumpPageContent(fb, i, fbo);
+                    using var fbr = File.Create(Path.Combine(output, $"{bn}_b{i}_raw.txt"));
+                    DumpRawPageContent(fb, i, fbr);
                 }
             }
         }
@@ -263,9 +315,15 @@ static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
 
     while (scanner.Peek() != PdfOperatorType.EOC)
     {
-        var op = scanner.GetCurrentOperation();
-        op.Serialize(ms);
-        ms.WriteByte((byte)'\n');
+        if (scanner.TryGetCurrentOperation(out var op))
+        {
+            op.Serialize(ms);
+            ms.WriteByte((byte)'\n');
+        } else
+        {
+            ms.Write(scanner.GetCurrentData());
+            ms.WriteByte((byte)'\n');
+        }
         scanner.SkipCurrent();
     }
 

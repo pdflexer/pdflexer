@@ -13,9 +13,6 @@ using System.Text;
 
 namespace PdfLexer.Operators
 {
-
-
-
     public interface IPdfOperationHandler
     {
         IPdfOperation ParseOp(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands);
@@ -112,6 +109,60 @@ namespace PdfLexer.Operators
 
     public class PdfOperator
     {
+
+        public static bool TryRepair(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> info, List<string> types, 
+            out List<OperandInfo> fixedOps)
+        {
+            fixedOps = new List<OperandInfo>();
+            var reversed = info.ToList();
+            reversed.Reverse();
+            types = types.ToList();
+            types.Reverse();
+            var i = 0;
+            foreach (var type in types)
+            {
+                bool matched = false;
+                while (i < reversed.Count)
+                {
+                    var current = reversed[i];
+                    switch (type)
+                    {
+                        case "int":
+                            if (current.Type == PdfTokenType.NumericObj)
+                            {
+                                matched = true;
+                            }
+                            break;
+                        case "decimal":
+                            if (current.Type == PdfTokenType.NumericObj || current.Type == PdfTokenType.DecimalObj)
+                            {
+                                matched = true;
+                            }
+                            break;
+                        case "PdfName":
+                            matched = current.Type == PdfTokenType.NameObj;
+                            break;
+                        default:
+                            break;
+                    }
+                    i++;
+                    if (matched)
+                    {
+                        fixedOps.Add(current);
+                        break;
+                    }
+                }
+            }
+
+            if (fixedOps.Count == types.Count)
+            {
+                fixedOps.Reverse();
+                return true;
+            }
+            fixedOps.Clear();
+            return false;
+        }
+
         public static PdfOperatorType GetType(ReadOnlySpan<byte> data, int startAt, int length)
         {
             int key = 0;
@@ -140,12 +191,13 @@ namespace PdfLexer.Operators
             }
             if (operands.Count == 1)
             {
-                ctx.Error("BDC only had single operands.");
                 if (operands[0].Type == PdfTokenType.NameObj)
                 {
+                    ctx.Error("BDC only had single operands.");
                     return new BDC_Op(ParsePdfName(ctx, data, operands[0]), new PdfDictionary());
                 }
-                return null;
+
+                throw new PdfLexerException("DP only had single operand and was not name.");
             }
             if (operands.Count > 2 && (operands[1].Type != PdfTokenType.ArrayStart && operands[1].Type != PdfTokenType.DictionaryStart))
             {
@@ -164,23 +216,19 @@ namespace PdfLexer.Operators
         {
             if (operands.Count == 0)
             {
-                ctx.Error("DP had no operands.");
-                return null;
+                throw new PdfLexerException("DP had no operands.");
             }
             if (operands.Count == 1)
             {
-                ctx.Error("DP only had single operands.");
                 if (operands[0].Type == PdfTokenType.NameObj)
                 {
+                    ctx.Error("DP only had single operands.");
                     return new DP_Op(ParsePdfName(ctx, data, operands[0]), new PdfDictionary());
                 }
-                return null;
-            }
-            if (operands.Count > 2)
-            {
-                ctx.Error("DP only had more than two operands, using first two.");
+                throw new PdfLexerException("DP only had single operand and was not name.");
             }
             var di = operands[1];
+            ctx.CurrentSource = null; // force no lazy
             return new DP_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetKnownPdfItem((PdfObjectType)di.Type, data, di.StartAt, di.Length));
         }
 
@@ -291,6 +339,19 @@ namespace PdfLexer.Operators
             return new doublequote_Op(aw,ac,text);
         }
 
+        internal static d_Op Parsed(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
+        {
+            var da = ParsePdfArray(ctx, data, operands[0]);
+            decimal dp = 0;
+            bool end = false;
+            for (var i = 1; i < operands.Count; i++)
+            {
+                if (operands[i].Type == PdfTokenType.ArrayEnd) { end = true; }
+                if (end) { ParseDecimal(ctx, data, operands[i]); break; }
+            }
+            return new d_Op(da, dp);
+        }
+
         public static decimal ParseDecimal(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
         {
             if (!Utf8Parser.TryParse(data.Slice(op.StartAt, op.Length), out decimal val, out int consumed))
@@ -310,15 +371,19 @@ namespace PdfLexer.Operators
             return ctx.StringParser.Parse(data.Slice(op.StartAt, op.Length));
         }
 
-        public static PdfArray ParsePdfArray(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
+        public static PdfArray ParsePdfArrayAndLength(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op, out int length)
         {
-            var obj = ctx.NestedParser.ParseNestedItem(data, op.StartAt, out _);
+            var obj = ctx.NestedParser.ParseNestedItem(data, op.StartAt, out length);
             if (obj.Type != PdfObjectType.ArrayObj)
             {
                 ctx.Error("Bad array found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
                 return new PdfArray();
             }
             return (PdfArray)obj;
+        }
+        public static PdfArray ParsePdfArray(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
+        {
+            return ParsePdfArrayAndLength(ctx, data, op, out var _);
         }
 
         public static int Parseint(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)

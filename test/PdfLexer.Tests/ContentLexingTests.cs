@@ -97,7 +97,7 @@ f";
         [InlineData(true)]
         [InlineData(false)]
         [Theory]
-        public void It_Hanldes_Inline(bool crlf)
+        public void It_Handles_Inline(bool crlf)
         {
             var txt = @"100 0 0 100 0 0 cm
 BI /W 4 /H 4 /CS /RGB /BPC 8
@@ -155,7 +155,7 @@ EI
         }
 
         [Fact]
-        public void It_Hanldes_Inline_At_End()
+        public void It_Handles_Inline_At_End()
         {
             var txt = @"100 0 0 100 0 0 cm
 BI /W 4 /H 4 /CS /RGB /BPC 8
@@ -187,6 +187,106 @@ EI";
             Assert.Equal(48, opImage?.allData?.Length ?? 0);
             scanner.SkipCurrent();
             Assert.Equal(PdfOperatorType.EOC, scanner.Peek());
+        }
+
+        [Fact]
+        public void It_Handles_DP()
+        {
+            var txt = @"/DocumentSetup << /PageOrigin [ 11
+12
+]
+/RulerOrigin [ 0
+0
+]
+>>
+DP
+q
+Q";
+            txt = txt.Replace("\r\n", "\n");
+            var data = Encoding.ASCII.GetBytes(txt);
+
+            // read then skip
+            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var dp = scanner.Peek();
+            Assert.Equal(PdfOperatorType.DP, dp);
+            var op = (DP_Op)scanner.GetCurrentOperation();
+            Assert.Equal("/DocumentSetup", op.tag);
+            Assert.Equal(PdfObjectType.DictionaryObj, op.props.Type);
+            var dict = (PdfDictionary)op.props;
+            Assert.Equal(2, dict.Count);
+            scanner.SkipCurrent();
+            var q = scanner.Peek();
+            Assert.Equal(PdfOperatorType.q, q);
+        }
+
+        [Fact]
+        public void It_Handles_BDC_Inline()
+        {
+            var txt = @"/Layer << /Printed true
+/Visible true
+/Preview true
+/Dimmed false
+/Title (Calque 1)
+/Transparency false
+/flatLayer false
+/Editable true
+/Color [ 20224
+32768
+65535
+]
+>>
+BDC
+q";
+            txt = txt.Replace("\r\n", "\n");
+            var data = Encoding.ASCII.GetBytes(txt);
+
+            // read then skip
+            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var bdc = scanner.Peek();
+            Assert.Equal(PdfOperatorType.BDC, bdc);
+            var op = scanner.GetCurrentOperation();
+            scanner.SkipCurrent();
+            var q = scanner.Peek();
+            Assert.Equal(PdfOperatorType.q, q);
+        }
+
+        [Fact]
+        public void It_Fixes_Bad_Name()
+        {
+            var txt = @"0.1 /F1 Do";
+            var data = Encoding.ASCII.GetBytes(txt);
+
+            // read then skip
+            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var doOp = scanner.Peek();
+            Assert.Equal(PdfOperatorType.Do, doOp);
+            var succeeded = scanner.TryGetCurrentOperation(out var doOpObj);
+            Assert.True(succeeded);
+            Assert.Equal(PdfOperatorType.Do, doOpObj.Type);
+            var obj = (Do_Op)doOpObj;
+            Assert.Equal("F1", obj.name);
+        }
+
+        [Fact]
+        public void It_Fixes_Bad_Numbers()
+        {
+            var txt = @"100 0 0 100 /Bad 0 0 cm";
+            var data = Encoding.ASCII.GetBytes(txt);
+
+            // read then skip
+            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var op = scanner.Peek();
+            Assert.Equal(PdfOperatorType.cm, op);
+            var succeeded = scanner.TryGetCurrentOperation(out var opObj);
+            Assert.True(succeeded);
+            Assert.Equal(PdfOperatorType.cm, opObj.Type);
+            var obj = (cm_Op)opObj;
+            Assert.Equal(100, obj.a);
+            Assert.Equal(0, obj.b);
+            Assert.Equal(0, obj.c);
+            Assert.Equal(100, obj.d);
+            Assert.Equal(0, obj.e);
+            Assert.Equal(0, obj.f);
         }
     }
 }

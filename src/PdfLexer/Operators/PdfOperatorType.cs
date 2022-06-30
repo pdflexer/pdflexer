@@ -181,7 +181,7 @@ namespace PdfLexer.Operators
             [28003] =  cm_Op.Parse, 
             [21315] =  CS_Op.Parse, 
             [29539] =  cs_Op.Parse, 
-            [100] =  d_Op.Parse, 
+            [100] =  PdfOperator.Parsed, 
             [12388] =  d0_Op.Parse, 
             [12644] =  d1_Op.Parse, 
             [28484] =  Do_Op.Parse, 
@@ -348,8 +348,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "PdfName"  };
+
         public static BMC_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for BMC, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
     
             return new BMC_Op(a0);
@@ -422,8 +433,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+
         public static c_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 6) 
+            {
+                ctx.Error($"Incorrect operand count for c, got {operands.Count}, expected 6.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -471,8 +493,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+
         public static cm_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 6) 
+            {
+                ctx.Error($"Incorrect operand count for cm, got {operands.Count}, expected 6.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -500,8 +533,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "PdfName"  };
+
         public static CS_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for CS, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
     
             return new CS_Op(a0);
@@ -524,8 +568,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "PdfName"  };
+
         public static cs_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for cs, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
     
             return new cs_Op(a0);
@@ -541,23 +596,6 @@ namespace PdfLexer.Operators
         {
             this.dashArray = dashArray;
             this.dashPhase = dashPhase;
-        }
-
-        public void Serialize(Stream stream) 
-        {
-            PdfOperator.WritePdfArray(dashArray, stream);
-            stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(dashPhase, stream);
-            stream.WriteByte((byte)' ');
-            stream.Write(OpData);
-        }
-
-        public static d_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
-        {
-            var a0 = PdfOperator.ParsePdfArray(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-    
-            return new d_Op(a0, a1);
         }
     }
     public partial class d0_Op : IPdfOperation
@@ -581,8 +619,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal"  };
+
         public static d0_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 2) 
+            {
+                ctx.Error($"Incorrect operand count for d0, got {operands.Count}, expected 2.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
     
@@ -626,8 +675,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+
         public static d1_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 6) 
+            {
+                ctx.Error($"Incorrect operand count for d1, got {operands.Count}, expected 6.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -655,8 +715,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "PdfName"  };
+
         public static Do_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for Do, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
     
             return new Do_Op(a0);
@@ -796,8 +867,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static G_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for G, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new G_Op(a0);
@@ -820,8 +902,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static g_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for g, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new g_Op(a0);
@@ -844,8 +937,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "PdfName"  };
+
         public static gs_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for gs, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
     
             return new gs_Op(a0);
@@ -883,8 +987,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static i_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for i, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new i_Op(a0);
@@ -922,8 +1037,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "int"  };
+
         public static j_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for j, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
     
             return new j_Op(a0);
@@ -946,8 +1072,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "int"  };
+
         public static J_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for J, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
     
             return new J_Op(a0);
@@ -982,8 +1119,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal"  };
+
         public static K_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 4) 
+            {
+                ctx.Error($"Incorrect operand count for K, got {operands.Count}, expected 4.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -1021,8 +1169,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal"  };
+
         public static k_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 4) 
+            {
+                ctx.Error($"Incorrect operand count for k, got {operands.Count}, expected 4.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -1052,8 +1211,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal"  };
+
         public static l_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 2) 
+            {
+                ctx.Error($"Incorrect operand count for l, got {operands.Count}, expected 2.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
     
@@ -1081,8 +1251,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal"  };
+
         public static m_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 2) 
+            {
+                ctx.Error($"Incorrect operand count for m, got {operands.Count}, expected 2.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
     
@@ -1106,8 +1287,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static M_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for M, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new M_Op(a0);
@@ -1130,8 +1322,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "PdfName"  };
+
         public static MP_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for MP, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
     
             return new MP_Op(a0);
@@ -1211,8 +1414,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal"  };
+
         public static re_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 4) 
+            {
+                ctx.Error($"Incorrect operand count for re, got {operands.Count}, expected 4.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -1246,8 +1460,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal"  };
+
         public static RG_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 3) 
+            {
+                ctx.Error($"Incorrect operand count for RG, got {operands.Count}, expected 3.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -1280,8 +1505,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal"  };
+
         public static rg_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 3) 
+            {
+                ctx.Error($"Incorrect operand count for rg, got {operands.Count}, expected 3.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -1306,8 +1542,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "PdfName"  };
+
         public static ri_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for ri, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
     
             return new ri_Op(a0);
@@ -1404,8 +1651,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "PdfName"  };
+
         public static sh_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for sh, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
     
             return new sh_Op(a0);
@@ -1443,8 +1701,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static Tc_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for Tc, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new Tc_Op(a0);
@@ -1471,8 +1740,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal"  };
+
         public static Td_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 2) 
+            {
+                ctx.Error($"Incorrect operand count for Td, got {operands.Count}, expected 2.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
     
@@ -1500,8 +1780,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal"  };
+
         public static TD_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 2) 
+            {
+                ctx.Error($"Incorrect operand count for TD, got {operands.Count}, expected 2.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
     
@@ -1529,8 +1820,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "PdfName", "decimal"  };
+
         public static Tf_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 2) 
+            {
+                ctx.Error($"Incorrect operand count for Tf, got {operands.Count}, expected 2.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
     
@@ -1574,8 +1876,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static TL_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for TL, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new TL_Op(a0);
@@ -1618,8 +1931,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+
         public static Tm_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 6) 
+            {
+                ctx.Error($"Incorrect operand count for Tm, got {operands.Count}, expected 6.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -1647,8 +1971,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "int"  };
+
         public static Tr_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for Tr, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
     
             return new Tr_Op(a0);
@@ -1671,8 +2006,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static Ts_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for Ts, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new Ts_Op(a0);
@@ -1695,8 +2041,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static Tw_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for Tw, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new Tw_Op(a0);
@@ -1719,8 +2076,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static Tz_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for Tz, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new Tz_Op(a0);
@@ -1755,8 +2123,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal"  };
+
         public static v_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 4) 
+            {
+                ctx.Error($"Incorrect operand count for v, got {operands.Count}, expected 4.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
@@ -1782,8 +2161,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal"  };
+
         public static w_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 1) 
+            {
+                ctx.Error($"Incorrect operand count for w, got {operands.Count}, expected 1.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
     
             return new w_Op(a0);
@@ -1848,8 +2238,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal"  };
+
         public static y_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
+            if (operands.Count != 4) 
+            {
+                ctx.Error($"Incorrect operand count for y, got {operands.Count}, expected 4.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
             var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
             var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
             var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
