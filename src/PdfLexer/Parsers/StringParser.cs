@@ -95,7 +95,7 @@ namespace PdfLexer.Parsers
             if (_ctx.IsEncrypted)
             {
                 // DECRYPTION TODO
-                throw new NotImplementedException("Encryption not supported.");
+                throw new NotSupportedException("Pdf encryption is not supported.");
             }
 
             var encoding = PdfTextEncodingType.PdfDocument;

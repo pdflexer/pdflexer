@@ -10,6 +10,7 @@ namespace PdfLexer.Filters
     {
         private readonly ParsingContext _ctx;
         private byte[] input = new byte[5];
+        private byte[] rev = new byte[4];
         public Ascii85Filter(ParsingContext ctx)
         {
             _ctx = ctx;
@@ -38,7 +39,8 @@ namespace PdfLexer.Filters
             // TODO create real stream implementation
             var output = _ctx.GetTemporaryStream();
             int i;
-            while ((i = stream.ReadByte()) != -1)
+            bool eof = false;
+            while ((i = stream.ReadByte()) != -1 && !eof)
             {
                 var c = (byte)i;
                 if (CommonUtil.IsWhiteSpace(c))
@@ -74,16 +76,19 @@ namespace PdfLexer.Filters
 
                     if (c == EOF || c == TILDA_CHAR)
                     {
+                        eof = true;
                         break;
                     }
                 }
 
                 // partial ending;
+                int added = 0;
                 if (i < 5)
                 {
                     for (; i < 5; ++i)
                     {
                         input[i] = 0x21 + 84;
+                        added++;
                     }
                 }
 
@@ -95,8 +100,12 @@ namespace PdfLexer.Filters
 
                 for (i = 3; i >= 0; --i)
                 {
-                    output.WriteByte((byte)(t & 0xff));
+                    rev[i] = (byte)(t & 0xff);
                     t >>= 8;
+                }
+                for (i = 0; i < 4-added; i++)
+                {
+                    output.WriteByte(rev[i]);
                 }
             }
 

@@ -1,4 +1,5 @@
-﻿using PdfLexer.Lexing;
+﻿using PdfLexer.Filters;
+using PdfLexer.Lexing;
 using PdfLexer.Operators;
 using System.Collections.Generic;
 using System.IO;
@@ -9,6 +10,19 @@ namespace PdfLexer.Tests
 {
     public class ContentLexingTests
     {
+        [InlineData("<+U,m+D#G#De*R\"B-:W(@qfW~>", "Test encoding ascii")]
+        [Theory]
+        public void It_Decodes(string encoded, string decoded)
+        {
+            var data = Encoding.ASCII.GetBytes(encoded);
+            var decoder = new Ascii85Filter(new Parsers.ParsingContext());
+            var ms = new MemoryStream(data);
+            var result = decoder.Decode(ms, null);
+            var rms = new MemoryStream();
+            result.CopyTo(rms);
+            var str = Encoding.UTF8.GetString(rms.ToArray());
+            Assert.Equal(str, decoded);
+        }
         [Fact]
         public void It_Lexes_Stream()
         {

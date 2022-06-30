@@ -233,16 +233,18 @@ bool RunRebuildTests(string pdfRoot, string output)
 {
     bool success = true;
     Directory.CreateDirectory(output);
-
-    foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+    // foreach (var pdf in names.Select(n=>Path.Combine(pdfRoot, n)))
+    foreach (var pdf in Directory.GetFiles(pdfRoot, "__*.pdf"))
     {
         var nm = Path.GetFileName(pdf);
+        // if (nm.StartsWith("__")) { continue; }
         var comparer = new Compare(Path.Combine(output, Path.GetFileNameWithoutExtension(pdf)), 2);
         var modified = Path.Combine(output, Path.GetFileName(pdf));
         {
             try
             {
                 using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                // for non compressed object strams
                 if (doc.Trailer.Get(PdfName.Encrypt) != null)
                 {
                     continue;
@@ -255,6 +257,15 @@ bool RunRebuildTests(string pdfRoot, string output)
                     sw.AddPage(np);
                 }
                 sw.Complete(doc.Trailer.CloneShallow(), doc.Catalog.CloneShallow());
+            }
+            catch (NotSupportedException ex)
+            {
+                // for compressed object streams
+                if (ex.Message.Contains("encryption"))
+                {
+                    continue;
+                }
+                Log($"[{nm}] pdflexer failure: {ex.Message}");
             }
             catch (Exception ex)
             {

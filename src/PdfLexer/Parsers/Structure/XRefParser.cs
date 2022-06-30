@@ -209,11 +209,14 @@ namespace PdfLexer.Parsers.Structure
                                 original[item.Key] = item.Value;
                             }
                         }
+                    } else
+                    {
+                        original = dict;
                     }
                     if (oss == null)
                     {
                         _ctx.Options.Eagerness = orig;
-                        return (entries, dict);
+                        return (entries, original);
                     }
 
                     stream = source.GetStream(oss);
@@ -226,7 +229,6 @@ namespace PdfLexer.Parsers.Structure
                         // TODO handle mixed XREf
                         throw new ApplicationException($"Token that /Prev entry pointed to at {strStart} was not a numeric, expected N N obj. Got: " + result);
                     }
-                    original ??= dict;
                 }
             }
             else

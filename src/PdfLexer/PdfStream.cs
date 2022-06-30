@@ -137,6 +137,10 @@ namespace PdfLexer
         /// <returns></returns>
         public Stream GetDecodedStream(ParsingContext ctx)
         {
+            if (ctx.IsEncrypted)
+            {
+                throw new NotSupportedException("Pdf encryption is not supported.");
+            }
             if (DecodedData != null)
             {
                 return new MemoryStream(DecodedData);
@@ -219,7 +223,7 @@ namespace PdfLexer
         {
             if (Source.Context.IsEncrypted)
             {
-                throw new NotImplementedException("Encryption not implemented.");
+                throw new NotSupportedException("Pdf encryption is not supported.");
             }
             Source.CopyData(Offset, Length, destination);
         }
@@ -228,7 +232,7 @@ namespace PdfLexer
         {
             if (Source.Context.IsEncrypted)
             {
-                throw new NotImplementedException("Encryption not implemented.");
+                throw new NotSupportedException("Pdf encryption is not supported.");
             }
             return Source.GetDataAsStream(Offset, Length);
         }

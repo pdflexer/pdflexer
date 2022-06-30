@@ -58,10 +58,15 @@ namespace PdfLexer.Filters
 
         public Stream Decode(Stream source, PdfDictionary decodeParms)
         {
+#if NET6_0
+            var deflated = new ZLibStream(source, CompressionMode.Decompress, true);
+#else
             // remove header
             source.ReadByte();
             source.ReadByte();
             var deflated = new DeflateStream(source, CompressionMode.Decompress, true);
+#endif
+
 
             if (decodeParms == null) { return deflated; }
 
