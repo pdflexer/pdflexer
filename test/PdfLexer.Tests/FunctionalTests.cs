@@ -151,6 +151,14 @@ namespace PdfLexer.Tests
                     var doc = PdfDocument.Open(fs);
                     EnumerateObjects(doc.Trailer, new HashSet<int>());
                 }
+                catch (NotSupportedException ex)
+                {
+                    // for compressed object streams
+                    if (ex.Message.Contains("encryption"))
+                    {
+                        continue;
+                    }
+                }
                 catch (Exception e)
                 {
                     errors.Add(pdf + ": " + e.Message);

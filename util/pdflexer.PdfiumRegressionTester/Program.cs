@@ -233,7 +233,7 @@ bool RunRebuildTests(string pdfRoot, string output)
     bool success = true;
     Directory.CreateDirectory(output);
     // foreach (var pdf in names.Select(n=>Path.Combine(pdfRoot, n)))
-    foreach (var pdf in Directory.GetFiles(pdfRoot, "*2799*.pdf"))
+    foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
     {
         var nm = Path.GetFileName(pdf);
         // if (nm.StartsWith("__")) { continue; }
