@@ -14,30 +14,41 @@ namespace PdfLexer.Filters
         {
             _ctx = ctx;
         }
-        // Decode FUNCTION PORTED FROM PDF.JS, PDF.JS is licensed as follows:
-        /* Copyright 2012 Mozilla Foundation
-         *
-         * Licensed under the Apache License, Version 2.0 (the "License");
-         * you may not use this file except in compliance with the License.
-         * You may obtain a copy of the License at
-         *
-         *     http://www.apache.org/licenses/LICENSE-2.0
-         *
-         * Unless required by applicable law or agreed to in writing, software
-         * distributed under the License is distributed on an "AS IS" BASIS,
-         * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-         * See the License for the specific language governing permissions and
-         * limitations under the License.
-         */
+
         public Stream Decode(Stream stream, PdfDictionary filterParams)
+        {
+            return new AsciiHexStream(stream);
+        }
+    }
+
+    // Decode stream MODIFIED / PORTED FROM PDF.JS, PDF.JS is licensed as follows:
+    /* Copyright 2012 Mozilla Foundation
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    internal class AsciiHexStream : DecodeStream
+    {
+        public AsciiHexStream(Stream inner) : base(inner) { }
+
+        public override int Read(byte[] buffer, int offset, int count)
         {
             var eof = false;
             var firstDigit = -1;
             int ch;
 
-            // TODO create real stream implementation
-            var output = _ctx.GetTemporaryStream();
-            while ((ch = stream.ReadByte()) != -1)
+            int read = 0;
+
+            while ((ch = inner.ReadByte()) != -1 && read < count)
             {
                 int digit;
                 if (ch >= /* '0' = */ 0x30 && ch <= /* '9' = */ 0x39)
@@ -67,7 +78,8 @@ namespace PdfLexer.Filters
                 }
                 else
                 {
-                    output.WriteByte((byte) ((firstDigit << 4) | digit));
+                    buffer[offset + read] = (byte)((firstDigit << 4) | digit);
+                    read++;
                     firstDigit = -1;
                 }
             }
@@ -75,10 +87,11 @@ namespace PdfLexer.Filters
             if (firstDigit >= 0 && eof)
             {
                 // incomplete byte
-                output.WriteByte((byte) (firstDigit << 4));
+                buffer[offset + read] = (byte)(firstDigit << 4);
+                read++;
             }
-            output.Position = 0;
-            return output;
+
+            return read;
         }
     }
 }

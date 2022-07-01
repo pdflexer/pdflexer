@@ -247,7 +247,15 @@ namespace PdfLexer.Parsers
 
             if (value.Type == XRefType.Compressed && value.Source == null)
             {
-                LoadObjectStream(value);
+                try
+                {
+                    LoadObjectStream(value);
+                } catch (PdfLexerException ex)
+                {
+                    Error($"Error loading object stream, return null obj: " + ex.Message);
+                    return PdfNull.Value;
+                }
+                
             }
 
             // CurrentIndirectObject = id;
