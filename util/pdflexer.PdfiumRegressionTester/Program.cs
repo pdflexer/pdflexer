@@ -27,7 +27,6 @@ var type = new Option<string>(
             name: "--type",
             description: "Type of test to run, merge or rebuild.");
 
-
 var download = new Option<bool>(
             name: "--download",
             getDefaultValue: () => false,
@@ -234,7 +233,7 @@ bool RunRebuildTests(string pdfRoot, string output)
     bool success = true;
     Directory.CreateDirectory(output);
     // foreach (var pdf in names.Select(n=>Path.Combine(pdfRoot, n)))
-    foreach (var pdf in Directory.GetFiles(pdfRoot, "__*.pdf"))
+    foreach (var pdf in Directory.GetFiles(pdfRoot, "*2799*.pdf"))
     {
         var nm = Path.GetFileName(pdf);
         // if (nm.StartsWith("__")) { continue; }
@@ -317,8 +316,6 @@ bool RunRebuildTests(string pdfRoot, string output)
     return success;
 }
 
-
-
 static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
 {
     var scanner = new PageContentScanner(doc.Context, page);
@@ -329,10 +326,6 @@ static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
         if (scanner.TryGetCurrentOperation(out var op))
         {
             op.Serialize(ms);
-            ms.WriteByte((byte)'\n');
-        } else
-        {
-            ms.Write(scanner.GetCurrentData());
             ms.WriteByte((byte)'\n');
         }
         scanner.SkipCurrent();

@@ -10,18 +10,29 @@ namespace PdfLexer.Tests
 {
     public class ContentLexingTests
     {
-        [InlineData("<+U,m+D#G#De*R\"B-:W(@qfW~>", "Test encoding ascii")]
+        [InlineData("<+U,m+D#G#De*R\"B-:W(@qfW~>", "Test encoding ascii", true)]
+        [InlineData("<+U,m+D#G#De*R\"B-:W(@qfW~>", "Test encoding ascii", false)]
         [Theory]
-        public void It_Decodes(string encoded, string decoded)
+        public void It_Decodes(string encoded, string decoded, bool singleByte)
         {
             var data = Encoding.ASCII.GetBytes(encoded);
             var decoder = new Ascii85Filter(new Parsers.ParsingContext());
             var ms = new MemoryStream(data);
             var result = decoder.Decode(ms, null);
             var rms = new MemoryStream();
-            result.CopyTo(rms);
+            if (singleByte)
+            {
+                int b = 0;
+                while ((b = result.ReadByte()) != -1)
+                {
+                    rms.WriteByte((byte)b);
+                }
+            } else
+            {
+                result.CopyTo(rms);
+            }
             var str = Encoding.UTF8.GetString(rms.ToArray());
-            Assert.Equal(str, decoded);
+            Assert.Equal(decoded, str);
         }
         [Fact]
         public void It_Lexes_Stream()

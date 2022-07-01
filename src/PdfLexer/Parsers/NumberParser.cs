@@ -112,6 +112,14 @@ namespace PdfLexer.Parsers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SkipNumber(ReadOnlySpan<byte> bytes, ref int i, out bool isDecimal)
         {
+            // TODO (lenient parsing consistent with adobe)
+            // ignore line breaks (between +/- and data)
+            // ignore double negative
+            // single decimal point = 0
+            // single minus = 0
+            // add scientific notation, need to peak after E to see if 0-9,+,-
+            // ignore minus sign in middle of number
+
             var start = i;
             ReadOnlySpan<byte> local = bytes;
             isDecimal = false;

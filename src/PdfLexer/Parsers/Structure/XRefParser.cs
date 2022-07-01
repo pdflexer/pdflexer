@@ -54,6 +54,8 @@ namespace PdfLexer.Parsers.Structure
                 entries[entry.Reference.GetId()] = entry;
             }
             UpdateRefs(results.Refs);
+
+            pdf.Context.IsEncrypted = results.Trailer?.ContainsKey(PdfName.Encrypt) ?? false;
             return (entries, results.Trailer);
 
             void UpdateRefs(List<XRefEntry> refs)
