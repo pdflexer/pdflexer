@@ -277,7 +277,10 @@ namespace PdfLexer.Parsers.Structure
                 stream.Seek(0, SeekOrigin.Begin);
                 pipe = PipeReader.Create(stream, new StreamPipeReaderOptions(leaveOpen: true));
                 scanner = new PipeScanner(_ctx, pipe);
-                scanner.Advance((int)(pos+1));
+                if (!scanner.Advance((int)(pos+1)))
+                {
+                    break;
+                }
             }
 
             stream.Seek(0, SeekOrigin.Begin);

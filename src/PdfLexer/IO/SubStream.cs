@@ -89,7 +89,8 @@ namespace PdfLexer.IO
                 offset += subOffset;
             }
             var result = baseStream.Seek(offset, origin);
-            return result - subOffset;
+            position = result - subOffset;
+            return position;
             
         }
         public override void SetLength(long value)
