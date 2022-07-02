@@ -82,11 +82,6 @@ namespace PdfLexer.IO
             Context.UnwrapAndCopyObjData(data.Slice(os), destination);
         }
 
-        public bool TryRepairXRef(XRefEntry entry, out XRefEntry repaired)
-        {
-            throw new NotImplementedException();
-        }
-
         public IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
         {
             throw new NotImplementedException();

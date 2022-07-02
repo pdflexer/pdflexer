@@ -48,15 +48,23 @@ namespace PdfLexer.Lexing
         public long GetStartOffset()
         {
             Peek();
-            return CurrentOffset + Reader.Sequence.Slice(Reader.Sequence.Start, CurrentStart).Length; // :(
+#if NET5_0_OR_GREATER
+            return CurrentOffset + Reader.Sequence.Slice(Reader.Sequence.Start, CurrentStart).Length;
+            //return CurrentOffset + Reader.Sequence.GetOffset(CurrentStart);
+#else
+            return CurrentOffset + Reader.Sequence.Slice(Reader.Sequence.Start, CurrentStart).Length;
+#endif
         }
 
         private void AdvanceBuffer(SequencePosition pos)
         {
-            // UGH.. better way? Sequence.GetOffset for net5.0 but not sure how that behaves
-            // since we are recreating sequence reader... data is from same pipereader so probably is
-            // what we want
+
+#if NET5_0_OR_GREATER
+            // CurrentOffset += Reader.Sequence.GetOffset(pos);
             CurrentOffset += Reader.Sequence.Slice(Reader.Sequence.Start, pos).Length;
+#else
+            CurrentOffset += Reader.Sequence.Slice(Reader.Sequence.Start, pos).Length;
+#endif
             Pipe.AdvanceTo(pos, Reader.Sequence.End);
             InitReader();
             CurrentStart = Reader.Position;
@@ -112,16 +120,19 @@ namespace PdfLexer.Lexing
             }
         }
 
-        public void Advance(int cnt)
+        public bool Advance(int cnt)
         {
-            
-            while (Reader.Remaining < cnt)
+            while (Reader.Remaining < cnt && !IsCompleted)
             {
                 cnt -= (int)Reader.Remaining;
                 AdvanceBuffer(Reader.Sequence.End);
             }
+            if (IsCompleted == true && cnt > Reader.Remaining) { 
+                return false;
+            }
             Reader.Advance(cnt);
             CurrentTokenType = PdfTokenType.TBD;
+            return true;
         }
 
         public void SkipObject()
@@ -168,7 +179,6 @@ namespace PdfLexer.Lexing
         {
             while (true)
             {
-
                 if (!NestedUtil.AdvanceToArrayEnd(ref Reader, out _))
                 {
                     if (IsCompleted)
@@ -231,12 +241,35 @@ namespace PdfLexer.Lexing
 
                 return Reader.Sequence.Slice(start, Reader.Position);
             }
+        }
 
+        public bool ScanToToken(ReadOnlySpan<byte> token)
+        {
+            var start = Reader.Position;
+            while (true)
+            {
+                if (!Reader.TryAdvanceTo(token[0], false) || Reader.Remaining < token.Length)
+                {
+                    if (IsCompleted)
+                    {
+                        return false;
+                    }
+                    AdvanceBuffer(start);
+                    continue;
+                }
+
+                if (!Reader.IsNext(token, false))
+                {
+                    Reader.Advance(1);
+                    continue;
+                }
+
+                return true;
+            }
         }
 
         public ReadOnlySequence<byte> Read(int total)
         {
-            var start = Reader.Position;
             while (Reader.Remaining < total)
             {
                 AdvanceBuffer(CurrentStart);

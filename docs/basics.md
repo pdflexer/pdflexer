@@ -2,7 +2,7 @@
 
 ### Opening and Creating Documents
 
-PDFs can currently be opened from a `byte[]` or `Stream` using the `PdfDocument.Open()` method. (note: `Stream` based access is beta quality, and lacks some capabilities to repair corrupt PDFs that are implemented for `byte[]` based access). PDFs can be created using `PdfDocument.Create()`. `PdfDocument` data can be accessed by using the `Trailer`, `Catalog` and `Pages` properties on the document.
+PDFs can currently be opened from a `byte[]` or `Stream` using the `PdfDocument.Open()` method. PDFs can be created using `PdfDocument.Create()`. `PdfDocument` data can be accessed by using the `Trailer`, `Catalog` and `Pages` properties on the document.
 
 ```csharp
 using var doc = PdfDocument.Open(File.ReadAllBytes("input.pdf"));
