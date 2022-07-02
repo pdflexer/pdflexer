@@ -204,6 +204,10 @@ namespace PdfLexer.Parsers
                 else
                 {
                     Error("Endstream not found at end of stream when parsing when copying data.");
+                    if (endstream == PdfTokenType.EOS)
+                    {
+                        scanner.Position = data.Length - Math.Min(data.Length, 100);
+                    }
                     if (!scanner.TryFindEndStream())
                     {
                         Error("Unable to find endstream in contents, writing provided length.");
@@ -370,6 +374,10 @@ namespace PdfLexer.Parsers
                 if (endstream != PdfTokenType.EndStream)
                 {
                     Error("Endstream not found at end of stream when parsing indirect object.");
+                    if (endstream == PdfTokenType.EOS)
+                    {
+                        scanner.Position = data.Length - Math.Min(data.Length, 100);
+                    }
                     if (scanner.TryFindEndStream())
                     {
                         Error("Found endstream in contents, using repaired length.");
