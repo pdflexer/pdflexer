@@ -43,7 +43,7 @@ namespace PdfLexer
                    || c == 0x20;
         }
 
-        public static void FillArray(this Stream stream, byte[] array, int requiredBytes=-1)
+        public static void FillArray(this Stream stream, byte[] array, int requiredBytes = -1)
         {
             if (requiredBytes < 0) { requiredBytes = array.Length; }
             int total = 0;
@@ -82,13 +82,13 @@ namespace PdfLexer
         public static void RecursiveLoad(IPdfObject obj) => RecursiveLoad(obj, new HashSet<object>());
         internal static void RecursiveLoad(IPdfObject obj, HashSet<object> refStack)
         {
-            if (refStack.Contains(obj)) 
+            if (refStack.Contains(obj))
             {
                 if (obj is ExistingIndirectRef eir)
                 {
                     _ = eir.GetObject();
                 }
-                return; 
+                return;
             }
             refStack.Add(obj);
             switch (obj)
@@ -112,11 +112,11 @@ namespace PdfLexer
                     }
                 case PdfDictionary dict:
                     dict.TryGetValue<PdfName>(PdfName.TypeName, out var type, false);
-                    foreach (var (k,v) in dict)
+                    foreach (var (k, v) in dict)
                     {
-                        if (type == PdfName.Page && k == PdfName.Parent) 
-                        { 
-                            continue; 
+                        if (type == PdfName.Page && k == PdfName.Parent)
+                        {
+                            continue;
                         }
                         RecursiveLoad(v, refStack);
                     }
@@ -192,7 +192,7 @@ namespace PdfLexer
             }
         }
 
-        internal static void Recurse(IPdfObject obj, HashSet<PdfIndirectRef> refStack, Func<IPdfObject, bool> skip, Action<IPdfObject, PdfIndirectRef?> objWork, bool ordered=false, PdfIndirectRef? irRef=null)
+        internal static void Recurse(IPdfObject obj, HashSet<PdfIndirectRef> refStack, Func<IPdfObject, bool> skip, Action<IPdfObject, PdfIndirectRef?> objWork, bool ordered = false, PdfIndirectRef? irRef = null)
         {
             if (refStack.Contains(obj) || skip(obj))
             {
@@ -255,7 +255,7 @@ namespace PdfLexer
         /// <param name="dict">Pdf catalog.</param>
         /// <returns>Page dictionaries.</returns>
         public static IEnumerable<PdfPage> EnumeratePageTree(PdfDictionary dict) => EnumeratePages(dict, null, null, null, null, null, new HashSet<object>());
-        internal static IEnumerable<PdfPage> EnumeratePages(PdfDictionary dict, 
+        internal static IEnumerable<PdfPage> EnumeratePages(PdfDictionary dict,
             PdfDictionary resources, PdfArray mediabox, PdfArray cropbox, PdfNumber rotate, ExistingIndirectRef irf,
             HashSet<object> read)
         {
@@ -339,11 +339,17 @@ namespace PdfLexer
             return new PdfLexerException(prefixInfo + ": '" + Encoding.ASCII.GetString(data.Slice(i, count)) + "'");
         }
 
+        internal static string DisplayDataError(ReadOnlySpan<byte> data, int i, string prefixInfo)
+        {
+            var count = data.Length > i + 25 ? 25 : data.Length - i;
+            return prefixInfo + ": '" + Encoding.ASCII.GetString(data.Slice(i, count)) + "'";
+        }
+
         internal static string GetDataErrorInfo(ReadOnlySpan<byte> data, int i)
         {
             if (i + 1 > data.Length || i < 0)
             {
-                i = Math.Max(data.Length-10, 0);
+                i = Math.Max(data.Length - 10, 0);
             }
             var count = data.Length > i + 25 ? 25 : data.Length - i;
             return Encoding.ASCII.GetString(data.Slice(i, count));
@@ -419,7 +425,7 @@ namespace PdfLexer
                     b == 0x00 || b == 0x09 || b == 0x0A || b == 0x0C || b == 0x0D || b == 0x20
                     || b == (byte)'(' || b == (byte)')' || b == (byte)'<' || b == (byte)'>'
                     || b == (byte)'[' || b == (byte)']' || b == (byte)'{' || b == (byte)'}'
-                    || b == (byte)'/' || b == (byte)'%' 
+                    || b == (byte)'/' || b == (byte)'%'
                     || (b > 47 && b < 58) // number start
                     || b == (byte)'+' || b == (byte)'-' || b == (byte)'.'
                     )

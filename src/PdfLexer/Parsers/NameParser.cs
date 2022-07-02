@@ -70,23 +70,31 @@ namespace PdfLexer.Parsers
                 {
                     if (!Utf8Parser.TryParse(buffer.Slice(i + 1, 2), out byte v, out int ic, 'x'))
                     {
-                        throw CommonUtil.DisplayDataErrorException(buffer, i, "Invalid hex found");
+                        _ctx.Error("Invalid hex found, ignoring: " + Encoding.ASCII.GetString(buffer.Slice(i, 3)));
+                        i += 2;
+                    } else
+                    {
+                        Debug.Assert(ic == 2);
+                        i += 2;
+                        bytes[ci++] = v;
                     }
-                    Debug.Assert(ic == 2);
-                    i += 2;
-                    bytes[ci++] = v;
                 }
                 else
                 {
                     bytes[ci++] = c;
                 }
             }
-            ;
+
+            if (ci <= 1)
+            {
+                // garbage name resulted in no chars
+                return Err;
+            }
             // note, pdf1.7 spec names should be treated at utf-8 for cases where they need a text representation
             var name = new PdfName(Iso88591.GetString(bytes.Slice(0, ci)), true);
             return name;
         }
-
+        private static readonly PdfName Err = new PdfName("/Err");
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SkipName(ReadOnlySpan<byte> bytes, ref int i)
         {

@@ -346,8 +346,8 @@ namespace PdfLexer.Operators
             bool end = false;
             for (var i = 1; i < operands.Count; i++)
             {
+                if (end) { dp = ParseDecimal(ctx, data, operands[i]); break; }
                 if (operands[i].Type == PdfTokenType.ArrayEnd) { end = true; }
-                if (end) { ParseDecimal(ctx, data, operands[i]); break; }
             }
             return new d_Op(da, dp);
         }

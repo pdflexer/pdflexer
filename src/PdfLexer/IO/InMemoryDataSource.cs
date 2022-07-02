@@ -84,12 +84,12 @@ namespace PdfLexer.IO
             {
                 return Context.GetWrappedIndirectObject(xref, buffer.Slice((int)xref.Offset, xref.MaxLength));
             }
-            catch (PdfLexerTokenMismatchException)
+            catch (PdfLexerException)
             {
                 Context.Error($"XRef offset for {xref.Reference} was not valid.");
                 if (!TryRepairXRef(xref, out var repaired))
                 {
-                    throw;
+                    return PdfNull.Value;
                 }
                 Context.CurrentOffset = repaired.Offset;
                 Context.Error("XRef offset repairs to " + repaired.Offset);
@@ -117,7 +117,7 @@ namespace PdfLexer.IO
                 Context.Error($"XRef offset for {xref.Reference} was not valid.");
                 if (!TryRepairXRef(xref, out var repaired))
                 {
-                    throw;
+                    return; // will be null in new doc
                 }
                 Context.CurrentOffset = repaired.Offset;
                 Context.Error("XRef offset repairs to " + repaired.Offset);
@@ -189,6 +189,10 @@ namespace PdfLexer.IO
             {
                 scanner.Position = nextOs;
                 scanner.ScanToToken(IndirectSequences.obj);
+                if (scanner.Peek() == PdfTokenType.EOS)
+                {
+                    break;
+                }
                 nextOs = scanner.Position + 1;
                 if (!scanner.TryScanBackTokens(2, 20))
                 {
