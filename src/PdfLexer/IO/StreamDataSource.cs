@@ -25,12 +25,12 @@ namespace PdfLexer.IO
             {
                 return Context.GetWrappedIndirectObject(xref, buffer); ;
             }
-            catch (PdfLexerTokenMismatchException e)
+            catch (PdfLexerException e)
             {
-                Context.Error($"XRef offset for {xref.Reference} was not valid.");
+                Context.Error($"XRef offset for {xref.Reference} was not valid: " + e.Message);
                 if (!TryRepairXRef(xref, out var repaired))
                 {
-                    throw;
+                    return PdfNull.Value;
                 }
                 Context.CurrentOffset = repaired.Offset;
                 Context.Error("XRef offset repairs to " + repaired.Offset);
@@ -67,12 +67,12 @@ namespace PdfLexer.IO
             {
                 Context.UnwrapAndCopyObjData(buffer, destination);
             }
-            catch (PdfLexerTokenMismatchException e)
+            catch (PdfLexerException e)
             {
-                Context.Error($"XRef offset for {xref.Reference} was not valid.");
+                Context.Error($"XRef offset for {xref.Reference} was not valid: " + e.Message);
                 if (!TryRepairXRef(xref, out var repaired))
                 {
-                     throw;
+                    return; // will be null;
                 }
                 Context.CurrentOffset = repaired.Offset;
                 Context.Error("XRef offset repairs to " + repaired.Offset);

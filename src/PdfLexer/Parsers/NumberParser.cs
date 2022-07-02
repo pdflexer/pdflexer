@@ -24,6 +24,7 @@ namespace PdfLexer.Parsers
         {
             if (buffer[0] == (byte)'+')
             {
+                if (buffer.Length == 1) { return PdfCommonNumbers.Zero; } // adobe convention
                 buffer = buffer.Slice(1);
             }
 
@@ -32,6 +33,8 @@ namespace PdfLexer.Parsers
                 switch (buffer[0])
                 {
                     case (byte)'0':
+                    case (byte)'.': // adobe convention
+                    case (byte)'-': // adobe convention
                         return PdfCommonNumbers.Zero;
                     case (byte)'1':
                         return PdfCommonNumbers.One;

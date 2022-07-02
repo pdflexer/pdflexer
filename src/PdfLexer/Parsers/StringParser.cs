@@ -160,17 +160,19 @@ namespace PdfLexer.Parsers
 
                     if (!Utf8Parser.TryParse(hexBuffer, out byte value, out int consumed, 'x'))
                     {
-                        throw CommonUtil.DisplayDataErrorException(buffer, i, "Bad hex string data");
+                        _ctx.Error(CommonUtil.DisplayDataError(buffer, i, "Bad hex string data"));
+                    } else
+                    {
+                        Debug.Assert(consumed == 2);
+                        data[di++] = value;
                     }
-                    Debug.Assert(consumed == 2);
-                    data[di++] = value;
                 }
                 isLow = !isLow;
             }
 
             if (!completed)
             {
-                throw CommonUtil.DisplayDataErrorException(buffer, buffer.Length - 1, "Unexpected hex string end");
+                _ctx.Error(CommonUtil.DisplayDataError(buffer, buffer.Length - 1, "Unexpected hex string end"));
             }
 
             if (!isLow)
@@ -178,10 +180,13 @@ namespace PdfLexer.Parsers
                 hexBuffer[1] = (byte)'0';
                 if (!Utf8Parser.TryParse(hexBuffer, out byte v, out int c, 'x'))
                 {
-                    throw CommonUtil.DisplayDataErrorException(buffer, buffer.Length - 1, "Bad hex string data");
+                    _ctx.Error(CommonUtil.DisplayDataError(buffer, buffer.Length - 1, "Bad hex string data at end"));
+                } else
+                {
+                    Debug.Assert(c == 2);
+                    data[di++] = v;
                 }
-                Debug.Assert(c == 2);
-                data[di++] = v;
+                
             }
 
             return di;

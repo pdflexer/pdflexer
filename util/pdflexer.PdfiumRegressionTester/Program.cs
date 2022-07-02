@@ -232,8 +232,7 @@ bool RunRebuildTests(string pdfRoot, string output)
 {
     bool success = true;
     Directory.CreateDirectory(output);
-    // var names = new string[] { "__bug1130815.pdf.pdf", "__ibwa-bad.pdf.pdf", "__issue11230.pdf.pdf", "__issue11678.pdf.pdf",
-    //    "__issue12402.pdf.pdf", "__issue1536.pdf.pdf", "__issue1877.pdf.pdf"};
+    // var names = new string[] { "__issue9462.pdf.pdf" };
     // foreach (var pdf in names.Select(n=>Path.Combine(pdfRoot, n)))
     foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
     {

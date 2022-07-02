@@ -9,11 +9,22 @@ namespace PdfLexer.Parsers
 {
     public class DecimalParser : Parser<PdfDecimalNumber>
     {
+        private static readonly PdfDecimalNumber Zero = new PdfDecimalNumber(0);
         public override PdfDecimalNumber Parse(ReadOnlySpan<byte> buffer)
         {
             if (buffer[0] == (byte) '+')
             {
+                if (buffer.Length == 1) { return Zero;  }
                 buffer = buffer.Slice(1);
+            } else if (buffer.Length == 1)
+            {
+                switch (buffer[0])
+                {
+                    case (byte) '-':
+                    case (byte) '0':
+                    case (byte) '.':
+                        return Zero;
+                }
             }
             return new PdfDecimalNumber(GetDecimal(buffer));
         }

@@ -40,6 +40,7 @@ namespace PdfLexer
         // for perf testing
         public bool LazyStrings { get; set; } = false;
         public bool LowMemoryMode { get; set; } = false;
+        public int MaxErrorRetention { get; set; } = 250;
     }
 
     public enum Eagerness
