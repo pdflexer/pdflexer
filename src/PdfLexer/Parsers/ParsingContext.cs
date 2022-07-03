@@ -84,7 +84,9 @@ namespace PdfLexer.Parsers
             {
                 throw new PdfLexerException(info);
             }
+
             errors++;
+            
             if (Errors.Count > Options.MaxErrorRetention)
             {
                 Errors.RemoveAt(0);
