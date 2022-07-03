@@ -5,11 +5,12 @@ using System.Text;
 
 namespace PdfLexer.IO
 {
+    // adapted from
     // from https://social.msdn.microsoft.com/Forums/vstudio/en-US/c409b63b-37df-40ca-9322-458ffe06ea48/how-to-access-part-of-a-filestream-or-memorystream?forum=netfxbcl
     internal class SubStream : Stream
     {
         private Stream baseStream;
-        private readonly long length;
+        private long length;
         private long position;
         private long subOffset;
         private bool disposeMain;
@@ -32,16 +33,6 @@ namespace PdfLexer.IO
             {
                 throw new NotImplementedException("substream on unseekable");
             }
-            // else
-            // { // read it manually...
-            //     const int BUFFER_SIZE = 512;
-            //     byte[] buffer = new byte[BUFFER_SIZE];
-            //     while (offset > 0)
-            //     {
-            //         int read = baseStream.Read(buffer, 0, offset < BUFFER_SIZE ? (int)offset : BUFFER_SIZE);
-            //         offset -= read;
-            //     }
-            // }
         }
         public override int Read(byte[] buffer, int offset, int count)
         {
@@ -103,20 +94,26 @@ namespace PdfLexer.IO
         }
         protected override void Dispose(bool disposing)
         {
-            base.Dispose(disposing);
-            if (disposing)
-            {
-                if (baseStream != null && disposeMain)
-                {
-                    try { baseStream.Dispose(); }
-                    catch { }
-                }
-                baseStream = null;
-            }
+            // no op -> we reuse these
         }
+
+        public void ActuallyDispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            baseStream = null;
+        }
+
         public override void Write(byte[] buffer, int offset, int count)
         {
             throw new NotImplementedException();
+        }
+
+        public void Reset(long offset, long length)
+        {
+            subOffset = offset;
+            this.length = length;
+            position = 0;
+            baseStream.Seek(offset, SeekOrigin.Begin);
         }
     }
 }

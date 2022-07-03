@@ -92,7 +92,6 @@ namespace PdfLexer
         }
         /// <summary>
         /// Gets the decoded data for this stream.
-        /// TODO look into not required context.
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
@@ -102,7 +101,7 @@ namespace PdfLexer
             {
                 return DecodedData;
             }
-            var stream = GetDecodedStream(ctx); // TODO figure out which streams to dispose;
+            using var stream = GetDecodedStream(ctx); // TODO figure out which streams to dispose;
             if (stream is MemoryStream ms)
             {
                 DecodedData = ms.ToArray();
@@ -112,23 +111,30 @@ namespace PdfLexer
                 if (stream.CanSeek)
                 {
                     DecodedData = new byte[stream.Length];
-                    int pos = 0;
-                    int read;
-                    while ((read = stream.Read(DecodedData, pos, (int)stream.Length - pos)) > 0)
-                    {
-                        pos += read;
-                    }
+                    FillData(stream);
                 }
                 else
                 {
-                    using var copy = ParsingContext.StreamManager.GetStream();
+                    // don't know length, have to copy
+                    using var copy = ctx.GetTemporaryStream();
                     stream.CopyTo(copy);
-                    DecodedData = copy.ToArray(); // this may not make sense... ToArray allocates anyway, why use stream manager?
+                    DecodedData = new byte[copy.Length];
+                    copy.Seek(0, SeekOrigin.Begin);
+                    FillData(copy);
                 }
-
             }
 
             return DecodedData;
+
+            void FillData(Stream str)
+            {
+                int pos = 0;
+                int read;
+                while ((read = str.Read(DecodedData, pos, (int)str.Length - pos)) > 0)
+                {
+                    pos += read;
+                }
+            }
         }
         /// <summary>
         /// Gets the decoded data as a stream.
@@ -151,12 +157,11 @@ namespace PdfLexer
             }
 
             var source = GetEncodedData();
-            if (source.Length != Length)
-            {
-                source = new SubStream(source, 0, Length, true);
-            }
+            // if (source.Length != Length)
+            // {
+            //     source = new SubStream(source, 0, Length, true);
+            // }
 
-            // TODO figure out which streams to dispose, look into usage of the pooled one
             var obj = Filters.Resolve();
             var parms = DecodeParams?.Resolve();
             if (obj.Type == PdfObjectType.ArrayObj)

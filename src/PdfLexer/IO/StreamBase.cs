@@ -17,6 +17,7 @@ namespace PdfLexer.IO
         private ParsingContext _ctx;
         protected Stream _stream;
         private readonly bool _leaveOpen;
+        private readonly SubStream _sub;
 
         public StreamBase(ParsingContext ctx, Stream stream, bool leaveOpen)
         {
@@ -28,6 +29,7 @@ namespace PdfLexer.IO
             _ctx = ctx;
             _stream = stream;
             _leaveOpen = leaveOpen;
+            _sub = new SubStream(stream, 0, stream.Length, false);
         }
 
         public IPdfDataSource Clone()
@@ -41,9 +43,8 @@ namespace PdfLexer.IO
             {
                 throw new ApplicationException("More data requested from data source than available.");
             }
-            // can manually copy without substream at some point if need to
-            using var sub = new SubStream(_stream, startPosition, requiredBytes, false);
-            sub.CopyTo(stream);
+            _sub.Reset(startPosition, requiredBytes);
+            _sub.CopyTo(stream);
         }
 
         public bool Disposed { get; private set; }
@@ -52,6 +53,7 @@ namespace PdfLexer.IO
         {
             if (!_leaveOpen) { _stream.Dispose(); }
             _stream = null;
+            _sub.ActuallyDispose(true);
             Disposed = true;
         }
 
@@ -83,7 +85,8 @@ namespace PdfLexer.IO
             }
             Context.CurrentSource = this;
             Context.CurrentOffset = startPosition;
-            return new SubStream(_stream, startPosition, desiredBytes, false);
+            _sub.Reset(startPosition, desiredBytes);
+            return _sub;
         }
 
         public Stream GetStream(long startPosition)
@@ -94,7 +97,8 @@ namespace PdfLexer.IO
             }
             Context.CurrentSource = this;
             Context.CurrentOffset = startPosition;
-            return new SubStream(_stream, startPosition, TotalBytes - startPosition, false);
+            _sub.Reset(startPosition, TotalBytes - startPosition);
+            return _sub;
         }
 
         public abstract IPdfObject GetIndirectObject(XRefEntry xref);

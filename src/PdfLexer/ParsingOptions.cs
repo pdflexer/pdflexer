@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Pipelines;
 using System.Text;
 
 namespace PdfLexer
@@ -41,6 +43,14 @@ namespace PdfLexer
         public bool LazyStrings { get; set; } = false;
         public bool LowMemoryMode { get; set; } = false;
         public int MaxErrorRetention { get; set; } = 250;
+        public int BufferSize { get; set; } = 4096;
+
+        internal PipeReader CreateReader(Stream stream)
+        {
+            return PipeReader.Create(stream,
+                new StreamPipeReaderOptions(bufferSize: BufferSize, leaveOpen: true)
+                );
+        }
     }
 
     public enum Eagerness

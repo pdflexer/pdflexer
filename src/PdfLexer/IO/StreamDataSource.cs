@@ -90,7 +90,7 @@ namespace PdfLexer.IO
         public override IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
         {
             _stream.Seek(0, SeekOrigin.Begin);
-            var reader = PipeReader.Create(_stream);
+            var reader = Context.Options.CreateReader(_stream);
             var scanner = new PipeScanner(Context, reader);
 
             IPdfObject toReturn = null;
@@ -147,7 +147,7 @@ namespace PdfLexer.IO
         private bool TryRepairXRef(XRefEntry entry, out XRefEntry repaired)
         {
             _stream.Seek(0, SeekOrigin.Begin);
-            var reader = PipeReader.Create(_stream);
+            var reader = Context.Options.CreateReader(_stream);
             var scanner = new PipeScanner(Context, reader);
             repaired = new XRefEntry
             {
@@ -212,7 +212,7 @@ namespace PdfLexer.IO
             if (repaired.Offset != 0)
             {
                 _stream.Seek(repaired.Offset, SeekOrigin.Begin);
-                reader = PipeReader.Create(_stream);
+                reader = Context.Options.CreateReader(_stream);
                 scanner = new PipeScanner(Context, reader);
                 scanner.SkipExpected(PdfTokenType.NumericObj); // on
                 scanner.SkipExpected(PdfTokenType.NumericObj); // gen

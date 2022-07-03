@@ -16,8 +16,6 @@ namespace PdfLexer.Parsers
     public class ParsingContext : IDisposable
     {
         internal int SourceId { get; set; }
-
-        // not yet set anywhere, just putting flow / checks in place
         internal bool IsEncrypted { get; set; } = false;
 
         // tracked here to support lazy parsing
@@ -26,7 +24,6 @@ namespace PdfLexer.Parsers
         internal IPdfDataSource CurrentSource { get; set; }
 
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
-        // internal Dictionary<ulong, IPdfObject> IndirectCache = new Dictionary<ulong, IPdfObject>();
         internal Dictionary<ulong, WeakReference<IPdfObject>> IndirectCache = new Dictionary<ulong, WeakReference<IPdfObject>>();
         internal NumberCache NumberCache = new NumberCache();
         internal NameCache NameCache = new NameCache();
@@ -80,18 +77,21 @@ namespace PdfLexer.Parsers
         internal List<string> Errors { get; set; } = new List<string>();
         public IReadOnlyList<string> ParsingErrors => Errors;
 
+        private int errors = 0;
         internal void Error(string info)
         {
             if (Options.ThrowOnErrors)
             {
                 throw new PdfLexerException(info);
             }
+            errors++;
             if (Errors.Count > Options.MaxErrorRetention)
             {
                 Errors.RemoveAt(0);
             }
             Errors.Add(info);
         }
+        public int ErrorCount { get => errors; }
 
         internal Stream GetTemporaryStream()
         {
@@ -263,10 +263,7 @@ namespace PdfLexer.Parsers
                     Error($"Error loading object stream, return null obj: " + ex.Message);
                     return PdfNull.Value;
                 }
-                
             }
-
-            // CurrentIndirectObject = id;
 
             var obj = value.GetObject();
             IndirectCache[id] = new WeakReference<IPdfObject>(obj);

@@ -60,16 +60,16 @@ namespace PdfLexer.Filters
         public Stream Decode(Stream source, PdfDictionary decodeParms)
         {
 #if NET6_0
-            // var deflated = new ZLibStream(source, CompressionMode.Decompress, true);
+            // var deflated = new ZLibStream(source, CompressionMode.Decompress, false);
             // remove header
             source.ReadByte();
             source.ReadByte();
-            var deflated = new DeflateStream(source, CompressionMode.Decompress, true);
+            var deflated = new DeflateStream(source, CompressionMode.Decompress, false);
 #else
             // remove header
             source.ReadByte();
             source.ReadByte();
-            var deflated = new DeflateStream(source, CompressionMode.Decompress, true);
+            var deflated = new DeflateStream(source, CompressionMode.Decompress, false);
 #endif
 
 
