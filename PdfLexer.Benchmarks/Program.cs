@@ -35,13 +35,16 @@ namespace PdfLexer.Benchmarks
             // var total = 0;
             // for (var i = 0; i < 100000; i++)
             // {
-            //     total += bench.MergePdfLexer().Length;
+            //     total += bench.MergePdfLexerStrean().Length;
             // }
-            // 
+            // // 
             // Console.WriteLine(total);
             // return;
-            
-            
+
+            //var rdr = new MergeBenchmark();
+            //var cnt = rdr.MergePdfLexerStream();
+            //return;
+
             // var bench = new NameCacheBench();
             // bench.Casting();
             // var bench = new FuncBenchmark();

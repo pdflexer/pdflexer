@@ -16,8 +16,6 @@ namespace PdfLexer.Parsers
     public class ParsingContext : IDisposable
     {
         internal int SourceId { get; set; }
-
-        // not yet set anywhere, just putting flow / checks in place
         internal bool IsEncrypted { get; set; } = false;
 
         // tracked here to support lazy parsing
@@ -26,7 +24,6 @@ namespace PdfLexer.Parsers
         internal IPdfDataSource CurrentSource { get; set; }
 
         internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
-        // internal Dictionary<ulong, IPdfObject> IndirectCache = new Dictionary<ulong, IPdfObject>();
         internal Dictionary<ulong, WeakReference<IPdfObject>> IndirectCache = new Dictionary<ulong, WeakReference<IPdfObject>>();
         internal NumberCache NumberCache = new NumberCache();
         internal NameCache NameCache = new NameCache();
@@ -80,18 +77,23 @@ namespace PdfLexer.Parsers
         internal List<string> Errors { get; set; } = new List<string>();
         public IReadOnlyList<string> ParsingErrors => Errors;
 
+        private int errors = 0;
         internal void Error(string info)
         {
             if (Options.ThrowOnErrors)
             {
                 throw new PdfLexerException(info);
             }
+
+            errors++;
+            
             if (Errors.Count > Options.MaxErrorRetention)
             {
                 Errors.RemoveAt(0);
             }
             Errors.Add(info);
         }
+        public int ErrorCount { get => errors; }
 
         internal Stream GetTemporaryStream()
         {
@@ -158,8 +160,7 @@ namespace PdfLexer.Parsers
 
         internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
         {
-            // TODO add support here for object streams?
-            return MainDocSource.RepairFindLastMatching(type, matcher);
+            return StructuralRepairs.RepairFindLastMatching(this, MainDocSource.GetStream(0), type, matcher);
         }
 
         internal void UnwrapAndCopyObjData(ReadOnlySpan<byte> data, WritingContext wtx)
@@ -182,6 +183,7 @@ namespace PdfLexer.Parsers
             }
             else if (type == PdfTokenType.StartStream)
             {
+                
                 // TODO look into this.. feels wrong parsing dict here
                 scanner.SkipCurrent(); // startstream
                 var startPos = scanner.Position;
@@ -263,10 +265,7 @@ namespace PdfLexer.Parsers
                     Error($"Error loading object stream, return null obj: " + ex.Message);
                     return PdfNull.Value;
                 }
-                
             }
-
-            // CurrentIndirectObject = id;
 
             var obj = value.GetObject();
             IndirectCache[id] = new WeakReference<IPdfObject>(obj);
@@ -302,18 +301,14 @@ namespace PdfLexer.Parsers
                 // TODO allow streams for offsets
                 var data = ArrayPool<byte>.Shared.Rent(start);
                 var decodedStream = stream.Contents.GetDecodedStream(this);
-                if (!decodedStream.CanSeek)
-                {
-                    var str = GetTemporaryStream();
-                    decodedStream.CopyTo(str);
-                    decodedStream.Dispose();
-                    decodedStream = str;
-                    decodedStream.Seek(0, SeekOrigin.Begin);
-                }
-                decodedStream.FillArray(data, start);
-                var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
+                var str = GetTemporaryStream();
+                decodedStream.CopyTo(str);
+                str.Seek(0, SeekOrigin.Begin);
+                str.FillArray(data, start);
+                Span<byte> spanned = data;
+                var os = GetOffsets(spanned.Slice(0, start), stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
                 ArrayPool<byte>.Shared.Return(data);
-                source = new ObjectStreamFileDataSource(ctx, entry.ObjectStreamNumber, decodedStream, os, start);
+                source = new ObjectStreamFileDataSource(ctx, entry.ObjectStreamNumber, str, os, start);
             } else
             {
                 var data = stream.Contents.GetDecodedData(this);
@@ -344,8 +339,6 @@ namespace PdfLexer.Parsers
             }
             return offsets;
         }
-
-        // TODO low memory / stream support
         internal IPdfObject GetWrappedIndirectObject(XRefEntry xref, ReadOnlySpan<byte> data)
         {
             var scanner = new Scanner(this, data, 0);
@@ -400,7 +393,38 @@ namespace PdfLexer.Parsers
             return obj;
         }
 
-        internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
+        public Stream GetStreamOfContents(XRefEntry xref, PdfName? filter, int predictedLength)
+        {
+            if (xref.KnownStreamStart == 0)
+            {
+                // this shouldn't happen -> bug
+                throw new ApplicationException($"GetStreamOfContents called on non stream: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+            }
+            if (xref.KnownStreamLength > 0)
+            {
+                return xref.Source.GetDataAsStream(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+            }
+            var stream = xref.Source.GetStream(xref.Offset + xref.KnownStreamStart + predictedLength);
+            var reader = Options.CreateReader(stream);
+            var scanner = new PipeScanner(this, reader);
+            var nxt = scanner.Peek();
+            reader.Complete();
+            if (nxt == PdfTokenType.EndStream)
+            {
+                xref.KnownStreamLength = predictedLength;
+                return xref.Source.GetDataAsStream(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+            }
+            Error($"Stream did not end with endstream: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+            if (!StructuralRepairs.TryFindStreamEnd(this, xref, filter, predictedLength))
+            {
+                xref.KnownStreamLength = predictedLength;
+                Error($"Unable to find endstream, using provided length");
+            }
+            Error($"Found endstream in contents, using repaired length: {xref.KnownStreamLength}");
+            return xref.Source.GetDataAsStream(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+        }
+
+        internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data)
         {
             // NOTE: this is on used during XRef Parsing -> no decryption support
             switch (type)
@@ -412,38 +436,31 @@ namespace PdfLexer.Parsers
                     }
                 case PdfObjectType.NumericObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return NumberParser.Parse(in slice);
+                        return NumberParser.Parse(in data);
                     }
                 case PdfObjectType.DecimalObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return DecimalParser.Parse(in slice);
+                        return DecimalParser.Parse(in data);
                     }
                 case PdfObjectType.NameObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return NameParser.Parse(in slice);
+                        return NameParser.Parse(in data);
                     }
                 case PdfObjectType.DictionaryObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return DictionaryParser.Parse(in slice);
+                        return DictionaryParser.Parse(in data);
                     }
                 case PdfObjectType.ArrayObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return ArrayParser.Parse(in slice);
+                        return ArrayParser.Parse(in data);
                     }
                 case PdfObjectType.StringObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return StringParser.Parse(in slice);
+                        return StringParser.Parse(in data);
                     }
                 case PdfObjectType.BooleanObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return BoolParser.Parse(slice);
+                        return BoolParser.Parse(in data);
                     }
             }
             return null;

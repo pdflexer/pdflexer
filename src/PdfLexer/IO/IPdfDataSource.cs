@@ -53,6 +53,5 @@ namespace PdfLexer.IO
         IPdfObject GetIndirectObject(XRefEntry xref);
         void CopyIndirectObject(XRefEntry xref, WritingContext destination);
 
-        IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher);
     }
 }

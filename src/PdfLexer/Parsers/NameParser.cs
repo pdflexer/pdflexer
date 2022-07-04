@@ -68,9 +68,9 @@ namespace PdfLexer.Parsers
                 var c = buffer[i];
                 if (c == (byte)'#')
                 {
-                    if (!Utf8Parser.TryParse(buffer.Slice(i + 1, 2), out byte v, out int ic, 'x'))
+                    if (buffer.Length < i + 3 || !Utf8Parser.TryParse(buffer.Slice(i + 1, 2), out byte v, out int ic, 'x'))
                     {
-                        _ctx.Error("Invalid hex found, ignoring: " + Encoding.ASCII.GetString(buffer.Slice(i, 3)));
+                        _ctx.Error("Invalid hex found, ignoring: " + Encoding.ASCII.GetString(buffer.Slice(i, Math.Min(buffer.Length - i - 1, 3))));
                         i += 2;
                     } else
                     {

@@ -79,6 +79,37 @@ namespace PdfLexer
                    || b == 0x20;
         }
 
+        public static PdfName? GetFirstFilter(PdfDictionary streamDict)
+        {
+            PdfName? filterName = null;
+            var filter = streamDict.Get(PdfName.Filter);
+            switch (filter)
+            {
+                case PdfArray arr:
+                    filterName = arr.FirstOrDefault()?.GetValue<PdfName>();
+                    break;
+                case PdfName nm:
+                    filterName = nm;
+                    break;
+            }
+            return filterName;
+        }
+
+        public static PdfName? GetFirstFilterFromList(IPdfObject filters)
+        {
+            PdfName? filterName = null;
+            switch (filters)
+            {
+                case PdfArray arr:
+                    filterName = arr.FirstOrDefault()?.GetValue<PdfName>();
+                    break;
+                case PdfName nm:
+                    filterName = nm;
+                    break;
+            }
+            return filterName;
+        }
+
         public static void RecursiveLoad(IPdfObject obj) => RecursiveLoad(obj, new HashSet<object>());
         internal static void RecursiveLoad(IPdfObject obj, HashSet<object> refStack)
         {

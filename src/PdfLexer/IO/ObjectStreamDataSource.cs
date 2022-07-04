@@ -92,5 +92,10 @@ namespace PdfLexer.IO
             _data = null;
             Disposed = true;
         }
+
+        public Stream GetStreamOfContents(XRefEntry xref, PdfName? filter, int predictedLength)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

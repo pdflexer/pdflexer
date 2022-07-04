@@ -11,7 +11,7 @@ namespace PdfLexer.Lexing
     {
         private ParsingContext Context;
         private PipeReader Pipe;
-        private SequenceReader<byte> Reader;
+        public SequenceReader<byte> Reader;
         public long CurrentOffset;
 
         public PipeScanner(ParsingContext ctx, PipeReader pipe)
@@ -28,8 +28,8 @@ namespace PdfLexer.Lexing
         }
 
         public PdfTokenType CurrentTokenType;
-        private SequencePosition CurrentStart;
-        private SequencePosition CurrentEnd;
+        private long CurrentStart;
+        private long CurrentEnd;
         private bool IsCompleted;
 
         private void InitReader()
@@ -48,26 +48,24 @@ namespace PdfLexer.Lexing
         public long GetStartOffset()
         {
             Peek();
-#if NET5_0_OR_GREATER
-            return CurrentOffset + Reader.Sequence.Slice(Reader.Sequence.Start, CurrentStart).Length;
-            //return CurrentOffset + Reader.Sequence.GetOffset(CurrentStart);
-#else
-            return CurrentOffset + Reader.Sequence.Slice(Reader.Sequence.Start, CurrentStart).Length;
-#endif
+            return CurrentOffset + CurrentStart;
         }
 
         private void AdvanceBuffer(SequencePosition pos)
         {
-
-#if NET5_0_OR_GREATER
-            // CurrentOffset += Reader.Sequence.GetOffset(pos);
             CurrentOffset += Reader.Sequence.Slice(Reader.Sequence.Start, pos).Length;
-#else
-            CurrentOffset += Reader.Sequence.Slice(Reader.Sequence.Start, pos).Length;
-#endif
             Pipe.AdvanceTo(pos, Reader.Sequence.End);
             InitReader();
-            CurrentStart = Reader.Position;
+            CurrentStart = 0;
+            return;
+        }
+
+        private void AdvanceBuffer(long count)
+        {
+            CurrentOffset += count;
+            Pipe.AdvanceTo(Reader.Sequence.GetPosition(count), Reader.Sequence.End);
+            InitReader();
+            CurrentStart = 0;
             return;
         }
 
@@ -77,7 +75,7 @@ namespace PdfLexer.Lexing
             {
                 return CurrentTokenType;
             }
-            if (!PdfSequenceLexer.TryReadNextToken(ref Reader, false, out CurrentTokenType, out CurrentStart))
+            if (!PdfSequenceLexer.TryReadNextToken(ref Reader, IsCompleted, out CurrentTokenType, out CurrentStart))
             {
                 if (IsCompleted)
                 {
@@ -88,7 +86,7 @@ namespace PdfLexer.Lexing
                 AdvanceBuffer(CurrentStart);
                 Peek();
             }
-            CurrentEnd = Reader.Position;
+            CurrentEnd = Reader.Consumed;
             return CurrentTokenType;
         }
 
@@ -98,6 +96,22 @@ namespace PdfLexer.Lexing
             ThrowIfAtEndOfData();
             CurrentTokenType = PdfTokenType.TBD;
             CurrentStart = CurrentEnd;
+        }
+
+        public ReadOnlySequence<byte> GetAndSkipCurrentData()
+        {
+            Peek();
+            ThrowIfAtEndOfData();
+            if (CurrentTokenType == PdfTokenType.ArrayStart)
+            {
+                SkipArray();
+            }
+            else if (CurrentTokenType == PdfTokenType.DictionaryStart)
+            {
+                SkipDict();
+            }
+            CurrentTokenType = PdfTokenType.TBD;
+            return Reader.Sequence.Slice(CurrentStart, CurrentEnd-CurrentStart);
         }
 
         public void SkipExpected(PdfTokenType type)
@@ -164,7 +178,7 @@ namespace PdfLexer.Lexing
                     if (IsCompleted)
                     {
                         Context.Error("Found end of data before dictionary end" + CommonUtil.GetDataErrorInfo(ref Reader));
-                        CurrentEnd = Reader.Sequence.End;
+                        CurrentEnd = Reader.Sequence.Length;
                         return;
                     }
                     AdvanceBuffer(CurrentStart);
@@ -173,7 +187,7 @@ namespace PdfLexer.Lexing
                 }
                 break;
             }
-            CurrentEnd = Reader.Position;
+            CurrentEnd = Reader.Consumed;
         }
         private void SkipArray()
         {
@@ -184,7 +198,7 @@ namespace PdfLexer.Lexing
                     if (IsCompleted)
                     {
                         Context.Error("Found end of data before array end" + CommonUtil.GetDataErrorInfo(ref Reader));
-                        CurrentEnd = Reader.Sequence.End;
+                        CurrentEnd = Reader.Sequence.Length;
                         return;
                     }
                     AdvanceBuffer(CurrentStart);
@@ -193,7 +207,7 @@ namespace PdfLexer.Lexing
                 }
                 break;
             }
-            CurrentEnd = Reader.Position;
+            CurrentEnd = Reader.Consumed;
         }
 
         public IPdfObject GetCurrentObject()
@@ -212,8 +226,7 @@ namespace PdfLexer.Lexing
             {
                 SkipDict();
             }
-
-            var obj = Context.GetPdfItem((PdfObjectType)CurrentTokenType, Reader.Sequence, CurrentStart, CurrentEnd);
+            var obj = Context.GetPdfItem((PdfObjectType)CurrentTokenType, Reader.Sequence.Slice(CurrentStart, CurrentEnd-CurrentStart));
             CurrentTokenType = PdfTokenType.TBD;
             return obj;
         }
@@ -276,7 +289,7 @@ namespace PdfLexer.Lexing
             }
             Reader.Advance(total);
             var data = Reader.Sequence.Slice(CurrentStart, Reader.Position);
-            CurrentStart = Reader.Position;
+            CurrentStart = Reader.Consumed;
             CurrentTokenType = PdfTokenType.TBD;
             return data;
         }
@@ -314,14 +327,15 @@ namespace PdfLexer.Lexing
                     {
                         return false;
                     }
-                    var e = Reader.Remaining - prevBuffer;
+                    var e = Reader.Remaining - prevBuffer - sequence.Length;
                     if (e > 0)
                     {
-                        Reader.Advance(Reader.Remaining - prevBuffer);
+                        Reader.Advance(e);
                         AdvanceBuffer(Reader.Position);
                     }
                     else
                     {
+                        if (-e > Reader.Consumed) { e = -Reader.Consumed; }
                         // need to keep enough in prevbuffer
                         Reader.Rewind(-e);
                         AdvanceBuffer(Reader.Position);

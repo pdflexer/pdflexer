@@ -94,7 +94,12 @@ namespace PdfLexer.Parsers
         {
             if (!Utf8Parser.TryParse(buffer, out int val, out int consumed))
             {
-                throw new ApplicationException("Bad data for int number: " + Encoding.ASCII.GetString(buffer));
+                _ctx.Error("Bad data for int number: " + Encoding.ASCII.GetString(buffer));
+                if (buffer.IndexOf((byte)'-') > 0)
+                {
+                    // TODO -> adobe ignores
+                }
+                return 0;
             }
             Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for int");
 
@@ -105,7 +110,12 @@ namespace PdfLexer.Parsers
         {
             if (!Utf8Parser.TryParse(buffer, out long val, out int consumed))
             {
-                throw new ApplicationException("Bad data for long number: " + Encoding.ASCII.GetString(buffer));
+                _ctx.Error("Bad data for long number: " + Encoding.ASCII.GetString(buffer));
+                if (buffer.IndexOf((byte)'-') > 0)
+                {
+                    // TODO -> adobe ignores
+                }
+                return 0;
             }
             Debug.Assert(consumed == buffer.Length, "consumed == buffer.Length for long");
 
@@ -115,13 +125,13 @@ namespace PdfLexer.Parsers
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void SkipNumber(ReadOnlySpan<byte> bytes, ref int i, out bool isDecimal)
         {
-            // TODO (lenient parsing consistent with adobe)
-            // ignore line breaks (between +/- and data)
-            // ignore double negative
-            // single decimal point = 0
-            // single minus = 0
-            // add scientific notation, need to peak after E to see if 0-9,+,-
-            // ignore minus sign in middle of number
+            // (lenient parsing consistent with adobe)
+            // ignore line breaks (between +/- and data) - TODO
+            // ignore double negative - done
+            // single decimal point = 0 - done
+            // single minus = 0 - done
+            // add scientific notation, need to peak after E to see if 0-9,+,-  TODO
+            // ignore minus sign in middle of number TODO
 
             var start = i;
             ReadOnlySpan<byte> local = bytes;
