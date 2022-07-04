@@ -330,11 +330,12 @@ namespace PdfLexer.Lexing
                     var e = Reader.Remaining - prevBuffer - sequence.Length;
                     if (e > 0)
                     {
-                        Reader.Advance(Reader.Remaining - prevBuffer);
+                        Reader.Advance(e);
                         AdvanceBuffer(Reader.Position);
                     }
                     else
                     {
+                        if (-e > Reader.Consumed) { e = -Reader.Consumed; }
                         // need to keep enough in prevbuffer
                         Reader.Rewind(-e);
                         AdvanceBuffer(Reader.Position);

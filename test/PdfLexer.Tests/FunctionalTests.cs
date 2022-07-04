@@ -279,7 +279,9 @@ namespace PdfLexer.Tests
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 var name = Path.GetFileNameWithoutExtension(pdf);
-                if (name == "bug1020226" // bad page tree / structure, don't think this is something to handle by default
+
+                if (name.StartsWith("__") 
+                    || name == "bug1020226" // bad page tree / structure, don't think this is something to handle by default
                     || name == "issue3371" || name == "pr6531_1" // bad compression
                     || name == "issue7229" // XRef table points to wrong object ... rebuilding might work but other pdfs have
                                            // refs to objects with incorret object number that are correct
@@ -640,6 +642,7 @@ namespace PdfLexer.Tests
             {
                 try
                 {
+                    if (Path.GetFileName(pdf).StartsWith("__")) { continue; }
                     if (pdf.Contains("Pages-tree-refs"))
                     {
                         // pdfpig can't handle the loop

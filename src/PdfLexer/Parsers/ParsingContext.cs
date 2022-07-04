@@ -337,18 +337,14 @@ namespace PdfLexer.Parsers
                 // TODO allow streams for offsets
                 var data = ArrayPool<byte>.Shared.Rent(start);
                 var decodedStream = stream.Contents.GetDecodedStream(this);
-                if (!decodedStream.CanSeek)
-                {
-                    var str = GetTemporaryStream();
-                    decodedStream.CopyTo(str);
-                    decodedStream.Dispose();
-                    decodedStream = str;
-                    decodedStream.Seek(0, SeekOrigin.Begin);
-                }
-                decodedStream.FillArray(data, start);
-                var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
+                var str = GetTemporaryStream();
+                decodedStream.CopyTo(str);
+                str.Seek(0, SeekOrigin.Begin);
+                str.FillArray(data, start);
+                Span<byte> spanned = data;
+                var os = GetOffsets(spanned.Slice(0, start), stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
                 ArrayPool<byte>.Shared.Return(data);
-                source = new ObjectStreamFileDataSource(ctx, entry.ObjectStreamNumber, decodedStream, os, start);
+                source = new ObjectStreamFileDataSource(ctx, entry.ObjectStreamNumber, str, os, start);
             } else
             {
                 var data = stream.Contents.GetDecodedData(this);

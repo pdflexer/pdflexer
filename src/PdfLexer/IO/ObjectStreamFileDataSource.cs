@@ -57,7 +57,7 @@ namespace PdfLexer.IO
             }
             Context.CurrentSource = this;
             Context.CurrentOffset = os;
-            var buffer = ArrayPool<byte>.Shared.Rent(length);
+            var buffer = ArrayPool<byte>.Shared.Rent(length+1);
             _stream.Seek(os, SeekOrigin.Begin);
             int total = 0;
             int read;
@@ -65,6 +65,7 @@ namespace PdfLexer.IO
             {
                 total += read;
             }
+            buffer[length] = 0;
             return buffer;
         }
 
