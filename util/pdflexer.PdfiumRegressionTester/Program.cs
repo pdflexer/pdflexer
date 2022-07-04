@@ -294,13 +294,16 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
     foreach (var pdf in pdfs)
     {
         var nm = Path.GetFileName(pdf);
-        // if (nm.StartsWith("__")) { continue; }
+        var errorOutput = new ErrInfo
+        {
+            PdfName = nm
+        };
+        corrupt.TryGetValue(nm, out var errorInfo);
         var comparer = new Compare(Path.Combine(output, Path.GetFileNameWithoutExtension(pdf)), 2);
         var modified = Path.Combine(output, Path.GetFileName(pdf));
         {
             try
             {
-                corrupt.TryGetValue(nm, out var errorInfo);
                 var opts = new ParsingOptions { MaxErrorRetention = 10 };
                 opts.ThrowOnErrors = strict && errorInfo?.ErrCount == 0;
                 using var fs = File.OpenRead(pdf);
@@ -328,10 +331,8 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                         Log(err);
                     }
                     Log("err total ->" + doc.Context.ErrorCount);
-                    errInfo.WriteLine(
-                        JsonSerializer.Serialize(
-                            new ErrInfo { PdfName = nm, ErrCount = doc.Context.ErrorCount, Errs = doc.Context.ParsingErrors.ToList() })
-                        );
+                    errorOutput.ErrCount = doc.Context.ErrorCount;
+                    errorOutput.Errs = doc.Context.ParsingErrors.ToList();
 
                     if (strict)
                     {
@@ -364,7 +365,20 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
             catch (Exception ex)
             {
                 Log($"[{nm}] pdflexer failure: {ex.Message}");
-                success = false;
+                errorOutput.Failure = true;
+                errorOutput.FailureMsg = ex.Message;
+                if (strict)
+                {
+                    if (errorInfo?.Failure ?? false && errorInfo?.FailureMsg == ex.Message) 
+                    {
+                        Log($"[{nm}] pdflexer failure matched existing.");
+                    } else
+                    {
+                        Log($"[{nm}] pdflexer failure not known.");
+                        success = false;
+                    }
+                }
+                
                 continue;
             }
 
@@ -372,6 +386,7 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
         var pgs = comparer.CompareAllPages(pdf, modified);
 
         bool changes = false;
+        var changedpages = new List<int>();
         for (var i = 0; i < pgs.Count; i++)
         {
             var pg = pgs[i];
@@ -384,6 +399,7 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                 else
                 {
                     changes = true;
+                    changedpages.Add(i);
                     Log($"[{nm}] failed pg {i} -> {pg.Type.ToString()}");
 
                     var bn = Path.GetFileNameWithoutExtension(pdf);
@@ -405,11 +421,27 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
         }
         else
         {
-            Log($"[{nm}] failed");
+            errorOutput.FailedPages = changedpages;
+            if (strict)
+            {
+                if (errorInfo?.FailedPages != null && errorInfo.FailedPages.SequenceEqual(changedpages))
+                {
+                    Log($"[{nm}] failed paged match previous run.");
+                } else
+                {
+                    Log($"[{nm}] failed");
+                    success = false;
+                }
+            }
+            
             File.Copy(pdf, Path.Combine(output, Path.GetFileNameWithoutExtension(pdf) + "_baseline.pdf"), true);
         }
         writer.Flush();
-        errInfo.Flush();
+        if (errorOutput.FailedPages != null || errorOutput.ErrCount > 0 || errorOutput.Failure)
+        {
+            errInfo.WriteLine(JsonSerializer.Serialize(errorOutput));
+            errInfo.Flush();
+        }
     }
     return success;
 }
@@ -463,5 +495,8 @@ public class ErrInfo
     public string PdfName { get; set; }
     public List<string> Errs { get; set; }
     public int ErrCount { get; set; }
+    public List<int> FailedPages { get; set; }
+    public bool Failure { get; set; }
+    public string FailureMsg { get; set; }
 }
 

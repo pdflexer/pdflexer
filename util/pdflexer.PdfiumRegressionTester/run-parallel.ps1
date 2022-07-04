@@ -31,7 +31,7 @@ $outputPath = [IO.Path]::GetFullPath($outputPath);
 $threads = 5;
 $all = ls $pdfs
 $size = $all.Count / ($threads * 10);
-# 
+# '--strict', 
 $all | % { $_ | % { '--pdf', $_ } } | Slice-Array -Size ($size * 2) | ForEach-Object -Throttle $threads  -Parallel { $outputPath = $using:outputPath; $a = @('--strict', '--type', 'rebuild', '--output', $outputPath, $_ ); .\bin\Release\net6.0\publish\pdflexer.PdfiumRegressionTester.exe @a; }
 
 Pop-Location;

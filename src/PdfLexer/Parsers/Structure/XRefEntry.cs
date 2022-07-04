@@ -60,6 +60,26 @@ namespace PdfLexer.Parsers.Structure
         /// </summary>
         public int MaxLength { get; set; }
         /// <summary>
+        /// Type of object 
+        /// </summary>
+        public PdfTokenType KnownObjType { get; set; } = PdfTokenType.Unknown;
+        /// <summary>
+        /// Start of obj data from start of xref
+        /// </summary>
+        public int KnownObjStart { get; set; }
+        /// <summary>
+        /// Object length excluding endobj (or stream start)
+        /// </summary>
+        public int KnownObjLength { get; set; }
+        /// <summary>
+        /// Start of stream data offset from start of xref
+        /// </summary>
+        public int KnownStreamStart { get; set; }
+        /// <summary>
+        /// Confirmed lenght of stream data
+        /// </summary>
+        public int KnownStreamLength { get; set; }
+        /// <summary>
         /// Object number of the object stream the referenced object is contained in.
         /// </summary>
         public int ObjectStreamNumber { get; set; }

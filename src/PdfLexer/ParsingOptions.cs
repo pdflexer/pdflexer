@@ -45,12 +45,10 @@ namespace PdfLexer
         public int MaxErrorRetention { get; set; } = 250;
 
         public int BufferSize { get; set; } = 4096;
-
+        private StreamPipeReaderOptions opts = new StreamPipeReaderOptions(bufferSize: 512, leaveOpen: true);
         internal PipeReader CreateReader(Stream stream)
         {
-            return PipeReader.Create(stream,
-                new StreamPipeReaderOptions(bufferSize: BufferSize, leaveOpen: true)
-                );
+            return PipeReader.Create(stream, opts);
         }
     }
 

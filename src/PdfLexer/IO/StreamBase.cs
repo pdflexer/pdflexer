@@ -17,7 +17,7 @@ namespace PdfLexer.IO
         private ParsingContext _ctx;
         protected Stream _stream;
         private readonly bool _leaveOpen;
-        private readonly SubStream _sub;
+        protected readonly SubStream _sub;
 
         public StreamBase(ParsingContext ctx, Stream stream, bool leaveOpen)
         {
@@ -106,5 +106,7 @@ namespace PdfLexer.IO
         public abstract IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher);
 
         public abstract void CopyIndirectObject(XRefEntry xref, WritingContext destination);
+
+        public abstract Stream GetStreamOfContents(XRefEntry xref, PdfName? filter, int predictedLength);
     }
 }

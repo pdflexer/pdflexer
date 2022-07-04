@@ -1,5 +1,6 @@
 ﻿using PdfLexer.IO;
 using PdfLexer.Parsers;
+using PdfLexer.Parsers.Structure;
 using System;
 using System.IO;
 
@@ -240,6 +241,45 @@ namespace PdfLexer
                 throw new NotSupportedException("Pdf encryption is not supported.");
             }
             return Source.GetDataAsStream(Offset, Length);
+        }
+    }
+
+    /// <summary>
+    /// Contents of a Pdf stream.
+    /// </summary>
+    internal class PdfXRefStreamContents : PdfStreamContents
+    {
+        internal IPdfDataSource Source { get; }
+        internal XRefEntry XRef { get; }
+        public PdfXRefStreamContents(IPdfDataSource source, XRefEntry xref, int predictedLength)
+        {
+            Source = source;
+            XRef = xref;
+            Length = predictedLength;
+        }
+
+        public override int Length { get; }
+        /// <summary>
+        /// Copies contents to the provided stream.
+        /// </summary>
+        /// <param name="destination"></param>
+        public override void CopyEncodedData(Stream destination)
+        {
+            if (Source.Context.IsEncrypted)
+            {
+                throw new NotSupportedException("Pdf encryption is not supported.");
+            }
+            using var str = Source.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
+            str.CopyTo(destination);
+        }
+
+        public override Stream GetEncodedData()
+        {
+            if (Source.Context.IsEncrypted)
+            {
+                throw new NotSupportedException("Pdf encryption is not supported.");
+            }
+            return Source.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
         }
     }
 

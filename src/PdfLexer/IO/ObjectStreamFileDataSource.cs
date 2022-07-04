@@ -67,5 +67,10 @@ namespace PdfLexer.IO
             }
             return buffer;
         }
+
+        public override Stream GetStreamOfContents(XRefEntry xref, PdfName? filter, int predictedLength)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

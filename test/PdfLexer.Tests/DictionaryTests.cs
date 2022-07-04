@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PdfLexer.IO;
@@ -246,6 +247,94 @@ namespace PdfLexer.Tests
                 }
             }
             Assert.Equal(3, cnt);
+        }
+
+        [Fact]
+        public void Scanner_Skips_Multiple_Types()
+        {
+            var buffer = Encoding.ASCII.GetBytes("/Name[/Test/Value/Test/Value/Test/Value/Test/Value]<<AE>>(string)");
+            var ms = new MemoryStream(buffer);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+            var scanner = new PipeScanner(new ParsingContext(), reader);
+            int cnt = 0;
+            var oss = new List<long>();
+            while (true)
+            {
+                var token = scanner.Peek();
+                if (token == PdfTokenType.EOS)
+                {
+                    break;
+                }
+                scanner.SkipObject();
+                oss.Add(scanner.GetStartOffset());
+            }
+            var expected = new List<long> { 5, 51, 57, 65 };
+            Assert.True(expected.SequenceEqual(oss));
+        }
+
+        [Fact]
+        public void Scanner_Copies_Array()
+        {
+            var buffer = Encoding.ASCII.GetBytes("/Name[/Test/Value/Test/Value/Test/Value/Test/Value]<<AE>>(string)");
+            var ms = new MemoryStream(buffer);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+            var scanner = new PipeScanner(new ParsingContext(), reader);
+            var mso = new MemoryStream();
+            var token = scanner.Peek();
+            Assert.Equal(PdfTokenType.NameObj, token);
+            scanner.SkipCurrent();
+            Assert.Equal(PdfTokenType.ArrayStart, scanner.Peek());
+            var dat = scanner.GetAndSkipCurrentData();
+            foreach (var seg in dat)
+            {
+                mso.Write(seg.Span);
+            }
+            var copied = Encoding.ASCII.GetString(mso.ToArray());
+            Assert.Equal("[/Test/Value/Test/Value/Test/Value/Test/Value]", copied);
+            Assert.Equal(PdfTokenType.DictionaryStart, scanner.Peek());
+        }
+
+        [Fact]
+        public void Scanner_Copies_String()
+        {
+            var buffer = Encoding.ASCII.GetBytes("/Name(string)/Name");
+            var ms = new MemoryStream(buffer);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+            var scanner = new PipeScanner(new ParsingContext(), reader);
+            var mso = new MemoryStream();
+            var token = scanner.Peek();
+            Assert.Equal(PdfTokenType.NameObj, token);
+            scanner.SkipCurrent();
+            Assert.Equal(PdfTokenType.StringStart, scanner.Peek());
+            var dat = scanner.GetAndSkipCurrentData();
+            foreach (var seg in dat)
+            {
+                mso.Write(seg.Span);
+            }
+            var copied = Encoding.ASCII.GetString(mso.ToArray());
+            Assert.Equal("(string)", copied);
+            Assert.Equal(PdfTokenType.NameObj, scanner.Peek());
+        }
+        [Fact]
+        public void Scanner_Copies_Dict()
+        {
+            var buffer = Encoding.ASCII.GetBytes("/Name<</A/B>>(string)");
+            var ms = new MemoryStream(buffer);
+            var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
+            var scanner = new PipeScanner(new ParsingContext(), reader);
+            var mso = new MemoryStream();
+            var token = scanner.Peek();
+            Assert.Equal(PdfTokenType.NameObj, token);
+            scanner.SkipCurrent();
+            Assert.Equal(PdfTokenType.DictionaryStart, scanner.Peek());
+            var dat = scanner.GetAndSkipCurrentData();
+            foreach (var seg in dat)
+            {
+                mso.Write(seg.Span);
+            }
+            var copied = Encoding.ASCII.GetString(mso.ToArray());
+            Assert.Equal("<</A/B>>", copied);
+            Assert.Equal(PdfTokenType.StringStart, scanner.Peek());
         }
 
         [Fact]

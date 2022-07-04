@@ -74,7 +74,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return ms;
         }
 
-        [Benchmark()]
+        // [Benchmark()]
         public byte[] MergePdfPig()
         {
             var finished = new UglyToad.PdfPig.Writer.PdfDocumentBuilder();
@@ -101,17 +101,27 @@ namespace PdfLexer.Benchmarks.Benchmarks
             }
             return finished.Save();
         }
+
         [Benchmark()]
-        public byte[] MergePdfLexerLazy()
+        public byte[] MergePdfLexerStream()
         {
             var finished = PdfDocument.Create();
-            var opts = new ParsingOptions
+            foreach (var pdf in mems)
             {
-                LazyStrings = true
-            };
-            foreach (var pdf in pdfs)
+                pdf.Seek(0, SeekOrigin.Begin);
+                var doc = PdfDocument.Open(pdf);
+                finished.Pages.AddRange(doc.Pages);
+            }
+            return finished.Save();
+        }
+        [Benchmark()]
+        public byte[] MergePdfLexerStreamEager()
+        {
+            var finished = PdfDocument.Create();
+            foreach (var pdf in mems)
             {
-                var doc = PdfDocument.Open(pdf, opts);
+                pdf.Seek(0, SeekOrigin.Begin);
+                var doc = PdfDocument.Open(pdf, new ParsingOptions {  Eagerness = Eagerness.FullEager });
                 finished.Pages.AddRange(doc.Pages);
             }
             return finished.Save();

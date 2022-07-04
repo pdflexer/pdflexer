@@ -184,6 +184,7 @@ namespace PdfLexer.Parsers
             }
             else if (type == PdfTokenType.StartStream)
             {
+                
                 // TODO look into this.. feels wrong parsing dict here
                 scanner.SkipCurrent(); // startstream
                 var startPos = scanner.Position;
@@ -237,6 +238,41 @@ namespace PdfLexer.Parsers
                 Options.Eagerness = existing;
                 return;
             }
+        }
+
+        internal void CopyObjectData(IPdfDataSource src, XRefEntry xref, ReadOnlySpan<byte> data, WritingContext wtx)
+        {
+            if (IsEncrypted)
+            {
+                throw new NotSupportedException("Copying raw data from encrypted PDF is not supported.");
+            }
+
+            wtx.Stream.Write(data.Slice(0, xref.KnownObjLength));
+            if (xref.KnownStreamStart == 0)
+            {
+                return;
+            }
+
+            var obj = GetPdfItem(data, 0, out _);
+            if (!(obj is PdfDictionary dict))
+            {
+                Error($"Pdf dictionary followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
+                return;
+            }
+            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
+            {
+                Error("Pdf dictionary followed by start stream token did not contain /Length.");
+                streamLength = PdfCommonNumbers.Zero;
+            }
+
+            PdfName filterName = CommonUtil.GetFirstFilter(dict);
+
+            var str = src.GetStreamOfContents(xref, filterName, streamLength);
+            wtx.Stream.Write(IndirectSequences.stream);
+            wtx.Stream.WriteByte((byte)'\n');
+            str.CopyTo(wtx.Stream);
+            wtx.Stream.WriteByte((byte)'\n');
+            wtx.Stream.Write(IndirectSequences.endstream);
         }
 
         internal IPdfObject GetIndirectObject(XRef xref) => GetIndirectObject(xref.GetId());
@@ -344,7 +380,31 @@ namespace PdfLexer.Parsers
             return offsets;
         }
 
-        // TODO low memory / stream support
+        internal IPdfObject GetIndirectObject(IPdfDataSource src, XRefEntry xref, ReadOnlySpan<byte> data)
+        {
+            var obj = GetKnownPdfItem((PdfObjectType)xref.KnownObjType, data, 0, xref.KnownObjLength);
+            if (xref.KnownStreamStart == 0)
+            {
+                return obj;
+            }
+
+            if (!(obj is PdfDictionary dict))
+            {
+                Error($"Pdf dictionary followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
+                return obj;
+            }
+
+            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
+            {
+                Error("Pdf dictionary followed by start stream token did not contain /Length.");
+                streamLength = PdfCommonNumbers.Zero;
+            }
+
+            var contents = new PdfXRefStreamContents(src, xref, streamLength);
+            contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
+            contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+            return new PdfStream(dict, contents);
+        }
         internal IPdfObject GetWrappedIndirectObject(XRefEntry xref, ReadOnlySpan<byte> data)
         {
             var scanner = new Scanner(this, data, 0);
@@ -399,7 +459,7 @@ namespace PdfLexer.Parsers
             return obj;
         }
 
-        internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data, SequencePosition start, SequencePosition end)
+        internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data)
         {
             // NOTE: this is on used during XRef Parsing -> no decryption support
             switch (type)
@@ -411,38 +471,31 @@ namespace PdfLexer.Parsers
                     }
                 case PdfObjectType.NumericObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return NumberParser.Parse(in slice);
+                        return NumberParser.Parse(in data);
                     }
                 case PdfObjectType.DecimalObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return DecimalParser.Parse(in slice);
+                        return DecimalParser.Parse(in data);
                     }
                 case PdfObjectType.NameObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return NameParser.Parse(in slice);
+                        return NameParser.Parse(in data);
                     }
                 case PdfObjectType.DictionaryObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return DictionaryParser.Parse(in slice);
+                        return DictionaryParser.Parse(in data);
                     }
                 case PdfObjectType.ArrayObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return ArrayParser.Parse(in slice);
+                        return ArrayParser.Parse(in data);
                     }
                 case PdfObjectType.StringObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return StringParser.Parse(in slice);
+                        return StringParser.Parse(in data);
                     }
                 case PdfObjectType.BooleanObj:
                     {
-                        var slice = data.Slice(start, end);
-                        return BoolParser.Parse(slice);
+                        return BoolParser.Parse(in data);
                     }
             }
             return null;

@@ -6,6 +6,7 @@ using System;
 using System.Buffers;
 using System.IO;
 using System.IO.Pipelines;
+using System.Linq;
 
 namespace PdfLexer.IO
 {
@@ -18,12 +19,9 @@ namespace PdfLexer.IO
 
         public override IPdfObject GetIndirectObject(XRefEntry xref)
         {
-            var buffer = GetRented(xref);
-            Context.CurrentSource = this;
-            Context.CurrentOffset = xref.Offset;
             try
             {
-                return Context.GetWrappedIndirectObject(xref, buffer); ;
+                return ParseObject(xref);
             }
             catch (PdfLexerException e)
             {
@@ -32,40 +30,127 @@ namespace PdfLexer.IO
                 {
                     return PdfNull.Value;
                 }
-                Context.CurrentOffset = repaired.Offset;
                 Context.Error("XRef offset repairs to " + repaired.Offset);
                 UpdateXref(repaired);
-                ArrayPool<byte>.Shared.Return(buffer);
-                buffer = GetRented(repaired);
-                return Context.GetWrappedIndirectObject(repaired, buffer); ;
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
+                return ParseObject(xref);
             }
         }
 
-        private byte[] GetRented(XRefEntry xref)
+        private IPdfObject ParseObject(XRefEntry xref)
         {
-            var buffer = ArrayPool<byte>.Shared.Rent(xref.MaxLength);
             _stream.Seek(xref.Offset, SeekOrigin.Begin);
-            int total = 0;
-            int read;
-            while ((read = _stream.Read(buffer, total, xref.MaxLength - total)) > 0)
+
+            var reader = Context.Options.CreateReader(_stream);
+            var scanner = new PipeScanner(Context, reader);
+            scanner.SkipExpected(PdfTokenType.NumericObj);
+            scanner.SkipExpected(PdfTokenType.NumericObj);
+            scanner.SkipExpected(PdfTokenType.StartObj);
+            xref.KnownObjType = scanner.Peek();
+            xref.KnownObjStart = (int)scanner.GetStartOffset();
+            Context.CurrentSource = this;
+            Context.CurrentOffset = xref.Offset + xref.KnownObjStart;
+            var obj = scanner.GetCurrentObject();
+            xref.KnownObjLength = (int)scanner.GetOffset() - xref.KnownObjStart;
+            var nxt = scanner.Peek();
+            if (nxt == PdfTokenType.EndObj)
             {
-                total += read;
+                return obj;
             }
-            return buffer;
+            else if (nxt == PdfTokenType.StartStream)
+            {
+                scanner.SkipCurrent();
+                xref.KnownStreamStart = (int)scanner.GetOffset();
+            }
+            else
+            {
+                Context.Error($"XRef obj did not end with endobj: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+                return obj;
+            }
+
+            if (!(obj is PdfDictionary dict))
+            {
+                Context.Error($"Obj followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
+                xref.KnownStreamStart = 0;
+                return obj;
+            }
+
+            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
+            {
+                Context.Error("Pdf dictionary followed by start stream token did not contain /Length.");
+                streamLength = PdfCommonNumbers.Zero;
+            }
+
+            var contents = new PdfXRefStreamContents(this, xref, streamLength);
+            contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
+            contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+            return new PdfStream(dict, contents);
+        }
+
+        private void CopyData(XRefEntry xref, Stream stream)
+        {
+            _stream.Seek(xref.Offset, SeekOrigin.Begin);
+            var reader = Context.Options.CreateReader(_stream);
+            var scanner = new PipeScanner(Context, reader);
+            scanner.SkipExpected(PdfTokenType.NumericObj);
+            scanner.SkipExpected(PdfTokenType.NumericObj);
+            scanner.SkipExpected(PdfTokenType.StartObj);
+            xref.KnownObjType = scanner.Peek();
+            xref.KnownObjStart = (int)scanner.GetStartOffset();
+
+            var dat = scanner.GetAndSkipCurrentData();
+            foreach (var seg in dat)
+            {
+                stream.Write(seg.Span);
+            }
+
+            xref.KnownObjLength = (int)scanner.GetOffset() - xref.KnownObjStart;
+            var nxt = scanner.Peek();
+            if (nxt == PdfTokenType.EndObj)
+            {
+                return;
+            }
+            else if (nxt == PdfTokenType.StartStream)
+            {
+                scanner.SkipCurrent();
+                xref.KnownStreamStart = (int)scanner.GetOffset();
+            }
+            else
+            {
+                Context.Error($"XRef obj did not end with endobj: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+            }
+            var obj = Context.GetPdfItem(PdfObjectType.DictionaryObj, in dat);
+            
+            reader.Complete();
+
+            if (!(obj is PdfDictionary dict))
+            {
+                Context.Error($"Obj followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
+                xref.KnownStreamStart = 0;
+                return;
+            }
+
+            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
+            {
+                Context.Error("Pdf dictionary followed by start stream token did not contain /Length.");
+                streamLength = PdfCommonNumbers.Zero;
+            }
+
+            PdfName filterName = CommonUtil.GetFirstFilter(dict);
+
+            stream.Write(IndirectSequences.stream);
+            stream.WriteByte((byte)'\n');
+            using var so = GetStreamOfContents(xref, filterName, streamLength);
+            so.CopyTo(stream);
+            stream.WriteByte((byte)'\n');
+            stream.Write(IndirectSequences.endstream);
+            
         }
 
         public override void CopyIndirectObject(XRefEntry xref, WritingContext destination)
         {
-            var buffer = GetRented(xref);
-            Context.CurrentSource = this;
-            Context.CurrentOffset = xref.Offset;
             try
             {
-                Context.UnwrapAndCopyObjData(buffer, destination);
+                CopyData(xref, destination.Stream);
             }
             catch (PdfLexerException e)
             {
@@ -77,13 +162,7 @@ namespace PdfLexer.IO
                 Context.CurrentOffset = repaired.Offset;
                 Context.Error("XRef offset repairs to " + repaired.Offset);
                 UpdateXref(repaired);
-                ArrayPool<byte>.Shared.Return(buffer);
-                buffer = GetRented(repaired); 
-                Context.UnwrapAndCopyObjData(buffer, destination);
-            }
-            finally
-            {
-                ArrayPool<byte>.Shared.Return(buffer);
+                CopyData(repaired, destination.Stream);
             }
         }
 
@@ -136,6 +215,7 @@ namespace PdfLexer.IO
                 }
             }
             Context.Options.Eagerness = orig;
+            reader.Complete();
             return toReturn;
         }
 
@@ -263,6 +343,68 @@ namespace PdfLexer.IO
 
             return repaired.Offset != 0;
 
+        }
+
+        public override Stream GetStreamOfContents(XRefEntry xref, PdfName? filter, int predictedLength)
+        {
+            if (xref.KnownStreamStart == 0)
+            {
+                // this shouldn't happen -> bug
+                throw new ApplicationException($"GetStreamOfContents called on non stream: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+            }
+            if (xref.KnownStreamLength > 0)
+            {
+                _sub.Reset(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+                return _sub;
+            }
+            _stream.Seek(xref.Offset + xref.KnownStreamStart + predictedLength, SeekOrigin.Begin);
+            var reader = Context.Options.CreateReader(_stream);
+            var scanner = new PipeScanner(Context, reader);
+            var nxt = scanner.Peek();
+            reader.Complete();
+            if (nxt == PdfTokenType.EndStream)
+            {
+                xref.KnownStreamLength = predictedLength;
+                _sub.Reset(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+                return _sub;
+            }
+            Context.Error($"Stream did not end with endstream: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+            if (!FindStreamEnd(xref, filter, predictedLength))
+            {
+                xref.KnownStreamLength = predictedLength;
+                Context.Error($"Unable to find endstream, using provided length");
+            }
+            Context.Error($"Found endstream in contents, using repaired length: {xref.KnownStreamLength}");
+            _sub.Reset(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+            return _sub;
+        }
+
+        private bool FindStreamEnd(XRefEntry xref, PdfName filter, int predictedLength)
+        {
+            var bt = Math.Min(predictedLength, 50);
+            var startOs = xref.Offset + xref.KnownStreamStart;
+            _stream.Seek(startOs, SeekOrigin.Begin);
+            var reader = Context.Options.CreateReader(_stream);
+            var scanner = new PipeScanner(Context, reader);
+            if (!scanner.TrySkipToToken(IndirectSequences.endstream, 5))
+            {
+                return false;
+            }
+            scanner.Reader.Rewind(2);
+            scanner.Reader.TryRead(out var b1);
+            scanner.Reader.TryRead(out var b2);
+            var sub = 0;
+            if (b1 == '\r' && b2 == '\n')
+            {
+                sub = 2;
+            }
+            else if (b2 == '\n')
+            {
+                sub = 1;
+            }
+            xref.KnownStreamLength = (int)(scanner.GetOffset() - sub);
+            reader.Complete();
+            return true;
         }
     }
 }

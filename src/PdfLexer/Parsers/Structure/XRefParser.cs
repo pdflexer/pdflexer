@@ -260,27 +260,28 @@ namespace PdfLexer.Parsers.Structure
             var dicts = new List<PdfDictionary>();
             var pipe = _ctx.Options.CreateReader(stream);
             var scanner = new PipeScanner(_ctx, pipe);
+            var start = 0;
             while (true)
             {
                 if (!scanner.TrySkipToToken(IndirectSequences.obj, 40))
                 {
                     break;
                 }
-                var pos = scanner.GetStartOffset();
+                var pos = scanner.GetStartOffset() + start;
 
                 var count = scanner.ScanBackTokens(2, 40);
 
-                AddCurrent(ref scanner, count, offsets, dicts);
+                AddCurrent(ref scanner, count, offsets, dicts, start);
 
                 // special handling in case malformed dictionary / array made us read past obj
-                // TODO see if this can be more efficient
-                stream.Seek(0, SeekOrigin.Begin);
-                pipe = _ctx.Options.CreateReader(stream);
-                scanner = new PipeScanner(_ctx, pipe);
-                if (!scanner.Advance((int)(pos+1)))
+                if (stream.Length == pos)
                 {
                     break;
                 }
+                start = (int)pos + 1;
+                stream.Seek(start, SeekOrigin.Begin);
+                pipe = _ctx.Options.CreateReader(stream);
+                scanner = new PipeScanner(_ctx, pipe);
             }
 
             stream.Seek(0, SeekOrigin.Begin);
@@ -319,7 +320,7 @@ namespace PdfLexer.Parsers.Structure
         }
 
         // adds xref entry for object at current location
-        private void AddCurrent(ref PipeScanner scanner, int maxScan, List<XRefEntry> entries, List<PdfDictionary> dicts)
+        private void AddCurrent(ref PipeScanner scanner, int maxScan, List<XRefEntry> entries, List<PdfDictionary> dicts, long scanStart)
         {
             long offset = 0;
             var start = scanner.GetOffset();
@@ -343,7 +344,7 @@ namespace PdfLexer.Parsers.Structure
                 }
                 scanner.SkipCurrent(); // obj
 
-                entries.Add(new XRefEntry { Offset = offset, Reference = new XRef { ObjectNumber = n, Generation = g } });
+                entries.Add(new XRefEntry { Offset = offset+ scanStart, Reference = new XRef { ObjectNumber = n, Generation = g } });
                 if (scanner.Peek() == PdfTokenType.DictionaryStart)
                 {
                     var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();

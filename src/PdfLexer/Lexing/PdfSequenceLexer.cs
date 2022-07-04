@@ -25,14 +25,14 @@ namespace PdfLexer.Lexing
         /// <param name="type">Type of token found.</param>
         /// <param name="start">SequencePosition of token start.</param>
         /// <returns>If token was successfully lexed.</returns>
-        public static bool TryReadNextToken(this ref SequenceReader<byte> reader, bool isCompleted, out PdfTokenType type, out SequencePosition start)
+        public static bool TryReadNextToken(this ref SequenceReader<byte> reader, bool isCompleted, out PdfTokenType type, out long start)
         {
             reader.AdvancePastAny(CommonUtil.WhiteSpaces);
 
             type = PdfTokenType.TBD;
             if (!reader.TryPeek(out byte b))
             {
-                start = reader.Position;
+                start = reader.Consumed;
                 return false;
             }
 
@@ -42,19 +42,19 @@ namespace PdfLexer.Lexing
                 // comments
                 if (!reader.TryAdvanceToAny(eolChars, true))
                 {
-                    start = reader.Position;
+                    start = reader.Consumed;
                     return false;
                 }
                 reader.AdvancePastAny(CommonUtil.WhiteSpaces);
 
                 if (!reader.TryPeek(out b))
                 {
-                    start = reader.Position;
+                    start = reader.Consumed;
                     return false;
                 }
             }
 
-            start = reader.Position;
+            start = reader.Consumed;
 
             switch (b)
             {
@@ -197,7 +197,10 @@ namespace PdfLexer.Lexing
                         
                         if (nxt != (byte)'\r')
                         {
-                            throw CommonUtil.DisplayDataErrorException(ref reader, "Stream not followed by \\r\\n or \\n.");
+                            // todo warning
+                            reader.Rewind(1);
+                            return true;
+                            // throw CommonUtil.DisplayDataErrorException(ref reader, "Stream not followed by \\r\\n or \\n.");
                         }
 
                         if (!reader.ReadRequiredByte(isCompleted, out nxt))
@@ -208,7 +211,10 @@ namespace PdfLexer.Lexing
 
                         if (nxt != (byte)'\n')
                         {
-                            throw CommonUtil.DisplayDataErrorException(ref reader, "Stream not followed by \\r\\n or \\n.");
+                            reader.Rewind(1);
+                            return true;
+                            // todo warning
+                            // throw CommonUtil.DisplayDataErrorException(ref reader, "Stream not followed by \\r\\n or \\n.");
                         }
 
                         return true;

@@ -36,7 +36,6 @@ namespace PdfLexer.IO
         }
         public override int Read(byte[] buffer, int offset, int count)
         {
-            CheckDisposed();
             long remaining = length - position;
             if (remaining <= 0) return 0;
             if (remaining < count) count = (int)remaining;
@@ -50,25 +49,24 @@ namespace PdfLexer.IO
         }
         public override long Length
         {
-            get { CheckDisposed(); return length; }
+            get { return length; }
         }
         public override bool CanRead
         {
-            get { CheckDisposed(); return true; }
+            get { return true; }
         }
         public override bool CanWrite
         {
-            get { CheckDisposed(); return false; }
+            get { return false; }
         }
         public override bool CanSeek
         {
-            get { CheckDisposed(); return baseStream.CanSeek; }
+            get { return baseStream.CanSeek; }
         }
         public override long Position
         {
             get
             {
-                CheckDisposed();
                 return position;
             }
             set { throw new NotSupportedException(); }
@@ -90,7 +88,7 @@ namespace PdfLexer.IO
         }
         public override void Flush()
         {
-            CheckDisposed(); baseStream.Flush();
+            baseStream.Flush();
         }
         protected override void Dispose(bool disposing)
         {

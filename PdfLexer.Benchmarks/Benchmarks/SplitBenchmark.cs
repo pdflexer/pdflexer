@@ -109,12 +109,13 @@ namespace PdfLexer.Benchmarks.Benchmarks
         }
 
         [Benchmark()]
-        public List<byte[]> SplitPdfLexerLazyStrings()
+        public List<byte[]> SplitPdfLexerStreams()
         {
             var results = new List<byte[]>();
-            foreach (var pdf in pdfs)
+            foreach (var pdf in mems)
             {
-                var doc = PdfDocument.Open(pdf, new ParsingOptions() { LazyStrings = true });
+                pdf.Seek(0, SeekOrigin.Begin);
+                var doc = PdfDocument.Open(pdf);
                 for (var i = 0; i < doc.Pages.Count; i++)
                 {
                     var output = PdfDocument.Create();
