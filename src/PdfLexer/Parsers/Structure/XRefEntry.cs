@@ -107,7 +107,7 @@ namespace PdfLexer.Parsers.Structure
             catch (PdfLexerException e)
             {
                 Source.Context.Error($"XRef offset for {Reference} was not valid: " + e.Message);
-                if (!!StructuralRepairs.TryRepairXRef(Source.Context, this, out var repaired))
+                if (!StructuralRepairs.TryRepairXRef(Source.Context, this, out var repaired))
                 {
                     return PdfNull.Value;
                 }

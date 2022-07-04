@@ -237,11 +237,18 @@ namespace PdfLexer
                 return true;
             }
 
+            value = default(T);
+
+            if (item?.Type == PdfObjectType.NullObj)
+            {
+                return false;
+            }
+
             if (errorOnMismatch)
             {
                 throw new PdfLexerObjectMismatchException($"Unexpected data type in dictionary for key {key.Value}, got {item.Type} expected {typeof(T)}");
             }
-            value = default(T);
+            
             return false;
         }
 

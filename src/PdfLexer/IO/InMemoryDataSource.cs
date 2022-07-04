@@ -52,7 +52,7 @@ namespace PdfLexer.IO
             var start = (int)startPosition;
             if (desiredBytes > _data.Length - start)
             {
-                throw new ApplicationException("More data requested from data source than available.");
+                throw new PdfLexerException("More data requested from data source than available.");
             }
             Context.CurrentSource = this;
             Context.CurrentOffset = startPosition; // TODO move this somewhere else
@@ -63,14 +63,14 @@ namespace PdfLexer.IO
         {
             if (startPosition > int.MaxValue)
             {
-                throw new NotSupportedException(
+                throw new PdfLexerException(
                     "In memory data source does not support offsets greater than Int32.MaxValue");
             }
 
             var start = (int)startPosition;
             if (requiredBytes > _data.Length - start)
             {
-                throw new ApplicationException("More data requested from data source than available.");
+                throw new PdfLexerException("More data requested from data source than available.");
             }
             stream.Write(_data, (int)startPosition, requiredBytes);
         }
@@ -78,14 +78,23 @@ namespace PdfLexer.IO
         public IPdfObject GetIndirectObject(XRefEntry xref)
         {
             ReadOnlySpan<byte> buffer = _data;
+            if (xref.Offset > _data.Length)
+            {
+                throw new PdfLexerException($"Offset larger than data: {xref.Offset} > {_data.Length}");
+            }
             Context.CurrentSource = this;
             Context.CurrentOffset = xref.Offset;
+
             return Context.GetWrappedIndirectObject(xref, buffer.Slice((int)xref.Offset, xref.MaxLength));
         }
 
         public void CopyIndirectObject(XRefEntry xref, WritingContext destination)
         {
             ReadOnlySpan<byte> buffer = _data;
+            if (xref.Offset > _data.Length)
+            {
+                throw new PdfLexerException($"Offset larger than data: {xref.Offset} > {_data.Length}");
+            }
             Context.CurrentSource = this;
             Context.CurrentOffset = xref.Offset;
             Context.UnwrapAndCopyObjData(buffer.Slice((int)xref.Offset, xref.MaxLength), destination);

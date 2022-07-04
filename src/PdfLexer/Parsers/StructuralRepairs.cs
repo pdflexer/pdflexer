@@ -179,7 +179,7 @@ namespace PdfLexer.Parsers
                 {
                     scanner.SkipCurrent();
                 }
-                repaired.MaxLength = (int)(scanner.GetOffset() - repaired.Offset);
+                repaired.MaxLength = (int)(scanner.GetOffset());
             }
 
             return repaired.Offset != 0;
