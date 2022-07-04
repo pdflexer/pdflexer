@@ -103,10 +103,7 @@ namespace PdfLexer.IO
 
         public abstract IPdfObject GetIndirectObject(XRefEntry xref);
 
-        public abstract IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher);
-
         public abstract void CopyIndirectObject(XRefEntry xref, WritingContext destination);
 
-        public abstract Stream GetStreamOfContents(XRefEntry xref, PdfName? filter, int predictedLength);
     }
 }

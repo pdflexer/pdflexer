@@ -160,8 +160,7 @@ namespace PdfLexer.Parsers
 
         internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
         {
-            // TODO add support here for object streams?
-            return MainDocSource.RepairFindLastMatching(type, matcher);
+            return StructuralRepairs.RepairFindLastMatching(this, MainDocSource.GetStream(0), type, matcher);
         }
 
         internal void UnwrapAndCopyObjData(ReadOnlySpan<byte> data, WritingContext wtx)
@@ -238,41 +237,6 @@ namespace PdfLexer.Parsers
                 Options.Eagerness = existing;
                 return;
             }
-        }
-
-        internal void CopyObjectData(IPdfDataSource src, XRefEntry xref, ReadOnlySpan<byte> data, WritingContext wtx)
-        {
-            if (IsEncrypted)
-            {
-                throw new NotSupportedException("Copying raw data from encrypted PDF is not supported.");
-            }
-
-            wtx.Stream.Write(data.Slice(0, xref.KnownObjLength));
-            if (xref.KnownStreamStart == 0)
-            {
-                return;
-            }
-
-            var obj = GetPdfItem(data, 0, out _);
-            if (!(obj is PdfDictionary dict))
-            {
-                Error($"Pdf dictionary followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
-                return;
-            }
-            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
-            {
-                Error("Pdf dictionary followed by start stream token did not contain /Length.");
-                streamLength = PdfCommonNumbers.Zero;
-            }
-
-            PdfName filterName = CommonUtil.GetFirstFilter(dict);
-
-            var str = src.GetStreamOfContents(xref, filterName, streamLength);
-            wtx.Stream.Write(IndirectSequences.stream);
-            wtx.Stream.WriteByte((byte)'\n');
-            str.CopyTo(wtx.Stream);
-            wtx.Stream.WriteByte((byte)'\n');
-            wtx.Stream.Write(IndirectSequences.endstream);
         }
 
         internal IPdfObject GetIndirectObject(XRef xref) => GetIndirectObject(xref.GetId());
@@ -375,32 +339,6 @@ namespace PdfLexer.Parsers
             }
             return offsets;
         }
-
-        internal IPdfObject GetIndirectObject(IPdfDataSource src, XRefEntry xref, ReadOnlySpan<byte> data)
-        {
-            var obj = GetKnownPdfItem((PdfObjectType)xref.KnownObjType, data, 0, xref.KnownObjLength);
-            if (xref.KnownStreamStart == 0)
-            {
-                return obj;
-            }
-
-            if (!(obj is PdfDictionary dict))
-            {
-                Error($"Pdf dictionary followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
-                return obj;
-            }
-
-            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
-            {
-                Error("Pdf dictionary followed by start stream token did not contain /Length.");
-                streamLength = PdfCommonNumbers.Zero;
-            }
-
-            var contents = new PdfXRefStreamContents(src, xref, streamLength);
-            contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
-            contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
-            return new PdfStream(dict, contents);
-        }
         internal IPdfObject GetWrappedIndirectObject(XRefEntry xref, ReadOnlySpan<byte> data)
         {
             var scanner = new Scanner(this, data, 0);
@@ -453,6 +391,37 @@ namespace PdfLexer.Parsers
             }
             Error("Indirect object not followed by endobj token: " + CommonUtil.GetDataErrorInfo(data, scanner.Position));
             return obj;
+        }
+
+        public Stream GetStreamOfContents(XRefEntry xref, PdfName? filter, int predictedLength)
+        {
+            if (xref.KnownStreamStart == 0)
+            {
+                // this shouldn't happen -> bug
+                throw new ApplicationException($"GetStreamOfContents called on non stream: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+            }
+            if (xref.KnownStreamLength > 0)
+            {
+                return xref.Source.GetDataAsStream(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+            }
+            var stream = xref.Source.GetStream(xref.Offset + xref.KnownStreamStart + predictedLength);
+            var reader = Options.CreateReader(stream);
+            var scanner = new PipeScanner(this, reader);
+            var nxt = scanner.Peek();
+            reader.Complete();
+            if (nxt == PdfTokenType.EndStream)
+            {
+                xref.KnownStreamLength = predictedLength;
+                return xref.Source.GetDataAsStream(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+            }
+            Error($"Stream did not end with endstream: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+            if (!StructuralRepairs.TryFindStreamEnd(this, xref, filter, predictedLength))
+            {
+                xref.KnownStreamLength = predictedLength;
+                Error($"Unable to find endstream, using provided length");
+            }
+            Error($"Found endstream in contents, using repaired length: {xref.KnownStreamLength}");
+            return xref.Source.GetDataAsStream(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
         }
 
         internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data)

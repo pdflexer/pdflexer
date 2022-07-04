@@ -41,12 +41,6 @@ namespace PdfLexer.IO
             ArrayPool<byte>.Shared.Return(data);
         }
 
-
-        public override IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
-        {
-            throw new NotImplementedException();
-        }
-
         private byte[] GetRented(XRefEntry xref)
         {
             var os = _offsets[xref.ObjectIndex] + _start;
@@ -67,11 +61,6 @@ namespace PdfLexer.IO
             }
             buffer[length] = 0;
             return buffer;
-        }
-
-        public override Stream GetStreamOfContents(XRefEntry xref, PdfName? filter, int predictedLength)
-        {
-            throw new NotImplementedException();
         }
     }
 }

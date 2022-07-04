@@ -269,7 +269,7 @@ namespace PdfLexer
             {
                 throw new NotSupportedException("Pdf encryption is not supported.");
             }
-            using var str = Source.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
+            using var str = Source.Context.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
             str.CopyTo(destination);
         }
 
@@ -279,7 +279,7 @@ namespace PdfLexer
             {
                 throw new NotSupportedException("Pdf encryption is not supported.");
             }
-            return Source.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
+            return Source.Context.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
         }
     }
 

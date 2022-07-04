@@ -53,12 +53,5 @@ namespace PdfLexer.IO
         IPdfObject GetIndirectObject(XRefEntry xref);
         void CopyIndirectObject(XRefEntry xref, WritingContext destination);
 
-        /// <summary>
-        /// Get stream object stream contents
-        /// </summary>
-        /// <returns>Stream</returns>
-        Stream GetStreamOfContents(XRefEntry xref, PdfName? filter, int predictedLength);
-
-        IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher);
     }
 }

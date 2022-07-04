@@ -98,12 +98,45 @@ namespace PdfLexer.Parsers.Structure
         /// Gets the object this entry points to.
         /// </summary>
         /// <returns>IPdfObject</returns>
-        public IPdfObject GetObject() => Source.GetIndirectObject(this);
+        public IPdfObject GetObject() 
+        {
+            try
+            {
+                return Source.GetIndirectObject(this);
+            }
+            catch (PdfLexerException e)
+            {
+                Source.Context.Error($"XRef offset for {Reference} was not valid: " + e.Message);
+                if (!!StructuralRepairs.TryRepairXRef(Source.Context, this, out var repaired))
+                {
+                    return PdfNull.Value;
+                }
+                Source.Context.Error("XRef offset repairs to " + repaired.Offset);
+                Source.Context.Document.xrefEntries[repaired.Reference.GetId()] = repaired;
+                return Source.GetIndirectObject(repaired);
+            }
+        } 
         /// <summary>
         /// Copies the data for the object this XRef points to the provided stream.
         /// Excludes object header and trailer (obj/endobj).
         /// </summary>
         /// <param name="destination">Stream to write to</param>
-        public void CopyUnwrappedData(WritingContext destination) => Source.CopyIndirectObject(this, destination);
+        public void CopyUnwrappedData(WritingContext destination) {
+            try
+            {
+                Source.CopyIndirectObject(this, destination);
+            }
+            catch (PdfLexerException e)
+            {
+                Source.Context.Error($"XRef offset for {Reference} was not valid: " + e.Message);
+                if (!StructuralRepairs.TryRepairXRef(Source.Context, this, out var repaired))
+                {
+                    return; // will be null;
+                }
+                Source.Context.Error("XRef offset repairs to " + repaired.Offset);
+                Source.Context.Document.xrefEntries[repaired.Reference.GetId()] = repaired;
+                Source.CopyIndirectObject(repaired, destination);
+            }
+        }
     }
 }
