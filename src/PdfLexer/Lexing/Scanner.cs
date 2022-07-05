@@ -7,7 +7,7 @@ namespace PdfLexer.Lexing
     public ref struct Scanner
     {
         private ParsingContext Context;
-        private ReadOnlySpan<byte> Data;
+        internal ReadOnlySpan<byte> Data;
 
         public Scanner(ParsingContext ctx, ReadOnlySpan<byte> data, int startAt = 0)
         {

@@ -972,7 +972,7 @@ namespace PdfLexer.Tests
                     var normal = ctx.XRefParser.LoadCrossReference(source);
                     var ms = new MemoryStream(contents);
                     var ctx2 = new ParsingContext();
-                    var rebuilt = ctx2.XRefParser.BuildFromRawData(ms);
+                    var rebuilt = StructuralRepairs.BuildFromRawData(new ParsingContext(), ms);
                     var nm = normal.Item1.Where(x => !x.IsFree).Select(x => x.Reference.GetId()).OrderBy(x => x).ToList();
                     var rb = rebuilt.Item1.Where(x => !x.IsFree).Select(x => x.Reference.GetId()).OrderBy(x => x).ToList();
                     var missing = normal.Item1.Where(x => !x.IsFree && !rebuilt.Item1.Any(y => y.Reference.Equals(x.Reference))).ToList();

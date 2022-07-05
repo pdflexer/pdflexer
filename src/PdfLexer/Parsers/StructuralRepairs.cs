@@ -1,11 +1,19 @@
-﻿using PdfLexer.Lexing;
+﻿using PdfLexer.IO;
+using PdfLexer.Lexing;
 using PdfLexer.Parsers.Structure;
 using System;
+using System.Buffers;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace PdfLexer.Parsers
 {
-    internal class StructuralRepairs
+    // TODO
+    // unify the two very similar repair scans
+    // probably scan once if it hasn't been scanned and then use that for any further xref errors
+    // add test coverage
+    internal static class StructuralRepairs
     {
         public static IPdfObject RepairFindLastMatching(ParsingContext ctx, Stream stream, PdfTokenType type, Func<IPdfObject, bool> matcher)
         {
@@ -211,6 +219,175 @@ namespace PdfLexer.Parsers
             xref.KnownStreamLength = (int)(scanner.GetOffset() - sub);
             reader.Complete();
             return true;
+        }
+
+        /// <summary>
+        /// Builds xref table by scanning through pdf and looking for obj sequences
+        /// </summary>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        public static (List<XRefEntry>, PdfDictionary) BuildFromRawData(ParsingContext ctx, Stream stream)
+        {
+            var orig = ctx.Options.Eagerness;
+            ctx.Options.Eagerness = Eagerness.FullEager;
+            var offsets = new List<XRefEntry>();
+            var dicts = new List<PdfDictionary>();
+            var pipe = ctx.Options.CreateReader(stream);
+            var scanner = new PipeScanner(ctx, pipe);
+            var start = 0;
+            while (true)
+            {
+                if (!scanner.TrySkipToToken(IndirectSequences.obj, 40))
+                {
+                    break;
+                }
+                var pos = scanner.GetStartOffset() + start;
+
+                var count = scanner.ScanBackTokens(2, 40);
+
+                AddCurrent(ctx, ref scanner, count, offsets, dicts, start);
+
+                // special handling in case malformed dictionary / array made us read past obj
+                if (stream.Length == pos)
+                {
+                    break;
+                }
+                start = (int)pos + 1;
+                stream.Seek(start, SeekOrigin.Begin);
+                pipe = ctx.Options.CreateReader(stream);
+                scanner = new PipeScanner(ctx, pipe);
+            }
+
+            stream.Seek(0, SeekOrigin.Begin);
+            pipe = ctx.Options.CreateReader(stream);
+            scanner = new PipeScanner(ctx, pipe);
+            var trailer = new PdfDictionary();
+            // TODO need determine ordering
+            foreach (var dict in dicts)
+            {
+                foreach (var item in dict)
+                {
+                    trailer[item.Key] = item.Value;
+                }
+            }
+            while (true)
+            {
+                if (!scanner.TrySkipToToken(XRefParser.Trailer, 0))
+                {
+                    break;
+                }
+                scanner.SkipCurrent(); // trailer
+                if (scanner.Peek() != PdfTokenType.DictionaryStart)
+                {
+                    continue;
+                }
+
+                var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+                // TODO need determine ordering
+                foreach (var item in dict)
+                {
+                    trailer[item.Key] = item.Value;
+                }
+            }
+            ctx.Options.Eagerness = orig;
+            return (offsets, trailer);
+        }
+
+        // adds xref entry for object at current location
+        private static void AddCurrent(ParsingContext ctx, ref PipeScanner scanner, int maxScan, List<XRefEntry> entries, List<PdfDictionary> dicts, long scanStart)
+        {
+            long offset = 0;
+            var start = scanner.GetOffset();
+            while (true)
+            {
+                scanner.Peek();
+
+                for (; scanner.CurrentTokenType != PdfTokenType.NumericObj; scanner.SkipCurrent())
+                { if (scanner.GetOffset() - start > maxScan) { return; } }
+
+                offset = scanner.GetStartOffset();
+                var n = scanner.GetCurrentObject().GetValue<PdfNumber>(); // N
+                if (scanner.Peek() != PdfTokenType.NumericObj)
+                {
+                    continue;
+                }
+                var g = scanner.GetCurrentObject().GetValue<PdfNumber>(); // G
+                if (scanner.Peek() != PdfTokenType.StartObj)
+                {
+                    continue;
+                }
+                scanner.SkipCurrent(); // obj
+
+                entries.Add(new XRefEntry { Offset = offset + scanStart, Reference = new XRef { ObjectNumber = n, Generation = g } });
+                if (scanner.Peek() == PdfTokenType.DictionaryStart)
+                {
+                    var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+                    var type = dict.GetOptionalValue<PdfName>(PdfName.TypeName);
+                    if (type == null)
+                    {
+                        return;
+                    }
+
+                    if (type.Equals(PdfName.XRef)) // ignoring xref entries (raw rebuild) and just use for trailer info
+                    {
+                        dicts.Add(dict);
+                        return;
+                    }
+
+                    if (!type.Equals(PdfName.ObjStm))
+                    {
+                        return;
+                    }
+                    if (scanner.Peek() != PdfTokenType.StartStream)
+                    {
+                        return;
+                    }
+
+                    // this object is an object stream, need to grab xref entries for it
+                    // TODO low memory mode
+
+                    var length = dict.GetRequiredValue<PdfNumber>(PdfName.Length);
+                    scanner.SkipCurrent();
+                    var sequence = scanner.Read(length);
+                    PdfStreamContents contents = new PdfByteArrayStreamContents(sequence.ToArray());
+                    contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
+                    contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+                    var str = new PdfStream(dict, contents);
+                    var data = str.Contents.GetDecodedData(ctx);
+
+                    var current = GetOSOffsets(ctx, data, str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N), n);
+                    var first = str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
+                    var source = new ObjectStreamDataSource(ctx, n, data, current.Select(x => (int)x.Offset).ToList(), first);
+                    foreach (var item in current)
+                    {
+                        item.Source = source;
+                    }
+                    entries.AddRange(current);
+                }
+                return;
+            }
+        }
+
+        internal static List<XRefEntry> GetOSOffsets(ParsingContext ctx, ReadOnlySpan<byte> data, int count, int objectNumber)
+        {
+            var entries = new List<XRefEntry>();
+            var c = 0;
+            var scanner = new Scanner(ctx, data, 0);
+            while (c < count)
+            {
+                var num = scanner.GetCurrentObject().GetValue<PdfNumber>(); // don't use object numbers currently
+                var os = scanner.GetCurrentObject().GetValue<PdfNumber>();
+                entries.Add(new XRefEntry
+                {
+                    Type = XRefType.Compressed,
+                    ObjectIndex = c,
+                    ObjectStreamNumber = objectNumber,
+                    Reference = new XRef { ObjectNumber = num, Generation = 0 },
+                    Offset = os
+                });
+                c++;
+            }
+            return entries;
         }
     }
 }

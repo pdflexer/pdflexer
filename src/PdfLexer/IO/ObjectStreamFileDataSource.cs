@@ -1,12 +1,11 @@
-﻿using PdfLexer.Parsers;
+﻿using PdfLexer.Lexing;
+using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
-using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
 
 namespace PdfLexer.IO
 {
@@ -24,6 +23,7 @@ namespace PdfLexer.IO
 
         public override IPdfObject GetIndirectObject(XRefEntry xref)
         {
+            // todo use sequence?
             Debug.Assert(xref.ObjectStreamNumber == SourceObject);
             var data = GetRented(xref);
             var orig = Context.Options.Eagerness;
@@ -36,8 +36,10 @@ namespace PdfLexer.IO
 
         public override void CopyIndirectObject(XRefEntry xref, WritingContext destination)
         {
+            // todo use sequence?
             var data = GetRented(xref);
-            Context.UnwrapAndCopyObjData(data, destination);
+            var scanner = new Scanner(Context, data, 0);
+            this.CopyRawObjFromSpan(ref scanner, destination);
             ArrayPool<byte>.Shared.Return(data);
         }
 
