@@ -37,64 +37,6 @@ namespace PdfLexer.Tests
             Assert.Equal(decoded, str);
         }
 
-
-        [InlineData("<</FormType 1/Subtype/Form/BBox[0 0 612 792]/Resources<</XObject<</Xf19186 20 0 R>>/ProcSet[/PDF/Text/ImageB/ImageC/ImageI]>>/Type/XObject/Filter/FlateDecode/Length 53/Matrix[1 0 0 1 0 0]>>")]
-        [Theory]
-        public void It_Lexes_Split(string txt)
-        {
-            var a = txt.Substring(20);
-            var b = txt.Substring(20, 20);
-            var c = txt.Substring(40);
-            var aa = Encoding.ASCII.GetBytes(a);
-            var bb = Encoding.ASCII.GetBytes(b);
-            var cc = Encoding.ASCII.GetBytes(c);
-            var all = Encoding.ASCII.GetBytes(txt);
-
-            var tokens = new List<PdfTokenType>();
-            int pos = 0;
-            while (pos < all.Length && (pos = PdfSpanLexer.TryReadNextToken(all, out var type, pos, out int length)) != -1)
-            {
-                pos += length;
-                tokens.Add(type);
-            }
-
-
-            var tokenSplit = new List<PdfTokenType>();
-            int start = 0;
-            var items = new[] { aa, bb, cc };
-            for (var i = 0;i<items.Length;i++)
-            {
-                ReadOnlySpan<byte> current = items[i];
-                var end = current.Length;
-                if (i+1<items.Length)
-                {
-                    var nxt = items[i + 1];
-                    // check for hard terminators
-                    if (Array.IndexOf(CommonUtil.Terminators, nxt[0]) >= 0)
-                    {
-                        for (var s=current.Length-1;s>=0;s--)
-                        {
-                            if (Array.IndexOf(CommonUtil.Terminators, nxt[0]) >= 0) 
-                            {
-
-                            }
-                        }
-                        // handle
-
-                        continue;
-                    }
-                }
-                while (start < current.Length && (start = PdfSpanLexer.TryReadNextToken(current, out var type, pos, out int length)) != -1)
-                {
-                    pos += length;
-                    tokenSplit.Add(type);
-                }
-            }
-
-            Assert.True(tokenSplit.SequenceEqual(tokens));
-        }
-
-
         [Fact]
         public void It_Lexes_Stream()
         {
