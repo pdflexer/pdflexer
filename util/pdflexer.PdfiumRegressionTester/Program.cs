@@ -306,9 +306,9 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
             {
                 var opts = new ParsingOptions { MaxErrorRetention = 10 };
                 opts.ThrowOnErrors = strict && errorInfo?.ErrCount == 0;
-                using var fs = File.OpenRead(pdf);
-                using var doc = PdfDocument.Open(fs, opts);
-                // using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), opts);
+                //using var fs = File.OpenRead(pdf);
+                //using var doc = PdfDocument.Open(fs, opts);
+                using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), opts);
                 // for non compressed object strams
                 if (doc.Trailer.Get(PdfName.Encrypt) != null)
                 {
@@ -472,6 +472,142 @@ static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
     var updatedStr = new PdfStream(new PdfDictionary(), bac);
     page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
     return page;
+}
+
+static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
+{
+    var res = page.Dictionary.GetOptionalValue<PdfDictionary>(PdfName.Resources);
+    var fonts = res?.GetOptionalValue<PdfDictionary>(PdfName.Font);
+    fonts = new();
+    var xobjs = res?.GetOptionalValue<PdfDictionary>(PdfName.XObject);
+    xobjs = new();
+
+    var oc = 0;
+
+    var scanner = new PageContentScanner(doc.Context, page, true);
+    var ms = new MemoryStream();
+
+    PdfDictionary currentForm = null;
+    var fontReplacements = new Dictionary<PdfName, PdfName>();
+    var xObjReplacements = new Dictionary<PdfName, PdfName>();
+    var gsReplacements = new Dictionary<PdfName, PdfName>();
+
+    while (scanner.Peek() != PdfOperatorType.EOC)
+    {
+        if (scanner.TryGetCurrentOperation(out var op))
+        {
+            if (scanner.CurrentForm == null)
+            {
+
+                op.Serialize(ms);
+                ms.WriteByte((byte)'\n');
+            } else
+            {
+                if (!Object.ReferenceEquals(currentForm, scanner.CurrentForm))
+                {
+                    fontReplacements = new();
+                    xObjReplacements = new();
+                    gsReplacements = new();
+                    currentForm = scanner.CurrentForm;
+                }
+                switch (op.Type)
+                {
+                    // font
+                    case PdfOperatorType.Tf:
+                        {
+                            var co = (Tf_Op)op;
+
+                            co.font = GetReplacedName(
+                                co.font,
+                                fonts,
+                                currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.Font),
+                                fontReplacements);
+
+                            op.Serialize(ms);
+                            ms.WriteByte((byte)'\n');
+                            break;
+                        }
+                    // gs
+                    case PdfOperatorType.gs:
+                        op.Serialize(ms);
+                        ms.WriteByte((byte)'\n');
+                        break;
+                    // color state
+                    case PdfOperatorType.CS:
+                        op.Serialize(ms);
+                        ms.WriteByte((byte)'\n');
+                        break;
+                    // color state
+                    case PdfOperatorType.cs:
+                        op.Serialize(ms);
+                        ms.WriteByte((byte)'\n');
+                        break;
+                    // do
+                    case PdfOperatorType.Do:
+                        {
+                            var co = (Do_Op)op;
+
+                            co.name = GetReplacedName(
+                                co.name,
+                                xobjs,
+                                currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.XObject),
+                                xObjReplacements);
+
+                            op.Serialize(ms);
+                            ms.WriteByte((byte)'\n');
+                            break;
+                        }
+                    default:
+                        op.Serialize(ms);
+                        ms.WriteByte((byte)'\n');
+                        break;
+                }
+            }
+
+            
+        }
+        scanner.SkipCurrent();
+    }
+
+    page = page.Dictionary.CloneShallow();
+    var flate = new FlateFilter(doc.Context);
+    ms.Seek(0, SeekOrigin.Begin);
+    var df = flate.Encode(ms);
+    var ms2 = new MemoryStream((int)df.Data.Length);
+    df.Data.CopyTo(ms2);
+    var bac = new PdfByteArrayStreamContents(ms2.ToArray(), df.Filter, df.Params);
+
+    var updatedStr = new PdfStream(new PdfDictionary(), bac);
+    page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+    return page;
+
+    PdfName GetReplacedName(PdfName name, PdfDictionary pageSubDict, PdfDictionary? formSubDict, Dictionary<PdfName,PdfName> replacement)
+    {
+        if (!replacement.TryGetValue(name, out var nm))
+        {
+            if (!pageSubDict.ContainsKey(name))
+            {
+                replacement[name] = name;
+                nm = name;
+            }
+            else
+            {
+                var newName = new PdfName(name.Value + oc);
+                while (pageSubDict.ContainsKey(newName))
+                {
+                    oc++;
+                    newName = new PdfName(name.Value + oc);
+                }
+                replacement[name] = newName;
+                nm = newName;
+            }
+
+            IPdfObject fd = null;
+            formSubDict?.TryGetValue(name, out fd);
+            pageSubDict[nm] = fd ?? PdfNull.Value;
+        }
+        return nm;
+    }
 }
 
 static string ExePath()

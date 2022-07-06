@@ -44,6 +44,7 @@ namespace PdfLexer.IO
 
         public void GetData(long startPosition, int desiredBytes, out ReadOnlySpan<byte> data)
         {
+            ReadOnlySpan<byte> span = _data;
             if (startPosition > int.MaxValue)
             {
                 throw new NotSupportedException(
@@ -55,8 +56,8 @@ namespace PdfLexer.IO
                 throw new PdfLexerException("More data requested from data source than available.");
             }
             Context.CurrentSource = this;
-            Context.CurrentOffset = startPosition; // TODO move this somewhere else
-            data = new Span<byte>(_data, start, _data.Length - start);
+            Context.CurrentOffset = startPosition;
+            data = span.Slice((int)startPosition, desiredBytes);
         }
 
         public void CopyData(long startPosition, int requiredBytes, Stream stream)
@@ -75,30 +76,9 @@ namespace PdfLexer.IO
             stream.Write(_data, (int)startPosition, requiredBytes);
         }
 
-        public IPdfObject GetIndirectObject(XRefEntry xref)
-        {
-            ReadOnlySpan<byte> buffer = _data;
-            if (xref.Offset > _data.Length)
-            {
-                throw new PdfLexerException($"Offset larger than data: {xref.Offset} > {_data.Length}");
-            }
-            Context.CurrentSource = this;
-            Context.CurrentOffset = xref.Offset;
+        public IPdfObject GetIndirectObject(XRefEntry xref) => this.GetWrappedFromSpan(xref);
 
-            return Context.GetWrappedIndirectObject(xref, buffer.Slice((int)xref.Offset, xref.MaxLength));
-        }
-
-        public void CopyIndirectObject(XRefEntry xref, WritingContext destination)
-        {
-            ReadOnlySpan<byte> buffer = _data;
-            if (xref.Offset > _data.Length)
-            {
-                throw new PdfLexerException($"Offset larger than data: {xref.Offset} > {_data.Length}");
-            }
-            Context.CurrentSource = this;
-            Context.CurrentOffset = xref.Offset;
-            Context.UnwrapAndCopyObjData(buffer.Slice((int)xref.Offset, xref.MaxLength), destination);
-        }
+        public void CopyIndirectObject(XRefEntry xref, WritingContext destination) => this.UnwrapAndCopyFromSpan(xref, destination);
 
         public void Dispose()
         {

@@ -1,4 +1,5 @@
-﻿using PdfLexer.Parsers;
+﻿using PdfLexer.Lexing;
+using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 using System;
@@ -79,7 +80,8 @@ namespace PdfLexer.IO
             Context.CurrentSource = this;
             Context.CurrentOffset = os;
             ReadOnlySpan<byte> data = _data;
-            Context.UnwrapAndCopyObjData(data.Slice(os), destination);
+            var scanner = new Scanner(Context, data.Slice(os), 0);
+            this.CopyRawObjFromSpan(ref scanner, destination);
         }
 
         public IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)

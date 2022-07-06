@@ -186,8 +186,7 @@ endobj
 ";
             var bytes = Encoding.ASCII.GetBytes(data);
             var ms = new MemoryStream(bytes);
-            var parser = new XRefParser(new ParsingContext());
-            var (xrefs, trailer) = parser.BuildFromRawData(ms);
+            var (xrefs, trailer) = StructuralRepairs.BuildFromRawData(new ParsingContext(), ms);
             Assert.Contains(xrefs, x =>x.Reference.ObjectNumber == 17);
             Assert.Contains(xrefs, x =>x.Reference.ObjectNumber == 1);
             Assert.Contains(xrefs, x =>x.Reference.ObjectNumber == 4);
