@@ -306,9 +306,9 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
             {
                 var opts = new ParsingOptions { MaxErrorRetention = 10 };
                 opts.ThrowOnErrors = strict && errorInfo?.ErrCount == 0;
-                //using var fs = File.OpenRead(pdf);
-                //using var doc = PdfDocument.Open(fs, opts);
-                using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), opts);
+                using var fs = File.OpenRead(pdf);
+                using var doc = PdfDocument.Open(fs, opts);
+                // using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), opts);
                 // for non compressed object strams
                 if (doc.Trailer.Get(PdfName.Encrypt) != null)
                 {

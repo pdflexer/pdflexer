@@ -1,6 +1,7 @@
 ﻿using BenchmarkDotNet.Attributes;
 using PdfLexer.Legacy;
 using PdfLexer.Parsers;
+using PdfLexer.Parsers.Nested;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
@@ -57,76 +58,97 @@ namespace PdfLexer.Benchmarks.Benchmarks
         }
 
         [Benchmark()]
-        public int ScanThenParseSpan()
+        public int ScanSpanThenParseSeq()
         {
-            
+
             var count = 0;
             foreach (var item in samples)
             {
-                var seq = new ReadOnlySequence<byte>(item);
-                var reader = new SequenceReader<byte>(seq);
-                var start = reader.Position;
-                skipper.TryScanToEndOfDict(ref reader);
-                var part = seq.Slice(start, reader.Position);
-                var dict = parser.Parse(part.FirstSpan);
-                count += dict.Count;
+                ReadOnlySpan<byte> span = item;
+                // var seq = new ReadOnlySequence<byte>(item);
+                // var reader = new SequenceReader<byte>(seq);
+                // var start = reader.Position;
+                // skipper.TryScanToEndOfDict(ref reader);
+                int i = 0;
+                NestedUtil.AdvanceToDictEnd(span, ref i, out bool _);
+                // var part = seq.Slice(0, reader.Position);
+                var dict = parser.Parse(span);
+                count += dict.Count + i;
             }
             return count;
         }
 
-        [Benchmark()]
-        public int ScanThenParseCopied()
-        {
-            var count = 0;
-            foreach (var item in samples)
-            {
-                
-                var seq = new ReadOnlySequence<byte>(item);
-                var reader = new SequenceReader<byte>(seq);
-                var start = reader.Position;
-                skipper.TryScanToEndOfDict(ref reader);
-                var part = seq.Slice(start, reader.Position);
-                var len = (int)part.Length;
-                var array = ArrayPool<byte>.Shared.Rent(len);
-                Span<byte> rented = array;
-                part.FirstSpan.CopyTo(rented);
-                var dict = parser.Parse(rented.Slice(0, len));
-                ArrayPool<byte>.Shared.Return(array);
-                count += dict.Count;
-            }
-            return count;
-        }
+        // [Benchmark()]
+        // public int ScanThenParseSpan()
+        // {
+        //     
+        //     var count = 0;
+        //     foreach (var item in samples)
+        //     {
+        //         var seq = new ReadOnlySequence<byte>(item);
+        //         var reader = new SequenceReader<byte>(seq);
+        //         var start = reader.Position;
+        //         skipper.TryScanToEndOfDict(ref reader);
+        //         var part = seq.Slice(start, reader.Position);
+        //         var dict = parser.Parse(part.FirstSpan);
+        //         count += dict.Count;
+        //     }
+        //     return count;
+        // }
+        // 
+        // [Benchmark()]
+        // public int ScanThenParseCopied()
+        // {
+        //     var count = 0;
+        //     foreach (var item in samples)
+        //     {
+        //         
+        //         var seq = new ReadOnlySequence<byte>(item);
+        //         var reader = new SequenceReader<byte>(seq);
+        //         var start = reader.Position;
+        //         skipper.TryScanToEndOfDict(ref reader);
+        //         var part = seq.Slice(start, reader.Position);
+        //         var len = (int)part.Length;
+        //         var array = ArrayPool<byte>.Shared.Rent(len);
+        //         Span<byte> rented = array;
+        //         part.FirstSpan.CopyTo(rented);
+        //         var dict = parser.Parse(rented.Slice(0, len));
+        //         ArrayPool<byte>.Shared.Return(array);
+        //         count += dict.Count;
+        //     }
+        //     return count;
+        // }
 
 
-        [Benchmark()]
-        public int JustSeqParse()
-        {
-            
-            var count = 0;
-            foreach (var item in samples)
-            {
-                var seq = new ReadOnlySequence<byte>(item);
-                var reader = new SequenceReader<byte>(seq);
-                var dict = parser.Parse(seq);
-                count += dict.Count;
-            }
-            return count;
-        }
+        // [Benchmark()]
+        // public int JustSeqParse()
+        // {
+        //     
+        //     var count = 0;
+        //     foreach (var item in samples)
+        //     {
+        //         var seq = new ReadOnlySequence<byte>(item);
+        //         var reader = new SequenceReader<byte>(seq);
+        //         var dict = parser.Parse(seq);
+        //         count += dict.Count;
+        //     }
+        //     return count;
+        // }
 
-        [Benchmark()]
-        public int JustSpanParseWithOverhead()
-        {
-            
-            var count = 0;
-            foreach (var item in samples)
-            {
-                var seq = new ReadOnlySequence<byte>(item);
-                var reader = new SequenceReader<byte>(seq);
-                var dict = parser.Parse(item);
-                count += dict.Count;
-            }
-            return count;
-        }
+        // [Benchmark()]
+        // public int JustSpanParseWithOverhead()
+        // {
+        //     
+        //     var count = 0;
+        //     foreach (var item in samples)
+        //     {
+        //         var seq = new ReadOnlySequence<byte>(item);
+        //         var reader = new SequenceReader<byte>(seq);
+        //         var dict = parser.Parse(item);
+        //         count += dict.Count;
+        //     }
+        //     return count;
+        // }
 
         [Benchmark()]
         public int JustSpanParse()

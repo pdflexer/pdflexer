@@ -183,11 +183,11 @@ namespace PdfLexer.Lexing
             // TODO
             // quick path if xref offsets known
             // set xref offsets
-            source.GetData(xref.Offset, xref.MaxLength, out var data);
             if (source.Context.IsEncrypted)
             {
                 throw new NotSupportedException("Copying raw data from encrypted PDF is not supported.");
             }
+            source.GetData(xref.Offset, xref.MaxLength, out var data);
             var scanner = new Scanner(source.Context, data, 0);
             scanner.SkipExpected(PdfTokenType.NumericObj);
             scanner.SkipExpected(PdfTokenType.NumericObj);

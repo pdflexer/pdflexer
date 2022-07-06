@@ -43,9 +43,9 @@ namespace PdfLexer
         public bool LazyStrings { get; set; } = false;
         public bool LowMemoryMode { get; set; } = false;
         public int MaxErrorRetention { get; set; } = 250;
-
+        public int MaxMemorySegment { get; set; } = 1024*8;
         public int BufferSize { get; set; } = 4096;
-        private StreamPipeReaderOptions opts = new StreamPipeReaderOptions(bufferSize: 512, leaveOpen: true);
+        private StreamPipeReaderOptions opts = new StreamPipeReaderOptions(bufferSize: 1024, leaveOpen: true);
         internal PipeReader CreateReader(Stream stream)
         {
             return PipeReader.Create(stream, opts);

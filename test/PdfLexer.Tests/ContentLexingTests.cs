@@ -1,8 +1,10 @@
 ﻿using PdfLexer.Filters;
 using PdfLexer.Lexing;
 using PdfLexer.Operators;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Xunit;
 
@@ -34,6 +36,7 @@ namespace PdfLexer.Tests
             var str = Encoding.UTF8.GetString(rms.ToArray());
             Assert.Equal(decoded, str);
         }
+
         [Fact]
         public void It_Lexes_Stream()
         {
