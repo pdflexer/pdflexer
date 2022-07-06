@@ -244,11 +244,15 @@ namespace PdfLexer.Operators
         };
     }
 
+
+    // Close, fill, and stroke path using nonzero winding number rule
     public partial class b_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'b' };
         public PdfOperatorType Type => PdfOperatorType.b;
         public static b_Op Value = new b_Op();
+
+        // Close, fill, and stroke path using nonzero winding number rule
         public b_Op()
         {
 
@@ -259,11 +263,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Fill and stroke path using nonzero winding number rule
     public partial class B_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'B' };
         public PdfOperatorType Type => PdfOperatorType.B;
         public static B_Op Value = new B_Op();
+
+        // Fill and stroke path using nonzero winding number rule
         public B_Op()
         {
 
@@ -274,11 +282,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Close, fill, and stroke path using even-odd rule
     public partial class b_Star_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'b', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.b_Star;
         public static b_Star_Op Value = new b_Star_Op();
+
+        // Close, fill, and stroke path using even-odd rule
         public b_Star_Op()
         {
 
@@ -289,11 +301,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Fill and stroke path using even-odd rule
     public partial class B_Star_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'B', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.B_Star;
         public static B_Star_Op Value = new B_Star_Op();
+
+        // Fill and stroke path using even-odd rule
         public B_Star_Op()
         {
 
@@ -304,6 +320,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Begin marked-content sequence with property list
     public partial class BDC_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'D', (byte) 'C' };
@@ -316,11 +334,15 @@ namespace PdfLexer.Operators
             this.props = props;
         }
     }
+
+    // Begin inline image object
     public partial class BI_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'I' };
         public PdfOperatorType Type => PdfOperatorType.BI;
         public static BI_Op Value = new BI_Op();
+
+        // Begin inline image object
         public BI_Op()
         {
 
@@ -331,6 +353,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Begin marked-content sequence
     public partial class BMC_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'M', (byte) 'C' };
@@ -366,11 +390,15 @@ namespace PdfLexer.Operators
             return new BMC_Op(a0);
         }
     }
+
+    // Begin text object
     public partial class BT_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'T' };
         public PdfOperatorType Type => PdfOperatorType.BT;
         public static BT_Op Value = new BT_Op();
+
+        // Begin text object
         public BT_Op()
         {
 
@@ -381,11 +409,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Begin compatibility section
     public partial class BX_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'B', (byte) 'X' };
         public PdfOperatorType Type => PdfOperatorType.BX;
         public static BX_Op Value = new BX_Op();
+
+        // Begin compatibility section
         public BX_Op()
         {
 
@@ -396,6 +428,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Append curved segment to path (three control points)
     public partial class c_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'c' };
@@ -456,6 +490,8 @@ namespace PdfLexer.Operators
             return new c_Op(a0, a1, a2, a3, a4, a5);
         }
     }
+
+    // Concatenate matrix to current transformation matrix
     public partial class cm_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'c', (byte) 'm' };
@@ -516,6 +552,8 @@ namespace PdfLexer.Operators
             return new cm_Op(a0, a1, a2, a3, a4, a5);
         }
     }
+
+    // Set color space for stroking operations
     public partial class CS_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'C', (byte) 'S' };
@@ -551,6 +589,8 @@ namespace PdfLexer.Operators
             return new CS_Op(a0);
         }
     }
+
+    // Set color space for nonstroking operations
     public partial class cs_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'c', (byte) 's' };
@@ -586,6 +626,8 @@ namespace PdfLexer.Operators
             return new cs_Op(a0);
         }
     }
+
+    // Set line dash pattern
     public partial class d_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'd' };
@@ -598,6 +640,8 @@ namespace PdfLexer.Operators
             this.dashPhase = dashPhase;
         }
     }
+
+    // Set glyph width in Type 3 font
     public partial class d0_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'd', (byte) '0' };
@@ -638,6 +682,8 @@ namespace PdfLexer.Operators
             return new d0_Op(a0, a1);
         }
     }
+
+    // Set glyph width and bounding box in Type 3 font
     public partial class d1_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'd', (byte) '1' };
@@ -698,6 +744,8 @@ namespace PdfLexer.Operators
             return new d1_Op(a0, a1, a2, a3, a4, a5);
         }
     }
+
+    // Invoke named XObject
     public partial class Do_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'D', (byte) 'o' };
@@ -733,6 +781,8 @@ namespace PdfLexer.Operators
             return new Do_Op(a0);
         }
     }
+
+    // Define marked-content point with property list
     public partial class DP_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'D', (byte) 'P' };
@@ -745,11 +795,15 @@ namespace PdfLexer.Operators
             this.props = props;
         }
     }
+
+    // End inline image object
     public partial class EI_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'E', (byte) 'I' };
         public PdfOperatorType Type => PdfOperatorType.EI;
         public static EI_Op Value = new EI_Op();
+
+        // End inline image object
         public EI_Op()
         {
 
@@ -760,11 +814,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // End marked-content sequence
     public partial class EMC_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'E', (byte) 'M', (byte) 'C' };
         public PdfOperatorType Type => PdfOperatorType.EMC;
         public static EMC_Op Value = new EMC_Op();
+
+        // End marked-content sequence
         public EMC_Op()
         {
 
@@ -775,11 +833,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // End text object
     public partial class ET_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'E', (byte) 'T' };
         public PdfOperatorType Type => PdfOperatorType.ET;
         public static ET_Op Value = new ET_Op();
+
+        // End text object
         public ET_Op()
         {
 
@@ -790,11 +852,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // End compatibility section
     public partial class EX_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'E', (byte) 'X' };
         public PdfOperatorType Type => PdfOperatorType.EX;
         public static EX_Op Value = new EX_Op();
+
+        // End compatibility section
         public EX_Op()
         {
 
@@ -805,11 +871,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Fill path using nonzero winding number rule
     public partial class f_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'f' };
         public PdfOperatorType Type => PdfOperatorType.f;
         public static f_Op Value = new f_Op();
+
+        // Fill path using nonzero winding number rule
         public f_Op()
         {
 
@@ -820,11 +890,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Fill path using nonzero winding number rule (obsolete)
     public partial class F_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'F' };
         public PdfOperatorType Type => PdfOperatorType.F;
         public static F_Op Value = new F_Op();
+
+        // Fill path using nonzero winding number rule (obsolete)
         public F_Op()
         {
 
@@ -835,11 +909,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Fill path using even-odd rule
     public partial class f_Star_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'f', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.f_Star;
         public static f_Star_Op Value = new f_Star_Op();
+
+        // Fill path using even-odd rule
         public f_Star_Op()
         {
 
@@ -850,6 +928,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Set gray level for stroking operations
     public partial class G_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'G' };
@@ -885,6 +965,8 @@ namespace PdfLexer.Operators
             return new G_Op(a0);
         }
     }
+
+    // Set gray level for nonstroking operations
     public partial class g_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'g' };
@@ -920,6 +1002,8 @@ namespace PdfLexer.Operators
             return new g_Op(a0);
         }
     }
+
+    // Set parameters from graphics state parameter dictionary
     public partial class gs_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'g', (byte) 's' };
@@ -955,11 +1039,15 @@ namespace PdfLexer.Operators
             return new gs_Op(a0);
         }
     }
+
+    // Close subpath
     public partial class h_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'h' };
         public PdfOperatorType Type => PdfOperatorType.h;
         public static h_Op Value = new h_Op();
+
+        // Close subpath
         public h_Op()
         {
 
@@ -970,6 +1058,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Set flatness tolerance
     public partial class i_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'i' };
@@ -1005,11 +1095,15 @@ namespace PdfLexer.Operators
             return new i_Op(a0);
         }
     }
+
+    // Begin inline image data
     public partial class ID_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'I', (byte) 'D' };
         public PdfOperatorType Type => PdfOperatorType.ID;
         public static ID_Op Value = new ID_Op();
+
+        // Begin inline image data
         public ID_Op()
         {
 
@@ -1020,6 +1114,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Set line join style
     public partial class j_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'j' };
@@ -1055,6 +1151,8 @@ namespace PdfLexer.Operators
             return new j_Op(a0);
         }
     }
+
+    // Set line capstyle
     public partial class J_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'J' };
@@ -1090,6 +1188,8 @@ namespace PdfLexer.Operators
             return new J_Op(a0);
         }
     }
+
+    // Set CMYK color for stroking operations
     public partial class K_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'K' };
@@ -1140,6 +1240,8 @@ namespace PdfLexer.Operators
             return new K_Op(a0, a1, a2, a3);
         }
     }
+
+    // Set CMYK color for nonstroking operations
     public partial class k_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'k' };
@@ -1190,6 +1292,8 @@ namespace PdfLexer.Operators
             return new k_Op(a0, a1, a2, a3);
         }
     }
+
+    // Append straight line segment to path
     public partial class l_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'l' };
@@ -1230,6 +1334,8 @@ namespace PdfLexer.Operators
             return new l_Op(a0, a1);
         }
     }
+
+    // Begin new subpath
     public partial class m_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'm' };
@@ -1270,6 +1376,8 @@ namespace PdfLexer.Operators
             return new m_Op(a0, a1);
         }
     }
+
+    // Set miter limit
     public partial class M_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'M' };
@@ -1305,6 +1413,8 @@ namespace PdfLexer.Operators
             return new M_Op(a0);
         }
     }
+
+    // Define marked-content point
     public partial class MP_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'M', (byte) 'P' };
@@ -1340,11 +1450,15 @@ namespace PdfLexer.Operators
             return new MP_Op(a0);
         }
     }
+
+    // End path without filling or stroking
     public partial class n_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'n' };
         public PdfOperatorType Type => PdfOperatorType.n;
         public static n_Op Value = new n_Op();
+
+        // End path without filling or stroking
         public n_Op()
         {
 
@@ -1355,11 +1469,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Save graphics state
     public partial class q_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'q' };
         public PdfOperatorType Type => PdfOperatorType.q;
         public static q_Op Value = new q_Op();
+
+        // Save graphics state
         public q_Op()
         {
 
@@ -1370,11 +1488,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Restore graphics state
     public partial class Q_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'Q' };
         public PdfOperatorType Type => PdfOperatorType.Q;
         public static Q_Op Value = new Q_Op();
+
+        // Restore graphics state
         public Q_Op()
         {
 
@@ -1385,6 +1507,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Append rectangle to path
     public partial class re_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'r', (byte) 'e' };
@@ -1435,6 +1559,8 @@ namespace PdfLexer.Operators
             return new re_Op(a0, a1, a2, a3);
         }
     }
+
+    // Set RGB color for stroking operations
     public partial class RG_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'R', (byte) 'G' };
@@ -1480,6 +1606,8 @@ namespace PdfLexer.Operators
             return new RG_Op(a0, a1, a2);
         }
     }
+
+    // Set RGB color for nonstroking operations
     public partial class rg_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'r', (byte) 'g' };
@@ -1525,6 +1653,8 @@ namespace PdfLexer.Operators
             return new rg_Op(a0, a1, a2);
         }
     }
+
+    // Set color rendering intent
     public partial class ri_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'r', (byte) 'i' };
@@ -1560,11 +1690,15 @@ namespace PdfLexer.Operators
             return new ri_Op(a0);
         }
     }
+
+    // Close and stroke path
     public partial class s_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 's' };
         public PdfOperatorType Type => PdfOperatorType.s;
         public static s_Op Value = new s_Op();
+
+        // Close and stroke path
         public s_Op()
         {
 
@@ -1575,11 +1709,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Stroke path
     public partial class S_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'S' };
         public PdfOperatorType Type => PdfOperatorType.S;
         public static S_Op Value = new S_Op();
+
+        // Stroke path
         public S_Op()
         {
 
@@ -1590,6 +1728,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Set color for stroking operations
     public partial class SC_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'S', (byte) 'C' };
@@ -1600,6 +1740,8 @@ namespace PdfLexer.Operators
             this.colorInfo = colorInfo;
         }
     }
+
+    // Set color for nonstroking operations
     public partial class sc_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 's', (byte) 'c' };
@@ -1610,6 +1752,8 @@ namespace PdfLexer.Operators
             this.colorInfo = colorInfo;
         }
     }
+
+    // Set color for stroking operations (ICCBased and special color spaces)
     public partial class SCN_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'S', (byte) 'C', (byte) 'N' };
@@ -1622,6 +1766,8 @@ namespace PdfLexer.Operators
             this.name = name;
         }
     }
+
+    // Set color for nonstroking operations (ICCBased and special color spaces)
     public partial class scn_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 's', (byte) 'c', (byte) 'n' };
@@ -1634,6 +1780,8 @@ namespace PdfLexer.Operators
             this.name = name;
         }
     }
+
+    // Paint area defined by shading pattern
     public partial class sh_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 's', (byte) 'h' };
@@ -1669,11 +1817,15 @@ namespace PdfLexer.Operators
             return new sh_Op(a0);
         }
     }
+
+    // Move to start of next text line
     public partial class T_Star_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.T_Star;
         public static T_Star_Op Value = new T_Star_Op();
+
+        // Move to start of next text line
         public T_Star_Op()
         {
 
@@ -1684,6 +1836,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Set character spacing
     public partial class Tc_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'c' };
@@ -1719,6 +1873,8 @@ namespace PdfLexer.Operators
             return new Tc_Op(a0);
         }
     }
+
+    // Move text position
     public partial class Td_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'd' };
@@ -1759,6 +1915,8 @@ namespace PdfLexer.Operators
             return new Td_Op(a0, a1);
         }
     }
+
+    // Move text position and set leading
     public partial class TD_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'D' };
@@ -1799,6 +1957,8 @@ namespace PdfLexer.Operators
             return new TD_Op(a0, a1);
         }
     }
+
+    // Set text font and size
     public partial class Tf_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'f' };
@@ -1839,6 +1999,8 @@ namespace PdfLexer.Operators
             return new Tf_Op(a0, a1);
         }
     }
+
+    // Show text
     public partial class Tj_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'j' };
@@ -1849,6 +2011,8 @@ namespace PdfLexer.Operators
             this.text = text;
         }
     }
+
+    // Show text, allowing individual glyph positioning
     public partial class TJ_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'J' };
@@ -1859,6 +2023,8 @@ namespace PdfLexer.Operators
             this.info = info;
         }
     }
+
+    // Set text leading
     public partial class TL_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'L' };
@@ -1894,6 +2060,8 @@ namespace PdfLexer.Operators
             return new TL_Op(a0);
         }
     }
+
+    // Set text matrix and text line matrix
     public partial class Tm_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'm' };
@@ -1954,6 +2122,8 @@ namespace PdfLexer.Operators
             return new Tm_Op(a0, a1, a2, a3, a4, a5);
         }
     }
+
+    // Set text rendering mode
     public partial class Tr_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'r' };
@@ -1989,6 +2159,8 @@ namespace PdfLexer.Operators
             return new Tr_Op(a0);
         }
     }
+
+    // Set text rise
     public partial class Ts_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 's' };
@@ -2024,6 +2196,8 @@ namespace PdfLexer.Operators
             return new Ts_Op(a0);
         }
     }
+
+    // Set word spacing
     public partial class Tw_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'w' };
@@ -2059,6 +2233,8 @@ namespace PdfLexer.Operators
             return new Tw_Op(a0);
         }
     }
+
+    // Set horizontal text scaling
     public partial class Tz_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'T', (byte) 'z' };
@@ -2094,6 +2270,8 @@ namespace PdfLexer.Operators
             return new Tz_Op(a0);
         }
     }
+
+    // Append curved segment to path (initial point replicated)
     public partial class v_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'v' };
@@ -2144,6 +2322,8 @@ namespace PdfLexer.Operators
             return new v_Op(a0, a1, a2, a3);
         }
     }
+
+    // Set line width
     public partial class w_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'w' };
@@ -2179,11 +2359,15 @@ namespace PdfLexer.Operators
             return new w_Op(a0);
         }
     }
+
+    // Set clipping path using nonzero winding number rule
     public partial class W_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'W' };
         public PdfOperatorType Type => PdfOperatorType.W;
         public static W_Op Value = new W_Op();
+
+        // Set clipping path using nonzero winding number rule
         public W_Op()
         {
 
@@ -2194,11 +2378,15 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Set clipping path using even-odd rule
     public partial class W_Star_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'W', (byte) '*' };
         public PdfOperatorType Type => PdfOperatorType.W_Star;
         public static W_Star_Op Value = new W_Star_Op();
+
+        // Set clipping path using even-odd rule
         public W_Star_Op()
         {
 
@@ -2209,6 +2397,8 @@ namespace PdfLexer.Operators
             => Value;
 
     }
+
+    // Append curved segment to path (final point replicated)
     public partial class y_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) 'y' };
@@ -2259,6 +2449,8 @@ namespace PdfLexer.Operators
             return new y_Op(a0, a1, a2, a3);
         }
     }
+
+    // Move to next line and show text
     public partial class singlequote_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) '\'' };
@@ -2269,6 +2461,8 @@ namespace PdfLexer.Operators
             this.text = text;
         }
     }
+
+    // Set word and character spacing, move to next line, and show text
     public partial class doublequote_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { (byte) '"' };

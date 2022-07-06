@@ -142,12 +142,16 @@ foreach (var op in operators)
 {
     var name = op.Item2 == null ? op.Item1 : op.Item2;
 #>
+
+    // <#= op.Item3 #>
     public partial class <#= name #>_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { <#= string.Join(", ", op.Item1.Select(x=> "(byte) '" + (x == '\'' ? "\\'" : x) + "'")) #> };
         public PdfOperatorType Type => PdfOperatorType.<#= name #>;
 <# if (op.Item4 == null) { #>
         public static <#= name #>_Op Value = new <#= name #>_Op();
+
+        // <#= op.Item3 #>
         public <#= name #>_Op()
         {
 

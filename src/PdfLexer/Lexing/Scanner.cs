@@ -122,10 +122,24 @@ namespace PdfLexer.Lexing
             {
                 throw CommonUtil.DisplayDataErrorException(Data, Position, $"No object found at offset, found token of type {CurrentTokenType.ToString()}");
             }
-            var obj = Context.GetPdfItem(Data, Position, out var length);
-            Position += length;
-            CurrentTokenType = PdfTokenType.TBD;
-            return obj;
+            switch (CurrentTokenType)
+            {
+                case PdfTokenType.DictionaryStart:
+                case PdfTokenType.ArrayStart:
+                    {
+                        var obj = Context.NestedParser.ParseNestedItem(Data, Position, out var end);
+                        Position = end;
+                        CurrentTokenType = PdfTokenType.TBD;
+                        return obj;
+                    }
+                default:
+                    {
+                        var obj = Context.GetKnownPdfItem((PdfObjectType)CurrentTokenType, Data, Position, CurrentLength);
+                        Position += CurrentLength;
+                        CurrentTokenType = PdfTokenType.TBD;
+                        return obj;
+                    }
+            }
         }
 
         public bool TryFindEndStream()
