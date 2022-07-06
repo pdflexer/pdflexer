@@ -162,6 +162,7 @@ namespace PdfLexer.Parsers.Nested
                         }
                         else
                         {
+                            itemEnd = startAt + 1;
                             completed = true;
                             goto Done;
                         }
