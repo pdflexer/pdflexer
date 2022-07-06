@@ -94,6 +94,8 @@ namespace PdfLexer.Parsers.Structure
         /// MAY BE INITIALLY NULL
         /// </summary>
         public IPdfDataSource Source { get; set; }
+
+        internal WeakReference<IPdfDataSource> CachedSource { get; set; }
         /// <summary>
         /// Gets the object this entry points to.
         /// </summary>
@@ -124,7 +126,13 @@ namespace PdfLexer.Parsers.Structure
         public void CopyUnwrappedData(WritingContext destination) {
             try
             {
-                Source.CopyIndirectObject(this, destination);
+                if (CachedSource?.TryGetTarget(out var source) ?? false)
+                {
+                    source.CopyIndirectObject(this, destination);
+                } else
+                {
+                    Source.CopyIndirectObject(this, destination);
+                }
             }
             catch (PdfLexerException e)
             {

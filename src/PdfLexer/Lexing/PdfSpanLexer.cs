@@ -274,5 +274,7 @@ namespace PdfLexer.Lexing
             type = PdfTokenType.Unknown;
             return i;
         }
+
+
     }
 }
