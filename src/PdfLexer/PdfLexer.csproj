@@ -3,13 +3,13 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net5.0;net6.0</TargetFrameworks>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/plaisted/pdflexer</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/pdflexer/pdflexer</PackageProjectUrl>
     <Authors>Michael Plaisted</Authors>
     <Company></Company>
     <Product />
     <Description>Lower level PDF parsing library.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.2-preview</Version>
+    <Version>0.0.3-preview</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -35,6 +35,12 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>PdfOperatorType.tt</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="DotNext.Unsafe">
+      <Version>4.6.1</Version>
+    </PackageReference>
   </ItemGroup>
 
 </Project>
