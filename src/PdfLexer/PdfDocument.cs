@@ -6,6 +6,7 @@ using PdfLexer.Serializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -236,6 +237,15 @@ namespace PdfLexer
             return Open(ctx, result.XRefs, result.Trailer);
         }
 
+#if NET6_0_OR_GREATER
+        public static PdfDocument OpenMapped(string file, ParsingOptions options = null)
+        {
+            var ctx = new ParsingContext(options);
+            var source = new MemoryMappedDataSource(ctx, file);
+            var result = ctx.Initialize(source);
+            return Open(ctx, result.XRefs, result.Trailer);
+        }
+#endif
         private static PdfDocument Open(ParsingContext ctx, Dictionary<ulong, XRefEntry> xrefs, PdfDictionary trailer)
         {
             var doc = new PdfDocument(ctx, trailer, xrefs);
