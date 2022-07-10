@@ -21,6 +21,10 @@ namespace PdfLexer
             {
                 return Parsed;
             }
+            if (Source.Disposed)
+            {
+                throw new PdfLexerException("Attempted to parse lazy object from disposed source.");
+            }
             Source.GetData(Offset, Length, out var buffer);
             Parsed = Source.Context.GetKnownPdfItem(LazyObjectType, buffer, 0, Length);
             return Parsed;

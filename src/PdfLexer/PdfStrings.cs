@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfLexer.Parsers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -72,6 +73,24 @@ namespace PdfLexer
 
         public static bool operator !=(PdfString n1, PdfString n2) => !(n1 == n2);
 
+        public byte[] GetRawBytes()
+        {
+            if (Encoding == PdfTextEncodingType.UTF16BE)
+            {
+                var temp = System.Text.Encoding.BigEndianUnicode.GetBytes(Value);
+                var padded = new byte[temp.Length + 2];
+                padded[0] = 0xFE; padded[1] = 0xFF;
+                temp.CopyTo(padded, 2);
+                return padded;
+            } else if(Encoding == PdfTextEncodingType.PdfDocument)
+            {
+                // TODO fix when we do real pdf doc encoding
+                return StringParser.Iso88591.GetBytes(Value);
+            }else
+            {
+                return System.Text.Encoding.Unicode.GetBytes(Value);
+            }
+        }
     }
 
     /// <summary>

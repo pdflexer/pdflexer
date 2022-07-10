@@ -59,8 +59,10 @@ namespace PdfLexer.Content
                     case PdfOperatorType.q:
                     case PdfOperatorType.Q:
                     case PdfOperatorType.cm:
-                        var gso = Scanner.GetCurrentOperation();
-                        gso.Apply(GraphicsState);
+                        if (Scanner.TryGetCurrentOperation(out var gso))
+                        {
+                            gso.Apply(ref GraphicsState);
+                        }
                         Scanner.SkipCurrent();
                         continue;
                 }
@@ -68,50 +70,53 @@ namespace PdfLexer.Content
                 var b = Scanner.Scanner.Data[Scanner.Scanner.Position];
                 if (b == (byte)'T' || b == (byte)'\'' || b == (byte)'"')
                 {
-                    switch (nxt)
+                    if (Scanner.TryGetCurrentOperation(out var to))
                     {
-                        case PdfOperatorType.singlequote:
-                            {
-                                var op = (singlequote_Op)Scanner.GetCurrentOperation();
-                                TextState.Apply(T_Star_Op.Value);
-                                TextState.FillGlyphs(op.text, CurrentGlyphs);
-                                CurrentTextPos = 0;
-                                ReadState = TextReadState.ReadingOp;
-                                break;
-                            }
-                        case PdfOperatorType.doublequote:
-                            {
-                                var op = (doublequote_Op)Scanner.GetCurrentOperation();
-                                TextState.WordSpacing = (float)op.aw;
-                                TextState.CharSpacing = (float)op.ac;
-                                TextState.Apply(T_Star_Op.Value);
-                                TextState.FillGlyphs(op.text, CurrentGlyphs);
-                                CurrentTextPos = 0;
-                                ReadState = TextReadState.ReadingOp;
-                                break;
-                            }
-                        case PdfOperatorType.Tj:
-                            {
-                                var op = (Tj_Op)Scanner.GetCurrentOperation();
-                                TextState.FillGlyphs(op, CurrentGlyphs);
-                                CurrentTextPos = 0;
-                                ReadState = TextReadState.ReadingOp;
-                                break;
-                            }
-                        case PdfOperatorType.TJ:
-                            {
-                                var op = (TJ_Op)Scanner.GetCurrentOperation();
-                                TextState.FillGlyphs(op, CurrentGlyphs);
-                                CurrentTextPos = 0;
-                                ReadState = TextReadState.ReadingOp;
-                                break;
-                            }
-                        default:
-                            var tso = Scanner.GetCurrentOperation();
-                            tso.Apply(TextState);
-                            Scanner.SkipCurrent();
-                            continue;
+                        switch (nxt)
+                        {
+                            case PdfOperatorType.singlequote:
+                                {
+                                    var op = (singlequote_Op)to;
+                                    TextState.Apply(T_Star_Op.Value);
+                                    TextState.FillGlyphs(op.text, CurrentGlyphs);
+                                    CurrentTextPos = 0;
+                                    ReadState = TextReadState.ReadingOp;
+                                    break;
+                                }
+                            case PdfOperatorType.doublequote:
+                                {
+                                    var op = (doublequote_Op)to;
+                                    TextState.WordSpacing = (float)op.aw;
+                                    TextState.CharSpacing = (float)op.ac;
+                                    TextState.Apply(T_Star_Op.Value);
+                                    TextState.FillGlyphs(op.text, CurrentGlyphs);
+                                    CurrentTextPos = 0;
+                                    ReadState = TextReadState.ReadingOp;
+                                    break;
+                                }
+                            case PdfOperatorType.Tj:
+                                {
+                                    var op = (Tj_Op)to;
+                                    TextState.FillGlyphs(op, CurrentGlyphs);
+                                    CurrentTextPos = 0;
+                                    ReadState = TextReadState.ReadingOp;
+                                    break;
+                                }
+                            case PdfOperatorType.TJ:
+                                {
+                                    var op = (TJ_Op)to;
+                                    TextState.FillGlyphs(op, CurrentGlyphs);
+                                    CurrentTextPos = 0;
+                                    ReadState = TextReadState.ReadingOp;
+                                    break;
+                                }
+                            default:
+                                to.Apply(TextState);
+                                Scanner.SkipCurrent();
+                                continue;
+                        }
                     }
+                    
 
                     // text creating ops (default breaks through)
                     Scanner.SkipCurrent();

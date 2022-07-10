@@ -309,7 +309,7 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                 // using var fs = File.OpenRead(pdf);
                 // using var doc = PdfDocument.Open(fs, opts);
                 using var doc = PdfDocument.OpenMapped(pdf, opts);
-                // using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), opts);
+                //using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), opts);
                 // for non compressed object strams
                 if (doc.Trailer.Get(PdfName.Encrypt) != null)
                 {
@@ -342,6 +342,7 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                         {
                             Log($"[{nm}] pdflexer had unknown errors in strict mode but no failure.");
                             success = false;
+                            WriteError(errorOutput);
                             continue;
                         } else if (errorInfo.ErrCount != doc.Context.ErrorCount)
                         {
@@ -380,8 +381,7 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                     }
                 }
                 
-                errInfo.WriteLine(JsonSerializer.Serialize(errorOutput));
-                errInfo.Flush();
+                WriteError(errorOutput);
                 continue;
             }
 
@@ -442,11 +442,16 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
         writer.Flush();
         if (errorOutput.FailedPages != null || errorOutput.ErrCount > 0 || errorOutput.Failure)
         {
-            errInfo.WriteLine(JsonSerializer.Serialize(errorOutput));
-            errInfo.Flush();
+            WriteError(errorOutput);
         }
     }
     return success;
+
+    void WriteError(ErrInfo err)
+    {
+        errInfo.WriteLine(JsonSerializer.Serialize(err));
+        errInfo.Flush();
+    }
 }
 
 static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
