@@ -220,14 +220,15 @@ namespace PdfLexer.Tests
                             while (imgRdr.Advance())
                             {
                                 var (x, y, w, h) = imgRdr.GetCurrentSize();
+                                if (w < 5 || h < 5) { continue; }
                                 if (!imgRdr.TryGetImage(out var img))
                                 {
                                     continue;
                                 }
                                 try
                                 {
-                                    using var isa = img.GetImage<Rgba32>(doc.Context);
-                                    isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
+                                    using var isa = img.GetImage(doc.Context);
+                                    // isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
                                     i++;
                                 }
                                 catch (Exception ex)
@@ -281,7 +282,7 @@ namespace PdfLexer.Tests
                     }
                     try
                     {
-                        using var isa = img.GetImage<Rgba32>(doc.Context);
+                        using var isa = img.GetImage(doc.Context);
                         isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
                         i++;
                     }

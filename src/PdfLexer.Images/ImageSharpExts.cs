@@ -8,7 +8,7 @@ namespace PdfLexer.Images;
 
 public static class ImageSharpExts
 {
-    public static Image GetImage<TPixel>(this PdfImage img, ParsingContext ctx)
+    public static Image GetImage(this PdfImage img, ParsingContext ctx)
     {
         var dict = img.Stream.Dictionary;
         if (!dict.TryGetValue(PdfName.Filter, out var filter))
