@@ -41,7 +41,7 @@ public static class ImageSharpExts
 
     private static (PdfName Cs, PdfName? BaseCs, byte[]? IndexData) GetColorSpace(ParsingContext ctx, PdfDictionary dict, bool isMasked)
     {
-        if (isMasked) { return (PdfName.DeviceGray, null,null); }
+        if (isMasked) { return (PdfName.DeviceGray, null, null); }
         if (!dict.TryGetValue(PdfName.ColorSpace, out var cs))
         {
             throw new ApplicationException("Non masked image had no colorspace defined.");
@@ -61,14 +61,16 @@ public static class ImageSharpExts
                 {
                     var str = (PdfString)data;
                     lookup = str.GetRawBytes();
-                } else if (data.Type == PdfObjectType.StreamObj)
+                }
+                else if (data.Type == PdfObjectType.StreamObj)
                 {
                     lookup = ((PdfStream)data).Contents.GetDecodedData(ctx);
-                } else
+                }
+                else
                 {
                     throw new ApplicationException("Index colorspace had unknown lookup table: " + cs.GetPdfObjType());
                 }
-                return (indexed, baseCs, lookup); 
+                return (indexed, baseCs, lookup);
             default:
                 throw new ApplicationException("Non masked image had unknown colorspace defined: " + cs.GetPdfObjType());
         }
@@ -96,18 +98,21 @@ public static class ImageSharpExts
     private static Image GetFromDecoded(ParsingContext ctx, PdfDictionary dict, Stream data)
     {
         var isMasked = dict.ContainsKey(PdfName.ImageMask);
-        var (cs, baseCs, lookup) = GetColorSpace(ctx, dict, isMasked);
+        var colorSpace = isMasked ? DeviceGray.Instance : GetColorspace(ctx, dict.GetRequiredValue(PdfName.ColorSpace));
+
         List<float> decode = null;
         if (dict.TryGetValue<PdfArray>(PdfName.Decode, out var dc, false))
         {
-            var cpp = GetCpp(cs);
+            var cpp = colorSpace.Components;
             decode = new List<float>();
             bool start = true;
-            foreach (var item in dc) { 
+            foreach (var item in dc)
+            {
                 if (item.Type == PdfObjectType.NumericObj)
                 {
                     decode.Add((PdfNumber)item);
-                } else
+                }
+                else
                 {
                     decode.Add(start ? 0 : 1);
                 }
@@ -117,23 +122,71 @@ public static class ImageSharpExts
             {
                 var diff = decode.Count - cpp * 2;
                 var first = diff % 2 == 0;
-                for (var i=0; i<diff; i++)
+                for (var i = 0; i < diff; i++)
                 {
                     decode.Add(first ? 0 : 1);
                 }
             }
         }
 
-        
+
         return GetFromDecoded(
             dict.GetRequiredValue<PdfNumber>(PdfName.Width),
             dict.GetRequiredValue<PdfNumber>(PdfName.Height),
             isMasked ? (dict.GetOptionalValue<PdfNumber>(PdfName.BitsPerComponent) ?? 1) : dict.GetRequiredValue<PdfNumber>(PdfName.BitsPerComponent),
-            cs,
-            baseCs,
-            lookup,
+            colorSpace,
             decode,
             data);
+    }
+
+    internal static IColorSpace GetColorspace(ParsingContext ctx, IPdfObject cs)
+    {
+        cs = cs.Resolve();
+        switch (cs)
+        {
+            case PdfName nm:
+                switch (nm.Value)
+                {
+                    case "/DeviceGray":
+                        return DeviceGray.Instance;
+                    case "/DeviceRGB":
+                        return DeviceRGB.Instance;
+                    case "/DeviceCMYK":
+                    case "/CalCMYK":
+                        return DeviceCMYK.Instance;
+                    case "/Pattern":
+                    default:
+                        throw new NotImplementedException($"Colorspace {nm.Value} is not implemented.");
+                }
+            case PdfArray arr:
+                if (arr.Count == 0) { throw new PdfLexerException($"Array colorspace had no entries."); }
+                var mode = arr[0].GetValue<PdfName>();
+                switch (mode.Value)
+                {
+                    case "/DeviceGray":
+                        return DeviceGray.Instance;
+                    case "/DeviceRGB":
+                        return DeviceRGB.Instance;
+                    case "/DeviceCMYK":
+                    case "/CalCMYK":
+                        return DeviceCMYK.Instance;
+                    case "/CalGray":
+                    case "/CalRGB":
+                    case "/ICCBased":
+                    case "/Pattern":
+                        throw new NotImplementedException($"Colorspace {mode.Value} is not implemented.");
+                    case "/Indexed":
+                        if (arr.Count < 4) { throw new PdfLexerException($"Indexed colorspace had less than 4 entries."); }
+                        return Indexed.FromArray(ctx, arr);
+                    case "/Separation":
+                    case "/DeviceN":
+                    case "/Lab":
+                    default:
+                        throw new PdfLexerException($"Unknown colorspace ${mode.Value}");
+                }
+            default:
+                throw new ApplicationException("Non masked image had unknown colorspace defined: " + cs.GetPdfObjType());
+        }
     }
 
     private static int GetCpp(PdfName cs) => cs.Value switch
@@ -147,26 +200,10 @@ public static class ImageSharpExts
         _ => 3 // todo -> how to handle DeviceN
     };
 
-    private static byte GetIndexed11(byte val, byte[] lookup)
+    private static Image GetFromDecoded(int width, int height, int bpc, IColorSpace cs, List<float>? decode, Stream data)
     {
-        if (val > lookup.Length) { return val; }
-        return lookup[val];
-    }
-
-    private static (byte r, byte g, byte b) GetIndexed13(int val, byte[] lookup)
-    {
-        var loc = val * 3;
-        if (loc+2 > lookup.Length) { return (0, 0, 0); }
-        var r = lookup[loc];
-        var g = lookup[loc+1];
-        var b = lookup[loc+2];
-        return (r, g, b);
-    }
-
-    private static Image GetFromDecoded(int width, int height, int bpc, PdfName cs, PdfName? baseCs, byte[]? lookup, List<float>? decode, Stream data)
-    {
-        var cpp = GetCpp(cs);
-        Action<Stream, int, int[]> readLine = bpc switch
+        var cpp = cs.Components;
+        Action<Stream, int, ushort[]> readLine = bpc switch
         {
             1 => ReadLine1bpc,
             2 => ReadLine2bpc,
@@ -182,217 +219,137 @@ public static class ImageSharpExts
         if (bytes % 8 > 1 || bytes == 0) { bytes++; }
         var roundedBits = bytes * 8;
         var roundedComps = roundedBits / bpc;
-        var comps = new int[roundedComps];
+        var comps = new ushort[roundedComps];
 
 
-        var basecpp = cpp;
-        if (baseCs != null)
+        if (bpc > 8)
         {
-            basecpp = GetCpp(baseCs);
+            var img = new Image<Rgba64>(width, height);
+            for (int y = 0; y < height; y++)
+            {
+                readLine(data, cc, comps);
+                for (int x = 0; x < width; x++)
+                {
+                    var os = x * cpp;
+                    if (decode != null)
+                    {
+                        Decode(cpp, os, comps, decode);
+                    }
+                    var (r, g, b) = cs.GetRGB16(comps, os);
+
+
+                    img[x, y] = new Rgba64
+                    {
+                        R = r,
+                        G = g,
+                        B = b,
+                        A = ushort.MaxValue
+                    };
+                }
+            }
+            return img;
         }
-
-
-        switch (basecpp)
+        else
         {
-            case 1:
+            var img = new Image<Rgb24>(width, height);
+            for (int y = 0; y < height; y++)
+            {
+                readLine(data, cc, comps);
+                for (int x = 0; x < width; x++)
                 {
-
-                    var scaling = Math.Pow(2, 8 / bpc) - 1;
-                    var dScale = Math.Pow(2, bpc) - 1;
-                    var img = new Image<Rgb24>(width, height);
-                    for (int y = 0; y < height; y++)
+                    var os = x * cpp;
+                    if (decode != null)
                     {
-                        readLine(data, cc, comps);
-                        for (int x = 0; x < width; x++)
-                        {
-                            var os = x * cpp;
-                            var c = comps[os];
-                            var val = (byte)(c);
-                            if (decode != null)
-                            {
-                                val = (byte)(decode[0] + (val * ((decode[1]-decode[0])/dScale)));
-                            }
-                            if (lookup != null)
-                            {
-                                val = GetIndexed11(val, lookup);
-                            }
-                            val = (byte)(c * scaling);
-                            img[x, y] = new Rgb24 { B = val, R = val, G = val };
-                        }
+                        Decode(cpp, os, comps, decode);
                     }
-                    return img;
+                    var (r, g, b) = cs.GetRGB8(comps, os);
+
+
+                    img[x, y] = new Rgb24
+                    {
+                        R = r,
+                        G = g,
+                        B = b
+                    };
                 }
-            case 3:
-                {
-                    if (bpc == 16)
-                    {
-                        int scaling = (int)(Math.Pow(2, 16 / bpc) - 1);
-                        var dScale = Math.Pow(2, bpc) - 1;
-                        var img = new Image<Rgba64>(width, height);
-                        for (int y = 0; y < height; y++)
-                        {
-                            readLine(data, cc, comps);
-                            for (int x = 0; x < width; x++)
-                            {
-                                var os = x * cpp;
-                                int r, g, b;
-                                if (lookup != null)
-                                {
-                                    if (decode != null)
-                                    {
-                                        os = (byte)(decode[0] + (os * ((decode[1] - decode[0]) / dScale)));
-                                    }
-                                    (r,g,b) = GetIndexed13(os, lookup);
-                                } else
-                                {
-                                    r = comps[os];
-                                    g = comps[os + 1];
-                                    b = comps[os + 2];
-                                    if (decode != null)
-                                    {
-                                        r = (int)(decode[0] + (r * ((decode[1] - decode[0]) / dScale)));
-                                        g = (int)(decode[2] + (r * ((decode[3] - decode[2]) / dScale)));
-                                        b = (int)(decode[4] + (r * ((decode[5] - decode[4]) / dScale)));
-                                    }
-                                }
-
-                                r = r * scaling;
-                                g = g * scaling;
-                                b = b * scaling;
-
-                                img[x, y] = new Rgba64
-                                {
-                                    R = (ushort)r,
-                                    G = (ushort)g,
-                                    B = (ushort)b,
-                                    A = ushort.MaxValue
-                                };
-                            }
-                        }
-                        return img;
-                    }
-                    else
-                    {
-                        int scaling = (int)(Math.Pow(2, 8 / bpc) - 1);
-                        var dScale = Math.Pow(2, bpc) - 1;
-                        var img = new Image<Rgba32>(width, height);
-                        for (int y = 0; y < height; y++)
-                        {
-                            readLine(data, cc, comps);
-                            for (int x = 0; x < width; x++)
-                            {
-                                var os = x * cpp;
-                                int r, g, b;
-                                if (lookup != null)
-                                {
-                                    var sb = comps[os];
-                                    if (decode != null)
-                                    {
-                                        sb = (byte)(decode[0] + (sb * ((decode[1] - decode[0]) / dScale)));
-                                    }
-                                    (r, g, b) = GetIndexed13(sb, lookup);
-                                }
-                                else
-                                {
-                                    r = comps[os];
-                                    g = comps[os + 1];
-                                    b = comps[os + 2];
-                                    if (decode != null)
-                                    {
-                                        r = (int)(decode[0] + (r * ((decode[1] - decode[0]) / dScale)));
-                                        g = (int)(decode[2] + (r * ((decode[3] - decode[2]) / dScale)));
-                                        b = (int)(decode[4] + (r * ((decode[5] - decode[4]) / dScale)));
-                                    }
-                                }
-
-                                r = r * scaling;
-                                g = g * scaling;
-                                b = b * scaling;
-
-                                img[x, y] = new Rgba32
-                                {
-                                    R = (byte)r,
-                                    G = (byte)g,
-                                    B = (byte)b,
-                                    A = 255
-                                };
-                            }
-                        }
-                        return img;
-                    }
-
-                }
-            case 4:
-                break;
+            }
+            return img;
         }
-
-        throw new NotImplementedException("Type not implemented");
-
-
     }
 
-    private static void ReadLine1bpc(Stream stream, int width, int[] components)
+    private static void Decode(int cpp, int os, ushort[] comps, List<float> decode)
+    {
+        for (var i = 0; i < cpp; i++)
+        {
+            comps[os + i] = (ushort)(decode[0 + 2 * i] + (comps[os + i] * ((decode[1 + 2 * i] - decode[0 + 2 * i]) / 65535)));
+        }
+    }
+
+    private static void ReadLine1bpc(Stream stream, int width, ushort[] components)
     {
         int read = 0;
         while (read < width)
         {
             var b = stream.ReadByte();
-            components[read + 0] = (b & 0b10000000) >> 7;
-            components[read + 1] = (b & 0b01000000) >> 6;
-            components[read + 2] = (b & 0b00100000) >> 5;
-            components[read + 3] = (b & 0b00010000) >> 4;
-            components[read + 4] = (b & 0b00001000) >> 3;
-            components[read + 5] = (b & 0b00000100) >> 2;
-            components[read + 6] = (b & 0b00000010) >> 1;
-            components[read + 7] = (b & 0b00000001);
+            components[read + 0] = (ushort)(((b & 0b10000000) >> 7) * 65535);
+            components[read + 1] = (ushort)(((b & 0b01000000) >> 6) * 65535);
+            components[read + 2] = (ushort)(((b & 0b00100000) >> 5) * 65535);
+            components[read + 3] = (ushort)(((b & 0b00010000) >> 4) * 65535);
+            components[read + 4] = (ushort)(((b & 0b00001000) >> 3) * 65535);
+            components[read + 5] = (ushort)(((b & 0b00000100) >> 2) * 65535);
+            components[read + 6] = (ushort)(((b & 0b00000010) >> 1) * 65535);
+            components[read + 7] = (ushort)((b & 0b00000001) * 65535);
             read += 8;
         }
     }
-    private static void ReadLine2bpc(Stream stream, int width, int[] components)
+    private static void ReadLine2bpc(Stream stream, int width, ushort[] components)
     {
         int read = 0;
         while (read < width)
         {
             var b = stream.ReadByte();
-            components[read + 0] = (b & 0b11000000) >> 6;
-            components[read + 1] = (b & 0b00110000) >> 4;
-            components[read + 2] = (b & 0b00001100) >> 2;
-            components[read + 3] = (b & 0b00000011);
+            components[read + 0] = (ushort)(((b & 0b11000000) >> 6) * 21845);
+            components[read + 1] = (ushort)(((b & 0b00110000) >> 4) * 21845);
+            components[read + 2] = (ushort)(((b & 0b00001100) >> 2) * 21845);
+            components[read + 3] = (ushort)((b & 0b00000011) * 21845);
             read += 4;
         }
     }
 
-    private static void ReadLine4bpc(Stream stream, int width, int[] components)
+
+
+    private static void ReadLine4bpc(Stream stream, int width, ushort[] components)
     {
         int read = 0;
         while (read < width)
         {
+            // 4369
             var b = stream.ReadByte();
-            components[read + 0] = b >> 4;
-            components[read + 1] = (b & 0b00001111);
+            components[read + 0] = (ushort)((b >> 4) * 4369);
+            components[read + 1] = (ushort)((b & 0b00001111) * 4369);
             read += 2;
         }
     }
 
-    private static void ReadLine8bpc(Stream stream, int width, int[] components)
+    private static void ReadLine8bpc(Stream stream, int width, ushort[] components)
     {
         int read = 0;
         while (read < width)
         {
             var b = stream.ReadByte();
-            components[read] = b;
+            components[read] = (ushort)((b << 8) * 257);
             read += 1;
         }
     }
 
-    private static void ReadLine16bpc(Stream stream, int width, int[] components)
+    private static void ReadLine16bpc(Stream stream, int width, ushort[] components)
     {
         int read = 0;
         while (read < width)
         {
             var b1 = stream.ReadByte();
             var b2 = stream.ReadByte();
-            components[read] = b1 * (2 ^ 8) + b2;
+            components[read] = (ushort)((b1 << 8) + b2);
             read += 1;
         }
     }

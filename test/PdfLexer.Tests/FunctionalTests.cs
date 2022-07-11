@@ -192,7 +192,8 @@ namespace PdfLexer.Tests
                     continue;
                 }
 
-
+                var ser = new PdfLexer.Serializers.Serializers();
+                var types = new List<string>();
                 try
                 {
                     try
@@ -203,6 +204,8 @@ namespace PdfLexer.Tests
                             // don't support encryption currently
                             continue;
                         }
+
+                        var read = new HashSet<PdfStream>();
 
                         int i = 0;
                         foreach (var page in doc.Pages)
@@ -227,8 +230,33 @@ namespace PdfLexer.Tests
                                 }
                                 try
                                 {
+                                    if (read.Contains(img.Stream)) { continue; }
+                                    read.Add(img.Stream);
+                                    var ms = new MemoryStream();
+
+                                    void WriteDirectly(Stream str, PdfIndirectRef ir)
+                                    {
+                                        var obj = ir.Resolve();
+                                        ser.SerializeObject(str, obj, WriteDirectly);
+                                    }
+
+                                    void WriteIfNotNull(IPdfObject obj)
+                                    {
+                                        if (obj == null) { return; }
+                                        ser.SerializeObject(ms, obj, WriteDirectly);
+                                        ms.WriteByte((byte)'\n');
+                                    }
+                                    var f = img.Stream.Dictionary.Get(PdfName.Filter);
+
+                                    WriteIfNotNull(img.Stream.Dictionary.Get(PdfName.BitsPerComponent));
+                                    WriteIfNotNull(img.Stream.Dictionary.Get(PdfName.Filter));
+                                    WriteIfNotNull(img.Stream.Dictionary.Get(PdfName.DecodeParms));
+                                    WriteIfNotNull(img.Stream.Dictionary.Get(PdfName.ColorSpace));
+                                    var data = ms.ToArray();
+                                    var fpstr = Encoding.UTF8.GetString(data);
+
                                     using var isa = img.GetImage(doc.Context);
-                                    // isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
+                                    isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
                                     i++;
                                 }
                                 catch (Exception ex)
