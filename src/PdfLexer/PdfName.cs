@@ -128,6 +128,26 @@ namespace PdfLexer
 
         public static readonly PdfName Encoding = new PdfName("/Encoding", false);
 
+
+        public static readonly PdfName DeviceGray = new PdfName("/DeviceGray", false);
+        public static readonly PdfName DeviceRGB = new PdfName("/DeviceRGB", false);
+        public static readonly PdfName DeviceCMYK = new PdfName("/DeviceCMYK", false);
+
+        public static readonly PdfName Decode = new PdfName("/Decode", false);
+        public static readonly PdfName ASCIIHexDecode = new PdfName("/ASCIIHexDecode", false);
+        public static readonly PdfName ASCII85Decode = new PdfName("/ASCII85Decode", false);
+        public static readonly PdfName LZWDecode = new PdfName("/LZWDecode", false);
+        public static readonly PdfName FlateDecode = new PdfName("/FlateDecode", false);
+        public static readonly PdfName RunLengthDecode = new PdfName("/RunLengthDecode", false);
+        public static readonly PdfName CCITTFaxDecode = new PdfName("/CCITTFaxDecode", false);
+        public static readonly PdfName DCTDecode = new PdfName("/DCTDecode", false);
+
+        public static readonly PdfName Height = new PdfName("/Height", false);
+        public static readonly PdfName Width = new PdfName("/Width", false);
+        public static readonly PdfName Interpolate = new PdfName("/Interpolate", false);
+        public static readonly PdfName ImageMask = new PdfName("/ImageMask", false);
+        public static readonly PdfName Image = new PdfName("/Image", false);
+
         public static implicit operator PdfName(string name)
         {
             // TODO common lookups for above?

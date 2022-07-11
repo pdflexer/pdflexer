@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using PdfLexer.Serializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -26,6 +27,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         }
 
         private List<byte[]> pdfs;
+        private List<string> paths;
         private List<MemoryStream> mems;
 
         public MergeBenchmark()
@@ -35,6 +37,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             var root = Path.GetFullPath(Path.Combine(src, ".."));
             var pdfRoot = Path.Combine(root, "test", "pdfs", "pdfjs");
             pdfs = new List<byte[]>();
+            paths = new List<string>();
             mems = new List<MemoryStream>();
             Add("calgray");
             Add("canvas");
@@ -50,7 +53,9 @@ namespace PdfLexer.Benchmarks.Benchmarks
 
             void Add(string name)
             {
-                var data = File.ReadAllBytes(Path.Combine(pdfRoot, name + ".pdf"));
+                var path = Path.Combine(pdfRoot, name + ".pdf");
+                paths.Add(path);
+                var data = File.ReadAllBytes(path);
                 pdfs.Add(data);
                 mems.Add(new MemoryStream(data));
             }
@@ -60,10 +65,10 @@ namespace PdfLexer.Benchmarks.Benchmarks
         public MemoryStream MergePdfSharp()
         {
             var finished = new PdfSharp.Pdf.PdfDocument();
-            foreach (var pdf in mems)
+            foreach (var pdf in paths)
             {
-                pdf.Seek(0, SeekOrigin.Begin);
-                var doc = PdfSharp.Pdf.IO.PdfReader.Open(pdf, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
+                // pdf.Seek(0, SeekOrigin.Begin);
+                using var doc = PdfSharp.Pdf.IO.PdfReader.Open(pdf, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Import);
                 for (var i = 0; i < doc.PageCount; i++)
                 {
                     finished.AddPage(doc.Pages[i]);
@@ -81,7 +86,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             
             foreach (var pdf in pdfs)
             {
-                var doc = UglyToad.PdfPig.PdfDocument.Open(pdf);
+                using var doc = UglyToad.PdfPig.PdfDocument.Open(pdf);
                 for (var i=0;i<doc.NumberOfPages;i++)
                 {
                     finished.AddPage(doc, i+1);
@@ -91,40 +96,69 @@ namespace PdfLexer.Benchmarks.Benchmarks
         }
 
         [Benchmark()]
-        public byte[] MergePdfLexer()
+        public byte[] MergePdfLexerMem()
         {
             var finished = PdfDocument.Create();
-            foreach (var pdf in pdfs)
+            foreach (var pdf in paths)
             {
-                var doc = PdfDocument.Open(pdf);
+                var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                 finished.Pages.AddRange(doc.Pages);
             }
             return finished.Save();
         }
 
+
         [Benchmark()]
-        public byte[] MergePdfLexerStream()
+        public MemoryStream MergePdfLexerMemStreamed()
         {
-            var finished = PdfDocument.Create();
-            foreach (var pdf in mems)
+            var ms = new MemoryStream();
+            var sw = new StreamingWriter(ms);
+            foreach (var pdf in paths)
             {
-                pdf.Seek(0, SeekOrigin.Begin);
-                var doc = PdfDocument.Open(pdf);
-                finished.Pages.AddRange(doc.Pages);
+                var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                doc.Pages.ForEach(p => sw.AddPage(p));
             }
-            return finished.Save();
+            sw.Complete(new PdfDictionary());
+            return ms;
         }
+
         [Benchmark()]
-        public byte[] MergePdfLexerStreamEager()
+        public MemoryStream MergePdfLexerMapped()
         {
-            var finished = PdfDocument.Create();
-            foreach (var pdf in mems)
+            var ms = new MemoryStream();
+            var sw = new StreamingWriter(ms);
+            foreach (var pdf in paths)
             {
-                pdf.Seek(0, SeekOrigin.Begin);
-                var doc = PdfDocument.Open(pdf, new ParsingOptions {  Eagerness = Eagerness.FullEager });
-                finished.Pages.AddRange(doc.Pages);
+                using var doc = PdfDocument.OpenMapped(pdf);
+                doc.Pages.ForEach(p => sw.AddPage(p));
             }
-            return finished.Save();
+            sw.Complete(new PdfDictionary());
+            return ms;
         }
+
+        // [Benchmark()]
+        // public byte[] MergePdfLexerStream()
+        // {
+        //     var finished = PdfDocument.Create();
+        //     foreach (var pdf in mems)
+        //     {
+        //         pdf.Seek(0, SeekOrigin.Begin);
+        //         var doc = PdfDocument.Open(pdf);
+        //         finished.Pages.AddRange(doc.Pages);
+        //     }
+        //     return finished.Save();
+        // }
+        // [Benchmark()]
+        // public byte[] MergePdfLexerStreamEager()
+        // {
+        //     var finished = PdfDocument.Create();
+        //     foreach (var pdf in mems)
+        //     {
+        //         pdf.Seek(0, SeekOrigin.Begin);
+        //         var doc = PdfDocument.Open(pdf, new ParsingOptions {  Eagerness = Eagerness.FullEager });
+        //         finished.Pages.AddRange(doc.Pages);
+        //     }
+        //     return finished.Save();
+        // }
     }
 }

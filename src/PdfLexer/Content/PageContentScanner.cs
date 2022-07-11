@@ -259,14 +259,32 @@ namespace PdfLexer.Content
                 isForm = false;
                 if (obj.TryGetValue<PdfDictionary>(PdfName.Resources, out var res) &&
                     res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobj) &&
-                    xobj.TryGetValue<PdfStream>(name, out form, errorOnMismatch:false)
+                    xobj.TryGetValue(name, out var formObj)
                     )
                 {
-                    if (form.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
-                          st == PdfName.Form)
+                    if (formObj.Type == PdfObjectType.DictionaryObj)
                     {
-                        isForm = true;
-                    }
+                        // special handling for forms that have no contents
+                        // review all the special forms and see how to handle those
+                        var fd = (PdfDictionary)formObj;
+                        if (fd.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
+                            st == PdfName.Form)
+                        {
+                            isForm = true;
+                            form = new PdfStream(fd, new PdfByteArrayStreamContents(new byte[0]));
+                        } else
+                        {
+                            form = null;
+                        }
+                    } else if (formObj.Type == PdfObjectType.StreamObj)
+                    {
+                        form = (PdfStream)formObj;
+                        if (form.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
+                            st == PdfName.Form)
+                        {
+                            isForm = true;
+                        }
+                    } else { form = null; }
                     return true;
                 }
                 form = null;

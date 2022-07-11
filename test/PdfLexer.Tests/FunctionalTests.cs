@@ -8,11 +8,14 @@ using System.Threading.Tasks;
 using CliWrap;
 using PdfLexer.Content;
 using PdfLexer.DOM;
+using PdfLexer.Images;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using PdfLexer.Serializers;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 
 namespace PdfLexer.Tests
@@ -201,6 +204,7 @@ namespace PdfLexer.Tests
                             continue;
                         }
 
+                        int i = 0;
                         foreach (var page in doc.Pages)
                         {
                             var reader = new TextScanner(doc.Context, page);
@@ -210,6 +214,29 @@ namespace PdfLexer.Tests
                                 sb.Append(reader.Glyph.Char);
                             }
                             var str = sb.ToString();
+
+                            
+                            var imgRdr = new ImageScanner(doc.Context, page);
+                            while (imgRdr.Advance())
+                            {
+                                var (x, y, w, h) = imgRdr.GetCurrentSize();
+                                if (w < 5 || h < 5) { continue; }
+                                if (!imgRdr.TryGetImage(out var img))
+                                {
+                                    continue;
+                                }
+                                try
+                                {
+                                    using var isa = img.GetImage(doc.Context);
+                                    // isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
+                                    i++;
+                                }
+                                catch (Exception ex)
+                                {
+                                    // dont fail for now
+                                    // throw;
+                                }
+                            }
                         }
                     }
                     catch (NotSupportedException ex)
@@ -230,6 +257,42 @@ namespace PdfLexer.Tests
             {
                 throw new ApplicationException(string.Join(Environment.NewLine, errors));
             }
+        }
+
+        // [Fact]
+        public void Too_Many_Images()
+        {
+            var errors = new List<string>();
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "__bug878194.pdf.pdf");
+
+            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+            var i = 0;
+            foreach (var page in doc.Pages)
+            {
+                var reader = new TextScanner(doc.Context, page);
+                var imgRdr = new ImageScanner(doc.Context, page);
+                while (imgRdr.Advance())
+                {
+                    var (x, y, w, h) = imgRdr.GetCurrentSize();
+                    if (w < 5 || h < 5) { continue;  }
+                    if (!imgRdr.TryGetImage(out var img))
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        using var isa = img.GetImage(doc.Context);
+                        isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
+                        i++;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                }
+            }
+
         }
 
         //[Fact]

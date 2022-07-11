@@ -457,7 +457,7 @@ namespace PdfLexer.Operators
     {
         public PdfOperatorType Type { get; }
         public void Serialize(Stream stream);
-        public void Apply(GraphicsState state) { }
+        public void Apply(ref GraphicsState state) { }
         public void Apply(TextState state) { }
     }
 

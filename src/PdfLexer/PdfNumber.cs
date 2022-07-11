@@ -53,6 +53,18 @@ namespace PdfLexer
             };
         }
 
+        public static implicit operator float(PdfNumber num)
+        {
+            return num switch
+            {
+                PdfIntNumber val => (float)val.Value,
+                PdfLongNumber val => (float)val.Value,
+                PdfDoubleNumber val => (float)val.Value,
+                PdfDecimalNumber val => (float)val.Value,
+                _ => throw new ApplicationException("Unable to convert PdfNumber to float for type " + num.GetType())
+            };
+        }
+
         public static implicit operator decimal(PdfNumber num)
         {
             return num switch {

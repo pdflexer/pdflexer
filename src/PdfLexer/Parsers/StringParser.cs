@@ -14,7 +14,7 @@ namespace PdfLexer.Parsers
     }
     public class StringParser : Parser<PdfString>
     {
-        private static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
+        internal static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
         // Require codepages nuget package... determine if really needed
         // private static Encoding Win1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252); // WinAnsiEncoding
         // private static Encoding MacRoman = CodePagesEncodingProvider.Instance.GetEncoding("macintosh"); // WinAnsiEncoding

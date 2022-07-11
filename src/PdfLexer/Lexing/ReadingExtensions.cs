@@ -11,6 +11,7 @@ namespace PdfLexer.Lexing
     {
         public static IPdfObject ReadWrappedFromStream(this IPdfDataSource source, XRefEntry xref)
         {
+            if (source.Disposed) { throw new ObjectDisposedException("Attempted to get object from disposed data source."); }
             // TODO
             // quick path if xref offsets known
             var stream = source.GetStream(xref.Offset);
@@ -61,6 +62,7 @@ namespace PdfLexer.Lexing
 
         public static void WriteWrappedFromStream(this IPdfDataSource source, XRefEntry xref, Stream output)
         {
+            if (source.Disposed) { throw new ObjectDisposedException("Attempted to get object data from disposed data source."); }
             // TODO
             // quick path if xref offsets known
             var stream = source.GetStream(xref.Offset);
@@ -122,6 +124,7 @@ namespace PdfLexer.Lexing
 
         internal static IPdfObject GetWrappedFromSpan(this IPdfDataSource source, XRefEntry xref)
         {
+            if (source.Disposed) { throw new ObjectDisposedException("Attempted to get object from disposed data source."); }
             // TODO
             // quick path if xref offsets known
             // set xref offsets
@@ -180,6 +183,7 @@ namespace PdfLexer.Lexing
 
         internal static void UnwrapAndCopyFromSpan(this IPdfDataSource source, XRefEntry xref, WritingContext wtx)
         {
+            if (source.Disposed) { throw new ObjectDisposedException("Attempted to get object data from disposed data source."); }
             // TODO
             // quick path if xref offsets known
             // set xref offsets
@@ -207,7 +211,7 @@ namespace PdfLexer.Lexing
             }
             else if (type == PdfTokenType.StartStream)
             {
-                // TODO look into this.. feels wrong parsing dict here
+                // TODO can we not parse dict here?
                 scanner.SkipCurrent(); // startstream
                 var startPos = scanner.Position;
                 var existing = source.Context.Options.Eagerness;
