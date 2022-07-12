@@ -59,7 +59,16 @@ namespace PdfLexer.Serializers
                 }
                 return written;
             }
-            
+            else if (obj is PdfDoubleNumber db)
+            {
+                if (!Utf8Formatter.TryFormat(db.Value, data, out var written))
+                {
+                    throw new ApplicationException("Unable for write PdfNumber doube: " + Encoding.ASCII.GetString(data));
+                }
+                return written;
+            }
+
+
             throw new NotImplementedException("Unknown number type: " + obj.GetType());
         }
     }

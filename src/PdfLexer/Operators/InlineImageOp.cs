@@ -51,6 +51,7 @@ namespace PdfLexer.Operators
                     key = null;
                 }
             }
+            dict[PdfName.Subtype] = PdfName.Image;
             var ba = new PdfByteArrayStreamContents(allData);
             ba.Filters = dict.Get(PdfName.Filter);
             ba.DecodeParams = dict.Get(PdfName.DecodeParms);

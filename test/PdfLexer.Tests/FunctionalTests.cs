@@ -257,6 +257,23 @@ namespace PdfLexer.Tests
 
                                     using var isa = img.GetImage(doc.Context);
                                     isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
+                                    using var od = PdfDocument.Create();
+                                    var pg = new PdfPage(new PdfDictionary());
+                                    od.Pages.Add(pg);
+                                    pg.AddXObj("/Im1", img.Stream);
+                                    var bx = pg.MediaBox;
+                                    bx.URx = img.Stream.Dictionary.Get<PdfNumber>(PdfName.Width);
+                                    bx.URy = img.Stream.Dictionary.Get<PdfNumber>(PdfName.Height);
+
+                                    var cs = new MemoryStream();
+                                    q_Op.WriteLn(cs);
+                                    cm_Op.WriteLn(bx.URx, 0, 0, bx.URy, 0, 0, cs);
+                                    Do_Op.WriteLn("/Im1", cs);
+                                    Q_Op.WriteLn(cs);
+                                    var cnt = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(cs.ToArray()));
+                                    pg.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(cnt);
+                                    using var fso = File.Create($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.pdf");
+                                    od.SaveTo(fso);
                                     i++;
                                 }
                                 catch (Exception ex)

@@ -75,6 +75,11 @@ namespace PdfLexer
                 _ => throw new ApplicationException("Unable to convert PdfNumber to decimal for type " + num.GetType())
             };
         }
+
+        public static implicit operator PdfNumber(float num)
+        {
+            return new PdfDoubleNumber(num);
+        }
     }
 
     public static class PdfCommonNumbers

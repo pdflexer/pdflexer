@@ -128,7 +128,7 @@ namespace PdfLexer.Tests
             var data = Encoding.ASCII.GetBytes(text);
             var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
             var dict = parser.Parse(data);
-            Assert.Equal(6, dict.GetRequiredValue<PdfNumber>(PdfName.Size));
+            Assert.Equal(6, (int)dict.GetRequiredValue<PdfNumber>(PdfName.Size));
         }
 
         [Fact]
@@ -141,7 +141,7 @@ namespace PdfLexer.Tests
             var data = Encoding.ASCII.GetBytes(text);
             var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
             var dict = parser.Parse(data);
-            Assert.Equal(10, dict.GetRequiredValue<PdfNumber>(PdfName.Length));
+            Assert.Equal(10, (int)dict.GetRequiredValue<PdfNumber>(PdfName.Length));
         }
 
         [Fact]
@@ -153,7 +153,7 @@ namespace PdfLexer.Tests
             var data = Encoding.ASCII.GetBytes(text);
             var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
             var dict = parser.Parse(data);
-            Assert.Equal(2, dict.GetRequiredValue<PdfNumber>(new PdfName("/Two")));
+            Assert.Equal(2, (int)dict.GetRequiredValue<PdfNumber>(new PdfName("/Two")));
         }
 
         [Fact]
