@@ -62,6 +62,10 @@ namespace PdfLexer
             }
             if (total != requiredBytes)
             {
+                // for (var i=total; i < requiredBytes; i++)
+                // {
+                //     array[i] = 0;
+                // }
                 return false;
             }
             return true;

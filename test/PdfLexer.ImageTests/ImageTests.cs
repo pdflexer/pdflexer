@@ -305,7 +305,7 @@ namespace PdfLexer.ImageTests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var output = Path.Combine(tp, "results", "images");
             var pdfRoot = Path.Combine(tp, "imgs");
-            RunSingle(pdfRoot, name, output);
+            RunSingle(pdfRoot, name, output, 10);
         }
 
         [InlineData("ytNxY-dzrqww-EFk6orraA.pdf")]

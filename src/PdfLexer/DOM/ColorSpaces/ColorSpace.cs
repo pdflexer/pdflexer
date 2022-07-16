@@ -44,11 +44,13 @@ namespace PdfLexer.DOM.ColorSpaces
                         case "/CalRGB":
                             if (arr.Count < 2) { throw new PdfLexerException($"CalRGB colorspace had no dictionary."); }
                             return CalRGB.FromObject(arr[1].GetValue<PdfDictionary>());
+                        case "/Lab":
+                            if (arr.Count < 2) { throw new PdfLexerException($"Lab colorspace had no dictionary."); }
+                            return Lab.FromObject(arr[1].GetValue<PdfDictionary>());
                         case "/ICCBased":
                         case "/Pattern":
                         case "/Separation":
                         case "/DeviceN":
-                        case "/Lab":
                             throw new NotImplementedException($"Colorspace {mode.Value} is not implemented.");
                         case "/Indexed":
                             if (arr.Count < 4) { throw new PdfLexerException($"Indexed colorspace had less than 4 entries."); }

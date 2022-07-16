@@ -138,6 +138,7 @@ namespace PdfLexer
         public static readonly PdfName Indexed = new PdfName("/Indexed", false);
         public static readonly PdfName CalGray = new PdfName("/CalGray", false);
         public static readonly PdfName CalRGB = new PdfName("/CalRGB", false);
+        public static readonly PdfName Lab = new PdfName("/Lab", false);
 
         public static readonly PdfName Decode = new PdfName("/Decode", false);
         public static readonly PdfName ASCIIHexDecode = new PdfName("/ASCIIHexDecode", false);

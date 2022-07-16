@@ -47,6 +47,7 @@ namespace PdfLexer.Parsers
         private IDecoder AsciiHexDecoder;
         private IDecoder Ascii58Decoder;
         private IDecoder RunLengthDecoder;
+        private IDecoder CCITTDecoder;
 
         public ParsingContext(ParsingOptions options = null)
         {
@@ -67,6 +68,7 @@ namespace PdfLexer.Parsers
             AsciiHexDecoder = new AsciiHexFilter(this);
             Ascii58Decoder = new Ascii85Filter(this);
             RunLengthDecoder = new RunLengthFilter();
+            CCITTDecoder = new CCITTFilter(this);
         }
 
         public (Dictionary<ulong, XRefEntry> XRefs, PdfDictionary Trailer) Initialize(IPdfDataSource pdf)
@@ -135,6 +137,9 @@ namespace PdfLexer.Parsers
                 case "/RL":
                 case "/RunLengthDecode":
                     return RunLengthDecoder;
+                case "/CCF":
+                case "/CCITTFaxDecode":
+                    return CCITTDecoder;
                 default:
                     throw new NotImplementedException($"Stream decoding of type {name.Value} has not been implemented.");
             }

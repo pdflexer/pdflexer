@@ -267,7 +267,11 @@ namespace PdfLexer.DOM.ColorSpaces
                 var bps = bp.Select(x => x.GetValue<PdfNumber>(false)).Where(x => x != null).Select(x => (float)x).ToList();
                 if (wps.Count == 3)
                 {
-                    (xw, yw, zw) = (bps[0], bps[1], bps[2]);
+                    (xb, yb, zb) = (bps[0], bps[1], bps[2]);
+                }
+                if (xb < 0 || yb < 0 || zb < 0)
+                {
+                    (xb, yb, zb) = (0f, 0f, 0f);
                 }
             }
 

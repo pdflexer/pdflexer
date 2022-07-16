@@ -73,7 +73,7 @@ namespace PdfLexer.DOM.ColorSpaces
             {
                 throw new PdfLexerException("No whitepoint entry for calgray colorspace");
             }
-            var wps = wp.Select(x => x.GetValue<PdfNumber>(false)).Where(x => x != null).Cast<float>().ToList();
+            var wps = wp.Select(x => x.GetValue<PdfNumber>(false)).Where(x => x != null).Select(x => (float)x).ToList();
             if (wps.Count != 3)
             {
                 throw new PdfLexerException($"Invalid WhitePoint entry for CalGray:" + wp.ToString());
@@ -88,17 +88,21 @@ namespace PdfLexer.DOM.ColorSpaces
             var bp = dict.Get<PdfArray>("/BlackPoint");
             if (bp != null)
             {
-                var bps = bp.Select(x => x.GetValue<PdfNumber>(false)).Where(x => x != null).Cast<float>().ToList();
+                var bps = bp.Select(x => x.GetValue<PdfNumber>(false)).Where(x => x != null).Select(x => (float)x).ToList();
                 if (wps.Count == 3)
                 {
-                    (xw, yw, zw) = (bps[0], bps[1], bps[2]);
+                    (xb, yb, zb) = (bps[0], bps[1], bps[2]);
+                }
+                if (xb < 0 || yb < 0 || zb < 0)
+                {
+                    (xb, yb, zb) = (0f, 0f, 0f);
                 }
             }
 
             var gamma = 1f;
             
             var g = dict.Get<PdfNumber>("/Gamma");
-            if (g > 1)
+            if (g != null && (double)g > 1)
             {
                 gamma = g;
             }

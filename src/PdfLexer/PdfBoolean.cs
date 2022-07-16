@@ -26,5 +26,10 @@ namespace PdfLexer
         }
         public bool Value { get; }
         public override PdfObjectType Type => PdfObjectType.BooleanObj;
+
+        public static implicit operator bool(PdfBoolean val) => val.Value;
+        public static implicit operator PdfBoolean(bool val) => val ? True : False;
+        public static implicit operator bool?(PdfBoolean val) => val?.Value;
+        
     }
 }

@@ -46,12 +46,12 @@ public static class ImageSharpExts
     {
         switch (filter.Value)
         {
-            case "/CCITTFaxDecode":
-                return GetCCTImage(
-                        img.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Width),
-                        img.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Height),
-                        img.Dictionary.GetRequiredValue<PdfNumber>(PdfName.BitsPerComponent),
-                        img.Contents.GetEncodedData());
+            // case "/CCITTFaxDecode":
+            //     return GetCCTImage(
+            //             img.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Width),
+            //             img.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Height),
+            //             img.Dictionary.GetRequiredValue<PdfNumber>(PdfName.BitsPerComponent),
+            //             img.Contents.GetEncodedData());
             case "/DCTDecode":
             case "/JPXDecode":
                 return Image.Load(img.Contents.GetEncodedData());
@@ -116,8 +116,6 @@ public static class ImageSharpExts
             colourMask);
     }
 
-
-
     private static Image GetFromDecoded(int width, int height, int bpc, IColorSpace cs, List<float>? decode, Stream data, bool isMask, List<float>? mask)
     {
         var cpp = cs.Components;
@@ -162,6 +160,7 @@ public static class ImageSharpExts
             };
             var compBuffer = new byte[roundedComps];
             var img = new Image<Rgba32>(width, height);
+            var totalRead = 0;
 
             img.ProcessPixelRows(ra =>
             {
@@ -172,7 +171,19 @@ public static class ImageSharpExts
                 }
                 for (int y = 0; y < height; y++)
                 {
-                    data.FillArray(buffer, buffer.Length);
+                    int total = 0;
+                    int read = 0;
+                    while ((read = data.Read(buffer, total, buffer.Length - total)) > 0)
+                    {
+                        total += read;
+                    }
+                    totalRead += total;
+                    if (total < buffer.Length)
+                    {
+                        // todo warning ? see LrUpVnZ0SQZWkawizVTIwQ
+                        // may be normal for ccitt
+                    }
+
                     if (bpc == 8) // shortcut as 8b values already in correct byte
                     {
                         compBuffer = buffer;
