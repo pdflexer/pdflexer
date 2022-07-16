@@ -11,6 +11,11 @@ namespace PdfLexer
     /// </summary>
     public class PdfStream : PdfObject
     {
+        public PdfStream()
+        {
+            Dictionary = new PdfDictionary();
+        }
+
         public PdfStream(PdfDictionary dictionary, PdfStreamContents contents)
         {
             Dictionary = dictionary;
@@ -173,7 +178,8 @@ namespace PdfLexer
                 {
                     var filter = arr[i].GetValue<PdfName>();
                     var dict = parmArray != null && parmArray.Count > i ? parmArray[i] : null;
-                    source = DecodeSingle(filter, source, dict?.GetValue<PdfDictionary>());
+                    source = DecodeSingle(filter, source,
+                        dict?.Type == PdfObjectType.NullObj ? null : dict?.GetValue<PdfDictionary>());
                 }
                 return source;
             }

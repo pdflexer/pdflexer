@@ -96,5 +96,15 @@ namespace PdfLexer
             }
             return item;
         }
+
+
+        public static PdfIndirectRef Indirect(this IPdfObject item)
+        {
+            if (item.Type == PdfObjectType.IndirectRefObj)
+            {
+                return (PdfIndirectRef)item;
+            }
+            return PdfIndirectRef.Create(item);
+        }
     }
 }

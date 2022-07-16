@@ -14,7 +14,7 @@ namespace PdfLexer
         internal static readonly byte[] end = new byte[2] {(byte) '>', (byte) '>'};
         internal readonly IDictionary<PdfName, IPdfObject> _dictionary;
         internal bool DictionaryModified { get; set; }
-        internal PdfLazyObject LazyWrapper { get; set; }
+        internal bool IndirectOnly { get; set; }
 
         /// <inheritdoc/>
         public override PdfObjectType Type => PdfObjectType.DictionaryObj;
@@ -65,7 +65,14 @@ namespace PdfLexer
         public void Add(KeyValuePair<PdfName, IPdfObject> item)
         {
             DictionaryModified = true;
-            _dictionary.Add(item);
+            if (IndirectOnly && item.Value.Type != PdfObjectType.IndirectRefObj)
+            {
+                _dictionary.Add(new KeyValuePair<PdfName, IPdfObject>(item.Key, item.Value.Indirect()));
+            } else
+            {
+                _dictionary.Add(item);
+            }
+            
         }
 
         /// <inheritdoc/>
@@ -104,7 +111,13 @@ namespace PdfLexer
         public void Add(PdfName key, IPdfObject value)
         {
             DictionaryModified = true;
-            _dictionary.Add(key, value);
+            if (IndirectOnly)
+            {
+                _dictionary.Add(key, value.Indirect());
+            } else
+            {
+                _dictionary.Add(key, value);
+            }
         }
 
         /// <inheritdoc/>
@@ -155,6 +168,23 @@ namespace PdfLexer
                 var val = new T();
                 this.Add(key, val);
                 return val;
+            }
+            return value;
+        }
+
+        /// <summary>
+        /// Gets value for key if exists, otherwise returns
+        /// new object and sets value in dict.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public T GetOrSetValue<T>(PdfName key, T def) where T : IPdfObject
+        {
+            if (!TryGetValue<T>(key, out T value))
+            {
+                this.Add(key, def);
+                return def;
             }
             return value;
         }
@@ -256,7 +286,16 @@ namespace PdfLexer
         public IPdfObject this[PdfName key]
         {
             get => _dictionary[key];
-            set => _dictionary[key] = value;
+            set {
+                DictionaryModified = true;
+                if (IndirectOnly)
+                {
+                    _dictionary[key] = value.Indirect();
+                } else
+                {
+                    _dictionary[key] = value;
+                }
+             }
         }
 
         /// <inheritdoc/>

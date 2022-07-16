@@ -6,7 +6,7 @@ namespace PdfLexer.DOM
 {
     public class XObjectForm
     {
-        public PdfDictionary Dictionary {get;set;}
+        public PdfDictionary Dictionary { get; }
         public XObjectForm(PdfDictionary dict)
         {
             Dictionary = dict;

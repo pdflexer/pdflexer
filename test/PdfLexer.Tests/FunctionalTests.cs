@@ -206,6 +206,7 @@ namespace PdfLexer.Tests
                         }
 
                         var read = new HashSet<PdfStream>();
+                        var hashes = new HashSet<string>();
 
                         int i = 0;
                         foreach (var page in doc.Pages)
@@ -218,70 +219,6 @@ namespace PdfLexer.Tests
                             }
                             var str = sb.ToString();
 
-                            
-                            var imgRdr = new ImageScanner(doc.Context, page);
-                            while (imgRdr.Advance())
-                            {
-                                var (x, y, w, h) = imgRdr.GetCurrentSize();
-                                if (w < 5 || h < 5) { continue; }
-                                if (!imgRdr.TryGetImage(out var img))
-                                {
-                                    continue;
-                                }
-                                try
-                                {
-                                    if (read.Contains(img.Stream)) { continue; }
-                                    read.Add(img.Stream);
-                                    var ms = new MemoryStream();
-
-                                    void WriteDirectly(Stream str, PdfIndirectRef ir)
-                                    {
-                                        var obj = ir.Resolve();
-                                        ser.SerializeObject(str, obj, WriteDirectly);
-                                    }
-
-                                    void WriteIfNotNull(IPdfObject obj)
-                                    {
-                                        if (obj == null) { return; }
-                                        ser.SerializeObject(ms, obj, WriteDirectly);
-                                        ms.WriteByte((byte)'\n');
-                                    }
-                                    var f = img.Stream.Dictionary.Get(PdfName.Filter);
-
-                                    WriteIfNotNull(img.Stream.Dictionary.Get(PdfName.BitsPerComponent));
-                                    WriteIfNotNull(img.Stream.Dictionary.Get(PdfName.Filter));
-                                    WriteIfNotNull(img.Stream.Dictionary.Get(PdfName.DecodeParms));
-                                    WriteIfNotNull(img.Stream.Dictionary.Get(PdfName.ColorSpace));
-                                    var data = ms.ToArray();
-                                    var fpstr = Encoding.UTF8.GetString(data);
-
-                                    using var isa = img.GetImage(doc.Context);
-                                    isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
-                                    using var od = PdfDocument.Create();
-                                    var pg = new PdfPage(new PdfDictionary());
-                                    od.Pages.Add(pg);
-                                    pg.AddXObj("/Im1", img.Stream);
-                                    var bx = pg.MediaBox;
-                                    bx.URx = img.Stream.Dictionary.Get<PdfNumber>(PdfName.Width);
-                                    bx.URy = img.Stream.Dictionary.Get<PdfNumber>(PdfName.Height);
-
-                                    var cs = new MemoryStream();
-                                    q_Op.WriteLn(cs);
-                                    cm_Op.WriteLn(bx.URx, 0, 0, bx.URy, 0, 0, cs);
-                                    Do_Op.WriteLn("/Im1", cs);
-                                    Q_Op.WriteLn(cs);
-                                    var cnt = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(cs.ToArray()));
-                                    pg.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(cnt);
-                                    using var fso = File.Create($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.pdf");
-                                    od.SaveTo(fso);
-                                    i++;
-                                }
-                                catch (Exception ex)
-                                {
-                                    // dont fail for now
-                                    // throw;
-                                }
-                            }
                         }
                     }
                     catch (NotSupportedException ex)
@@ -320,7 +257,7 @@ namespace PdfLexer.Tests
                 while (imgRdr.Advance())
                 {
                     var (x, y, w, h) = imgRdr.GetCurrentSize();
-                    if (w < 5 || h < 5) { continue;  }
+                    if (w < 5 || h < 5) { continue; }
                     if (!imgRdr.TryGetImage(out var img))
                     {
                         continue;
@@ -388,7 +325,7 @@ namespace PdfLexer.Tests
             {
                 var name = Path.GetFileNameWithoutExtension(pdf);
 
-                if (name.StartsWith("__") 
+                if (name.StartsWith("__")
                     || name == "bug1020226" // bad page tree / structure, don't think this is something to handle by default
                     || name == "issue3371" || name == "pr6531_1" // bad compression
                     || name == "issue7229" // XRef table points to wrong object ... rebuilding might work but other pdfs have
