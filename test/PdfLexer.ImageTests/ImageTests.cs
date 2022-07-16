@@ -198,14 +198,14 @@ namespace PdfLexer.ImageTests
 
 
         [InlineData("LcDy-GQ2oC0mJ4pDz18ixw.pdf")]
-        [InlineData("SsGZumJPC4cJHwDRzPXmHg.pdf")]
+        // [InlineData("SsGZumJPC4cJHwDRzPXmHg.pdf")] // license
         [Theory]
         public void It_Reads_CalRGB(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var output = Path.Combine(tp, "results", "images");
             var pdfRoot = Path.Combine(tp, "imgs");
-            RunSingle(pdfRoot, name, output);
+            RunSingle(pdfRoot, name, output, 10);
         }
 
         [Fact]

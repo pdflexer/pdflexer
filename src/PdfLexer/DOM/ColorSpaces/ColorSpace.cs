@@ -39,7 +39,11 @@ namespace PdfLexer.DOM.ColorSpaces
                         case "/CalCMYK":
                             return DeviceCMYK.Instance;
                         case "/CalGray":
+                            if (arr.Count < 2) { throw new PdfLexerException($"CalGray colorspace had no dictionary."); }
+                            return CalGray.FromObject(arr[1].GetValue<PdfDictionary>());
                         case "/CalRGB":
+                            if (arr.Count < 2) { throw new PdfLexerException($"CalRGB colorspace had no dictionary."); }
+                            return CalRGB.FromObject(arr[1].GetValue<PdfDictionary>());
                         case "/ICCBased":
                         case "/Pattern":
                         case "/Separation":

@@ -144,5 +144,18 @@ namespace PdfLexer
         {
             return new PdfArray(internalList.ToList());
         }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("[");
+            foreach (var val in internalList)
+            {
+                sb.Append(val.ToString());
+                sb.Append(" ");
+            }
+            sb.Append("]");
+            return sb.ToString();
+        }
     }
 }
