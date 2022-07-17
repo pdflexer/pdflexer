@@ -114,7 +114,7 @@ namespace PdfLexer.Tests
             var errors = new List<string>();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
-
+                if (Path.GetFileName(pdf).StartsWith("__")) { continue; }
                 try
                 {
                     using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
@@ -148,6 +148,7 @@ namespace PdfLexer.Tests
             var errors = new List<string>();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
+                if (Path.GetFileName(pdf).StartsWith("__")) { continue; }
                 try
                 {
                     using var fs = File.OpenRead(pdf);
@@ -181,6 +182,7 @@ namespace PdfLexer.Tests
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
+                if (Path.GetFileName(pdf).StartsWith("__")) { continue; }
                 var name = Path.GetFileNameWithoutExtension(pdf);
                 if (name == "bug1020226" // bad page tree / structure, don't think this is something to handle by default
                     || name == "issue3371" || name == "pr6531_1" // bad compression
@@ -806,6 +808,14 @@ namespace PdfLexer.Tests
                         Assert.Equal(hc, hc6);
                         hc7 = Util.GetDocumentHashCode(d7);
                         Assert.Equal(hc, hc7);
+                    }
+                }
+                catch (NotSupportedException ex)
+                {
+                    // for compressed object streams
+                    if (ex.Message.Contains("encryption"))
+                    {
+                        continue;
                     }
                 }
                 catch (Exception e)
