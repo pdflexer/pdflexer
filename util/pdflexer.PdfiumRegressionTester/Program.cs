@@ -305,7 +305,7 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
             try
             {
                 var opts = new ParsingOptions { MaxErrorRetention = 10 };
-                opts.ThrowOnErrors = strict && errorInfo?.ErrCount == 0;
+                opts.ThrowOnErrors = strict && !errorInfo.Failure && errorInfo?.ErrCount == 0;
                 // using var fs = File.OpenRead(pdf);
                 // using var doc = PdfDocument.Open(fs, opts);
                 using var doc = PdfDocument.OpenMapped(pdf, opts);
