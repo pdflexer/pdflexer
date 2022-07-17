@@ -156,6 +156,18 @@ foreach (var op in operators)
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
 <# if (!op.Item5) { #>
@@ -186,6 +198,26 @@ foreach (var op in operators)
             <#= serializer #>;
             stream.WriteByte((byte)' ');
 <#         ii++;
+       }
+#>
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item1} {i.Item2}")) #>, Stream stream) 
+        {
+            Write(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item2}")) #>, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item1} {i.Item2}")) #>, Stream stream) 
+        {
+<#     
+       foreach (var prop in op.Item4) { 
+            var serializer2 = $"PdfOperator.Write{prop.Item1}({prop.Item2}, stream)";
+#>
+            <#= serializer2 #>;
+            stream.WriteByte((byte)' ');
+<#         
        }
 #>
             stream.Write(OpData);

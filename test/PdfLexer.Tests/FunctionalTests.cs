@@ -114,7 +114,7 @@ namespace PdfLexer.Tests
             var errors = new List<string>();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
-
+                if (Path.GetFileName(pdf).StartsWith("__")) { continue; }
                 try
                 {
                     using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
@@ -148,6 +148,7 @@ namespace PdfLexer.Tests
             var errors = new List<string>();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
+                if (Path.GetFileName(pdf).StartsWith("__")) { continue; }
                 try
                 {
                     using var fs = File.OpenRead(pdf);
@@ -181,6 +182,7 @@ namespace PdfLexer.Tests
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
+                if (Path.GetFileName(pdf).StartsWith("__")) { continue; }
                 var name = Path.GetFileNameWithoutExtension(pdf);
                 if (name == "bug1020226" // bad page tree / structure, don't think this is something to handle by default
                     || name == "issue3371" || name == "pr6531_1" // bad compression
@@ -192,7 +194,8 @@ namespace PdfLexer.Tests
                     continue;
                 }
 
-
+                var ser = new PdfLexer.Serializers.Serializers();
+                var types = new List<string>();
                 try
                 {
                     try
@@ -203,6 +206,9 @@ namespace PdfLexer.Tests
                             // don't support encryption currently
                             continue;
                         }
+
+                        var read = new HashSet<PdfStream>();
+                        var hashes = new HashSet<string>();
 
                         int i = 0;
                         foreach (var page in doc.Pages)
@@ -215,28 +221,6 @@ namespace PdfLexer.Tests
                             }
                             var str = sb.ToString();
 
-                            
-                            var imgRdr = new ImageScanner(doc.Context, page);
-                            while (imgRdr.Advance())
-                            {
-                                var (x, y, w, h) = imgRdr.GetCurrentSize();
-                                if (w < 5 || h < 5) { continue; }
-                                if (!imgRdr.TryGetImage(out var img))
-                                {
-                                    continue;
-                                }
-                                try
-                                {
-                                    using var isa = img.GetImage(doc.Context);
-                                    // isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
-                                    i++;
-                                }
-                                catch (Exception ex)
-                                {
-                                    // dont fail for now
-                                    // throw;
-                                }
-                            }
                         }
                     }
                     catch (NotSupportedException ex)
@@ -275,7 +259,7 @@ namespace PdfLexer.Tests
                 while (imgRdr.Advance())
                 {
                     var (x, y, w, h) = imgRdr.GetCurrentSize();
-                    if (w < 5 || h < 5) { continue;  }
+                    if (w < 5 || h < 5) { continue; }
                     if (!imgRdr.TryGetImage(out var img))
                     {
                         continue;
@@ -343,7 +327,7 @@ namespace PdfLexer.Tests
             {
                 var name = Path.GetFileNameWithoutExtension(pdf);
 
-                if (name.StartsWith("__") 
+                if (name.StartsWith("__")
                     || name == "bug1020226" // bad page tree / structure, don't think this is something to handle by default
                     || name == "issue3371" || name == "pr6531_1" // bad compression
                     || name == "issue7229" // XRef table points to wrong object ... rebuilding might work but other pdfs have
@@ -824,6 +808,14 @@ namespace PdfLexer.Tests
                         Assert.Equal(hc, hc6);
                         hc7 = Util.GetDocumentHashCode(d7);
                         Assert.Equal(hc, hc7);
+                    }
+                }
+                catch (NotSupportedException ex)
+                {
+                    // for compressed object streams
+                    if (ex.Message.Contains("encryption"))
+                    {
+                        continue;
                     }
                 }
                 catch (Exception e)

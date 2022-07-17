@@ -71,6 +71,7 @@ namespace PdfLexer
             throw new PdfLexerObjectMismatchException($"Mismatched data type requested, got {item.Type} expected {typeof(T)}");
         }
 
+        public static T GetAs<T>(this IPdfObject item, bool errorOnMismatch = true) where T : IPdfObject => item.GetValue<T>(errorOnMismatch);
 
 
         /// <summary>
@@ -95,6 +96,16 @@ namespace PdfLexer
                 return ir.GetObject();
             }
             return item;
+        }
+
+
+        public static PdfIndirectRef Indirect(this IPdfObject item)
+        {
+            if (item.Type == PdfObjectType.IndirectRefObj)
+            {
+                return (PdfIndirectRef)item;
+            }
+            return PdfIndirectRef.Create(item);
         }
     }
 }

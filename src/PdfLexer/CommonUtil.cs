@@ -45,6 +45,14 @@ namespace PdfLexer
 
         public static void FillArray(this Stream stream, byte[] array, int requiredBytes = -1)
         {
+            if (!TryFillArray(stream, array, requiredBytes))
+            {
+                throw new PdfLexerException("unable to fill array from stream");
+            }
+        }
+
+        public static bool TryFillArray(this Stream stream, byte[] array, int requiredBytes = -1)
+        {
             if (requiredBytes < 0) { requiredBytes = array.Length; }
             int total = 0;
             int read;
@@ -54,8 +62,13 @@ namespace PdfLexer
             }
             if (total != requiredBytes)
             {
-                throw new PdfLexerException("unable to fill array from stream");
+                // for (var i=total; i < requiredBytes; i++)
+                // {
+                //     array[i] = 0;
+                // }
+                return false;
             }
+            return true;
         }
 
         public static bool IsWhiteSpace(byte b)

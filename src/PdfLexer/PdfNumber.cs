@@ -42,6 +42,12 @@ namespace PdfLexer
             };
         }
 
+        public static implicit operator int?(PdfNumber num)
+        {
+            if (num == null) { return null; }
+            return (int)num;
+        }
+
         public static implicit operator double(PdfNumber num)
         {
             return num switch {
@@ -51,6 +57,12 @@ namespace PdfLexer
                 PdfDecimalNumber val => (double)val.Value,
                 _ => throw new ApplicationException("Unable to convert PdfNumber to decimal for type " + num.GetType())
             };
+        }
+
+        public static implicit operator double?(PdfNumber num)
+        {
+            if (num == null) { return null; }
+            return (double)num;
         }
 
         public static implicit operator float(PdfNumber num)
@@ -65,6 +77,12 @@ namespace PdfLexer
             };
         }
 
+        public static implicit operator float?(PdfNumber num)
+        {
+            if (num == null) { return null; }
+            return (float)num;
+        }
+
         public static implicit operator decimal(PdfNumber num)
         {
             return num switch {
@@ -74,6 +92,17 @@ namespace PdfLexer
                 PdfDecimalNumber val => val.Value,
                 _ => throw new ApplicationException("Unable to convert PdfNumber to decimal for type " + num.GetType())
             };
+        }
+
+        public static implicit operator decimal?(PdfNumber num)
+        {
+            if (num == null) { return null; }
+            return (decimal)num;
+        }
+
+        public static implicit operator PdfNumber(float num)
+        {
+            return new PdfDoubleNumber(num);
         }
     }
 

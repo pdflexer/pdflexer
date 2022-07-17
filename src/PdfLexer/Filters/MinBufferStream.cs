@@ -60,7 +60,7 @@ namespace PdfLexer.Filters
             }
 
             read = FillBuffer(buffer, 0, minimum);
-            if (read == 0)
+            if (read <= 0)
             {
                 return 0;
             }

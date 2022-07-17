@@ -257,6 +257,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static b_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -276,6 +288,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static B_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -295,6 +319,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static b_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -314,6 +350,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static B_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -347,6 +395,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static BI_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -366,6 +426,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfName(tag, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(PdfName tag, Stream stream) 
+        {
+            Write(tag, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(PdfName tag, Stream stream) 
         {
             PdfOperator.WritePdfName(tag, stream);
             stream.WriteByte((byte)' ');
@@ -403,6 +476,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static BT_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -422,6 +507,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static BX_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -451,6 +548,29 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x1, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y1, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(x2, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y2, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(x3, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y3, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3, Stream stream) 
+        {
+            Write(x1, y1, x2, y2, x3, y3, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3, Stream stream) 
         {
             PdfOperator.Writedecimal(x1, stream);
             stream.WriteByte((byte)' ');
@@ -529,6 +649,29 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f, Stream stream) 
+        {
+            Write(a, b, c, d, e, f, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f, Stream stream) 
+        {
+            PdfOperator.Writedecimal(a, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(b, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(c, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(d, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(e, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(f, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
 
         public static cm_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -571,6 +714,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(PdfName name, Stream stream) 
+        {
+            Write(name, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(PdfName name, Stream stream) 
+        {
+            PdfOperator.WritePdfName(name, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "PdfName"  };
 
         public static CS_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -602,6 +758,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfName(name, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(PdfName name, Stream stream) 
+        {
+            Write(name, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(PdfName name, Stream stream) 
         {
             PdfOperator.WritePdfName(name, stream);
             stream.WriteByte((byte)' ');
@@ -655,6 +824,21 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(wx, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(wy, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal wx, decimal wy, Stream stream) 
+        {
+            Write(wx, wy, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal wx, decimal wy, Stream stream) 
         {
             PdfOperator.Writedecimal(wx, stream);
             stream.WriteByte((byte)' ');
@@ -721,6 +905,29 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal wx, decimal wy, decimal llx, decimal lly, decimal urx, decimal ury, Stream stream) 
+        {
+            Write(wx, wy, llx, lly, urx, ury, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal wx, decimal wy, decimal llx, decimal lly, decimal urx, decimal ury, Stream stream) 
+        {
+            PdfOperator.Writedecimal(wx, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(wy, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(llx, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(lly, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(urx, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(ury, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
 
         public static d1_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -757,6 +964,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfName(name, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(PdfName name, Stream stream) 
+        {
+            Write(name, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(PdfName name, Stream stream) 
         {
             PdfOperator.WritePdfName(name, stream);
             stream.WriteByte((byte)' ');
@@ -808,6 +1028,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static EI_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -827,6 +1059,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static EMC_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -846,6 +1090,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static ET_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -865,6 +1121,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static EX_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -884,6 +1152,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static f_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -903,6 +1183,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static F_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -922,6 +1214,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static f_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -941,6 +1245,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(gray, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal gray, Stream stream) 
+        {
+            Write(gray, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal gray, Stream stream) 
         {
             PdfOperator.Writedecimal(gray, stream);
             stream.WriteByte((byte)' ');
@@ -984,6 +1301,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal gray, Stream stream) 
+        {
+            Write(gray, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal gray, Stream stream) 
+        {
+            PdfOperator.Writedecimal(gray, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal"  };
 
         public static g_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1021,6 +1351,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(PdfName name, Stream stream) 
+        {
+            Write(name, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(PdfName name, Stream stream) 
+        {
+            PdfOperator.WritePdfName(name, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "PdfName"  };
 
         public static gs_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1052,6 +1395,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static h_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1071,6 +1426,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(flatness, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal flatness, Stream stream) 
+        {
+            Write(flatness, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal flatness, Stream stream) 
         {
             PdfOperator.Writedecimal(flatness, stream);
             stream.WriteByte((byte)' ');
@@ -1108,6 +1476,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static ID_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1127,6 +1507,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writeint(lineJoin, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(int lineJoin, Stream stream) 
+        {
+            Write(lineJoin, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(int lineJoin, Stream stream) 
         {
             PdfOperator.Writeint(lineJoin, stream);
             stream.WriteByte((byte)' ');
@@ -1170,6 +1563,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(int lineCap, Stream stream) 
+        {
+            Write(lineCap, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(int lineCap, Stream stream) 
+        {
+            PdfOperator.Writeint(lineCap, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "int"  };
 
         public static J_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1207,6 +1613,25 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(c, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(m, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(k, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal c, decimal m, decimal y, decimal k, Stream stream) 
+        {
+            Write(c, m, y, k, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal c, decimal m, decimal y, decimal k, Stream stream) 
         {
             PdfOperator.Writedecimal(c, stream);
             stream.WriteByte((byte)' ');
@@ -1271,6 +1696,25 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal c, decimal m, decimal y, decimal k, Stream stream) 
+        {
+            Write(c, m, y, k, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal c, decimal m, decimal y, decimal k, Stream stream) 
+        {
+            PdfOperator.Writedecimal(c, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(m, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(k, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal"  };
 
         public static k_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1307,6 +1751,21 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal x, decimal y, Stream stream) 
+        {
+            Write(x, y, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal x, decimal y, Stream stream) 
         {
             PdfOperator.Writedecimal(x, stream);
             stream.WriteByte((byte)' ');
@@ -1357,6 +1816,21 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal x, decimal y, Stream stream) 
+        {
+            Write(x, y, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal x, decimal y, Stream stream) 
+        {
+            PdfOperator.Writedecimal(x, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal", "decimal"  };
 
         public static m_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1389,6 +1863,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(miterLimit, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal miterLimit, Stream stream) 
+        {
+            Write(miterLimit, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal miterLimit, Stream stream) 
         {
             PdfOperator.Writedecimal(miterLimit, stream);
             stream.WriteByte((byte)' ');
@@ -1432,6 +1919,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(PdfName tag, Stream stream) 
+        {
+            Write(tag, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(PdfName tag, Stream stream) 
+        {
+            PdfOperator.WritePdfName(tag, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "PdfName"  };
 
         public static MP_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1463,6 +1963,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static n_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1482,6 +1994,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static q_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1501,6 +2025,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static Q_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1526,6 +2062,25 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(width, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(height, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal x, decimal y, decimal width, decimal height, Stream stream) 
+        {
+            Write(x, y, width, height, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal x, decimal y, decimal width, decimal height, Stream stream) 
         {
             PdfOperator.Writedecimal(x, stream);
             stream.WriteByte((byte)' ');
@@ -1586,6 +2141,23 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal r, decimal g, decimal b, Stream stream) 
+        {
+            Write(r, g, b, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal r, decimal g, decimal b, Stream stream) 
+        {
+            PdfOperator.Writedecimal(r, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(g, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(b, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal"  };
 
         public static RG_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1623,6 +2195,23 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(r, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(g, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(b, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal r, decimal g, decimal b, Stream stream) 
+        {
+            Write(r, g, b, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal r, decimal g, decimal b, Stream stream) 
         {
             PdfOperator.Writedecimal(r, stream);
             stream.WriteByte((byte)' ');
@@ -1672,6 +2261,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(PdfName intent, Stream stream) 
+        {
+            Write(intent, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(PdfName intent, Stream stream) 
+        {
+            PdfOperator.WritePdfName(intent, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "PdfName"  };
 
         public static ri_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1703,6 +2305,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static s_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1722,6 +2336,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static S_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1799,6 +2425,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(PdfName name, Stream stream) 
+        {
+            Write(name, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(PdfName name, Stream stream) 
+        {
+            PdfOperator.WritePdfName(name, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "PdfName"  };
 
         public static sh_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1830,6 +2469,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static T_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1849,6 +2500,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(charSpace, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal charSpace, Stream stream) 
+        {
+            Write(charSpace, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal charSpace, Stream stream) 
         {
             PdfOperator.Writedecimal(charSpace, stream);
             stream.WriteByte((byte)' ');
@@ -1888,6 +2552,21 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(tx, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(ty, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal tx, decimal ty, Stream stream) 
+        {
+            Write(tx, ty, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal tx, decimal ty, Stream stream) 
         {
             PdfOperator.Writedecimal(tx, stream);
             stream.WriteByte((byte)' ');
@@ -1938,6 +2617,21 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal tx, decimal ty, Stream stream) 
+        {
+            Write(tx, ty, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal tx, decimal ty, Stream stream) 
+        {
+            PdfOperator.Writedecimal(tx, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(ty, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal", "decimal"  };
 
         public static TD_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -1972,6 +2666,21 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.WritePdfName(font, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(size, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(PdfName font, decimal size, Stream stream) 
+        {
+            Write(font, size, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(PdfName font, decimal size, Stream stream) 
         {
             PdfOperator.WritePdfName(font, stream);
             stream.WriteByte((byte)' ');
@@ -2042,6 +2751,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal leading, Stream stream) 
+        {
+            Write(leading, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal leading, Stream stream) 
+        {
+            PdfOperator.Writedecimal(leading, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal"  };
 
         public static TL_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -2083,6 +2805,29 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(a, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(b, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(c, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(d, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(e, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(f, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f, Stream stream) 
+        {
+            Write(a, b, c, d, e, f, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f, Stream stream) 
         {
             PdfOperator.Writedecimal(a, stream);
             stream.WriteByte((byte)' ');
@@ -2141,6 +2886,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(int render, Stream stream) 
+        {
+            Write(render, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(int render, Stream stream) 
+        {
+            PdfOperator.Writeint(render, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "int"  };
 
         public static Tr_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -2172,6 +2930,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(rise, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal rise, Stream stream) 
+        {
+            Write(rise, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal rise, Stream stream) 
         {
             PdfOperator.Writedecimal(rise, stream);
             stream.WriteByte((byte)' ');
@@ -2215,6 +2986,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal wordSpace, Stream stream) 
+        {
+            Write(wordSpace, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal wordSpace, Stream stream) 
+        {
+            PdfOperator.Writedecimal(wordSpace, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal"  };
 
         public static Tw_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -2246,6 +3030,19 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(scale, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal scale, Stream stream) 
+        {
+            Write(scale, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal scale, Stream stream) 
         {
             PdfOperator.Writedecimal(scale, stream);
             stream.WriteByte((byte)' ');
@@ -2301,6 +3098,25 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal x2, decimal y2, decimal x3, decimal y3, Stream stream) 
+        {
+            Write(x2, y2, x3, y3, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal x2, decimal y2, decimal x3, decimal y3, Stream stream) 
+        {
+            PdfOperator.Writedecimal(x2, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y2, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(x3, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y3, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal", "decimal", "decimal", "decimal"  };
 
         public static v_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -2341,6 +3157,19 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
+        public static void WriteLn(decimal lineWidth, Stream stream) 
+        {
+            Write(lineWidth, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal lineWidth, Stream stream) 
+        {
+            PdfOperator.Writedecimal(lineWidth, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
         private static List<string> OpTypes = new List<string> { "decimal"  };
 
         public static w_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -2372,6 +3201,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static W_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -2391,6 +3232,18 @@ namespace PdfLexer.Operators
         {
 
         }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
         public void Serialize(Stream stream) 
             => stream.Write(OpData);
         public static W_Star_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
@@ -2416,6 +3269,25 @@ namespace PdfLexer.Operators
         }
 
         public void Serialize(Stream stream) 
+        {
+            PdfOperator.Writedecimal(x1, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y1, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(x3, stream);
+            stream.WriteByte((byte)' ');
+            PdfOperator.Writedecimal(y3, stream);
+            stream.WriteByte((byte)' ');
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(decimal x1, decimal y1, decimal x3, decimal y3, Stream stream) 
+        {
+            Write(x1, y1, x3, y3, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(decimal x1, decimal y1, decimal x3, decimal y3, Stream stream) 
         {
             PdfOperator.Writedecimal(x1, stream);
             stream.WriteByte((byte)' ');

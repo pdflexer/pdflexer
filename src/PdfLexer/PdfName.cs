@@ -72,6 +72,9 @@ namespace PdfLexer
         public static readonly PdfName Resources = new PdfName("/Resources", false);
         public static readonly PdfName MediaBox = new PdfName("/MediaBox", false);
         public static readonly PdfName CropBox = new PdfName("/CropBox", false);
+        public static readonly PdfName BleedBox = new PdfName("/BleedBox", false);
+        public static readonly PdfName TrimBox = new PdfName("/TrimBox", false);
+        public static readonly PdfName ArtBox = new PdfName("/ArtBox", false);
         public static readonly PdfName Rotate = new PdfName("/Rotate", false);
         public static readonly PdfName Catalog = new PdfName("/Catalog", false);
         public static readonly PdfName Filter = new PdfName("/Filter", false);
@@ -132,6 +135,10 @@ namespace PdfLexer
         public static readonly PdfName DeviceGray = new PdfName("/DeviceGray", false);
         public static readonly PdfName DeviceRGB = new PdfName("/DeviceRGB", false);
         public static readonly PdfName DeviceCMYK = new PdfName("/DeviceCMYK", false);
+        public static readonly PdfName Indexed = new PdfName("/Indexed", false);
+        public static readonly PdfName CalGray = new PdfName("/CalGray", false);
+        public static readonly PdfName CalRGB = new PdfName("/CalRGB", false);
+        public static readonly PdfName Lab = new PdfName("/Lab", false);
 
         public static readonly PdfName Decode = new PdfName("/Decode", false);
         public static readonly PdfName ASCIIHexDecode = new PdfName("/ASCIIHexDecode", false);
@@ -146,6 +153,8 @@ namespace PdfLexer
         public static readonly PdfName Width = new PdfName("/Width", false);
         public static readonly PdfName Interpolate = new PdfName("/Interpolate", false);
         public static readonly PdfName ImageMask = new PdfName("/ImageMask", false);
+        public static readonly PdfName Mask = new PdfName("/Mask", false);
+        public static readonly PdfName SMask = new PdfName("/SMask", false);
         public static readonly PdfName Image = new PdfName("/Image", false);
 
         public static implicit operator PdfName(string name)

@@ -14,6 +14,7 @@ namespace PdfLexer
     {
         internal List<IPdfObject> internalList = new List<IPdfObject>();
         internal bool ArrayModified {get;set;}
+        internal bool IndirectOnly { get; set; }
 
         public override bool IsModified
         {
@@ -48,7 +49,7 @@ namespace PdfLexer
 
         /// <summary>
         /// Creates an new pdf array from the provided list.
-        /// Note: List provided will be modified is Pdf array is modified.
+        /// Note: List provided will be modified if Pdf array is modified.
         /// </summary>
         /// <param name="items"></param>
         public PdfArray(List<IPdfObject> items)
@@ -64,7 +65,14 @@ namespace PdfLexer
         public void Add(IPdfObject item)
         {
             ArrayModified = true;
-            internalList.Add(item);
+            if (IndirectOnly)
+            {
+                internalList.Add(item.Indirect());
+            } else
+            {
+                internalList.Add(item);
+            }
+            
         }
 
         public void Clear()
@@ -95,7 +103,14 @@ namespace PdfLexer
         public void Insert(int index, IPdfObject item)
         {
             ArrayModified = true;
-            internalList.Insert(index, item);
+            if (IndirectOnly)
+            {
+                internalList.Insert(index, item.Indirect());
+            }
+            else
+            {
+                internalList.Insert(index, item);
+            }
         }
 
         public void RemoveAt(int index)
@@ -109,7 +124,14 @@ namespace PdfLexer
             get => internalList[index];
             set {
                 ArrayModified = true;
-                internalList[index] = value;
+                if (IndirectOnly)
+                {
+                    internalList[index] = value.Indirect();
+                }
+                else
+                {
+                    internalList[index] = value;
+                }
             }
         }
 
@@ -121,6 +143,19 @@ namespace PdfLexer
         public PdfArray CloneShallow()
         {
             return new PdfArray(internalList.ToList());
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.Append("[");
+            foreach (var val in internalList)
+            {
+                sb.Append(val.ToString());
+                sb.Append(" ");
+            }
+            sb.Append("]");
+            return sb.ToString();
         }
     }
 }

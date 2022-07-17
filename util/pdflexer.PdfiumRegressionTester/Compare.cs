@@ -235,19 +235,6 @@ public enum ChangeType
     ChangesFound
 }
 
-public class D : IDisposable
-{
-    private Action _a;
-
-    public D(Action a)
-    {
-        _a = a;
-    }
-    public void Dispose()
-    {
-        _a();
-    }
-}
 
 public class Scope : IDisposable
 {

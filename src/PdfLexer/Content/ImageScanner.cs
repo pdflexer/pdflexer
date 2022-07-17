@@ -1,4 +1,5 @@
-﻿using PdfLexer.Operators;
+﻿using PdfLexer.DOM;
+using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using System;
 using System.Collections.Generic;
@@ -152,7 +153,7 @@ namespace PdfLexer.Content
                 Y = y,
                 W = w,
                 H = h,
-                Stream = stream
+                XObj = stream
             };
         }
     }
@@ -163,6 +164,6 @@ namespace PdfLexer.Content
         public float Y { get; set; }
         public float W { get; set; }
         public float H { get; set; }
-        public PdfStream Stream { get; set; }
+        public XObjImage XObj { get; set; }
     }
 }
