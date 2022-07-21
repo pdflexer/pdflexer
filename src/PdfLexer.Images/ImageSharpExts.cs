@@ -1,9 +1,9 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.DOM;
 using PdfLexer.DOM.ColorSpaces;
+using PdfLexer.Filters;
 using PdfLexer.Parsers;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.Formats.Tiff;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Runtime.InteropServices;
 
@@ -11,6 +11,73 @@ namespace PdfLexer.Images;
 
 public static class ImageSharpExts
 {
+    public static XObjImage CreatePdfImage(this Image img)
+    {
+        // TODO
+        // var info = Image.Identify(new byte[1]);
+        // overloads for JPEG / JPEG200 -> copy raw data
+        // overloads for PNG -> copy raw data where possible
+
+        var xi = new XObjImage();
+        xi.Width = img.Width;
+        xi.Height = img.Height;
+        xi.BitsPerComponent = 8;
+        xi.ColorSpace = PdfName.DeviceRGB;
+
+        if (img.PixelType.AlphaRepresentation.HasValue && img.PixelType.AlphaRepresentation.Value != PixelAlphaRepresentation.None)
+        {
+            byte[] buff = new byte[3];
+            var rgb = img.CloneAs<Rgba32>();
+            var writer = new FlateWriter();
+            var mask = new FlateWriter();
+            rgb.ProcessPixelRows(pa =>
+            {
+                for (var i = 0; i < pa.Height; i++)
+                {
+                    var row = MemoryMarshal.Cast<Rgba32, byte>(pa.GetRowSpan(i));
+                    for (var x=0;x<pa.Width; x++)
+                    {
+                        var os = x * 4;
+                        if (img.PixelType.AlphaRepresentation.Value == PixelAlphaRepresentation.Unassociated)
+                        {
+                            writer.Stream.Write(row.Slice(os, 3));
+                        } else
+                        {
+                            var s = (double)row[os + 3];
+                            buff[0] = (byte)Math.Min(255, row[os] / s);
+                            buff[1] = (byte)Math.Min(255, row[os+1] / s);
+                            buff[2] = (byte)Math.Min(255, row[os+2] / s);
+                        }
+                        mask.Stream.WriteByte(row[os + 3]);
+                    }
+                }
+            });
+            xi.Contents = writer.Complete();
+            var mi = new XObjImage();
+            mi.BitsPerComponent = 8;
+            mi.Width = img.Width;
+            mi.Height = img.Height;
+            mi.ColorSpace = PdfName.DeviceGray;
+            mi.Contents = writer.Complete();
+            xi.SMask = mi.Stream;
+
+        } else
+        {
+            var rgb = img.CloneAs<Rgb24>();
+            var writer = new FlateWriter();
+            rgb.ProcessPixelRows(pa =>
+            {
+                for (var i = 0; i < pa.Height; i++)
+                {
+                    var row = MemoryMarshal.Cast<Rgb24, byte>(pa.GetRowSpan(i));
+                    writer.Stream.Write(row);
+                }
+            });
+            xi.Contents = writer.Complete();
+        }
+        return xi;
+    }
+
     public static Image GetImage(this PdfImage img, ParsingContext ctx)
     {
         var dict = img.XObj.Dictionary;
@@ -46,12 +113,6 @@ public static class ImageSharpExts
     {
         switch (filter.Value)
         {
-            // case "/CCITTFaxDecode":
-            //     return GetCCTImage(
-            //             img.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Width),
-            //             img.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Height),
-            //             img.Dictionary.GetRequiredValue<PdfNumber>(PdfName.BitsPerComponent),
-            //             img.Contents.GetEncodedData());
             case "/DCTDecode":
             case "/JPXDecode":
                 return Image.Load(img.Contents.GetEncodedData());
@@ -64,7 +125,6 @@ public static class ImageSharpExts
     private static Image GetFromDecoded(ParsingContext ctx, XObjImage image, Stream data)
     {
         // /Mask -> another image w/ /ImageMask true
-        // /Mask -> array before decode run, if all components match do not draw
         var isMasked = image.ImageMask.Value;
         var colorSpace = isMasked ? DeviceGray.Instance : ColorSpace.Get(ctx, image.ColorSpace);
         var mask = image.Mask;
@@ -106,6 +166,7 @@ public static class ImageSharpExts
         }
 
         return GetFromDecoded(
+            ctx,
             image.Width,
             image.Height,
             isMasked ? (image.BitsPerComponent ?? 1) : image.BitsPerComponent,
@@ -116,7 +177,8 @@ public static class ImageSharpExts
             colourMask);
     }
 
-    private static Image GetFromDecoded(int width, int height, int bpc, IColorSpace cs, List<float>? decode, Stream data, bool isMask, List<float>? mask)
+    private static Image GetFromDecoded(ParsingContext ctx, 
+        int width, int height, int bpc, IColorSpace cs, List<float>? decode, Stream data, bool isMask, List<float>? mask)
     {
         var cpp = cs.Components;
         var bpp = cpp * bpc;
@@ -160,8 +222,6 @@ public static class ImageSharpExts
             };
             var compBuffer = new byte[roundedComps];
             var img = new Image<Rgba32>(width, height);
-            var totalRead = 0;
-
             img.ProcessPixelRows(ra =>
             {
                 Span<byte> components = compBuffer;
@@ -177,10 +237,10 @@ public static class ImageSharpExts
                     {
                         total += read;
                     }
-                    totalRead += total;
                     if (total < buffer.Length)
                     {
-                        // todo warning ? see LrUpVnZ0SQZWkawizVTIwQ
+                        ctx.Error($"Image data ended before filling image, row {y+1}, {total} bytes read out of {buffer.Length} expected.");
+                        // see LrUpVnZ0SQZWkawizVTIwQ
                         // may be normal for ccitt
                     }
 
@@ -236,7 +296,17 @@ public static class ImageSharpExts
                 }
                 for (int y = 0; y < height; y++)
                 {
-                    data.FillArray(buffer, buffer.Length);
+                    int total = 0;
+                    int read = 0;
+                    while ((read = data.Read(buffer, total, buffer.Length - total)) > 0)
+                    {
+                        total += read;
+                    }
+                    if (total < buffer.Length)
+                    {
+                        ctx.Error($"Image data ended before filling image, row {y + 1}, {total} bytes read out of {buffer.Length} expected.");
+                    }
+
                     ReadLine16bpc(buffer, compBuffer);
                     if (mask != null)
                     {
@@ -414,52 +484,5 @@ public static class ImageSharpExts
             var b2 = buffer[2 * i+1];
             components[pos++] = (ushort)((b1 << 8) | b2);
         }
-    }
-
-    private static Image GetCCTImage(int width, int height, int bpp, Stream data)
-    {
-        using var str = GetTiffStream(width, height, bpp, data);
-        return Image.Load(str, new TiffDecoder());
-    }
-
-    private static Stream GetTiffStream(int width, int height, int bpp, Stream image)
-    {
-        const short TIFF_BIGENDIAN = 0x4d4d;
-        const short TIFF_LITTLEENDIAN = 0x4949;
-
-        const int ifd_length = 10;
-        const int header_length = 10 + (ifd_length * 12 + 4);
-        var buffer = new MemoryStream(header_length + (int)image.Length);
-        // TIFF Header
-        buffer.Write(BitConverter.GetBytes(BitConverter.IsLittleEndian ? TIFF_LITTLEENDIAN : TIFF_BIGENDIAN), 0, 2); // tiff_magic (big/little endianness)
-        buffer.Write(BitConverter.GetBytes((uint)42), 0, 2);         // tiff_version
-        buffer.Write(BitConverter.GetBytes((uint)8), 0, 4);          // first_ifd (Image file directory) / offset
-        buffer.Write(BitConverter.GetBytes((uint)ifd_length), 0, 2); // ifd_length, number of tags (ifd entries)
-
-        // Dictionary should be in order based on the TiffTag value
-        WriteTiffTag(buffer, TiffTag.SUBFILETYPE, TiffType.LONG, 1, 0);
-        WriteTiffTag(buffer, TiffTag.IMAGEWIDTH, TiffType.LONG, 1, (uint)width);
-        WriteTiffTag(buffer, TiffTag.IMAGELENGTH, TiffType.LONG, 1, (uint)height);
-        WriteTiffTag(buffer, TiffTag.BITSPERSAMPLE, TiffType.SHORT, 1, (uint)bpp);
-        WriteTiffTag(buffer, TiffTag.COMPRESSION, TiffType.SHORT, 1, (uint)Compression.CCITTFAX4); // CCITT Group 4 fax encoding.
-        WriteTiffTag(buffer, TiffTag.PHOTOMETRIC, TiffType.SHORT, 1, 0); // WhiteIsZero
-        WriteTiffTag(buffer, TiffTag.STRIPOFFSETS, TiffType.LONG, 1, header_length);
-        WriteTiffTag(buffer, TiffTag.SAMPLESPERPIXEL, TiffType.SHORT, 1, 1);
-        WriteTiffTag(buffer, TiffTag.ROWSPERSTRIP, TiffType.LONG, 1, (uint)height);
-        WriteTiffTag(buffer, TiffTag.STRIPBYTECOUNTS, TiffType.LONG, 1, (uint)image.Length);
-
-        // Next IFD Offset
-        buffer.Write(BitConverter.GetBytes((uint)0), 0, 4);
-        image.CopyTo(buffer);
-        buffer.Seek(0, SeekOrigin.Begin);
-        return buffer;
-    }
-
-    private static void WriteTiffTag(Stream stream, TiffTag tag, TiffType type, uint count, uint value)
-    {
-        stream.Write(BitConverter.GetBytes((uint)tag), 0, 2);
-        stream.Write(BitConverter.GetBytes((uint)type), 0, 2);
-        stream.Write(BitConverter.GetBytes(count), 0, 4);
-        stream.Write(BitConverter.GetBytes(value), 0, 4);
     }
 }

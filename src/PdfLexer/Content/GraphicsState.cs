@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Content;
+using System.IO;
 using System.Numerics;
 
 namespace PdfLexer.Content
@@ -31,6 +32,17 @@ namespace PdfLexer.Content
         //  -sinq  cosq              tanb 1
         //  0      0                 0    0 
         //
+
+        public Matrix4x4 GetTranslation(Matrix4x4 desired)
+        {
+            Matrix4x4.Invert(CTM, out var iv);
+            return desired * iv;
+        }
+
+        public void Apply(Matrix4x4 cm)
+        {
+            CTM = cm * CTM;
+        }
 
     }
 }
@@ -72,6 +84,14 @@ namespace PdfLexer.Operators
                           (float)e, (float)f, 1f, 0f,
                           0f, 0f, 0f, 1f);
             state.CTM = val * state.CTM;
+        }
+
+        public static void WriteLn(Matrix4x4 ctm, Stream stream)
+        {
+            WriteLn(
+                (decimal)ctm.M11, (decimal)ctm.M12,
+                (decimal)ctm.M21, (decimal)ctm.M22,
+                (decimal)ctm.M31, (decimal)ctm.M32, stream);
         }
     }
 }

@@ -11,7 +11,7 @@ using Xunit;
 
 namespace PdfLexer.ImageTests
 {
-    public class ImageTests
+    public class ImageExtractTests
     {
         [Fact]
         public void It_Reads_8_bit_RGB_Large_Decode()
@@ -464,7 +464,7 @@ namespace PdfLexer.ImageTests
 
         }
 
-        private static bool RunCompare(Image<Bgra32> imgB, Image<Bgra32> imgC, string output, int threshhold)
+        public static bool RunCompare(Image<Bgra32> imgB, Image<Bgra32> imgC, string output, int threshhold)
         {
             var w1 = imgB.Width;
             var w2 = imgB.Width;

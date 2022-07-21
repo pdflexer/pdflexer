@@ -31,6 +31,9 @@ namespace PdfLexer.DOM.ColorSpaces
         void CopyRowToRBGA16Span(ReadOnlySpan<ushort> row, Span<ushort> output);
 
         bool IsDefaultDecode(int bpc, List<float> decode) { return false; }
+
+
+        (double x, double y, double z) GetXYZ(double[] compData) { return (0,0,0); }
     }
 
 }

@@ -85,7 +85,7 @@ namespace PdfLexer.Parsers
         public IReadOnlyList<string> ParsingErrors => Errors;
 
         private int errors = 0;
-        internal void Error(string info)
+        public void Error(string info)
         {
             if (Options.ThrowOnErrors)
             {
@@ -168,6 +168,9 @@ namespace PdfLexer.Parsers
                     case PdfObjectType.DictionaryObj:
                         var dict = (PdfDictionary)value;
                         return !dict.IsModified;
+                    case PdfObjectType.StreamObj:
+                        var str = (PdfStream)value;
+                        return !str.IsModified;
                 }
                 return true;
             }

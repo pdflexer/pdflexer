@@ -28,6 +28,10 @@ namespace PdfLexer.DOM
         public static implicit operator PdfPage(PdfDictionary dict) => new PdfPage(dict);
         public static implicit operator PdfDictionary(PdfPage page) => page.Dictionary;
 
+
+        public PdfDictionary Resources { 
+            get => Dictionary.GetOrCreateValue<PdfDictionary>(PdfName.Resources);
+            set => Dictionary[PdfName.Resources] = value; }
         public PdfRectangle MediaBox { get => Dictionary.GetOrCreateValue<PdfArray>(PdfName.MediaBox); set => Dictionary[PdfName.MediaBox] = value.Array; }
         public PdfRectangle CropBox { get => GetWithDefault(PdfName.CropBox, PdfName.MediaBox); set => Dictionary[PdfName.CropBox] = value.Array; }
         public PdfRectangle BleedBox { get => GetWithDefault(PdfName.BleedBox, PdfName.CropBox); set => Dictionary[PdfName.BleedBox] = value.Array; }
