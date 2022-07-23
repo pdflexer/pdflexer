@@ -1,4 +1,5 @@
 ﻿using PdfLexer.DOM;
+using PdfLexer.Fonts;
 using PdfLexer.Lexing;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
@@ -20,7 +21,7 @@ namespace PdfLexer.Content
         {
             Context = ctx;
             Scanner = new PageContentScanner(ctx, page, true);
-            TextState = new TextState();
+            TextState = new TextState(ctx, page.Get<PdfDictionary>(PdfName.Resources));
             GraphicsState = new GraphicsState();
             CurrentTextPos = 0;
             ReadState = TextReadState.Normal;
@@ -49,6 +50,8 @@ namespace PdfLexer.Content
                         return false;
                     case PdfOperatorType.BT:
                         ReadState = TextReadState.ReadingText;
+                        TextState.Apply(BT_Op.Value);
+                        TextState.FormResources = Scanner.CurrentForm?.Get<PdfDictionary>(PdfName.Resources);
                         Scanner.SkipCurrent();
                         // todo reset text state
                         continue;
@@ -63,6 +66,7 @@ namespace PdfLexer.Content
                         {
                             gso.Apply(ref GraphicsState);
                         }
+                        TextState.CTM = GraphicsState.CTM;
                         Scanner.SkipCurrent();
                         continue;
                 }
@@ -164,10 +168,19 @@ namespace PdfLexer.Content
                 if (CurrentGlyph.Shift != 0)
                 {
                     TextState.ApplyShift(CurrentGlyph);
-                }
-
-                if (CurrentGlyph.Glyph != null)
+                } else if (CurrentGlyph.Glyph != null)
                 {
+                    // special not def handling if char is wordspace
+                    if (CurrentGlyph.Glyph.Char == '\u0000')
+                    {
+                        if (CurrentGlyph.Glyph.IsWordSpace)
+                        {
+                            CurrentGlyph.Glyph.Char = ' ';
+                        } else
+                        {
+                            continue;
+                        }
+                    }
                     Glyph = CurrentGlyph.Glyph;
                     return true;
                 }

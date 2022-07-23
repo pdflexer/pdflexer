@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.IO;
 using PdfLexer.Filters;
+using PdfLexer.Fonts;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
 using PdfLexer.Parsers.Nested;
@@ -175,6 +176,14 @@ namespace PdfLexer.Parsers
                 return true;
             }
             return true;
+        }
+
+
+        internal IReadableFont GetFont(IPdfObject obj)
+        {
+            var dict = obj.GetAs<PdfDictionary>();
+            // TODO type check
+            return Standard14Font.Create(dict);
         }
 
         internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)

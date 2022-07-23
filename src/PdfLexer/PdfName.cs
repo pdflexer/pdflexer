@@ -11,8 +11,8 @@ namespace PdfLexer
     /// </summary>
     public class PdfName : PdfObject, IEquatable<PdfName>
     {
-        internal ulong CacheValue {get;set;}
-        internal bool? NeedsEscaping { get;} 
+        internal ulong CacheValue { get; set; }
+        internal bool? NeedsEscaping { get; }
         /// <summary>
         /// PdfName CTOR
         /// </summary>
@@ -65,6 +65,7 @@ namespace PdfLexer
         public static readonly PdfName Root = new PdfName("/Root", false);
         public static readonly PdfName Pages = new PdfName("/Pages", false);
         public static readonly PdfName Page = new PdfName("/Page", false);
+        public static readonly PdfName TYPE = new PdfName("/Type", false);
         public static readonly PdfName TypeName = new PdfName("/Type", false);
         public static readonly PdfName Count = new PdfName("/Count", false);
         public static readonly PdfName Kids = new PdfName("/Kids", false);
@@ -110,8 +111,19 @@ namespace PdfLexer
 
         public static readonly PdfName Widths = new PdfName("/Widths", false);
         public static readonly PdfName FontName = new PdfName("/FontName", false);
+        public static readonly PdfName FontFamily = new PdfName("/FontFamily", false);
+        public static readonly PdfName FontWeight = new PdfName("/FontWeight", false);
+        public static readonly PdfName Leading = new PdfName("/Leading", false);
+        public static readonly PdfName StemV = new PdfName("/StemV", false);
+
+        public static readonly PdfName StemH = new PdfName("/StemH", false);
+        public static readonly PdfName MissingWidth = new PdfName("/MissingWidth", false);
+        public static readonly PdfName CharSet = new PdfName("/CharSet", false);
+        
+
         public static readonly PdfName FontBBox = new PdfName("/FontBBox", false);
         public static readonly PdfName Type0 = new PdfName("/Type0", false);
+        public static readonly PdfName Type1 = new PdfName("/Type1", false);
         public static readonly PdfName Type3 = new PdfName("/Type3", false);
         public static readonly PdfName DescendantFonts = new PdfName("/DescendantFonts", false);
         public static readonly PdfName BaseFont = new PdfName("/BaseFont", false);
@@ -129,8 +141,13 @@ namespace PdfLexer
         public static readonly PdfName Flags = new PdfName("/Flags", false);
         public static readonly PdfName ItalicAngle = new PdfName("/ItalicAngle", false);
 
+        public static readonly PdfName FirstChar = new PdfName("/FirstChar", false);
+        public static readonly PdfName LastChar = new PdfName("/LastChar", false);
+        public static readonly PdfName FontDescriptor = new PdfName("/FontDescriptor", false);
         public static readonly PdfName Encoding = new PdfName("/Encoding", false);
-
+        public static readonly PdfName BaseEncoding = new PdfName("/BaseEncoding", false);
+        public static readonly PdfName ToUnicode = new PdfName("/ToUnicode", false);
+        public static readonly PdfName Differences = new PdfName("/Differences", false);
 
         public static readonly PdfName DeviceGray = new PdfName("/DeviceGray", false);
         public static readonly PdfName DeviceRGB = new PdfName("/DeviceRGB", false);
@@ -163,11 +180,12 @@ namespace PdfLexer
             if (name[0] == '/')
             {
                 return new PdfName(name);
-            } else
-            {
-                return new PdfName("/"+name);
             }
-            
+            else
+            {
+                return new PdfName("/" + name);
+            }
+
         }
 
         public override string ToString()

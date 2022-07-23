@@ -4,10 +4,10 @@ using System.Text;
 
 namespace PdfLexer.DOM
 {
-    public class XObjectForm
+    public class XObjForm
     {
         public PdfDictionary Dictionary { get; }
-        public XObjectForm(PdfDictionary dict)
+        public XObjForm(PdfDictionary dict)
         {
             Dictionary = dict;
         }

@@ -187,7 +187,7 @@ namespace PdfLexer.Content
         public ContentWriter RotateAt(double angle, double x, double y)
         {
             if (scale != 1) { x *= scale; y *= scale; }
-            var rad = (angle * Math.PI) / 180;
+            var rad = (angle * Math.PI) / 180.0;
             var cos = Math.Cos(rad);
             var sin = Math.Sin(rad);
 

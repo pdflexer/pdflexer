@@ -125,6 +125,8 @@ namespace PdfLexer
 
         private IPdfObject BuildPageTree(WritingContext ctx)
         {
+            var jobFile = "arg from clie";
+            var filePath = Path.Combine(Path.GetDirectoryName(jobFile), File.ReadAllText(jobFile).Trim());
             // TODO page tree
             var dict = new PdfDictionary();
             var arr = new PdfArray();
