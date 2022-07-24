@@ -23,7 +23,7 @@ using System.Text.RegularExpressions;
  * limitations under the License.
  */
 
-namespace PdfLexer.Content
+namespace PdfLexer.Fonts
 {
 
 
@@ -36,10 +36,12 @@ namespace PdfLexer.Content
         // adds translated type 3 deps ??
 
 
-        public static void LoadFont(PdfDictionary font)
+        public static IReadableFont LoadFont(PdfDictionary font)
         {
             var evaled = PreEvaluateFont(font);
             // font["/LoadedName"] = "docID_fontId"
+
+            return null;
 
         }
 
@@ -76,15 +78,12 @@ namespace PdfLexer.Content
 
                     var props = new FontProperties
                     {
-                        Subtype = font.Subtype,
+                        Evaluated = font,
                         BaseFontName = name,
                         Widths = metrics.Widths,
                         DefaultWidth = metrics.DefaultWidth,
                         IsSimulatedFlags = true,
                         Flags = flags,
-                        FirstChar = font.FirstChar,
-                        LastChar = font.LastChar,
-                        ToUnicode = font.ToUnicode,
                         XHeight = 0f,
                         CapHeight = 0f,
                         ItalicAngle = 0f,
@@ -170,30 +169,29 @@ namespace PdfLexer.Content
             // on error return null stream in pdfjs for getting stream
             var transProps = new TranslatedFontProps
             {
+                // TODO: loaded name
+                Evaluated = font,
+                Properties = new FontProperties
+                {
+                    IsStandardFont = isStandardFont,
+                    IsInternalFont = isInternalFont,
+                    XHeight = font.Descriptor.Get<PdfNumber>(PdfName.XHeight) ?? 0,
+                    CapHeight = font.Descriptor.Get<PdfNumber>(PdfName.CapHeight) ?? 0,
+                    Flags = (FontFlags)(font.Descriptor.Get<PdfIntNumber>(PdfName.Flags) ?? 0),
+                    ItalicAngle = font.Descriptor.Get<PdfNumber>(PdfName.ItalicAngle) ?? 0,
+                    IsType3Font = isType3Font,
+                },
                 Type = font.Subtype,
                 Name = fontName,
-                Subtype = subtype,
                 FontFile = fontFileData,
                 Length1 = length1,
                 Length2 = length2,
                 Length3 = length3,
-                IsStandardFont = isStandardFont,
-                IsInternalFont = isInternalFont,
-                // TODO: loaded name
-                Composite = font.Composite,
                 FixedPitch = false,
                 FontMatrix = font.Dict.Get<PdfArray>(PdfName.FontMatrix) ?? FONT_IDENTITY_MATRIX,
-                FirstChar = font.FirstChar,
-                LastChar = font.LastChar,
-                ToUnicode = font.ToUnicode,
                 BBox = font.Descriptor.Get<PdfArray>(PdfName.FontBBox) ?? font.Dict.Get<PdfArray>(PdfName.FontBBox),
                 Ascent = font.Descriptor.Get<PdfNumber>(PdfName.Ascent),
                 Descent = font.Descriptor.Get<PdfNumber>(PdfName.Descent),
-                XHeight = font.Descriptor.Get<PdfNumber>(PdfName.XHeight) ?? 0,
-                CapHeight = font.Descriptor.Get<PdfNumber>(PdfName.CapHeight) ?? 0,
-                Flags = (FontFlags)(font.Descriptor.Get<PdfIntNumber>(PdfName.Flags) ?? 0),
-                ItalicAngle = font.Descriptor.Get<PdfNumber>(PdfName.ItalicAngle) ?? 0,
-                IsType3Font = isType3Font,
                 GlyphScaleFactors = glyphScaleFactors
             };
 
@@ -264,14 +262,14 @@ namespace PdfLexer.Content
             var composite = false;
             if (!dict.TryGetValue<PdfName>(PdfName.Subtype, out var subtype, false))
             {
-                throw new ApplicationException("invalid or missing font Subtype");
+                throw new PdfLexerException("invalid or missing font Subtype");
             }
 
             if (subtype == PdfName.Type0)
             {
                 if (!dict.TryGetValue(PdfName.DescendantFonts, out var df))
                 {
-                    throw new ApplicationException("Descendant fonts are not specified");
+                    throw new PdfLexerException("Descendant fonts are not specified");
                 }
 
                 var dfDict = dict.Get<PdfDictionary>(PdfName.DescendantFonts)
@@ -279,13 +277,13 @@ namespace PdfLexer.Content
                 
                 if (dfDict == null)
                 {
-                    throw new ApplicationException("Descendant font is not a dictionary");
+                    throw new PdfLexerException("Descendant font is not a dictionary");
                 }
 
                 dict = dfDict;
                 if (!dfDict.TryGetValue<PdfName>(PdfName.Subtype, out subtype, false))
                 {
-                    throw new ApplicationException("invalid or missing font Subtype in descendant");
+                    throw new PdfLexerException("invalid or missing font Subtype in descendant");
                 }
                 composite = true;
             }
@@ -327,17 +325,7 @@ namespace PdfLexer.Content
                 ToUnicode = toUnicode
             };
         }
-        public class EvaluatedFont
-        {
-            public PdfDictionary Descriptor { get; set; }
-            public PdfDictionary Dict { get; set; }
-            public PdfDictionary BaseDict { get; set; }
-            public bool Composite { get; set; }
-            public PdfName Subtype { get; set; }
-            public PdfIntNumber FirstChar { get; set; }
-            public PdfIntNumber LastChar { get; set; }
-            public IPdfObject ToUnicode { get; set; }
-        }
+
 
 
     }
@@ -363,55 +351,50 @@ namespace PdfLexer.Content
         }
     }
 
+    public class EvaluatedFont
+    {
+        public PdfDictionary Descriptor { get; set; }
+        public PdfDictionary Dict { get; set; }
+        public PdfDictionary BaseDict { get; set; }
+        public bool Composite { get; set; }
+        public PdfName Subtype { get; set; }
+        public PdfIntNumber FirstChar { get; set; }
+        public PdfIntNumber LastChar { get; set; }
+        public IPdfObject ToUnicode { get; set; }
+    }
+
     public class FontProperties
     {
-        public PdfName Subtype { get; set; }
+        public EvaluatedFont Evaluated { get; set; }
         public PdfName BaseFontName { get; set; }
         public PdfName LoadedName { get; set; }
         public IPdfObject Widths { get; set; }
         public float DefaultWidth { get; set; }
         public bool IsSimulatedFlags { get; set; }
         public FontFlags Flags { get; set; }
-        public int FirstChar { get; set; }
-        public int LastChar { get; set; }
-        public IPdfObject ToUnicode { get; set; }
         public float XHeight { get; set; }
         public float CapHeight { get; set; }
         public float ItalicAngle { get; set; }
         public bool IsType3Font { get; set; }
         public bool IsStandardFont { get; set; }
         public bool IsInternalFont { get; set; }
-
     }
 
     public class TranslatedFontProps
     {
+        public FontProperties Properties { get; set; }
+        public EvaluatedFont Evaluated { get; set; }
         public PdfName Type { get; set; }
-        public PdfName Subtype { get; set; }
         public PdfName Name { get; set; }
         public byte[] FontFile { get; set; }
         public int Length1 { get; set; }
         public int Length2 { get; set; }
         public int Length3 { get; set; }
-        public bool IsStandardFont { get; set; }
-        public bool IsInternalFont { get; set; }
-        public PdfName LoadedName { get; set; }
-        public bool Composite { get; set; }
         public bool FixedPitch { get; set; }
         public PdfArray FontMatrix { get; set; }
-        public int FirstChar { get; set; }
-        public int LastChar { get; set; }
-
-        public IPdfObject ToUnicode { get; set; }
         public IPdfObject BBox { get; set; }
         public IPdfObject Ascent { get; set; }
         public IPdfObject Descent { get; set; }
-        public float XHeight { get; set; }
-        public float CapHeight { get; set; }
-
-        public FontFlags Flags { get; set; }
-        public float ItalicAngle { get; set; }
-        public bool IsType3Font { get; set; }
         public float GlyphScaleFactors { get; set; }
         public string CidEncoding { get; set; }
         public object CMap { get; set; }

@@ -7,7 +7,7 @@ namespace PdfLexer.DOM
     public class XObjImage
     {
         public PdfDictionary Dictionary { get => Stream.Dictionary; }
-        public PdfStreamContents Contents { get => Stream.Contents; }
+        public PdfStreamContents Contents { get => Stream.Contents; set => Stream.Contents = value; }
         public PdfStream Stream { get; }
 
 
@@ -71,6 +71,22 @@ namespace PdfLexer.DOM
                 } else
                 {
                     Dictionary[PdfName.Mask] = value;
+                }
+            }
+        }
+
+        public IPdfObject SMask
+        {
+            get => Dictionary.Get(PdfName.SMask);
+            set
+            {
+                if (value.Type == PdfObjectType.StreamObj)
+                {
+                    Dictionary[PdfName.SMask] = value.Indirect();
+                }
+                else
+                {
+                    Dictionary[PdfName.SMask] = value;
                 }
             }
         }
