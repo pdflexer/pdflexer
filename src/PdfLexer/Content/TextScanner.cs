@@ -146,6 +146,16 @@ namespace PdfLexer.Content
             ReadingOp
         }
 
+        public (float x, float y) GetCurrentTextPos()
+        {
+            return (TextState.TextRenderingMatrix.M31, TextState.TextRenderingMatrix.M32);
+        }
+
+        public (float llx, float lly, float urx, float ury) GetCurrentBoundingBox()
+        {
+            return TextState.GetBoundingBox(Glyph);
+        }
+
         private bool ReadCurrent()
         {
             if (CurrentGlyph.Glyph != null)
@@ -171,7 +181,7 @@ namespace PdfLexer.Content
                 } else if (CurrentGlyph.Glyph != null)
                 {
                     // special not def handling if char is wordspace
-                    if (CurrentGlyph.Glyph.Char == '\u0000')
+                    if (CurrentGlyph.Glyph.Undefined)
                     {
                         if (CurrentGlyph.Glyph.IsWordSpace)
                         {

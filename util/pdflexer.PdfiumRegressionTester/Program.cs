@@ -1,4 +1,5 @@
-﻿using pdflexer.PdfiumRegressionTester;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using pdflexer.PdfiumRegressionTester;
 using PdfLexer;
 using PdfLexer.Content;
 using PdfLexer.DOM;
@@ -166,6 +167,15 @@ async Task<int> RunBase(string type, string pdfRoot, string[] pdfPaths, string o
             return RunMergeTests(pdfPaths, output) ? 0 : 1;
         case "REBUILD":
             return RunRebuildTests(pdfPaths, output, strict) ? 0 : 1;
+        case "TEXT":
+            var txt = new TextTests(NullLogger.Instance);
+            var success = true;
+            foreach (var item in pdfPaths)
+            {
+                var r = txt.RunOne(item, output);
+                if (!r) { success = false; }
+            }
+            return success ? 0 : 1;
         default:
             Console.WriteLine("Unknown test type: " + type);
             return 1;

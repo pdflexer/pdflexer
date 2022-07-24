@@ -81,6 +81,40 @@ namespace PdfLexer.Content
             return this;
         }
 
+        public ContentWriter Stroke()
+        {
+            S_Op.WriteLn(Stream);
+            return this;
+        }
+
+        public ContentWriter SetStrokingRGB(int r, int g, int b)
+        {
+            RG_Op.WriteLn((r & 0xFF)/255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, Stream);
+            return this;
+        }
+
+        public ContentWriter Circle(decimal x, decimal y, decimal r) => Ellipse(x, y, r, r);
+
+        public ContentWriter Ellipse(decimal x, decimal y, decimal r1, decimal r2)
+        {
+            // based on http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas/2173084#2173084
+            x -= r1;
+            y -= r2;
+            var ox = r1 * KAPPA;
+            var oy = r2 * KAPPA;
+            var xe = x + r1 * 2;
+            var ye = y + r2 * 2;
+            var xm = x + r1;
+            var ym = y + r2;
+
+            MoveTo(x, ym);
+            BezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
+            BezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
+            BezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
+            BezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
+            return this.ClosePath();
+        }
+
         public ContentWriter LineWidth(decimal w)
         {
             if (scale != 1) { w *=  (decimal)scale; }

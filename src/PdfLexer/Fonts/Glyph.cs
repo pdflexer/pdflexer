@@ -14,6 +14,7 @@ namespace PdfLexer.Fonts
 
         public decimal[] BBox { get; internal set; }
 
+        public bool Undefined { get; set; }
         // originalCharCode,
         // fontChar,
         // unicode,

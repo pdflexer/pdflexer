@@ -20,7 +20,7 @@ namespace PdfLexer.Content
                 UpdateTRM();
             } 
         }
-        private float __textHScale;
+        private float __textHScale = 1;
         public float TextHScale { 
             get => __textHScale;
             internal set
@@ -74,14 +74,13 @@ namespace PdfLexer.Content
             }
         }
 
-        Matrix4x4 TextRenderingMatrix { get; set; } // todo
-                                                    //      Trm = [ T_fs*T_h  0       0 ] x Tm x CTM
-                                                    //              0         T_fs    0
-                                                    //              0         T_rise  1
+        public Matrix4x4 TextRenderingMatrix { get; private set; } 
+        //      Trm = [ T_fs*T_h  0       0 ] x Tm x CTM
+        //              0         T_fs    0
+        //              0         T_rise  1
 
         private void UpdateTRM()
         {
-            return; // not used for now
             TextRenderingMatrix = new Matrix4x4(
               FontSize*TextHScale, 0,        0, 0,
               0,                   FontSize, 0, 0,
@@ -100,6 +99,7 @@ namespace PdfLexer.Content
             PageResources = pageResources;
             TextMatrix = Matrix4x4.Identity;
             TextLineMatrix = Matrix4x4.Identity;
+            CTM = Matrix4x4.Identity;
         }
 
         public void Apply(BT_Op op)
@@ -157,11 +157,11 @@ namespace PdfLexer.Content
             float ty = 0f;
             if (!Font.IsVertical)
             {
-                tx = (-tj / 1000) * FontSize * TextHScale;
+                tx = (-tj / 1000.0f) * FontSize * TextHScale; // TODO 1000 should be from fontmatrix?
             }
             else
             {
-                var s = (-tj / 1000) * FontSize;
+                var s = (-tj / 1000.0f) * FontSize;
                 ty = s;
             }
 
@@ -206,6 +206,23 @@ namespace PdfLexer.Content
             }
 
             ShiftTextMatrix(tx, ty);
+        }
+
+        public (float llx, float lly, float urx, float ury) GetBoundingBox(Glyph glyph)
+        {
+            var bl = new Matrix4x4(
+                          1f, 0f, 0f, 0f,
+                          0f, 1f, 0f, 0f,
+                          (float)glyph.BBox[0], (float)glyph.BBox[1], 1f, 0f,
+                          0f, 0f, 0f, 1f) * TextRenderingMatrix;
+
+            var tr = new Matrix4x4(
+              1f, 0f, 0f, 0f,
+              0f, 1f, 0f, 0f,
+              (float)glyph.BBox[2], (float)glyph.BBox[3], 1f, 0f,
+              0f, 0f, 0f, 1f) * TextRenderingMatrix;
+
+            return (bl.M31, bl.M32, tr.M31, tr.M32);
         }
 
         private void ShiftTextMatrix(float tx, float ty)
@@ -336,7 +353,7 @@ namespace PdfLexer.Content
 
         public void Apply(Tz_Op op)
         {
-            TextHScale = (float)op.scale;
+            TextHScale = (float)op.scale/100.0F;
         }
 
         public void Apply(gs_Op op)

@@ -52,6 +52,24 @@ namespace PdfLexer.DOM
         public PageTreeNode Parent { get => Dictionary.Get<PdfDictionary>(PdfName.Parent); set => Dictionary[PdfName.Parent] = value.Dictionary.Indirect(); }
 
 
+        public IEnumerable<PdfStream> Contents { get
+            {
+                var cnt = Dictionary.Get(PdfName.Contents).Resolve();
+                if (cnt.Type == PdfObjectType.ArrayObj)
+                {
+                    var arr = (PdfArray)cnt;
+                    foreach (var item in arr)
+                    {
+                        yield return item.GetAs<PdfStream>();
+                    }
+                } else
+                {
+                    yield return cnt.GetAs<PdfStream>();
+                }
+                    
+            }
+        }
+
         public void AddXObj(PdfName nm, IPdfObject xobj)
         {
             Dictionary.GetOrCreateValue<PdfDictionary>(PdfName.Resources).GetOrCreateValue<PdfDictionary>(PdfName.XObject)[nm] = xobj.Indirect();

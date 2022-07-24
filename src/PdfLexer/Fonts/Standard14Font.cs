@@ -62,6 +62,7 @@ namespace PdfLexer.Fonts
             }
             var glyphs = fm.GetStandardEncoding();
             var notdef = fm.GetGlyph(".notdef") ?? new Glyph { Char = '\u0000', IsWordSpace = false, BBox = new decimal [] { 0m, 0m, 0m, 0m } };
+            notdef.Undefined = true;
             if (t1.FontDescriptor?.NativeObject?.ContainsKey(PdfName.MissingWidth) ?? false)
             {
                 notdef = notdef.Clone();
@@ -79,13 +80,15 @@ namespace PdfLexer.Fonts
                         continue;
                     }
                     var g = fm.GetGlyph(diff.name.Value.Substring(1));
-                    g ??= notdef;
-                    if (diff.code == 32 && g.IsWordSpace == false)
+                    if (g != null) // TODO how to handle not found, leave as is or notdef it?
                     {
-                        g = g.Clone();
-                        g.IsWordSpace = true;
+                        if (diff.code == 32 && g.IsWordSpace == false)
+                        {
+                            g = g.Clone();
+                            g.IsWordSpace = true;
+                        }
+                        glyphs[diff.code] = g;
                     }
-                    glyphs[diff.code] = g;
                 }
             }
 
