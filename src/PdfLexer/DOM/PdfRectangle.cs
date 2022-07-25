@@ -46,6 +46,16 @@ namespace PdfLexer.DOM
             set => SetValue(3, value);
         }
 
+        public PdfNumber Width
+        {
+            get => URx - LLx;
+        }
+
+        public PdfNumber Height
+        {
+            get => URy - LLy;
+        }
+
         private PdfNumber GetValue(int i)
         {
             if (Array[i] is PdfNumber n)
@@ -66,5 +76,7 @@ namespace PdfLexer.DOM
         public static implicit operator PdfArray(PdfRectangle rect) => rect.Array;
 
         public static PdfRectangle Zeros { get; } = new PdfRectangle();
+
+        public PdfRectangle CloneShallow() => Array.CloneShallow();
     }
 }

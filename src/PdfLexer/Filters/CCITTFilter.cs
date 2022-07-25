@@ -5,7 +5,8 @@ namespace PdfLexer.Filters
 {
     public class CCITTFilter : IDecoder
     {
-        private readonly ParsingContext _ctx;
+        private readonly ParsingContext? _ctx;
+        public static CCITTFilter Instance { get; } = new CCITTFilter(null);
         public CCITTFilter(ParsingContext ctx)
         {
             _ctx = ctx;
@@ -469,7 +470,7 @@ namespace PdfLexer.Filters
   new int[] {2, 2}, new int[] {2, 2}, new int[] {2, 2}, new int[] {2, 2},
   new int[] {2, 2}, new int[] {2, 2}, new int[] {2, 2}, new int[] {2, 2}
 };
-        private readonly ParsingContext ctx;
+        private readonly ParsingContext? ctx;
         private int encoding;
         private bool eoline;
         private bool byteAlign;
@@ -490,7 +491,7 @@ namespace PdfLexer.Filters
         private int row;
 
         public CCITTStream(int? k, bool? endofLine, bool? endOfBlock, bool? blackIs1, bool? encodedByteAlign, int? columns,
-            int? rows, Stream inner, ParsingContext ctx) : base(inner)
+            int? rows, Stream inner, ParsingContext? ctx) : base(inner)
         {
             this.ctx = ctx;
             encoding = k ?? 0;
@@ -761,7 +762,7 @@ namespace PdfLexer.Filters
                                 this.eof = true;
                                 break;
                             default:
-                                ctx.Error("bad 2d code in ccitt");
+                                ctx?.Error("bad 2d code in ccitt");
                                 this._addPixels(columns, 0);
                                 this.err = true;
                                 break;
@@ -860,7 +861,7 @@ namespace PdfLexer.Filters
                                 code1 = this._lookBits(12);
                                 if (code1 != 1)
                                 {
-                                    ctx.Error("bad rtc code in ccitt: " + code1);
+                                    ctx?.Error("bad rtc code in ccitt: " + code1);
                                 }
                                 this._eatBits(12);
                                 if (this.encoding > 0)
@@ -985,7 +986,7 @@ namespace PdfLexer.Filters
             {
                 if (a1 > this.columns)
                 {
-                    ctx.Error("row is wrong length in ccitt");
+                    ctx?.Error("row is wrong length in ccitt");
                     this.err = true;
                     a1 = this.columns;
                 }
@@ -1011,7 +1012,7 @@ namespace PdfLexer.Filters
             {
                 if (a1 > this.columns)
                 {
-                    ctx.Error("row is wrong length in ccitt");
+                    ctx?.Error("row is wrong length in ccitt");
                     this.err = true;
                     a1 = this.columns;
                 }
@@ -1026,7 +1027,7 @@ namespace PdfLexer.Filters
             {
                 if (a1 < 0)
                 {
-                    ctx.Error("invalid code in ccitt a1: " + a1);
+                    ctx?.Error("invalid code in ccitt a1: " + a1);
                     this.err = true;
                     a1 = 0;
                 }
@@ -1103,7 +1104,7 @@ namespace PdfLexer.Filters
                     return result.Item2;
                 }
             }
-            ctx.Error("Bad two dim code in ccitt");
+            ctx?.Error("Bad two dim code in ccitt");
             return ccittEOF;
         }
 
@@ -1152,7 +1153,7 @@ namespace PdfLexer.Filters
                     return result.Item2;
                 }
             }
-            ctx.Error("bad white code in ccitt");
+            ctx?.Error("bad white code in ccitt");
             this._eatBits(1);
             return 1;
         }
@@ -1211,7 +1212,7 @@ namespace PdfLexer.Filters
                 }
             }
 
-            ctx.Error("bad black code in ccitt");
+            ctx?.Error("bad black code in ccitt");
             this._eatBits(1);
             return 1;
         }

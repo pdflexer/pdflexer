@@ -107,6 +107,9 @@ namespace PdfLexer
         public static readonly PdfName ColorSpace = new PdfName("/ColorSpace", false);
         public static readonly PdfName ExtGState = new PdfName("/ExtGState", false);
         public static readonly PdfName Form = new PdfName("/Form", false);
+        public static readonly PdfName BBox = new PdfName("/BBox", false);
+
+        
 
 
         public static readonly PdfName Widths = new PdfName("/Widths", false);

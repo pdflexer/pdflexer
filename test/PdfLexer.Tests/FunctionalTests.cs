@@ -290,7 +290,7 @@ namespace PdfLexer.Tests
             var str = pg.Dictionary.GetRequiredValue<PdfStream>(PdfName.Contents);
             var copy = pg.Dictionary.CloneShallow();
             pg.Dictionary.Remove(new PdfName("Annots"));
-            var decoded = str.Contents.GetDecodedData(doc.Context);
+            var decoded = str.Contents.GetDecodedData();
             var strCopy = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(decoded));
             copy[PdfName.Contents] = PdfIndirectRef.Create(strCopy);
             doc2.Pages.Add(copy);
@@ -396,7 +396,7 @@ namespace PdfLexer.Tests
             {
                 case PdfStream strObj:
                     {
-                        using var str = strObj.Contents.GetDecodedStream(doc.Context);
+                        using var str = strObj.Contents.GetDecodedStream();
                         var msc = new MemoryStream();
                         str.CopyTo(msc);
                         newData = CheckStreamData(msc.ToArray());
@@ -420,7 +420,8 @@ namespace PdfLexer.Tests
                     var ms = new MemoryStream();
                     foreach (var str in streams)
                     {
-                        str.Contents.GetDecodedStream(doc.Context).CopyTo(ms);
+                        using var s = str.Contents.GetDecodedStream();
+                        s.CopyTo(ms);
                         ms.WriteByte((byte)' ');
                     }
                     newData = CheckStreamData(ms.ToArray());

@@ -53,11 +53,39 @@ namespace PdfLexer.Fonts
             }
 
             var mw = t1.FontDescriptor?.MissingWidth ?? 0;
+
             FontGlyphMetrics fm = null;
             switch (t1.BaseFont.Value)
             {
                 case "/Times-Roman":
-                    fm = new FontGlyphMetrics(TimeRomanMetrics.AllGlyphs, TimeRomanMetrics.DefaultEncoding);
+                    // complete hack for now
+                    var rg = TimesRoman.GetGlyphs();
+                    var lu = new Dictionary<char, string>();
+                    foreach (var item in GlyphNames.Lookup)
+                    {
+                        lu[item.Value] = item.Key;
+                    }
+                    var used = new Dictionary<ushort, Glyph>();
+                    foreach (var item in rg)
+                    {
+                        used[item.CodePoint] = item;
+                    }
+                    var all = new Dictionary<string, Glyph>();
+                    foreach (var item in rg)
+                    {
+                        all[lu[item.Char]] = item;
+                    }
+                    var de = new Glyph[256];
+                    for (var i=0;i<256;i++)
+                    {
+                        if (used.TryGetValue((ushort)i, out var match)) {
+                            de[i] = match;
+                        } else
+                        {
+                            de[i] = null;
+                        }
+                    }
+                    fm = new FontGlyphMetrics(all, de);
                     break;
             }
             var glyphs = fm.GetStandardEncoding();

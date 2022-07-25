@@ -494,6 +494,7 @@ C -1 ; WX 500 ; N Euro ; B 0 0 0 0 ;";
                 g.w0 = (float)w;
                 g.IsWordSpace = cc == 32;
                 g.BBox = new decimal[4];
+
                 var b = segs[3].Trim().Split(' ');
                 g.BBox[0] = decimal.Parse(b[1]) / 1000m;
                 g.BBox[1] = decimal.Parse(b[2]) / 1000m;
@@ -502,6 +503,7 @@ C -1 ; WX 500 ; N Euro ; B 0 0 0 0 ;";
                 all[gn] = g;
                 if (cc > 0)
                 {
+                    g.CodePoint = (ushort)cc;
                     defNames[cc] = gn;
                     def[cc] = g;
                 }
@@ -514,6 +516,7 @@ C -1 ; WX 500 ; N Euro ; B 0 0 0 0 ;";
                 if (g == null) { continue; }
                 output.Append($"\t\tstatic Glyph {defNames[i]} = new Glyph {{ Char = (char){(int)(g.Char)}, w0 = {g.w0}F, ");
                 output.Append($"IsWordSpace = {g.IsWordSpace.ToString().ToLower()}, ");
+                output.Append($"CodePoint = {g.CodePoint}, ");
                 output.Append($"BBox = new decimal[] {{ {g.BBox[0].ToString()}m, {g.BBox[1].ToString()}m, {g.BBox[2].ToString()}m, {g.BBox[3].ToString()}m }}  }};\n");
             }
             output.Append("\t\tpublic static Glyph[] DefaultEncoding = new Glyph[] {\n");
@@ -522,6 +525,20 @@ C -1 ; WX 500 ; N Euro ; B 0 0 0 0 ;";
                 var g = def[i];
                 if (g == null) { output.Append($"\t\t\tnull,\n");  continue; }
                 output.Append($"\t\t\t{defNames[i]},\n");
+            }
+            output.Append("\t\t};\n");
+            output.Append("\t\tpublic static byte[] DefaultChars = new byte[] {\n");
+            var fastLookup = def.Select((c, i) => (c,i)).Where(x => x.c != null && x.c.Char < 255).OrderBy(x => (int)x.c.Char)
+                .ToDictionary(x=> (int)x.c.Char, v=> v.i);
+            for (var i = 0; i < 255; i++)
+            {
+                if (fastLookup.TryGetValue(i, out var g)) {
+                    
+                    output.Append($"\t\t\t0x{g:x2},\n");
+                } else
+                {
+                    output.Append($"\t\t\t0,\n");
+                }
             }
             output.Append("\t\t};\n");
             output.Append("\t\tpublic static Dictionary<string, Glyph> AllGlyphs = new Dictionary<string, Glyph> {\n");
@@ -536,9 +553,18 @@ C -1 ; WX 500 ; N Euro ; B 0 0 0 0 ;";
                     var g = kvp.Value;
                     txt = $"new Glyph {{ Char = (char){(int)(g.Char)}, w0 = {g.w0}F, ";
                     txt += $"IsWordSpace = {g.IsWordSpace.ToString().ToLower()}, ";
+                    txt += $"CodePoint = {g.CodePoint}, ";
                     txt += $"BBox = new decimal[] {{ {g.BBox[0].ToString()}m, {g.BBox[1].ToString()}m, {g.BBox[2].ToString()}m, {g.BBox[3].ToString()}m }}  }}";
                 }
                 output.Append($"\t\t\t[\"{kvp.Key}\"] = {txt},\n");
+            }
+            output.Append("\t\t};\n");
+            output.Append("\t\tpublic static Dictionary<char, byte> DefinedChars = new Dictionary<char, byte> {\n");
+            foreach (var g in def)
+            {
+                if (g == null) { continue; }
+                var c = (int)g.Char;
+                output.Append($"\t\t\t['\\u{c:x4}'] = 0x{g.CodePoint:x2},\n");
             }
             output.Append("\t\t};\n");
             output.Append("\t}\n");

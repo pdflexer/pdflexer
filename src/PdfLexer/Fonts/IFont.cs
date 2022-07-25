@@ -1,12 +1,14 @@
 ﻿using PdfLexer.DOM;
 using System;
+using System.Collections.Generic;
 
 namespace PdfLexer.Fonts
 {
     public interface IWritableFont
     {
-        PdfFont GetPdfFont();
-        double ConvertFromUnicode(ReadOnlySpan<char> word, Span<byte> content) { return 0; }
+        PdfDictionary GetPdfFont();
+        // double ConvertFromUnicode(ReadOnlySpan<char> word, Span<byte> content);
+        IEnumerable<(int ByteCount, double Width, double PrevKern)> ConvertFromUnicode(string text, int start, int length, byte[] buffer);
         bool SpaceIsWordSpace();
         // ascender?
         // descender?

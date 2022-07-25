@@ -56,7 +56,7 @@ namespace PdfLexer.DOM.ColorSpaces
             }
             else if (data.Type == PdfObjectType.StreamObj)
             {
-                lookup = ((PdfStream)data).Contents.GetDecodedData(ctx);
+                lookup = ((PdfStream)data).Contents.GetDecodedData();
             }
             else
             {

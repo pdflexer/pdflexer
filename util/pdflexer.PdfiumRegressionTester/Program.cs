@@ -207,7 +207,7 @@ void DumpRawPageContent(PdfDocument doc, int pg, Stream output)
                 var str = item.GetValue<PdfStream>(false);
                 if (str != null)
                 {
-                    using var wo = str.Contents.GetDecodedStream(doc.Context);
+                    using var wo = str.Contents.GetDecodedStream();
                     wo.CopyTo(output);
                     output.WriteByte((byte)'\n');
                 }
@@ -215,7 +215,7 @@ void DumpRawPageContent(PdfDocument doc, int pg, Stream output)
             break;
         case PdfStream stream:
             {
-                using var wo = stream.Contents.GetDecodedStream(doc.Context);
+                using var wo = stream.Contents.GetDecodedStream();
                 wo.CopyTo(output);
                 output.WriteByte((byte)'\n');
             }
@@ -315,10 +315,10 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
             try
             {
                 var opts = new ParsingOptions { MaxErrorRetention = 10 };
-                opts.ThrowOnErrors = strict && !errorInfo.Failure && errorInfo?.ErrCount == 0;
-                // using var fs = File.OpenRead(pdf);
-                // using var doc = PdfDocument.Open(fs, opts);
-                using var doc = PdfDocument.OpenMapped(pdf, opts);
+                opts.ThrowOnErrors = strict && !(errorInfo?.Failure ?? false) && errorInfo?.ErrCount == 0;
+                using var fs = File.OpenRead(pdf);
+                using var doc = PdfDocument.Open(fs, opts);
+                // using var doc = PdfDocument.OpenMapped(pdf, opts);
                 //using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), opts);
                 // for non compressed object strams
                 if (doc.Trailer.Get(PdfName.Encrypt) != null)
@@ -326,13 +326,15 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                     continue;
                 }
                 using var fo = File.Create(modified);
-                var sw = new StreamingWriter(fo, true, true);
+                using var sw = new StreamingWriter(fo);
                 foreach (var pg in doc.Pages)
                 {
                     var np = ReWriteStream(doc, pg);
                     sw.AddPage(np);
                 }
-                sw.Complete(doc.Trailer.CloneShallow(), doc.Catalog.CloneShallow());
+
+                sw.Complete(new PdfDictionary());
+                // sw.Complete(doc.Trailer.CloneShallow(), doc.Catalog.CloneShallow());
 
                 if (doc.Context.ErrorCount > 0)
                 {
@@ -467,6 +469,7 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
 static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
 {
     var scanner = new PageContentScanner(doc.Context, page);
+    var fl = new FlateWriter();
     var ms = new MemoryStream();
 
     while (scanner.Peek() != PdfOperatorType.EOC)
@@ -475,19 +478,17 @@ static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
         {
             op.Serialize(ms);
             ms.WriteByte((byte)'\n');
+            op.Serialize(fl.Stream);
+            fl.Stream.WriteByte((byte)'\n');
         }
         scanner.SkipCurrent();
     }
 
     page = page.Dictionary.CloneShallow();
-    var flate = new FlateFilter(doc.Context);
-    ms.Seek(0, SeekOrigin.Begin);
-    var df = flate.Encode(ms);
-    var ms2 = new MemoryStream((int)df.Data.Length);
-    df.Data.CopyTo(ms2);
-    var bac = new PdfByteArrayStreamContents(ms2.ToArray(), df.Filter, df.Params);
 
-    var updatedStr = new PdfStream(new PdfDictionary(), bac);
+    var dat = ms.ToArray();
+
+    var updatedStr = new PdfStream(new PdfDictionary(), fl.Complete());
     page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
     return page;
 }
@@ -503,7 +504,7 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
     var oc = 0;
 
     var scanner = new PageContentScanner(doc.Context, page, true);
-    var ms = new MemoryStream();
+    var fl = new FlateWriter();
 
     PdfDictionary currentForm = null;
     var fontReplacements = new Dictionary<PdfName, PdfName>();
@@ -517,8 +518,8 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
             if (scanner.CurrentForm == null)
             {
 
-                op.Serialize(ms);
-                ms.WriteByte((byte)'\n');
+                op.Serialize(fl);
+                fl.Stream.WriteByte((byte)'\n');
             } else
             {
                 if (!Object.ReferenceEquals(currentForm, scanner.CurrentForm))
@@ -541,24 +542,24 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
                                 currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.Font),
                                 fontReplacements);
 
-                            op.Serialize(ms);
-                            ms.WriteByte((byte)'\n');
+                            op.Serialize(fl);
+                            fl.Stream.WriteByte((byte)'\n');
                             break;
                         }
                     // gs
                     case PdfOperatorType.gs:
-                        op.Serialize(ms);
-                        ms.WriteByte((byte)'\n');
+                        op.Serialize(fl);
+                        fl.Stream.WriteByte((byte)'\n');
                         break;
                     // color state
                     case PdfOperatorType.CS:
-                        op.Serialize(ms);
-                        ms.WriteByte((byte)'\n');
+                        op.Serialize(fl);
+                        fl.Stream.WriteByte((byte)'\n');
                         break;
                     // color state
                     case PdfOperatorType.cs:
-                        op.Serialize(ms);
-                        ms.WriteByte((byte)'\n');
+                        op.Serialize(fl);
+                        fl.Stream.WriteByte((byte)'\n');
                         break;
                     // do
                     case PdfOperatorType.Do:
@@ -571,13 +572,13 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
                                 currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.XObject),
                                 xObjReplacements);
 
-                            op.Serialize(ms);
-                            ms.WriteByte((byte)'\n');
+                            op.Serialize(fl);
+                            fl.Stream.WriteByte((byte)'\n');
                             break;
                         }
                     default:
-                        op.Serialize(ms);
-                        ms.WriteByte((byte)'\n');
+                        op.Serialize(fl);
+                        fl.Stream.WriteByte((byte)'\n');
                         break;
                 }
             }
@@ -588,14 +589,8 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
     }
 
     page = page.Dictionary.CloneShallow();
-    var flate = new FlateFilter(doc.Context);
-    ms.Seek(0, SeekOrigin.Begin);
-    var df = flate.Encode(ms);
-    var ms2 = new MemoryStream((int)df.Data.Length);
-    df.Data.CopyTo(ms2);
-    var bac = new PdfByteArrayStreamContents(ms2.ToArray(), df.Filter, df.Params);
 
-    var updatedStr = new PdfStream(new PdfDictionary(), bac);
+    var updatedStr = new PdfStream(new PdfDictionary(), fl.Complete());
     page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
     return page;
 

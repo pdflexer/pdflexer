@@ -2,7 +2,7 @@
   "profiles": {
     "pdflexer.PdfiumRegressionTester": {
       "commandName": "Project",
-      "commandLineArgs": "--strict --type text --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\issue4304.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\txt"
+      "commandLineArgs": "--strict --type rebuild --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__issue2442.pdf.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\txt"
     }
   }
 }

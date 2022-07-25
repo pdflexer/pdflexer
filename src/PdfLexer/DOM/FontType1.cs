@@ -4,7 +4,11 @@ using System.Text;
 
 namespace PdfLexer.DOM
 {
-    public class FontType1
+    public interface IPdfFont
+    {
+        PdfDictionary NativeObject { get; }
+    }
+    public class FontType1 : IPdfFont
     {
         public PdfDictionary NativeObject { get; }
 
@@ -25,6 +29,7 @@ namespace PdfLexer.DOM
 
         /// <summary>
         /// required
+        /// Always the value of FontName in the font program
         /// </summary>
         public PdfName BaseFont
         {
@@ -34,6 +39,8 @@ namespace PdfLexer.DOM
 
         /// <summary>
         /// req non 14
+        /// Integer
+        /// Corresponds to first char in fonts widths
         /// </summary>
         public PdfNumber FirstChar
         {
@@ -43,6 +50,8 @@ namespace PdfLexer.DOM
 
         /// <summary>
         /// req non 14
+        /// Integer
+        /// Corresponds to last char in fonts widths
         /// </summary>
         public PdfNumber LastChar
         {
@@ -52,11 +61,13 @@ namespace PdfLexer.DOM
 
         /// <summary>
         /// req non 14
+        /// Indirect preferred
+        /// 1000 to 1 ratio with text space
         /// </summary>
         public PdfArray Widths
         {
             get => NativeObject.Get<PdfArray>(PdfName.Widths);
-            set => NativeObject[PdfName.Widths] = value;
+            set => NativeObject[PdfName.Widths] = value.Indirect();
         }
 
         /// <summary>

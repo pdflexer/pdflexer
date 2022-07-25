@@ -11,10 +11,12 @@ namespace PdfLexer.Fonts
         public float w1 { get; internal set; }
         public bool IsWordSpace { get; internal set; } // single byte character code 32 when simple font
                                                        // composite font if 32 is single byte code
-
         public decimal[] BBox { get; internal set; }
-
+        public ushort CodePoint { get; internal set; }
         public bool Undefined { get; set; }
+        public Dictionary<char,float>? Kernings { get; set; }
+
+
         // originalCharCode,
         // fontChar,
         // unicode,
@@ -33,7 +35,10 @@ namespace PdfLexer.Fonts
                 w0 = w0,
                 w1 = w1,
                 IsWordSpace = IsWordSpace,
-                BBox = BBox
+                BBox = BBox,
+                Undefined = Undefined,
+                CodePoint = CodePoint,
+                Kernings = Kernings
             };
         }
     }

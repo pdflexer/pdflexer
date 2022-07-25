@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using PdfLexer.Legacy;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Nested;
 using System;
@@ -38,22 +37,21 @@ namespace PdfLexer.Benchmarks.Benchmarks
                 samples.Add(Encoding.ASCII.GetBytes(item));
             }
         }
-        private NestedSkipper skipper = new NestedSkipper();
-        [Benchmark(Baseline = true)]
-        public int SeqSkip()
-        {
-            
-            var count = 0;
-            foreach (var item in samples)
-            {
-                var seq = new ReadOnlySequence<byte>(item);
-                var reader = new SequenceReader<byte>(seq);
-                reader.Advance(2); // <<
-                skipper.TryScanToEndOfDict(ref reader);
-                count += (int)reader.Consumed;
-            }
-            return count;
-        }
+        // [Benchmark(Baseline = true)]
+        // public int SeqSkip()
+        // {
+        //     
+        //     var count = 0;
+        //     foreach (var item in samples)
+        //     {
+        //         var seq = new ReadOnlySequence<byte>(item);
+        //         var reader = new SequenceReader<byte>(seq);
+        //         reader.Advance(2); // <<
+        //         skipper.TryScanToEndOfDict(ref reader);
+        //         count += (int)reader.Consumed;
+        //     }
+        //     return count;
+        // }
 
         [Benchmark()]
         public int SpanSkip()

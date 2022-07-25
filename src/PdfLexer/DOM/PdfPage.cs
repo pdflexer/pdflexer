@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PdfLexer.Content;
+using PdfLexer.Parsers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -54,7 +56,9 @@ namespace PdfLexer.DOM
 
         public IEnumerable<PdfStream> Contents { get
             {
-                var cnt = Dictionary.Get(PdfName.Contents).Resolve();
+                
+                var cnt = Dictionary?.Get(PdfName.Contents)?.Resolve();
+                if (cnt == null) { yield break; }
                 if (cnt.Type == PdfObjectType.ArrayObj)
                 {
                     var arr = (PdfArray)cnt;
@@ -83,6 +87,11 @@ namespace PdfLexer.DOM
             var s = Dictionary.GetOrCreateValue<PdfArray>(secondary).CloneShallow();
             Dictionary[primary] = s;
             return s;
+        }
+
+        public PageWriter GetWriter(PageWriteMode mode=PageWriteMode.Append)
+        {
+            return new PageWriter(this, mode);
         }
     }
 

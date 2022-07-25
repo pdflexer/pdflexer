@@ -45,7 +45,7 @@ namespace PdfLexer.Fonts
 
         }
 
-        public static Font TranslateFont(ParsingContext ctx, EvaluatedFont font)
+        public static Font TranslateFont(EvaluatedFont font)
         {
             var isType3Font = font.Subtype == PdfName.Type3;
 
@@ -143,7 +143,7 @@ namespace PdfLexer.Fonts
             var fontFile = font.Descriptor.Get<PdfStream>(PdfName.FontFile)
                 ?? font.Descriptor.Get<PdfStream>(PdfName.FontFile2)
                  ?? font.Descriptor.Get<PdfStream>(PdfName.FontFile3);
-            var fontFileData = fontFile?.Contents.GetDecodedData(ctx);
+            var fontFileData = fontFile?.Contents.GetDecodedData();
             var isStandardFont = false;
             var isInternalFont = false;
             var glyphScaleFactors = 0;
@@ -330,18 +330,7 @@ namespace PdfLexer.Fonts
 
     }
 
-    [Flags]
-    public enum FontFlags {
-      FixedPitch = 1,
-      Serif = 2,
-      Symbolic = 4,
-      Script = 8,
-      Nonsymbolic = 32,
-      Italic = 64,
-      AllCap = 65536,
-      SmallCap = 131072,
-      ForceBold = 262144,
-    }
+
 
     public class Font
     {

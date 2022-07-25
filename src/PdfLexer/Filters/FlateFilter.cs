@@ -6,56 +6,58 @@ using System.Threading.Tasks;
 
 namespace PdfLexer.Filters
 {
-    public class FlateFilter : IDecoder, IEncoder
+    public class FlateFilter : IDecoder //, IEncoder
     {
         private PdfNumber DefaultPredictor = PdfCommonNumbers.One;
         private PdfNumber DefaultColors = PdfCommonNumbers.One;
         private PdfNumber DefaultColumns = PdfCommonNumbers.One;
         private PdfNumber DefaultEarlyChange = PdfCommonNumbers.One;
         private PdfNumber DefaultBPC = PdfCommonNumbers.Eight;
-        private readonly ParsingContext _ctx;
 
-        public FlateFilter(ParsingContext ctx)
+
+        public static FlateFilter Instance { get; } = new FlateFilter();
+
+        public FlateFilter()
         {
-            _ctx = ctx;
+
         }
 
-        // TODO migrate to net 6 zlib?
-        public (Stream Data, PdfName Filter, PdfDictionary? Params) Encode(Stream source)
-        {
-            var output = _ctx.GetTemporaryStream();
-            output.WriteByte(120);
-            output.WriteByte(1);
-
-            using (var flate = new DeflateStream(output, CompressionLevel.Fastest, true))
-            {
-                source.CopyTo(flate);
-            }
-
-            output.Seek(0, SeekOrigin.Begin);
-            var cs = Calculate(output, 65521);
-            output.Seek(0, SeekOrigin.End);
-            output.WriteByte((byte)(cs >> 24));
-            output.WriteByte((byte)(cs >> 16));
-            output.WriteByte((byte)(cs >> 8));
-            output.WriteByte((byte)(cs >> 0));
-            output.Seek(0, SeekOrigin.Begin);
-            return (output, "/FlateDecode", null);
-
-            static int Calculate(Stream data, int modulus)
-            {
-                var s1 = 1;
-                var s2 = 0;
-
-                int b = 0;
-                while ((b = data.ReadByte()) != -1)
-                {
-                    s1 = (s1 + b) % modulus;
-                    s2 = (s1 + s2) % modulus;
-                }
-                return s2 * 65536 + s1;
-            }
-        }
+        // // TODO migrate to net 6 zlib?
+        // public (Stream Data, PdfName Filter, PdfDictionary? Params) Encode(Stream source)
+        // {
+        //     var output = _ctx.GetTemporaryStream();
+        //     output.WriteByte(120);
+        //     output.WriteByte(1);
+        // 
+        //     using (var flate = new DeflateStream(output, CompressionLevel.Fastest, true))
+        //     {
+        //         source.CopyTo(flate);
+        //     }
+        // 
+        //     output.Seek(0, SeekOrigin.Begin);
+        //     var cs = Calculate(output, 65521);
+        //     output.Seek(0, SeekOrigin.End);
+        //     output.WriteByte((byte)(cs >> 24));
+        //     output.WriteByte((byte)(cs >> 16));
+        //     output.WriteByte((byte)(cs >> 8));
+        //     output.WriteByte((byte)(cs >> 0));
+        //     output.Seek(0, SeekOrigin.Begin);
+        //     return (output, "/FlateDecode", null);
+        // 
+        //     static int Calculate(Stream data, int modulus)
+        //     {
+        //         var s1 = 1;
+        //         var s2 = 0;
+        // 
+        //         int b = 0;
+        //         while ((b = data.ReadByte()) != -1)
+        //         {
+        //             s1 = (s1 + b) % modulus;
+        //             s2 = (s1 + s2) % modulus;
+        //         }
+        //         return s2 * 65536 + s1;
+        //     }
+        // }
 
         public Stream Decode(Stream source, PdfDictionary decodeParms)
         {

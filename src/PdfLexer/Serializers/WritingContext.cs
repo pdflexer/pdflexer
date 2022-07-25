@@ -220,7 +220,11 @@ namespace PdfLexer.Serializers
                 if (obj.Type == PdfObjectType.NullObj) { return local; }
                 if (local.DeferWriting && !completing)
                 {
-                    deferedObjects.Add((obj, local));
+                    if (!deferred.Contains(obj))
+                    {
+                        deferredObjects.Add((obj, local));
+                        deferred.Add(obj);
+                    }
                     return local;
                 }
                 writtenObjs[local.Reference.ObjectNumber] = (Stream.Position, local.Reference);
@@ -297,11 +301,11 @@ namespace PdfLexer.Serializers
         }
 
         private bool completing = false;
-        private List<(IPdfObject obj, PdfIndirectRef iref)> deferedObjects = new List<(IPdfObject obj, PdfIndirectRef iref)>();
-
+        private List<(IPdfObject obj, PdfIndirectRef iref)> deferredObjects = new List<(IPdfObject obj, PdfIndirectRef iref)>();
+        private HashSet<IPdfObject> deferred = new HashSet<IPdfObject>();
         private void WriteDeferred()
         {
-            foreach (var (obj, local) in deferedObjects)
+            foreach (var (obj, local) in deferredObjects)
             {
                 writtenObjs[local.Reference.ObjectNumber] = (Stream.Position, local.Reference);
                 WriteObjStart(local.Reference);

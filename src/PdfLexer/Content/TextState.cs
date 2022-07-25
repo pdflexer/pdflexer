@@ -2,6 +2,7 @@
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
@@ -112,11 +113,29 @@ namespace PdfLexer.Content
             return Font.GetGlyph(data, pos, out info);
         }
 
-        public void FillGlyphs(Tj_Op op, List<UnappliedGlyph> glyphs) => FillGlyphs(op.text, glyphs);
+        internal void FillGlyphs(Tj_Op op, List<UnappliedGlyph> glyphs) => FillGlyphs(op.text, glyphs);
 
-        public void FillGlyphs(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+
+        internal void FillGlyphsFromRawString(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
         {
-            glyphs.Clear();
+            if (data.Length < 200)
+            {
+                Span<byte> writeBuffer = stackalloc byte[data.Length];
+                var l = Ctx.StringParser.ConvertBytes(data, writeBuffer);
+                FillGlyphsNoReset(writeBuffer.Slice(0, l), glyphs);
+            }
+            else
+            {
+                var rented = ArrayPool<byte>.Shared.Rent(data.Length);
+                ReadOnlySpan<byte> spanned = rented;
+                var l = Ctx.StringParser.ConvertBytes(data, rented);
+                FillGlyphsNoReset(spanned.Slice(0, l), glyphs);
+                ArrayPool<byte>.Shared.Return(rented);
+            }
+        }
+
+        internal void FillGlyphsNoReset(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+        {
             int i = 0;
             int u = 0;
             while (i < data.Length && (u = GetGlyph(data, i, out var glyph)) > 0)
@@ -124,6 +143,12 @@ namespace PdfLexer.Content
                 glyphs.Add(new UnappliedGlyph(glyph, 0f));
                 i += u;
             }
+        }
+
+        public void FillGlyphs(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+        {
+            glyphs.Clear();
+            FillGlyphsNoReset(data, glyphs);
         }
 
         public void FillGlyphs(TJ_Op op, List<UnappliedGlyph> glyphs)

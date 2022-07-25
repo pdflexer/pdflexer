@@ -83,7 +83,7 @@ public static class ImageSharpExts
         var dict = img.XObj.Dictionary;
         if (!dict.TryGetValue(PdfName.Filter, out var filter))
         {
-            using var str = img.XObj.Contents.GetDecodedStream(ctx);
+            using var str = img.XObj.Contents.GetDecodedStream();
             return GetFromDecoded(ctx, img.XObj, str);
         }
 
@@ -95,7 +95,7 @@ public static class ImageSharpExts
             {
                 return GetFromDecodedSingleFilter(ctx, img.XObj, (PdfName)arr[0]);
             }
-            using var str = img.XObj.Contents.GetDecodedStream(ctx);
+            using var str = img.XObj.Contents.GetDecodedStream();
             return GetFromDecoded(ctx, img.XObj, str);
         }
         else if (filter.Type == PdfObjectType.NameObj)
@@ -104,7 +104,7 @@ public static class ImageSharpExts
         }
         else
         {
-            using var str = img.XObj.Contents.GetDecodedStream(ctx);
+            using var str = img.XObj.Contents.GetDecodedStream();
             return GetFromDecoded(ctx, img.XObj, str);
         }
     }
@@ -118,7 +118,7 @@ public static class ImageSharpExts
                 return Image.Load(img.Contents.GetEncodedData());
 
         }
-        using var str = img.Contents.GetDecodedStream(ctx);
+        using var str = img.Contents.GetDecodedStream();
         return GetFromDecoded(ctx, img, str);
     }
 

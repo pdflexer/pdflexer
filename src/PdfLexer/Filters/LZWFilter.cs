@@ -1,18 +1,14 @@
-﻿using PdfLexer.Parsers;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.IO;
-using System.Text;
 
 namespace PdfLexer.Filters
 {
     public class LZWFilter : IDecoder
     {
-        private ParsingContext _ctx;
+        public static LZWFilter Instance { get; } = new LZWFilter();
 
-        public LZWFilter(ParsingContext ctx)
+        public LZWFilter()
         {
-            _ctx = ctx;
         }
 
         public Stream Decode(Stream stream, PdfDictionary filterParams)
@@ -20,7 +16,7 @@ namespace PdfLexer.Filters
             var ec = filterParams?.Get<PdfNumber>("/EarlyChange");
             if (ec != null)
             {
-                return _ctx.FlateDecoder.Decode(
+                return FlateFilter.Instance.Decode(
                     new LZWStream(ec, stream),
                     filterParams
                     );

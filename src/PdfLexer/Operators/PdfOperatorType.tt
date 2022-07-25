@@ -135,6 +135,16 @@ foreach (var op in operators)
 }
 #>
         };
+
+        public static PdfOperator.ParseOp GetParser(ReadOnlySpan<byte> opData) 
+        {
+<# 
+    var b1 = operators.Select(x=>x.Item1[0]).Distinct().ToList();
+#>
+            // var test = "<#=string.Join(", ", b1)#>";
+            
+            return null;
+        }
     }
 
 <#
@@ -143,7 +153,9 @@ foreach (var op in operators)
     var name = op.Item2 == null ? op.Item1 : op.Item2;
 #>
 
-    // <#= op.Item3 #>
+    /// <summary>
+    /// <#= op.Item3 #>
+    /// </summary>
     public partial class <#= name #>_Op : IPdfOperation
     {
         public static byte[] OpData = new byte[] { <#= string.Join(", ", op.Item1.Select(x=> "(byte) '" + (x == '\'' ? "\\'" : x) + "'")) #> };

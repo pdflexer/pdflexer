@@ -3,7 +3,6 @@ using PDFiumCore;
 using PdfLexer;
 using PdfLexer.Content;
 using PdfLexer.DOM;
-using PdfLexer.Operators;
 
 namespace pdflexer.PdfiumRegressionTester
 {
@@ -36,18 +35,14 @@ namespace pdflexer.PdfiumRegressionTester
             var pi = 1;
             foreach (var page in doc.Pages)
             {
-                PdfPage newPage = page.Dictionary.CloneShallow();
-                doc2.Pages.Add(newPage);
+                var pg = doc2.AddPage();
+                pg.MediaBox = page.MediaBox;
 
-                var writer = new ContentWriter(newPage.Resources);
-                writer.Raw(q_Op.Value);
-                foreach (var stream in newPage.Contents)
-                {
-                    using var str = stream.Contents.GetDecodedStream(doc.Context);
-                    str.CopyTo(writer.Stream);
-                }
-                writer.Raw(Q_Op.Value);
-                writer.SetStrokingRGB(0, 0, 0);
+                var form = XObjForm.FromPage(page);
+
+                using var writer = pg.GetWriter();
+                writer.Form(form)
+                      .SetStrokingRGB(0, 0, 0);
 
                 var reader = new TextScanner(doc.Context, page);
                 var lines = new List<string>();
@@ -58,10 +53,9 @@ namespace pdflexer.PdfiumRegressionTester
                     var (x, y) = reader.GetCurrentTextPos();
                     // lines.Add($"{x:0.000} {y:0.000} {bb.llx:0.0} {bb.lly:0.0} {bb.urx:0.0} {bb.ury:0.0} {c}");
                     lines.Add($"{x:0.000} {y:0.000} {c}");
-                    writer
-                        .LineWidth(0.05m)
-                        .Rect((decimal)bb.llx, (decimal)bb.lly, (decimal)(bb.urx - bb.llx), (decimal)(bb.ury - bb.lly))
-                        .Stroke();
+                    writer.LineWidth(0.05m)
+                          .Rect((decimal)bb.llx, (decimal)bb.lly, (decimal)(bb.urx - bb.llx), (decimal)(bb.ury - bb.lly))
+                          .Stroke();
 
 
 
@@ -119,11 +113,9 @@ namespace pdflexer.PdfiumRegressionTester
                     File.WriteAllText(fob, result2);
                     success = false;
                 }
-
-                newPage.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(new PdfStream(new PdfDictionary(), writer.Complete()));
                 pi++;
             }
-            if (!success)
+            if (true)
             {
                 var pdfo = Path.Combine(output, Path.GetFileNameWithoutExtension(name) + "_rects.pdf");
                 using var fs = File.Create(pdfo);

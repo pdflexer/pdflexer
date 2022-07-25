@@ -25,10 +25,11 @@ namespace PdfLexer.Content
             GraphicsState = new GraphicsState();
             CurrentTextPos = 0;
             ReadState = TextReadState.Normal;
-            CurrentGlyphs = new List<UnappliedGlyph>();
+            CurrentGlyphs = new List<UnappliedGlyph>(50);
             CurrentGlyph = default;
             Glyph = default;
             Position = null;
+            TJCache = new List<TJ_Lazy_Item>(10);
         }
 
         public bool Advance()
@@ -74,59 +75,93 @@ namespace PdfLexer.Content
                 var b = Scanner.Scanner.Data[Scanner.Scanner.Position];
                 if (b == (byte)'T' || b == (byte)'\'' || b == (byte)'"')
                 {
-                    if (Scanner.TryGetCurrentOperation(out var to))
+                    // need to brainstorm if way to deduplicate the parsing logic here
+                    try
                     {
                         switch (nxt)
                         {
                             case PdfOperatorType.singlequote:
                                 {
-                                    var op = (singlequote_Op)to;
+                                    CurrentGlyphs.Clear();
                                     TextState.Apply(T_Star_Op.Value);
-                                    TextState.FillGlyphs(op.text, CurrentGlyphs);
+                                    var op = Scanner.Scanner.Operands[0];
+                                    var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
+                                    TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
                                     CurrentTextPos = 0;
                                     ReadState = TextReadState.ReadingOp;
                                     break;
                                 }
                             case PdfOperatorType.doublequote:
                                 {
-                                    var op = (doublequote_Op)to;
-                                    TextState.WordSpacing = (float)op.aw;
-                                    TextState.CharSpacing = (float)op.ac;
+                                    CurrentGlyphs.Clear();
+                                    var aw = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, Scanner.Scanner.Operands[0]);
+                                    var ac = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, Scanner.Scanner.Operands[1]);
+                                    var op = Scanner.Scanner.Operands[2];
+                                    var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
+                                    TextState.WordSpacing = aw;
+                                    TextState.CharSpacing = ac;
                                     TextState.Apply(T_Star_Op.Value);
-                                    TextState.FillGlyphs(op.text, CurrentGlyphs);
+                                    TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
                                     CurrentTextPos = 0;
                                     ReadState = TextReadState.ReadingOp;
                                     break;
                                 }
                             case PdfOperatorType.Tj:
                                 {
-                                    var op = (Tj_Op)to;
-                                    TextState.FillGlyphs(op, CurrentGlyphs);
+                                    CurrentGlyphs.Clear();
+                                    var op = Scanner.Scanner.Operands[0];
+                                    var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
+                                    TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
                                     CurrentTextPos = 0;
                                     ReadState = TextReadState.ReadingOp;
                                     break;
                                 }
                             case PdfOperatorType.TJ:
                                 {
-                                    var op = (TJ_Op)to;
-                                    TextState.FillGlyphs(op, CurrentGlyphs);
+                                    TJCache.Clear();
+                                    CurrentGlyphs.Clear();
+                                    PdfOperator.ParseTJLazy(Context, Scanner.Scanner.Data, Scanner.Scanner.Operands, TJCache);
+                                    foreach (var item in TJCache)
+                                    {
+                                        if (item.Shift != 0)
+                                        {
+                                            CurrentGlyphs.Add(new UnappliedGlyph(null, (float)item.Shift));
+                                        }
+                                        else
+                                        {
+                                            var op = Scanner.Scanner.Operands[item.OpNum];
+                                            var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
+                                            TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
+                                        }
+                                    }
                                     CurrentTextPos = 0;
                                     ReadState = TextReadState.ReadingOp;
                                     break;
                                 }
                             default:
-                                to.Apply(TextState);
+                                if (Scanner.TryGetCurrentOperation(out var tao))
+                                {
+                                    tao.Apply(TextState);
+                                }
                                 Scanner.SkipCurrent();
                                 continue;
                         }
-                    }
-                    
 
-                    // text creating ops (default breaks through)
-                    Scanner.SkipCurrent();
-                    var result = ReadCurrent();
-                    if (!result) { continue; }
-                    return true;
+                        // text creating ops (default breaks through)
+                        Scanner.SkipCurrent();
+                        var result = ReadCurrent();
+                        if (!result) { continue; }
+                        return true;
+
+                    } catch (Exception e)
+                    {
+                        // since we are manually parsing text ops (not using TryGetCurrentOperation)
+                        // we have to handle errors manually here
+                        var data = Encoding.ASCII.GetString(Scanner.Scanner.GetCurrentData());
+                        Context.Error($"error while parsing text op ({nxt.ToString()} -> '{data}'): " + e.Message);
+                        Scanner.SkipCurrent();
+                        continue;
+                    }
                 }
 
                 // non-text affecting op
@@ -134,11 +169,15 @@ namespace PdfLexer.Content
             }
         }
 
+        List<TJ_Lazy_Item> TJCache;
         int CurrentTextPos;
         TextReadState ReadState;
         List<UnappliedGlyph> CurrentGlyphs;
         UnappliedGlyph CurrentGlyph;
         PdfRectangle Position;
+
+
+
         public enum TextReadState
         {
             Normal,

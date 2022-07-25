@@ -196,7 +196,7 @@ namespace PdfLexer.Parsers.Structure
                     contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
                     contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
                     var str = new PdfStream(dict, contents);
-                    var data = str.Contents.GetDecodedData(_ctx);
+                    var data = str.Contents.GetDecodedData();
 
                     var index = dict.GetOptionalValue<PdfArray>(PdfName.Index);
                     AddEntries(data, dict.GetRequiredValue<PdfArray>(PdfName.W), index, entries);
@@ -241,7 +241,7 @@ namespace PdfLexer.Parsers.Structure
 
         private void AddXRefStream(PdfStream stream, List<XRefEntry> entries)
         {
-            var data = stream.Contents.GetDecodedData(_ctx);
+            var data = stream.Contents.GetDecodedData();
             var index = stream.Dictionary.GetOptionalValue<PdfArray>(PdfName.Index);
             AddEntries(data, stream.Dictionary.GetRequiredValue<PdfArray>(PdfName.W), index, entries);
         }

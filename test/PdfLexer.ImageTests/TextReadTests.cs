@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Fonts;
 using PdfLexer.Tests;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using Xunit;
 
 namespace PdfLexer.ImageTests
 {
-    internal class TextReadTests
+    public class TextReadTests
     {
 
         [InlineData("issue4304.pdf")]
@@ -35,6 +36,26 @@ namespace PdfLexer.ImageTests
                 }
                 var str = sb.ToString();
             }
+        }
+
+        [Fact]
+        public void Test()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var output = Path.Combine(tp, "results", "txt");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            using var doc = PdfDocument.Create();
+            var pg = doc.AddPage();
+            pg.MediaBox.URx = 200;
+            pg.MediaBox.URy = 100;
+
+            {
+                using var writer = pg.GetWriter();
+                var tr = TimesRoman.Create();
+                writer.Font(tr, 10).TextMove(20, 20).Text("Testing").EndText();
+            }
+            using var fo = File.Create(Path.Combine(output, "test.pdf"));
+            doc.SaveTo(fo);
         }
 
 

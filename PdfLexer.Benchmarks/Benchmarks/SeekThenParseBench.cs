@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using PdfLexer.Legacy;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Nested;
 using System;
@@ -15,6 +14,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
     /// just getting ascii.
     /// </summary>
     [Config(typeof(BenchmarkConfig))]
+    [Obsolete]
     public class SeekThenParseBench
     {
         public static List<string> data = new List<string>
@@ -38,24 +38,23 @@ namespace PdfLexer.Benchmarks.Benchmarks
                 samples.Add(Encoding.ASCII.GetBytes(item));
             }
         }
-        private NestedSkipper skipper = new NestedSkipper();
-        [Benchmark(Baseline = true)]
-        public int ScanThenParse()
-        {
-            
-            var count = 0;
-            foreach (var item in samples)
-            {
-                var seq = new ReadOnlySequence<byte>(item);
-                var reader = new SequenceReader<byte>(seq);
-                var start = reader.Position;
-                skipper.TryScanToEndOfDict(ref reader);
-                var part = seq.Slice(start, reader.Position);
-                var dict = parser.Parse(in part);
-                count += dict.Count;
-            }
-            return count;
-        }
+        // [Benchmark(Baseline = true)]
+        // public int ScanThenParse()
+        // {
+        //     
+        //     var count = 0;
+        //     foreach (var item in samples)
+        //     {
+        //         var seq = new ReadOnlySequence<byte>(item);
+        //         var reader = new SequenceReader<byte>(seq);
+        //         var start = reader.Position;
+        //         skipper.TryScanToEndOfDict(ref reader);
+        //         var part = seq.Slice(start, reader.Position);
+        //         var dict = parser.Parse(in part);
+        //         count += dict.Count;
+        //     }
+        //     return count;
+        // }
 
         [Benchmark()]
         public int ScanSpanThenParseSeq()

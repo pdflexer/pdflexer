@@ -8,11 +8,7 @@ namespace PdfLexer.Filters
 {
     public class Ascii85Filter : IDecoder
     {
-        private readonly ParsingContext _ctx;
-        public Ascii85Filter(ParsingContext ctx)
-        {
-            _ctx = ctx;
-        }
+        public static Ascii85Filter Instance { get; } = new Ascii85Filter();
 
         public Stream Decode(Stream stream, PdfDictionary filterParams) => new Ascii85Stream(stream);
     }

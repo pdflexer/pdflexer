@@ -37,8 +37,9 @@ namespace PdfLexer.Filters
             ms.WriteByte((byte)(cs >> 16));
             ms.WriteByte((byte)(cs >> 8));
             ms.WriteByte((byte)(cs >> 0));
-
-            return new PdfByteArrayStreamContents(ms.ToArray(), PdfName.FlateDecode, null);
+            var dat = ms.ToArray();
+            ms = null;
+            return new PdfByteArrayStreamContents(dat, PdfName.FlateDecode, null);
 
             static int Calculate(Stream data, int modulus)
             {

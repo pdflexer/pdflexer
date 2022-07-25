@@ -13,14 +13,15 @@ using System.Numerics;
 
 namespace PdfLexer.Content
 {
-    public class ContentWriter
+    public partial class ContentWriter
     {
         private static decimal KAPPA = (decimal)(4 * ((Math.Sqrt(2) - 1) / 3.0));
         private GraphicsState GfxState;
         internal PageState State { get; private set; }
         private PdfDictionary Resources { get; }
         private PdfDictionary XObjs { get; }
-        public FlateWriter Stream { get; }
+        private PdfDictionary Fonts { get; }
+        public FlateWriter Stream { get; private set; }
 
         private double scale;
 
@@ -29,6 +30,7 @@ namespace PdfLexer.Content
             GfxState = new GraphicsState();
             Resources = resources;
             XObjs = resources.GetOrCreateValue<PdfDictionary>(PdfName.XObject);
+            Fonts = resources.GetOrCreateValue<PdfDictionary>(PdfName.Font);
             Stream = new FlateWriter();
             scale = unit switch
             {
@@ -37,7 +39,30 @@ namespace PdfLexer.Content
             };
         }
 
+
+        public ContentWriter Image(XObjImage form, PdfRectangle rect)
+              => Image(form, rect.LLx, rect.LLy, rect.Width, rect.Height);
+
         public ContentWriter Image(XObjImage img, double x, double y, double w, double h)
+        {
+            var nm = AddResource(img.Stream, "I");
+            return Do(nm, x, y, w, h);
+        }
+
+        public ContentWriter Form(XObjForm form, double x, double y, double xScale = 1, double yScale = 1)
+        {
+            var nm = AddResource(form.NativeObject, "F");
+            return Do(nm, x, y, xScale, yScale);
+        }
+
+        public ContentWriter Form(XObjForm form)
+        {
+            var nm = AddResource(form.NativeObject, "F");
+            return Do(nm);
+        }
+
+
+        private ContentWriter Do(PdfName nm, double x, double y, double w, double h)
         {
             if (scale != 1) { x *= scale; y *= scale; w *= scale; h *= scale; }
             var d = new Matrix4x4(
@@ -46,18 +71,26 @@ namespace PdfLexer.Content
                 (float)x, (float)y, 1, 0,
                 0, 0, 0, 1);
             var cm = GfxState.GetTranslation(d);
+            return Do(nm, cm);
+        }
 
-            var nm = AddResource(img.Stream, "I");
+        private ContentWriter Do(PdfName nm, Matrix4x4? xform = null)
+        {
             EnsureInPageState();
+            if (xform.HasValue)
+            {
+                q_Op.Value.Apply(ref GfxState);
+                q_Op.WriteLn(Stream);
+                cm_Op.WriteLn(xform.Value, Stream);
+            }
 
-            q_Op.Value.Apply(ref GfxState);
-            q_Op.WriteLn(Stream);
-
-            cm_Op.WriteLn(cm, Stream);
             Do_Op.WriteLn(nm, Stream);
 
-            Q_Op.Value.Apply(ref GfxState);
-            Q_Op.WriteLn(Stream);
+            if (xform.HasValue)
+            {
+                Q_Op.Value.Apply(ref GfxState);
+                Q_Op.WriteLn(Stream);
+            }
             return this;
         }
 
@@ -75,49 +108,22 @@ namespace PdfLexer.Content
             return this;
         }
 
-        public ContentWriter ClosePath()
-        {
-            h_Op.WriteLn(Stream);
-            return this;
-        }
-
-        public ContentWriter Stroke()
-        {
-            S_Op.WriteLn(Stream);
-            return this;
-        }
 
         public ContentWriter SetStrokingRGB(int r, int g, int b)
         {
-            RG_Op.WriteLn((r & 0xFF)/255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, Stream);
+            RG_Op.WriteLn((r & 0xFF) / 255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, Stream);
             return this;
         }
 
-        public ContentWriter Circle(decimal x, decimal y, decimal r) => Ellipse(x, y, r, r);
-
-        public ContentWriter Ellipse(decimal x, decimal y, decimal r1, decimal r2)
+        public ContentWriter SetFillRGB(int r, int g, int b)
         {
-            // based on http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas/2173084#2173084
-            x -= r1;
-            y -= r2;
-            var ox = r1 * KAPPA;
-            var oy = r2 * KAPPA;
-            var xe = x + r1 * 2;
-            var ye = y + r2 * 2;
-            var xm = x + r1;
-            var ym = y + r2;
-
-            MoveTo(x, ym);
-            BezierCurveTo(x, ym - oy, xm - ox, y, xm, y);
-            BezierCurveTo(xm + ox, y, xe, ym - oy, xe, ym);
-            BezierCurveTo(xe, ym + oy, xm + ox, ye, xm, ye);
-            BezierCurveTo(xm - ox, ye, x, ym + oy, x, ym);
-            return this.ClosePath();
+            rg_Op.WriteLn((r & 0xFF) / 255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, Stream);
+            return this;
         }
 
         public ContentWriter LineWidth(decimal w)
         {
-            if (scale != 1) { w *=  (decimal)scale; }
+            if (scale != 1) { w *= (decimal)scale; }
             w_Op.WriteLn(w, Stream);
             return this;
         }
@@ -148,57 +154,6 @@ namespace PdfLexer.Content
             return this;
         }
 
-        public ContentWriter MoveTo(decimal x, decimal y)
-        {
-            if (scale != 1) { x *= (decimal)scale; y *= (decimal)scale; }
-            m_Op.WriteLn(x, y, Stream);
-            return this;
-        }
-
-        public ContentWriter LineTo(decimal x, decimal y)
-        {
-            if (scale != 1) { x *= (decimal)scale; y *= (decimal)scale; }
-            l_Op.WriteLn(x, y, Stream);
-            return this;
-        }
-
-        public ContentWriter BezierCurveTo(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3)
-        {
-            if (scale != 1) { var s = (decimal)scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; x3 *= s; y3 *= s; }
-            c_Op.WriteLn(x1, y1, x2, y2, x3, y3, Stream);
-            return this;
-        }
-
-        public ContentWriter QuadraticCurveTo(decimal x1, decimal y1, decimal x2, decimal y2)
-        {
-            if (scale != 1) { var s = (decimal)scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; }
-            v_Op.WriteLn(x1, y1, x2, y2, Stream);
-            return this;
-        }
-
-        public ContentWriter Rect(decimal x, decimal y, decimal w, decimal h)
-        {
-            if (scale != 1) { var s = (decimal)scale; x *= s; y *= s; w *= s; h *= s; }
-            re_Op.WriteLn(x, y, w, h, Stream);
-            return this;
-        }
-
-        public ContentWriter RoundedRect(decimal x, decimal y, decimal w, decimal h, decimal r)
-        {
-            r = Math.Min(Math.Min(r, 0.5m * w), 0.5m*h);
-            var c = r * (1 - KAPPA);
-            MoveTo(x + r, y);
-            LineTo(x + w - r, y);
-            BezierCurveTo(x + w - c, y, x + w, y + c, x + w, y + r);
-            LineTo(x + w, y + h - r);
-            BezierCurveTo(x + w, y + h - c, x + w - c, y + h, x + w - r, y + h);
-            LineTo(x + r, y + h);
-            BezierCurveTo(x + c, y + h, x, y + h - c, x, y + h - r);
-            LineTo(x, y + r);
-            BezierCurveTo(x, y + c, x + c, y, x + r, y);
-            return this.ClosePath();
-        }
-
         public ContentWriter Scale(decimal x, decimal y)
         {
             var cm = new Matrix4x4(
@@ -211,7 +166,6 @@ namespace PdfLexer.Content
             cm_Op.WriteLn(cm, Stream);
             return this;
         }
-
 
         public ContentWriter Rotate(double angle)
         {
@@ -257,6 +211,12 @@ namespace PdfLexer.Content
         private void EnsureInPageState()
         {
             if (State == PageState.Page) { return; }
+            if (State == PageState.Text)
+            {
+                EndText();
+                State = PageState.Page;
+                return;
+            }
         }
 
         private void ResetState()
@@ -277,7 +237,11 @@ namespace PdfLexer.Content
             return this;
         }
 
-        public PdfStreamContents Complete() => Stream.Complete();
+        public PdfStreamContents Complete() { 
+            var result = Stream.Complete();
+            Stream = null; // TODO: add proper error handling for using methods after calling complete
+            return result;
+        }
     }
 
     internal enum PageState
@@ -294,4 +258,5 @@ namespace PdfLexer.Content
     {
         Points
     }
+    
 }
