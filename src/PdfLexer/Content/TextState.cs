@@ -113,9 +113,6 @@ namespace PdfLexer.Content
             return Font.GetGlyph(data, pos, out info);
         }
 
-        internal void FillGlyphs(Tj_Op op, List<UnappliedGlyph> glyphs) => FillGlyphs(op.text, glyphs);
-
-
         internal void FillGlyphsFromRawString(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
         {
             if (data.Length < 200)
@@ -145,13 +142,13 @@ namespace PdfLexer.Content
             }
         }
 
-        public void FillGlyphs(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+        internal void FillGlyphs(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
         {
             glyphs.Clear();
             FillGlyphsNoReset(data, glyphs);
         }
 
-        public void FillGlyphs(TJ_Op op, List<UnappliedGlyph> glyphs)
+        internal void FillGlyphs(TJ_Op op, List<UnappliedGlyph> glyphs)
         {
             float offset = 0f;
             glyphs.Clear();
@@ -175,7 +172,7 @@ namespace PdfLexer.Content
             }
         }
 
-        public void ApplyTj(float tj)
+        internal void ApplyTj(float tj)
         {
             if (tj == 0f) { return; }
             float tx = 0f;

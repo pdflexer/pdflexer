@@ -28,7 +28,7 @@ namespace PdfLexer.Filters
 
         public PdfStreamContents Complete()
         {
-            Stream.Flush();
+            Stream.Dispose();
             // TODO calc this during writing
             ms.Seek(0, SeekOrigin.Begin);
             var cs = Calculate(ms, 65521);

@@ -25,7 +25,8 @@ namespace PdfLexer.Filters
         // // TODO migrate to net 6 zlib?
         // public (Stream Data, PdfName Filter, PdfDictionary? Params) Encode(Stream source)
         // {
-        //     var output = _ctx.GetTemporaryStream();
+        //     // var output = _ctx.GetTemporaryStream();
+        //     var output = new MemoryStream();
         //     output.WriteByte(120);
         //     output.WriteByte(1);
         // 

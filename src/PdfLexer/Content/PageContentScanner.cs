@@ -122,7 +122,7 @@ namespace PdfLexer.Content
                 {
                     return nxt;
                 }
-                if (stack.Any(x => Object.ReferenceEquals(x.Contents, form)))
+                if (stack.Any(x => Object.ReferenceEquals(x.Dict, form.Dictionary)))
                 {
                     // cyclic
                     Context.Error("Cyclic form reference: " + doOp.name);

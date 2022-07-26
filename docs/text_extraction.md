@@ -6,7 +6,7 @@ Lots of work TODO regarding fonts / glyphs.
 
 ```csharp
 // get all chars
-var doc = PdfDocument.Open(data);
+using var doc = PdfDocument.Open(data);
 var page = doc.Pages.First();
 var reader = new TextScanner(doc.Context, page);
 while (reader.Advance())
@@ -19,7 +19,7 @@ var str = sb.ToString();
 ```csharp
 // get filtered chars
 var doc = PdfDocument.Open(data);
-var page = doc.Pages.First();
+using var page = doc.Pages.First();
 var reader = new TextScanner(doc.Context, page);
 while (reader.Advance())
 {

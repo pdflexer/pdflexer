@@ -36,6 +36,8 @@ namespace pdflexer.PdfiumRegressionTester
             foreach (var page in doc.Pages)
             {
                 var pg = doc2.AddPage();
+                pg.MediaBox.URx = 500;
+                pg.MediaBox.URy = 200;
                 pg.MediaBox = page.MediaBox;
 
                 var form = XObjForm.FromPage(page);

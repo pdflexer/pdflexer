@@ -371,7 +371,6 @@ namespace PdfLexer.ImageTests
                 {
                     throw new ApplicationException("Read failure");
                 }
-
                 var name = Path.GetFileNameWithoutExtension(pdf);
                 using var isa = img.GetImage(doc.Context);
                 var imgout = Path.Combine(output, name + ".png");
@@ -405,7 +404,6 @@ namespace PdfLexer.ImageTests
                             // don't support encryption currently
                             continue;
                         }
-
 
                         int i = 0;
                         foreach (var page in doc.Pages)
