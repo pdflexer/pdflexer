@@ -1,4 +1,4 @@
-# Content Extraction
+# Content Creation
 
 Note: Work in progress
 
@@ -12,7 +12,7 @@ var pg = doc.AddPage();
 pg.MediaBox.URx = 500;
 pg.MediaBox.URy = 200;
 
-using var writer = pg.GetWRite();
+using var writer = pg.GetWiter();
 writer.SetStrokingRGB(255, 0, 0);
       .LineWidth(0.05m)
       .Rect(10m, 10m, 10m, 10m)
