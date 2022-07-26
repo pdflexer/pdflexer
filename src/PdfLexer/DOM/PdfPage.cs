@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PdfLexer.Content;
+using PdfLexer.Parsers;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -28,6 +30,10 @@ namespace PdfLexer.DOM
         public static implicit operator PdfPage(PdfDictionary dict) => new PdfPage(dict);
         public static implicit operator PdfDictionary(PdfPage page) => page.Dictionary;
 
+
+        public PdfDictionary Resources { 
+            get => Dictionary.GetOrCreateValue<PdfDictionary>(PdfName.Resources);
+            set => Dictionary[PdfName.Resources] = value; }
         public PdfRectangle MediaBox { get => Dictionary.GetOrCreateValue<PdfArray>(PdfName.MediaBox); set => Dictionary[PdfName.MediaBox] = value.Array; }
         public PdfRectangle CropBox { get => GetWithDefault(PdfName.CropBox, PdfName.MediaBox); set => Dictionary[PdfName.CropBox] = value.Array; }
         public PdfRectangle BleedBox { get => GetWithDefault(PdfName.BleedBox, PdfName.CropBox); set => Dictionary[PdfName.BleedBox] = value.Array; }
@@ -48,6 +54,26 @@ namespace PdfLexer.DOM
         public PageTreeNode Parent { get => Dictionary.Get<PdfDictionary>(PdfName.Parent); set => Dictionary[PdfName.Parent] = value.Dictionary.Indirect(); }
 
 
+        public IEnumerable<PdfStream> Contents { get
+            {
+                
+                var cnt = Dictionary?.Get(PdfName.Contents)?.Resolve();
+                if (cnt == null) { yield break; }
+                if (cnt.Type == PdfObjectType.ArrayObj)
+                {
+                    var arr = (PdfArray)cnt;
+                    foreach (var item in arr)
+                    {
+                        yield return item.GetAs<PdfStream>();
+                    }
+                } else
+                {
+                    yield return cnt.GetAs<PdfStream>();
+                }
+                    
+            }
+        }
+
         public void AddXObj(PdfName nm, IPdfObject xobj)
         {
             Dictionary.GetOrCreateValue<PdfDictionary>(PdfName.Resources).GetOrCreateValue<PdfDictionary>(PdfName.XObject)[nm] = xobj.Indirect();
@@ -61,6 +87,11 @@ namespace PdfLexer.DOM
             var s = Dictionary.GetOrCreateValue<PdfArray>(secondary).CloneShallow();
             Dictionary[primary] = s;
             return s;
+        }
+
+        public PageWriter GetWriter(PageWriteMode mode=PageWriteMode.Append)
+        {
+            return new PageWriter(this, mode);
         }
     }
 

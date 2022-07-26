@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Microsoft.IO;
 using PdfLexer.Filters;
+using PdfLexer.Fonts;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
 using PdfLexer.Parsers.Nested;
@@ -43,12 +44,6 @@ namespace PdfLexer.Parsers
 
         public ParsingOptions Options { get; }
 
-        internal IDecoder FlateDecoder;
-        private IDecoder AsciiHexDecoder;
-        private IDecoder Ascii58Decoder;
-        private IDecoder RunLengthDecoder;
-        private IDecoder CCITTDecoder;
-        private IDecoder LZWDecoder;
 
         public ParsingContext(ParsingOptions options = null)
         {
@@ -64,13 +59,6 @@ namespace PdfLexer.Parsers
             StringParser = new StringParser(this);
             XRefParser = new XRefParser(this);
             NestedParser = new NestedParser(this);
-
-            FlateDecoder = new FlateFilter(this);
-            AsciiHexDecoder = new AsciiHexFilter(this);
-            Ascii58Decoder = new Ascii85Filter(this);
-            RunLengthDecoder = new RunLengthFilter();
-            CCITTDecoder = new CCITTFilter(this);
-            LZWDecoder = new LZWFilter(this);
         }
 
         public (Dictionary<ulong, XRefEntry> XRefs, PdfDictionary Trailer) Initialize(IPdfDataSource pdf)
@@ -85,7 +73,7 @@ namespace PdfLexer.Parsers
         public IReadOnlyList<string> ParsingErrors => Errors;
 
         private int errors = 0;
-        internal void Error(string info)
+        public void Error(string info)
         {
             if (Options.ThrowOnErrors)
             {
@@ -114,7 +102,7 @@ namespace PdfLexer.Parsers
             }
         }
 
-        internal IDecoder GetDecoder(PdfName name)
+        internal static IDecoder GetDecoder(PdfName name)
         {
             // Not technically valid outside of inline image
             // but used (eg. ghostscript)
@@ -129,22 +117,22 @@ namespace PdfLexer.Parsers
             {
                 case "/FlateDecode":
                 case "/Fl":
-                    return FlateDecoder;
+                    return FlateFilter.Instance;
                 case "/ASCIIHexDecode":
                 case "/AHx":
-                    return AsciiHexDecoder;
+                    return AsciiHexFilter.Instance;
                 case "/ASCII85Decode":
                 case "/A85":
-                    return Ascii58Decoder;
+                    return Ascii85Filter.Instance;
                 case "/RL":
                 case "/RunLengthDecode":
-                    return RunLengthDecoder;
+                    return RunLengthFilter.Instance;
                 case "/CCF":
                 case "/CCITTFaxDecode":
-                    return CCITTDecoder;
+                    return CCITTFilter.Instance;
                 case "/LZW":
                 case "/LZWDecode":
-                    return LZWDecoder;
+                    return LZWFilter.Instance;
                 default:
                     throw new NotImplementedException($"Stream decoding of type {name.Value} has not been implemented.");
             }
@@ -168,10 +156,21 @@ namespace PdfLexer.Parsers
                     case PdfObjectType.DictionaryObj:
                         var dict = (PdfDictionary)value;
                         return !dict.IsModified;
+                    case PdfObjectType.StreamObj:
+                        var str = (PdfStream)value;
+                        return !str.IsModified;
                 }
                 return true;
             }
             return true;
+        }
+
+
+        internal IReadableFont GetFont(IPdfObject obj)
+        {
+            var dict = obj.GetAs<PdfDictionary>();
+            // TODO type check
+            return Standard14Font.Create(dict);
         }
 
         internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
@@ -240,7 +239,7 @@ namespace PdfLexer.Parsers
             {
                 // TODO allow streams for offsets
                 var data = ArrayPool<byte>.Shared.Rent(start);
-                var decodedStream = stream.Contents.GetDecodedStream(this);
+                var decodedStream = stream.Contents.GetDecodedStream();
                 var str = GetTemporaryStream();
                 decodedStream.CopyTo(str);
                 str.Seek(0, SeekOrigin.Begin);
@@ -251,7 +250,7 @@ namespace PdfLexer.Parsers
                 source = new ObjectStreamFileDataSource(ctx, entry.ObjectStreamNumber, str, os, start);
             } else
             {
-                var data = stream.Contents.GetDecodedData(this);
+                var data = stream.Contents.GetDecodedData();
                 var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
                 source = new ObjectStreamDataSource(ctx, entry.ObjectStreamNumber, data, os, start);
             }

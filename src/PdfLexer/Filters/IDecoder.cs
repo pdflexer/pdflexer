@@ -13,6 +13,9 @@ namespace PdfLexer.Filters
         /// <param name="filterParams"></param>
         /// <returns></returns>
         Stream Decode(Stream stream, PdfDictionary filterParams);
+
+        Stream Decode(Stream stream, PdfDictionary filterParams, Action<string> errInfo) => 
+            Decode(stream, filterParams);
     }
 
     public interface IEncoder

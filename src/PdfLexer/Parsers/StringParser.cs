@@ -20,8 +20,6 @@ namespace PdfLexer.Parsers
         // private static Encoding MacRoman = CodePagesEncodingProvider.Instance.GetEncoding("macintosh"); // WinAnsiEncoding
                                                                                                         // PdfEncoding : ???-255 same, 20-126 same, 127 undefined, 0-21 same
                                                                                                         // MaxExpert??
-
-
         private static int[] mapping = new int[]{
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0x2D8, 0x2C7, 0x2C6, 0x2D9, 0x2DD, 0x2DB, 0x2DA, 0x2DC, 0, 0, 0, 0, 0, 0, 0,

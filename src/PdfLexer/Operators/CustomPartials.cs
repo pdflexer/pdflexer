@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Serializers;
 using System.IO;
 
 namespace PdfLexer.Operators
@@ -110,7 +111,7 @@ namespace PdfLexer.Operators
             {
                 if (item.Data != null)
                 {
-                    PdfOperator.Shared.StringSerializer.WriteToStream(item.Data, stream);
+                    StringSerializer.WriteToStream(item.Data, stream);
                     // PdfOperator.Shared.StringSerializer.WriteToStream(item.Text, stream);
                 }
                 else
@@ -128,7 +129,7 @@ namespace PdfLexer.Operators
     {
         public void Serialize(Stream stream)
         {
-            PdfOperator.Shared.StringSerializer.WriteToStream(text, stream);
+            StringSerializer.WriteToStream(text, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
@@ -138,7 +139,7 @@ namespace PdfLexer.Operators
     {
         public void Serialize(Stream stream)
         {
-            PdfOperator.Shared.StringSerializer.WriteToStream(text, stream);
+            StringSerializer.WriteToStream(text, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
@@ -152,7 +153,7 @@ namespace PdfLexer.Operators
             stream.WriteByte((byte)' ');
             PdfOperator.Writedecimal(ac, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Shared.StringSerializer.WriteToStream(text, stream);
+            StringSerializer.WriteToStream(text, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
@@ -162,6 +163,11 @@ namespace PdfLexer.Operators
     {
         public decimal Shift;
         public byte[] Data;
+    }
+    internal struct TJ_Lazy_Item
+    {
+        public decimal Shift;
+        public int OpNum;
     }
 
     public partial class Tc_Op

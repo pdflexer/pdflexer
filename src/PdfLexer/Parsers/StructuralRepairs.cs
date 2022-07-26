@@ -353,7 +353,7 @@ namespace PdfLexer.Parsers
                     contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
                     contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
                     var str = new PdfStream(dict, contents);
-                    var data = str.Contents.GetDecodedData(ctx);
+                    var data = str.Contents.GetDecodedData();
 
                     var current = GetOSOffsets(ctx, data, str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N), n);
                     var first = str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);

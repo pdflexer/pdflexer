@@ -6,11 +6,8 @@ using PdfLexer.Serializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.MemoryMappedFiles;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace PdfLexer
 {
@@ -77,6 +74,13 @@ namespace PdfLexer
             using var ms = new MemoryStream();
             SaveTo(ms);
             return ms.ToArray();
+        }
+
+        public PdfPage AddPage()
+        {
+            var pg = new PdfPage();
+            Pages.Add(pg);
+            return pg;
         }
 
         /// <summary>

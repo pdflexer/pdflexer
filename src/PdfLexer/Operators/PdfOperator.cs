@@ -13,103 +13,16 @@ using System.Text;
 
 namespace PdfLexer.Operators
 {
-    public interface IPdfOperationHandler
+    public interface IPdfOperation
     {
-        IPdfOperation ParseOp(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands);
-        void Apply(ParsingContext ctx, TextState txt, GraphicsState gfx, ReadOnlySpan<byte> data, List<OperandInfo> operands);
+        public PdfOperatorType Type { get; }
+        public void Serialize(Stream stream);
+        public void Apply(ref GraphicsState state) { }
+        public void Apply(TextState state) { }
     }
-
-    public class Glyph
-    {
-        public char Char { get; internal set; }
-        public float w0 { get; internal set; }
-        public float w1 { get; internal set; }
-        public bool IsWordSpace { get; internal set; } // single byte character code 32 when simple font
-                                                       // composite font if 32 is single byte code
-
-
-        // originalCharCode,
-        // fontChar,
-        // unicode,
-        // accent,
-        // width,
-        // vmetric,
-        // operatorListId,
-        // isSpace,
-        // isInFont
-    }
-    public readonly struct UnappliedGlyph
-    {
-        public UnappliedGlyph(Glyph glyph, float shift)
-        {
-            Glyph = glyph;
-            Shift = shift;
-
-        }
-        public readonly Glyph Glyph;
-        public readonly float Shift;
-    }
-
-    public class TJ_OpHandler : IPdfOperationHandler
-    {
-        private void FillGlyphs(ParsingContext ctx, TextState txt, ReadOnlySpan<byte> data, List<OperandInfo> operands, List<UnappliedGlyph> glyphs)
-        {
-            var max = operands.Max(x => x.Length);
-            if (max > 200)
-            {
-                var rented = ArrayPool<byte>.Shared.Rent(max);
-                FillGlyphsWithBuffer(ctx, txt, data, operands, glyphs, rented);
-                ArrayPool<byte>.Shared.Return(rented);
-            } else
-            {
-                Span<byte> buffer = stackalloc byte[max];
-                FillGlyphsWithBuffer(ctx, txt, data, operands, glyphs, buffer);
-            }
-        }
-
-        private void FillGlyphsWithBuffer(ParsingContext ctx, TextState txt, ReadOnlySpan<byte> data, List<OperandInfo> operands, List<UnappliedGlyph> glyphs, Span<byte> buffer)
-        {
-            float offset = 0f;
-            glyphs.Clear();
-            foreach (var op in operands)
-            {
-                if (op.Type == PdfTokenType.StringStart)
-                {
-                    var used = ctx.StringParser.ConvertBytes(data.Slice(op.StartAt, op.Length), buffer);
-                    buffer = buffer.Slice(0, used);
-                    int i = 0;
-                    int u = 0;
-                    while ((u = txt.GetGlyph(buffer, i, out var info)) > 0)
-                    {
-                        glyphs.Add(new UnappliedGlyph(info, offset));
-                        offset = 0f;
-                        i += u;
-                    }
-                }
-                else if (op.Type == PdfTokenType.NumericObj || op.Type == PdfTokenType.DecimalObj)
-                {
-                    if (!Utf8Parser.TryParse(data.Slice(op.StartAt, op.Length), out float val, out int consumed))
-                    {
-                        ctx.Error("Bad TJ found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
-                        val = 0f;
-                    }
-                    offset += val;
-                }
-            }
-        }
-        public void Apply(ParsingContext ctx, TextState txt, GraphicsState gfx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
-        {
-
-        }
-
-        public IPdfOperation ParseOp(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) =>
-            PdfOperator.ParseTJ(ctx, data, operands);
-    }
-
 
     public class PdfOperator
     {
-
         public static bool TryRepair(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> info, List<string> types, 
             out List<OperandInfo> fixedOps)
         {
@@ -323,6 +236,31 @@ namespace PdfLexer.Operators
             return new TJ_Op(items);
         }
 
+        internal static void ParseTJLazy(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands, List<TJ_Lazy_Item> items)
+        {
+            int i = 0;
+            foreach (var op in operands)
+            {
+                if (op.Type == PdfTokenType.StringStart)
+                {
+                    items.Add(
+                        new TJ_Lazy_Item
+                        {
+                            OpNum = i
+                        });
+                }
+                else if (op.Type == PdfTokenType.NumericObj || op.Type == PdfTokenType.DecimalObj)
+                {
+                    items.Add(
+                        new TJ_Lazy_Item
+                        {
+                            Shift = ParseDecimal(ctx, data, op)
+                        });
+                }
+                i++;
+            }
+        }
+
         internal static singlequote_Op Parsesinglequote(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
         {
             var op = operands[0];
@@ -357,6 +295,15 @@ namespace PdfLexer.Operators
             if (!Utf8Parser.TryParse(data.Slice(op.StartAt, op.Length), out decimal val, out int consumed))
             {
                 ctx.Error("Bad decimal found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
+            }
+            return val;
+        }
+
+        public static float ParseFloat(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
+        {
+            if (!Utf8Parser.TryParse(data.Slice(op.StartAt, op.Length), out float val, out int consumed))
+            {
+                ctx.Error("Bad float found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
             }
             return val;
         }
@@ -453,41 +400,5 @@ namespace PdfLexer.Operators
         }
     }
 
-    public interface IPdfOperation
-    {
-        public PdfOperatorType Type { get; }
-        public void Serialize(Stream stream);
-        public void Apply(ref GraphicsState state) { }
-        public void Apply(TextState state) { }
-    }
-
-    public interface ITextState
-    {
-        Matrix4x4 TextMatrix { get; set; }
-        Matrix4x4 TextLineMatrix { get; set; }
-        // character spacing - Tc = 0, used by Tj, TJ and ' (unscaled by Tfs), added to glyph displacement
-        // word spacing - Tw = 0, used by Tj, TJ and ' (unscaled by Tfs), only applied to char code 32 if simple font or composite with 32 as single byte code
-        // horizontal scaling - Th = 100,
-        // leading - Tl = 0, used by T*, ', " (unscaled by Tfs) - vertical coordinate space
-        // Text font - Tt
-        // Text font size Tfs
-        // Text rise - Trise set by Ts = 0 (unscaled by Tfs) - 
-        // Text knockout - Tk -> graphics state, default true, set for whole BT ET
-
-        // mode, default = 0 set by Tr
-
-        // text matrix
-        // text line matrix
-        // text rendering matrix = text state params + text matrix + CTM
-        // current font
-        // user unit (PDF 1.6)
-
-        // CTM
-        // string byte (0-255) -> character code
-
-        // horizontal 0, vertical 1 writing mode
-
-
-    }
-    
+   
 }

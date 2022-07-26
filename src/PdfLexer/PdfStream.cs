@@ -2,6 +2,7 @@
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using System;
+using System.Buffers;
 using System.IO;
 
 namespace PdfLexer
@@ -14,6 +15,12 @@ namespace PdfLexer
         public PdfStream()
         {
             Dictionary = new PdfDictionary();
+        }
+
+        public PdfStream(PdfStreamContents contents)
+        {
+            Dictionary = new PdfDictionary();
+            Contents = contents;
         }
 
         public PdfStream(PdfDictionary dictionary, PdfStreamContents contents)
@@ -78,6 +85,8 @@ namespace PdfLexer
         /// Decoded data cache
         /// </summary>
         internal byte[] DecodedData { get; private set; }
+
+        internal ParsingContext? Context { get; set; }
         /// <summary>
         /// Updates the stream dictionary with this streams filter information
         /// </summary>
@@ -96,18 +105,59 @@ namespace PdfLexer
             }
             dict[PdfName.Length] = new PdfIntNumber(Length);
         }
+
         /// <summary>
         /// Gets the decoded data for this stream.
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public byte[] GetDecodedData(ParsingContext ctx)
+        internal DecodedStreamContents GetDecodedBuffer()
+        {
+            if (DecodedData != null)
+            {
+                return new ArrayContents(DecodedData);
+            }
+
+            // TODO make this smarter
+            var size = Math.Min(1_048_000, Length * 15);
+            var rented = ArrayPool<byte>.Shared.Rent(size);
+            using var str = GetDecodedStream();
+            var l = str.Fill(rented);
+            if (l == rented.Length)
+            {
+                // slow fallback
+                var ms = new MemoryStream();
+                str.CopyTo(ms);
+                DecodedData = new byte[l + ms.Length];
+                Buffer.BlockCopy(rented, 0, DecodedData, 0, rented.Length);
+                int pos = rented.Length;
+                int toRead = (int)ms.Length;
+                ms.Seek(0, SeekOrigin.Begin);
+                int total = 0;
+                int read;
+                while ((read = ms.Read(DecodedData, pos, toRead - total)) > 0)
+                {
+                    total += read;
+                }
+                ArrayPool<byte>.Shared.Return(rented);
+                return new ArrayContents(DecodedData);
+            }
+            return new RentedArrayContents(rented, l);
+        }
+
+
+        /// <summary>
+        /// Gets the decoded data for this stream.
+        /// </summary>
+        /// <param name="ctx"></param>
+        /// <returns></returns>
+        public byte[] GetDecodedData()
         {
             if (DecodedData != null)
             {
                 return DecodedData;
             }
-            using var stream = GetDecodedStream(ctx); // TODO figure out which streams to dispose;
+            using var stream = GetDecodedStream();
             if (stream is MemoryStream ms)
             {
                 DecodedData = ms.ToArray();
@@ -122,7 +172,7 @@ namespace PdfLexer
                 else
                 {
                     // don't know length, have to copy
-                    using var copy = ctx.GetTemporaryStream();
+                    using var copy = Context?.GetTemporaryStream() ?? new MemoryStream();
                     stream.CopyTo(copy);
                     DecodedData = new byte[copy.Length];
                     copy.Seek(0, SeekOrigin.Begin);
@@ -147,9 +197,9 @@ namespace PdfLexer
         /// </summary>
         /// <param name="ctx"></param>
         /// <returns></returns>
-        public Stream GetDecodedStream(ParsingContext ctx)
+        public Stream GetDecodedStream()
         {
-            if (ctx.IsEncrypted)
+            if (Context?.IsEncrypted ?? false)
             {
                 throw new NotSupportedException("Pdf encryption is not supported.");
             }
@@ -163,10 +213,7 @@ namespace PdfLexer
             }
 
             var source = GetEncodedData();
-            // if (source.Length != Length)
-            // {
-            //     source = new SubStream(source, 0, Length, true);
-            // }
+
 
             var obj = Filters.Resolve();
             var parms = DecodeParams?.Resolve();
@@ -206,8 +253,14 @@ namespace PdfLexer
 
             Stream DecodeSingle(PdfName filterName, Stream input, PdfDictionary decodeParams)
             {
-                var decode = ctx.GetDecoder(filterName);
-                return decode.Decode(input, decodeParams);
+                var decode = ParsingContext.GetDecoder(filterName);
+                if (Context != null)
+                {
+                    return decode.Decode(input, decodeParams, Context.Error);
+                } else
+                {
+                    return decode.Decode(input, decodeParams);
+                }
             }
         }
     }
@@ -222,6 +275,7 @@ namespace PdfLexer
         public PdfExistingStreamContents(IPdfDataSource source, long offset, int length)
         {
             Source = source;
+            Context = source.Context;
             Offset = offset;
             Length = length;
         }
@@ -354,5 +408,55 @@ namespace PdfLexer
         }
 
         public override Stream GetEncodedData() => throw new NotImplementedException();
+    }
+
+    public abstract class DecodedStreamContents : IDisposable
+    {
+        public abstract ReadOnlySpan<byte> GetData();
+        public abstract void Dispose();
+    }
+
+    internal class RentedArrayContents : DecodedStreamContents
+    {
+        private byte[] _data;
+        private int _length;
+
+        public RentedArrayContents(byte[] data, int length)
+        {
+            _data = data;
+            _length = length;
+        }
+        public override void Dispose()
+        {
+            ArrayPool<byte>.Shared.Return(_data);
+            _data = null;
+        }
+
+        public override ReadOnlySpan<byte> GetData()
+        {
+            if (_data == null) { throw new ObjectDisposedException("GetData() called on disposed DecodedStreamContents.");  }
+            ReadOnlySpan<byte> spanned = _data;
+            return spanned.Slice(0, _length);
+        }
+    }
+
+    internal class ArrayContents : DecodedStreamContents
+    {
+        private byte[] _data;
+
+        public ArrayContents(byte[] data)
+        {
+            _data = data;
+        }
+        public override void Dispose()
+        {
+            _data = null;
+        }
+
+        public override ReadOnlySpan<byte> GetData()
+        {
+            if (_data == null) { throw new ObjectDisposedException("GetData() called on disposed DecodedStreamContents."); }
+            return _data;
+        }
     }
 }

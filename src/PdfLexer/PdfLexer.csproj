@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="DOM\DOMGen.tt">
+      <LastGenOutput>DOMGen.cs</LastGenOutput>
+      <Generator>TextTemplatingFileGenerator</Generator>
+    </None>
     <None Update="Operators\PdfOperatorType.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>PdfOperatorType.cs</LastGenOutput>

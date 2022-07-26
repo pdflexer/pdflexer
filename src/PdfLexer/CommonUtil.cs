@@ -51,6 +51,18 @@ namespace PdfLexer
             }
         }
 
+        public static int Fill(this Stream stream, byte[] array)
+        {
+            var l = array.Length;
+            int total = 0;
+            int read;
+            while ((read = stream.Read(array, total, l - total)) > 0)
+            {
+                total += read;
+            }
+            return total;
+        }
+
         public static bool TryFillArray(this Stream stream, byte[] array, int requiredBytes = -1)
         {
             if (requiredBytes < 0) { requiredBytes = array.Length; }

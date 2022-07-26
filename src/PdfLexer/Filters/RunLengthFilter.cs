@@ -4,6 +4,8 @@ namespace PdfLexer.Filters
 {
     public class RunLengthFilter : IDecoder
     {
+
+        public static RunLengthFilter Instance { get; } = new RunLengthFilter();
         public RunLengthFilter()
         {
         }

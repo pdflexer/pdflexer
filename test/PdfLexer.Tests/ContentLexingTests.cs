@@ -18,7 +18,7 @@ namespace PdfLexer.Tests
         public void It_Decodes(string encoded, string decoded, bool singleByte)
         {
             var data = Encoding.ASCII.GetBytes(encoded);
-            var decoder = new Ascii85Filter(new Parsers.ParsingContext());
+            var decoder = new Ascii85Filter();
             var ms = new MemoryStream(data);
             var result = decoder.Decode(ms, null);
             var rms = new MemoryStream();

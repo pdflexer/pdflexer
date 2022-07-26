@@ -11,7 +11,7 @@ using Xunit;
 
 namespace PdfLexer.ImageTests
 {
-    public class ImageTests
+    public class ImageExtractTests
     {
         [Fact]
         public void It_Reads_8_bit_RGB_Large_Decode()
@@ -371,7 +371,6 @@ namespace PdfLexer.ImageTests
                 {
                     throw new ApplicationException("Read failure");
                 }
-
                 var name = Path.GetFileNameWithoutExtension(pdf);
                 using var isa = img.GetImage(doc.Context);
                 var imgout = Path.Combine(output, name + ".png");
@@ -405,7 +404,6 @@ namespace PdfLexer.ImageTests
                             // don't support encryption currently
                             continue;
                         }
-
 
                         int i = 0;
                         foreach (var page in doc.Pages)
@@ -464,7 +462,7 @@ namespace PdfLexer.ImageTests
 
         }
 
-        private static bool RunCompare(Image<Bgra32> imgB, Image<Bgra32> imgC, string output, int threshhold)
+        public static bool RunCompare(Image<Bgra32> imgB, Image<Bgra32> imgC, string output, int threshhold)
         {
             var w1 = imgB.Width;
             var w2 = imgB.Width;

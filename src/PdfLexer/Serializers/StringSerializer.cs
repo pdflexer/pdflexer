@@ -35,7 +35,7 @@ namespace PdfLexer.Serializers
             ArrayPool<byte>.Shared.Return(buffer);
         }
 
-        public void WriteToStream(ReadOnlySpan<byte> data, Stream stream)
+        public static void WriteToStream(ReadOnlySpan<byte> data, Stream stream)
         {
             var buffer = ArrayPool<byte>.Shared.Rent((data.Length) * 8 + 16); // overkill find better solution
             var i = ConvertLiteralBytes(data, buffer, true);
