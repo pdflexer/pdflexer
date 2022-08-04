@@ -6,16 +6,19 @@ namespace PdfLexer.Fonts
 {
     public class Glyph
     {
+        // TODO unify unicode handling for char vs string
+        public string MultiChar { get; internal set; }
         public char Char { get; internal set; }
         public float w0 { get; internal set; }
         public float w1 { get; internal set; }
         public bool IsWordSpace { get; internal set; } // single byte character code 32 when simple font
                                                        // composite font if 32 is single byte code
         public decimal[] BBox { get; internal set; }
-        public ushort CodePoint { get; internal set; }
+        public uint? CodePoint { get; internal set; }
+        public int Bytes { get; internal set; }
         public bool Undefined { get; set; }
         public Dictionary<char,float>? Kernings { get; set; }
-
+        public string? Name { get; set; }
 
         // originalCharCode,
         // fontChar,
@@ -43,7 +46,6 @@ namespace PdfLexer.Fonts
         }
     }
 
-
     public readonly struct UnappliedGlyph
     {
         public UnappliedGlyph(Glyph glyph, float shift)
@@ -55,5 +57,4 @@ namespace PdfLexer.Fonts
         public readonly Glyph Glyph;
         public readonly float Shift;
     }
-
 }

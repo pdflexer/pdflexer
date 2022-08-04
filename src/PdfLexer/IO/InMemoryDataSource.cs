@@ -62,7 +62,13 @@ namespace PdfLexer.IO
             }
             Context.CurrentSource = this;
             Context.CurrentOffset = startPosition;
-            data = span.Slice(start, desiredBytes);
+            if (desiredBytes == -1)
+            {
+                data = span.Slice(start);
+            } else
+            {
+                data = span.Slice(start, desiredBytes);
+            }
         }
 
         public void CopyData(long startPosition, int requiredBytes, Stream stream)

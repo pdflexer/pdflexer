@@ -1,6 +1,5 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Fonts;
-using PdfLexer.Lexing;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using System;
@@ -13,6 +12,9 @@ namespace PdfLexer.Content
     {
         private ParsingContext Context;
         private PageContentScanner Scanner;
+
+        private PdfDictionary PgRes;
+
         public TextState TextState;
         public GraphicsState GraphicsState;
         public Glyph Glyph;
@@ -21,7 +23,8 @@ namespace PdfLexer.Content
         {
             Context = ctx;
             Scanner = new PageContentScanner(ctx, page, true);
-            TextState = new TextState(ctx, page.Get<PdfDictionary>(PdfName.Resources));
+            PgRes = page.Get<PdfDictionary>(PdfName.Resources);
+            TextState = new TextState(ctx, PgRes);
             GraphicsState = new GraphicsState();
             CurrentTextPos = 0;
             ReadState = TextReadState.Normal;
@@ -51,10 +54,10 @@ namespace PdfLexer.Content
                         return false;
                     case PdfOperatorType.BT:
                         ReadState = TextReadState.ReadingText;
+                        // todo reset text state ?
                         TextState.Apply(BT_Op.Value);
                         TextState.FormResources = Scanner.CurrentForm?.Get<PdfDictionary>(PdfName.Resources);
                         Scanner.SkipCurrent();
-                        // todo reset text state
                         continue;
                     case PdfOperatorType.ET:
                         ReadState = TextReadState.Normal;
@@ -123,7 +126,7 @@ namespace PdfLexer.Content
                                     PdfOperator.ParseTJLazy(Context, Scanner.Scanner.Data, Scanner.Scanner.Operands, TJCache);
                                     foreach (var item in TJCache)
                                     {
-                                        if (item.Shift != 0)
+                                        if (item.OpNum == -1)
                                         {
                                             CurrentGlyphs.Add(new UnappliedGlyph(null, (float)item.Shift));
                                         }

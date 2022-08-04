@@ -60,6 +60,9 @@ namespace PdfLexer
 
         public static bool operator !=(PdfName n1, PdfName n2) => !(n1 == n2);
 
+        
+        public static readonly PdfName Name = new PdfName("/Name", false);
+        public static readonly PdfName CharProcs = new PdfName("/CharProcs", false);
         public static readonly PdfName Prev = new PdfName("/Prev", false);
         public static readonly PdfName Length = new PdfName("/Length", false);
         public static readonly PdfName Root = new PdfName("/Root", false);
@@ -128,6 +131,18 @@ namespace PdfLexer
         public static readonly PdfName Type0 = new PdfName("/Type0", false);
         public static readonly PdfName Type1 = new PdfName("/Type1", false);
         public static readonly PdfName Type3 = new PdfName("/Type3", false);
+        public static readonly PdfName CIDFontType0 = new PdfName("/CIDFontType0", false);
+        public static readonly PdfName CIDFontType2 = new PdfName("/CIDFontType2", false);
+
+        public static readonly PdfName DW = new PdfName("/DW", false);
+        public static readonly PdfName DW2 = new PdfName("/DW2", false);
+        public static readonly PdfName W2 = new PdfName("/W2", false);
+        public static readonly PdfName CIDToGIDMap = new PdfName("/CIDToGIDMap", false);
+        public static readonly PdfName CIDSystemInfo = new PdfName("/CIDSystemInfo", false);
+        public static readonly PdfName Registry = new PdfName("/Registry", false);
+        public static readonly PdfName Ordering = new PdfName("/Ordering", false);
+        public static readonly PdfName Supplement = new PdfName("/Supplement", false);
+
         public static readonly PdfName DescendantFonts = new PdfName("/DescendantFonts", false);
         public static readonly PdfName BaseFont = new PdfName("/BaseFont", false);
         public static readonly PdfName FontFile = new PdfName("/FontFile", false);
@@ -176,6 +191,14 @@ namespace PdfLexer
         public static readonly PdfName Mask = new PdfName("/Mask", false);
         public static readonly PdfName SMask = new PdfName("/SMask", false);
         public static readonly PdfName Image = new PdfName("/Image", false);
+
+        public static readonly PdfName WinAnsiEncoding = new PdfName("/WinAnsiEncoding", false);
+        public static readonly PdfName StandardEncoding = new PdfName("/StandardEncoding", false);
+        public static readonly PdfName MacRomanEncoding = new PdfName("/MacRomanEncoding", false);
+        public static readonly PdfName SymbolSetEncoding = new PdfName("/SymbolSetEncoding", false);
+        public static readonly PdfName ZapfDingbatsEncoding = new PdfName("/ZapfDingbatsEncoding", false);
+        public static readonly PdfName ExpertEncoding = new PdfName("/ExpertEncoding", false);
+        public static readonly PdfName MacExpertEncoding = new PdfName("/MacExpertEncoding", false);
 
         public static implicit operator PdfName(string name)
         {

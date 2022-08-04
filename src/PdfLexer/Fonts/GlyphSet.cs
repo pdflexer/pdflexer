@@ -4,12 +4,12 @@ using System.Text;
 
 namespace PdfLexer.Fonts
 {
-    internal class FontGlyphMetrics
+    internal class GlyphSet
     {
         private Dictionary<string, Glyph> _all;
         private Glyph[] _default;
 
-        public FontGlyphMetrics(Dictionary<string, Glyph> allGlyphs, Glyph[] defaultEncoding)
+        public GlyphSet(Dictionary<string, Glyph> allGlyphs, Glyph[] defaultEncoding)
         {
             _all = allGlyphs;
             _default = defaultEncoding;

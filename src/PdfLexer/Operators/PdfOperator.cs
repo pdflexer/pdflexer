@@ -254,7 +254,8 @@ namespace PdfLexer.Operators
                     items.Add(
                         new TJ_Lazy_Item
                         {
-                            Shift = ParseDecimal(ctx, data, op)
+                            Shift = ParseDecimal(ctx, data, op),
+                            OpNum = -1
                         });
                 }
                 i++;

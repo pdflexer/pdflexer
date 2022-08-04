@@ -232,16 +232,26 @@ namespace PdfLexer.Content
 
         public (float llx, float lly, float urx, float ury) GetBoundingBox(Glyph glyph)
         {
+            
+            float x = 0, y = 0, x2 = glyph.w0, y2 = 0;
+            if (glyph.BBox != null)
+            {
+                // TODO : should this be moved to fonts to decide fallback?
+                x = (float)glyph.BBox[0];
+                y = (float)glyph.BBox[1];
+                x2 = (float)glyph.BBox[2];
+                y2 = (float)glyph.BBox[3];
+            }
             var bl = new Matrix4x4(
                           1f, 0f, 0f, 0f,
                           0f, 1f, 0f, 0f,
-                          (float)glyph.BBox[0], (float)glyph.BBox[1], 1f, 0f,
+                          x, y, 1f, 0f,
                           0f, 0f, 0f, 1f) * TextRenderingMatrix;
 
             var tr = new Matrix4x4(
               1f, 0f, 0f, 0f,
               0f, 1f, 0f, 0f,
-              (float)glyph.BBox[2], (float)glyph.BBox[3], 1f, 0f,
+              x2, y2, 1f, 0f,
               0f, 0f, 0f, 1f) * TextRenderingMatrix;
 
             return (bl.M31, bl.M32, tr.M31, tr.M32);

@@ -44,6 +44,14 @@ namespace PdfLexer.Content
             CTM = cm * CTM;
         }
 
+        public GraphicsState CloneNoPrev()
+        {
+            return new GraphicsState
+            {
+                CTM = CTM
+            };
+        }
+
     }
 }
 
@@ -68,7 +76,7 @@ namespace PdfLexer.Operators
         public void Apply(ref GraphicsState state)
         {
             var prev = state;
-            state = new GraphicsState();
+            state = state.CloneNoPrev();
             state.Prev = prev;
         }
     }

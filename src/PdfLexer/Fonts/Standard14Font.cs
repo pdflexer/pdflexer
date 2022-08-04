@@ -1,5 +1,6 @@
 ﻿using PdfLexer.DOM;
-using PdfLexer.Fonts.StdFonts;
+using PdfLexer.Fonts.Predefined;
+using PdfLexer.Parsers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,23 +8,21 @@ using System.Text;
 
 namespace PdfLexer.Fonts
 {
-    internal class Standard14Font : IReadableFont
+    public partial class SingleByteFont : IReadableFont
     {
         private Glyph[] Glyphs;
         private Glyph NotDef;
-
 
         public bool IsVertical => false;
 
         public PdfName Name { get; }
 
-        public Standard14Font(PdfName name, Glyph[] glyphs, Glyph notdef)
+        public SingleByteFont(PdfName name, Glyph[] glyphs, Glyph notdef)
         {
             Glyphs = glyphs;
             Name = name;
             NotDef = notdef;
         }
-
 
         public int GetGlyph(ReadOnlySpan<byte> data, int os, out Glyph glyph)
         {
@@ -40,87 +39,264 @@ namespace PdfLexer.Fonts
             return 1;
         }
 
-        public static Standard14Font Create(FontType1 t1)
+        internal static IReadableFont Type1Fallback(FontType1 t1)
         {
-            if (t1.FontDescriptor?.FontFile != null)
-            {
-                throw new PdfLexerException("Trying to create standard font from embedded font: " + t1.BaseFont);
-            }
+            var g = Encodings.GetPartialGlyphs(Encodings.StandardEncoding);
+            return FromEncodingAndDifferences(t1, g, g);
+        }
 
-            if (t1.ToUnicode != null) 
+        internal static IReadableFont FromEncodingAndDifferences(FontType1 t1, Glyph[] allGlyphs, Glyph[] defaultEnc)
+        {
+            var all = new Dictionary<string, Glyph>();
+            foreach (var item in allGlyphs)
             {
-                throw new PdfLexerException("ToUnicode not implemented for base 14: " + t1.BaseFont);
+                if (item == null) { continue; }
+                all[item.Name] = item;
             }
+            var fm = new GlyphSet(all, defaultEnc);
 
             var mw = t1.FontDescriptor?.MissingWidth ?? 0;
 
-            FontGlyphMetrics fm = null;
-            switch (t1.BaseFont.Value)
-            {
-                case "/Times-Roman":
-                    // complete hack for now
-                    var rg = TimesRoman.GetGlyphs();
-                    var lu = new Dictionary<char, string>();
-                    foreach (var item in GlyphNames.Lookup)
-                    {
-                        lu[item.Value] = item.Key;
-                    }
-                    var used = new Dictionary<ushort, Glyph>();
-                    foreach (var item in rg)
-                    {
-                        used[item.CodePoint] = item;
-                    }
-                    var all = new Dictionary<string, Glyph>();
-                    foreach (var item in rg)
-                    {
-                        all[lu[item.Char]] = item;
-                    }
-                    var de = new Glyph[256];
-                    for (var i=0;i<256;i++)
-                    {
-                        if (used.TryGetValue((ushort)i, out var match)) {
-                            de[i] = match;
-                        } else
-                        {
-                            de[i] = null;
-                        }
-                    }
-                    fm = new FontGlyphMetrics(all, de);
-                    break;
-            }
             var glyphs = fm.GetStandardEncoding();
-            var notdef = fm.GetGlyph(".notdef") ?? new Glyph { Char = '\u0000', IsWordSpace = false, BBox = new decimal [] { 0m, 0m, 0m, 0m } };
+            var notdef = fm.GetGlyph(".notdef") ?? new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, mw, 0m } };
             notdef.Undefined = true;
             if (t1.FontDescriptor?.NativeObject?.ContainsKey(PdfName.MissingWidth) ?? false)
             {
                 notdef = notdef.Clone();
                 notdef.w0 = t1.FontDescriptor.MissingWidth;
             }
+            bool copied = false;
 
             if (t1.Encoding != null)
             {
-                glyphs = glyphs.ToArray();
-                var enc = (FontEncoding)(PdfDictionary)t1.Encoding;
-                foreach (var diff in enc.ReadDifferences())
+                var enc = t1.Encoding.Resolve();
+                if (enc.Type == PdfObjectType.NameObj)
                 {
-                    if (diff.code > 255)
+                    var nm = enc.GetAs<PdfName>();
+                    if (nm != PdfName.StandardEncoding)
                     {
-                        continue;
-                    }
-                    var g = fm.GetGlyph(diff.name.Value.Substring(1));
-                    if (g != null) // TODO how to handle not found, leave as is or notdef it?
-                    {
-                        if (diff.code == 32 && g.IsWordSpace == false)
+                        var lookup = Encodings.GetEncoding(nm);
+                        if (lookup == null)
                         {
-                            g = g.Clone();
-                            g.IsWordSpace = true;
+                            // todo error
                         }
-                        glyphs[diff.code] = g;
+                        else
+                        {
+                            if (t1.NativeObject.Get<PdfName>(PdfName.Subtype)?.Value == PdfName.Type1)
+                            {
+                                glyphs = new Glyph[256];
+                                copied = true;
+                                for (var i = 0; i < 256; i++)
+                                {
+                                    var luv = lookup[i];
+                                    if (luv != null)
+                                    {
+                                        glyphs[i] = fm.GetGlyph(luv);
+                                    }
+                                    else
+                                    {
+                                        glyphs[i] = null;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                glyphs = Encodings.GetPartialGlyphs(lookup);
+                            }
+                        }
+                    }
+                }
+                else if (enc.Type == PdfObjectType.DictionaryObj)
+                {
+                    copied = true;
+                    
+                    var encDiff = (FontEncoding)(PdfDictionary)t1.Encoding;
+                    if (encDiff.BaseEncoding != null)
+                    {
+                        var be = Encodings.GetEncoding(encDiff.BaseEncoding);
+                        if (be == null)
+                        {
+                            // todo error
+                            be = Encodings.StandardEncoding;
+                        }
+                        glyphs = Encodings.GetPartialGlyphs(be);
+
+                    } else
+                    {
+                        glyphs = glyphs.ToArray();
+                    }
+                    foreach (var diff in encDiff.ReadDifferences())
+                    {
+                        if (diff.code > 255)
+                        {
+                            continue;
+                        }
+                        var nm = diff.name.Value[1..];
+                        var g = fm.GetGlyph(nm);
+                        if (g != null) // TODO how to handle not found, leave as is or notdef it, or create new glyph with unicode char?
+                        {
+                            if (diff.code == 32 && g.IsWordSpace == false)
+                            {
+                                g = g.Clone();
+                                g.IsWordSpace = true;
+                            }
+                            glyphs[diff.code] = g;
+                        } else
+                        {
+                            if (GlyphNames.Lookup.TryGetValue(nm, out char c))
+                            {
+                                glyphs[diff.code] = new Glyph
+                                {
+                                    Char = c,
+                                    CodePoint = (uint)diff.code,
+                                    Name = nm,
+                                    IsWordSpace = diff.code == 32
+                                };
+                            } else
+                            {
+                                // TODO error
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    // TODO error
+                }
+            }
+            var bbox = t1.FontDescriptor?.FontBBox;
+            if (t1.FirstChar != null && t1.Widths != null)
+            {
+                if (!copied)
+                {
+                    glyphs = glyphs.ToArray();
+                }
+                var start = (int)t1.FirstChar;
+                float sf = 1000.0f;
+                if (t1.NativeObject.TryGetValue<PdfArray>(PdfName.FontMatrix, out var matrix))
+                {
+                    var x = (float)matrix[0].GetAs<PdfNumber>();
+                    sf = 1 / x;
+                }
+                for (var i = 0; i < t1.Widths.Count; i++)
+                {
+                    var v = (float)t1.Widths[i].GetAs<PdfNumber>();
+                    v = v / sf;
+                    var g = glyphs[i+start];
+                    if (g != null && v != g.w0)
+                    {
+                        g = g.Clone();
+                        g.w0 = v;
+                        glyphs[i + start] = g;
+                        if (bbox != null && g.BBox == null)
+                        {
+                            g.BBox = new decimal[] { 0, 0, (decimal)g.w0, bbox.URy / 1000.0m };  // todo font matrix vs 1000?
+                        }
                     }
                 }
             }
 
-            return new Standard14Font(t1.BaseFont, glyphs, notdef);
+            if (glyphs.Max(x=>x?.CodePoint ?? 0) > 255)
+            {
+                return new CMapFont(glyphs, notdef);
+            }
+
+            return new SingleByteFont(t1.BaseFont, glyphs, notdef);
+        }
+
+        // internal static IReadableFont FromGlyphsAndWidths()
+        // {
+        // 
+        // }
+
+
+        internal static IReadableFont Create(ParsingContext ctx, FontType1 t1)
+        {
+            // if (t1.FontDescriptor?.FontFile != null)
+            // {
+            //     return Type1Fallback(t1);
+            //     var dat = t1.FontDescriptor.FontFile.Contents.GetDecodedData();
+            //     var txt = Encoding.ASCII.GetString(dat);
+            //     throw new PdfLexerException("Trying to create standard font from embedded font: " + t1.BaseFont);
+            // }
+
+            if (t1.ToUnicode != null)
+            {
+                return ToUnicodeFont.GetSimple(ctx, t1);
+            }
+
+            Glyph[] defaultEnc = null;
+            Glyph[] allGlyphs = null;
+
+            switch (t1.BaseFont.Value)
+            {
+                case "/Times-Roman":
+                    defaultEnc = TimesRomanGlyphs.DefaultEncoding;
+                    allGlyphs = TimesRomanGlyphs.AllGlyphs;
+                    break;
+                case "/Helvetica":
+                    defaultEnc = HelveticaGlyphs.DefaultEncoding;
+                    allGlyphs = HelveticaGlyphs.AllGlyphs;
+                    break;
+                case "/Courier":
+                    defaultEnc = CourierGlyphs.DefaultEncoding;
+                    allGlyphs = CourierGlyphs.AllGlyphs;
+                    break;
+                case "/Symbol":
+                    defaultEnc = SymbolGlyphs.DefaultEncoding;
+                    allGlyphs = SymbolGlyphs.AllGlyphs;
+                    break;
+                case "/Times-Bold":
+                    defaultEnc = TimesBoldGlyphs.DefaultEncoding;
+                    allGlyphs = TimesBoldGlyphs.AllGlyphs;
+                    break;
+                case "/Helvetica-Bold":
+                    defaultEnc = HelveticaBoldGlyphs.DefaultEncoding;
+                    allGlyphs = HelveticaBoldGlyphs.AllGlyphs;
+                    break;
+                case "/Courier-Bold":
+                    defaultEnc = CourierBoldGlyphs.DefaultEncoding;
+                    allGlyphs = CourierBoldGlyphs.AllGlyphs;
+                    break;
+                case "/ZapfDingbats":
+                    defaultEnc = ZapfDingbatsGlyphs.DefaultEncoding;
+                    allGlyphs = ZapfDingbatsGlyphs.AllGlyphs;
+                    break;
+                case "/Times-Italic":
+                    defaultEnc = TimesItalicGlyphs.DefaultEncoding;
+                    allGlyphs = TimesItalicGlyphs.AllGlyphs;
+                    break;
+                case "/Helvetica-Oblique":
+                    defaultEnc = HelveticaObliqueGlyphs.DefaultEncoding;
+                    allGlyphs = HelveticaObliqueGlyphs.AllGlyphs;
+                    break;
+                case "/Courier-Oblique":
+                    defaultEnc = CourierObliqueGlyphs.DefaultEncoding;
+                    allGlyphs = CourierObliqueGlyphs.AllGlyphs;
+                    break;
+                case "/Times-BoldItalic":
+                    defaultEnc = TimesBoldItalicGlyphs.DefaultEncoding;
+                    allGlyphs = TimesBoldItalicGlyphs.AllGlyphs;
+                    break;
+                case "/Helvetica-BoldOblique":
+                    defaultEnc = HelveticaBoldObliqueGlyphs.DefaultEncoding;
+                    allGlyphs = HelveticaBoldObliqueGlyphs.AllGlyphs;
+                    break;
+                case "/Courier-BoldOblique":
+                    defaultEnc = CourierBoldObliqueGlyphs.DefaultEncoding;
+                    allGlyphs = CourierBoldObliqueGlyphs.AllGlyphs;
+                    break;
+                default:
+                    if (t1.Encoding != null && t1.Encoding.GetPdfObjType() == PdfObjectType.NameObj)
+                    {
+                        var be = t1.Encoding.GetAs<PdfName>();
+                        var g = Encodings.GetPartialGlyphs(Encodings.GetEncoding(be));
+                        return FromEncodingAndDifferences(t1, g, g);
+                    }
+                    return Type1Fallback(t1);
+            }
+
+            return FromEncodingAndDifferences(t1, allGlyphs, defaultEnc);
 
             // widths
             // optional otherwise from font metrics

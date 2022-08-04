@@ -8,7 +8,21 @@ namespace PdfLexer.DOM
     {
         PdfDictionary NativeObject { get; }
     }
-    public class FontType1 : IPdfFont
+
+    public interface ISimpleUnicode
+    {
+        PdfDictionary NativeObject { get; }
+        PdfName FontName { get; }
+        PdfNumber FirstChar { get; }
+        PdfNumber LastChar { get; }
+        PdfArray Widths { get; }
+        PdfNumber MissingWidth { get; }
+        PdfRectangle FontBBox { get; }
+        PdfStream ToUnicode { get; }
+        float ScaleFactor { get; }
+
+    }
+    public class FontType1 : IPdfFont, ISimpleUnicode
     {
         public PdfDictionary NativeObject { get; }
 
@@ -95,5 +109,13 @@ namespace PdfLexer.DOM
             get => NativeObject.Get<PdfStream>(PdfName.ToUnicode);
             set => NativeObject[PdfName.ToUnicode] = value.Indirect();
         }
+
+        PdfName ISimpleUnicode.FontName => BaseFont;
+
+        PdfNumber ISimpleUnicode.MissingWidth => FontDescriptor?.MissingWidth;
+
+        PdfRectangle ISimpleUnicode.FontBBox => FontDescriptor?.FontBBox;
+
+        public float ScaleFactor => 1000f;
     }
 }

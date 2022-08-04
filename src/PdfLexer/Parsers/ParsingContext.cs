@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Microsoft.IO;
+using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.Fonts;
 using PdfLexer.IO;
@@ -168,9 +169,33 @@ namespace PdfLexer.Parsers
 
         internal IReadableFont GetFont(IPdfObject obj)
         {
+            // built in encoding:
+            // type1 -> Encoding array in font program but overridden by Encoding / BaseEncoding values
+            // type3
+            // pdfjs:
+            // default -> StandardEncoding
+            // if truetype && doesn't have nonsymbolic flag -> WinAnsiEncoding
+            // is has symbolic flag -> MacRomanEncoding unless
+            //      unembedded or isinternalfont
+            //          Symbol in name -> SymbolSetEncoding
+            //          Dingbats|Wingdings in name -> ZapfDingbats
+            
             var dict = obj.GetAs<PdfDictionary>();
-            // TODO type check
-            return Standard14Font.Create(dict);
+            var type = dict.Get<PdfName>(PdfName.Subtype);
+
+            switch (type.Value)
+            {
+                case "/TrueType":
+                    return TrueType.Get(this, dict);
+                case "/Type1":
+                    return SingleByteFont.Create(this, dict);
+                case "/Type0":
+                    return CIDFontReader.Create(this, dict);
+                case "/Type3":
+                    var glyphs = new Glyph[256];
+                    return SingleByteFont.FromEncodingAndDifferences(dict, glyphs, glyphs);
+            }
+            return null;
         }
 
         internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
