@@ -70,7 +70,7 @@ namespace pdflexer.PdfiumRegressionTester
                             chars[$"{x:0.0}{y:0.0}f"] = ((float)x, (float)y, 'f', llx, lly, urx, ury);
                             lines.Add(((float)x, (float)y, 'i'));
                             chars[$"{x:0.0}{y:0.0}i"] = ((float)x, (float)y, 'i', llx, lly, urx, ury);
-                        }
+                        } // 415 is ti
                         else if (c == '\uFB02')
                         {
                             lines.Add(((float)x, (float)y, 'f'));
@@ -113,7 +113,7 @@ namespace pdflexer.PdfiumRegressionTester
                     if (!chars.TryGetValue(key, out var prev))
                     {
                         var dist = Nearest((float)x, (float)y, c, lines);
-                        if (dist > 0.25)
+                        if (dist > 0.01)
                         {
                             writer
                               .LineWidth(0.01m)
@@ -149,7 +149,7 @@ namespace pdflexer.PdfiumRegressionTester
                     if (!chars2.TryGetValue(kvp.Key, out var prev))
                     {
                         var dist = Nearest(kvp.Value.x, kvp.Value.y, kvp.Value.c, lines2);
-                        if (dist > 0.25)
+                        if (dist > 0.01)
                         {
                             writer.LineWidth(0.05m)
                                   .Rect((decimal)kvp.Value.llx, (decimal)kvp.Value.lly,

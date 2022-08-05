@@ -19,6 +19,7 @@ namespace PdfLexer.Fonts
         public bool Undefined { get; set; }
         public Dictionary<char,float>? Kernings { get; set; }
         public string? Name { get; set; }
+        public bool GuessedUnicode { get; set; }
 
         // originalCharCode,
         // fontChar,

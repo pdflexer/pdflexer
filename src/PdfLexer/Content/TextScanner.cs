@@ -26,6 +26,8 @@ namespace PdfLexer.Content
             PgRes = page.Get<PdfDictionary>(PdfName.Resources);
             TextState = new TextState(ctx, PgRes);
             GraphicsState = new GraphicsState();
+            TextState.GS = GraphicsState;
+            TextState.UpdateTRM();
             CurrentTextPos = 0;
             ReadState = TextReadState.Normal;
             CurrentGlyphs = new List<UnappliedGlyph>(50);
@@ -70,7 +72,8 @@ namespace PdfLexer.Content
                         {
                             gso.Apply(ref GraphicsState);
                         }
-                        TextState.CTM = GraphicsState.CTM;
+                        TextState.GS = GraphicsState;
+                        TextState.UpdateTRM();
                         Scanner.SkipCurrent();
                         continue;
                 }
@@ -101,8 +104,8 @@ namespace PdfLexer.Content
                                     var ac = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, Scanner.Scanner.Operands[1]);
                                     var op = Scanner.Scanner.Operands[2];
                                     var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                    TextState.WordSpacing = aw;
-                                    TextState.CharSpacing = ac;
+                                    GraphicsState.WordSpacing = aw;
+                                    GraphicsState.CharSpacing = ac;
                                     TextState.Apply(T_Star_Op.Value);
                                     TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
                                     CurrentTextPos = 0;
@@ -203,6 +206,9 @@ namespace PdfLexer.Content
             if (CurrentGlyph.Glyph != null)
             {
                 TextState.ApplyCharShift(CurrentGlyph); // apply previous glyph to shift char size
+            } else
+            {
+                TextState.UpdateTRM();
             }
 
             while (true)

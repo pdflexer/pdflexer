@@ -89,6 +89,19 @@ namespace PdfLexer.Fonts
                 {
                     glyph.w0 = w.width / 1000f;
                 }
+                else
+                {
+                    var g = new Glyph
+                    {
+                        Char = (char)w.cid,
+                        CodePoint = w.cid,
+                        GuessedUnicode = true,
+                        w0 = w.width / 1000f
+                    };
+                    lu[w.cid] = g;
+                    glyphs.Add(g);
+
+                }
             }
 
             ranges.Sort((a, b) => a.Bytes - b.Bytes);
@@ -108,7 +121,7 @@ namespace PdfLexer.Fonts
                     }
                 }
             }
-            
+
             return new CMapFont3(glyphs);
         }
     }

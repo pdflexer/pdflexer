@@ -2,7 +2,7 @@
   "profiles": {
     "pdflexer.PdfiumRegressionTester": {
       "commandName": "Project",
-      "commandLineArgs": "--strict --type text --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__bpl13210.pdf.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__bug888437.pdf.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__issue8895.pdf.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__aboutstacks.pdf.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\issue4934.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__issue6117.pdf.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\pdfium"
+      "commandLineArgs": "--strict --type text --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__issue1597.pdf.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__bug888437.pdf.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__issue8895.pdf.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__aboutstacks.pdf.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\issue4934.pdf --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\__issue6117.pdf.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\pdfium"
     }
   }
 }

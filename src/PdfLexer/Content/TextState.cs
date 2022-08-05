@@ -11,84 +11,23 @@ namespace PdfLexer.Content
 {
     public class TextState
     {
-        public int TextMode { get; internal set; }
+        internal GraphicsState GS { get; set; }
 
-        private float __fontSize;
-        public float FontSize { 
-            get => __fontSize;
-            internal set {
-                __fontSize = value;
-                UpdateTRM();
-            } 
-        }
-        private float __textHScale = 1;
-        public float TextHScale { 
-            get => __textHScale;
-            internal set
-            {
-                __textHScale = value;
-                UpdateTRM();
-            }
-        }
-        private float __textRise;
-        public float TextRise
-        {
-            get => __textRise; 
-            internal set
-            {
-                __textRise = value;
-                UpdateTRM();
-            }
-        }
-
-        private Matrix4x4 __textMatrix;
-        public Matrix4x4 TextMatrix
-        {
-            get => __textMatrix;
-            internal set
-            {
-                __textMatrix = value;
-                UpdateTRM();
-            }
-        }
-
-        public float CharSpacing { get; internal set; }
-        public float WordSpacing { get; internal set; }
-        public float TextLeading { get; internal set; }
-
-        public PdfName FontName { get; internal set; }
-        public IReadableFont Font { get; internal set; } // todo
-        // fontMatrix ??
-
-        // marked content?
-        // will need Apply for BMC BMCProps EMC
-
-
-        private Matrix4x4 __ctm;
-        internal Matrix4x4 CTM
-        {
-            get => __ctm;
-            set
-            {
-                __ctm = value;
-                UpdateTRM();
-            }
-        }
-
-        public Matrix4x4 TextRenderingMatrix { get; private set; } 
+        public Matrix4x4 TextRenderingMatrix { get; private set; }
         //      Trm = [ T_fs*T_h  0       0 ] x Tm x CTM
         //              0         T_fs    0
         //              0         T_rise  1
 
-        private void UpdateTRM()
+        internal void UpdateTRM()
         {
             TextRenderingMatrix = new Matrix4x4(
-              FontSize*TextHScale, 0,        0, 0,
-              0,                   FontSize, 0, 0,
-              0,                   TextRise, 1, 0,
-              0,                   0,        0, 1) * TextMatrix * CTM;
+              GS.FontSize * GS.TextHScale, 0, 0, 0,
+              0, GS.FontSize, 0, 0,
+              0, GS.TextRise, 1, 0,
+              0, 0, 0, 1) * TextMatrix * GS.CTM;
         }
 
+        Matrix4x4 TextMatrix { get; set; }
         Matrix4x4 TextLineMatrix { get; set; } // set to Tm at beginning of a line of text
         internal ParsingContext Ctx { get; }
         internal PdfDictionary PageResources { get; }
@@ -100,17 +39,17 @@ namespace PdfLexer.Content
             PageResources = pageResources;
             TextMatrix = Matrix4x4.Identity;
             TextLineMatrix = Matrix4x4.Identity;
-            CTM = Matrix4x4.Identity;
         }
 
         public void Apply(BT_Op op)
         {
             TextLineMatrix = TextMatrix = Matrix4x4.Identity;
+            UpdateTRM();
         }
 
         public int GetGlyph(ReadOnlySpan<byte> data, int pos, out Glyph info)
         {
-            return Font.GetGlyph(data, pos, out info);
+            return GS.Font.GetGlyph(data, pos, out info);
         }
 
         internal void FillGlyphsFromRawString(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
@@ -177,13 +116,13 @@ namespace PdfLexer.Content
             if (tj == 0f) { return; }
             float tx = 0f;
             float ty = 0f;
-            if (!Font.IsVertical)
+            if (!GS.Font.IsVertical)
             {
-                tx = (-tj / 1000.0f) * FontSize * TextHScale; // TODO 1000 should be from fontmatrix?
+                tx = (-tj / 1000.0f) * GS.FontSize * GS.TextHScale; // TODO 1000 should be from fontmatrix?
             }
             else
             {
-                var s = (-tj / 1000.0f) * FontSize;
+                var s = (-tj / 1000.0f) * GS.FontSize;
                 ty = s;
             }
 
@@ -211,19 +150,19 @@ namespace PdfLexer.Content
             // shift
             float tx = 0f;
             float ty = 0f;
-            if (!Font.IsVertical)
+            if (!GS.Font.IsVertical)
             {
                 // tx = ((w0-Tj/1000) * T_fs + T_c + T_w?) * Th
                 // var s = (info.w0 - tj / 1000) * FontSize + CharSpacing; // Tj pre applied
-                var s = (info.w0) * FontSize + CharSpacing;
-                if (info.IsWordSpace) { s += WordSpacing; }
-                tx = s * TextHScale;
+                var s = (info.w0) * GS.FontSize + GS.CharSpacing;
+                if (info.IsWordSpace) { s += GS.WordSpacing; }
+                tx = s * GS.TextHScale;
             }
             else
             {
                 // ty = (w1-Tj/1000) * T_fs + T_c + T_w?)
-                var s = (info.w1) * FontSize + CharSpacing;
-                if (info.IsWordSpace) { s += WordSpacing; }
+                var s = (info.w1) * GS.FontSize + GS.CharSpacing;
+                if (info.IsWordSpace) { s += GS.WordSpacing; }
                 ty = s;
             }
 
@@ -232,7 +171,7 @@ namespace PdfLexer.Content
 
         public (float llx, float lly, float urx, float ury) GetBoundingBox(Glyph glyph)
         {
-            
+
             float x = 0, y = 0, x2 = glyph.w0, y2 = 0;
             if (glyph.BBox != null)
             {
@@ -268,6 +207,8 @@ namespace PdfLexer.Content
               0f, 1f, 0f, 0f,
               tx, ty, 1f, 0f,
               0f, 0f, 0f, 1f) * TextMatrix;
+
+            UpdateTRM();
         }
 
         public void Apply(Td_Op op)
@@ -288,13 +229,14 @@ namespace PdfLexer.Content
                           0f, 0f, 0f, 1f) * TextLineMatrix;
 
             TextMatrix = TextLineMatrix;
+            UpdateTRM();
         }
 
         public void Apply(TD_Op op)
         {
             // -ty TL
             // tx, ty Td
-            TextLeading = (float)-op.ty;
+            GS.TextLeading = (float)-op.ty;
             ShiftTextAndLineMatrix((float)op.tx, (float)op.ty);
         }
 
@@ -311,7 +253,7 @@ namespace PdfLexer.Content
 
         public void Apply(T_Star_Op op)
         {
-            ShiftTextAndLineMatrix(0, -TextLeading);
+            ShiftTextAndLineMatrix(0, -GS.TextLeading);
         }
 
 
@@ -325,15 +267,15 @@ namespace PdfLexer.Content
             var i = 0;
             while (i < data.Length)
             {
-                i += Font.GetGlyph(data, i, out var glyph);
+                i += GS.Font.GetGlyph(data, i, out var glyph);
                 Apply(glyph);
             }
         }
 
         public void Apply(doublequote_Op op)
         {
-            WordSpacing = (float)op.aw;
-            CharSpacing = (float)op.ac;
+            GS.WordSpacing = (float)op.aw;
+            GS.CharSpacing = (float)op.ac;
             Apply(new singlequote_Op(op.text));
         }
 
@@ -360,32 +302,34 @@ namespace PdfLexer.Content
 
         public void Apply(Ts_Op op)
         {
-            TextRise = (float)op.rise;
+            GS.TextRise = (float)op.rise;
+            UpdateTRM();
         }
 
         public void Apply(TL_Op op)
         {
-            TextLeading = (float)op.leading;
+            GS.TextLeading = (float)op.leading;
         }
 
         public void Apply(Tr_Op op)
         {
-            TextMode = op.render;
+            GS.TextMode = op.render;
         }
 
         public void Apply(Tw_Op op)
         {
-            WordSpacing = (float)op.wordSpace;
+            GS.WordSpacing = (float)op.wordSpace;
         }
 
         public void Apply(Tc_Op op)
         {
-            CharSpacing = (float)op.charSpace;
+            GS.CharSpacing = (float)op.charSpace;
         }
 
         public void Apply(Tz_Op op)
         {
-            TextHScale = (float)op.scale/100.0F;
+            GS.TextHScale = (float)op.scale / 100.0F;
+            UpdateTRM();
         }
 
         public void Apply(gs_Op op)
@@ -395,24 +339,26 @@ namespace PdfLexer.Content
             {
                 // holds array of [ font_iref size ] -> similar to Tf but iref instead of name
                 // TODO harden
-                Font = Ctx.GetFont(fa[0]);
+                GS.Font = Ctx.GetFont(fa[0]);
                 if (fa.Count > 1 && fa[1].GetPdfObjType() == PdfObjectType.NumericObj)
                 {
-                    FontSize = fa[1].GetValue<PdfNumber>();
+                    GS.FontSize = fa[1].GetValue<PdfNumber>();
                 }
             }
+            UpdateTRM();
             // TODO any other text props in GS?
         }
 
         public void Apply(Tf_Op op)
         {
-            FontSize = (float)op.size;
-            if (Font != null && FontName == op.font)
+            GS.FontSize = (float)op.size;
+            if (GS.Font != null && GS.FontName == op.font)
             {
                 return;
             }
-            FontName = op.font;
-            Font = Ctx.GetFont(GetFontObj(FontName));
+            GS.FontName = op.font;
+            GS.Font = Ctx.GetFont(GetFontObj(GS.FontName));
+            UpdateTRM();
         }
 
 
@@ -435,7 +381,7 @@ namespace PdfLexer.Content
 
         private IPdfObject GetFontObj(PdfName name)
         {
-            if (FormResources != null && FormResources.TryGetValue<PdfDictionary>(PdfName.Font, out var fonts) 
+            if (FormResources != null && FormResources.TryGetValue<PdfDictionary>(PdfName.Font, out var fonts)
                 && fonts.TryGetValue<PdfDictionary>(name, out var fnt))
             {
                 return fnt;

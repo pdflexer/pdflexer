@@ -41,8 +41,15 @@ namespace PdfLexer.Fonts
 
         internal static IReadableFont Type1Fallback(FontType1 t1)
         {
-            var g = Encodings.GetPartialGlyphs(Encodings.StandardEncoding);
-            return FromEncodingAndDifferences(t1, g, g);
+            var gs = Encodings.GetPartialGlyphs(Encodings.StandardEncoding);
+            foreach (var g in gs)
+            {
+                if (g != null)
+                {
+                    g.GuessedUnicode = true;
+                }
+            }
+            return FromEncodingAndDifferences(t1, gs, gs);
         }
 
         internal static IReadableFont FromEncodingAndDifferences(FontType1 t1, Glyph[] allGlyphs, Glyph[] defaultEnc)
@@ -182,12 +189,19 @@ namespace PdfLexer.Fonts
                 {
                     var v = (float)t1.Widths[i].GetAs<PdfNumber>();
                     v = v / sf;
-                    var g = glyphs[i+start];
-                    if (g != null && v != g.w0)
+                    var cp = (i + start);
+                    var g = glyphs[cp];
+                    g ??= new Glyph
+                    {
+                        Char = (char)cp,
+                        CodePoint = (uint)cp,
+                        GuessedUnicode = true
+                    };
+                    if (v != g.w0)
                     {
                         g = g.Clone();
                         g.w0 = v;
-                        glyphs[i + start] = g;
+                        glyphs[cp] = g;
                         if (bbox != null && g.BBox == null)
                         {
                             g.BBox = new decimal[] { 0, 0, (decimal)g.w0, bbox.URy / 1000.0m };  // todo font matrix vs 1000?
@@ -204,22 +218,9 @@ namespace PdfLexer.Fonts
             return new SingleByteFont(t1.BaseFont, glyphs, notdef);
         }
 
-        // internal static IReadableFont FromGlyphsAndWidths()
-        // {
-        // 
-        // }
-
 
         internal static IReadableFont Create(ParsingContext ctx, FontType1 t1)
         {
-            // if (t1.FontDescriptor?.FontFile != null)
-            // {
-            //     return Type1Fallback(t1);
-            //     var dat = t1.FontDescriptor.FontFile.Contents.GetDecodedData();
-            //     var txt = Encoding.ASCII.GetString(dat);
-            //     throw new PdfLexerException("Trying to create standard font from embedded font: " + t1.BaseFont);
-            // }
-
             if (t1.ToUnicode != null)
             {
                 return ToUnicodeFont.GetSimple(ctx, t1);
