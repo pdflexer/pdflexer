@@ -179,7 +179,7 @@ namespace PdfLexer.Parsers
             //      unembedded or isinternalfont
             //          Symbol in name -> SymbolSetEncoding
             //          Dingbats|Wingdings in name -> ZapfDingbats
-            
+            if (obj == null) { return null; }
             var dict = obj.GetAs<PdfDictionary>();
             var type = dict.Get<PdfName>(PdfName.Subtype);
 

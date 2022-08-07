@@ -143,6 +143,7 @@ namespace PdfLexer
         public static readonly PdfName Ordering = new PdfName("/Ordering", false);
         public static readonly PdfName Supplement = new PdfName("/Supplement", false);
 
+        public static readonly PdfName Matrix = new PdfName("/Matrix", false);
         public static readonly PdfName DescendantFonts = new PdfName("/DescendantFonts", false);
         public static readonly PdfName BaseFont = new PdfName("/BaseFont", false);
         public static readonly PdfName FontFile = new PdfName("/FontFile", false);

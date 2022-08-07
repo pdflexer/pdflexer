@@ -8,8 +8,58 @@ using System.Text;
 
 namespace pdflexer.PdfiumRegressionTester
 {
+    internal class IgnoreSetup
+    {
+        public List<int> BaselineIgnores { get; set; } = new();
+        public List<int> CandidateIgnores { get; set; } = new();
+    }
+
+    internal class CharInfo
+    {
+        // (float x, float y, char c, float llx, float lly, float urx, float ury)
+        public float x { get; set; }
+        public float y { get; set; }
+        public char c { get; set; }
+        public uint cp { get; set; }
+        public float llx { get; set; }
+        public float lly { get; set; }
+        public float urx { get; set; }
+        public float ury { get; set; }
+        public string Font { get; set; }
+
+    }
+    
     internal class TextTests
     {
+        internal static List<string> skip = new List<string>
+        {
+            "__bug1260585.pdf.pdf", // pdfium spacing seems wrong
+            "__bug878194.pdf.pdf", // pdfium doesn't extract some stacked french text, maybe deduping internally?
+        };
+        internal static Dictionary<string, IgnoreSetup> ignoreMap = new Dictionary<string, IgnoreSetup>
+        {
+            ["__bug766138.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 160 } // whitespace char ignored by pdfium
+            },
+            ["__aboutstacks.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 3 } // whitespace char ignored by pdfium
+            },
+            ["__bug1354114.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 0 }
+            },
+            ["__bug956965.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 61 } // equal sign in font ignored by pdfium, maybe symbolic?
+            },
+            ["__bug1123803.pdf.pdf"] = new IgnoreSetup
+            {
+                BaselineIgnores = new List<int> { 10063 }, // pdflexer extract fails with missing tounicode data TODO
+                CandidateIgnores = new List<int> { 0, 12288 } // 10063 from above and then a whitespace char
+            }
+        };
         private ILogger _logger;
         public TextTests(ILogger logger)
         {
@@ -20,6 +70,12 @@ namespace pdflexer.PdfiumRegressionTester
         public bool RunOne(string pdf, string output)
         {
             var name = Path.GetFileName(pdf);
+
+            if (skip.Contains(name)) { return true; }
+
+            ignoreMap.TryGetValue(name, out var ignores);
+            ignores ??= new IgnoreSetup();
+
             using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
 
             using var doc2 = PdfDocument.Create();
@@ -52,7 +108,7 @@ namespace pdflexer.PdfiumRegressionTester
                 var reader = new TextScanner(doc.Context, page);
                 var lines = new List<(float x, float y, char c)>();
                 var unmatched = new List<(float x, float y, char c)>();
-                var chars = new Dictionary<string, (float x, float y, char c, float llx, float lly, float urx, float ury)>();
+                var chars = new Dictionary<string, CharInfo>();
                 while (reader.Advance())
                 {
                     var glyphChars = reader.Glyph.MultiChar ?? $"{reader.Glyph.Char}";
@@ -67,21 +123,68 @@ namespace pdflexer.PdfiumRegressionTester
                         if (c == 'ﬁ' || c == (char)64257) 
                         {
                             lines.Add(((float)x, (float)y, 'f'));
-                            chars[$"{x:0.0}{y:0.0}f"] = ((float)x, (float)y, 'f', llx, lly, urx, ury);
+                            var ci = new CharInfo { c = 'f', Font = reader.GraphicsState.FontName?.Value ?? "uk", 
+                                x = x, y = y, llx = llx, lly = lly, urx = urx, ury= ury };
+                            chars[$"{x:0.0}{y:0.0}f"] = ci;
                             lines.Add(((float)x, (float)y, 'i'));
-                            chars[$"{x:0.0}{y:0.0}i"] = ((float)x, (float)y, 'i', llx, lly, urx, ury);
-                        } // 415 is ti
+                            ci = new CharInfo
+                            {
+                                c = 'l',
+                                Font = reader.GraphicsState.FontName?.Value ?? "uk",
+                                x = x,
+                                y = y,
+                                llx = llx,
+                                lly = lly,
+                                urx = urx,
+                                ury = ury
+                            };
+                            chars[$"{x:0.0}{y:0.0}i"] = ci;
+                        }
                         else if (c == '\uFB02')
                         {
                             lines.Add(((float)x, (float)y, 'f'));
-                            chars[$"{x:0.0}{y:0.0}f"] = ((float)x, (float)y, 'f', llx, lly, urx, ury);
+                            var ci =  new CharInfo
+                            {
+                                c = 'f',
+                                Font = reader.GraphicsState.FontName?.Value ?? "uk",
+                                x = x,
+                                y = y,
+                                llx = llx,
+                                lly = lly,
+                                urx = urx,
+                                ury = ury
+                            }; ;
+                            chars[$"{x:0.0}{y:0.0}f"] = ci;
                             lines.Add(((float)x, (float)y, 'l'));
-                            chars[$"{x:0.0}{y:0.0}l"] = ((float)x, (float)y, 'l', llx, lly, urx, ury);
+                            ci = new CharInfo
+                            {
+                                c = 'l',
+                                Font = reader.GraphicsState.FontName?.Value ?? "uk",
+                                x = x,
+                                y = y,
+                                llx = llx,
+                                lly = lly,
+                                urx = urx,
+                                ury = ury
+                            };
+                            chars[$"{x:0.0}{y:0.0}l"] = ci;
                         }
                         else
                         {
                             lines.Add(((float)x, (float)y, c));
-                            chars[$"{x:0.0}{y:0.0}{c}"] = ((float)x, (float)y, c, llx, lly, urx, ury);
+                            var ci = new CharInfo
+                            {
+                                c = c,
+                                Font = reader.GraphicsState.FontName?.Value ?? "uk",
+                                x = x,
+                                y = y,
+                                llx = llx,
+                                lly = lly,
+                                urx = urx,
+                                ury = ury,
+                                cp = reader.Glyph.CodePoint ?? 0
+                            }; ;
+                            chars[$"{x:0.0}{y:0.0}{c}"] = ci;
                         }
                     }
                 }
@@ -95,6 +198,7 @@ namespace pdflexer.PdfiumRegressionTester
                 var txt = fpdf_text.FPDFTextLoadPage(ppg);
                 d2.Add(() => fpdf_text.FPDFTextClosePage(txt));
 
+                var charList = chars.Select(x => x.Value).ToList();
                 var lines2 = new List<(float x, float y, char c)>();
                 var unmatched2 = new List<(float x, float y, char c)>();
                 var chars2 = new Dictionary<string, (float x, float y, char c)>();
@@ -105,9 +209,11 @@ namespace pdflexer.PdfiumRegressionTester
                     fpdf_text.FPDFTextGetCharBox(txt, i, ref llx, ref urx, ref lly, ref ury);
                     var c = (char)fpdf_text.FPDFTextGetUnicode(txt, i);
                     if (c == '\n' || c == '\r' || c == ' ' || c == '-' || c == '\u0002') { continue; }
-
+                    
                     double x = 0, y = 0;
                     fpdf_text.FPDFTextGetCharOrigin(txt, i, ref x, ref y);
+
+                    
 
                     var key = $"{x:0.0}{y:0.0}{c}";
                     if (!chars.TryGetValue(key, out var prev))
@@ -115,6 +221,12 @@ namespace pdflexer.PdfiumRegressionTester
                         var dist = Nearest((float)x, (float)y, c, lines);
                         if (dist > 0.01)
                         {
+                            var ci = (int)c;
+                            if (ignores.BaselineIgnores.Contains(ci))
+                            {
+                                continue;
+                            }
+                            // var nm = GetFontName(txt, i);
                             writer
                               .LineWidth(0.01m)
                               .Rect((decimal)llx, (decimal)lly, (decimal)(urx - llx), (decimal)(ury - lly))
@@ -122,12 +234,12 @@ namespace pdflexer.PdfiumRegressionTester
                                 writer.Circle((decimal)x, (decimal)y, 0.05m).Stroke();
                             unmatched2.Add(((float)x, (float)y, c));
 
-                            var (dd, cc) = Nearest((float)x, (float)y, lines);
-                            if (cc.HasValue && dd < 5)
+                            var (dd, cc) = Nearest((float)x, (float)y, charList);
+                            if (cc != null && dd < 5)
                             {
                                 writer.Font(font, 0.5)
                                       .TextMove(x + 1, y - 1)
-                                      .Text($"b:{(int)c} c:{(int)cc.Value}")
+                                      .Text($"b:{(int)c} c:{(int)cc.c} cf: {cc.Font}")
                                       .EndText();
                             } else
                             {
@@ -151,6 +263,12 @@ namespace pdflexer.PdfiumRegressionTester
                         var dist = Nearest(kvp.Value.x, kvp.Value.y, kvp.Value.c, lines2);
                         if (dist > 0.01)
                         {
+                            var ci = (int)kvp.Value.c;
+                            if (ignores.CandidateIgnores.Contains(ci))
+                            {
+                                continue;
+                            }
+
                             writer.LineWidth(0.05m)
                                   .Rect((decimal)kvp.Value.llx, (decimal)kvp.Value.lly,
                                     (decimal)(kvp.Value.urx - kvp.Value.llx), (decimal)(kvp.Value.ury - kvp.Value.lly))
@@ -160,7 +278,7 @@ namespace pdflexer.PdfiumRegressionTester
                             unmatched.Add((kvp.Value.x, kvp.Value.y, kvp.Value.c));
                             writer.Font(font, 0.5)
                               .TextMove(kvp.Value.x + 1, kvp.Value.y - 2)
-                              .Text($"c:{(int)kvp.Value.c}")
+                              .Text($"c:{(int)kvp.Value.c} cf: {kvp.Value.Font}")
                               .EndText();
                         }
 
@@ -208,7 +326,34 @@ namespace pdflexer.PdfiumRegressionTester
             return success;
         }
 
+        private static unsafe string GetFontName(FpdfTextpageT page, int c)
+        {
+            var maxChars = 20;
+            Span<byte> txt = new byte[maxChars * 2 + 1];
+
+            int flags = 0;
+            uint read = 0;
+            fixed (byte* ptrr = &txt[0])
+            {
+                read = fpdf_text.FPDFTextGetFontInfo(page, c, (IntPtr)ptrr, (uint)txt.Length, ref flags);
+            }
+            return Encoding.Unicode.GetString(txt.Slice(0, (int)read));
+        }
         private static double Nearest(float x, float y, char cf, List<(float x, float y, char c)> others)
+        {
+            var d = double.MaxValue;
+            foreach (var item in others)
+            {
+                var dist = Math.Sqrt(Math.Pow(Math.Abs(x - item.x), 2) + Math.Pow(Math.Abs(y - item.y), 2));
+                if (cf == item.c && dist < d)
+                {
+                    d = dist;
+                }
+            }
+            return d;
+        }
+
+        private static double Nearest(float x, float y, char cf, List<CharInfo> others)
         {
             var d = double.MaxValue;
             foreach (var item in others)
@@ -235,6 +380,22 @@ namespace pdflexer.PdfiumRegressionTester
                 }
             }
             return (d, c?.c);
+        }
+
+        private static (double dist, CharInfo? c) Nearest(float x, float y, List<CharInfo> others)
+        {
+            var d = double.MaxValue;
+            CharInfo? c = null;
+            foreach (var item in others)
+            {
+                var dist = Math.Sqrt(Math.Pow(Math.Abs(x - item.x), 2) + Math.Pow(Math.Abs(y - item.y), 2));
+                if (dist < d)
+                {
+                    d = dist;
+                    c = item;
+                }
+            }
+            return (d, c);
         }
     }
 

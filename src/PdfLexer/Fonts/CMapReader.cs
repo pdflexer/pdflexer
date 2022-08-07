@@ -1,4 +1,5 @@
-﻿using PdfLexer.Lexing;
+﻿using PdfLexer.CMaps;
+using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using System;
 using System.Collections.Generic;
@@ -25,9 +26,9 @@ namespace PdfLexer.Fonts
         private static byte[] rangeEnd = Encoding.ASCII.GetBytes("endbfrange");
         private static UnicodeEncoding ucBO = new UnicodeEncoding(true, true, false);
         private static UnicodeEncoding uc = new UnicodeEncoding(true, false, false);
-        public static (List<CMapRange> Ranges, List<Glyph> Glyphs) GetGlyphsFromToUnicode(ParsingContext ctx, DecodedStreamContents contents)
+        public static (List<CRange> Ranges, List<Glyph> Glyphs) GetGlyphsFromToUnicode(ParsingContext ctx, ReadOnlySpan<byte> data)
         {
-            var ranges = new List<CMapRange>();
+            var ranges = new List<CRange>();
             var glyphs = new List<Glyph>();
             
             ToUnicodeState state = ToUnicodeState.None;
@@ -35,8 +36,7 @@ namespace PdfLexer.Fonts
             var chars = new char[1];
             int bufferUsed = 0;
             int pos = 0;
-            var scanner = new Scanner(ctx, contents.GetData());
-            var data = contents.GetData();
+            var scanner = new Scanner(ctx, data);
 
             PdfTokenType type = PdfTokenType.Unknown;
             
@@ -160,11 +160,10 @@ namespace PdfLexer.Fonts
                     type = scanner.Peek();
                     token = scanner.GetCurrentData();
                     var cp2 = ReadCodePoint(ctx, token, buffer);
-                    ranges.Add(new CMapRange
+                    ranges.Add(new CRange
                     {
                         Start = cp1,
                         End = cp2,
-                        Glyphs = new List<Glyph>(),
                         Bytes = bytes
                     });
                 }

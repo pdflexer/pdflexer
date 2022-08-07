@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
-    <PackageReference Include="System.IO.Pipelines" Version="6.0.1" />
+    <PackageReference Include="System.IO.Pipelines" Version="6.0.3" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
   </ItemGroup>
 
@@ -35,6 +35,10 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="pdflexer.TestCaseGen" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
 	</ItemGroup>
 
   <ItemGroup>

@@ -11,6 +11,7 @@ namespace PdfLexer.Content
 {
     public class TextState
     {
+        internal List<ScannerInfo> stack;
         internal GraphicsState GS { get; set; }
 
         public Matrix4x4 TextRenderingMatrix { get; private set; }
@@ -155,7 +156,10 @@ namespace PdfLexer.Content
                 // tx = ((w0-Tj/1000) * T_fs + T_c + T_w?) * Th
                 // var s = (info.w0 - tj / 1000) * FontSize + CharSpacing; // Tj pre applied
                 var s = (info.w0) * GS.FontSize + GS.CharSpacing;
-                if (info.IsWordSpace) { s += GS.WordSpacing; }
+                if (info.IsWordSpace) 
+                { 
+                    s += GS.WordSpacing;
+                }
                 tx = s * GS.TextHScale;
             }
             else
@@ -385,6 +389,19 @@ namespace PdfLexer.Content
                 && fonts.TryGetValue<PdfDictionary>(name, out var fnt))
             {
                 return fnt;
+            }
+
+            if (stack != null && stack.Count > 0)
+            {
+                for (var i=stack.Count-1;i>-1;i--)
+                {
+                    var dict = stack[i].Stream.Dictionary?.Get<PdfDictionary>(PdfName.Resources);
+                    if (dict != null && dict.TryGetValue<PdfDictionary>(PdfName.Font, out var fd)
+                            && fd.TryGetValue<PdfDictionary>(name, out var f))
+                    {
+                        return f;
+                    }
+                }
             }
 
             if (PageResources.TryGetValue<PdfDictionary>(PdfName.Font, out fonts)

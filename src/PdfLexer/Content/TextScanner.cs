@@ -19,6 +19,7 @@ namespace PdfLexer.Content
         public GraphicsState GraphicsState;
         public Glyph Glyph;
 
+
         public TextScanner(ParsingContext ctx, PdfDictionary page)
         {
             Context = ctx;
@@ -27,6 +28,7 @@ namespace PdfLexer.Content
             TextState = new TextState(ctx, PgRes);
             GraphicsState = new GraphicsState();
             TextState.GS = GraphicsState;
+            TextState.stack = Scanner.stack;
             TextState.UpdateTRM();
             CurrentTextPos = 0;
             ReadState = TextReadState.Normal;

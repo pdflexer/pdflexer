@@ -119,13 +119,13 @@ namespace PdfLexer.DOM
             set => NativeObject[PdfName.CIDToGIDMap] = value;
         }
 
-        public IEnumerable<(ushort cid, float width)> ReadW() => ReadWidths(W);
-        public IEnumerable<(ushort cid, float width)> ReadW2() => ReadWidths(W2);
-        private static IEnumerable<(ushort cid, float width)> ReadWidths(PdfArray array)
+        public IEnumerable<(uint cid, float width)> ReadW() => ReadWidths(W);
+        public IEnumerable<(uint cid, float width)> ReadW2() => ReadWidths(W2);
+        private static IEnumerable<(uint cid, float width)> ReadWidths(PdfArray array)
         {
             if (array == null) { yield break; }
-            ushort? firstCode = null;
-            ushort? lastCode = null;
+            uint? firstCode = null;
+            uint? lastCode = null;
             foreach (var rv in array)
             {
                 var val = rv.Resolve();
@@ -134,17 +134,17 @@ namespace PdfLexer.DOM
                     case PdfNumber cnt:
                         if (firstCode == null)
                         {
-                            firstCode = (ushort)cnt;
+                            firstCode = (uint)cnt;
                             continue;
                         }
                         if (lastCode == null)
                         {
-                            lastCode = (ushort)cnt;
+                            lastCode = (uint)cnt;
                             continue;
                         }
                         for (var i = firstCode.Value; i <= lastCode.Value; i++)
                         {
-                            yield return ((ushort)(i), (float)cnt);
+                            yield return ((uint)(i), (float)cnt);
                         }
                         firstCode = null;
                         lastCode = null;

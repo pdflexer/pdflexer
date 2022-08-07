@@ -52,7 +52,7 @@ namespace PdfLexer.Fonts
             return FromEncodingAndDifferences(t1, gs, gs);
         }
 
-        internal static IReadableFont FromEncodingAndDifferences(FontType1 t1, Glyph[] allGlyphs, Glyph[] defaultEnc)
+        internal static IReadableFont FromEncodingAndDifferences(FontType1 t1, Glyph[] allGlyphs, Glyph[] defaultEnc, PdfName? encoding=null)
         {
             var all = new Dictionary<string, Glyph>();
             foreach (var item in allGlyphs)
@@ -80,7 +80,7 @@ namespace PdfLexer.Fonts
                 if (enc.Type == PdfObjectType.NameObj)
                 {
                     var nm = enc.GetAs<PdfName>();
-                    if (nm != PdfName.StandardEncoding)
+                    if ((encoding != null && nm != encoding) || nm != PdfName.StandardEncoding)
                     {
                         var lookup = Encodings.GetEncoding(nm);
                         if (lookup == null)
@@ -98,7 +98,17 @@ namespace PdfLexer.Fonts
                                     var luv = lookup[i];
                                     if (luv != null)
                                     {
-                                        glyphs[i] = fm.GetGlyph(luv);
+                                        var g = fm.GetGlyph(luv);
+                                        if (g != null)
+                                        {
+                                            g = g.Clone();
+                                            g.CodePoint = (uint)i;
+                                            if (i == 32)
+                                            {
+                                                g.IsWordSpace = true;
+                                            }
+                                        }
+                                        glyphs[i] = g;
                                     }
                                     else
                                     {
@@ -168,7 +178,8 @@ namespace PdfLexer.Fonts
                 }
                 else
                 {
-                    // TODO error
+                    // TODO ctx error / fallback
+                    throw new PdfLexerException("simple font encoding was: " + enc.Type);
                 }
             }
             var bbox = t1.FontDescriptor?.FontBBox;
@@ -204,7 +215,7 @@ namespace PdfLexer.Fonts
                         glyphs[cp] = g;
                         if (bbox != null && g.BBox == null)
                         {
-                            g.BBox = new decimal[] { 0, 0, (decimal)g.w0, bbox.URy / 1000.0m };  // todo font matrix vs 1000?
+                            g.BBox = new decimal[] { 0, 0, (decimal)g.w0, bbox.URy / 1000.0m };
                         }
                     }
                 }
@@ -212,7 +223,8 @@ namespace PdfLexer.Fonts
 
             if (glyphs.Max(x=>x?.CodePoint ?? 0) > 255)
             {
-                return new CMapFont(glyphs, notdef);
+                // TODO ctx error / fallback
+                throw new PdfLexerException("simple font had codepoint greater than 255");
             }
 
             return new SingleByteFont(t1.BaseFont, glyphs, notdef);
@@ -292,7 +304,7 @@ namespace PdfLexer.Fonts
                     {
                         var be = t1.Encoding.GetAs<PdfName>();
                         var g = Encodings.GetPartialGlyphs(Encodings.GetEncoding(be));
-                        return FromEncodingAndDifferences(t1, g, g);
+                        return FromEncodingAndDifferences(t1, g, g, be);
                     }
                     return Type1Fallback(t1);
             }

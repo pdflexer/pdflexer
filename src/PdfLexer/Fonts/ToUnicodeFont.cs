@@ -1,6 +1,7 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Parsers;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace PdfLexer.Fonts
 {
@@ -10,7 +11,7 @@ namespace PdfLexer.Fonts
         {
             var str = dict.ToUnicode;
             using var buffer = str.Contents.GetDecodedBuffer();
-            var (ranges, glyphs) = CMapReader.GetGlyphsFromToUnicode(ctx, buffer);
+            var (ranges, glyphs) = CMapReader.GetGlyphsFromToUnicode(ctx, buffer.GetData());
 
             int fc = dict.FirstChar;
             int lc = dict.LastChar;
@@ -71,8 +72,7 @@ namespace PdfLexer.Fonts
         {
             var str = dict.ToUnicode;
             using var buffer = str.Contents.GetDecodedBuffer();
-            var (ranges, glyphs) = CMapReader.GetGlyphsFromToUnicode(ctx, buffer);
-
+            var (ranges, glyphs) = CMapReader.GetGlyphsFromToUnicode(ctx, buffer.GetData());
             var bbox = dict.DescendantFont?.FontDescriptor?.FontBBox;
 
             var mw = dict.DescendantFont.DW / 1000f;
@@ -83,46 +83,13 @@ namespace PdfLexer.Fonts
                 g.w0 = mw;
                 lu[g.CodePoint.Value] = g;
             }
-            foreach (var w in dict.DescendantFont.ReadW())
-            {
-                if (lu.TryGetValue(w.cid, out var glyph))
-                {
-                    glyph.w0 = w.width / 1000f;
-                }
-                else
-                {
-                    var g = new Glyph
-                    {
-                        Char = (char)w.cid,
-                        CodePoint = w.cid,
-                        GuessedUnicode = true,
-                        w0 = w.width / 1000f
-                    };
-                    lu[w.cid] = g;
-                    glyphs.Add(g);
 
-                }
-            }
+            CIDFontReader.AddWidths(dict, ranges, lu);
 
-            ranges.Sort((a, b) => a.Bytes - b.Bytes);
-
-            foreach (var g in glyphs)
-            {
-                if (bbox != null)
-                {
-                    g.BBox = new decimal[] { 0, 0, (decimal)g.w0, bbox.URy / 1000.0m }; // todo font matrix vs 1000?
-                }
-
-                foreach (var range in ranges)
-                {
-                    if (g.CodePoint >= range.Start && g.CodePoint <= range.End)
-                    {
-                        range.Glyphs.Add(g);
-                    }
-                }
-            }
-
-            return new CMapFont3(glyphs);
+            var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, 0m } };
+            var gs = new FontGlyphSet(lu.Values, notdef);
+            var cmap = new CMap(ranges);
+            return new CMapFont(cmap, gs);
         }
     }
 }
