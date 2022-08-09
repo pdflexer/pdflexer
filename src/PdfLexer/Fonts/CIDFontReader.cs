@@ -48,6 +48,7 @@ namespace PdfLexer.Fonts
 
             AddToUnicodeValues(ctx, t0, all, b1g);
 
+
             CMap cmap;
             if (knownDesc)
             {
@@ -69,10 +70,30 @@ namespace PdfLexer.Fonts
                         }
                     }
                 }
+                if (all.Count == 0)
+                {
+                    // TODO remove this once we can parse nontrue type embedded files ?
+                    // maybe leave as fallback? huge perf hit
+                    foreach (var (cid,gg) in e2.Mapping)
+                    {
+                        var g = new Glyph
+                        {
+                            Char = (char)gg.Code,
+                            MultiChar = gg.MultiChar,
+                            CodePoint = cid,
+                            IsWordSpace = false,
+                        };
+                        all[cid] = g;
+                        if (b1g != null && cid < b1g.Length)
+                        {
+                            b1g[cid] = g;
+                        }
+                    }
+                }
                 cmap = new CMap(e2.Ranges);
             } else
             {
-                // this matches the idents
+                // this matches the identity ranges
                 // need to dig into spec more to see as
                 // we are only using charset info for the UCS2 ones
                 var twoByte = new CRange
@@ -115,7 +136,7 @@ namespace PdfLexer.Fonts
         private static void AddEmbeddedValues(ParsingContext ctx, FontType0 t0, Dictionary<uint, Glyph> all, Glyph[] b1g)
         {
             var ttf = t0.DescendantFont?.FontDescriptor?.FontFile2;
-            if (ttf != null)
+            if (ttf == null)
             {
                 return;
             }

@@ -80,7 +80,7 @@ namespace PdfLexer.Fonts
                 if (enc.Type == PdfObjectType.NameObj)
                 {
                     var nm = enc.GetAs<PdfName>();
-                    if ((encoding != null && nm != encoding))
+                    if ((encoding != null && nm != encoding) || nm != PdfName.StandardEncoding)
                     {
                         var lookup = Encodings.GetEncoding(nm);
                         if (lookup == null)
