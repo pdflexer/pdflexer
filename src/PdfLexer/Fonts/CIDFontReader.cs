@@ -8,15 +8,6 @@ using System.IO;
 
 namespace PdfLexer.Fonts
 {
-    internal class ReadableCIDFont : IReadableFont
-    {
-        public bool IsVertical => throw new NotImplementedException();
-
-        public int GetGlyph(ReadOnlySpan<byte> data, int os, out Glyph glyph)
-        {
-            throw new NotImplementedException();
-        }
-    }
     internal class CIDFontReader
     {
 
@@ -53,7 +44,7 @@ namespace PdfLexer.Fonts
             AddEmbeddedValues(ctx, t0, all, b1g);
 
             // todo vertical
-            AddWidths(t0, all);
+            AddWidths(t0, all, b1g);
 
             AddToUnicodeValues(ctx, t0, all, b1g);
 
@@ -81,10 +72,13 @@ namespace PdfLexer.Fonts
                 cmap = new CMap(e2.Ranges);
             } else
             {
+                // this matches the idents
+                // need to dig into spec more to see as
+                // we are only using charset info for the UCS2 ones
                 var twoByte = new CRange
                 {
-                    Start = 0x00,
-                    End = 0xFF,
+                    Start = 0x0000,
+                    End = 0xFFFF,
                     Bytes = 2
                 };
 
@@ -126,81 +120,97 @@ namespace PdfLexer.Fonts
                 return;
             }
 
-            // add glyphs if has postscript table, otherwise we'll just guess
-            using var buff = ttf.Contents.GetDecodedBuffer();
+            // TODO 
+            // FontFile3 -> Compact Font Format (CFF) -> descriptor subtype  CIDFontType0C or OpenType
 
-            var cidtogid = t0.DescendantFont?.ReadCIDToGid();
-            var reader = new TrueTypeReader(ctx, buff.GetData());
-
-            if (reader.TryGetMaxpGlyphs(out int count) && reader.HasPostTable())
+            try
             {
-                var (_, names) = reader.ReadPostScriptTable(count);
+                // add glyphs if has postscript table, otherwise we'll just guess
+                using var buff = ttf.Contents.GetDecodedBuffer();
 
-                Dictionary<uint, uint> cidLu = null;
-                if (cidtogid != null)
+                var cidtogid = t0.DescendantFont?.ReadCIDToGid();
+                var reader = new TrueTypeReader(ctx, buff.GetData());
+
+                if (reader.TryGetMaxpGlyphs(out int count) && reader.HasPostTable())
                 {
-                    cidLu = new Dictionary<uint, uint>();
-                    foreach (var (cid, gid) in cidtogid)
+                    var (_, names) = reader.ReadPostScriptTable(count);
+                    if (names.Length != 0)
                     {
-                        cidLu[gid] = cid;
+                        Dictionary<uint, uint> cidLu = null;
+                        if (cidtogid != null)
+                        {
+                            cidLu = new Dictionary<uint, uint>();
+                            foreach (var (cid, gid) in cidtogid)
+                            {
+                                cidLu[gid] = cid;
+                            }
+                        }
+
+                        if (cidLu != null)
+                        {
+                            for (uint i = 0; i < names.Length; i++)
+                            {
+                                var gid = i;
+                                var name = names[i];
+                                if (name == null) { continue; }
+                                if (cidLu.TryGetValue(gid, out var cid))
+                                {
+                                    var g = MapGlyph(cid, name);
+                                    all[cid] = g;
+                                    if (cid < b1g.Length)
+                                    {
+                                        b1g[cid] = g;
+                                    }
+                                }
+                            }
+                        }
+
+                        // fallback for unmapped cidtogid && those without cidtogid
+                        for (uint i = 0; i < names.Length; i++)
+                        {
+                            var gid = i;
+                            var name = names[i];
+                            var cid = gid;
+                            if (cidLu == null || !all.ContainsKey(cid))
+                            {
+                                var g = MapGlyph(cid, name);
+                                all[cid] = g;
+                                if (cid < b1g.Length)
+                                {
+                                    b1g[cid] = g;
+                                }
+                            }
+                        }
+                        return;
                     }
                 }
-
-                if (cidLu != null)
+                
+                if (count > 0 && reader.HasGlyfInfo())
                 {
-                    for (uint i = 0; i < names.Length; i++)
+                    var glyphs = reader.ReadGlyfInfo(count);
+                    for (uint i = 0; i < glyphs.Length; i++)
                     {
-                        var gid = i;
-                        var name = names[i];
-                        if (name == null) { continue; }
-                        if (cidLu.TryGetValue(gid, out var cid))
+                        if (glyphs[i])
                         {
-                            var g = MapGlyph(cid, name);
-                            all[cid] = g;
-                            if (cid < b1g.Length)
+                            var g = new Glyph
                             {
-                                b1g[cid] = g;
+                                CodePoint = i,
+                                GuessedUnicode = true
+                            };
+                            all[i] = g;
+                            if (i < b1g.Length)
+                            {
+                                b1g[i] = g;
                             }
                         }
                     }
                 }
 
-                // fallback for unmapped cidtogid && those without cidtogid
-                for (uint i = 0; i < names.Length; i++)
-                {
-                    var gid = i;
-                    var name = names[i];
-                    var cid = gid;
-                    if (cidLu == null || !all.ContainsKey(cid))
-                    {
-                        var g = MapGlyph(cid, name);
-                        all[cid] = g;
-                        if (cid < b1g.Length)
-                        {
-                            b1g[cid] = g;
-                        }
-                    }
-                }
-            } else if (count > 0 && reader.HasGlyfInfo())
+            } catch (Exception e)
             {
-                var glyphs = reader.ReadGlyfInfo(count);
-                for (uint i = 0; i < glyphs.Length; i++)
-                {
-                    if (glyphs[i])
-                    {
-                        var g = new Glyph
-                        {
-                            CodePoint = i,
-                            GuessedUnicode = true
-                        };
-                        all[i] = g;
-                        if (i < b1g.Length)
-                        {
-                            b1g[i] = g;
-                        }
-                    }
-                }
+                ctx.Error($"Error reading tt font file ({t0.BaseFont}): " + e.Message);
             }
+            
         }
 
         private static void AddToUnicodeValues(ParsingContext ctx, FontType0 t0, Dictionary<uint, Glyph> all, Glyph[] b1g)
