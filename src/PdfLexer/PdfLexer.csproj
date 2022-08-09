@@ -55,5 +55,9 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Fonts\Parsers\" />
+  </ItemGroup>
+
 
 </Project>

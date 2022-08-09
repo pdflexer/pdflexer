@@ -80,7 +80,7 @@ namespace PdfLexer.Fonts
                 if (enc.Type == PdfObjectType.NameObj)
                 {
                     var nm = enc.GetAs<PdfName>();
-                    if ((encoding != null && nm != encoding) || nm != PdfName.StandardEncoding)
+                    if ((encoding != null && nm != encoding))
                     {
                         var lookup = Encodings.GetEncoding(nm);
                         if (lookup == null)
@@ -241,7 +241,7 @@ namespace PdfLexer.Fonts
             Glyph[] defaultEnc = null;
             Glyph[] allGlyphs = null;
 
-            switch (t1.BaseFont.Value)
+            switch (t1.BaseFont?.Value)
             {
                 case "/Times-Roman":
                     defaultEnc = TimesRomanGlyphs.DefaultEncoding;

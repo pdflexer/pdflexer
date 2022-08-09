@@ -15,7 +15,6 @@ namespace PdfLexer.Fonts
                                                        // composite font if 32 is single byte code
         public decimal[] BBox { get; internal set; }
         public uint? CodePoint { get; internal set; }
-        public int Bytes { get; internal set; }
         public bool Undefined { get; set; }
         public Dictionary<char,float>? Kernings { get; set; }
         public string? Name { get; set; }

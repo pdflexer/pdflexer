@@ -63,7 +63,13 @@ namespace PdfLexer.Fonts
         private Glyph[] b1;
         private Dictionary<uint, Glyph> bm;
 
-        public FontGlyphSet(IEnumerable<Glyph> glyphs, Glyph notdef = null)
+        public FontGlyphSet(Glyph[] b1, Dictionary<uint, Glyph> glyphs, Glyph notdef)
+        {
+            this.notdef = notdef;
+            this.b1 = b1;
+            this.bm = glyphs;
+        }
+        public FontGlyphSet(IEnumerable<Glyph> glyphs, Glyph notdef)
         {
             this.notdef = notdef;
             b1 = new Glyph[256];
@@ -84,7 +90,7 @@ namespace PdfLexer.Fonts
         public Glyph GetGlyph(uint charCode)
         {
             Glyph glyph;
-            if (charCode < 256)
+            if (charCode < 256 && b1 != null)
             {
                 glyph = b1[charCode];
             }
@@ -102,14 +108,16 @@ namespace PdfLexer.Fonts
         private CMap _map;
         private CMap _gidMap;
         private FontGlyphSet _glyphSet;
+        private int _notdefBytes;
 
         public bool IsVertical => false;
 
-        public CMapFont(CMap cmap, FontGlyphSet glyphSet, CMap gidMap=null)
+        public CMapFont(CMap cmap, FontGlyphSet glyphSet, int notdefBytes, CMap gidMap=null)
         {
             _map = cmap;
             _gidMap = gidMap;
             _glyphSet = glyphSet;
+            _notdefBytes = notdefBytes;
         }
 
         public int GetGlyph(ReadOnlySpan<byte> data, int os, out Glyph glyph)
@@ -127,7 +135,7 @@ namespace PdfLexer.Fonts
             if (l == 0)
             {
                 glyph = _glyphSet.notdef;
-                return glyph?.Bytes ?? 2;
+                return _notdefBytes;
             }
 
             glyph = _glyphSet.GetGlyph(c);

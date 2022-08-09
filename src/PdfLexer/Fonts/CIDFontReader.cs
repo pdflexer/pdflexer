@@ -1,8 +1,10 @@
 ﻿using PdfLexer.CMaps;
 using PdfLexer.DOM;
+using PdfLexer.Fonts.Files;
 using PdfLexer.Parsers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace PdfLexer.Fonts
 {
@@ -17,128 +19,221 @@ namespace PdfLexer.Fonts
     }
     internal class CIDFontReader
     {
+
         public static IReadableFont Create(ParsingContext ctx, FontType0 t0)
         {
-            if (t0.ToUnicode != null)
-            {
-                return ToUnicodeFont.GetComposite(ctx, t0);
-            }
+            
             var enc = t0.Encoding;
-            var cidCharSet = t0.DescendantFont?.CIDSystemInfo?.Registry?.Value + "-" + t0.DescendantFont?.CIDSystemInfo?.Ordering?.Value;
-            if (enc != null && enc.Type == PdfObjectType.NameObj)
+            PdfName encodingName = null;
+            CMap encodingMap = null;
+            if (enc.Type == PdfObjectType.NameObj)
             {
-                var en = enc.GetAs<PdfName>();
-                var identityEncoded = en.Value == "/Identity-H" || en.Value == "Identity-V";
-                var knownDesc = cidCharSet == "Adobe-BG1" || cidCharSet == "Adobe-CNS1" || cidCharSet == "Adobe-Japan1" || cidCharSet == "Adobe-Korea1";
-                if (identityEncoded && !knownDesc)
+                encodingName = enc.GetAs<PdfName>();
+            } else if (enc.Type == PdfObjectType.StreamObj)
+            {
+                var encodingStream = enc.GetAs<PdfStream>();
+                using var buffer = encodingStream.Contents.GetDecodedBuffer();
+                var (ranges, _) = CMapReader.ReadCMap(ctx, buffer.GetData(), true);
+                encodingMap = new CMap(ranges);
+            }
+
+            var identityEncoded = encodingName != null && (encodingName.Value == "/Identity-H" || encodingName.Value == "Identity-V");
+            if (!identityEncoded && encodingName != null)
+            {
+                var e1 = KnownCMaps.GetCMap(encodingName.Value.Substring(1));
+                encodingMap = new CMap(e1.Ranges);
+            }
+
+            var cidCharSet = t0.DescendantFont?.CIDSystemInfo?.Registry?.Value + "-" + t0.DescendantFont?.CIDSystemInfo?.Ordering?.Value;
+            var knownDesc = cidCharSet == "Adobe-BG1" || cidCharSet == "Adobe-CNS1" || cidCharSet == "Adobe-Japan1" || cidCharSet == "Adobe-Korea1";
+
+            var all = new Dictionary<uint, Glyph>();
+            var b1g = new Glyph[256];
+
+            AddEmbeddedValues(ctx, t0, all, b1g);
+
+            // todo vertical
+            AddWidths(t0, all);
+
+            AddToUnicodeValues(ctx, t0, all, b1g);
+
+            CMap cmap;
+            if (knownDesc)
+            {
+                // add unicode values from known cmap
+                var e2 = KnownCMaps.GetCMap(cidCharSet + "-UCS2");
+                foreach (var (cid, gg) in all)
                 {
-                    var ttf = t0.DescendantFont?.FontDescriptor?.FontFile2;
-                    if (ttf != null)
+                    if (e2.Mapping.TryGetValue(cid, out var info))
                     {
-
-                    }
-
-                    var all = new List<Glyph>();
-                    // TODO warn
-                    var g = new Glyph[256];
-                    // var g = Encodings.GetPartialGlyphs(Encodings.StandardEncoding);
-                    // todo vertical
-                    foreach (var (cid, w) in ReadWidths(t0.DescendantFont.W))
-                    {
-                        if (cid < g.Length)
+                        gg.GuessedUnicode = false;
+                        if (info.MultiChar != null)
                         {
-                            var tg = g[cid];
-                            if (tg != null)
-                            {
-                                g[cid].w0 = w / 1000f;
-                                all.Add(tg);
-                                continue;
-                            }
+                            gg.MultiChar = info.MultiChar;
+                            gg.Char = default;
                         }
-
-                        all.Add(new Glyph
+                        else
                         {
-                            Char = (char)cid,
-                            CodePoint = cid,
-                            w0 = w / 1000f,
-                            IsWordSpace = false,
-                            BBox = new decimal[] { 0m, 0m, (decimal)(w / 1000f), 0m
+                            gg.Char = (char)info.Code;
                         }
-                        });
                     }
-                    var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
-                    var mw = (t0.DescendantFont.DW ?? 1000f) / 1000f;
-                    foreach (var glyph in g)
+                }
+                cmap = new CMap(e2.Ranges);
+            } else
+            {
+                var twoByte = new CRange
+                {
+                    Start = 0x00,
+                    End = 0xFF,
+                    Bytes = 2
+                };
+
+                cmap = new CMap(new List<CRange> { twoByte });
+            }
+
+            SetDefaultWidths(t0, all);
+
+            var mw = (t0.DescendantFont.DW ?? 1000f) / 1000f;
+            var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, 0m } };
+
+            var gs = new FontGlyphSet(b1g, all, notdef);
+
+            return new CMapFont(cmap, gs, 2, encodingMap);
+        }
+
+        private static Glyph MapGlyph(uint cc, string name)
+        {
+            if (name == null) { return null; }
+            var g = new Glyph
+            {
+                Name = name,
+                CodePoint = cc
+            };
+            if (!GlyphNames.Lookup.TryGetValue(name, out char value))
+            {
+                value = (char)cc;
+                g.GuessedUnicode = true;
+            }
+            g.Char = value;
+            return g;
+        }
+
+        private static void AddEmbeddedValues(ParsingContext ctx, FontType0 t0, Dictionary<uint, Glyph> all, Glyph[] b1g)
+        {
+            var ttf = t0.DescendantFont?.FontDescriptor?.FontFile2;
+            if (ttf != null)
+            {
+                return;
+            }
+
+            // add glyphs if has postscript table, otherwise we'll just guess
+            using var buff = ttf.Contents.GetDecodedBuffer();
+
+            var cidtogid = t0.DescendantFont?.ReadCIDToGid();
+            var reader = new TrueTypeReader(ctx, buff.GetData());
+
+            if (reader.TryGetMaxpGlyphs(out int count) && reader.HasPostTable())
+            {
+                var (_, names) = reader.ReadPostScriptTable(count);
+
+                Dictionary<uint, uint> cidLu = null;
+                if (cidtogid != null)
+                {
+                    cidLu = new Dictionary<uint, uint>();
+                    foreach (var (cid, gid) in cidtogid)
                     {
-                        if (glyph == null) { continue; }
-                        if (glyph.w0 == 0)
-                        {
-                            glyph.w0 = mw;
-                        }
-                        glyph.BBox = new decimal[] { 0m, 0m, (decimal)glyph.w0, bbox?.URy / 1000.0m };
+                        cidLu[gid] = cid;
                     }
-                    var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, 0m } };
-                    var twoByte = new CRange
-                    {
-                        Start = 0x00,
-                        End = 0xFF,
-                        Bytes = 2
-                    };
-
-                    var cmap = new CMap(new List<CRange> { twoByte });
-                    var gs = new FontGlyphSet(all, notdef);
-
-                    return new CMapFont(cmap, gs);
                 }
 
-
-                if (!identityEncoded || knownDesc)
+                if (cidLu != null)
                 {
-                    // todo, lookup first cmap
-                    CMap gid = null;
-                    if (!identityEncoded)
+                    for (uint i = 0; i < names.Length; i++)
                     {
-                        var e1 = KnownCMaps.GetCMap(en.Value.Substring(1));
-                        gid = new CMap(e1.Ranges);
+                        var gid = i;
+                        var name = names[i];
+                        if (name == null) { continue; }
+                        if (cidLu.TryGetValue(gid, out var cid))
+                        {
+                            var g = MapGlyph(cid, name);
+                            all[cid] = g;
+                            if (cid < b1g.Length)
+                            {
+                                b1g[cid] = g;
+                            }
+                        }
                     }
-                    var e2 = KnownCMaps.GetCMap(cidCharSet + "-UCS2");
+                }
 
-                    var lu = new Dictionary<uint, Glyph>();
-                    foreach (var (k,v) in e2.Mapping)
+                // fallback for unmapped cidtogid && those without cidtogid
+                for (uint i = 0; i < names.Length; i++)
+                {
+                    var gid = i;
+                    var name = names[i];
+                    var cid = gid;
+                    if (cidLu == null || !all.ContainsKey(cid))
+                    {
+                        var g = MapGlyph(cid, name);
+                        all[cid] = g;
+                        if (cid < b1g.Length)
+                        {
+                            b1g[cid] = g;
+                        }
+                    }
+                }
+            } else if (count > 0 && reader.HasGlyfInfo())
+            {
+                var glyphs = reader.ReadGlyfInfo(count);
+                for (uint i = 0; i < glyphs.Length; i++)
+                {
+                    if (glyphs[i])
                     {
                         var g = new Glyph
                         {
-                            CodePoint = k,
-                            // TODO
+                            CodePoint = i,
+                            GuessedUnicode = true
                         };
-                        if (v.MultiChar != null)
+                        all[i] = g;
+                        if (i < b1g.Length)
                         {
-                            g.MultiChar = v.MultiChar;
-                        } else
-                        {
-                            g.Char = (char)v.Code;
+                            b1g[i] = g;
                         }
-
-                        lu[k] = g;
                     }
-
-                    AddWidths(t0, e2.Ranges, lu);
-
-                    var mw = (t0.DescendantFont.DW ?? 1000f) / 1000f;
-                    var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, 0m } };
-
-                    var cmap = new CMap(e2.Ranges);
-                    var gs = new FontGlyphSet(lu.Values, notdef);
-
-                    return new CMapFont(cmap, gs, gid);
                 }
-
             }
-
-            return null;
         }
 
-        internal static void AddWidths(FontType0 t0, List<CRange> ranges, Dictionary<uint, Glyph> glyphs)
+        private static void AddToUnicodeValues(ParsingContext ctx, FontType0 t0, Dictionary<uint, Glyph> all, Glyph[] b1g)
+        {
+            if (t0.ToUnicode == null)
+            {
+                return;
+            }
+            var str = t0.ToUnicode;
+            using var buffer = str.Contents.GetDecodedBuffer();
+            var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
+            foreach (var glyph in glyphs)
+            {
+                var cid = glyph.CodePoint.Value;
+                if (all.TryGetValue(cid, out var existing))
+                {
+                    if (existing.GuessedUnicode)
+                    {
+                        existing.GuessedUnicode = false;
+                        existing.Char = glyph.Char;
+                        existing.MultiChar = glyph.MultiChar;
+                    }
+                    continue;
+                }
+                all[cid] = glyph;
+                if (b1g != null && cid < b1g.Length)
+                {
+                    b1g[cid] = glyph;
+                }
+            }
+        }
+
+        internal static void AddWidths(FontType0 t0, Dictionary<uint, Glyph> glyphs, Glyph[] b1g=null)
         {
             var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
             foreach (var (cid, w) in ReadWidths(t0.DescendantFont.W))
@@ -149,19 +244,27 @@ namespace PdfLexer.Fonts
                 }
                 else
                 {
-                    glyphs[cid] = new Glyph
+                    var g = new Glyph
                     {
                         Char = (char)cid,
                         CodePoint = cid,
                         w0 = w / 1000f,
-                        Bytes = CRange.EstimateByteSize(ranges, cid),
                         IsWordSpace = false,
                         GuessedUnicode = true,
                         BBox = new decimal[] { 0m, 0m, (decimal)(w / 1000f), bbox?.URy / 1000.0m }
                     };
+                    glyphs[cid] = g;
+                    if (b1g != null && cid < b1g.Length)
+                    {
+                        b1g[cid] = g;
+                    }
                 }
             }
-            
+        }
+
+        internal static void SetDefaultWidths(FontType0 t0, Dictionary<uint, Glyph> glyphs)
+        {
+            var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
             var mw = (t0.DescendantFont.DW ?? 1000f) / 1000f;
             foreach (var glyph in glyphs.Values)
             {

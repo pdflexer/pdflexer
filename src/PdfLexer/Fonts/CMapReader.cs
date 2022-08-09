@@ -3,7 +3,6 @@ using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace PdfLexer.Fonts
@@ -26,7 +25,7 @@ namespace PdfLexer.Fonts
         private static byte[] rangeEnd = Encoding.ASCII.GetBytes("endbfrange");
         private static UnicodeEncoding ucBO = new UnicodeEncoding(true, true, false);
         private static UnicodeEncoding uc = new UnicodeEncoding(true, false, false);
-        public static (List<CRange> Ranges, List<Glyph> Glyphs) GetGlyphsFromToUnicode(ParsingContext ctx, ReadOnlySpan<byte> data)
+        public static (List<CRange> Ranges, List<Glyph> Glyphs) ReadCMap(ParsingContext ctx, ReadOnlySpan<byte> data, bool skipGlyphs = false)
         {
             var ranges = new List<CRange>();
             var glyphs = new List<Glyph>();
@@ -47,7 +46,7 @@ namespace PdfLexer.Fonts
                     var token = scanner.GetCurrentData();
                     if (token.SequenceEqual(charStart))
                     {
-                        state = ToUnicodeState.ReadChars;
+                        state = skipGlyphs ? ToUnicodeState.None : ToUnicodeState.ReadChars;
                     }
                     else if (token.SequenceEqual(charEnd))
                     {
@@ -55,7 +54,7 @@ namespace PdfLexer.Fonts
                     }
                     else if (token.SequenceEqual(rangeStart))
                     {
-                        state = ToUnicodeState.ReadRange;
+                        state = skipGlyphs ? ToUnicodeState.None : ToUnicodeState.ReadRange;
                     }
                     else if (token.SequenceEqual(rangeEnd))
                     {
@@ -79,7 +78,7 @@ namespace PdfLexer.Fonts
                     // c1
                     var token = scanner.GetCurrentData();
                     g.CodePoint = ReadCodePoint(ctx, token, buffer);
-                    g.Bytes = (token.Length - 2) / 2;
+                    // g.Bytes = (token.Length - 2) / 2;
                     scanner.SkipCurrent();
 
                     // vals ->
@@ -88,6 +87,7 @@ namespace PdfLexer.Fonts
                     switch (type)
                     {
                         case PdfTokenType.StringStart:
+                            
                             AddStringVal(ctx, g, token, buffer);
                             break;
                         case PdfTokenType.NameObj:
@@ -122,7 +122,7 @@ namespace PdfLexer.Fonts
                             {
                                 var g = new Glyph();
                                 g.CodePoint = cp1 + (uint)c;
-                                g.Bytes = bytes;
+                                // g.Bytes = bytes;
                                 AddStringVal(g, buffer.Slice(0, bufferUsed));
                                 glyphs.Add(g);
                                 buffer[bufferUsed - 1] = (byte)(buffer[bufferUsed - 1] + 1);
@@ -136,7 +136,7 @@ namespace PdfLexer.Fonts
                                 token = scanner.GetCurrentData();
                                 bufferUsed = ctx.StringParser.ConvertBytes(token, buffer);
                                 var g = new Glyph();
-                                g.Bytes = bytes;
+                                // g.Bytes = bytes;
                                 g.CodePoint = cp1 + (uint)c;
                                 AddStringVal(g, buffer.Slice(0, bufferUsed));
                                 glyphs.Add(g);

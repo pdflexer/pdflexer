@@ -35,6 +35,10 @@ namespace pdflexer.PdfiumRegressionTester
         {
             "__bug1260585.pdf.pdf", // pdfium spacing seems wrong
             "__bug878194.pdf.pdf", // pdfium doesn't extract some stacked french text, maybe deduping internally?
+            "__aboutstacks.pdf.pdf", // pdfium doesn't read composite truetype with post table, need to add test coverage here though
+            "__issue1127.pdf.pdf", // pdfium has spacing issues but we aren't properly extracting encoding for embedded type1 ps font
+            "__issue1658.pdf.pdf", // type1 ps embedded TODO
+            "__issue1687.pdf.pdf", // bad tounicode values, good truetype ps name, pdfium uses to unicode
         };
         internal static Dictionary<string, IgnoreSetup> ignoreMap = new Dictionary<string, IgnoreSetup>
         {

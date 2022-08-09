@@ -1,11 +1,11 @@
-﻿using PdfLexer.DOM;
-using PdfLexer.Fonts.Predefined;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
 namespace PdfLexer.Fonts
 {
+    [ExcludeFromCodeCoverage]
     internal class AFMReader
     {
         public static List<Glyph> GetGlyphsFromAFM(Stream str)

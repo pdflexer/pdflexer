@@ -3,6 +3,7 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.IO;
 using PdfLexer.DOM;
 using PdfLexer.Filters;
@@ -167,6 +168,8 @@ namespace PdfLexer.Parsers
         }
 
 
+        private ConditionalWeakTable<PdfDictionary, IReadableFont> fontCache = new ConditionalWeakTable<PdfDictionary, IReadableFont>();
+
         internal IReadableFont GetFont(IPdfObject obj)
         {
             // built in encoding:
@@ -179,23 +182,32 @@ namespace PdfLexer.Parsers
             //      unembedded or isinternalfont
             //          Symbol in name -> SymbolSetEncoding
             //          Dingbats|Wingdings in name -> ZapfDingbats
-            if (obj == null) { return null; }
-            var dict = obj.GetAs<PdfDictionary>();
-            var type = dict.Get<PdfName>(PdfName.Subtype);
 
-            switch (type.Value)
+            var dict = obj.GetAs<PdfDictionary>();
+
+            if (fontCache.TryGetValue(dict, out var font))
             {
-                case "/TrueType":
-                    return TrueType.Get(this, dict);
-                case "/Type1":
-                    return SingleByteFont.Create(this, dict);
-                case "/Type0":
-                    return CIDFontReader.Create(this, dict);
-                case "/Type3":
-                    var glyphs = new Glyph[256];
-                    return SingleByteFont.FromEncodingAndDifferences(dict, glyphs, glyphs);
+                return font;
             }
-            return null;
+
+            var type = dict.Get<PdfName>(PdfName.Subtype);
+            var created = type.Value switch
+            {
+                "/Type0" => CIDFontReader.Create(this, dict),
+                "/Type1" => SingleByteFont.Create(this, dict),
+                "/TrueType" => TrueType.Get(this, dict),
+                "/Type3" => GetType3(dict),
+                _ => throw new PdfLexerException("Uknown font type: " + type.Value)
+            };
+            fontCache.AddOrUpdate(dict, created);
+
+            return created;
+        }
+
+        private IReadableFont GetType3(PdfDictionary dict)
+        {
+            var glyphs = new Glyph[256];
+            return SingleByteFont.Create(this, dict);
         }
 
         internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)

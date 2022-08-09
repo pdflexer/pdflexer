@@ -28,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pdflexer.TestCaseGen", "uti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.ImageTests", "test\PdfLexer.ImageTests\PdfLexer.ImageTests.csproj", "{45CC7FD2-D89C-47FA-97C9-FA884B681E61}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfLexer.CMaps", "src\PdfLexer.CMaps\PdfLexer.CMaps.csproj", "{FFDC4EC5-3A85-4F17-BD10-3D69E14F2885}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.CMaps", "src\PdfLexer.CMaps\PdfLexer.CMaps.csproj", "{FFDC4EC5-3A85-4F17-BD10-3D69E14F2885}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

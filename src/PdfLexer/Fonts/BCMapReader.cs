@@ -1,8 +1,6 @@
-﻿using PdfLexer.Lexing;
-using PdfLexer.Parsers;
+﻿using PdfLexer.Parsers;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 
 namespace PdfLexer.Fonts

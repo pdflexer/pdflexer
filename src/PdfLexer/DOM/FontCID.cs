@@ -69,9 +69,9 @@ namespace PdfLexer.DOM
         /// default width for glyphs
         /// default 1000
         /// </summary>
-        public PdfIntNumber DW
+        public PdfNumber DW
         {
-            get => NativeObject.Get<PdfIntNumber>(PdfName.DW) ?? (PdfIntNumber)1000;
+            get => NativeObject.Get<PdfNumber>(PdfName.DW) ?? (PdfNumber)1000;
             set => NativeObject[PdfName.DW] = value;
         }
 
@@ -121,6 +121,37 @@ namespace PdfLexer.DOM
 
         public IEnumerable<(uint cid, float width)> ReadW() => ReadWidths(W);
         public IEnumerable<(uint cid, float width)> ReadW2() => ReadWidths(W2);
+
+        public Dictionary<uint, uint> ReadCIDToGid()
+        {
+            var obj = CIDToGIDMap.Resolve();
+            if (obj == null)
+            {
+                return null;
+            }
+            if (obj.Type == PdfObjectType.NameObj)
+            {
+                return null;
+            } else if (obj.Type != PdfObjectType.StreamObj)
+            {
+                return null;
+            }
+
+            var str = obj.GetAs<PdfStream>();
+            var lu = new Dictionary<uint, uint>();
+            using var buffer = str.Contents.GetDecodedBuffer();
+            var data = buffer.GetData();
+            var cids = data.Length / 2;
+            for (var i=0;i<cids;i++)
+            {
+                var b0 = data[2 * i];
+                var b2 = data[2 * i + 1];
+                var gid = b0 << 8 | b2;
+                lu[(uint)i] = (uint)gid;
+            }
+            return lu;
+
+        }
         private static IEnumerable<(uint cid, float width)> ReadWidths(PdfArray array)
         {
             if (array == null) { yield break; }
