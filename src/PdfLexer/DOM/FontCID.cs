@@ -124,7 +124,7 @@ namespace PdfLexer.DOM
 
         public Dictionary<uint, uint> ReadCIDToGid()
         {
-            var obj = CIDToGIDMap.Resolve();
+            var obj = CIDToGIDMap;
             if (obj == null)
             {
                 return null;

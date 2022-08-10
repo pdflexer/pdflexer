@@ -70,26 +70,26 @@ namespace PdfLexer.Fonts
                         }
                     }
                 }
-                if (all.Count == 0)
-                {
-                    // TODO remove this once we can parse nontrue type embedded files ?
-                    // maybe leave as fallback? huge perf hit
-                    foreach (var (cid,gg) in e2.Mapping)
-                    {
-                        var g = new Glyph
-                        {
-                            Char = (char)gg.Code,
-                            MultiChar = gg.MultiChar,
-                            CodePoint = cid,
-                            IsWordSpace = false,
-                        };
-                        all[cid] = g;
-                        if (b1g != null && cid < b1g.Length)
-                        {
-                            b1g[cid] = g;
-                        }
-                    }
-                }
+                // if (all.Count == 0)
+                // {
+                //     // TODO remove this once we can parse nontrue type embedded files ?
+                //     // maybe leave as fallback? huge perf hit
+                //     foreach (var (cid,gg) in e2.Mapping)
+                //     {
+                //         var g = new Glyph
+                //         {
+                //             Char = (char)gg.Code,
+                //             MultiChar = gg.MultiChar,
+                //             CodePoint = cid,
+                //             IsWordSpace = false,
+                //         };
+                //         all[cid] = g;
+                //         if (b1g != null && cid < b1g.Length)
+                //         {
+                //             b1g[cid] = g;
+                //         }
+                //     }
+                // }
                 cmap = new CMap(e2.Ranges);
             } else
             {
@@ -136,21 +136,33 @@ namespace PdfLexer.Fonts
         private static void AddEmbeddedValues(ParsingContext ctx, FontType0 t0, Dictionary<uint, Glyph> all, Glyph[] b1g)
         {
             var ttf = t0.DescendantFont?.FontDescriptor?.FontFile2;
+            ttf ??= t0.DescendantFont?.FontDescriptor?.FontFile3;
             if (ttf == null)
             {
                 return;
             }
 
-            // TODO 
-            // FontFile3 -> Compact Font Format (CFF) -> descriptor subtype  CIDFontType0C or OpenType
+            using var buff = ttf.Contents.GetDecodedBuffer();
+            var data = buff.GetData();
+            if (TrueTypeReader.IsTTFile(data) || TrueTypeReader.IsTTCollectionFile(data) || TrueTypeReader.IsOpenTypeFile(data))
+            {
+                AddFromTrueType(ctx, t0, all, b1g, data);
+            } else if (CFFReader.IsCFFfile(data))
+            {
+                var cff = new CFFReader(ctx, data);
+                cff.AddCharactersToCid(t0.BaseFont, all, b1g);
+            } else
+            {
+                ctx.Error($"Font file for {t0.BaseFont} was not matched as CFF, OpenType, TrueType, or TrueType collection for Type0 font.");
+            }
+        }
 
+        private static void AddFromTrueType(ParsingContext ctx, FontType0 t0, Dictionary<uint, Glyph> all, Glyph[] b1g, ReadOnlySpan<byte> data)
+        {
             try
             {
-                // add glyphs if has postscript table, otherwise we'll just guess
-                using var buff = ttf.Contents.GetDecodedBuffer();
-
                 var cidtogid = t0.DescendantFont?.ReadCIDToGid();
-                var reader = new TrueTypeReader(ctx, buff.GetData());
+                var reader = new TrueTypeReader(ctx, data);
 
                 if (reader.TryGetMaxpGlyphs(out int count) && reader.HasPostTable())
                 {
@@ -225,6 +237,11 @@ namespace PdfLexer.Fonts
                             }
                         }
                     }
+                } else if (count > 0 && reader.HasCFFData())
+                {
+                    var cffData = reader.GetCFFData();
+                    var cffReader = new CFFReader(ctx, cffData);
+                    cffReader.AddCharactersToCid(t0.BaseFont, all, b1g);
                 }
 
             } catch (Exception e)

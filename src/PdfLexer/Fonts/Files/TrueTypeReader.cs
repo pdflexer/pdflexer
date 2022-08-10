@@ -5,6 +5,26 @@ using System.Text;
 
 namespace PdfLexer.Fonts.Files
 {
+    // TrueTypeReader PORTED FROM PDF.JS, PDF.JS is licensed as follows:
+    /* Copyright 2012 Mozilla Foundation
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+
+
+    /// <summary>
+    /// 
+    /// </summary>
     public ref struct TrueTypeReader
     {
         private ReadOnlySpan<byte> Data;
@@ -18,42 +38,70 @@ namespace PdfLexer.Fonts.Files
             Headers = ReadHeader();
         }
 
+        public static bool IsTTFile(ReadOnlySpan<byte> data)
+        {
+            var header = data.Slice(0, 4);
+            uint b0 = data[0], b1 = data[1], b2 = data[2], b3 = data[3];
+            var v = (b0 << 24) + (b1 << 16) + (b2 << 8) + b3;
+            if (v == 0x00010000) { return true; }
+
+            var s = Encoding.UTF8.GetString(header);
+            if (s == "true" || s == "typ1") { return true; }
+            return false;
+        }
+
+        public static bool IsTTCollectionFile(ReadOnlySpan<byte> data)
+        {
+            var s = Encoding.UTF8.GetString(data.Slice(0, 4));
+            if (s == "ttcf") { return true; }
+            return false;
+        }
+
+        public static bool IsOpenTypeFile(ReadOnlySpan<byte> data)
+        {
+            var s = Encoding.UTF8.GetString(data.Slice(0, 4));
+            if (s == "OTTO") { return true; }
+            return false;
+        }
+
         private Dictionary<string, Tab> ReadHeader()
         {
             var ttcTag = GetString(4);
             if (ttcTag == "ttcf")
             {
-                var majorVersion = GetUint16();
-                var minorVersion = GetUint16();
-                var numFonts = GetUInt32();
-                var offsetTable = new List<uint> { };
+                var (numFonts, offsetTable) = GetFromTTCF();
+
+                var parts = "".Split("+");
                 for (var i = 0; i < numFonts; i++)
                 {
-                    offsetTable.Add(GetUInt32());
-                }
+                    Position = (int)offsetTable[i];
+                    var numTables = ReadOpenTypeHeader();
 
-                switch (majorVersion)
-                {
-                    case 1:
-                        // return new { ttcTag };
-                        return null;
-                    case 2:
-                        {
-                            var dsigTag = GetInt32();
-                            var dsigLength = GetInt32();
-                            var dsigOffset = GetInt32();
-                            return null;
-                        }
-                }
+                    var tables = new Dictionary<string, Tab>();
+                    for (var t = 0; t < numTables; t++)
+                    {
+                        var tab = ReadOTTableEntry();
+                        tables[tab.Name] = tab;
+                    }
 
-                throw new ApplicationException("Unknown truetype format: " + majorVersion);
+                    if (!tables.TryGetValue("name", out var nameTabInfo))
+                    {
+                        // err ?
+                        continue;
+                    }
+
+
+                    // TODO complete name table parsing
+                    var nameTable = ReadNameTable(nameTabInfo.Offset, nameTabInfo.Length);
+
+                    // TODO match to correct font based on name or partial name.
+                }
+                throw new NotImplementedException("true type collections not implemented.");
             }
             else
             {
-                var numTables = GetUint16();
-                var searchRange = GetUint16();
-                var entrySelector = GetUint16();
-                var rangeShift = GetUint16();
+                Position -= 4; // unread header
+                var numTables = ReadOpenTypeHeader();
                 var tables = new Dictionary<string, Tab>();
                 for (var i = 0; i < numTables; i++)
                 {
@@ -62,14 +110,48 @@ namespace PdfLexer.Fonts.Files
                 }
 
                 return tables;
-                if (!tables.TryGetValue("name", out var nameTable))
-                {
-                    throw new ApplicationException("No name tables");
-                }
-                ReadNameTable(nameTable.Offset, nameTable.Length);
             }
 
         }
+
+        private int ReadOpenTypeHeader()
+        {
+            var version = GetString(4);
+            var numTables = GetUint16();
+            var searchRange = GetUint16();
+            var entrySelector = GetUint16();
+            var rangeShift = GetUint16();
+            return numTables;
+        }
+
+        private (uint numFonts, List<uint> offsetTable) GetFromTTCF()
+        {
+            // 4 byte already read
+            var majorVersion = GetUint16();
+            var minorVersion = GetUint16();
+            var numFonts = GetUInt32();
+            var offsetTable = new List<uint> { };
+            for (var i = 0; i < numFonts; i++)
+            {
+                offsetTable.Add(GetUInt32());
+            }
+
+            switch (majorVersion)
+            {
+                case 1:
+                    // return new { ttcTag };
+                    return (numFonts, offsetTable);
+                case 2:
+                    {
+                        var dsigTag = GetInt32();
+                        var dsigLength = GetInt32();
+                        var dsigOffset = GetInt32();
+                        return (numFonts, offsetTable);
+                    }
+            }
+            throw new PdfLexerException("Unknown truetype format: " + majorVersion);
+        }
+
         public struct Tab
         {
             public string Name;
@@ -630,8 +712,18 @@ namespace PdfLexer.Fonts.Files
 
         public bool HasGlyfInfo()
         {
-            return Headers.ContainsKey("loca") &&
-                Headers.ContainsKey("loca");
+            return Headers.ContainsKey("loca");
+        }
+
+        public bool HasCFFData()
+        {
+            return Headers.ContainsKey("CFF ");
+        }
+
+        public ReadOnlySpan<byte> GetCFFData()
+        {
+            var table = Headers["CFF "];
+            return Data.Slice(table.Offset, table.Length);
         }
 
         public bool TryGetMaxpGlyphs(out int count)

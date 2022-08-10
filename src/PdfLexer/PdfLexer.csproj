@@ -1,63 +1,63 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFrameworks>netstandard2.1;net5.0;net6.0</TargetFrameworks>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageProjectUrl>https://github.com/pdflexer/pdflexer</PackageProjectUrl>
-    <Authors>Michael Plaisted</Authors>
-    <Company></Company>
-    <Product />
-    <Description>Lower level PDF parsing library.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.0.3-preview</Version>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.1;net5.0;net6.0</TargetFrameworks>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/pdflexer/pdflexer</PackageProjectUrl>
+		<Authors>Michael Plaisted</Authors>
+		<Company></Company>
+		<Product />
+		<Description>Lower level PDF parsing library.</Description>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Version>0.0.3-preview</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
-    <PackageReference Include="System.IO.Pipelines" Version="6.0.3" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-  </ItemGroup>
+	<PropertyGroup>
+		<LangVersion>9.0</LangVersion>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <None Update="DOM\DOMGen.tt">
-      <LastGenOutput>DOMGen.cs</LastGenOutput>
-      <Generator>TextTemplatingFileGenerator</Generator>
-    </None>
-    <None Update="Operators\PdfOperatorType.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>PdfOperatorType.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
+		<PackageReference Include="System.IO.Pipelines" Version="6.0.3" />
+		<PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
-  </ItemGroup>
+	<ItemGroup>
+		<None Update="DOM\DOMGen.tt">
+			<LastGenOutput>DOMGen.cs</LastGenOutput>
+			<Generator>TextTemplatingFileGenerator</Generator>
+		</None>
+		<None Update="Operators\PdfOperatorType.tt">
+			<Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>PdfOperatorType.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Service Include="{508349b6-6b84-4df5-91f0-309beebad82d}" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="pdflexer.TestCaseGen" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
+		<ProjectReference Include="..\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
 	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Operators\PdfOperatorType.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>PdfOperatorType.tt</DependentUpon>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="Operators\PdfOperatorType.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>PdfOperatorType.tt</DependentUpon>
+		</Compile>
+	</ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
-    <PackageReference Include="DotNext.Unsafe">
-      <Version>4.6.1</Version>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Fonts\Parsers\" />
-  </ItemGroup>
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+		<PackageReference Include="DotNext.Unsafe">
+			<Version>4.6.1</Version>
+		</PackageReference>
+	</ItemGroup>
 
 
 </Project>

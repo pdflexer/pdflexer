@@ -70,7 +70,6 @@ namespace PdfLexer.Lexing
             Operands.Clear();
         }
 
-
         public bool TryGetCurrentOperation(out IPdfOperation op)
         {
             Peek();
@@ -82,7 +81,12 @@ namespace PdfLexer.Lexing
             }
 
             var oi = (int)CurrentOperator;
-            if (!ParseOpMapping.Parsers.TryGetValue(oi, out var parser))
+            PdfOperator.ParseOp parser = null;
+            if (oi < 256)
+            {
+                parser = ParseOpMapping.SingleByteParsers[oi];
+            } 
+            if (parser == null && !ParseOpMapping.Parsers.TryGetValue(oi, out parser))
             {
                 var uk = GetUnknown(Scanner, Operands, Data);
                 op = uk;
