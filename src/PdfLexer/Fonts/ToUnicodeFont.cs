@@ -38,6 +38,10 @@ namespace PdfLexer.Fonts
         public static void AddMissingSimple(ParsingContext ctx, ISimpleUnicode dict, Glyph[] encoding)
         {
             var str = dict.ToUnicode;
+            if (str == null)
+            {
+                return;
+            }
             using var buffer = str.Contents.GetDecodedBuffer();
             var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
 
@@ -45,15 +49,12 @@ namespace PdfLexer.Fonts
             {
                 if (glyph.CodePoint < 256)
                 {
-                    var g = encoding[glyph.CodePoint.Value];
-
-                    if (g == null)
+                    if (glyph.CodePoint == 32)
                     {
-                        encoding[glyph.CodePoint.Value] = glyph;
-                    } else if (g.GuessedUnicode)
-                    {
-                        g.Char = glyph.Char;
+                        glyph.IsWordSpace = true;
                     }
+                    // var g = encoding[glyph.CodePoint.Value];
+                    encoding[glyph.CodePoint.Value] = glyph; // overwrite.. need to see if this is really what we want
                 }
             }
         }

@@ -253,9 +253,10 @@ namespace PdfLexer.Fonts
                 var nms = Encodings.StandardEncoding;
                 for (var i = 0; i < nms.Length; i++)
                 {
-                    if (encoding[i] == null)
+                    var nm = nms[i];
+                    if (encoding[i] == null && nm != null)
                     {
-                        encoding[i] = GetOrCreate(nms[i], (uint)i, null);
+                        encoding[i] = GetOrCreate(nm, (uint)i, null);
                     }
                 }
             }

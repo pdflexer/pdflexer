@@ -41,7 +41,10 @@ namespace PdfLexer.Fonts
                 BBox = BBox,
                 Undefined = Undefined,
                 CodePoint = CodePoint,
-                Kernings = Kernings
+                Kernings = Kernings,
+                MultiChar = MultiChar,
+                Name = Name,
+                GuessedUnicode = GuessedUnicode
             };
         }
     }
