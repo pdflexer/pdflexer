@@ -238,6 +238,7 @@ namespace PdfLexer.Content
                             CurrentGlyph.Glyph.Char = ' ';
                         } else
                         {
+                            TextState.ApplyCharShift(CurrentGlyph);
                             continue;
                         }
                     }

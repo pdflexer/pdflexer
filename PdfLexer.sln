@@ -30,6 +30,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.ImageTests", "test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.CMaps", "src\PdfLexer.CMaps\PdfLexer.CMaps.csproj", "{FFDC4EC5-3A85-4F17-BD10-3D69E14F2885}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pdflexer.ArlingtonGen", "util\pdflexer.ArlingtonGen\pdflexer.ArlingtonGen.csproj", "{DFAA8A69-56D7-4638-A059-322344F1945F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{FFDC4EC5-3A85-4F17-BD10-3D69E14F2885}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FFDC4EC5-3A85-4F17-BD10-3D69E14F2885}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FFDC4EC5-3A85-4F17-BD10-3D69E14F2885}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DFAA8A69-56D7-4638-A059-322344F1945F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFAA8A69-56D7-4638-A059-322344F1945F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFAA8A69-56D7-4638-A059-322344F1945F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFAA8A69-56D7-4638-A059-322344F1945F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -78,6 +84,7 @@ Global
 		{39094293-ADE2-4D9E-BEB7-9713642D12B0} = {825C7D8C-848E-49F7-BC3C-FF1C9AE7EB74}
 		{9CF0AC91-B1AA-4114-90FC-19A93DD59505} = {825C7D8C-848E-49F7-BC3C-FF1C9AE7EB74}
 		{45CC7FD2-D89C-47FA-97C9-FA884B681E61} = {255B3635-FE74-4930-ABE3-4927692218F6}
+		{DFAA8A69-56D7-4638-A059-322344F1945F} = {825C7D8C-848E-49F7-BC3C-FF1C9AE7EB74}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CA4BE97-518D-4374-BAC7-469AFC1F69AF}

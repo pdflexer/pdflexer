@@ -162,6 +162,16 @@ namespace PdfLexer.Fonts
             try
             {
                 var cidtogid = t0.DescendantFont?.ReadCIDToGid();
+                Dictionary<uint, uint> cidLu = null;
+                if (cidtogid != null)
+                {
+                    cidLu = new Dictionary<uint, uint>();
+                    foreach (var (cid, gid) in cidtogid)
+                    {
+                        cidLu[gid] = cid;
+                    }
+                }
+
                 var reader = new TrueTypeReader(ctx, data);
 
                 if (reader.TryGetMaxpGlyphs(out int count) && reader.HasPostTable())
@@ -169,16 +179,6 @@ namespace PdfLexer.Fonts
                     var (_, names) = reader.ReadPostScriptTable(count);
                     if (names.Length != 0)
                     {
-                        Dictionary<uint, uint> cidLu = null;
-                        if (cidtogid != null)
-                        {
-                            cidLu = new Dictionary<uint, uint>();
-                            foreach (var (cid, gid) in cidtogid)
-                            {
-                                cidLu[gid] = cid;
-                            }
-                        }
-
                         if (cidLu != null)
                         {
                             for (uint i = 0; i < names.Length; i++)
@@ -218,6 +218,7 @@ namespace PdfLexer.Fonts
                     }
                 }
                 
+
                 if (count > 0 && reader.HasGlyfInfo())
                 {
                     var glyphs = reader.ReadGlyfInfo(count);
@@ -228,8 +229,19 @@ namespace PdfLexer.Fonts
                             var g = new Glyph
                             {
                                 CodePoint = i,
+                                Char = (char)i,
                                 GuessedUnicode = true
                             };
+
+                            if (cidLu != null && cidLu.TryGetValue(i, out var cid))
+                            {
+                                g.CodePoint = cid;
+                                // use original char for unicode those GID
+                                // consistent with pdfium, may not have a purpose
+                                // but makes testing consistent
+                                // g.Char = (char)cid;
+                            }
+
                             all[i] = g;
                             if (i < b1g.Length)
                             {

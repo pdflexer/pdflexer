@@ -344,6 +344,7 @@ namespace PdfLexer.Content
                 // holds array of [ font_iref size ] -> similar to Tf but iref instead of name
                 // TODO harden
                 GS.Font = Ctx.GetFont(fa[0]);
+                GS.FontObject = fa[0].GetAs<PdfDictionary>();
                 if (fa.Count > 1 && fa[1].GetPdfObjType() == PdfObjectType.NumericObj)
                 {
                     GS.FontSize = fa[1].GetValue<PdfNumber>();
@@ -361,7 +362,9 @@ namespace PdfLexer.Content
                 return;
             }
             GS.FontName = op.font;
-            GS.Font = Ctx.GetFont(GetFontObj(GS.FontName));
+            var obj = GetFontObj(GS.FontName);
+            GS.FontObject = obj.GetAs<PdfDictionary>();
+            GS.Font = Ctx.GetFont(obj);
             UpdateTRM();
         }
 

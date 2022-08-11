@@ -206,7 +206,6 @@ namespace PdfLexer.Parsers
 
         private IReadableFont GetType3(PdfDictionary dict)
         {
-            var glyphs = new Glyph[256];
             return SingleByteFont.Create(this, dict);
         }
 

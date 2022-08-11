@@ -20,6 +20,20 @@ namespace PdfLexer.Fonts
      */
     public class GlyphNames
     {
+
+        public static char? Get(string name, uint cp)
+        {
+            if (Lookup.TryGetValue(name, out var c))
+            {
+                return c;
+            }
+            if (LookupDingBats.TryGetValue(name, out c))
+            {
+                return c;
+            }
+            return null;
+        }
+
         public static Dictionary<string, char> Lookup = new Dictionary<string, char>
         {
             ["A"] = '\u0041',

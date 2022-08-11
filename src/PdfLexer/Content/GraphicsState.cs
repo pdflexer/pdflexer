@@ -43,6 +43,7 @@ namespace PdfLexer.Content
         public float WordSpacing { get; internal set; }
         public float TextLeading { get; internal set; }
         public PdfName FontName { get; internal set; }
+        public PdfDictionary FontObject { get; internal set; }
         public IReadableFont Font { get; internal set; }
 
         public Matrix4x4 GetTranslation(Matrix4x4 desired)
@@ -68,6 +69,7 @@ namespace PdfLexer.Content
                 CharSpacing = CharSpacing,
                 WordSpacing = WordSpacing,
                 Font = Font,
+                FontObject = FontObject,
                 FontName = FontName,
                 FontSize = FontSize,
             };

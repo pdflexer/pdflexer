@@ -39,6 +39,9 @@ namespace pdflexer.PdfiumRegressionTester
             "__issue1127.pdf.pdf", // pdfium has spacing issues but we aren't properly extracting encoding for embedded type1 ps font
             "__issue1658.pdf.pdf", // type1 ps embedded TODO
             "__issue1687.pdf.pdf", // bad tounicode values, good truetype ps name, pdfium uses to unicode
+            "__bug1292316.pdf.pdf", // unembedded font without width info written, adobe / pdfium knows glyph metrics somehow and glyphs use up space
+                                    // we don't read so causes subsequent text to be off, TODO determine
+            "__bug1443140.pdf.pdf", // some potential misreads on typ1c CFF but corrupt page has a ton of data noise
         };
         internal static Dictionary<string, IgnoreSetup> ignoreMap = new Dictionary<string, IgnoreSetup>
         {
@@ -62,6 +65,15 @@ namespace pdflexer.PdfiumRegressionTester
             {
                 BaselineIgnores = new List<int> { 10063 }, // pdflexer extract fails with missing tounicode data TODO
                 CandidateIgnores = new List<int> { 0, 12288 } // 10063 from above and then a whitespace char
+            },
+            ["__bug1142033.pdf.pdf"] = new IgnoreSetup
+            {
+                BaselineIgnores = new List<int> { 68, 67, 50, 4018, 3968 }, // no unicode mapping in doc
+                CandidateIgnores = new List<int> { 3, 9234, 3958 } //
+            },
+            ["__issue1629.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 2 } // pound char
             }
         };
         private ILogger _logger;
@@ -93,6 +105,10 @@ namespace pdflexer.PdfiumRegressionTester
             }
             d.Add(() => fpdfview.FPDF_CloseDocument(pdoc));
 
+            var baseValues = new HashSet<uint>();
+
+            var candValues = new HashSet<uint>();
+
             var success = true;
             var pi = 1;
             foreach (var page in doc.Pages)
@@ -108,6 +124,8 @@ namespace pdflexer.PdfiumRegressionTester
                 using var writer = pg.GetWriter();
                 writer.Form(form)
                       .SetStrokingRGB(0, 0, 0);
+
+
 
                 var reader = new TextScanner(doc.Context, page);
                 var lines = new List<(float x, float y, char c)>();
@@ -195,6 +213,8 @@ namespace pdflexer.PdfiumRegressionTester
                 writer.SetStrokingRGB(255, 0, 0);
 
 
+
+
                 var d2 = new Scope();
                 var ppg = fpdfview.FPDF_LoadPage(pdoc, pi - 1);
                 d2.Add(() => fpdfview.FPDF_ClosePage(ppg));
@@ -226,6 +246,7 @@ namespace pdflexer.PdfiumRegressionTester
                         if (dist > 0.01)
                         {
                             var ci = (int)c;
+                            baseValues.Add((uint)ci);
                             if (ignores.BaselineIgnores.Contains(ci))
                             {
                                 continue;
@@ -243,7 +264,7 @@ namespace pdflexer.PdfiumRegressionTester
                             {
                                 writer.Font(font, 0.5)
                                       .TextMove(x + 1, y - 1)
-                                      .Text($"b:{(int)c} c:{(int)cc.c} cf: {cc.Font}")
+                                      .Text($"b:{(int)c} c:{(int)cc.c} cp: {cc.cp} cf: {cc.Font}")
                                       .EndText();
                             } else
                             {
@@ -259,6 +280,7 @@ namespace pdflexer.PdfiumRegressionTester
                     lines2.Add(((float)x, (float)y, c));
                 }
 
+
                 writer.SetStrokingRGB(0, 0, 0);
                 foreach (var kvp in chars)
                 {
@@ -268,6 +290,7 @@ namespace pdflexer.PdfiumRegressionTester
                         if (dist > 0.01)
                         {
                             var ci = (int)kvp.Value.c;
+                            candValues.Add(kvp.Value.c);
                             if (ignores.CandidateIgnores.Contains(ci))
                             {
                                 continue;
@@ -282,7 +305,7 @@ namespace pdflexer.PdfiumRegressionTester
                             unmatched.Add((kvp.Value.x, kvp.Value.y, kvp.Value.c));
                             writer.Font(font, 0.5)
                               .TextMove(kvp.Value.x + 1, kvp.Value.y - 2)
-                              .Text($"c:{(int)kvp.Value.c} cf: {kvp.Value.Font}")
+                              .Text($"c:{(int)kvp.Value.c} cp: {kvp.Value.cp} cf: {kvp.Value.Font}")
                               .EndText();
                         }
 
@@ -295,7 +318,7 @@ namespace pdflexer.PdfiumRegressionTester
                     var vals = grp.OrderBy(x => x.x);
                     foreach (var v in vals)
                     {
-                        op.Append($"{v.x:0.0} {v.y:0.0} {v.c}\n");
+                        op.Append($"{v.x:0.0} {v.y:0.0} {(int)v.c} {v.c}\n");
                     }
                 }
                 var result = op.ToString();
@@ -306,7 +329,7 @@ namespace pdflexer.PdfiumRegressionTester
                     var vals = grp.OrderBy(x => x.x);
                     foreach (var v in vals)
                     {
-                        op.Append($"{v.x:0.0} {v.y:0.0} {v.c}\n");
+                        op.Append($"{v.x:0.0} {v.y:0.0} {(int)v.c} {v.c}\n");
                     }
                 }
                 var result2 = op.ToString();
@@ -314,12 +337,20 @@ namespace pdflexer.PdfiumRegressionTester
                 {
                     var foc = Path.Combine(output, Path.GetFileNameWithoutExtension(name) + "_cc_" + pi + ".txt");
                     var fob = Path.Combine(output, Path.GetFileNameWithoutExtension(name) + "_bc_" + pi + ".txt");
+                    
                     File.WriteAllText(foc, result);
                     File.WriteAllText(fob, result2);
                     success = false;
                 }
                 pi++;
             }
+
+            if (candValues.Count > 0 || baseValues.Count > 0)
+            {
+                var valout = Path.Combine(output, Path.GetFileNameWithoutExtension(name) + "_values.txt");
+                File.WriteAllText(valout, "cand:\n" + string.Join(',', candValues) + "\n" + "base:\n" + string.Join(',', baseValues) + "\n");
+            }
+
             if (true)
             {
                 var pdfo = Path.Combine(output, Path.GetFileNameWithoutExtension(name) + "_rects.pdf");

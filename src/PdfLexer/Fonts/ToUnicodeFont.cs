@@ -35,6 +35,29 @@ namespace PdfLexer.Fonts
             return new SingleByteFont(dict.FontName, lookup, notdef);
         }
 
+        public static void AddMissingSimple(ParsingContext ctx, ISimpleUnicode dict, Glyph[] encoding)
+        {
+            var str = dict.ToUnicode;
+            using var buffer = str.Contents.GetDecodedBuffer();
+            var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
+
+            foreach (var glyph in glyphs)
+            {
+                if (glyph.CodePoint < 256)
+                {
+                    var g = encoding[glyph.CodePoint.Value];
+
+                    if (g == null)
+                    {
+                        encoding[glyph.CodePoint.Value] = glyph;
+                    } else if (g.GuessedUnicode)
+                    {
+                        g.Char = glyph.Char;
+                    }
+                }
+            }
+        }
+
         public static IReadableFont GetComposite(ParsingContext ctx, FontType0 dict)
         {
             var str = dict.ToUnicode;

@@ -280,7 +280,7 @@ namespace PdfLexer.Fonts.Files
                         var glyphsCount = Data[pos++];
                         for (i = 1; i <= glyphsCount; i++)
                         {
-                            encoding[Data[pos++]] = ReadString(i, strings);
+                            encoding[Data[pos++]] = charset.GetName(i); // ?? ReadString(i, strings);
                         }
                         break;
 
@@ -293,7 +293,7 @@ namespace PdfLexer.Fonts.Files
                             var left = Data[pos++];
                             for (var j = start; j <= start + left; j++)
                             {
-                                encoding[j] = ReadString(gid++, strings);
+                                encoding[j] = charset.GetName(i); // ?? ReadString(gid++, strings);
                             }
                         }
                         break;
@@ -629,6 +629,7 @@ namespace PdfLexer.Fonts.Files
         {
             cids = new List<string>(total);
             cids.Add(".notdef");
+            ids = new List<int>();
         }
         public int Count => cids.Count;
 
