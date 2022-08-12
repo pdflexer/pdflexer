@@ -36,7 +36,7 @@ namespace PdfLexer.Fonts
             }
 
             var cidCharSet = t0.DescendantFont?.CIDSystemInfo?.Registry?.Value + "-" + t0.DescendantFont?.CIDSystemInfo?.Ordering?.Value;
-            var knownDesc = cidCharSet == "Adobe-BG1" || cidCharSet == "Adobe-CNS1" || cidCharSet == "Adobe-Japan1" || cidCharSet == "Adobe-Korea1";
+            var knownDesc = cidCharSet == "Adobe-GB1" || cidCharSet == "Adobe-CNS1" || cidCharSet == "Adobe-Japan1" || cidCharSet == "Adobe-Korea1";
 
             var all = new Dictionary<uint, Glyph>();
             var b1g = new Glyph[256];
@@ -149,8 +149,15 @@ namespace PdfLexer.Fonts
                 AddFromTrueType(ctx, t0, all, b1g, data);
             } else if (CFFReader.IsCFFfile(data))
             {
-                var cff = new CFFReader(ctx, data);
-                cff.AddCharactersToCid(t0.BaseFont, all, b1g);
+                try
+                {
+                    var cff = new CFFReader(ctx, data);
+                    cff.AddCharactersToCid(t0.BaseFont, all, b1g);
+                } catch (Exception e)
+                {
+                    ctx.Error($"CFF parsing error for t0 font {t0.BaseFont}: " + e.Message);
+                }
+                
             } else
             {
                 ctx.Error($"Font file for {t0.BaseFont} was not matched as CFF, OpenType, TrueType, or TrueType collection for Type0 font.");
@@ -272,7 +279,7 @@ namespace PdfLexer.Fonts
             var str = t0.ToUnicode;
             using var buffer = str.Contents.GetDecodedBuffer();
             var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
-            foreach (var glyph in glyphs)
+            foreach (var glyph in glyphs.Values)
             {
                 var cid = glyph.CodePoint.Value;
                 if (all.TryGetValue(cid, out var existing))
@@ -298,9 +305,14 @@ namespace PdfLexer.Fonts
             var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
             foreach (var (cid, w) in ReadWidths(t0.DescendantFont.W))
             {
+                var rw = w / 1000f;
+                if (rw == 0f) // hack for tracking undefined vs set 0 widths... need to clean up at some point
+                {
+                    rw = -9999f;
+                }
                 if (glyphs.TryGetValue(cid, out Glyph glyph))
                 {
-                    glyph.w0 = w / 1000f;
+                    glyph.w0 = rw;
                 }
                 else
                 {
@@ -308,10 +320,10 @@ namespace PdfLexer.Fonts
                     {
                         Char = (char)cid,
                         CodePoint = cid,
-                        w0 = w / 1000f,
+                        w0 = rw,
                         IsWordSpace = false,
                         GuessedUnicode = true,
-                        BBox = new decimal[] { 0m, 0m, (decimal)(w / 1000f), bbox?.URy / 1000.0m }
+                        BBox = new decimal[] { 0m, 0m, (decimal)rw, bbox?.URy / 1000.0m }
                     };
                     glyphs[cid] = g;
                     if (b1g != null && cid < b1g.Length)
@@ -332,6 +344,9 @@ namespace PdfLexer.Fonts
                 if (glyph.w0 == 0)
                 {
                     glyph.w0 = mw;
+                } else if (glyph.w0 == -9999f) // hack for tracking undefined vs set 0 widths... need to clean up at some point
+                {
+                    glyph.w0 = 0;
                 }
                 glyph.BBox = new decimal[] { 0m, 0m, (decimal)glyph.w0, bbox?.URy / 1000.0m };
             }

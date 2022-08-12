@@ -25,10 +25,10 @@ namespace PdfLexer.Fonts
         private static byte[] rangeEnd = Encoding.ASCII.GetBytes("endbfrange");
         private static UnicodeEncoding ucBO = new UnicodeEncoding(true, true, false);
         private static UnicodeEncoding uc = new UnicodeEncoding(true, false, false);
-        public static (List<CRange> Ranges, List<Glyph> Glyphs) ReadCMap(ParsingContext ctx, ReadOnlySpan<byte> data, bool skipGlyphs = false)
+        public static (List<CRange> Ranges, Dictionary<uint, Glyph> Glyphs) ReadCMap(ParsingContext ctx, ReadOnlySpan<byte> data, bool skipGlyphs = false)
         {
             var ranges = new List<CRange>();
-            var glyphs = new List<Glyph>();
+            var glyphs = new Dictionary<uint, Glyph>();
             
             ToUnicodeState state = ToUnicodeState.None;
             Span<byte> buffer = stackalloc byte[256];
@@ -95,7 +95,7 @@ namespace PdfLexer.Fonts
                             break;
                     }
 
-                    glyphs.Add(g);
+                    glyphs[g.CodePoint.Value] = g;
                 } else if (state == ToUnicodeState.ReadRange)
                 {
                     // c1
@@ -124,7 +124,7 @@ namespace PdfLexer.Fonts
                                 g.CodePoint = cp1 + (uint)c;
                                 // g.Bytes = bytes;
                                 AddStringVal(g, buffer.Slice(0, bufferUsed));
-                                glyphs.Add(g);
+                                glyphs[g.CodePoint.Value] = g;
                                 buffer[bufferUsed - 1] = (byte)(buffer[bufferUsed - 1] + 1);
                             }
                             break;
@@ -139,7 +139,7 @@ namespace PdfLexer.Fonts
                                 // g.Bytes = bytes;
                                 g.CodePoint = cp1 + (uint)c;
                                 AddStringVal(g, buffer.Slice(0, bufferUsed));
-                                glyphs.Add(g);
+                                glyphs[g.CodePoint.Value] = g;
                             }
                             scanner.SkipCurrent(); // ]
                             break;

@@ -35,7 +35,15 @@ namespace PdfLexer.Fonts
             for (var i = 0; i < 256; i++)
             {
                 var glyph = glyphs[i];
-                if (glyph == null) { continue; }
+                if (glyph == null) {
+                    glyph = new Glyph
+                    {
+                        GuessedUnicode = true,
+                        Char = (char)i,
+                        CodePoint = (uint)i,
+                    };
+                    glyphs[i] = glyph;
+                }
                 var lup = i - fc;
                 if (lup < ws.Length && lup > -1)
                 {

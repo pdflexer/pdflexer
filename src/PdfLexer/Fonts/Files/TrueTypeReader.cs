@@ -163,8 +163,7 @@ namespace PdfLexer.Fonts.Files
         {
             public int PlatformId { get; set; }
             public int EncodingId { get; set; }
-            public uint Offset { get; set; }
-            public bool HasShortCmap { get; set; }
+            public int Offset { get; set; }
             public Dictionary<uint, uint> Mappings { get; set; }
         }
 
@@ -185,27 +184,89 @@ namespace PdfLexer.Fonts.Files
         public bool HasCMapTable()
         {
             return Headers.ContainsKey("cmap");
-        }     
-        public TTCMap ReadCMapTable(bool hasEncoding, bool isSymbolicFont)
+        }
+
+        public List<TTCMap> ReadCMapTables()
         {
             var table = Headers["cmap"];
             Position = table.Offset;
+            _ = GetUint16(); // version
             var numTables = GetUint16();
+            var tables = new List<TTCMap>(numTables);
+            for (var i = 0; i < numTables; i++)
+            {
+                var platformId = GetUint16();
+                var encodingId = GetUint16();
+                var offset = GetUInt32();
+                tables.Add(new TTCMap
+                {
+                    PlatformId = platformId,
+                    EncodingId = encodingId,
+                    Offset = table.Offset + (int)offset
+                });
+            }
+            return tables;
+        }
 
-            TTCMap? potentialTable = null;
+        public bool TryGetNameMap(List<TTCMap> maps, out Dictionary<uint,string> gidToUnicode)
+        {
+            foreach (var map in maps)
+            {
+                if (map.PlatformId == 3 && map.EncodingId == 1)
+                {
+                    var mapping = GetSingleMap(map);
+                    // map winansi to glyph id
+                    var enc = Encodings.WinAnsiEncoding;
+                    gidToUnicode = GetDict(mapping, enc);
+                    return true;
+                } else if (map.PlatformId == 1)
+                {
+                    var mapping = GetSingleMap(map);
+                    // map winansi to glyph id
+                    var enc = Encodings.MacRomanEncoding;
+                    gidToUnicode = GetDict(mapping, enc);
+                    return true;
+                }
+            }
+
+            gidToUnicode = null;
+            return false;
+
+            Dictionary<uint, string> GetDict(Dictionary<uint,uint> cmap, string[] enc)
+            {
+                var dict = new Dictionary<uint, string>();
+                foreach (var item in cmap)
+                {
+                    var winansi = item.Key;
+                    var gid = item.Value;
+                    if (winansi < 256)
+                    {
+                        var v = enc[winansi];
+                        if (v != null)
+                        {
+                            dict[gid] = enc[winansi];
+                        }
+                    }
+                }
+                return dict;
+            }
+        }
+
+        public TTCMap GetPdfCmap(List<TTCMap> maps, bool hasEncoding, bool isSymbolicFont)
+        {
+
             var canBreak = false;
-
+            TTCMap? potentialTable = null;
             // There's an order of preference in terms of which cmap subtable to
             // use:
             // - non-symbolic fonts the preference is a 3,1 table then a 1,0 table
             // - symbolic fonts the preference is a 3,0 table then a 1,0 table
             // The following takes advantage of the fact that the tables are sorted
             // to work.
-            for (var i = 0; i < numTables; i++)
+            for (var i = 0; i < maps.Count; i++)
             {
-                var platformId = GetUint16();
-                var encodingId = GetUint16();
-                var offset = GetUInt32();
+                var platformId = maps[i].PlatformId;
+                var encodingId = maps[i].EncodingId;
                 var useTable = false;
 
                 // Sometimes there are multiple of the same type of table. Default
@@ -251,7 +312,7 @@ namespace PdfLexer.Fonts.Files
                     useTable = true;
 
                     var correctlySorted = true;
-                    if (i < numTables - 1)
+                    if (i < maps.Count - 1)
                     {
                         // var nextBytes = file.peekBytes(2),
                         var nextPlatformId = GetUint16();
@@ -269,12 +330,7 @@ namespace PdfLexer.Fonts.Files
 
                 if (useTable)
                 {
-                    potentialTable = new TTCMap
-                    {
-                        PlatformId = platformId,
-                        EncodingId = encodingId,
-                        Offset = offset,
-                    };
+                    potentialTable = maps[i];
                 }
                 if (canBreak)
                 {
@@ -282,11 +338,7 @@ namespace PdfLexer.Fonts.Files
                 }
             }
 
-            if (potentialTable != null)
-            {
-                Position = table.Offset + (int)potentialTable.Offset;
-            }
-            if (potentialTable == null || Position >= Data.Length - 1)
+            if (potentialTable == null || potentialTable.Offset >= Data.Length - 1)
             {
                 // warn("Could not find a preferred cmap table.");
                 return new TTCMap
@@ -298,9 +350,14 @@ namespace PdfLexer.Fonts.Files
                     // hasShortCmap: false
                 };
             }
+            potentialTable.Mappings = GetSingleMap(potentialTable);
+            return potentialTable;
+        }
 
+        public Dictionary<uint,uint> GetSingleMap(TTCMap map)
+        {
+            Position = map.Offset;
             var format = GetUint16();
-            var hasShortCmap = false;
             var mappings = new Dictionary<uint, uint>();
             int j = 0, glyphId = 0;
             if (format == 0)
@@ -315,7 +372,6 @@ namespace PdfLexer.Fonts.Files
                     }
                     mappings[(uint)j] = index;
                 }
-                hasShortCmap = true;
             }
             else if (format == 2)
             {
@@ -491,13 +547,7 @@ namespace PdfLexer.Fonts.Files
                 // warn
             }
 
-            return new TTCMap
-            {
-                PlatformId = potentialTable.PlatformId,
-                EncodingId = potentialTable.EncodingId,
-                Mappings = mappings,
-                HasShortCmap = hasShortCmap
-            };
+            return mappings;
         }
 
         private Tab ReadOTTableEntry()

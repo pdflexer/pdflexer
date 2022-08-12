@@ -102,10 +102,14 @@ namespace PdfLexer.Fonts
 
             uint?[] charCodeToGlyphId = new uint?[256];
 
+
+            Dictionary<uint, string> gidToName = null;
             TrueTypeReader.TTCMap cmapTable = null;
             if (reader.HasCMapTable())
             {
-                cmapTable = reader.ReadCMapTable(t1.Encoding != null, symbolic);
+                var tables = reader.ReadCMapTables();
+                cmapTable = reader.GetPdfCmap(tables, t1.Encoding != null, symbolic);
+                reader.TryGetNameMap(tables, out gidToName);
             }
             else
             {
@@ -217,15 +221,21 @@ namespace PdfLexer.Fonts
                 {
                     continue;
                 }
-
-                if (!diffs.TryGetValue((int)i, out var glyphName))
+                string glyphName = null;
+                if (diffs != null && !diffs.TryGetValue((int)i, out glyphName))
                 {
                     glyphName = glyphNames[i];
                 }
 
                 if (glyphName == null)
                 {
-                    preDiffedEncoding[i] = ""; // special to force guess
+                    if (gidToName != null && gidToName.TryGetValue(gid.Value, out var value))
+                    {
+                        preDiffedEncoding[i] = value; // from an unused cmap that we grabbed unicode vals from
+                    } else
+                    {
+                        preDiffedEncoding[i] = ""; // special to force guess
+                    }
                 }
                 else
                 {

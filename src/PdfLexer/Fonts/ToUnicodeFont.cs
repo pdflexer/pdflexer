@@ -15,7 +15,7 @@ namespace PdfLexer.Fonts
             var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
 
             var lookup = new Glyph[256];
-            foreach (var glyph in glyphs)
+            foreach (var glyph in glyphs.Values)
             {
                 if (glyph.CodePoint.Value < 256)
                 {
@@ -45,7 +45,7 @@ namespace PdfLexer.Fonts
             using var buffer = str.Contents.GetDecodedBuffer();
             var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
 
-            foreach (var glyph in glyphs)
+            foreach (var glyph in glyphs.Values)
             {
                 if (glyph.CodePoint < 256)
                 {
@@ -69,7 +69,7 @@ namespace PdfLexer.Fonts
             var mw = dict.DescendantFont.DW / 1000f;
 
             var lu = new Dictionary<uint, Glyph>();
-            foreach (var g in glyphs)
+            foreach (var g in glyphs.Values)
             {
                 g.w0 = mw;
                 lu[g.CodePoint.Value] = g;

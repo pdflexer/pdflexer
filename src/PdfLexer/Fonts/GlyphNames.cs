@@ -472,7 +472,7 @@ namespace PdfLexer.Fonts
             ["Omacron"] = '\u014c',
             ["Omacronacute"] = '\u1e52',
             ["Omacrongrave"] = '\u1e50',
-            ["Omega"] = '\u2126',
+            ["Omega"] = '\u0460', // '\u2126' from pdfjs TODO reconcile, this appears to match with pdfium
             ["Omegacyrillic"] = '\u0460',
             ["Omegagreek"] = '\u03a9',
             ["Omegaroundcyrillic"] = '\u047a',

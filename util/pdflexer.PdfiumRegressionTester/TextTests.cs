@@ -42,6 +42,10 @@ namespace pdflexer.PdfiumRegressionTester
             "__bug1292316.pdf.pdf", // unembedded font without width info written, adobe / pdfium knows glyph metrics somehow and glyphs use up space
                                     // we don't read so causes subsequent text to be off, TODO determine
             "__bug1443140.pdf.pdf", // some potential misreads on typ1c CFF but corrupt page has a ton of data noise
+            "__issue1536.pdf.pdf", // differences and doesn't open in adobe
+            "__issue2829.pdf.pdf", // TODO vert. font
+            "__issue12533.pdf.pdf", // pdfium spacing off from adobe / pdflexer
+            "__issue12714.pdf.pdf", // pdfium spacing off from adobe / pdflexer first page has BG1 UCS though
         };
         internal static Dictionary<string, IgnoreSetup> ignoreMap = new Dictionary<string, IgnoreSetup>
         {
@@ -74,7 +78,41 @@ namespace pdflexer.PdfiumRegressionTester
             ["__issue1629.pdf.pdf"] = new IgnoreSetup
             {
                 CandidateIgnores = new List<int> { 2 } // pound char
-            }
+            },
+            ["__issue1133.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 8195 } // pound char
+            },
+            ["__issue1317.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 173, 8208 } // misc symbols not returned
+            },
+            ["__issue1317.pdf.pdf"] = new IgnoreSetup
+            {
+                BaselineIgnores = new List<int> { 937 },
+                CandidateIgnores = new List<int> { 1120 } // TODO: review omega unicode mappings
+            },
+            ["__issue1257.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 2 } // unread symbol pdfium
+            },
+            ["__issue6238.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 173 } // unread symbol pdfium
+            },
+            ["__issue6238.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 173 } // unread symbol pdfium
+            },
+            ["__issue7496.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 64259, 64256, 2 }, // auto ligature splitting,
+                BaselineIgnores = new List<int> { 102, 105 }
+            },
+            ["__issue4883.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 9, 173, 8208 }, // different hyphen types pdfium dedups
+            },
         };
         private ILogger _logger;
         public TextTests(ILogger logger)
@@ -125,8 +163,6 @@ namespace pdflexer.PdfiumRegressionTester
                 writer.Form(form)
                       .SetStrokingRGB(0, 0, 0);
 
-
-
                 var reader = new TextScanner(doc.Context, page);
                 var lines = new List<(float x, float y, char c)>();
                 var unmatched = new List<(float x, float y, char c)>();
@@ -140,7 +176,8 @@ namespace pdflexer.PdfiumRegressionTester
                     // lines.Add($"{x:0.000} {y:0.000} {bb.llx:0.0} {bb.lly:0.0} {bb.urx:0.0} {bb.ury:0.0} {c}");
 
                     foreach (var c in glyphChars) {
-                        if (c == '\n' || c == '\r' || c == ' ' || c == '-') { continue; }
+                        if (c == '\n' || c == '\r' || c == ' ' || c == '-' || c == '\u00A0' || c == '\u0010') { continue; }
+                        // TODO build this logic into text scanner
                         
                         if (c == 'ﬁ' || c == (char)64257) 
                         {
@@ -211,9 +248,6 @@ namespace pdflexer.PdfiumRegressionTester
                     }
                 }
                 writer.SetStrokingRGB(255, 0, 0);
-
-
-
 
                 var d2 = new Scope();
                 var ppg = fpdfview.FPDF_LoadPage(pdoc, pi - 1);

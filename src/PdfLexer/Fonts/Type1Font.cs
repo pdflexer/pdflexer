@@ -51,17 +51,26 @@ namespace PdfLexer.Fonts
                 return false;
             }
 
-            using var buffer = t1.FontDescriptor.FontFile3.Contents.GetDecodedBuffer();
-            var cff = new CFFReader(null, buffer.GetData());
-            var enc = cff.GetBaseSimpleEncoding(t1.BaseFont);
-            for (var i=0;i<enc.Length;i++)
+            try
             {
-                var nm = enc[i];
-                if (nm != null && names[i] == null)
+                using var buffer = t1.FontDescriptor.FontFile3.Contents.GetDecodedBuffer();
+                var cff = new CFFReader(null, buffer.GetData());
+                var enc = cff.GetBaseSimpleEncoding(t1.BaseFont);
+                for (var i = 0; i < enc.Length; i++)
                 {
-                    names[i] = GetOrCreate(nm, (uint)i, known);
+                    var nm = enc[i];
+                    if (nm != null && names[i] == null)
+                    {
+                        names[i] = GetOrCreate(nm, (uint)i, known);
+                    }
                 }
+            } catch (Exception e)
+            {
+                ctx.Error($"CFF parsing error for font {t1.BaseFont}: " + e.Message);
+                return false;
             }
+
+
             return true;
         }
 
