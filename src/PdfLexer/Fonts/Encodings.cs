@@ -322,7 +322,7 @@ namespace PdfLexer.Fonts
 };
         public static string[]? GetEncoding(PdfName encoding)
         {
-            switch (encoding.Value)
+            switch (encoding?.Value)
             {
                 case "/WinAnsiEncoding":
                     return WinAnsiEncoding;

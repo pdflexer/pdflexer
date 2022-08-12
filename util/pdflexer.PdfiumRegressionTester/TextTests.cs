@@ -46,6 +46,7 @@ namespace pdflexer.PdfiumRegressionTester
             "__issue2829.pdf.pdf", // TODO vert. font
             "__issue12533.pdf.pdf", // pdfium spacing off from adobe / pdflexer
             "__issue12714.pdf.pdf", // pdfium spacing off from adobe / pdflexer first page has BG1 UCS though
+            "__fit11-talk.pdf.pdf", // pdfium spacing off from adobe / pdflexer
         };
         internal static Dictionary<string, IgnoreSetup> ignoreMap = new Dictionary<string, IgnoreSetup>
         {
@@ -112,6 +113,10 @@ namespace pdflexer.PdfiumRegressionTester
             ["__issue4883.pdf.pdf"] = new IgnoreSetup
             {
                 CandidateIgnores = new List<int> { 9, 173, 8208 }, // different hyphen types pdfium dedups
+            },
+            ["__fips197.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 9, 173, 91, 93, 175 }, // whitespace / hyphens, TODO: type1 using base14, need test coverage
             },
         };
         private ILogger _logger;

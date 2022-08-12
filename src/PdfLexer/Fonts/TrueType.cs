@@ -10,6 +10,15 @@ namespace PdfLexer.Fonts
     {
         public static IReadableFont Get(ParsingContext ctx, FontType1 t1)
         {
+            if (t1.Widths == null) // sometimes truetype fonts refernce base14 and don't include required info
+            {
+                var (a,_) = SingleByteFont.GetBase14Info(t1.BaseFont?.Value);
+                if (a != null)
+                {
+                    return SingleByteFont.Create(ctx, t1);
+                }
+            }
+
             bool skipFontFile = false;
             if (t1.Encoding != null && t1.Encoding.GetPdfObjType() == PdfObjectType.NameObj)
             {

@@ -49,12 +49,22 @@ namespace PdfLexer.Fonts
             {
                 if (glyph.CodePoint < 256)
                 {
-                    if (glyph.CodePoint == 32)
+                    Glyph g;
+                    var existing = encoding[glyph.CodePoint.Value];
+                    if (existing != null)
                     {
-                        glyph.IsWordSpace = true;
+                        g = existing.Clone(); // simple may be base14 and still have tounicode, need to keep width info
+                        g.Char = glyph.Char;
+                        g.MultiChar = glyph.MultiChar;
+                    } else
+                    {
+                        g = glyph;
                     }
-                    // var g = encoding[glyph.CodePoint.Value];
-                    encoding[glyph.CodePoint.Value] = glyph; // overwrite.. need to see if this is really what we want
+                    if (g.CodePoint == 32)
+                    {
+                        g.IsWordSpace = true;
+                    }
+                    encoding[g.CodePoint.Value] = g;
                 }
             }
         }

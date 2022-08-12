@@ -9,8 +9,9 @@ namespace PdfLexer.Fonts
     {
         public static void AddWidthInfo(this ISimpleUnicode dict, Glyph[] glyphs)
         {
+            if (dict.FirstChar == null) { return; }
             int fc = dict.FirstChar;
-            int lc = dict.LastChar;
+            int lc = (dict.LastChar ?? dict.Widths?.Count + fc);
             float mw = dict.MissingWidth ?? 0;
             mw = (float)(mw / 1000.0);
             var ws = new float[lc - fc + 1];
@@ -24,7 +25,7 @@ namespace PdfLexer.Fonts
             {
                 if (pos < ws.Length)
                 {
-                    var t = (double)val.GetAs<PdfNumber>();
+                    var t = (double)(val.GetAs<PdfNumber>() ?? 0m);
                     ws[pos] = (float)(t / 1000.0);
                 }
                 pos++;
