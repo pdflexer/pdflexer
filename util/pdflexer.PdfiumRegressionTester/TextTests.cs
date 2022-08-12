@@ -36,7 +36,7 @@ namespace pdflexer.PdfiumRegressionTester
             "__bug1260585.pdf.pdf", // pdfium spacing seems wrong
             "__bug878194.pdf.pdf", // pdfium doesn't extract some stacked french text, maybe deduping internally?
             "__aboutstacks.pdf.pdf", // pdfium doesn't read composite truetype with post table, need to add test coverage here though
-            "__issue1127.pdf.pdf", // pdfium has spacing issues but we aren't properly extracting encoding for embedded type1 ps font
+            "__issue1127.pdf.pdf", // pdfium has spacing issues
             "__issue1658.pdf.pdf", // type1 ps embedded TODO
             "__issue1687.pdf.pdf", // bad tounicode values, good truetype ps name, pdfium uses to unicode
             "__bug1292316.pdf.pdf", // unembedded font without width info written, adobe / pdfium knows glyph metrics somehow and glyphs use up space
@@ -47,6 +47,8 @@ namespace pdflexer.PdfiumRegressionTester
             "__issue12533.pdf.pdf", // pdfium spacing off from adobe / pdflexer
             "__issue12714.pdf.pdf", // pdfium spacing off from adobe / pdflexer first page has BG1 UCS though
             "__fit11-talk.pdf.pdf", // pdfium spacing off from adobe / pdflexer
+            "__issue2627.pdf.pdf", // no glyph info to extract, some minor differences from pdfium
+            "__issue11678.pdf.pdf", // adobe won't open page with issues
         };
         internal static Dictionary<string, IgnoreSetup> ignoreMap = new Dictionary<string, IgnoreSetup>
         {
@@ -117,6 +119,14 @@ namespace pdflexer.PdfiumRegressionTester
             ["__fips197.pdf.pdf"] = new IgnoreSetup
             {
                 CandidateIgnores = new List<int> { 9, 173, 91, 93, 175 }, // whitespace / hyphens, TODO: type1 using base14, need test coverage
+            },
+            ["__issue4883.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 173 }, //  hyphen
+            },
+            ["__issue12402.pdf.pdf"] = new IgnoreSetup
+            {
+                BaselineIgnores = new List<int> { 160 }, //  whitespace
             },
         };
         private ILogger _logger;

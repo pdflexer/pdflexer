@@ -4,6 +4,7 @@ using PdfLexer.Fonts.Predefined;
 using PdfLexer.Parsers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -46,24 +47,43 @@ namespace PdfLexer.Fonts
         internal static bool AddEmbeddedInfo(ParsingContext ctx, FontType1 t1, Glyph[] names, Dictionary<string, Glyph> known)
         {
             // TODO adobe
-            if (t1.FontDescriptor?.FontFile3 == null)
-            {
-                return false;
-            }
+
+            var file = t1.FontDescriptor?.FontFile ?? t1.FontDescriptor?.FontFile3;
+            if (file == null) { return false; }
 
             try
             {
-                using var buffer = t1.FontDescriptor.FontFile3.Contents.GetDecodedBuffer();
-                var cff = new CFFReader(null, buffer.GetData());
-                var enc = cff.GetBaseSimpleEncoding(t1.BaseFont);
-                for (var i = 0; i < enc.Length; i++)
+                string[] t1Names;
+                using var buffer = file.Contents.GetDecodedBuffer();
+                var data = buffer.GetData();
+                File.WriteAllBytes("c:\\temp\\type1.txt", data.ToArray());
+                if (Type1Reader.IsType1File(data))
                 {
-                    var nm = enc[i];
+                    var reader = new Type1Reader(ctx, data);
+                    if (!reader.TryGetEncoding(out t1Names))
+                    {
+                        return false;
+                    }
+
+                } else if (CFFReader.IsCFFfile(data))
+                {
+                    var cff = new CFFReader(null, buffer.GetData());
+                    t1Names = cff.GetBaseSimpleEncoding(t1.BaseFont);
+                } else
+                {
+                    return false;
+                }
+
+                for (var i = 0; i < t1Names.Length; i++)
+                {
+                    var nm = t1Names[i];
                     if (nm != null && names[i] == null)
                     {
                         names[i] = GetOrCreate(nm, (uint)i, known);
                     }
                 }
+
+
             } catch (Exception e)
             {
                 ctx.Error($"CFF parsing error for font {t1.BaseFont}: " + e.Message);
