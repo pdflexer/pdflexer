@@ -9,7 +9,7 @@ namespace PdfLexer.Tests
     public class CMapTests
     {
 
-        [Fact]
+        //[Fact]
         public void It_Reads_Cmap()
         {
             var sb = new StringBuilder();
