@@ -128,6 +128,16 @@ namespace pdflexer.PdfiumRegressionTester
             {
                 BaselineIgnores = new List<int> { 160 }, //  whitespace
             },
+            ["__geothermal.pdf.pdf"] = new IgnoreSetup
+            {
+                CandidateIgnores = new List<int> { 74, 100, 71, 112, 79, 105, 108, 84, 115, 73, 86, 114, 72, 83, 116, 76, 101, 66, 99, 48, 46, 49, 51, 80, 68, 111, 109, 110, 97, 40, 69, 67, 70, 56, 44, 61, 98, 53, 50, 102, 54, 55, 57, 176, 8211, 107, 121, 52, 58, 77, 104, 103, 81, 65, 82, 169, 41, 87, 117, 120, 78, 119, 8805, 8804, 118, 85, 186, 38, 122, 89, 75 },
+                //  bunch of data from graphs pdfium ignores
+            },
+            ["__gesamt.pdf.pdf"] = new IgnoreSetup
+            {
+                BaselineIgnores = new List<int> { 160 }, //  whitespace
+            },
+
         };
         private ILogger _logger;
         public TextTests(ILogger logger)

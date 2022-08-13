@@ -17,8 +17,9 @@ namespace PdfLexer.Fonts
     internal class CMap
     {
         private List<CRange>[] rangeSets = new List<CRange>[4];
+        private Dictionary<uint, CResult> fallback;
 
-        public CMap(List<CRange> ranges)
+        public CMap(List<CRange> ranges, Dictionary<uint, CResult> fallback = null)
         {
             foreach (var range in ranges)
             {
@@ -29,6 +30,13 @@ namespace PdfLexer.Fonts
                 }
                 rangeSets[b].Add(range);
             }
+            this.fallback = fallback;
+        }
+
+        public bool HasFallbackUnicode { get => fallback != null; }
+        public bool TryGetFallback(uint cp, out CResult val)
+        {
+            return fallback.TryGetValue(cp, out val);
         }
 
         public uint GetCharCode(ReadOnlySpan<byte> data, int os, out int l)
@@ -134,11 +142,21 @@ namespace PdfLexer.Fonts
 
             if (l == 0)
             {
+                
                 glyph = _glyphSet.notdef;
                 return _notdefBytes;
             }
 
             glyph = _glyphSet.GetGlyph(c);
+            if (glyph == _glyphSet.notdef && _map.HasFallbackUnicode)
+            {
+                if (_map.TryGetFallback(c, out var val))
+                {
+                    glyph = glyph.Clone();
+                    glyph.MultiChar = val.MultiChar;
+                    glyph.Char = (char)val.Code;
+                }
+            }
 
             return l;
         }

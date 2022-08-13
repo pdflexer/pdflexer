@@ -90,7 +90,7 @@ namespace PdfLexer.Fonts
                 //         }
                 //     }
                 // }
-                cmap = new CMap(e2.Ranges);
+                cmap = new CMap(e2.Ranges, e2.Mapping);
             } else
             {
                 // this matches the identity ranges
