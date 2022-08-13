@@ -21,6 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer.Images\PdfLexer.Images.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer\PdfLexer.csproj" />
   </ItemGroup>

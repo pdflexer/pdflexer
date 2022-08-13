@@ -1,0 +1,102 @@
+﻿using PdfLexer.DOM;
+using PdfLexer.Parsers;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace PdfLexer.Fonts
+{
+    internal class ToUnicodeFont
+    {
+
+        public static Glyph[] GetSimpleGlyphs(ParsingContext ctx, ISimpleUnicode dict)
+        {
+            var str = dict.ToUnicode;
+            using var buffer = str.Contents.GetDecodedBuffer();
+            var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
+
+            var lookup = new Glyph[256];
+            foreach (var glyph in glyphs.Values)
+            {
+                if (glyph.CodePoint.Value < 256)
+                {
+                    lookup[(int)glyph.CodePoint.Value] = glyph;
+                }
+            }
+            return lookup;
+        }
+
+        public static IReadableFont GetSimple(ParsingContext ctx, ISimpleUnicode dict)
+        {
+            var lookup = GetSimpleGlyphs(ctx, dict);
+            dict.AddWidthInfo(lookup);
+            float mw = dict.MissingWidth ?? 0;
+            mw = (float)(mw / 1000.0);
+            var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, 0m } };
+            return new SingleByteFont(dict.FontName, lookup, notdef);
+        }
+
+        public static void AddMissingSimple(ParsingContext ctx, ISimpleUnicode dict, Glyph[] encoding)
+        {
+            var str = dict.ToUnicode;
+            if (str == null)
+            {
+                return;
+            }
+            using var buffer = str.Contents.GetDecodedBuffer();
+            var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
+
+            foreach (var glyph in glyphs.Values)
+            {
+                if (glyph.CodePoint < 256)
+                {
+                    Glyph g;
+                    var existing = encoding[glyph.CodePoint.Value];
+                    if (existing != null)
+                    {
+                        g = existing.Clone(); // simple may be base14 and still have tounicode, need to keep width info
+                        g.Char = glyph.Char;
+                        g.MultiChar = glyph.MultiChar;
+                    } else
+                    {
+                        g = glyph;
+                    }
+                    if (g.CodePoint == 32)
+                    {
+                        g.IsWordSpace = true;
+                    }
+                    encoding[g.CodePoint.Value] = g;
+                }
+            }
+        }
+
+        public static IReadableFont GetComposite(ParsingContext ctx, FontType0 dict)
+        {
+            var str = dict.ToUnicode;
+            using var buffer = str.Contents.GetDecodedBuffer();
+            var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
+            var bbox = dict.DescendantFont?.FontDescriptor?.FontBBox;
+
+            var mw = dict.DescendantFont.DW / 1000f;
+
+            var lu = new Dictionary<uint, Glyph>();
+            foreach (var g in glyphs.Values)
+            {
+                g.w0 = mw;
+                lu[g.CodePoint.Value] = g;
+            }
+
+            CIDFontReader.AddWidths(dict, lu);
+            CIDFontReader.SetDefaultWidths(dict, lu);
+
+            var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, 0m } };
+            var gs = new FontGlyphSet(lu.Values, notdef);
+            var cmap = new CMap(ranges);
+            var rng1 = ranges.FirstOrDefault().Bytes;
+            if (rng1 == 0)
+            {
+                rng1 = 1;
+            }
+            return new CMapFont(cmap, gs, rng1);
+        }
+    }
+}

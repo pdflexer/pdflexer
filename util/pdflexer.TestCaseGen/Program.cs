@@ -31,6 +31,10 @@ static CommandLineBuilder BuildCommandLine()
     var run = RunImageCmd.CreateCommand();
     run.Handler = CommandHandler.Create<RunImageCmd, IHost>(RunImages);
     root.AddCommand(run);
+    var gen = GenStdGlyph.CreateCommand();
+    gen.Handler = CommandHandler.Create<GenStdGlyph, IHost>(RunGen);
+    root.AddCommand(gen);
+
     return new CommandLineBuilder(root);
 
 }
@@ -40,5 +44,11 @@ static Task RunImages(RunImageCmd cmd, IHost host)
     var provider = host.Services;
     var proc = provider.GetRequiredService<ImageSampler>();
     proc.Run(cmd);
+    return Task.CompletedTask;
+}
+
+static Task RunGen(GenStdGlyph cmd, IHost host)
+{
+    GenStdGlyph.Run();
     return Task.CompletedTask;
 }

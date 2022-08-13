@@ -1,4 +1,5 @@
-﻿using pdflexer.PdfiumRegressionTester;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using pdflexer.PdfiumRegressionTester;
 using PdfLexer;
 using PdfLexer.Content;
 using PdfLexer.DOM;
@@ -162,6 +163,25 @@ async Task<int> RunBase(string type, string pdfRoot, string[] pdfPaths, string o
 
     switch (type.ToUpper())
     {
+        case "TEXT":
+            var tester = new TextTests(NullLogger.Instance);
+            bool success = true;
+            foreach (var file in pdfPaths)
+            {
+                try
+                {
+                    if (tester.RunOne(file, output) != true)
+                    {
+                        success = false;
+                    }
+                } catch (Exception e)
+                {
+                    Console.WriteLine("Failure: " + e.Message);
+                    success = false;
+                }
+                
+            }
+            return success ? 0 : 1;
         case "MERGE":
             return RunMergeTests(pdfPaths, output) ? 0 : 1;
         case "REBUILD":

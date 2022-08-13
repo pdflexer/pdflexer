@@ -4,15 +4,38 @@ using System.Collections.Generic;
 
 namespace PdfLexer.Fonts
 {
+    public struct SizedChar
+    {
+        public int ByteCount;
+        public double Width;
+        public double PrevKern;
+    }
     public interface IWritableFont
     {
+        /// <summary>
+        /// Returns the Pdf font dictionary object that represents this font.
+        /// </summary>
+        /// <returns></returns>
         PdfDictionary GetPdfFont();
-        // double ConvertFromUnicode(ReadOnlySpan<char> word, Span<byte> content);
-        IEnumerable<(int ByteCount, double Width, double PrevKern)> ConvertFromUnicode(string text, int start, int length, byte[] buffer);
+        /// <summary>
+        /// Reads chars at from a given string and writes each character individually into
+        /// the provided buffer.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="start"></param>
+        /// <param name="length"></param>
+        /// <param name="buffer"></param>
+        /// <returns></returns>
+        IEnumerable<SizedChar> ConvertFromUnicode(string text, int start, int length, byte[] buffer);
+        /// <summary>
+        /// Determines if unicode space ' ' is considered a word space according to
+        /// pdf spec.
+        /// </summary>
+        /// <returns></returns>
         bool SpaceIsWordSpace();
-        // ascender?
-        // descender?
-        // LH -> ((this.ascender + gap - this.descender) / 1000) * size;
+        /// <summary>
+        /// Default line separation for this font.
+        /// </summary>
         double LineHeight { get; }
     }
 

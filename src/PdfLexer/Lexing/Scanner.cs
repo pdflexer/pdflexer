@@ -114,6 +114,13 @@ namespace PdfLexer.Lexing
             }
         }
 
+        public ReadOnlySpan<byte> GetCurrentData()
+        {
+            Peek();
+            ThrowIfAtEndOfData();
+            return Data.Slice(Position, CurrentLength);
+        }
+
         public IPdfObject GetCurrentObject()
         {
             Peek();

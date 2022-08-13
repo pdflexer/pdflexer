@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
+using PdfLexer.Benchmarks.Benchmarks;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -12,8 +13,8 @@ namespace PdfLexer.Benchmarks
         public BenchmarkConfig()
         {
             AddDiagnoser(MemoryDiagnoser.Default);
-            // AddJob(Job.ShortRun.WithWarmupCount(5).WithIterationCount(25));
-            AddJob(Job.ShortRun.WithWarmupCount(25).WithIterationCount(100));
+            AddJob(Job.ShortRun.WithWarmupCount(5).WithIterationCount(25));
+            // AddJob(Job.ShortRun.WithWarmupCount(25).WithIterationCount(100));
         }
     }
 
@@ -21,6 +22,15 @@ namespace PdfLexer.Benchmarks
     {
         static async Task Main(string[] args)
         {
+            // var txt = new TextBenchmark();
+            // 
+            // var total = 0;
+            // for (var i = 0; i < 100000; i++)
+            // {
+            //     total += txt.ReadTxtPdfLexer();
+            // }
+            
+            // var i = txt.ReadTxtPdfPig();
             // var test = new ContentStreamBenchmark();
             // var total = 0;
             // for (var i = 0; i < 100000; i++)

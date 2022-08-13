@@ -136,6 +136,39 @@ foreach (var op in operators)
 #>
         };
 
+                public static PdfOperator.ParseOp[] SingleByteParsers = new  PdfOperator.ParseOp[] {
+<#
+var items = new string[256];
+var b2items = new string[256];
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+    var bytes = Encoding.ASCII.GetBytes(op.Item1);
+    var parseName = op.Item5 ? "PdfOperator.Parse" + name : name + "_Op.Parse";
+    if (bytes.Length != 1) { continue; }
+    items[(int)bytes[0]] = parseName;
+}
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+    var bytes = Encoding.ASCII.GetBytes(op.Item1);
+    var parseName = op.Item5 ? "PdfOperator.Parse" + name : name + "_Op.Parse";
+    if (bytes.Length != 2 || (int)bytes[0] != (int)'T') { continue; }
+    var b2 = (int)bytes[1];
+    if (items[b2] != null)
+    {
+        // items[b2] = parseName;    
+    }
+}
+foreach (var op in items) 
+{
+#>
+            <#= op == null ? "null" : op #>,
+<#
+}
+#>
+        };
+
         public static PdfOperator.ParseOp GetParser(ReadOnlySpan<byte> opData) 
         {
 <# 

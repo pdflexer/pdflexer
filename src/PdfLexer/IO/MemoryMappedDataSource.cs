@@ -68,7 +68,14 @@ namespace PdfLexer.IO
             }
             Context.CurrentSource = this;
             Context.CurrentOffset = startPosition;
-            buffer = _accessor.Bytes.Slice((int)startPosition, requiredBytes);
+            if (requiredBytes == -1)
+            {
+                buffer = _accessor.Bytes.Slice((int)startPosition);
+            }
+            else
+            {
+                buffer = _accessor.Bytes.Slice((int)startPosition, requiredBytes);
+            }
         }
 
         public void CopyIndirectObject(XRefEntry xref, WritingContext destination) => this.UnwrapAndCopyFromSpan(xref, destination);

@@ -51,7 +51,7 @@ namespace PdfLexer.ImageTests
 
             {
                 using var writer = pg.GetWriter();
-                var tr = TimesRoman.Create();
+                var tr = SingleByteFont.GetTimesRoman();
                 writer.Font(tr, 10).TextMove(20, 20).Text("Testing").EndText();
             }
             using var fo = File.Create(Path.Combine(output, "test.pdf"));

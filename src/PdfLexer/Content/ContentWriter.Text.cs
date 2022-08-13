@@ -46,18 +46,21 @@ namespace PdfLexer.Content
 
         public ContentWriter TextMove(double x, double y)
         {
+            EnsureInTextState();
             Td_Op.WriteLn((decimal)x, (decimal)y, Stream);
             return this;
         }
 
         public ContentWriter EndText()
         {
+            State = PageState.Page;
             ET_Op.WriteLn(Stream);
             return this;
         }
 
         public ContentWriter BeginText()
         {
+            State = PageState.Text;
             BT_Op.WriteLn(Stream);
             return this;
         }
@@ -68,7 +71,6 @@ namespace PdfLexer.Content
             if (State == PageState.Page)
             {
                 BeginText();
-                State = PageState.Text;
                 return;
             }
         }

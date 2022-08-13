@@ -161,6 +161,11 @@ namespace PdfLexer
         }
 
         public static bool operator !=(PdfIntNumber n1, PdfIntNumber n2) => !(n1 == n2);
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     /// <summary>
@@ -202,6 +207,11 @@ namespace PdfLexer
         }
 
         public static bool operator !=(PdfLongNumber n1, PdfLongNumber n2) => !(n1 == n2);
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     /// <summary>
@@ -243,6 +253,11 @@ namespace PdfLexer
         }
 
         public static bool operator !=(PdfDoubleNumber n1, PdfDoubleNumber n2) => !(n1 == n2);
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 
     /// <summary>
@@ -285,5 +300,10 @@ namespace PdfLexer
         }
 
         public static bool operator !=(PdfDecimalNumber n1, PdfDecimalNumber n2) => !(n1 == n2);
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 }

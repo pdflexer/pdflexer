@@ -23,6 +23,10 @@ namespace PdfLexer.Operators
 
     public class PdfOperator
     {
+        public static void GetParser(ReadOnlySpan<byte> data)
+        {
+
+        }
         public static bool TryRepair(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> info, List<string> types, 
             out List<OperandInfo> fixedOps)
         {
@@ -254,7 +258,8 @@ namespace PdfLexer.Operators
                     items.Add(
                         new TJ_Lazy_Item
                         {
-                            Shift = ParseDecimal(ctx, data, op)
+                            Shift = ParseDecimal(ctx, data, op),
+                            OpNum = -1
                         });
                 }
                 i++;

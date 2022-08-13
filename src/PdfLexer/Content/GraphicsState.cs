@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Fonts;
 using System.IO;
 using System.Numerics;
 
@@ -33,6 +34,18 @@ namespace PdfLexer.Content
         //  0      0                 0    0 
         //
 
+
+        public int TextMode { get; internal set; }
+        public float FontSize { get; internal set; }
+        public float TextHScale { get; internal set; } = 1f;
+        public float TextRise { get; internal set; }
+        public float CharSpacing { get; internal set; }
+        public float WordSpacing { get; internal set; }
+        public float TextLeading { get; internal set; }
+        public PdfName FontName { get; internal set; }
+        public PdfDictionary FontObject { get; internal set; }
+        public IReadableFont Font { get; internal set; }
+
         public Matrix4x4 GetTranslation(Matrix4x4 desired)
         {
             Matrix4x4.Invert(CTM, out var iv);
@@ -42,6 +55,24 @@ namespace PdfLexer.Content
         public void Apply(Matrix4x4 cm)
         {
             CTM = cm * CTM;
+        }
+
+        public GraphicsState CloneNoPrev()
+        {
+            return new GraphicsState
+            {
+                CTM = CTM,
+                TextHScale = TextHScale,
+                TextLeading = TextLeading,
+                TextMode = TextMode,
+                TextRise = TextRise,
+                CharSpacing = CharSpacing,
+                WordSpacing = WordSpacing,
+                Font = Font,
+                FontObject = FontObject,
+                FontName = FontName,
+                FontSize = FontSize,
+            };
         }
 
     }
@@ -68,7 +99,7 @@ namespace PdfLexer.Operators
         public void Apply(ref GraphicsState state)
         {
             var prev = state;
-            state = new GraphicsState();
+            state = state.CloneNoPrev();
             state.Prev = prev;
         }
     }

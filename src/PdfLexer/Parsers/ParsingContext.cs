@@ -3,7 +3,9 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.IO;
+using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.Fonts;
 using PdfLexer.IO;
@@ -166,11 +168,45 @@ namespace PdfLexer.Parsers
         }
 
 
+        private ConditionalWeakTable<PdfDictionary, IReadableFont> fontCache = new ConditionalWeakTable<PdfDictionary, IReadableFont>();
+
         internal IReadableFont GetFont(IPdfObject obj)
         {
+            // built in encoding:
+            // type1 -> Encoding array in font program but overridden by Encoding / BaseEncoding values
+            // type3
+            // pdfjs:
+            // default -> StandardEncoding
+            // if truetype && doesn't have nonsymbolic flag -> WinAnsiEncoding
+            // is has symbolic flag -> MacRomanEncoding unless
+            //      unembedded or isinternalfont
+            //          Symbol in name -> SymbolSetEncoding
+            //          Dingbats|Wingdings in name -> ZapfDingbats
+
             var dict = obj.GetAs<PdfDictionary>();
-            // TODO type check
-            return Standard14Font.Create(dict);
+
+            if (fontCache.TryGetValue(dict, out var font))
+            {
+                return font;
+            }
+
+            var type = dict.Get<PdfName>(PdfName.Subtype);
+            var created = type.Value switch
+            {
+                "/Type0" => CIDFontReader.Create(this, dict),
+                "/Type1" => SingleByteFont.Create(this, dict),
+                "/TrueType" => TrueType.Get(this, dict),
+                "/Type3" => GetType3(dict),
+                _ => throw new PdfLexerException("Uknown font type: " + type.Value)
+            };
+            fontCache.AddOrUpdate(dict, created);
+
+            return created;
+        }
+
+        private IReadableFont GetType3(PdfDictionary dict)
+        {
+            return SingleByteFont.Create(this, dict);
         }
 
         internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)

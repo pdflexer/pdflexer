@@ -1,6 +1,5 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Fonts;
-using PdfLexer.Lexing;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using System;
@@ -13,16 +12,24 @@ namespace PdfLexer.Content
     {
         private ParsingContext Context;
         private PageContentScanner Scanner;
+
+        private PdfDictionary PgRes;
+
         public TextState TextState;
         public GraphicsState GraphicsState;
         public Glyph Glyph;
+
 
         public TextScanner(ParsingContext ctx, PdfDictionary page)
         {
             Context = ctx;
             Scanner = new PageContentScanner(ctx, page, true);
-            TextState = new TextState(ctx, page.Get<PdfDictionary>(PdfName.Resources));
+            PgRes = page.Get<PdfDictionary>(PdfName.Resources);
+            TextState = new TextState(ctx, PgRes);
             GraphicsState = new GraphicsState();
+            TextState.GS = GraphicsState;
+            TextState.stack = Scanner.stack;
+            TextState.UpdateTRM();
             CurrentTextPos = 0;
             ReadState = TextReadState.Normal;
             CurrentGlyphs = new List<UnappliedGlyph>(50);
@@ -51,10 +58,10 @@ namespace PdfLexer.Content
                         return false;
                     case PdfOperatorType.BT:
                         ReadState = TextReadState.ReadingText;
+                        // todo reset text state ?
                         TextState.Apply(BT_Op.Value);
                         TextState.FormResources = Scanner.CurrentForm?.Get<PdfDictionary>(PdfName.Resources);
                         Scanner.SkipCurrent();
-                        // todo reset text state
                         continue;
                     case PdfOperatorType.ET:
                         ReadState = TextReadState.Normal;
@@ -67,7 +74,8 @@ namespace PdfLexer.Content
                         {
                             gso.Apply(ref GraphicsState);
                         }
-                        TextState.CTM = GraphicsState.CTM;
+                        TextState.GS = GraphicsState;
+                        TextState.UpdateTRM();
                         Scanner.SkipCurrent();
                         continue;
                 }
@@ -98,8 +106,8 @@ namespace PdfLexer.Content
                                     var ac = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, Scanner.Scanner.Operands[1]);
                                     var op = Scanner.Scanner.Operands[2];
                                     var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                    TextState.WordSpacing = aw;
-                                    TextState.CharSpacing = ac;
+                                    GraphicsState.WordSpacing = aw;
+                                    GraphicsState.CharSpacing = ac;
                                     TextState.Apply(T_Star_Op.Value);
                                     TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
                                     CurrentTextPos = 0;
@@ -123,7 +131,7 @@ namespace PdfLexer.Content
                                     PdfOperator.ParseTJLazy(Context, Scanner.Scanner.Data, Scanner.Scanner.Operands, TJCache);
                                     foreach (var item in TJCache)
                                     {
-                                        if (item.Shift != 0)
+                                        if (item.OpNum == -1)
                                         {
                                             CurrentGlyphs.Add(new UnappliedGlyph(null, (float)item.Shift));
                                         }
@@ -200,6 +208,9 @@ namespace PdfLexer.Content
             if (CurrentGlyph.Glyph != null)
             {
                 TextState.ApplyCharShift(CurrentGlyph); // apply previous glyph to shift char size
+            } else
+            {
+                TextState.UpdateTRM();
             }
 
             while (true)
@@ -227,6 +238,7 @@ namespace PdfLexer.Content
                             CurrentGlyph.Glyph.Char = ' ';
                         } else
                         {
+                            TextState.ApplyCharShift(CurrentGlyph);
                             continue;
                         }
                     }
