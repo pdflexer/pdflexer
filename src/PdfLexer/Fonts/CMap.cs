@@ -17,9 +17,9 @@ namespace PdfLexer.Fonts
     internal class CMap
     {
         private List<CRange>[] rangeSets = new List<CRange>[4];
-        private Dictionary<uint, CResult> fallback;
+        private Dictionary<uint, CResult>? fallback;
 
-        public CMap(List<CRange> ranges, Dictionary<uint, CResult> fallback = null)
+        public CMap(List<CRange> ranges, Dictionary<uint, CResult>? fallback = null)
         {
             foreach (var range in ranges)
             {
@@ -36,6 +36,7 @@ namespace PdfLexer.Fonts
         public bool HasFallbackUnicode { get => fallback != null; }
         public bool TryGetFallback(uint cp, out CResult val)
         {
+            if (fallback == null) { val = default; return false; }
             return fallback.TryGetValue(cp, out val);
         }
 
@@ -90,7 +91,7 @@ namespace PdfLexer.Fonts
                 }
                 else
                 {
-                    bm[g.CodePoint.Value] = g;
+                    bm[g.CodePoint ?? 0] = g;
                 }
             }
         }
@@ -113,15 +114,17 @@ namespace PdfLexer.Fonts
 
     internal class CMapFont : IReadableFont
     {
-        private CMap _map;
-        private CMap _gidMap;
-        private FontGlyphSet _glyphSet;
-        private int _notdefBytes;
+        private readonly CMap _map;
+        private readonly CMap? _gidMap;
+        private readonly FontGlyphSet _glyphSet;
+        private readonly int _notdefBytes;
 
         public bool IsVertical => false;
+        public string Name { get; }
 
-        public CMapFont(CMap cmap, FontGlyphSet glyphSet, int notdefBytes, CMap gidMap=null)
+        public CMapFont(string name, CMap cmap, FontGlyphSet glyphSet, int notdefBytes, CMap? gidMap=null)
         {
+            Name = name;
             _map = cmap;
             _gidMap = gidMap;
             _glyphSet = glyphSet;

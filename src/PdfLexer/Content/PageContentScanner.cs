@@ -65,7 +65,7 @@ namespace PdfLexer.Content
                 var array = contents.GetValue<PdfArray>();
                 foreach (var item in array)
                 {
-                    var str = item.GetValue<PdfStream>(false);
+                    var str = item.GetValueOrNull<PdfStream>();
                     if (str == null)
                     {
                         ctx.Error("Page scanning encounted missing or null content reference: " + str?.Type);
@@ -75,7 +75,7 @@ namespace PdfLexer.Content
                 }
             } else
             {
-                var str = contents.GetValue<PdfStream>(false);
+                var str = contents.GetValueOrNull<PdfStream>();
                 if (str == null)
                 {
                     ctx.Error("Page scanning encounted missing or null content reference: " + str?.Type);

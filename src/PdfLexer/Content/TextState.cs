@@ -29,7 +29,7 @@ namespace PdfLexer.Content
         }
 
         Matrix4x4 TextMatrix { get; set; }
-        Matrix4x4 TextLineMatrix { get; set; } // set to Tm at beginning of a line of text
+        Matrix4x4 TextLineMatrix { get; set; }
         internal ParsingContext Ctx { get; }
         internal PdfDictionary PageResources { get; }
         internal PdfDictionary FormResources { get; set; }
@@ -357,19 +357,19 @@ namespace PdfLexer.Content
         public void Apply(Tf_Op op)
         {
             GS.FontSize = (float)op.size;
-            if (GS.Font != null && GS.FontName == op.font)
+            if (GS.Font != null && GS.FontResourceName == op.font)
             {
                 return;
             }
-            GS.FontName = op.font;
-            var obj = GetFontObj(GS.FontName);
+            GS.FontResourceName = op.font;
+            var obj = GetFontObj(GS.FontResourceName);
             GS.FontObject = obj.GetAs<PdfDictionary>();
             GS.Font = Ctx.GetFont(obj);
             UpdateTRM();
         }
 
 
-        private PdfArray GetFontFromGs(PdfName name)
+        private PdfArray? GetFontFromGs(PdfName name)
         {
             if (FormResources != null && FormResources.TryGetValue<PdfDictionary>(PdfName.ExtGState, out var gss)
                 && gss.TryGetValue<PdfDictionary>(name, out var gs))
@@ -378,7 +378,7 @@ namespace PdfLexer.Content
             }
 
             if (PageResources.TryGetValue<PdfDictionary>(PdfName.ExtGState, out gss)
-                && gss.TryGetValue<PdfDictionary>(name, out gs))
+                && gss.TryGetValue<PdfDictionary>(name, out gs) && gs != null)
             {
                 return gs.Get<PdfArray>(PdfName.Font);
             }
@@ -412,8 +412,8 @@ namespace PdfLexer.Content
             {
                 return fnt;
             }
-
-            return null;
+            Ctx.Error($"Unable to find font for {name.Value}, using fallback.");
+            return null; // fallback?
         }
 
     }

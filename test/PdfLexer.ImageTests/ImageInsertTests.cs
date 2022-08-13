@@ -3,6 +3,7 @@ using PdfLexer.DOM;
 using PdfLexer.Images;
 using PdfLexer.Operators;
 using PdfLexer.Tests;
+using PdfLexer.Writing;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;

@@ -214,7 +214,7 @@ void DumpRawPageContent(PdfDocument doc, int pg, Stream output)
         case PdfArray arr:
             foreach (var item in arr)
             {
-                var str = item.GetValue<PdfStream>(false);
+                var str = item.GetValueOrNull<PdfStream>();
                 if (str != null)
                 {
                     using var wo = str.Contents.GetDecodedStream();
@@ -540,15 +540,17 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
                     // font
                     case PdfOperatorType.Tf:
                         {
-                            var co = (Tf_Op)op;
+                            var orig = (Tf_Op)op;
 
-                            co.font = GetReplacedName(
-                                co.font,
+                            var rn = GetReplacedName(
+                                orig.font,
                                 fonts,
                                 currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.Font),
                                 fontReplacements);
 
-                            op.Serialize(ms);
+                            var co = new Tf_Op(rn, orig.size);
+
+                            co.Serialize(ms);
                             ms.WriteByte((byte)'\n');
                             break;
                         }
@@ -570,15 +572,18 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
                     // do
                     case PdfOperatorType.Do:
                         {
-                            var co = (Do_Op)op;
+                            var orig = (Do_Op)op;
+                            
 
-                            co.name = GetReplacedName(
-                                co.name,
+                            var rn = GetReplacedName(
+                                orig.name,
                                 xobjs,
                                 currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.XObject),
                                 xObjReplacements);
 
-                            op.Serialize(ms);
+                            var co = new Do_Op(rn);
+
+                            co.Serialize(ms);
                             ms.WriteByte((byte)'\n');
                             break;
                         }

@@ -249,7 +249,7 @@ namespace PdfLexer.DOM.ColorSpaces
             {
                 throw new PdfLexerException("No whitepoint entry for CalRGB colorspace");
             }
-            var wps = wp.Select(x => x.GetValue<PdfNumber>(false)).Where(x => x != null).Select(x => (float)x).ToList();
+            var wps = wp.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x).ToList();
             if (wps.Count != 3)
             {
                 throw new PdfLexerException($"Invalid WhitePoint entry for CalRGB:" + wp.ToString());
@@ -264,7 +264,7 @@ namespace PdfLexer.DOM.ColorSpaces
             var bp = dict.Get<PdfArray>("/BlackPoint");
             if (bp != null)
             {
-                var bps = bp.Select(x => x.GetValue<PdfNumber>(false)).Where(x => x != null).Select(x => (float)x).ToList();
+                var bps = bp.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x).ToList();
                 if (wps.Count == 3)
                 {
                     (xb, yb, zb) = (bps[0], bps[1], bps[2]);
@@ -284,7 +284,7 @@ namespace PdfLexer.DOM.ColorSpaces
             var ga = dict.Get<PdfArray>("/Gamma");
             if (ga != null)
             {
-                var gav = ga.Select(x => x.GetValue<PdfNumber>(false)).Where(x => x != null).Select(x => (float)x).ToList();
+                var gav = ga.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x).ToList();
                 if (gav.Count == 3)
                 {
                     (gr, gg, gb) = (gav[0], gav[1], gav[2]);
@@ -307,7 +307,7 @@ namespace PdfLexer.DOM.ColorSpaces
             var m = dict.Get<PdfArray>("/Matrix");
             if (m != null)
             {
-                var mv = m.Select(x => x.GetValue<PdfNumber>(false)).Where(x => x != null).Select(x => (float)x).ToList();
+                var mv = m.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x).ToList();
                 if (mv.Count == 9)
                 {
                     mxa = mv[0];

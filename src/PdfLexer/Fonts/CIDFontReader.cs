@@ -8,10 +8,9 @@ using System.IO;
 
 namespace PdfLexer.Fonts
 {
-    internal class CIDFontReader
+    internal class Type0Font
     {
-
-        public static IReadableFont Create(ParsingContext ctx, FontType0 t0)
+        public static IReadableFont CreateReadable(ParsingContext ctx, FontType0 t0)
         {
             
             var enc = t0.Encoding;
@@ -70,26 +69,6 @@ namespace PdfLexer.Fonts
                         }
                     }
                 }
-                // if (all.Count == 0)
-                // {
-                //     // TODO remove this once we can parse nontrue type embedded files ?
-                //     // maybe leave as fallback? huge perf hit
-                //     foreach (var (cid,gg) in e2.Mapping)
-                //     {
-                //         var g = new Glyph
-                //         {
-                //             Char = (char)gg.Code,
-                //             MultiChar = gg.MultiChar,
-                //             CodePoint = cid,
-                //             IsWordSpace = false,
-                //         };
-                //         all[cid] = g;
-                //         if (b1g != null && cid < b1g.Length)
-                //         {
-                //             b1g[cid] = g;
-                //         }
-                //     }
-                // }
                 cmap = new CMap(e2.Ranges, e2.Mapping);
             } else
             {
@@ -113,7 +92,7 @@ namespace PdfLexer.Fonts
 
             var gs = new FontGlyphSet(b1g, all, notdef);
 
-            return new CMapFont(cmap, gs, 2, encodingMap);
+            return new CMapFont(t0.BaseFont?.Value, cmap, gs, 2, encodingMap);
         }
 
         private static Glyph MapGlyph(uint cc, string name)
@@ -300,10 +279,12 @@ namespace PdfLexer.Fonts
             }
         }
 
-        internal static void AddWidths(FontType0 t0, Dictionary<uint, Glyph> glyphs, Glyph[] b1g=null)
+        internal static void AddWidths(FontType0 t0, Dictionary<uint, Glyph> glyphs, Glyph[]? b1g=null)
         {
             var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
-            foreach (var (cid, w) in ReadWidths(t0.DescendantFont.W))
+            var widths = t0.DescendantFont?.W;
+            if (widths == null) { return; }
+            foreach (var (cid, w) in ReadWidths(widths))
             {
                 var rw = w / 1000f;
                 if (rw == 0f) // hack for tracking undefined vs set 0 widths... need to clean up at some point

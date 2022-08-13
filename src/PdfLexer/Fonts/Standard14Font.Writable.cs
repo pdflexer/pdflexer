@@ -1,31 +1,26 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Fonts.Predefined;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PdfLexer.Fonts
 {
-    public partial class SingleByteFont
+    public class Standard14Font : IWritableFont
     {
         public static IWritableFont GetTimesRoman()
         {
             var d = new Dictionary<char, Glyph>();
             foreach (var g in TimesRomanGlyphs.DefaultEncoding)
             {
-                if (g!=null)
+                if (g != null)
                 {
                     d[g.Char] = g;
                 }
             }
-            return new Standard14FontWritable(FontMetrics.TimesRoman, d);
+            return new Standard14Font(FontMetrics.TimesRoman, d);
         }
-    }
 
 
-    internal class Standard14FontWritable : IWritableFont
-    {
         private FontMetrics _metrics;
         private Dictionary<char, Glyph> _glyphs;
         private Glyph[] _fastLookup;
@@ -36,7 +31,7 @@ namespace PdfLexer.Fonts
         public bool SpaceIsWordSpace() => true;
 
 
-        public Standard14FontWritable(FontMetrics metrics, Dictionary<char, Glyph> glyphs, Glyph[]? fastLookup = null, int fastStart = 0)
+        internal Standard14Font(FontMetrics metrics, Dictionary<char, Glyph> glyphs, Glyph[]? fastLookup = null, int fastStart = 0)
         {
             _metrics = metrics;
             _glyphs = glyphs;

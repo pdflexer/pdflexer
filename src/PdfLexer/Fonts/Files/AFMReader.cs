@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 
-namespace PdfLexer.Fonts
+namespace PdfLexer.Fonts.Files
 {
     [ExcludeFromCodeCoverage]
     internal class AFMReader

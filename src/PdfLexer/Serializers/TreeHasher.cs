@@ -1,79 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿namespace PdfLexer.Serializers;
 
-namespace PdfLexer.Serializers
+internal class TreeHasher
 {
-    internal class TreeHasher
+    private readonly Serializers Serializers;
+    private readonly RefTracker Tracker;
+    private readonly MemoryStream Stream = new();
+    private readonly List<PdfIndirectRef> Objs = new();
+
+    public TreeHasher()
     {
-        private readonly Serializers Serializers;
-        private readonly RefTracker Tracker;
-        private readonly MemoryStream Stream = new MemoryStream();
+        Serializers = new Serializers();
+        Tracker = new RefTracker();
+    }
 
-        public TreeHasher()
+    
+    public PdfStreamHash GetHash(IPdfObject obj)
+    {
+        Objs.Clear();
+        Tracker.Reset();
+
+        if (obj.Type != PdfObjectType.IndirectRefObj)
         {
-            Serializers = new Serializers();
-            Tracker = new RefTracker();
+            obj = PdfIndirectRef.Create(obj);
         }
 
-        private List<PdfIndirectRef> Objs = new List<PdfIndirectRef>();
-        public PdfStreamHash GetHash(IPdfObject obj)
-        {
-            Objs.Clear();
-            Tracker.Reset();
-
-            if (obj.Type != PdfObjectType.IndirectRefObj)
-            {
-                obj = PdfIndirectRef.Create(obj);
-            }
-
-            CommonUtil.Recurse(obj, new HashSet<PdfIndirectRef>(), x => false, (x, ir) =>
+        CommonUtil.Recurse(obj, new HashSet<PdfIndirectRef>(), x => false, (x, ir) =>
+          {
+              if (ir != null)
               {
-                  if (ir != null)
-                  {
-                      Tracker.Localize(ir);
-                      Objs.Add(ir);
-                  }
-              }, true);
+                  Tracker.Localize(ir);
+                  Objs.Add(ir);
+              }
+          }, true);
 
 
-            Stream.SetLength(0);
-            Stream.Position = 0;
-            foreach (var item in Objs.OrderBy(x => x.Reference.ObjectNumber))
+        Stream.SetLength(0);
+        Stream.Position = 0;
+        foreach (var item in Objs.OrderBy(x => x.Reference.ObjectNumber))
+        {
+            Serializers.SerializeObject(Stream, item.GetObject(), (s) =>
             {
-                Serializers.SerializeObject(Stream, item.GetObject(), (s) =>
+                if (Tracker.TryGetLocalRef(s, out var ns, false))
                 {
-                    if (Tracker.TryGetLocalRef(s, out var ns, false))
-                    {
-                        return ns;
-                    }
-                    throw new ApplicationException("Unlocalized IR during hashing.");
-                });
-            }
-
-            return new PdfStreamHash(Stream);
-
-            // using (var md5 = MD5.Create())
-            // using (CryptoStream cs = new CryptoStream(Stream.Null, md5, CryptoStreamMode.Write))
-            // {
-            //     foreach (var item in Objs.OrderBy(x=>x.Reference.ObjectNumber))
-            //     {
-            //         Serializers.SerializeObject(cs, item.GetObject(), (s) =>
-            //         {
-            //             if (Tracker.TryGetLocalRef(s, out var ns, false))
-            //             {
-            //                 return ns;
-            //             }
-            //             throw new ApplicationException("Unlocalized IR during hashing.");
-            //         });
-            //     }
-            //     cs.FlushFinalBlock();
-            //     return Convert.ToBase64String(md5.Hash);
-            // }
+                    return ns;
+                }
+                throw new ApplicationException("Unlocalized IR during hashing.");
+            });
         }
 
-        
+        return new PdfStreamHash(Stream);
     }
 }
 
@@ -88,7 +63,7 @@ class FNVStreamComparison : IEqualityComparer<PdfStreamHash>
 
         x.Stream.Seek(0, SeekOrigin.Begin);
         y.Stream.Seek(0, SeekOrigin.Begin);
-        
+
         for (var i = 0; i < x.Stream.Length; i++)
         {
             var a = x.Stream.ReadByte();

@@ -10,19 +10,19 @@ using System.Text;
 
 namespace PdfLexer.Fonts
 {
-    public partial class SingleByteFont : IReadableFont
+    internal class SingleByteFont : IReadableFont
     {
         private Glyph[] Glyphs;
         private Glyph NotDef;
 
         public bool IsVertical => false;
 
-        public PdfName Name { get; }
+        public string Name { get; }
 
         public SingleByteFont(PdfName name, Glyph[] glyphs, Glyph notdef)
         {
             Glyphs = glyphs;
-            Name = name;
+            Name = name.Value;
             NotDef = notdef;
         }
 
@@ -33,16 +33,90 @@ namespace PdfLexer.Fonts
             if (c < Glyphs.Length)
             {
                 var g = Glyphs[c];
-                if (g != null) 
+                if (g != null)
                 {
                     glyph = g;
-                } else
+                }
+                else
                 {
 
                 }
             }
             return 1;
         }
+    }
+    internal partial class Type1Font
+    {
+        internal static IReadableFont CreateReadable(ParsingContext ctx, FontType1 t1)
+        {
+            var hasBase = false;
+            var (encoding, b14glyphs) = GetBase14Info(t1.BaseFont?.Value);
+            encoding ??= new Glyph[256];
+
+            Dictionary<string, Glyph> knownNames = null;
+            if (b14glyphs != null)
+            {
+                hasBase = true;
+                knownNames = new Dictionary<string, Glyph>();
+                foreach (var item in b14glyphs)
+                {
+                    if (item == null) { continue; }
+                    knownNames[item.Name] = item;
+                }
+            }
+
+            var hadEmbedded = AddEmbeddedInfo(ctx, t1, encoding, knownNames);
+            if (hadEmbedded) { hasBase = true; }
+
+            decimal mw = t1.FontDescriptor?.MissingWidth;
+            if (b14glyphs != null && !(t1.FontDescriptor?.NativeObject?.ContainsKey(PdfName.MissingWidth) ?? false))
+            {
+                mw = 0.278m;
+            }
+
+            var notdef = new Glyph { Char = '\u0000', w0 = (float)mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, mw, 0m } };
+            notdef.Undefined = true;
+
+            if (t1.Encoding != null)
+            {
+                var enc = t1.Encoding.Resolve();
+                if (enc.Type == PdfObjectType.NameObj)
+                {
+                    var nm = enc.GetAs<PdfName>();
+                    var hadNamed = AddNamedEncoding(ctx, t1, nm, encoding, knownNames);
+                    if (hadNamed) { hasBase = true; }
+                }
+                else if (enc.Type == PdfObjectType.DictionaryObj)
+                {
+                    var hadDiff = AddDifferenceEncoding(ctx, t1, encoding, knownNames);
+                    if (hadDiff) { hasBase = true; }
+                }
+                else
+                {
+                    ctx.Error($"Encoding specified in type 1 font was not name or dict ({t1.BaseFont}): {enc.Type}");
+                }
+            }
+
+            AddMissingSimple(ctx, t1, encoding);
+
+            if (!hasBase)
+            {
+                var nms = Encodings.StandardEncoding;
+                for (var i = 0; i < nms.Length; i++)
+                {
+                    var nm = nms[i];
+                    if (encoding[i] == null && nm != null)
+                    {
+                        encoding[i] = GetOrCreate(nm, (uint)i, null);
+                    }
+                }
+            }
+
+            AddWidths(ctx, t1, encoding);
+
+            return new SingleByteFont(t1.BaseFont, encoding, notdef);
+        }
+
 
         internal static bool AddEmbeddedInfo(ParsingContext ctx, FontType1 t1, Glyph[] names, Dictionary<string, Glyph> known)
         {
@@ -225,74 +299,39 @@ namespace PdfLexer.Fonts
             }
         }
 
-        internal static IReadableFont Create(ParsingContext ctx, FontType1 t1)
+        internal static void AddMissingSimple(ParsingContext ctx, ISimpleUnicode dict, Glyph[] encoding)
         {
-            var hasBase = false;
-            var (encoding, b14glyphs) = GetBase14Info(t1.BaseFont?.Value);
-            encoding ??= new Glyph[256];
-
-            Dictionary<string, Glyph> knownNames = null;
-            if (b14glyphs != null)
+            var str = dict.ToUnicode;
+            if (str == null)
             {
-                hasBase = true;
-                knownNames = new Dictionary<string, Glyph>();
-                foreach (var item in b14glyphs)
-                {
-                    if (item == null) { continue; }
-                    knownNames[item.Name] = item;
-                }
+                return;
             }
+            using var buffer = str.Contents.GetDecodedBuffer();
+            var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
 
-            var hadEmbedded = AddEmbeddedInfo(ctx, t1, encoding, knownNames);
-            if (hadEmbedded) { hasBase = true; }
-
-            decimal mw = t1.FontDescriptor?.MissingWidth;
-            if (b14glyphs != null && !(t1.FontDescriptor?.NativeObject?.ContainsKey(PdfName.MissingWidth) ?? false))
+            foreach (var glyph in glyphs.Values)
             {
-                mw = 0.278m;
-            }
-
-            var notdef = new Glyph { Char = '\u0000', w0 = (float)mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, mw, 0m } };
-            notdef.Undefined = true;
-
-            if (t1.Encoding != null)
-            {
-                var enc = t1.Encoding.Resolve();
-                if (enc.Type == PdfObjectType.NameObj)
+                if (glyph.CodePoint < 256)
                 {
-                    var nm = enc.GetAs<PdfName>();
-                    var hadNamed = AddNamedEncoding(ctx, t1, nm, encoding, knownNames);
-                    if (hadNamed) { hasBase = true; }
-                }
-                else if (enc.Type == PdfObjectType.DictionaryObj)
-                {
-                    var hadDiff = AddDifferenceEncoding(ctx, t1, encoding, knownNames);
-                    if (hadDiff) { hasBase = true; }
-                }
-                else
-                {
-                    ctx.Error($"Encoding specified in type 1 font was not name or dict ({t1.BaseFont}): {enc.Type}");
-                }
-            }
-
-            ToUnicodeFont.AddMissingSimple(ctx, t1, encoding);
-
-            if (!hasBase)
-            {
-                var nms = Encodings.StandardEncoding;
-                for (var i = 0; i < nms.Length; i++)
-                {
-                    var nm = nms[i];
-                    if (encoding[i] == null && nm != null)
+                    Glyph g;
+                    var existing = encoding[glyph.CodePoint.Value];
+                    if (existing != null)
                     {
-                        encoding[i] = GetOrCreate(nm, (uint)i, null);
+                        g = existing.Clone(); // simple may be base14 and still have tounicode, need to keep width info
+                        g.Char = glyph.Char;
+                        g.MultiChar = glyph.MultiChar;
                     }
+                    else
+                    {
+                        g = glyph;
+                    }
+                    if (g.CodePoint == 32)
+                    {
+                        g.IsWordSpace = true;
+                    }
+                    encoding[g.CodePoint.Value] = g;
                 }
             }
-
-            AddWidths(ctx, t1, encoding);
-
-            return new SingleByteFont(t1.BaseFont, encoding, notdef);
         }
 
         internal static (Glyph[] defaultEnc, Glyph[] allGlyphs) GetBase14Info(string fontName)

@@ -72,8 +72,8 @@ namespace PdfLexer.DOM
             Array[i] = value;
         }
 
-        public static implicit operator PdfRectangle(PdfArray array) => array == null ? null : new PdfRectangle(array);
-        public static implicit operator PdfArray(PdfRectangle rect) => rect?.Array;
+        public static implicit operator PdfRectangle(PdfArray array) => new PdfRectangle(array);
+        public static implicit operator PdfArray(PdfRectangle rect) => rect.Array;
 
         public static PdfRectangle Zeros { get; } = new PdfRectangle();
 

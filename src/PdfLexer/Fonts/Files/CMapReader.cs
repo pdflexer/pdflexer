@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace PdfLexer.Fonts
+namespace PdfLexer.Fonts.Files
 {
     internal class CMapReader
     {
