@@ -157,7 +157,7 @@ internal static class ReadingExtensions
             if (endstream != PdfTokenType.EndStream)
             {
                 source.Context.Error("Endstream not found at end of stream when parsing indirect object.");
-                scanner.Position = startPos + streamLength - Math.Min(data.Length, 100);
+                scanner.Position = startPos; // + streamLength - Math.Min(data.Length, 100); need to be smarter than this for content without filter
                 if (scanner.TryFindEndStream())
                 {
                     source.Context.Error("Found endstream in contents, using repaired length.");

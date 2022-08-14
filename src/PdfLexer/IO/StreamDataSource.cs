@@ -31,7 +31,14 @@ internal class StreamDataSource : StreamBase
             data[requiredBytes] = (byte)'\n';
             var ims = new InMemoryDataSource(Context, data, startPosition);
             xref.CachedSource = new WeakReference<IPdfDataSource>(ims);
-            return ims.GetIndirectObject(xref);
+            try
+            {
+                return ims.GetIndirectObject(xref);
+            } catch
+            {
+                xref.CachedSource = null;
+                // fallback to stream
+            }
         }
         return this.ReadWrappedFromStream(xref);
     }
