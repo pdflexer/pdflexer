@@ -81,7 +81,7 @@ public ref struct ContentScanner
 
         var oi = (int)CurrentOperator;
         PdfOperator.ParseOp? parser = null;
-        if (oi < 256)
+        if (oi > 0 && oi < 256)
         {
             parser = ParseOpMapping.SingleByteParsers[oi];
         } 

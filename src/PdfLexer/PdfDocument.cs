@@ -257,7 +257,7 @@ public sealed class PdfDocument : IDisposable
             if (item.Type == PdfObjectType.IndirectRefObj)
             {
                 var eir = (ExistingIndirectRef)item;
-                eir.SourceId = docId;
+                eir.SourceId = ctx.SourceId;
             }
         }
 

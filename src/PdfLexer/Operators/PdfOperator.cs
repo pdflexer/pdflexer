@@ -177,7 +177,7 @@ public class PdfOperator
                 colors.Add(ParseDecimal(ctx, data, operands[i]));
             }
         }
-        return new scn_Op(colors, name ?? "Unknown");
+        return new scn_Op(colors, name);
     }
 
     internal static SCN_Op ParseSCN(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
@@ -195,7 +195,7 @@ public class PdfOperator
                 colors.Add(ParseDecimal(ctx, data, operands[i]));
             }
         }
-        return new SCN_Op(colors, name ?? "Unknown");
+        return new SCN_Op(colors, name);
     }
 
     internal static Tj_Op ParseTj(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)

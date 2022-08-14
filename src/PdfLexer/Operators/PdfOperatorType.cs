@@ -505,7 +505,7 @@ namespace PdfLexer.Operators
         {
             // var test = "b, B, c, C, d, D, E, f, F, G, g, h, i, I, j, J, K, k, l, m, M, n, q, Q, r, R, s, S, T, v, w, W, y, ', "";
             
-            return null!;
+            return null;
         }
     }
 
@@ -2752,8 +2752,8 @@ namespace PdfLexer.Operators
         public static byte[] OpData { get; } = new byte[] { (byte) 'S', (byte) 'C', (byte) 'N' };
         public PdfOperatorType Type => PdfOperatorType.SCN;
         public List<decimal> colorInfo { get; }
-        public PdfName name { get; }
-        public SCN_Op(List<decimal> colorInfo, PdfName name)
+        public PdfName? name { get; }
+        public SCN_Op(List<decimal> colorInfo, PdfName? name)
         {
             this.colorInfo = colorInfo;
             this.name = name;
@@ -2768,8 +2768,8 @@ namespace PdfLexer.Operators
         public static byte[] OpData { get; } = new byte[] { (byte) 's', (byte) 'c', (byte) 'n' };
         public PdfOperatorType Type => PdfOperatorType.scn;
         public List<decimal> colorInfo { get; }
-        public PdfName name { get; }
-        public scn_Op(List<decimal> colorInfo, PdfName name)
+        public PdfName? name { get; }
+        public scn_Op(List<decimal> colorInfo, PdfName? name)
         {
             this.colorInfo = colorInfo;
             this.name = name;
