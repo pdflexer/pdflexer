@@ -12,7 +12,7 @@ namespace PdfLexer.Parsers;
 
 public class ParsingContext : IDisposable
 {
-    internal int SourceId { get; set; }
+    internal int SourceId { get; }
     internal bool IsEncrypted { get; set; } = false;
 
     // tracked here to support lazy parsing
@@ -20,11 +20,10 @@ public class ParsingContext : IDisposable
     // tracked here to support lazy parsing
     internal IPdfDataSource? CurrentSource { get; set; }
     
-    
     public IPdfDataSource MainDocSource { get; private set; }
     public PdfDocument Document { get; internal set; }
 
-
+    internal Dictionary<ulong, XRefEntry> XRefs = null!;
     internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
     internal Dictionary<ulong, WeakReference<IPdfObject>> IndirectCache = new Dictionary<ulong, WeakReference<IPdfObject>>();
     internal NumberCache NumberCache = new NumberCache();
@@ -43,11 +42,13 @@ public class ParsingContext : IDisposable
 
     public ParsingOptions Options { get; }
 
-
-    public ParsingContext(ParsingOptions? options = null)
+    public ParsingContext(ParsingOptions? options = null) : this(PdfDocument.GetNextId(), options)
     {
-        Options = options ?? new ParsingOptions();
-
+    }
+    internal ParsingContext(int sourceId, ParsingOptions? options = null)
+    {
+        Options = options ?? new ParsingOptions() { Eagerness = Eagerness.FullEager };
+        SourceId = sourceId;
         ArrayParser = new ArrayParser(this);
         BoolParser = new BoolParser();
         DictionaryParser = new DictionaryParser(this);
@@ -67,7 +68,9 @@ public class ParsingContext : IDisposable
         MainDocSource = pdf;
         CurrentSource = MainDocSource;
         disposables.Add(MainDocSource);
-        return XRefParser.LoadCrossReferences(pdf);
+        var (xr, tr) = XRefParser.LoadCrossReferences(pdf);
+        XRefs = xr;
+        return (xr, tr);
     }
 
     internal List<string> Errors { get; set; } = new List<string>();
@@ -226,7 +229,7 @@ public class ParsingContext : IDisposable
             return cached;
         }
 
-        if (Document.XrefEntries == null || !Document.XrefEntries.TryGetValue(id, out var value) || value.IsFree)
+        if (XRefs == null || !XRefs.TryGetValue(id, out var value) || value.IsFree)
         {
             // A indirect reference to an undefined object shall not be considered an error by
             // a conforming reader; it shall be treated as a reference to the null object.
@@ -296,7 +299,7 @@ public class ParsingContext : IDisposable
 
         disposables.Add(source);
 
-        foreach (var item in Document.XrefEntries.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
+        foreach (var item in XRefs.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
         {
             item.Source = source;
         }

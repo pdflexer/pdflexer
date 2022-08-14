@@ -41,19 +41,15 @@ public sealed class PdfDocument : IDisposable
     /// XRef entries of this document. May be internalized at some point.
     /// Will be null on new documents.
     /// </summary>
-    public IReadOnlyDictionary<ulong, XRefEntry> XrefEntries => xrefEntries;
-    internal Dictionary<ulong, XRefEntry> xrefEntries { get; set; }
+    public IReadOnlyDictionary<ulong, XRefEntry> XrefEntries => Context.XRefs;
 
 
-    internal PdfDocument(int id, ParsingContext ctx, 
-        PdfDictionary catalog, PdfDictionary trailer, List<PdfPage> pages,
-        Dictionary<ulong, XRefEntry> entries)
+    internal PdfDocument(ParsingContext ctx, 
+        PdfDictionary catalog, PdfDictionary trailer, List<PdfPage> pages)
     {
-        DocumentId = id;
+        DocumentId = ctx.SourceId;
         Context = ctx;
-        ctx.SourceId = DocumentId;
         ctx.Document = this;
-        xrefEntries = entries;
         Trailer = trailer;
         Pages = pages;
         Catalog = catalog;
@@ -62,7 +58,6 @@ public sealed class PdfDocument : IDisposable
     public void Dispose()
     {
         Context?.Dispose();
-        xrefEntries = null!;
         Pages = null!;
         Catalog = null!;
         Trailer = null!;
@@ -183,30 +178,32 @@ public sealed class PdfDocument : IDisposable
     /// <returns>PdfDocument</returns>
     public static PdfDocument Create()
     {
-        var doc = new PdfDocument(GetNextId(), new ParsingContext(),
-            new PdfDictionary(), new PdfDictionary { [PdfName.TypeName] = PdfName.Catalog }, new List<PdfPage>(),
-            new Dictionary<ulong, XRefEntry>());
+        var ctx = new ParsingContext();
+        var doc = new PdfDocument(ctx,
+            new PdfDictionary(), new PdfDictionary { [PdfName.TypeName] = PdfName.Catalog },
+            new List<PdfPage>());
+        ctx.Document = doc;
         return doc;
     }
 
 
     /// <summary>
-    /// Opens a PDF document from the provided seekable strea.
+    /// Opens a PDF document from the provided seekable stream.
     /// </summary>
     /// <param name="data">PDF data</param>
     /// <param name="options">Optional parsing options</param>
     /// <returns>PdfDocument</returns>
     public static PdfDocument Open(Stream data, ParsingOptions? options = null)
     {
+        options ??= new ParsingOptions { };
         var ctx = new ParsingContext(options);
-
         var source = new StreamDataSource(ctx, data);
         var result = ctx.Initialize(source);
         return Open(ctx, result.XRefs, result.Trailer);
     }
 
     /// <summary>
-    /// Opens a PDF document from the provided seekable strea.
+    /// Opens a PDF document from the provided seekable stream.
     /// </summary>
     /// <param name="data">PDF data</param>
     /// <param name="options">Optional parsing options</param>
@@ -233,8 +230,8 @@ public sealed class PdfDocument : IDisposable
     /// <returns>PdfDocument</returns>
     public static PdfDocument Open(byte[] data, ParsingOptions? options = null)
     {
+        options ??= new ParsingOptions { };
         var ctx = new ParsingContext(options);
-
         var source = new InMemoryDataSource(ctx, data);
         var result = ctx.Initialize(source);
         return Open(ctx, result.XRefs, result.Trailer);
@@ -243,6 +240,7 @@ public sealed class PdfDocument : IDisposable
 #if NET6_0_OR_GREATER
     public static PdfDocument OpenMapped(string file, ParsingOptions? options = null)
     {
+        options ??= new ParsingOptions { };
         var ctx = new ParsingContext(options);
         var source = new MemoryMappedDataSource(ctx, file);
         var result = ctx.Initialize(source);
@@ -254,7 +252,6 @@ public sealed class PdfDocument : IDisposable
         trailer ??= new PdfDictionary();
 
         // TODO clean doc id during parsing up
-        var docId = GetNextId();
         foreach (var item in trailer.Values)
         {
             if (item.Type == PdfObjectType.IndirectRefObj)
@@ -263,7 +260,6 @@ public sealed class PdfDocument : IDisposable
                 eir.SourceId = docId;
             }
         }
-        ctx.SourceId = docId;
 
         var cat = trailer.GetOptionalValue<PdfDictionary>(PdfName.Root);
         if (cat == null ||
@@ -301,7 +297,8 @@ public sealed class PdfDocument : IDisposable
                 pages.Add(pg);
             }
         }
-        var doc = new PdfDocument(docId, ctx, cat ?? new PdfDictionary(), trailer, pages, xrefs);
+        var doc = new PdfDocument(ctx, cat ?? new PdfDictionary(), trailer, pages);
+        ctx.Document = doc;
         return doc;
     }
 

@@ -30,7 +30,7 @@ namespace PdfLexer.Tests
         public void It_Gets_Dict_Basic(string data, bool found, string expected)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
-            var ctx = new ParsingContext(new ParsingOptions { ThrowOnErrors = true });
+            var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager, ThrowOnErrors = true });
             if (!found)
             {
                 Assert.ThrowsAny<Exception>(() => ctx.DictionaryParser.Parse(buffer));

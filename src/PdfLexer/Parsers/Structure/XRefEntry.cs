@@ -54,60 +54,60 @@ public struct XRef
 
 public class XRefEntry
 {
-    public XRefType Type { get; set; }
-    public XRef Reference { get; set; }
-    public bool IsFree { get; set; }
+    public XRefType Type { get; internal set; }
+    public XRef Reference { get; internal set; }
+    public bool IsFree { get; internal set; }
     /// <summary>
     /// Offset of the start of object. If <see cref="Type"/> is Compressed, this may be 0 if the 
     /// object stream has not been read.
     /// </summary>
-    public long Offset { get; set; }
+    public long Offset { get; internal set; }
     /// <summary>
     /// Maximum length of the object data.
     /// </summary>
-    public int MaxLength { get; set; }
+    internal int MaxLength { get; set; }
     /// <summary>
     /// Type of object 
     /// </summary>
-    public PdfTokenType KnownObjType { get; set; } = PdfTokenType.Unknown;
+    internal PdfTokenType KnownObjType { get; set; } = PdfTokenType.Unknown;
     /// <summary>
     /// Start of obj data from start of xref
     /// </summary>
-    public int KnownObjStart { get; set; }
+    internal int KnownObjStart { get; set; }
     /// <summary>
     /// Object length excluding endobj (or stream start)
     /// </summary>
-    public int KnownObjLength { get; set; }
+    internal int KnownObjLength { get; set; }
     /// <summary>
     /// Start of stream data offset from start of xref
     /// </summary>
-    public int KnownStreamStart { get; set; }
+    internal int KnownStreamStart { get; set; }
     /// <summary>
     /// Confirmed lenght of stream data
     /// </summary>
-    public int KnownStreamLength { get; set; }
+    internal int KnownStreamLength { get; set; }
     /// <summary>
     /// Object number of the object stream the referenced object is contained in.
     /// </summary>
-    public int ObjectStreamNumber { get; set; }
+    internal int ObjectStreamNumber { get; set; }
     /// <summary>
     /// Index in the object stream.
     /// </summary>
-    public int ObjectIndex { get; set; }
+    internal int ObjectIndex { get; set; }
     /// <summary>
     /// Data source containing the referenced data.
     /// This will be the main document source for uncompressed objects.
     /// For compressed objects it will be a wrapper around the object stream
     /// INTERNAL NOTE: May be null during initial doc parsing
     /// </summary>
-    public IPdfDataSource Source { get; set; } = null!;
+    internal IPdfDataSource Source { get; set; } = null!;
 
     internal WeakReference<IPdfDataSource>? CachedSource { get; set; }
     /// <summary>
     /// Gets the object this entry points to.
     /// </summary>
     /// <returns>IPdfObject</returns>
-    public IPdfObject GetObject() 
+    internal IPdfObject GetObject() 
     {
         try
         {
@@ -121,7 +121,7 @@ public class XRefEntry
                 return PdfNull.Value;
             }
             Source.Context.Error("XRef offset repairs to " + repaired.Offset);
-            Source.Context.Document.xrefEntries[repaired.Reference.GetId()] = repaired;
+            Source.Context.XRefs[repaired.Reference.GetId()] = repaired;
             return Source.GetIndirectObject(repaired);
         }
     } 
@@ -149,7 +149,7 @@ public class XRefEntry
                 return; // will be null;
             }
             Source.Context.Error("XRef offset repairs to " + repaired.Offset);
-            Source.Context.Document.xrefEntries[repaired.Reference.GetId()] = repaired;
+            Source.Context.XRefs[repaired.Reference.GetId()] = repaired;
             Source.CopyIndirectObject(repaired, destination);
         }
     }

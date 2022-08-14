@@ -18,7 +18,7 @@ internal class StringSerializer : ISerializer<PdfString>
     // TODO open up support for writing raw bytes for specific use cases
     public void WriteToStream(PdfString obj, Stream stream)
     {
-        if (obj.Value == null || obj.Value.Length == 0)
+        if (obj.Value == null)
         {
             return;
         }

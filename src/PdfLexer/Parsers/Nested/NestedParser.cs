@@ -19,9 +19,10 @@ internal class NestedParser
 
     public IPdfObject ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt, out int itemEnd)
     {
-        if (_ctx.CurrentSource == null && _ctx.Options.Eagerness != Eagerness.FullEager)
+        var eager = _ctx.Options.Eagerness;
+        if (_ctx.CurrentSource == null)
         {
-            throw new PdfLexerException("No CTX source set for lazy loading.");
+            eager = Eagerness.FullEager;
         }
         bool completed = false;
         var lastStart = 0;
@@ -51,8 +52,6 @@ internal class NestedParser
                 case PdfTokenType.DictionaryStart:
                     if (CurrentState.IsParsing())
                     {
-                        var eager = _ctx.Options.Eagerness;
-                        if (_ctx.CurrentSource == null) { eager = Eagerness.FullEager; }
                         switch (eager)
                         {
                             case Eagerness.Lazy:
@@ -86,8 +85,6 @@ internal class NestedParser
                 case PdfTokenType.ArrayStart:
                     if (CurrentState.IsParsing())
                     {
-                        var eager = _ctx.Options.Eagerness;
-                        if (_ctx.CurrentSource == null) { eager = Eagerness.FullEager; }
                         switch (eager)
                         {
                             case Eagerness.Lazy:
