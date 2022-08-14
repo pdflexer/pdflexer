@@ -352,7 +352,7 @@ public class PdfByteArrayStreamContents : PdfStreamContents
         Contents = contents;
     }
 
-    public PdfByteArrayStreamContents(byte[] contents, PdfName filter, PdfDictionary decodeParams)
+    public PdfByteArrayStreamContents(byte[] contents, PdfName filter, PdfDictionary? decodeParams)
     {
         Contents = contents;
         Filters = new PdfArray { filter };

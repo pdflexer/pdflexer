@@ -215,6 +215,18 @@ public class PdfDictionary : PdfObject, IDictionary<PdfName, IPdfObject>
     /// <summary>
     /// Returns value for key if exists and matches type.
     /// </summary>
+    /// <typeparam name="T"></typeparam>
+    /// <param name="key"></param>
+    /// <returns>Result or null if not found or does not match</returns>
+    public void Set(PdfName key, IPdfObject? value)
+    {
+        if (value == null) { _dictionary.Remove(key); return; }
+        _dictionary[key] = value;
+    }
+
+    /// <summary>
+    /// Returns value for key if exists and matches type.
+    /// </summary>
     /// <param name="key"></param>
     /// <returns>Result or null if not found or does not match</returns>
     public IPdfObject? Get(PdfName key)
@@ -331,9 +343,9 @@ public class PdfDictionary : PdfObject, IDictionary<PdfName, IPdfObject>
         foreach (var (key, value) in _dictionary)
         {
             sb.Append(key.ToString());
-            sb.Append(" ");
+            sb.Append(' ');
             sb.Append(value.ToString());
-            sb.Append(" ");
+            sb.Append(' ');
         }
         sb.Append(">>");
         return sb.ToString();

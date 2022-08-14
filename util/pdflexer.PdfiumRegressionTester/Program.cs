@@ -208,7 +208,7 @@ void DumpRawPageContent(PdfDocument doc, int pg, Stream output)
 {
     if (doc.Pages == null || doc.Pages.Count <= pg) { return; }
     var page = doc.Pages[pg];
-    var contents = page.Dictionary.Get(PdfName.Contents)?.Resolve();
+    var contents = page.NativeObject.Get(PdfName.Contents)?.Resolve();
     switch (contents)
     {
         case PdfArray arr:
@@ -492,16 +492,16 @@ static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
 
     var content = fl.Complete();
 
-    page = page.Dictionary.CloneShallow();
+    page = page.NativeObject.CloneShallow();
 
     var updatedStr = new PdfStream(new PdfDictionary(), content);
-    page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+    page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
     return page;
 }
 
 static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
 {
-    var res = page.Dictionary.GetOptionalValue<PdfDictionary>(PdfName.Resources);
+    var res = page.NativeObject.GetOptionalValue<PdfDictionary>(PdfName.Resources);
     var fonts = res?.GetOptionalValue<PdfDictionary>(PdfName.Font);
     fonts = new();
     var xobjs = res?.GetOptionalValue<PdfDictionary>(PdfName.XObject);
@@ -599,13 +599,13 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
         scanner.SkipCurrent();
     }
 
-    page = page.Dictionary.CloneShallow();
+    page = page.NativeObject.CloneShallow();
     var fl = new FlateWriter();
     ms.Seek(0, SeekOrigin.Begin);
     ms.CopyTo(fl);
 
     var updatedStr = new PdfStream(new PdfDictionary(), fl.Complete());
-    page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+    page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
     return page;
 
     PdfName GetReplacedName(PdfName name, PdfDictionary pageSubDict, PdfDictionary? formSubDict, Dictionary<PdfName,PdfName> replacement)

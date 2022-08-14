@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PdfLexer.DOM
@@ -72,11 +73,13 @@ namespace PdfLexer.DOM
             Array[i] = value;
         }
 
-        public static implicit operator PdfRectangle(PdfArray array) => new PdfRectangle(array);
-        public static implicit operator PdfArray(PdfRectangle rect) => rect.Array;
+        [return: NotNullIfNotNull("array")]
+        public static implicit operator PdfRectangle?(PdfArray? array) => array == null ? null : new PdfRectangle(array);
+        [return: NotNullIfNotNull("rect")]
+        public static implicit operator PdfArray?(PdfRectangle? rect) => rect?.Array;
 
         public static PdfRectangle Zeros { get; } = new PdfRectangle();
 
-        public PdfRectangle CloneShallow() => Array.CloneShallow();
+        public PdfRectangle CloneShallow() => Array.CloneShallow()!;
     }
 }

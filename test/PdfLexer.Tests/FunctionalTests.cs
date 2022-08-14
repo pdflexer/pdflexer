@@ -287,9 +287,9 @@ namespace PdfLexer.Tests
             var pg = doc.Pages[0];
             using var doc3 = PdfDocument.Create();
             doc3.Pages.Add(pg);
-            var str = pg.Dictionary.GetRequiredValue<PdfStream>(PdfName.Contents);
-            var copy = pg.Dictionary.CloneShallow();
-            pg.Dictionary.Remove(new PdfName("Annots"));
+            var str = pg.NativeObject.GetRequiredValue<PdfStream>(PdfName.Contents);
+            var copy = pg.NativeObject.CloneShallow();
+            pg.NativeObject.Remove(new PdfName("Annots"));
             var decoded = str.Contents.GetDecodedData();
             var strCopy = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(decoded));
             copy[PdfName.Contents] = PdfIndirectRef.Create(strCopy);
@@ -299,7 +299,7 @@ namespace PdfLexer.Tests
             File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-cp2.pdf", doc3.Save());
             doc.Trailer.Remove(new PdfName("/ID"));
             doc.Trailer.Remove(new PdfName("/Info"));
-            var res = doc.Pages[0].Dictionary.GetRequiredValue<PdfDictionary>(PdfName.Resources);
+            var res = doc.Pages[0].NativeObject.GetRequiredValue<PdfDictionary>(PdfName.Resources);
             var fonts = res.GetRequiredValue<PdfDictionary>("/Font");
             res["/Font"] = new PdfDictionary
             {
@@ -385,7 +385,7 @@ namespace PdfLexer.Tests
 
         private static PdfPage ReWriteStream(PdfDocument doc, PdfPage page, bool clone)
         {
-            if (!page.Dictionary.TryGetValue(PdfName.Contents, out var value))
+            if (!page.NativeObject.TryGetValue(PdfName.Contents, out var value))
             {
                 return page;
             }
@@ -432,10 +432,10 @@ namespace PdfLexer.Tests
 
             if (clone)
             {
-                page = page.Dictionary.CloneShallow();
+                page = page.NativeObject.CloneShallow();
             }
             var updatedStr = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(newData));
-            page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+            page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
             return page;
 
             byte[] CheckStreamData(byte[] pgStream)
@@ -494,11 +494,11 @@ namespace PdfLexer.Tests
 
             if (clone)
             {
-                page = page.Dictionary.CloneShallow();
+                page = page.NativeObject.CloneShallow();
             }
 
             var updatedStr = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(ms.ToArray()));
-            page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+            page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
             return page;
         }
 
@@ -992,7 +992,7 @@ namespace PdfLexer.Tests
                 {
                     using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                     if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
-                    foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.Dictionary); }
+                    foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.NativeObject); }
                     merged.Pages.AddRange(doc.Pages);
                 }
                 catch (NotSupportedException ex)

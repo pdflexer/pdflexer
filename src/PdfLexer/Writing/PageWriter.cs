@@ -3,7 +3,7 @@ using PdfLexer.Filters;
 
 namespace PdfLexer.Writing;
 
-public class PageWriter : ContentWriter, IDisposable
+public sealed class PageWriter : ContentWriter, IDisposable
 {
     private readonly PageWriteMode Mode;
     private PdfPage Page;
@@ -20,7 +20,7 @@ public class PageWriter : ContentWriter, IDisposable
         switch (Mode)
         {
             case PageWriteMode.Replace:
-                Page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(new PdfStream(data));
+                Page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(new PdfStream(data));
                 break;
             case PageWriteMode.Pre:
                 {
@@ -30,7 +30,7 @@ public class PageWriter : ContentWriter, IDisposable
                     {
                         arr.Add(existing);
                     }
-                    Page.Dictionary[PdfName.Contents] = arr;
+                    Page.NativeObject[PdfName.Contents] = arr;
                     break; ;
                 }
             case PageWriteMode.Append:
@@ -47,7 +47,7 @@ public class PageWriter : ContentWriter, IDisposable
                     var arr = new PdfArray();
                     arr.Add(PdfIndirectRef.Create(new PdfStream(fw.Complete())));
                     arr.Add(PdfIndirectRef.Create(new PdfStream(data)));
-                    Page.Dictionary[PdfName.Contents] = arr;
+                    Page.NativeObject[PdfName.Contents] = arr;
                     break;
                 }
         }

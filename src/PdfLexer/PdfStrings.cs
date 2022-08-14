@@ -45,12 +45,13 @@ public class PdfString : PdfObject, IEquatable<PdfString>
     public string Value { get; }
     public override PdfObjectType Type => PdfObjectType.StringObj;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
+        if (obj == null) { return false; }
         return obj is PdfString str && Value.Equals(str?.Value);
     }
 
-    public virtual bool Equals(PdfString other)
+    public virtual bool Equals(PdfString? other)
     {
         return Value.Equals(other?.Value);
     }

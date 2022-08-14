@@ -31,10 +31,10 @@ namespace PdfLexer.Content
         Matrix4x4 TextMatrix { get; set; }
         Matrix4x4 TextLineMatrix { get; set; }
         internal ParsingContext Ctx { get; }
-        internal PdfDictionary PageResources { get; }
-        internal PdfDictionary FormResources { get; set; }
+        internal PdfDictionary? PageResources { get; }
+        internal PdfDictionary? FormResources { get; set; }
 
-        public TextState(ParsingContext ctx, PdfDictionary pageResources)
+        public TextState(ParsingContext ctx, PdfDictionary? pageResources)
         {
             Ctx = ctx;
             PageResources = pageResources;

@@ -161,7 +161,7 @@ internal class XRefParser
         {
             var oss = num.GetValue<PdfNumber>();
 
-            PdfDictionary original = null;
+            PdfDictionary? original = null;
             while (true)
             {
                 scanner.SkipCurrent(); // objnum
@@ -242,7 +242,7 @@ internal class XRefParser
 
 
 
-    private void AddEntries(Span<byte> xd, PdfArray w, PdfArray index, List<XRefEntry> entries)
+    private void AddEntries(Span<byte> xd, PdfArray w, PdfArray? index, List<XRefEntry> entries)
     {
         int l1 = w[0].GetValue<PdfNumber>();
         int l2 = w[1].GetValue<PdfNumber>();

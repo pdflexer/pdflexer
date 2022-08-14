@@ -40,7 +40,7 @@ public class StreamingWriter : IDisposable
 
     public void AddPage(PdfPage page)
     {
-        var pg = page.Dictionary.CloneShallow();
+        var pg = page.NativeObject.CloneShallow();
         WritingUtil.RemovedUnusedLinks(pg, ir => false);
         pg[PdfName.Parent] = currentBagRef;
 

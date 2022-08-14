@@ -23,8 +23,9 @@ public struct XRef
         return unchecked(ObjectNumber.GetHashCode() + Generation.GetHashCode());
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
+        if (obj == null) { return false; }
         if (obj is XRef key)
         {
             return key.ObjectNumber.Equals(ObjectNumber) && key.Generation.Equals(Generation);
@@ -39,6 +40,16 @@ public struct XRef
 
     public ulong GetId() => ((ulong)ObjectNumber << 16) | ((uint)Generation & 0xFFFF);
     public static ulong GetId(int objectNumber, int generation) => ((ulong)objectNumber << 16) | ((uint)generation & 0xFFFF);
+
+    public static bool operator ==(XRef left, XRef right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(XRef left, XRef right)
+    {
+        return !(left == right);
+    }
 }
 
 public class XRefEntry

@@ -167,7 +167,7 @@ internal class ImageSampler
                                 Do_Op.WriteLn("/Im1", cs);
                                 Q_Op.WriteLn(cs);
                                 var cnt = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(cs.ToArray()));
-                                pg.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(cnt);
+                                pg.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(cnt);
                                 var pdfOut = Path.Combine(cmd.OutputPath, $"{hash}.pdf");
                                 using (var fso = File.Create(pdfOut))
                                 {

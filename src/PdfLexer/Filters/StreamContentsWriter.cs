@@ -1,61 +1,56 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
+﻿using System.IO.Compression;
 
-namespace PdfLexer.Filters
+namespace PdfLexer.Filters;
+
+public interface IStreamContentsWriter
 {
-    public interface IStreamContentsWriter
+    Stream Stream { get; }
+    PdfStreamContents Complete();
+}
+public class FlateWriter : IStreamContentsWriter
+{
+    private MemoryStream ms;
+
+    public Stream Stream { get; }
+
+    public FlateWriter()
     {
-        Stream Stream { get; }
-        PdfStreamContents Complete();
+        // can write to file in low mem mode
+        ms = new MemoryStream();
+        ms.WriteByte(120);
+        ms.WriteByte(1);
+        Stream = new DeflateStream(ms, CompressionLevel.Fastest, true);
     }
-    public class FlateWriter : IStreamContentsWriter
+
+    public PdfStreamContents Complete()
     {
-        private MemoryStream ms;
+        Stream.Dispose();
+        // TODO calc this during writing
+        ms.Seek(0, SeekOrigin.Begin);
+        var cs = Calculate(ms, 65521);
+        ms.Seek(0, SeekOrigin.End);
+        ms.WriteByte((byte)(cs >> 24));
+        ms.WriteByte((byte)(cs >> 16));
+        ms.WriteByte((byte)(cs >> 8));
+        ms.WriteByte((byte)(cs >> 0));
+        var dat = ms.ToArray();
+        ms = null!;
+        return new PdfByteArrayStreamContents(dat, PdfName.FlateDecode, null);
 
-        public Stream Stream { get; }
-
-        public FlateWriter()
+        static int Calculate(Stream data, int modulus)
         {
-            // can write to file in low mem mode
-            ms = new MemoryStream();
-            ms.WriteByte(120);
-            ms.WriteByte(1);
-            Stream = new DeflateStream(ms, CompressionLevel.Fastest, true);
-        }
+            var s1 = 1;
+            var s2 = 0;
 
-        public PdfStreamContents Complete()
-        {
-            Stream.Dispose();
-            // TODO calc this during writing
-            ms.Seek(0, SeekOrigin.Begin);
-            var cs = Calculate(ms, 65521);
-            ms.Seek(0, SeekOrigin.End);
-            ms.WriteByte((byte)(cs >> 24));
-            ms.WriteByte((byte)(cs >> 16));
-            ms.WriteByte((byte)(cs >> 8));
-            ms.WriteByte((byte)(cs >> 0));
-            var dat = ms.ToArray();
-            ms = null;
-            return new PdfByteArrayStreamContents(dat, PdfName.FlateDecode, null);
-
-            static int Calculate(Stream data, int modulus)
+            int b = 0;
+            while ((b = data.ReadByte()) != -1)
             {
-                var s1 = 1;
-                var s2 = 0;
-
-                int b = 0;
-                while ((b = data.ReadByte()) != -1)
-                {
-                    s1 = (s1 + b) % modulus;
-                    s2 = (s1 + s2) % modulus;
-                }
-                return s2 * 65536 + s1;
+                s1 = (s1 + b) % modulus;
+                s2 = (s1 + s2) % modulus;
             }
+            return s2 * 65536 + s1;
         }
-
-        public static implicit operator Stream(FlateWriter str) => str.Stream;
     }
+
+    public static implicit operator Stream(FlateWriter str) => str.Stream;
 }

@@ -9,7 +9,7 @@ namespace PdfLexer;
 /// <summary>
 /// Represents a single PDF document.
 /// </summary>
-public class PdfDocument : IDisposable
+public sealed class PdfDocument : IDisposable
 {
     /// <summary>
     /// Id of PDF, used for tracking indirect references between documents. 
@@ -128,10 +128,10 @@ public class PdfDocument : IDisposable
         var dict = new PdfDictionary();
         var arr = new PdfArray();
         var ir = PdfIndirectRef.Create(dict);
-        var pageDicts = Pages.Select(x => x.Dictionary).ToList();
+        var pageDicts = Pages.Select(x => x.NativeObject).ToList();
         foreach (var page in Pages)
         {
-            var pg = page.Dictionary.CloneShallow();
+            var pg = page.NativeObject.CloneShallow();
             WritingUtil.RemovedUnusedLinks(pg, ir => pageDicts.Contains(ir.GetObject()));
             pg[PdfName.Parent] = ir;
             if (page.SourceRef != null)

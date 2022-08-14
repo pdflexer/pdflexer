@@ -16,11 +16,11 @@ namespace PdfLexer.Content
     {
         private ParsingContext Context;
         private PageContentScanner Scanner;
-        private PdfDictionary PgRes;
-        private List<TJ_Lazy_Item> TJCache;
+        private PdfDictionary? PgRes;
+        private readonly List<TJ_Lazy_Item> TJCache;
         private int CurrentTextPos;
         private TextReadState ReadState;
-        private List<UnappliedGlyph> CurrentGlyphs;
+        private readonly List<UnappliedGlyph> CurrentGlyphs;
         private UnappliedGlyph CurrentGlyph;
         private PdfOperatorType LastOp;
 
@@ -38,7 +38,7 @@ namespace PdfLexer.Content
         /// Note may be null before first Advance() call
         /// or when Advance() returns false
         /// </summary>
-        public Glyph Glyph;
+        public Glyph? Glyph;
         /// <summary>
         /// Set true if previous statement resulted in line shift
         /// Note: does not track manual text cursor repositioning.

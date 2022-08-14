@@ -26,7 +26,8 @@ public class PdfBoolean : PdfObject // we do not need equitable / overloads sinc
 
     public static implicit operator bool(PdfBoolean val) => val.Value;
     public static implicit operator PdfBoolean(bool val) => val ? True : False;
-    public static implicit operator bool?(PdfBoolean val) => val?.Value;
+    public static implicit operator PdfBoolean?(bool? val) => val == null ? null : val;
+    public static implicit operator bool?(PdfBoolean? val) => val?.Value;
 
 
     public override string ToString()

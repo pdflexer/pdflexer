@@ -5,11 +5,11 @@ using PdfLexer.Serializers;
 
 namespace PdfLexer.IO;
 
-public class InMemoryDataSource : IPdfDataSource
+internal class InMemoryDataSource : IPdfDataSource
 {
 
     private byte[] _data;
-    private long _os;
+    private readonly long _os;
 
     // TODO in memory larger than int.maxvalue bytes
     // TODO -> Memory<byte>??
@@ -62,7 +62,7 @@ public class InMemoryDataSource : IPdfDataSource
         Context.CurrentOffset = startPosition;
         if (desiredBytes == -1)
         {
-            data = span.Slice(start);
+            data = span[start..];
         } else
         {
             data = span.Slice(start, desiredBytes);

@@ -724,7 +724,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "PdfName"  };
+        private static readonly List<string> OpTypes = new () { "PdfName"  };
 
         public static BMC_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -872,7 +872,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
 
         public static c_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -959,7 +959,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
 
         public static cm_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1016,7 +1016,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "PdfName"  };
+        private static readonly List<string> OpTypes = new () { "PdfName"  };
 
         public static CS_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1068,7 +1068,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "PdfName"  };
+        private static readonly List<string> OpTypes = new () { "PdfName"  };
 
         public static cs_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1142,7 +1142,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
 
         public static d0_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1225,7 +1225,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
 
         public static d1_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1282,7 +1282,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "PdfName"  };
+        private static readonly List<string> OpTypes = new () { "PdfName"  };
 
         public static Do_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1581,7 +1581,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static G_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1633,7 +1633,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static g_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1685,7 +1685,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "PdfName"  };
+        private static readonly List<string> OpTypes = new () { "PdfName"  };
 
         public static gs_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1770,7 +1770,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static i_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1855,7 +1855,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "int"  };
+        private static readonly List<string> OpTypes = new () { "int"  };
 
         public static j_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1907,7 +1907,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "int"  };
+        private static readonly List<string> OpTypes = new () { "int"  };
 
         public static J_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1977,7 +1977,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
 
         public static K_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2050,7 +2050,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
 
         public static k_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2111,7 +2111,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
 
         public static l_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2170,7 +2170,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
 
         public static m_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2223,7 +2223,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static M_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2275,7 +2275,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "PdfName"  };
+        private static readonly List<string> OpTypes = new () { "PdfName"  };
 
         public static MP_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2444,7 +2444,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
 
         public static re_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2511,7 +2511,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal"  };
 
         public static RG_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2577,7 +2577,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal"  };
 
         public static rg_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2631,7 +2631,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "PdfName"  };
+        private static readonly List<string> OpTypes = new () { "PdfName"  };
 
         public static ri_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2809,7 +2809,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "PdfName"  };
+        private static readonly List<string> OpTypes = new () { "PdfName"  };
 
         public static sh_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2894,7 +2894,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static Tc_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2952,7 +2952,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
 
         public static Td_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3011,7 +3011,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
 
         public static TD_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3070,7 +3070,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "PdfName", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "PdfName", "decimal"  };
 
         public static Tf_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3151,7 +3151,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static TL_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3233,7 +3233,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
 
         public static Tm_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3290,7 +3290,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "int"  };
+        private static readonly List<string> OpTypes = new () { "int"  };
 
         public static Tr_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3342,7 +3342,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static Ts_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3394,7 +3394,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static Tw_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3446,7 +3446,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static Tz_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3516,7 +3516,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
 
         public static v_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3571,7 +3571,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal"  };
 
         public static w_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3707,7 +3707,7 @@ namespace PdfLexer.Operators
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
 
         public static y_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {

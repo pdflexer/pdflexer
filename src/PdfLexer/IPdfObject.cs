@@ -116,8 +116,9 @@ public static class PdfObjectExtensions
     }
 
 
-    public static PdfIndirectRef Indirect(this IPdfObject item)
+    public static PdfIndirectRef Indirect(this IPdfObject? item)
     {
+        if (item == null) { return PdfIndirectRef.Create(PdfNull.Value); }
         if (item.Type == PdfObjectType.IndirectRefObj)
         {
             return (PdfIndirectRef)item;

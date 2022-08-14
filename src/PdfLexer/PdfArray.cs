@@ -144,13 +144,13 @@ public class PdfArray : PdfObject, IList<IPdfObject>
     public override string ToString()
     {
         var sb = new StringBuilder();
-        sb.Append("[");
+        sb.Append('[');
         foreach (var val in internalList)
         {
             sb.Append(val.ToString());
-            sb.Append(" ");
+            sb.Append(' ');
         }
-        sb.Append("]");
+        sb.Append(']');
         return sb.ToString();
     }
 }

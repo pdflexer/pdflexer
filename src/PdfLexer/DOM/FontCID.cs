@@ -22,16 +22,16 @@ namespace PdfLexer.DOM
             NativeObject = dict;
         }
 
-        public static implicit operator FontCID(PdfDictionary dict) => new FontCID(dict);
+        public static implicit operator FontCID?(PdfDictionary? dict) => dict == null ? null : new (dict);
         public static implicit operator PdfDictionary(FontCID page) => page.NativeObject;
 
         /// <summary>
         /// required
         /// </summary>
-        public PdfName Subtype
+        public PdfName? Subtype
         {
             get => NativeObject.Get<PdfName>(PdfName.Subtype);
-            set => NativeObject[PdfName.Subtype] = value;
+            set => NativeObject.Set(PdfName.Subtype, value);
         }
 
         /// <summary>
@@ -39,28 +39,28 @@ namespace PdfLexer.DOM
         /// If type 2 cidfont name should be CIDFonts BaseFont name
         /// If type 0 concat CIDFont BaseFont name "-" and the CMap name in encoding entry
         /// </summary>
-        public PdfName BaseFont
+        public PdfName? BaseFont
         {
             get => NativeObject.Get<PdfName>(PdfName.BaseFont);
-            set => NativeObject[PdfName.BaseFont] = value;
+            set => NativeObject.Set(PdfName.BaseFont, value);
         }
 
         /// <summary>
         /// required
         /// </summary>
-        public CIDSystemInfo CIDSystemInfo
+        public CIDSystemInfo? CIDSystemInfo
         {
             get => NativeObject.Get<PdfDictionary>(PdfName.CIDSystemInfo);
-            set => NativeObject[PdfName.CIDSystemInfo] = value?.NativeObject;
+            set => NativeObject.Set(PdfName.CIDSystemInfo, value?.NativeObject);
         }
 
         /// <summary>
         /// required
         /// </summary>
-        public FontDescriptor FontDescriptor
+        public FontDescriptor? FontDescriptor
         {
             get => NativeObject.Get<PdfDictionary>(PdfName.FontDescriptor);
-            set => NativeObject[PdfName.FontDescriptor] = value.NativeObject.Indirect();
+            set => NativeObject.Set(PdfName.FontDescriptor, value.NativeObject.Indirect());
         }
 
 
@@ -69,20 +69,20 @@ namespace PdfLexer.DOM
         /// default width for glyphs
         /// default 1000
         /// </summary>
-        public PdfNumber DW
+        public PdfNumber? DW
         {
             get => NativeObject.Get<PdfNumber>(PdfName.DW) ?? (PdfNumber)1000;
-            set => NativeObject[PdfName.DW] = value;
+            set => NativeObject.Set(PdfName.DW, value);
         }
 
         /// <summary>
         /// optional
         /// use DW if not present
         /// </summary>
-        public PdfArray W
+        public PdfArray? W
         {
             get => NativeObject.Get<PdfArray>(PdfName.W);
-            set => NativeObject[PdfName.W] = value;
+            set => NativeObject.Set(PdfName.W, value);
         }
 
         /// <summary>
@@ -90,20 +90,20 @@ namespace PdfLexer.DOM
         /// default vertical size for glyphs
         /// default [880 -1000]
         /// </summary>
-        public PdfArray DW2
+        public PdfArray? DW2
         {
             get => NativeObject.Get<PdfArray>(PdfName.DW2);
-            set => NativeObject[PdfName.DW2] = value;
+            set => NativeObject.Set(PdfName.DW2, value);
         }
 
         /// <summary>
         /// optional
         /// use DW2 if not present
         /// </summary>
-        public PdfArray W2
+        public PdfArray? W2
         {
             get => NativeObject.Get<PdfArray>(PdfName.W2);
-            set => NativeObject[PdfName.W2] = value;
+            set => NativeObject.Set(PdfName.W2, value);
         }
 
         /// <summary>
@@ -113,16 +113,16 @@ namespace PdfLexer.DOM
         /// if name should be Identity
         /// may only appear on embedded fonts
         /// </summary>
-        public IPdfObject CIDToGIDMap
+        public IPdfObject? CIDToGIDMap
         {
             get => NativeObject.Get(PdfName.CIDToGIDMap);
-            set => NativeObject[PdfName.CIDToGIDMap] = value;
+            set => NativeObject.Set(PdfName.CIDToGIDMap, value);
         }
 
         public IEnumerable<(uint cid, float width)> ReadW() => ReadWidths(W);
         public IEnumerable<(uint cid, float width)> ReadW2() => ReadWidths(W2);
 
-        public Dictionary<uint, uint> ReadCIDToGid()
+        public Dictionary<uint, uint>? ReadCIDToGid()
         {
             var obj = CIDToGIDMap;
             if (obj == null)
@@ -152,7 +152,7 @@ namespace PdfLexer.DOM
             return lu;
 
         }
-        private static IEnumerable<(uint cid, float width)> ReadWidths(PdfArray array)
+        private static IEnumerable<(uint cid, float width)> ReadWidths(PdfArray? array)
         {
             if (array == null) { yield break; }
             uint? firstCode = null;
@@ -212,8 +212,8 @@ namespace PdfLexer.DOM
             NativeObject = dict;
         }
 
-        public static implicit operator CIDSystemInfo(PdfDictionary dict) => new CIDSystemInfo(dict);
-        public static implicit operator PdfDictionary(CIDSystemInfo page) => page.NativeObject;
+        public static implicit operator CIDSystemInfo?(PdfDictionary? dict) => dict == null ? null :new CIDSystemInfo(dict);
+        public static implicit operator PdfDictionary?(CIDSystemInfo? page) => page?.NativeObject;
 
      
 
@@ -221,20 +221,20 @@ namespace PdfLexer.DOM
         /// required
         /// A string identifying the issuer of the char collection
         /// </summary>
-        public PdfString Registry
+        public PdfString? Registry
         {
             get => NativeObject.Get<PdfString>(PdfName.Registry);
-            set => NativeObject[PdfName.Registry] = value;
+            set => NativeObject.Set(PdfName.Registry, value);
         }
 
         /// <summary>
         /// required
         /// A string identifying the char collection from the issuer
         /// </summary>
-        public PdfString Ordering
+        public PdfString? Ordering
         {
             get => NativeObject.Get<PdfString>(PdfName.Ordering);
-            set => NativeObject[PdfName.Ordering] = value;
+            set => NativeObject.Set(PdfName.Ordering, value);
         }
 
         /// <summary>
@@ -242,10 +242,10 @@ namespace PdfLexer.DOM
         /// Supplement / version number of CID collection
         /// Starts at 0.
         /// </summary>
-        public PdfIntNumber Supplement
+        public PdfIntNumber? Supplement
         {
             get => NativeObject.Get<PdfIntNumber>(PdfName.Supplement);
-            set => NativeObject[PdfName.Supplement] = value;
+            set => NativeObject.Set(PdfName.Supplement, value);
         }
     }
 }

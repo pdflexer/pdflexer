@@ -29,12 +29,13 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public string Value { get; }
 
     public override PdfObjectType Type => PdfObjectType.NameObj;
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
+        if (obj == null) { return false; }
         return obj is PdfName name && Value.Equals(name?.Value);
     }
 
-    public virtual bool Equals(PdfName other)
+    public virtual bool Equals(PdfName? other)
     {
         return Value.Equals(other?.Value);
     }

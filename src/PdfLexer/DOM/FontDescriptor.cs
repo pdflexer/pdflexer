@@ -19,25 +19,25 @@ namespace PdfLexer.DOM
             NativeObject = dict;
         }
 
-        public static implicit operator FontDescriptor(PdfDictionary dict) => new FontDescriptor(dict);
-        public static implicit operator PdfDictionary(FontDescriptor page) => page.NativeObject;
+        public static implicit operator FontDescriptor?(PdfDictionary? dict) => dict == null ? null : new FontDescriptor(dict);
+        public static implicit operator PdfDictionary?(FontDescriptor? page) => page?.NativeObject;
 
         /// <summary>
         /// required 
         /// </summary>
-        public PdfName FontName
+        public PdfName? FontName
         {
             get => NativeObject?.Get<PdfName>(PdfName.FontName);
-            set => NativeObject[PdfName.FontName] = value;
+            set => NativeObject.Set(PdfName.FontName, value);
         }
 
         /// <summary>
         /// optional but should be used in Type 3 fonts in Tagged PDFs 
         /// </summary>
-        public PdfString FontFamily
+        public PdfString? FontFamily
         {
             get => NativeObject?.Get<PdfString>(PdfName.FontFamily);
-            set => NativeObject[PdfName.FontFamily] = value;
+            set => NativeObject.Set(PdfName.FontFamily, value);
         }
 
         /// <summary>
@@ -46,10 +46,10 @@ namespace PdfLexer.DOM
         /// UltraCondensed, ExtraCondensed, Condensed, SemiCondensed, Normal, SemiExpanded
         /// Expanded, ExtraExpanded, UltraExpanded
         /// </summary>
-        public PdfString FontStretch
+        public PdfString? FontStretch
         {
             get => NativeObject?.Get<PdfString>(PdfName.FontFamily);
-            set => NativeObject[PdfName.FontFamily] = value;
+            set => NativeObject.Set(PdfName.FontFamily, value);
         }
 
 
@@ -58,10 +58,10 @@ namespace PdfLexer.DOM
         /// 100, 200, 300, 400, 500, 600, 700, 800, 900
         /// 400 -> normal, 700 -> bold
         /// </summary>
-        public PdfString FontWeight
+        public PdfString? FontWeight
         {
             get => NativeObject?.Get<PdfString>(PdfName.FontWeight);
-            set => NativeObject[PdfName.FontWeight] = value;
+            set => NativeObject.Set(PdfName.FontWeight, value);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace PdfLexer.DOM
                     NativeObject[PdfName.Flags] = (PdfNumber)(int)value;
                 } else
                 {
-                    NativeObject[PdfName.Flags] = null;
+                    NativeObject[PdfName.Flags] = null!;
                 }
             }
         }
@@ -93,46 +93,46 @@ namespace PdfLexer.DOM
         /// <summary>
         /// required except for type 3
         /// </summary>
-        public PdfRectangle FontBBox
+        public PdfRectangle? FontBBox
         {
             get => NativeObject?.Get<PdfArray>(PdfName.FontBBox);
-            set => NativeObject[PdfName.FontBBox] = (PdfArray)value;
+            set => NativeObject.Set(PdfName.FontBBox, (PdfArray?)value);
         }
 
         /// <summary>
         /// required
         /// </summary>
-        public PdfNumber ItalicAngle
+        public PdfNumber? ItalicAngle
         {
             get => NativeObject?.Get<PdfNumber>(PdfName.ItalicAngle);
-            set => NativeObject[PdfName.ItalicAngle] = value;
+            set => NativeObject.Set(PdfName.ItalicAngle, value);
         }
 
         /// <summary>
         /// required except for type 3
         /// </summary>
-        public PdfNumber Ascent
+        public PdfNumber? Ascent
         {
             get => NativeObject?.Get<PdfNumber>(PdfName.Ascent);
-            set => NativeObject[PdfName.Ascent] = value;
+            set => NativeObject.Set(PdfName.Ascent, value);
         }
 
         /// <summary>
         /// required except for type 3
         /// </summary>
-        public PdfNumber Descent
+        public PdfNumber? Descent
         {
             get => NativeObject?.Get<PdfNumber>(PdfName.Descent);
-            set => NativeObject[PdfName.Descent] = value;
+            set => NativeObject.Set(PdfName.Descent, value);
         }
 
         /// <summary>
         /// Spacing between consecutive lines of text, default 0
         /// </summary>
-        public PdfNumber Leading
+        public PdfNumber? Leading
         {
             get => NativeObject?.Get<PdfNumber>(PdfName.Leading) ?? 0;
-            set => NativeObject[PdfName.Leading] = value;
+            set => NativeObject.Set(PdfName.Leading, value);
         }
 
         /// <summary>
@@ -140,10 +140,10 @@ namespace PdfLexer.DOM
         /// vertical coordinate of the top of flat capital letters measured
         /// from the baseline
         /// </summary>
-        public PdfNumber CapHeight
+        public PdfNumber? CapHeight
         {
             get => NativeObject?.Get<PdfNumber>(PdfName.CapHeight);
-            set => NativeObject[PdfName.CapHeight] = value;
+            set => NativeObject.Set(PdfName.CapHeight, value);
         }
 
         /// <summary>
@@ -151,30 +151,30 @@ namespace PdfLexer.DOM
         /// measured from baseline
         /// default 0
         /// </summary>
-        public PdfNumber XHeight
+        public PdfNumber? XHeight
         {
             get => NativeObject?.Get<PdfNumber>(PdfName.XHeight) ?? 0;
-            set => NativeObject[PdfName.XHeight] = value;
+            set => NativeObject.Set(PdfName.XHeight, value);
         }
 
         /// <summary>
         /// required except for type 3 fonts
         /// thickness of dominant vertical stems measured horizontally
         /// </summary>
-        public PdfNumber StemV
+        public PdfNumber? StemV
         {
             get => NativeObject?.Get<PdfNumber>(PdfName.StemV) ?? 0;
-            set => NativeObject[PdfName.StemV] = value;
+            set => NativeObject.Set(PdfName.StemV, value);
         }
 
         /// <summary>
         /// optional
         /// thickness of dominant horizontal stems measured vertically
         /// </summary>
-        public PdfNumber StemH
+        public PdfNumber? StemH
         {
             get => NativeObject?.Get<PdfNumber>(PdfName.StemH) ?? 0;
-            set => NativeObject[PdfName.StemH] = value;
+            set => NativeObject.Set(PdfName.StemH, value);
         }
 
         // TODO
@@ -184,50 +184,50 @@ namespace PdfLexer.DOM
         /// <summary>
         /// optional
         /// </summary>
-        public PdfNumber MissingWidth
+        public PdfNumber? MissingWidth
         {
             get => NativeObject?.Get<PdfNumber>(PdfName.MissingWidth) ?? 0;
-            set => NativeObject[PdfName.MissingWidth] = value;
+            set => NativeObject.Set(PdfName.MissingWidth, value);
         }
 
         /// <summary>
         /// optional
         /// embedded type 1 front
         /// </summary>
-        public PdfStream FontFile
+        public PdfStream? FontFile
         {
             get => NativeObject?.Get<PdfStream>(PdfName.FontFile);
-            set => NativeObject[PdfName.FontFile] = value.Indirect();
+            set => NativeObject.Set(PdfName.FontFile, value.Indirect());
         }
 
         /// <summary>
         /// optional
         /// embedded truetype font
         /// </summary>
-        public PdfStream FontFile2
+        public PdfStream? FontFile2
         {
             get => NativeObject?.Get<PdfStream>(PdfName.FontFile2);
-            set => NativeObject[PdfName.FontFile2] = value.Indirect();
+            set => NativeObject.Set(PdfName.FontFile2, value.Indirect());
         }
 
         /// <summary>
         /// optional
         /// embedded font, type specified in Subtype of stream dict 
         /// </summary>
-        public PdfStream FontFile3
+        public PdfStream? FontFile3
         {
             get => NativeObject?.Get<PdfStream>(PdfName.FontFile3);
-            set => NativeObject[PdfName.FontFile3] = value.Indirect();
+            set => NativeObject.Set(PdfName.FontFile3, value.Indirect());
         }
 
         /// <summary>
         /// optional
         /// meaningful only for type 1 fonts for subsetting
         /// </summary>
-        public PdfString CharSet
+        public PdfString? CharSet
         {
             get => NativeObject?.Get<PdfString>(PdfName.CharSet);
-            set => NativeObject[PdfName.CharSet] = value;
+            set => NativeObject.Set(PdfName.CharSet, value);
         }
     }
 

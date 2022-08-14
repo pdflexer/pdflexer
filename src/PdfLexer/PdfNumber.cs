@@ -30,6 +30,12 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
+    public static implicit operator long?(PdfNumber? num)
+    {
+        if (num == null) { return null; }
+        return (long)num;
+    }
+
     public static implicit operator int(PdfNumber num)
     {
         return num switch {
@@ -39,7 +45,7 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
-    public static implicit operator int?(PdfNumber num)
+    public static implicit operator int?(PdfNumber? num)
     {
         if (num == null) { return null; }
         return (int)num;
@@ -56,7 +62,7 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
-    public static implicit operator double?(PdfNumber num)
+    public static implicit operator double?(PdfNumber? num)
     {
         if (num == null) { return null; }
         return (double)num;
@@ -74,7 +80,7 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
-    public static implicit operator float?(PdfNumber num)
+    public static implicit operator float?(PdfNumber? num)
     {
         if (num == null) { return null; }
         return (float)num;
@@ -91,7 +97,7 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
-    public static implicit operator decimal?(PdfNumber num)
+    public static implicit operator decimal?(PdfNumber? num)
     {
         if (num == null) { return null; }
         return (decimal)num;
@@ -134,12 +140,13 @@ public class PdfIntNumber : PdfNumber, IEquatable<PdfIntNumber>
 
     public override PdfNumberType NumberType => PdfNumberType.Integer;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
+        if (obj == null) { return false; }
         return obj is PdfIntNumber num && Value.Equals(num?.Value);
     }
 
-    public virtual bool Equals(PdfIntNumber other)
+    public virtual bool Equals(PdfIntNumber? other)
     {
         return Value.Equals(other?.Value);
     }
@@ -180,12 +187,13 @@ public class PdfLongNumber : PdfNumber, IEquatable<PdfLongNumber>
     }
 
     public override PdfNumberType NumberType => PdfNumberType.Long;
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
+        if (obj == null) { return false; }
         return obj is PdfLongNumber num && Value.Equals(num?.Value);
     }
 
-    public virtual bool Equals(PdfLongNumber other)
+    public virtual bool Equals(PdfLongNumber? other)
     {
         return Value.Equals(other?.Value);
     }
@@ -226,8 +234,9 @@ public class PdfDoubleNumber : PdfNumber, IEquatable<PdfDoubleNumber>
     }
 
     public override PdfNumberType NumberType => PdfNumberType.Double;
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
+        if (obj == null) { return false; }
         return obj is PdfLongNumber num && Value.Equals(num?.Value);
     }
 
@@ -273,12 +282,13 @@ public class PdfDecimalNumber : PdfNumber, IEquatable<PdfDecimalNumber>
 
     public override PdfNumberType NumberType => PdfNumberType.Decimal;
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
+        if (obj == null) { return false; }
         return obj is PdfLongNumber num && Value.Equals(num?.Value);
     }
 
-    public virtual bool Equals(PdfDecimalNumber other)
+    public virtual bool Equals(PdfDecimalNumber? other)
     {
         return Value.Equals(other?.Value);
     }

@@ -71,14 +71,14 @@ internal class ExistingIndirectRef : PdfIndirectRef
     {
         return unchecked(SourceId + Reference.Generation + Reference.ObjectNumber).GetHashCode();
     }
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (!(obj is ExistingIndirectRef oir))
+        if (obj is not ExistingIndirectRef oir)
         {
             return false;
         }
@@ -123,14 +123,14 @@ internal class NewIndirectRef : PdfIndirectRef
         return RuntimeHelpers.GetHashCode(Object);
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (System.Object.ReferenceEquals(this, obj))
+        if (ReferenceEquals(this, obj))
         {
             return true;
         }
 
-        if (!(obj is NewIndirectRef oor))
+        if (obj is not NewIndirectRef oor)
         {
             return false;
         }

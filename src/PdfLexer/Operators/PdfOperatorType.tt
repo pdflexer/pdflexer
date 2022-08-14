@@ -267,7 +267,7 @@ foreach (var op in operators)
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new () { "<#= string.Join("\", \"", op.Item4.Select(x=>x.Item1)) #>"  };
+        private static readonly List<string> OpTypes = new () { "<#= string.Join("\", \"", op.Item4.Select(x=>x.Item1)) #>"  };
 
         public static <#= name #>_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {

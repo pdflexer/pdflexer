@@ -66,7 +66,7 @@ namespace PdfLexer.Fonts
 
     }
 
-    public class FontGlyphSet
+    internal class FontGlyphSet
     {
         public Glyph notdef { get; }
         private Glyph[] b1;
@@ -98,7 +98,7 @@ namespace PdfLexer.Fonts
 
         public Glyph GetGlyph(uint charCode)
         {
-            Glyph glyph;
+            Glyph? glyph;
             if (charCode < 256 && b1 != null)
             {
                 glyph = b1[charCode];

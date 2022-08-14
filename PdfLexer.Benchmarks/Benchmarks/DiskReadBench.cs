@@ -85,7 +85,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         {
             foreach (var page in doc.Pages)
             {
-                RecurseDict(page.Dictionary, new HashSet<PdfDictionary>());
+                RecurseDict(page.NativeObject, new HashSet<PdfDictionary>());
             }
         }
 

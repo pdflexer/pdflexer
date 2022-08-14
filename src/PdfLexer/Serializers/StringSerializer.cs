@@ -208,19 +208,19 @@ internal class StringSerializer : ISerializer<PdfString>
         return di;
     }
 
-    private int GetHexBytes(PdfString obj, Span<byte> data)
-    {
-        var di = 0;
-        data[di++] = (byte)'<';
-        for (var i = 0; i < obj.Value.Length; i++)
-        {
-            var b = obj.Value[i];
-            int high = ((b & 0xf0) >> 4);
-            int low = (b & 0x0f);
-            data[di++] = hexVals[high];
-            data[di++] = hexVals[low];
-        }
-        data[di++] = (byte)'>';
-        return di;
-    }
+    // private static int GetHexBytes(PdfString obj, Span<byte> data)
+    // {
+    //     var di = 0;
+    //     data[di++] = (byte)'<';
+    //     for (var i = 0; i < obj.Value.Length; i++)
+    //     {
+    //         var b = obj.Value[i];
+    //         int high = ((b & 0xf0) >> 4);
+    //         int low = (b & 0x0f);
+    //         data[di++] = hexVals[high];
+    //         data[di++] = hexVals[low];
+    //     }
+    //     data[di++] = (byte)'>';
+    //     return di;
+    // }
 }
