@@ -60,7 +60,7 @@ namespace PdfLexer.DOM
         public FontDescriptor? FontDescriptor
         {
             get => NativeObject.Get<PdfDictionary>(PdfName.FontDescriptor);
-            set => NativeObject.Set(PdfName.FontDescriptor, value.NativeObject.Indirect());
+            set => NativeObject.Set(PdfName.FontDescriptor, value?.NativeObject.Indirect());
         }
 
 
@@ -204,7 +204,8 @@ namespace PdfLexer.DOM
         public PdfDictionary NativeObject { get; }
 
         public CIDSystemInfo()
-        {
+        { 
+            NativeObject = new();
         }
 
         public CIDSystemInfo(PdfDictionary dict)

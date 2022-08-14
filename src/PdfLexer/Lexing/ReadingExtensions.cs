@@ -110,7 +110,7 @@ internal static class ReadingExtensions
             streamLength = PdfCommonNumbers.Zero;
         }
 
-        PdfName filterName = CommonUtil.GetFirstFilter(dict);
+        PdfName? filterName = CommonUtil.GetFirstFilter(dict);
 
         output.Write(IndirectSequences.stream);
         output.WriteByte((byte)'\n');

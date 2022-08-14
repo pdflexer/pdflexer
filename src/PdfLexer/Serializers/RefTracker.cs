@@ -38,7 +38,7 @@ internal class RefTracker
         localizedObjects.Clear();
     }
 
-    public bool TryGetLocalRef(PdfIndirectRef ir, out PdfIndirectRef local, bool attemptOwnership)
+    public bool TryGetLocalRef(PdfIndirectRef ir, [NotNullWhen(true)]out PdfIndirectRef? local, bool attemptOwnership)
     {
         if (TryLocalizeExisting(ir, attemptOwnership))
         {

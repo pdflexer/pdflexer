@@ -190,7 +190,7 @@ internal static class StructuralRepairs
 
     }
 
-    public static bool TryFindStreamEnd(ParsingContext ctx, XRefEntry xref, PdfName filter, int predictedLength)
+    public static bool TryFindStreamEnd(ParsingContext ctx, XRefEntry xref, PdfName? filter, int predictedLength)
     {
         var startOs = xref.Offset + xref.KnownStreamStart;
         var stream = xref.Source.GetStream(startOs);

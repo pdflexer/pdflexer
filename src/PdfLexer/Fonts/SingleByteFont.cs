@@ -35,4 +35,9 @@ internal class SingleByteFont : IReadableFont
         }
         return 1;
     }
+
+    public static SingleByteFont Fallback { get; } = new SingleByteFont(
+        "/Fallback",
+        Predefined.HelveticaGlyphs.DefaultEncoding,
+        new Glyph { Char = '\u0000', w0 = (float)0.278, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, 0.278m, 0m } });
 }

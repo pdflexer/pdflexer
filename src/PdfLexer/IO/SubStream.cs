@@ -93,7 +93,7 @@ internal class SubStream : Stream
     public void ActuallyDispose(bool disposing)
     {
         base.Dispose(disposing);
-        baseStream = null;
+        baseStream = null!;
     }
 
     public override void Write(byte[] buffer, int offset, int count)

@@ -98,9 +98,9 @@ public class XRefEntry
     /// Data source containing the referenced data.
     /// This will be the main document source for uncompressed objects.
     /// For compressed objects it will be a wrapper around the object stream
-    /// MAY BE INITIALLY NULL
+    /// INTERNAL NOTE: May be null during initial doc parsing
     /// </summary>
-    public IPdfDataSource Source { get; set; }
+    public IPdfDataSource Source { get; set; } = null!;
 
     internal WeakReference<IPdfDataSource>? CachedSource { get; set; }
     /// <summary>

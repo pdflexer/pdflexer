@@ -129,7 +129,7 @@ public ref struct ContentScanner
         }
     }
 
-    public IPdfOperation GetCurrentOperation()
+    public IPdfOperation? GetCurrentOperation()
     {
         _ = TryGetCurrentOperation(out var op);
         return op;

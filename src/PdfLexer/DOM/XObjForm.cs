@@ -19,19 +19,19 @@ public class XObjForm
     public PdfRectangle? BBox
     {
         get => NativeObject.Dictionary.Get<PdfArray>(PdfName.BBox);
-        set => NativeObject.Dictionary[PdfName.BBox] = (PdfArray)value;
+        set => NativeObject.Dictionary.Set(PdfName.BBox, value?.NativeObject);
     }
 
     public PdfDictionary? Resources
     {
         get => NativeObject.Dictionary.Get<PdfDictionary>(PdfName.Resources);
-        set => NativeObject.Dictionary[PdfName.Resources] = value;
+        set => NativeObject.Dictionary.Set(PdfName.Resources, value);
     }
 
     public PdfStreamContents? Contents
     {
         get => NativeObject.Contents;
-        set => NativeObject.Contents = value;
+        set => NativeObject.Contents = value == null ? PdfStreamContents.Empty : value;
     }
 
     // Type -> XObject (optional)

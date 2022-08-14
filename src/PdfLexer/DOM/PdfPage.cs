@@ -37,21 +37,27 @@ public sealed class PdfPage
     public PdfRectangle BleedBox { get => GetWithDefault(PdfName.BleedBox, PdfName.CropBox); set => NativeObject[PdfName.BleedBox] = value.NativeObject; }
     public PdfRectangle TrimBox { get => GetWithDefault(PdfName.TrimBox, PdfName.CropBox); set => NativeObject[PdfName.TrimBox] = value.NativeObject; }
     public PdfRectangle ArtBox { get => GetWithDefault(PdfName.ArtBox, PdfName.CropBox); set => NativeObject[PdfName.ArtBox] = value.NativeObject; }
-    public PdfNumber? Rotate { get 
+    public PdfNumber? Rotate
+    {
+        get
         {
             var r = NativeObject.Get<PdfNumber>(PdfName.Rotate);
-            if (r != null) {
+            if (r != null)
+            {
                 return r;
             }
             NativeObject[PdfName.Rotate] = PdfCommonNumbers.Zero;
-            return PdfCommonNumbers.Zero; 
+            return PdfCommonNumbers.Zero;
         }
-        set => NativeObject[PdfName.Rotate] = value; }
+        set => NativeObject.Set(PdfName.Rotate, value);
+    }
 
 
-    public PageTreeNode? Parent { 
+    public PageTreeNode? Parent
+    {
         get => NativeObject.Get<PdfDictionary>(PdfName.Parent);
-        set => NativeObject[PdfName.Parent] = value.Dictionary.Indirect(); }
+        set => NativeObject.Set(PdfName.Parent, value?.Dictionary.Indirect());
+    }
 
 
     public IEnumerable<PdfStream> Contents { get

@@ -1,6 +1,5 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Parsers;
-using System.Diagnostics.CodeAnalysis;
 
 namespace PdfLexer.Content;
 
@@ -160,11 +159,15 @@ public ref struct ImageScanner
     }
 }
 
-public class PdfImage
+public sealed class PdfImage
 {
     public float X { get; set; }
     public float Y { get; set; }
     public float W { get; set; }
     public float H { get; set; }
-    public XObjImage XObj { get; set; }
+    public XObjImage XObj { get; set; } = null!;
+    internal PdfImage()
+    {
+
+    }
 }

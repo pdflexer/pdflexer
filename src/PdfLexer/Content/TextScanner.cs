@@ -55,9 +55,8 @@ namespace PdfLexer.Content
             Context = ctx;
             Scanner = new PageContentScanner(ctx, page, true);
             PgRes = page.Get<PdfDictionary>(PdfName.Resources);
-            TextState = new TextState(ctx, PgRes);
             GraphicsState = new GraphicsState();
-            TextState.GS = GraphicsState;
+            TextState = new TextState(ctx, GraphicsState, PgRes);
             TextState.stack = Scanner.stack;
             TextState.UpdateTRM();
             CurrentTextPos = 0;
@@ -233,6 +232,10 @@ namespace PdfLexer.Content
 
         public (float llx, float lly, float urx, float ury) GetCurrentBoundingBox()
         {
+            if (Glyph == null)
+            {
+                throw new NotSupportedException("GetCurrentBoundingBox called with no current glyph in scanner state.");
+            }
             return TextState.GetBoundingBox(Glyph);
         }
 

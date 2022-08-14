@@ -240,7 +240,7 @@ public partial class ContentWriter
 
     public PdfStreamContents Complete() { 
         var result = Stream.Complete();
-        Stream = null; // TODO: add proper error handling for using methods after calling complete
+        Stream = null!; // TODO: add proper error handling for using methods after calling complete
         return result;
     }
 }

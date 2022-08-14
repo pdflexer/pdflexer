@@ -210,7 +210,7 @@ public ref struct PageContentScanner
         Scanner.SkipCurrent();
     }
 
-    public IPdfOperation GetCurrentOperation()
+    public IPdfOperation? GetCurrentOperation()
     {
         if (State == MultiPageState.CTMForm)
         {

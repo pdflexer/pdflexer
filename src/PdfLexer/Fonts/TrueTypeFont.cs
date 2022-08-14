@@ -200,9 +200,9 @@ namespace PdfLexer.Fonts
                 {
                     EncodingId = -1,
                     PlatformId = -1,
-                    Mappings = new Dictionary<uint, uint>(0)
                 };
             }
+            cmapTable.Mappings ??= new Dictionary<uint, uint>(0);
 
             var windows = cmapTable.PlatformId == 3 && cmapTable.EncodingId == 1;
             var mac = cmapTable.PlatformId == 1 && cmapTable.EncodingId == 0;

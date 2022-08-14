@@ -505,7 +505,7 @@ namespace PdfLexer.Operators
         {
             // var test = "b, B, c, C, d, D, E, f, F, G, g, h, i, I, j, J, K, k, l, m, M, n, q, Q, r, R, s, S, T, v, w, W, y, ', "";
             
-            return null;
+            return null!;
         }
     }
 
