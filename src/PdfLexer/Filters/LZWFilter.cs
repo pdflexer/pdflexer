@@ -47,7 +47,7 @@ internal class LZWStream : MinBufferStream
     int bitsCached = 0;
     int earlyChange;
     int nextCode = 258;
-    int[] dictionaryValues;
+    int[]? dictionaryValues;
     int[] dictionaryLengths;
     int[] dictionaryPrevCodes;
     int[] currentSequence;

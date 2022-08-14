@@ -138,7 +138,7 @@ public class PdfDictionary : PdfObject, IDictionary<PdfName, IPdfObject>
     }
 
     /// <inheritdoc/>
-    public bool TryGetValue(PdfName key, out IPdfObject value)
+    public bool TryGetValue(PdfName key, [NotNullWhen(true)]out IPdfObject? value)
     {
         return _dictionary.TryGetValue(key, out value);
     }

@@ -112,21 +112,21 @@ namespace PdfLexer.Fonts
         }
     }
 
-    internal class CMapFont : IReadableFont
+    internal class CIDFont : IReadableFont
     {
         private readonly CMap _map;
-        private readonly CMap? _gidMap;
+        private readonly CMap? _cidToGid;
         private readonly FontGlyphSet _glyphSet;
         private readonly int _notdefBytes;
 
         public bool IsVertical => false;
         public string Name { get; }
 
-        public CMapFont(string name, CMap cmap, FontGlyphSet glyphSet, int notdefBytes, CMap? gidMap=null)
+        public CIDFont(string name, CMap cmap, FontGlyphSet glyphSet, int notdefBytes, CMap? cidToGid=null)
         {
             Name = name;
             _map = cmap;
-            _gidMap = gidMap;
+            _cidToGid = cidToGid;
             _glyphSet = glyphSet;
             _notdefBytes = notdefBytes;
         }
@@ -135,9 +135,9 @@ namespace PdfLexer.Fonts
         {
             int l;
             uint c;
-            if (_gidMap != null)
+            if (_cidToGid != null)
             {
-                c = _gidMap.GetCharCode(data, os, out l);
+                c = _cidToGid.GetCharCode(data, os, out l);
             } else
             {
                 c = _map.GetCharCode(data, os, out l);

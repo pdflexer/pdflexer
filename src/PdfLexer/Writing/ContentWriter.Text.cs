@@ -16,6 +16,7 @@ public partial class ContentWriter
 
     public ContentWriter Text(string text)
     {
+        if (currentFont == null) { throw new NotSupportedException("Must set current font before writing."); }
         // very inefficient just experimenting
         var b = new byte[2];
         Span<byte> buf = new byte[text.Length];
@@ -70,7 +71,7 @@ public partial class ContentWriter
             return;
         }
     }
-    private IWritableFont currentFont;
+    private IWritableFont? currentFont;
     private Dictionary<IWritableFont, PdfName> fonts = new Dictionary<IWritableFont, PdfName>();
 
     private PdfName AddFont(IWritableFont obj)

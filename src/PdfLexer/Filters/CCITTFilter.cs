@@ -7,7 +7,7 @@ public class CCITTFilter : IDecoder
 {
     private readonly ParsingContext? _ctx;
     public static CCITTFilter Instance { get; } = new CCITTFilter(null);
-    public CCITTFilter(ParsingContext ctx)
+    public CCITTFilter(ParsingContext? ctx)
     {
         _ctx = ctx;
     }

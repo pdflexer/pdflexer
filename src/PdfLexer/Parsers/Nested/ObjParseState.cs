@@ -59,7 +59,7 @@ internal struct ObjParseState
                     ctx.Error($"Pdf dictionary was malformed, expected PdfName for key, got {item.Type}");
                     continue;
                 }
-            } else
+            } else if (name != null)
             {
                 if (item is PdfNumber num 
                     && i + 2 < Bag.Count

@@ -62,7 +62,7 @@ public class ParsingContext : IDisposable
         Document = null!;
     }
 
-    public (Dictionary<ulong, XRefEntry> XRefs, PdfDictionary Trailer) Initialize(IPdfDataSource pdf)
+    public (Dictionary<ulong, XRefEntry> XRefs, PdfDictionary? Trailer) Initialize(IPdfDataSource pdf)
     {
         MainDocSource = pdf;
         CurrentSource = MainDocSource;
@@ -169,7 +169,7 @@ public class ParsingContext : IDisposable
 
     private ConditionalWeakTable<PdfDictionary, IReadableFont> fontCache = new ConditionalWeakTable<PdfDictionary, IReadableFont>();
 
-    internal IReadableFont GetFont(IPdfObject obj)
+    internal IReadableFont? GetFont(IPdfObject obj)
     {
         // built in encoding:
         // type1 -> Encoding array in font program but overridden by Encoding / BaseEncoding values
@@ -190,6 +190,10 @@ public class ParsingContext : IDisposable
         }
 
         var type = dict.Get<PdfName>(PdfName.Subtype);
+        if (type == null)
+        {
+            return null;
+        }
         var created = type.Value switch
         {
             "/Type0" => Type0Font.CreateReadable(this, dict),
@@ -208,7 +212,7 @@ public class ParsingContext : IDisposable
         return Type1Font.CreateReadable(this, dict);
     }
 
-    internal IPdfObject RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
+    internal IPdfObject? RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
     {
         return StructuralRepairs.RepairFindLastMatching(this, MainDocSource.GetStream(0), type, matcher);
     }
@@ -269,7 +273,7 @@ public class ParsingContext : IDisposable
             };
         }
 
-        IPdfDataSource source = null;
+        IPdfDataSource? source;
         if (Options.LowMemoryMode)
         {
             // TODO allow streams for offsets
@@ -383,7 +387,7 @@ public class ParsingContext : IDisposable
                     return BoolParser.Parse(in data);
                 }
         }
-        return null;
+        throw new NotImplementedException($"Pdf Object type {type} was passed for parsing but is not known.");
     }
 
     // review this, seems wasteful to scan twice
@@ -462,9 +466,9 @@ public class ParsingContext : IDisposable
 
     public void Dispose()
     {
-        CachedInts = null;
-        NameCache = null;
-        NumberCache = null;
+        CachedInts = null!;
+        NameCache = null!;
+        NumberCache = null!;
         // IndirectCache = null;
         foreach (var disp in disposables)
         {

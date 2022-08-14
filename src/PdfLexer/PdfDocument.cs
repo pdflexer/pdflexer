@@ -14,7 +14,7 @@ public sealed class PdfDocument : IDisposable
     /// <summary>
     /// Id of PDF, used for tracking indirect references between documents. 
     /// </summary>
-    internal int DocumentId { get; } = Interlocked.Increment(ref docId);
+    internal int DocumentId { get; set; }
     /// <summary>
     /// Parsing context for this PDF. May be internalized but may provide external access to allow parallel processing at some point.
     /// </summary>
@@ -45,23 +45,28 @@ public sealed class PdfDocument : IDisposable
     internal Dictionary<ulong, XRefEntry> xrefEntries { get; set; }
 
 
-    internal PdfDocument(ParsingContext ctx, PdfDictionary trailer, Dictionary<ulong, XRefEntry> entries)
+    internal PdfDocument(int id, ParsingContext ctx, 
+        PdfDictionary catalog, PdfDictionary trailer, List<PdfPage> pages,
+        Dictionary<ulong, XRefEntry> entries)
     {
+        DocumentId = id;
         Context = ctx;
         ctx.SourceId = DocumentId;
         ctx.Document = this;
         xrefEntries = entries;
         Trailer = trailer;
+        Pages = pages;
+        Catalog = catalog;
     }
 
     public void Dispose()
     {
         Context?.Dispose();
-        xrefEntries = null;
-        Pages = null;
-        Catalog = null;
-        Trailer = null;
-        Context = null;
+        xrefEntries = null!;
+        Pages = null!;
+        Catalog = null!;
+        Trailer = null!;
+        Context = null!;
     }
 
     public byte[] Save()
@@ -86,7 +91,7 @@ public sealed class PdfDocument : IDisposable
     {
         var nums = XrefEntries?.Values.Select(x => x.Reference.ObjectNumber).ToList();
         var nextId = 1;
-        if (nums.Any())
+        if (nums != null && nums.Any())
         {
             nextId = nums.Max() + 1;
         }
@@ -178,10 +183,9 @@ public sealed class PdfDocument : IDisposable
     /// <returns>PdfDocument</returns>
     public static PdfDocument Create()
     {
-        var doc = new PdfDocument(new ParsingContext(), new PdfDictionary(), new Dictionary<ulong, XRefEntry>());
-        doc.Catalog = new PdfDictionary();
-        doc.Catalog[PdfName.TypeName] = PdfName.Catalog;
-        doc.Pages = new List<PdfPage>();
+        var doc = new PdfDocument(GetNextId(), new ParsingContext(),
+            new PdfDictionary(), new PdfDictionary { [PdfName.TypeName] = PdfName.Catalog }, new List<PdfPage>(),
+            new Dictionary<ulong, XRefEntry>());
         return doc;
     }
 
@@ -245,23 +249,27 @@ public sealed class PdfDocument : IDisposable
         return Open(ctx, result.XRefs, result.Trailer);
     }
 #endif
-    private static PdfDocument Open(ParsingContext ctx, Dictionary<ulong, XRefEntry> xrefs, PdfDictionary trailer)
+    private static PdfDocument Open(ParsingContext ctx, Dictionary<ulong, XRefEntry> xrefs, PdfDictionary? trailer)
     {
-        var doc = new PdfDocument(ctx, trailer, xrefs);
-        // TODO: clean the existing ref ID up
+        trailer ??= new PdfDictionary();
+
+        // TODO clean doc id during parsing up
+        var docId = GetNextId();
         foreach (var item in trailer.Values)
         {
             if (item.Type == PdfObjectType.IndirectRefObj)
             {
                 var eir = (ExistingIndirectRef)item;
-                eir.SourceId = doc.DocumentId;
+                eir.SourceId = docId;
             }
         }
-        doc.Catalog = doc.Trailer.GetOptionalValue<PdfDictionary>(PdfName.Root);
-        if (doc.Catalog == null ||
-            (doc.Catalog.GetOptionalValue<PdfName>(PdfName.TypeName) != PdfName.Catalog && !doc.Catalog.ContainsKey(PdfName.Pages)))
+        ctx.SourceId = docId;
+
+        var cat = trailer.GetOptionalValue<PdfDictionary>(PdfName.Root);
+        if (cat == null ||
+            (cat.GetOptionalValue<PdfName>(PdfName.TypeName) != PdfName.Catalog && !cat.ContainsKey(PdfName.Pages)))
         {
-            var matched = doc.Context.RepairFindLastMatching(PdfTokenType.DictionaryStart, x =>
+            var matched = ctx.RepairFindLastMatching(PdfTokenType.DictionaryStart, x =>
             {
                 if (x.Type != PdfObjectType.DictionaryObj)
                 {
@@ -274,29 +282,26 @@ public sealed class PdfDocument : IDisposable
                 }
                 return false;
             })?.GetValue<PdfDictionary>();
-            if (matched != null && doc.Catalog == null)
+            if (matched != null && cat == null)
             {
-                doc.Catalog = matched;
+                cat = matched;
             }
             else if (matched != null && matched.ContainsKey(PdfName.Pages))
             {
-                doc.Catalog = matched;
+                cat = matched;
             }
         }
-        var pages = doc.Catalog?.GetOptionalValue<PdfDictionary>(PdfName.Pages);
-        if (ctx.Options.LoadPageTree)
+        
+        var pagesRef = cat?.GetOptionalValue<PdfDictionary>(PdfName.Pages);
+        List<PdfPage> pages = new();
+        if (ctx.Options.LoadPageTree && pagesRef != null)
         {
-            doc.Pages = new List<PdfPage>();
-            if (pages == null)
+            foreach (var pg in CommonUtil.EnumeratePageTree(pagesRef))
             {
-                return doc;
-            }
-            foreach (var pg in CommonUtil.EnumeratePageTree(pages))
-            {
-                doc.Pages.Add(pg);
+                pages.Add(pg);
             }
         }
-
+        var doc = new PdfDocument(docId, ctx, cat ?? new PdfDictionary(), trailer, pages, xrefs);
         return doc;
     }
 

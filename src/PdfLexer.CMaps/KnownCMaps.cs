@@ -177,7 +177,7 @@ public class KnownCMaps
         "v",
         "wp-symbol",
     };
-    public static (List<CRange> Ranges, Dictionary<uint, CResult> Mapping) GetCMap(string name)
+    public static (List<CRange>? Ranges, Dictionary<uint, CResult>? Mapping) GetCMap(string name)
     {
         var assembly = Assembly.GetExecutingAssembly();
 

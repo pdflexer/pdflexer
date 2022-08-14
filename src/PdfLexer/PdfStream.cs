@@ -13,18 +13,22 @@ public class PdfStream : PdfObject
     public PdfStream()
     {
         Dictionary = new PdfDictionary();
+        _contents = PdfStreamContents.Empty;
+        streamModified = true;
     }
 
     public PdfStream(PdfStreamContents contents)
     {
         Dictionary = new PdfDictionary();
-        Contents = contents;
+        _contents = contents;
+        streamModified = true;
     }
 
     public PdfStream(PdfDictionary dictionary, PdfStreamContents contents)
     {
         Dictionary = dictionary;
-        Contents = contents;
+        _contents = contents;
+        streamModified = true;
     }
     /// <summary>
     /// Dictionary portion of the Stream object.
@@ -57,6 +61,7 @@ public class PdfStream : PdfObject
 /// </summary>
 public abstract class PdfStreamContents
 {
+    public static PdfStreamContents Empty { get; } = new PdfByteArrayStreamContents(Array.Empty<byte>());
     /// <summary>
     /// Reads data of the stream.
     /// </summary>
@@ -427,7 +432,7 @@ internal class RentedArrayContents : DecodedStreamContents
     public override void Dispose()
     {
         ArrayPool<byte>.Shared.Return(_data);
-        _data = null;
+        _data = null!;
     }
 
     public override ReadOnlySpan<byte> GetData()
@@ -448,7 +453,7 @@ internal class ArrayContents : DecodedStreamContents
     }
     public override void Dispose()
     {
-        _data = null;
+        _data = null!;
     }
 
     public override ReadOnlySpan<byte> GetData()

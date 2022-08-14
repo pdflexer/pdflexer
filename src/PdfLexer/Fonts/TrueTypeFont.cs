@@ -10,9 +10,9 @@ namespace PdfLexer.Fonts
     {
         public static IReadableFont CreateReadable(ParsingContext ctx, FontType1 t1)
         {
-            if (t1.Widths == null) // sometimes truetype fonts refernce base14 and don't include required info
+            if (t1.Widths == null) // sometimes truetype fonts reference base14 and don't include required info
             {
-                var (a,_) = Type1Font.GetBase14Info(t1.BaseFont?.Value);
+                var (a, _) = Type1Font.GetBase14Info(t1.BaseFont?.Value);
                 if (a != null)
                 {
                     return Type1Font.CreateReadable(ctx, t1);
@@ -41,13 +41,13 @@ namespace PdfLexer.Fonts
             // add in postscript info if exists
             if (t1.FontDescriptor?.FontFile2 != null && !skipFontFile)
             {
-                AddTrueTypeInfo(ctx, t1, hadBase, encoding, diffs);
+                AddTrueTypeInfo(ctx, t1.FontDescriptor.FontFile2, t1, hadBase, encoding, diffs);
             }
 
-            Glyph[] lookup;
+            Glyph?[] lookup;
             if (t1.ToUnicode != null)
             {
-                lookup = GetToUnicodeGlyphs(ctx, t1);
+                lookup = GetToUnicodeGlyphs(ctx, t1, t1.ToUnicode);
                 for (var i = 0; i < 256; i++)
                 {
                     var nm = encoding[i];
@@ -67,10 +67,10 @@ namespace PdfLexer.Fonts
             }
 
             AddWidthInfo(t1, lookup);
-            return new SingleByteFont(t1.BaseFont, lookup, notdef);
+            return new SingleByteFont(t1.BaseFont ?? "Empty", lookup, notdef);
         }
 
-        private static Glyph MapGlyph(uint cc, string name)
+        private static Glyph? MapGlyph(uint cc, string? name)
         {
             if (name == null) { return null; }
             var g = new Glyph
@@ -88,11 +88,11 @@ namespace PdfLexer.Fonts
             return g;
         }
 
-        public static (bool HadBase, string[] Encoding, Dictionary<int, string> Diffs) GetDiffedEncoding(FontType1 t1)
+        public static (bool HadBase, string?[] Encoding, Dictionary<int, string>? Diffs) GetDiffedEncoding(FontType1 t1)
         {
             // grab encoding / diffs if exist
-            PdfName be = null;
-            string[] baseEncoding = null;
+            PdfName? be = null;
+            string?[]? baseEncoding = null;
             if (t1.Encoding != null && t1.Encoding.GetPdfObjType() == PdfObjectType.NameObj)
             {
                 be = t1.Encoding.GetAs<PdfName>();
@@ -102,13 +102,13 @@ namespace PdfLexer.Fonts
                 }
             }
 
-            Dictionary<int, string> diffs = null;
+            Dictionary<int, string>? diffs = null;
             if (t1.Encoding != null && t1.Encoding.GetPdfObjType() == PdfObjectType.DictionaryObj)
             {
                 var diff = (FontEncoding)(PdfDictionary)t1.Encoding;
                 if (diff.BaseEncoding != null)
                 {
-                    baseEncoding = Encodings.GetEncoding(be);
+                    baseEncoding = Encodings.GetEncoding(diff.BaseEncoding);
                 }
                 diffs = new Dictionary<int, string>();
                 foreach (var (code, name) in diff.ReadDifferences())
@@ -120,12 +120,12 @@ namespace PdfLexer.Fonts
             return (baseEncoding != null, GetDiffedEncoding(baseEncoding, diffs), diffs);
         }
 
-        private static string[] GetDiffedEncoding(string[] baseEncoding, Dictionary<int, string> diffs)
+        private static string?[] GetDiffedEncoding(string?[]? baseEncoding, Dictionary<int, string>? diffs)
         {
-            var be = new string[256];
+            var be = new string?[256];
             for (var charCode = 0; charCode < 256; charCode++)
             {
-                string glyphName = null;
+                string? glyphName = null;
                 if (diffs != null && diffs.TryGetValue(charCode, out glyphName))
                 {
                     // value set;
@@ -147,28 +147,27 @@ namespace PdfLexer.Fonts
             return be;
         }
 
-        private static Glyph[] GetToUnicodeGlyphs(ParsingContext ctx, ISimpleUnicode dict)
+        private static Glyph?[] GetToUnicodeGlyphs(ParsingContext ctx, ISimpleUnicode dict, PdfStream data)
         {
-            var str = dict.ToUnicode;
-            using var buffer = str.Contents.GetDecodedBuffer();
+            using var buffer = data.Contents.GetDecodedBuffer();
             var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
 
-            var lookup = new Glyph[256];
+            var lookup = new Glyph?[256];
             foreach (var glyph in glyphs.Values)
             {
-                if (glyph.CodePoint.Value < 256)
+                if (glyph.CodePoint < 256)
                 {
-                    lookup[(int)glyph.CodePoint.Value] = glyph;
+                    lookup[(int)glyph.CodePoint] = glyph;
                 }
             }
             return lookup;
         }
 
-        private static void AddTrueTypeInfo(ParsingContext ctx, FontType1 t1, bool hadBase, string[] preDiffedEncoding,
-            Dictionary<int, string> diffs)
+        private static void AddTrueTypeInfo(ParsingContext ctx, PdfStream file, FontType1 t1, bool hadBase, string?[] preDiffedEncoding,
+            Dictionary<int, string>? diffs)
         {
             var symbolic = t1.FontDescriptor?.Flags?.HasFlag(FontFlags.Symbolic) ?? false;
-            using var buffer = t1.FontDescriptor.FontFile2.Contents.GetDecodedBuffer();
+            using var buffer = file.Contents.GetDecodedBuffer();
             var reader = new TrueTypeReader(ctx, buffer.GetData());
 
             if (!reader.TryGetMaxpGlyphs(out var numGlyphs))
@@ -176,7 +175,7 @@ namespace PdfLexer.Fonts
                 return;
             }
 
-            string[] glyphNames = null;
+            string?[]? glyphNames = null;
             if (reader.HasPostTable())
             {
 
@@ -187,8 +186,8 @@ namespace PdfLexer.Fonts
             uint?[] charCodeToGlyphId = new uint?[256];
 
 
-            Dictionary<uint, string> gidToName = null;
-            TrueTypeReader.TTCMap cmapTable = null;
+            Dictionary<uint, string>? gidToName = null;
+            TrueTypeReader.TTCMap? cmapTable = null;
             if (reader.HasCMapTable())
             {
                 var tables = reader.ReadCMapTables();
@@ -305,8 +304,8 @@ namespace PdfLexer.Fonts
                 {
                     continue;
                 }
-                string glyphName = null;
-                if (diffs != null && !diffs.TryGetValue((int)i, out glyphName))
+                string? glyphName = null;
+                if (glyphNames != null && diffs != null && !diffs.TryGetValue((int)i, out glyphName))
                 {
                     glyphName = glyphNames[i];
                 }
@@ -316,7 +315,8 @@ namespace PdfLexer.Fonts
                     if (gidToName != null && gidToName.TryGetValue(gid.Value, out var value))
                     {
                         preDiffedEncoding[i] = value; // from an unused cmap that we grabbed unicode vals from
-                    } else
+                    }
+                    else
                     {
                         preDiffedEncoding[i] = ""; // special to force guess
                     }
@@ -328,11 +328,11 @@ namespace PdfLexer.Fonts
             }
         }
 
-        internal static void AddWidthInfo(ISimpleUnicode dict, Glyph[] glyphs)
+        internal static void AddWidthInfo(ISimpleUnicode dict, Glyph?[] glyphs)
         {
-            if (dict.FirstChar == null) { return; }
+            if (dict.FirstChar == null || dict.Widths == null) { return; }
             int fc = dict.FirstChar;
-            int lc = (dict.LastChar ?? dict.Widths?.Count + fc);
+            int lc = (dict.LastChar ?? dict.Widths.Count + fc);
             float mw = dict.MissingWidth ?? 0;
             mw = (float)(mw / 1000.0);
             var ws = new float[lc - fc + 1];
@@ -381,7 +381,7 @@ namespace PdfLexer.Fonts
                     glyph.w0 = mw;
                 }
 
-                if (glyph.CodePoint.Value == 32)
+                if (glyph.CodePoint == 32)
                 {
                     glyph.IsWordSpace = true;
                 }

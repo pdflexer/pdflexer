@@ -60,8 +60,8 @@ namespace PdfLexer.Fonts
             var f = new FontType1();
             f.BaseFont = _metrics.BaseFont;
             var list = _glyphs.Values.Where(x => x.CodePoint.HasValue).OrderBy(x => x.CodePoint).ToList();
-            int min = (int)list.First().CodePoint;
-            int max = (int)list.Last().CodePoint;
+            int min = (int)(list.First().CodePoint ?? 0);
+            int max = (int)(list.Last().CodePoint ?? 0);
             var widths = new PdfArray(new List<IPdfObject>(max - min + 1));
 
             for (var i = min; i <= max; i++)
@@ -86,12 +86,12 @@ namespace PdfLexer.Fonts
 
         public IEnumerable<SizedChar> ConvertFromUnicode(string text, int start, int length, byte[] buffer)
         {
-            Glyph lc = null;
+            Glyph? lc = null;
             for (var i = start; i < start + length; i++)
             {
                 var c = text[i];
                 var g = GetGlyph(c);
-                buffer[0] = (byte)g.CodePoint; // 1 byte only
+                buffer[0] = (byte)(g.CodePoint ?? 0); // 1 byte only
                 var k = lc == null ? 0 : Getkerning(lc, c);
                 yield return new SizedChar { ByteCount = 1, Width = g.w0, PrevKern = k };
                 lc = g;

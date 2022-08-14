@@ -32,11 +32,11 @@ public sealed class PdfPage
     public PdfDictionary Resources { 
         get => NativeObject.GetOrCreateValue<PdfDictionary>(PdfName.Resources);
         set => NativeObject[PdfName.Resources] = value; }
-    public PdfRectangle MediaBox { get => NativeObject.GetOrCreateValue<PdfArray>(PdfName.MediaBox); set => NativeObject[PdfName.MediaBox] = value.Array; }
-    public PdfRectangle CropBox { get => GetWithDefault(PdfName.CropBox, PdfName.MediaBox); set => NativeObject[PdfName.CropBox] = value.Array; }
-    public PdfRectangle BleedBox { get => GetWithDefault(PdfName.BleedBox, PdfName.CropBox); set => NativeObject[PdfName.BleedBox] = value.Array; }
-    public PdfRectangle TrimBox { get => GetWithDefault(PdfName.TrimBox, PdfName.CropBox); set => NativeObject[PdfName.TrimBox] = value.Array; }
-    public PdfRectangle ArtBox { get => GetWithDefault(PdfName.ArtBox, PdfName.CropBox); set => NativeObject[PdfName.ArtBox] = value.Array; }
+    public PdfRectangle MediaBox { get => NativeObject.GetOrCreateValue<PdfArray>(PdfName.MediaBox); set => NativeObject[PdfName.MediaBox] = value.NativeObject; }
+    public PdfRectangle CropBox { get => GetWithDefault(PdfName.CropBox, PdfName.MediaBox); set => NativeObject[PdfName.CropBox] = value.NativeObject; }
+    public PdfRectangle BleedBox { get => GetWithDefault(PdfName.BleedBox, PdfName.CropBox); set => NativeObject[PdfName.BleedBox] = value.NativeObject; }
+    public PdfRectangle TrimBox { get => GetWithDefault(PdfName.TrimBox, PdfName.CropBox); set => NativeObject[PdfName.TrimBox] = value.NativeObject; }
+    public PdfRectangle ArtBox { get => GetWithDefault(PdfName.ArtBox, PdfName.CropBox); set => NativeObject[PdfName.ArtBox] = value.NativeObject; }
     public PdfNumber? Rotate { get 
         {
             var r = NativeObject.Get<PdfNumber>(PdfName.Rotate);

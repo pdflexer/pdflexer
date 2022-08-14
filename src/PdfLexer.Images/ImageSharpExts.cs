@@ -80,7 +80,7 @@ public static class ImageSharpExts
 
     public static Image GetImage(this PdfImage img, ParsingContext ctx)
     {
-        var dict = img.XObj.Dictionary;
+        var dict = img.XObj.NativeObject;
         if (!dict.TryGetValue(PdfName.Filter, out var filter))
         {
             using var str = img.XObj.Contents.GetDecodedStream();

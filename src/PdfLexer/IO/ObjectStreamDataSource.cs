@@ -91,7 +91,7 @@ internal class ObjectStreamDataSource : IPdfDataSource
 
     public void Dispose()
     {
-        _data = null;
+        _data = null!;
         Disposed = true;
     }
 

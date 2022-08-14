@@ -86,7 +86,7 @@ internal partial class Type1Font
 
         try
         {
-            string[] t1Names;
+            string?[]? t1Names;
             using var buffer = file.Contents.GetDecodedBuffer();
             var data = buffer.GetData();
             File.WriteAllBytes("c:\\temp\\type1.txt", data.ToArray());
@@ -101,7 +101,7 @@ internal partial class Type1Font
             } else if (CFFReader.IsCFFfile(data))
             {
                 var cff = new CFFReader(ctx, buffer.GetData());
-                t1Names = cff.GetBaseSimpleEncoding(t1.BaseFont);
+                t1Names = cff.GetBaseSimpleEncoding(t1.BaseFont ?? "Empty");
             } else
             {
                 return false;

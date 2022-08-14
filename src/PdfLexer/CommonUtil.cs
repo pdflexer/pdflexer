@@ -110,8 +110,9 @@ internal static class CommonUtil
         return filterName;
     }
 
-    public static PdfName? GetFirstFilterFromList(IPdfObject filters)
+    public static PdfName? GetFirstFilterFromList(IPdfObject? filters)
     {
+        if (filters == null) { return null; }
         PdfName? filterName = null;
         switch (filters)
         {

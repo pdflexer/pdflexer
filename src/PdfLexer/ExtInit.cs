@@ -1,4 +1,6 @@
-﻿global using global::PdfLexer.Operators;
+﻿global using PdfLexer.Operators;
+global using System.Diagnostics.CodeAnalysis;
+
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("PdfLexer.Tests")]

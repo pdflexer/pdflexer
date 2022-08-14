@@ -1,4 +1,6 @@
 ﻿
+using System.Diagnostics.CodeAnalysis;
+
 namespace PdfLexer;
 
 public enum PdfNumberType
@@ -21,6 +23,7 @@ public abstract class PdfNumber : PdfObject
     /// </summary>
     public abstract PdfNumberType NumberType { get; }
 
+
     public static implicit operator long(PdfNumber num)
     {
         return num switch {
@@ -30,6 +33,7 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
+    [return: NotNullIfNotNull("num")]
     public static implicit operator long?(PdfNumber? num)
     {
         if (num == null) { return null; }
@@ -45,6 +49,7 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
+    [return: NotNullIfNotNull("num")]
     public static implicit operator int?(PdfNumber? num)
     {
         if (num == null) { return null; }
@@ -62,12 +67,14 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
+    [return: NotNullIfNotNull("num")]
     public static implicit operator double?(PdfNumber? num)
     {
         if (num == null) { return null; }
         return (double)num;
     }
 
+    [return: NotNullIfNotNull("num")]
     public static implicit operator float(PdfNumber num)
     {
         return num switch
@@ -80,6 +87,7 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
+    [return: NotNullIfNotNull("num")]
     public static implicit operator float?(PdfNumber? num)
     {
         if (num == null) { return null; }
@@ -97,6 +105,7 @@ public abstract class PdfNumber : PdfObject
         };
     }
 
+    [return: NotNullIfNotNull("num")]
     public static implicit operator decimal?(PdfNumber? num)
     {
         if (num == null) { return null; }
