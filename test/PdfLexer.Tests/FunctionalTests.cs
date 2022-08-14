@@ -217,6 +217,11 @@ namespace PdfLexer.Tests
                             var sb = new StringBuilder();
                             while (reader.Advance())
                             {
+                                
+                                if (reader.Glyph == null)
+                                {
+
+                                }
                                 sb.Append(reader.Glyph.Char);
                             }
                             var str = sb.ToString();

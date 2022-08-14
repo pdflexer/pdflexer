@@ -140,6 +140,10 @@ public ref struct PageContentScanner
                 Context.Error("Cyclic form reference: " + doOp.name);
                 return nxt;
             }
+            if (form == null)
+            {
+
+            }
             NextForm = form;
             NextFormName = doOp.name.Value;
             State = MultiPageState.StartForm;
@@ -333,6 +337,7 @@ public ref struct PageContentScanner
 
         bool TryGetForm(PdfDictionary obj, [NotNullWhen(true)] out PdfStream? form, out bool isForm)
         {
+            form = null;
             isForm = false;
             if (obj.TryGetValue<PdfDictionary>(PdfName.Resources, out var res) &&
                 res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobj) &&
@@ -366,11 +371,9 @@ public ref struct PageContentScanner
                         isForm = true;
                     }
                 }
-                else { form = null; }
-                form = null!;
-                return true;
+                else { form = null!; }
+                return true; // special case with isform false
             }
-            form = null;
             return false;
         }
     }

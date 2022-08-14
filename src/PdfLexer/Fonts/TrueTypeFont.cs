@@ -289,7 +289,11 @@ namespace PdfLexer.Fonts
                     {
                         charCode &= 0xff;
                     }
-                    charCodeToGlyphId[charCode] = gid;
+                    if (charCode < 256)
+                    {
+                        charCodeToGlyphId[charCode] = gid;
+                    }
+                    
                 }
             }
 
@@ -305,7 +309,7 @@ namespace PdfLexer.Fonts
                     continue;
                 }
                 string? glyphName = null;
-                if (glyphNames != null && diffs != null && !diffs.TryGetValue((int)i, out glyphName))
+                if (glyphNames != null && i < glyphNames.Length && diffs != null && !diffs.TryGetValue((int)i, out glyphName))
                 {
                     glyphName = glyphNames[i];
                 }

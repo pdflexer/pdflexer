@@ -9,6 +9,8 @@ internal class StreamDataSource : StreamBase
 {
     public StreamDataSource(ParsingContext ctx, Stream stream) : base(ctx, stream, true) { }
 
+    public StreamDataSource(ParsingContext ctx, Stream stream, bool leaveOpen) : base(ctx, stream, leaveOpen) { }
+
     public override IPdfObject GetIndirectObject(XRefEntry xref)
     {
         if (xref.MaxLength < Context.Options.MaxMemorySegment)

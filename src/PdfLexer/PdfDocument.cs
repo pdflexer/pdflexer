@@ -223,7 +223,6 @@ public sealed class PdfDocument : IDisposable
 
     /// <summary>
     /// Opens a PDF document from the provided byte array.
-    /// TODO turn this into sync code.
     /// </summary>
     /// <param name="data">PDF data</param>
     /// <param name="options">Optional parsing options</param>
@@ -237,16 +236,42 @@ public sealed class PdfDocument : IDisposable
         return Open(ctx, result.XRefs, result.Trailer);
     }
 
-#if NET6_0_OR_GREATER
-    public static PdfDocument OpenMapped(string file, ParsingOptions? options = null)
+    /// <summary>
+    /// Opens a PDF document from the provided file path.
+    /// </summary>
+    /// <param name="data">PDF data</param>
+    /// <param name="options">Optional parsing options</param>
+    /// <returns>PdfDocument</returns>
+    public static PdfDocument Open(string file, ParsingOptions? options = null)
     {
         options ??= new ParsingOptions { };
+        IPdfDataSource source;
         var ctx = new ParsingContext(options);
-        var source = new MemoryMappedDataSource(ctx, file);
+#if NET6_0_OR_GREATER
+        try
+        {
+            source = new MemoryMappedDataSource(ctx, file);
+        }
+        catch (NotSupportedException)
+        {
+            var fs = File.OpenRead(file);
+            source = new StreamDataSource(ctx, fs, false);
+        }
+#else
+        var fs = File.OpenRead(file);
+        source = new StreamDataSource(ctx, fs, false);
+#endif
+
         var result = ctx.Initialize(source);
         return Open(ctx, result.XRefs, result.Trailer);
     }
+
+
+#if NET6_0_OR_GREATER
+    [Obsolete()]
+    public static PdfDocument OpenMapped(string file, ParsingOptions? options = null) => Open(file, options);
 #endif
+
     private static PdfDocument Open(ParsingContext ctx, Dictionary<ulong, XRefEntry> xrefs, PdfDictionary? trailer)
     {
         trailer ??= new PdfDictionary();
