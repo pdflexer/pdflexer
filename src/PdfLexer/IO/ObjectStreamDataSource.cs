@@ -61,6 +61,11 @@ internal class ObjectStreamDataSource : IPdfDataSource
         Context.CurrentSource = this;
         Context.CurrentOffset = os;
         ReadOnlySpan<byte> data = _data;
+        if (os > data.Length - 1)
+        {
+            Context.Error($"XRef stream entry {xref} past length of data: {data.Length}");
+            return PdfNull.Value;
+        }
         data = data.Slice(os);
         var orig = Context.Options.Eagerness;
         Context.Options.Eagerness = Eagerness.FullEager; // TODO fix so this works lazy

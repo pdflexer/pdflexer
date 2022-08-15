@@ -74,6 +74,8 @@ namespace PdfLexer.Tests
         [InlineData("/PANTONE#205757#20CV", "/PANTONE 5757 CV")]
         [InlineData("/paired#28#29parentheses", "/paired()parentheses")]
         [InlineData("/The_Key_of_F#23_Minor", "/The_Key_of_F#_Minor")]
+        [InlineData("/#23", "/#")]
+        [InlineData("/Empty", "/")]
         [Theory]
         public void It_Writes_Name(string expected, string input)
         {

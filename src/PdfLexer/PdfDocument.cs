@@ -180,7 +180,7 @@ public sealed class PdfDocument : IDisposable
     {
         var ctx = new ParsingContext();
         var doc = new PdfDocument(ctx,
-            new PdfDictionary(), new PdfDictionary { [PdfName.TypeName] = PdfName.Catalog },
+            new PdfDictionary { [PdfName.TypeName] = PdfName.Catalog }, new PdfDictionary(),
             new List<PdfPage>());
         ctx.Document = doc;
         return doc;

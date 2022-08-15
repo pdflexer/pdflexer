@@ -160,7 +160,7 @@ internal class StringParser : Parser<PdfString>
                     _ctx.Error(CommonUtil.DisplayDataError(buffer, i, "Bad hex string data"));
                 } else
                 {
-                    Debug.Assert(consumed == 2);
+                    // Debug.Assert(consumed == 2);
                     data[di++] = value;
                 }
             }

@@ -8,7 +8,7 @@ internal class NameSerializer : ISerializer<PdfName>
     private static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
     public void WriteToStream(PdfName obj, Stream stream)
     {
-
+        if (obj.Value.Length == 1) { stream.Write(Iso88591.GetBytes("/Empty")); return; }
         if (obj.Value.Length < 50)
         {
             Span<byte> bytes = stackalloc byte[obj.Value.Length * 3];
@@ -31,6 +31,8 @@ internal class NameSerializer : ISerializer<PdfName>
         {
             return WriteCached(obj, data);
         }
+
+        if (obj.Value.Length == 1) { Iso88591.GetBytes("/Empty").CopyTo(data); return 6; }
 
         if (data.Length < 150)
         {

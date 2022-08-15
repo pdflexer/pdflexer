@@ -126,30 +126,35 @@ internal static class CommonUtil
         return filterName;
     }
 
+    public static PdfPage RecursePage(PdfPage obj)
+    {
+        obj = obj.NativeObject.CloneShallow();
+        obj.Parent = null;
+        RecursiveLoad(obj.NativeObject);
+        return obj;
+    }
     public static void RecursiveLoad(IPdfObject obj) => RecursiveLoad(obj, new HashSet<object>());
     internal static void RecursiveLoad(IPdfObject obj, HashSet<object> refStack)
     {
+        if (obj is PdfIndirectRef ir)
+        {
+            obj = ir.GetObject();
+        }
+
         if (refStack.Contains(obj))
         {
-            if (obj is ExistingIndirectRef eir)
-            {
-                _ = eir.GetObject();
-            }
             return;
         }
-        refStack.Add(obj);
+
         switch (obj)
         {
-            case PdfIndirectRef ir:
-                obj = ir.GetObject();
-                RecursiveLoad(obj, refStack);
-                return;
             case PdfLazyObject lz:
                 obj = lz.Resolve();
                 RecursiveLoad(obj, refStack);
                 break;
             case PdfStream str:
                 {
+                    refStack.Add(obj);
                     RecursiveLoad(str.Dictionary, refStack);
                     var ms = new MemoryStream();
                     using var data = str.Contents.GetEncodedData();
@@ -158,17 +163,19 @@ internal static class CommonUtil
                     break;
                 }
             case PdfDictionary dict:
+                refStack.Add(obj);
                 dict.TryGetValue<PdfName>(PdfName.TypeName, out var type, false);
                 foreach (var (k, v) in dict)
                 {
                     if (type == PdfName.Page && k == PdfName.Parent)
                     {
-                        continue;
+                        // continue;
                     }
                     RecursiveLoad(v, refStack);
                 }
                 break;
             case PdfArray array:
+                refStack.Add(obj);
                 foreach (var v in array)
                 {
                     RecursiveLoad(v, refStack);

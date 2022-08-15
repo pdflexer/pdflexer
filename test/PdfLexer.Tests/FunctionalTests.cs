@@ -990,15 +990,20 @@ namespace PdfLexer.Tests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var errors = new List<string>();
+            var ms = new MemoryStream();
+            var writer = new StreamingWriter(ms);
             var merged = PdfDocument.Create();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 try
                 {
-                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { ForceSerialize = true });
                     if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
-                    foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.NativeObject); }
-                    merged.Pages.AddRange(doc.Pages);
+                    foreach (var page in doc.Pages) 
+                    {
+                        writer.AddPage(page);
+                        // merged.Pages.Add(CommonUtil.RecursePage(page));
+                    }
                 }
                 catch (NotSupportedException ex)
                 {
@@ -1010,11 +1015,38 @@ namespace PdfLexer.Tests
                 }
 
             }
+            // var ms = new MemoryStream();
+            merged.SaveTo(ms);
+            writer.Complete(new PdfDictionary());
+
+            // File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
+            using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = false });
+            EnumerateObjects(doc2.Trailer, new HashSet<int>());
+        }
+
+        [Fact]
+        public void It_Loads_Recursive()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdf = Path.Combine(pdfRoot, "160F-2019.pdf");
+            var errors = new List<string>();
+            //var writer = new StreamingWriter();
+            var merged = PdfDocument.Create();
+
+            for (var i =0; i<1000;i++)
+            {
+                using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.NativeObject); }
+                merged.Pages.AddRange(doc.Pages);
+                // ensure we can't look cached items after
+                doc.Context.IndirectCache.Clear();
+            }
+
             var ms = new MemoryStream();
             merged.SaveTo(ms);
             using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = true });
             EnumerateObjects(doc2.Trailer, new HashSet<int>());
-            // File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
         }
 
         // [Fact]

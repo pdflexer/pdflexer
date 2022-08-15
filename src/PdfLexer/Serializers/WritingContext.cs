@@ -174,7 +174,7 @@ public class WritingContext
         switch (obj)
         {
             case PdfLazyObject lz:
-                if (lz.HasLazyIndirect || lz.IsModified)
+                if (lz.HasLazyIndirect || lz.IsModified || lz.Source.Disposed)
                 {
                     obj = lz.Resolve();
                     goto Parse; // sorry
@@ -236,7 +236,7 @@ public class WritingContext
         if (obj.IsLazy)
         {
             var lz = (PdfLazyObject)obj;
-            if (lz.HasLazyIndirect || lz.IsModified)
+            if (lz.HasLazyIndirect || lz.IsModified || lz.Source.Disposed)
             {
                 toCheck = lz.Resolve();
             }
