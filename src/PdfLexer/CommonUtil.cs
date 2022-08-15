@@ -159,7 +159,11 @@ internal static class CommonUtil
                     var ms = new MemoryStream();
                     using var data = str.Contents.GetEncodedData();
                     data.CopyTo(ms);
+                    var f = str.Contents.Filters;
+                    var fp = str.Contents.DecodeParams;
                     str.Contents = new PdfByteArrayStreamContents(ms.ToArray());
+                    str.Contents.Filters = f;
+                    str.Contents.DecodeParams = fp;
                     break;
                 }
             case PdfDictionary dict:
