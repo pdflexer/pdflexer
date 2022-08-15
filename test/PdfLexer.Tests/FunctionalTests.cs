@@ -1025,6 +1025,46 @@ namespace PdfLexer.Tests
         }
 
         [Fact]
+        public void It_Fixes_Syntax_When_Writing()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var output = Path.Combine(tp, "results", "syntax");
+            var errors = new List<string>();
+            
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                var rewrite = PdfDocument.Create();
+                var ms = new MemoryStream();
+                try
+                {
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { ForceSerialize = true });
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
+                    rewrite.Pages.AddRange(doc.Pages);
+                    rewrite.SaveTo(ms);
+                }
+                catch (NotSupportedException ex)
+                {
+                    // for compressed object streams
+                    if (ex.Message.Contains("encryption"))
+                    {
+                        continue;
+                    }
+                }
+
+                try
+                {
+                    using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = true });
+                    EnumerateObjects(doc2.Trailer, new HashSet<int>());
+                } catch (Exception e)
+                {
+                    File.WriteAllBytes(Path.Combine(output, Path.GetFileName(pdf)), ms.ToArray());
+                    errors.Add(pdf + ": " + e.Message);
+                }
+            }
+        }
+
+        [Fact]
         public void It_Loads_Recursive()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
