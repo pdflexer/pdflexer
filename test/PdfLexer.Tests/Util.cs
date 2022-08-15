@@ -30,7 +30,7 @@ namespace PdfLexer.Tests
             using var doc = PdfDocument.Open(pdfDoc);
             foreach (var page in doc.Pages)
             {
-                if (page.Dictionary.TryGetValue<PdfDictionary>(PdfName.Resources, out var res))
+                if (page.NativeObject.TryGetValue<PdfDictionary>(PdfName.Resources, out var res))
                 {
                     foreach (var kvp in res.Where(x=>x.Key == PdfName.Font || x.Key == PdfName.XObject))
                     {

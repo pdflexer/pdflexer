@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Fonts;
+using PdfLexer.Fonts.Files;
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
@@ -44,7 +45,7 @@ internal class GenStdGlyph
                 {
                     def[(int)g.CodePoint] = g;
                 }
-                output.Append($"\t\tstatic Glyph {g.Name} = new Glyph {{ Char = (char){(int)(g.Char)}, w0 = {g.w0}F, ");
+                output.Append($"\t\tstatic readonly Glyph {g.Name} = new () {{ Char = (char){(int)(g.Char)}, w0 = {g.w0}F, ");
                 output.Append($"IsWordSpace = {g.IsWordSpace.ToString().ToLower()}, ");
 				if (g.CodePoint != null) { output.Append($"CodePoint = {g.CodePoint}, "); }
                 output.Append($"Name = \"{g.Name}\", ");

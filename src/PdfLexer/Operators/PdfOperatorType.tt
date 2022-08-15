@@ -55,8 +55,8 @@
     ("S", null, "Stroke path", null, false), // no ops
     ("SC", null, "Set color for stroking operations", new List<(string, string)>{ ("List<decimal>", "colorInfo") }, true),
     ("sc", null, "Set color for nonstroking operations", new List<(string, string)>{ ("List<decimal>", "colorInfo") }, true),
-    ("SCN", null, "Set color for stroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<decimal>", "colorInfo"), ("PdfName", "name") }, true),
-    ("scn", null, "Set color for nonstroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<decimal>", "colorInfo"), ("PdfName", "name") }, true),
+    ("SCN", null, "Set color for stroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<decimal>", "colorInfo"), ("PdfName?", "name") }, true),
+    ("scn", null, "Set color for nonstroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<decimal>", "colorInfo"), ("PdfName?", "name") }, true),
     ("sh", null, "Paint area defined by shading pattern", new List<(string, string)>{ ("PdfName", "name") }, false),
     ("T*", "T_Star", "Move to start of next text line", null, false), // no ops
     ("Tc", null, "Set character spacing", new List<(string, string)>{ ("decimal", "charSpace") }, false),
@@ -89,7 +89,6 @@ using System.Collections.Generic;
 /// <summary>
 /// Auto-generated, do not modify.
 /// </summary>
-
 namespace PdfLexer.Operators
 {
     public enum PdfOperatorType
@@ -117,7 +116,7 @@ foreach (var op in operators)
 
     public static class ParseOpMapping
     {
-        public static Dictionary<int, PdfOperator.ParseOp> Parsers = new Dictionary<int, PdfOperator.ParseOp> {
+        public static Dictionary<int, PdfOperator.ParseOp> Parsers = new () {
 <#
 foreach (var op in operators) 
 {
@@ -136,7 +135,7 @@ foreach (var op in operators)
 #>
         };
 
-                public static PdfOperator.ParseOp[] SingleByteParsers = new  PdfOperator.ParseOp[] {
+                public static PdfOperator.ParseOp?[] SingleByteParsers = new PdfOperator.ParseOp?[] {
 <#
 var items = new string[256];
 var b2items = new string[256];
@@ -191,10 +190,10 @@ foreach (var op in operators)
     /// </summary>
     public partial class <#= name #>_Op : IPdfOperation
     {
-        public static byte[] OpData = new byte[] { <#= string.Join(", ", op.Item1.Select(x=> "(byte) '" + (x == '\'' ? "\\'" : x) + "'")) #> };
+        public static byte[] OpData { get; } = new byte[] { <#= string.Join(", ", op.Item1.Select(x=> "(byte) '" + (x == '\'' ? "\\'" : x) + "'")) #> };
         public PdfOperatorType Type => PdfOperatorType.<#= name #>;
 <# if (op.Item4 == null) { #>
-        public static <#= name #>_Op Value = new <#= name #>_Op();
+        public static readonly <#= name #>_Op Value = new ();
 
         // <#= op.Item3 #>
         public <#= name #>_Op()
@@ -222,7 +221,7 @@ foreach (var op in operators)
 <# } #>
 <# } else { #>
 <#     foreach (var prop in op.Item4) { #>
-        public <#= prop.Item1 #> <#= prop.Item2 #> { get; set; }
+        public <#= prop.Item1 #> <#= prop.Item2 #> { get; }
 <#     } #>
         public <#= name #>_Op(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item1} {i.Item2}")) #>)
         {
@@ -268,9 +267,9 @@ foreach (var op in operators)
             stream.Write(OpData);
         }
 
-        private static List<string> OpTypes = new List<string> { "<#= string.Join("\", \"", op.Item4.Select(x=>x.Item1)) #>"  };
+        private static readonly List<string> OpTypes = new () { "<#= string.Join("\", \"", op.Item4.Select(x=>x.Item1)) #>"  };
 
-        public static <#= name #>_Op Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        public static <#= name #>_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
             if (operands.Count != <#=op.Item4.Count#>) 
             {

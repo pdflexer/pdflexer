@@ -3,6 +3,7 @@ using PdfLexer.DOM;
 using PdfLexer.Images;
 using PdfLexer.Operators;
 using PdfLexer.Tests;
+using PdfLexer.Writing;
 using SixLabors.ImageSharp;
 using System;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ namespace PdfLexer.ImageTests
             Do_Op.WriteLn("/Im1", cs);
             Q_Op.WriteLn(cs);
             var cnt = new PdfStream(new PdfDictionary(), content); // new PdfByteArrayStreamContents(cs.ToArray()));
-            pg.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(cnt);
+            pg.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(cnt);
             var pdfOut = Path.Combine(output, Path.GetFileNameWithoutExtension(imgName) + "_ins.pdf");
             using (var fso = File.Create(pdfOut))
             {

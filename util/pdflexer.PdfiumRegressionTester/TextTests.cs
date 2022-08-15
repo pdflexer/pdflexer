@@ -14,9 +14,9 @@ namespace pdflexer.PdfiumRegressionTester
         public List<int> CandidateIgnores { get; set; } = new();
     }
 
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
     internal class CharInfo
     {
-        // (float x, float y, char c, float llx, float lly, float urx, float ury)
         public float x { get; set; }
         public float y { get; set; }
         public char c { get; set; }
@@ -183,7 +183,7 @@ namespace pdflexer.PdfiumRegressionTester
 
                 var form = XObjForm.FromPage(page);
 
-                var font = SingleByteFont.GetTimesRoman();
+                var font = Standard14Font.GetTimesRoman();
                 using var writer = pg.GetWriter();
                 writer.Form(form)
                       .SetStrokingRGB(0, 0, 0);
@@ -207,14 +207,14 @@ namespace pdflexer.PdfiumRegressionTester
                         if (c == 'ﬁ' || c == (char)64257) 
                         {
                             lines.Add(((float)x, (float)y, 'f'));
-                            var ci = new CharInfo { c = 'f', Font = reader.GraphicsState.FontName?.Value ?? "uk", 
+                            var ci = new CharInfo { c = 'f', Font = reader.GraphicsState.FontResourceName?.Value ?? "uk", 
                                 x = x, y = y, llx = llx, lly = lly, urx = urx, ury= ury };
                             chars[$"{x:0.0}{y:0.0}f"] = ci;
                             lines.Add(((float)x, (float)y, 'i'));
                             ci = new CharInfo
                             {
                                 c = 'l',
-                                Font = reader.GraphicsState.FontName?.Value ?? "uk",
+                                Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
                                 x = x,
                                 y = y,
                                 llx = llx,
@@ -230,7 +230,7 @@ namespace pdflexer.PdfiumRegressionTester
                             var ci =  new CharInfo
                             {
                                 c = 'f',
-                                Font = reader.GraphicsState.FontName?.Value ?? "uk",
+                                Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
                                 x = x,
                                 y = y,
                                 llx = llx,
@@ -243,7 +243,7 @@ namespace pdflexer.PdfiumRegressionTester
                             ci = new CharInfo
                             {
                                 c = 'l',
-                                Font = reader.GraphicsState.FontName?.Value ?? "uk",
+                                Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
                                 x = x,
                                 y = y,
                                 llx = llx,
@@ -259,7 +259,7 @@ namespace pdflexer.PdfiumRegressionTester
                             var ci = new CharInfo
                             {
                                 c = c,
-                                Font = reader.GraphicsState.FontName?.Value ?? "uk",
+                                Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
                                 x = x,
                                 y = y,
                                 llx = llx,

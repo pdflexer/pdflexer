@@ -103,15 +103,15 @@ internal class ImageSampler
                                     ser.SerializeObject(ms, obj, WriteDirectly);
                                     ms.WriteByte((byte)'\n');
                                 }
-                                var f = img.XObj.Dictionary.Get(PdfName.Filter);
+                                var f = img.XObj.NativeObject.Get(PdfName.Filter);
 
-                                WriteIfNotNull(img.XObj.Dictionary.Get(PdfName.BitsPerComponent));
-                                WriteIfNotNull(img.XObj.Dictionary.Get(PdfName.Filter));
-                                WriteIfNotNull(img.XObj.Dictionary.Get(PdfName.Decode));
-                                WriteIfNotNull(img.XObj.Dictionary.Get<PdfDictionary>(PdfName.DecodeParms)?.Get("/K"));
-                                WriteIfNotNull(img.XObj.Dictionary.Get<PdfDictionary>(PdfName.DecodeParms)?.Get("/BlackIs1"));
-                                WriteIfNotNull(img.XObj.Dictionary.Get(PdfName.ImageMask));
-                                var css = img.XObj.Dictionary.Get(PdfName.ColorSpace)?.Resolve();
+                                WriteIfNotNull(img.XObj.NativeObject.Get(PdfName.BitsPerComponent));
+                                WriteIfNotNull(img.XObj.NativeObject.Get(PdfName.Filter));
+                                WriteIfNotNull(img.XObj.NativeObject.Get(PdfName.Decode));
+                                WriteIfNotNull(img.XObj.NativeObject.Get<PdfDictionary>(PdfName.DecodeParms)?.Get("/K"));
+                                WriteIfNotNull(img.XObj.NativeObject.Get<PdfDictionary>(PdfName.DecodeParms)?.Get("/BlackIs1"));
+                                WriteIfNotNull(img.XObj.NativeObject.Get(PdfName.ImageMask));
+                                var css = img.XObj.NativeObject.Get(PdfName.ColorSpace)?.Resolve();
                                 if (css?.Type == PdfObjectType.ArrayObj)
                                 {
                                     var csa = (PdfArray)css;
@@ -127,12 +127,12 @@ internal class ImageSampler
                                 {
                                     WriteIfNotNull(css);
                                 }
-                                var maskType = img.XObj.Dictionary.Get(PdfName.Mask)?.GetPdfObjType();
+                                var maskType = img.XObj.NativeObject.Get(PdfName.Mask)?.GetPdfObjType();
                                 if (maskType != null)
                                 {
                                     ms.Write(Encoding.UTF8.GetBytes(maskType.ToString()));
                                 }
-                                var smask = img.XObj.Dictionary.Get<PdfStream>(PdfName.SMask);
+                                var smask = img.XObj.NativeObject.Get<PdfStream>(PdfName.SMask);
                                 if (smask != null)
                                 {
                                     WriteIfNotNull(PdfName.SMask);
@@ -158,8 +158,8 @@ internal class ImageSampler
                                 od.Pages.Add(pg);
                                 pg.AddXObj("/Im1", img.XObj.Stream);
                                 var bx = pg.MediaBox;
-                                bx.URx = img.XObj.Dictionary.Get<PdfNumber>(PdfName.Width);
-                                bx.URy = img.XObj.Dictionary.Get<PdfNumber>(PdfName.Height);
+                                bx.URx = img.XObj.NativeObject.Get<PdfNumber>(PdfName.Width);
+                                bx.URy = img.XObj.NativeObject.Get<PdfNumber>(PdfName.Height);
 
                                 var cs = new MemoryStream();
                                 q_Op.WriteLn(cs);
@@ -167,7 +167,7 @@ internal class ImageSampler
                                 Do_Op.WriteLn("/Im1", cs);
                                 Q_Op.WriteLn(cs);
                                 var cnt = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(cs.ToArray()));
-                                pg.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(cnt);
+                                pg.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(cnt);
                                 var pdfOut = Path.Combine(cmd.OutputPath, $"{hash}.pdf");
                                 using (var fso = File.Create(pdfOut))
                                 {

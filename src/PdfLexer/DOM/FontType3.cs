@@ -28,37 +28,37 @@ namespace PdfLexer.DOM
         /// <summary>
         /// optional
         /// </summary>
-        public PdfName Name
+        public PdfName? Name
         {
             get => NativeObject.Get<PdfName>(PdfName.Name);
-            set => NativeObject[PdfName.Name] = value;
+            set => NativeObject.Set(PdfName.Name, value);
         }
 
         /// <summary>
         /// required
         /// </summary>
-        public PdfRectangle FontBBox
+        public PdfRectangle? FontBBox
         {
             get => NativeObject?.Get<PdfArray>(PdfName.FontBBox);
-            set => NativeObject[PdfName.FontBBox] = (PdfArray)value;
+            set => NativeObject.Set(PdfName.FontBBox, value?.NativeObject);
         }
 
         /// <summary>
         /// required
         /// </summary>
-        public PdfArray FontMatrix
+        public PdfArray? FontMatrix
         {
             get => NativeObject?.Get<PdfArray>(PdfName.FontMatrix);
-            set => NativeObject[PdfName.FontMatrix] = (PdfArray)value;
+            set => NativeObject.Set(PdfName.FontMatrix, value);
         }
 
         /// <summary>
         /// required
         /// </summary>
-        public PdfDictionary CharProcs
+        public PdfDictionary? CharProcs
         {
             get => NativeObject?.Get<PdfDictionary>(PdfName.CharProcs);
-            set => NativeObject[PdfName.CharProcs] = (PdfDictionary)value;
+            set => NativeObject.Set(PdfName.CharProcs, value);
         }
 
         /// <summary>
@@ -66,10 +66,10 @@ namespace PdfLexer.DOM
         /// either name of PDF encoding set
         /// or dictionary w/ differences (FontEncoding DOM object)
         /// </summary>
-        public IPdfObject Encoding
+        public IPdfObject? Encoding
         {
             get => NativeObject.Get(PdfName.Encoding);
-            set => NativeObject[PdfName.Encoding] = value;
+            set => NativeObject.Set(PdfName.Encoding, value);
         }
 
         /// <summary>
@@ -77,10 +77,10 @@ namespace PdfLexer.DOM
         /// Integer
         /// Corresponds to first char in fonts widths
         /// </summary>
-        public PdfNumber FirstChar
+        public PdfNumber? FirstChar
         {
             get => NativeObject.Get<PdfNumber>(PdfName.FirstChar);
-            set => NativeObject[PdfName.FirstChar] = value;
+            set => NativeObject.Set(PdfName.FirstChar, value);
         }
 
         /// <summary>
@@ -88,51 +88,51 @@ namespace PdfLexer.DOM
         /// Integer
         /// Corresponds to last char in fonts widths
         /// </summary>
-        public PdfNumber LastChar
+        public PdfNumber? LastChar
         {
             get => NativeObject.Get<PdfNumber>(PdfName.LastChar);
-            set => NativeObject[PdfName.LastChar] = value;
+            set => NativeObject.Set(PdfName.LastChar, value);
         }
 
         /// <summary>
         /// req
         /// Indirect preferred
         /// </summary>
-        public PdfArray Widths
+        public PdfArray? Widths
         {
             get => NativeObject.Get<PdfArray>(PdfName.Widths);
-            set => NativeObject[PdfName.Widths] = value.Indirect();
+            set => NativeObject.Set(PdfName.Widths, value.Indirect());
         }
 
         /// <summary>
         /// req non 14
         /// </summary>
-        public FontDescriptor FontDescriptor
+        public FontDescriptor? FontDescriptor
         {
             get => NativeObject.Get<PdfDictionary>(PdfName.FontDescriptor);
-            set => NativeObject[PdfName.FontDescriptor] = value.NativeObject.Indirect();
+            set => NativeObject.Set(PdfName.FontDescriptor, value?.NativeObject.Indirect());
         }
 
 
         /// <summary>
         /// optional but should be used
         /// </summary>
-        public PdfDictionary Resources
+        public PdfDictionary? Resources
         {
             get => NativeObject?.Get<PdfDictionary>(PdfName.Resources);
-            set => NativeObject[PdfName.Resources] = (PdfDictionary)value;
+            set => NativeObject.Set(PdfName.Resources, value);
         }
 
 
-        public PdfStream ToUnicode
+        public PdfStream? ToUnicode
         {
             get => NativeObject.Get<PdfStream>(PdfName.ToUnicode);
-            set => NativeObject[PdfName.ToUnicode] = value.Indirect();
+            set => NativeObject.Set(PdfName.ToUnicode, value.Indirect());
         }
 
-        PdfName ISimpleUnicode.FontName => Name;
+        PdfName? ISimpleUnicode.FontName => Name;
 
-        PdfNumber ISimpleUnicode.MissingWidth => FontDescriptor?.MissingWidth;
+        PdfNumber? ISimpleUnicode.MissingWidth => FontDescriptor?.MissingWidth;
 
         float ISimpleUnicode.ScaleFactor
         { get

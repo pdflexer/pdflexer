@@ -8,26 +8,55 @@ using System.Text;
 
 namespace PdfLexer.Content
 {
+    /// <summary>
+    /// Lowest level text reader for PdfLexer
+    /// Gives access to raw 
+    /// </summary>
     public ref struct TextScanner
     {
         private ParsingContext Context;
         private PageContentScanner Scanner;
+        private PdfDictionary? PgRes;
+        private readonly List<TJ_Lazy_Item> TJCache;
+        private int CurrentTextPos;
+        private TextReadState ReadState;
+        private readonly List<UnappliedGlyph> CurrentGlyphs;
+        private UnappliedGlyph CurrentGlyph;
+        private PdfOperatorType LastOp;
 
-        private PdfDictionary PgRes;
 
+        /// <summary>
+        /// Current text state
+        /// </summary>
         public TextState TextState;
+        /// <summary>
+        /// Current graphics state
+        /// </summary>
         public GraphicsState GraphicsState;
-        public Glyph Glyph;
-
+        /// <summary>
+        /// Current glyph.
+        /// Note may be null before first Advance() call
+        /// or when Advance() returns false
+        /// </summary>
+        public Glyph? Glyph;
+        /// <summary>
+        /// Set true if previous statement resulted in line shift
+        /// Note: does not track manual text cursor repositioning.
+        /// </summary>
+        public bool WasNewLine;
+        /// <summary>
+        /// Set true current glyph is part of a new set of glyphs
+        /// from a single text showing operation
+        /// </summary>
+        public bool WasNewStatement;
 
         public TextScanner(ParsingContext ctx, PdfDictionary page)
         {
             Context = ctx;
             Scanner = new PageContentScanner(ctx, page, true);
             PgRes = page.Get<PdfDictionary>(PdfName.Resources);
-            TextState = new TextState(ctx, PgRes);
             GraphicsState = new GraphicsState();
-            TextState.GS = GraphicsState;
+            TextState = new TextState(ctx, GraphicsState, PgRes);
             TextState.stack = Scanner.stack;
             TextState.UpdateTRM();
             CurrentTextPos = 0;
@@ -35,8 +64,10 @@ namespace PdfLexer.Content
             CurrentGlyphs = new List<UnappliedGlyph>(50);
             CurrentGlyph = default;
             Glyph = default;
-            Position = null;
             TJCache = new List<TJ_Lazy_Item>(10);
+            WasNewLine = false;
+            WasNewStatement = false;
+            LastOp = PdfOperatorType.Unknown;
         }
 
         public bool Advance()
@@ -151,9 +182,18 @@ namespace PdfLexer.Content
                                 {
                                     tao.Apply(TextState);
                                 }
+                                if (LastOp == PdfOperatorType.T_Star) { WasNewLine = true; }
                                 Scanner.SkipCurrent();
                                 continue;
                         }
+
+                        if (LastOp == PdfOperatorType.singlequote || LastOp == PdfOperatorType.doublequote)
+                        {
+                            WasNewLine = true;
+                        }
+                        WasNewStatement = true;
+
+                        LastOp = nxt;
 
                         // text creating ops (default breaks through)
                         Scanner.SkipCurrent();
@@ -177,14 +217,6 @@ namespace PdfLexer.Content
             }
         }
 
-        List<TJ_Lazy_Item> TJCache;
-        int CurrentTextPos;
-        TextReadState ReadState;
-        List<UnappliedGlyph> CurrentGlyphs;
-        UnappliedGlyph CurrentGlyph;
-        PdfRectangle Position;
-
-
 
         public enum TextReadState
         {
@@ -200,6 +232,10 @@ namespace PdfLexer.Content
 
         public (float llx, float lly, float urx, float ury) GetCurrentBoundingBox()
         {
+            if (Glyph == null)
+            {
+                throw new NotSupportedException("GetCurrentBoundingBox called with no current glyph in scanner state.");
+            }
             return TextState.GetBoundingBox(Glyph);
         }
 
@@ -213,6 +249,7 @@ namespace PdfLexer.Content
                 TextState.UpdateTRM();
             }
 
+            bool trigger = CurrentTextPos == 0;
             while (true)
             {
                 if (CurrentTextPos >= CurrentGlyphs.Count)
@@ -242,6 +279,14 @@ namespace PdfLexer.Content
                             continue;
                         }
                     }
+
+                    // delay setting false until user can read it once
+                    if (trigger)
+                    {
+                        WasNewLine = false;
+                        WasNewStatement = false;
+                    }
+
                     Glyph = CurrentGlyph.Glyph;
                     return true;
                 }

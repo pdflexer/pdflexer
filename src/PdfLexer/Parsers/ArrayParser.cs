@@ -1,21 +1,18 @@
-﻿using PdfLexer.Parsers.Nested;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
 
-namespace PdfLexer.Parsers
+namespace PdfLexer.Parsers;
+
+internal class ArrayParser : Parser<PdfArray>
 {
-    public class ArrayParser : Parser<PdfArray>
-    {
-        private ParsingContext _ctx;
+    private ParsingContext _ctx;
 
-        public ArrayParser(ParsingContext ctx)
-        {
-            _ctx = ctx;
-        }
-        public override PdfArray Parse(ReadOnlySpan<byte> buffer)
-        {
-            return _ctx.NestedParser.ParseNestedItem(buffer, 0, out _) as PdfArray;
-        }
+    public ArrayParser(ParsingContext ctx)
+    {
+        _ctx = ctx;
+    }
+    public override PdfArray Parse(ReadOnlySpan<byte> buffer)
+    {
+        var obj = _ctx.NestedParser.ParseNestedItem(buffer, 0, out _) as PdfArray;
+        return obj!;
     }
 }

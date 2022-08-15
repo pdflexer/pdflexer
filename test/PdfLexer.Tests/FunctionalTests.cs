@@ -217,6 +217,11 @@ namespace PdfLexer.Tests
                             var sb = new StringBuilder();
                             while (reader.Advance())
                             {
+                                
+                                if (reader.Glyph == null)
+                                {
+
+                                }
                                 sb.Append(reader.Glyph.Char);
                             }
                             var str = sb.ToString();
@@ -287,9 +292,9 @@ namespace PdfLexer.Tests
             var pg = doc.Pages[0];
             using var doc3 = PdfDocument.Create();
             doc3.Pages.Add(pg);
-            var str = pg.Dictionary.GetRequiredValue<PdfStream>(PdfName.Contents);
-            var copy = pg.Dictionary.CloneShallow();
-            pg.Dictionary.Remove(new PdfName("Annots"));
+            var str = pg.NativeObject.GetRequiredValue<PdfStream>(PdfName.Contents);
+            var copy = pg.NativeObject.CloneShallow();
+            pg.NativeObject.Remove(new PdfName("Annots"));
             var decoded = str.Contents.GetDecodedData();
             var strCopy = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(decoded));
             copy[PdfName.Contents] = PdfIndirectRef.Create(strCopy);
@@ -299,7 +304,7 @@ namespace PdfLexer.Tests
             File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-cp2.pdf", doc3.Save());
             doc.Trailer.Remove(new PdfName("/ID"));
             doc.Trailer.Remove(new PdfName("/Info"));
-            var res = doc.Pages[0].Dictionary.GetRequiredValue<PdfDictionary>(PdfName.Resources);
+            var res = doc.Pages[0].NativeObject.GetRequiredValue<PdfDictionary>(PdfName.Resources);
             var fonts = res.GetRequiredValue<PdfDictionary>("/Font");
             res["/Font"] = new PdfDictionary
             {
@@ -385,7 +390,7 @@ namespace PdfLexer.Tests
 
         private static PdfPage ReWriteStream(PdfDocument doc, PdfPage page, bool clone)
         {
-            if (!page.Dictionary.TryGetValue(PdfName.Contents, out var value))
+            if (!page.NativeObject.TryGetValue(PdfName.Contents, out var value))
             {
                 return page;
             }
@@ -432,10 +437,10 @@ namespace PdfLexer.Tests
 
             if (clone)
             {
-                page = page.Dictionary.CloneShallow();
+                page = page.NativeObject.CloneShallow();
             }
             var updatedStr = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(newData));
-            page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+            page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
             return page;
 
             byte[] CheckStreamData(byte[] pgStream)
@@ -494,11 +499,11 @@ namespace PdfLexer.Tests
 
             if (clone)
             {
-                page = page.Dictionary.CloneShallow();
+                page = page.NativeObject.CloneShallow();
             }
 
             var updatedStr = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(ms.ToArray()));
-            page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+            page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
             return page;
         }
 
@@ -985,15 +990,20 @@ namespace PdfLexer.Tests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var errors = new List<string>();
+            var ms = new MemoryStream();
+            var writer = new StreamingWriter(ms);
             var merged = PdfDocument.Create();
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 try
                 {
-                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { ForceSerialize = true });
                     if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
-                    foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.Dictionary); }
-                    merged.Pages.AddRange(doc.Pages);
+                    foreach (var page in doc.Pages) 
+                    {
+                        writer.AddPage(page);
+                        // merged.Pages.Add(CommonUtil.RecursePage(page));
+                    }
                 }
                 catch (NotSupportedException ex)
                 {
@@ -1005,11 +1015,38 @@ namespace PdfLexer.Tests
                 }
 
             }
+            // var ms = new MemoryStream();
+            merged.SaveTo(ms);
+            writer.Complete(new PdfDictionary());
+
+            // File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
+            using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = false });
+            EnumerateObjects(doc2.Trailer, new HashSet<int>());
+        }
+
+        [Fact]
+        public void It_Loads_Recursive()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdf = Path.Combine(pdfRoot, "160F-2019.pdf");
+            var errors = new List<string>();
+            //var writer = new StreamingWriter();
+            var merged = PdfDocument.Create();
+
+            for (var i =0; i<1000;i++)
+            {
+                using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+                foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.NativeObject); }
+                merged.Pages.AddRange(doc.Pages);
+                // ensure we can't look cached items after
+                doc.Context.IndirectCache.Clear();
+            }
+
             var ms = new MemoryStream();
             merged.SaveTo(ms);
             using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = true });
             EnumerateObjects(doc2.Trailer, new HashSet<int>());
-            // File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
         }
 
         // [Fact]

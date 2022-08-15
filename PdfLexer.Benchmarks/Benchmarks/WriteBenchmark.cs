@@ -121,7 +121,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         {
             using var doc = PdfDocument.Open(data2, new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy });
             ms.Position = 0;
-            doc.Pages[0].Dictionary[PdfName.Colors] = PdfCommonNumbers.Zero; // add dummy data to page
+            doc.Pages[0].NativeObject[PdfName.Colors] = PdfCommonNumbers.Zero; // add dummy data to page
             doc.SaveTo(ms);
             return 0;
         }

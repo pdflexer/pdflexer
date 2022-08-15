@@ -1,6 +1,6 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.DOM;
 using PdfLexer.Fonts;
-using System.IO;
 using System.Numerics;
 
 namespace PdfLexer.Content
@@ -11,7 +11,7 @@ namespace PdfLexer.Content
         {
             CTM = Matrix4x4.Identity;
         }
-        public GraphicsState? Prev { get; set; }
+        internal GraphicsState? Prev { get; set; }
         public Matrix4x4 CTM { get; set; }
 
         public (float x, float y, float w, float h) GetCurrentSize()
@@ -42,9 +42,11 @@ namespace PdfLexer.Content
         public float CharSpacing { get; internal set; }
         public float WordSpacing { get; internal set; }
         public float TextLeading { get; internal set; }
-        public PdfName FontName { get; internal set; }
-        public PdfDictionary FontObject { get; internal set; }
-        public IReadableFont Font { get; internal set; }
+        public PdfName? FontResourceName { get; internal set; }
+        public string? FontName { get; internal set; }
+        public FontFlags FontFlags { get; internal set; }
+        public PdfDictionary? FontObject { get; internal set; }
+        public IReadableFont? Font { get; internal set; }
 
         public Matrix4x4 GetTranslation(Matrix4x4 desired)
         {
@@ -70,7 +72,9 @@ namespace PdfLexer.Content
                 WordSpacing = WordSpacing,
                 Font = Font,
                 FontObject = FontObject,
+                FontResourceName = FontResourceName,
                 FontName = FontName,
+                FontFlags = FontFlags,
                 FontSize = FontSize,
             };
         }

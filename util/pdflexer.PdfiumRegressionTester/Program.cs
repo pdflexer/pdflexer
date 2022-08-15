@@ -208,13 +208,13 @@ void DumpRawPageContent(PdfDocument doc, int pg, Stream output)
 {
     if (doc.Pages == null || doc.Pages.Count <= pg) { return; }
     var page = doc.Pages[pg];
-    var contents = page.Dictionary.Get(PdfName.Contents)?.Resolve();
+    var contents = page.NativeObject.Get(PdfName.Contents)?.Resolve();
     switch (contents)
     {
         case PdfArray arr:
             foreach (var item in arr)
             {
-                var str = item.GetValue<PdfStream>(false);
+                var str = item.GetValueOrNull<PdfStream>();
                 if (str != null)
                 {
                     using var wo = str.Contents.GetDecodedStream();
@@ -492,16 +492,16 @@ static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
 
     var content = fl.Complete();
 
-    page = page.Dictionary.CloneShallow();
+    page = page.NativeObject.CloneShallow();
 
     var updatedStr = new PdfStream(new PdfDictionary(), content);
-    page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+    page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
     return page;
 }
 
 static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
 {
-    var res = page.Dictionary.GetOptionalValue<PdfDictionary>(PdfName.Resources);
+    var res = page.NativeObject.GetOptionalValue<PdfDictionary>(PdfName.Resources);
     var fonts = res?.GetOptionalValue<PdfDictionary>(PdfName.Font);
     fonts = new();
     var xobjs = res?.GetOptionalValue<PdfDictionary>(PdfName.XObject);
@@ -540,15 +540,17 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
                     // font
                     case PdfOperatorType.Tf:
                         {
-                            var co = (Tf_Op)op;
+                            var orig = (Tf_Op)op;
 
-                            co.font = GetReplacedName(
-                                co.font,
+                            var rn = GetReplacedName(
+                                orig.font,
                                 fonts,
                                 currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.Font),
                                 fontReplacements);
 
-                            op.Serialize(ms);
+                            var co = new Tf_Op(rn, orig.size);
+
+                            co.Serialize(ms);
                             ms.WriteByte((byte)'\n');
                             break;
                         }
@@ -570,15 +572,18 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
                     // do
                     case PdfOperatorType.Do:
                         {
-                            var co = (Do_Op)op;
+                            var orig = (Do_Op)op;
+                            
 
-                            co.name = GetReplacedName(
-                                co.name,
+                            var rn = GetReplacedName(
+                                orig.name,
                                 xobjs,
                                 currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.XObject),
                                 xObjReplacements);
 
-                            op.Serialize(ms);
+                            var co = new Do_Op(rn);
+
+                            co.Serialize(ms);
                             ms.WriteByte((byte)'\n');
                             break;
                         }
@@ -594,13 +599,13 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
         scanner.SkipCurrent();
     }
 
-    page = page.Dictionary.CloneShallow();
+    page = page.NativeObject.CloneShallow();
     var fl = new FlateWriter();
     ms.Seek(0, SeekOrigin.Begin);
     ms.CopyTo(fl);
 
     var updatedStr = new PdfStream(new PdfDictionary(), fl.Complete());
-    page.Dictionary[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+    page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
     return page;
 
     PdfName GetReplacedName(PdfName name, PdfDictionary pageSubDict, PdfDictionary? formSubDict, Dictionary<PdfName,PdfName> replacement)

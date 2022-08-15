@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PdfLexer.DOM
 {
     public class PdfRectangle
     {
-        internal PdfArray Array { get; }
+        internal PdfArray NativeObject { get; }
 
         public PdfRectangle() : this(new PdfArray())
         { }
 
         public PdfRectangle(PdfArray array)
         {
-            Array = array;
-            var c = 4 - Array.Count;
+            NativeObject = array;
+            var c = 4 - NativeObject.Count;
             if (c<1){ return; }
             for (;c>0;c--)
             {
-                Array.Add(PdfCommonNumbers.Zero);
+                NativeObject.Add(PdfCommonNumbers.Zero);
             }
         }
 
@@ -58,25 +59,27 @@ namespace PdfLexer.DOM
 
         private PdfNumber GetValue(int i)
         {
-            if (Array[i] is PdfNumber n)
+            if (NativeObject[i] is PdfNumber n)
             {
                 return n;
             }
             var nn = PdfCommonNumbers.Zero;
-            Array[i] = nn;
+            NativeObject[i] = nn;
             return nn;
         }
 
         private void SetValue(int i, PdfNumber value)
         {
-            Array[i] = value;
+            NativeObject[i] = value;
         }
 
-        public static implicit operator PdfRectangle(PdfArray array) => array == null ? null : new PdfRectangle(array);
-        public static implicit operator PdfArray(PdfRectangle rect) => rect?.Array;
+        [return: NotNullIfNotNull("array")]
+        public static implicit operator PdfRectangle?(PdfArray? array) => array == null ? null : new PdfRectangle(array);
+        [return: NotNullIfNotNull("rect")]
+        public static implicit operator PdfArray?(PdfRectangle? rect) => rect?.NativeObject;
 
         public static PdfRectangle Zeros { get; } = new PdfRectangle();
 
-        public PdfRectangle CloneShallow() => Array.CloneShallow();
+        public PdfRectangle CloneShallow() => NativeObject.CloneShallow()!;
     }
 }

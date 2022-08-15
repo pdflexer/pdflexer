@@ -31,8 +31,8 @@ namespace PdfLexer.ImageTests
                 while (reader.Advance())
                 {
                     var c = reader.Glyph.Char;
-                    var bb = reader.GetCurrentBoundingBox();
-                    sb.AppendLine($"{bb.llx:0.00} {bb.lly:0.00} {bb.urx:0.00} {bb.ury:0.00} {c}");
+                    var (llx, lly, urx, ury) = reader.GetCurrentBoundingBox();
+                    sb.AppendLine($"{llx:0.00} {lly:0.00} {urx:0.00} {ury:0.00} {c}");
                 }
                 var str = sb.ToString();
             }
@@ -51,7 +51,7 @@ namespace PdfLexer.ImageTests
 
             {
                 using var writer = pg.GetWriter();
-                var tr = SingleByteFont.GetTimesRoman();
+                var tr = Standard14Font.GetTimesRoman();
                 writer.Font(tr, 10).TextMove(20, 20).Text("Testing").EndText();
             }
             using var fo = File.Create(Path.Combine(output, "test.pdf"));

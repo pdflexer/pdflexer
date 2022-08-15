@@ -1,31 +1,26 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Fonts.Predefined;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PdfLexer.Fonts
 {
-    public partial class SingleByteFont
+    public class Standard14Font : IWritableFont
     {
         public static IWritableFont GetTimesRoman()
         {
             var d = new Dictionary<char, Glyph>();
             foreach (var g in TimesRomanGlyphs.DefaultEncoding)
             {
-                if (g!=null)
+                if (g != null)
                 {
                     d[g.Char] = g;
                 }
             }
-            return new Standard14FontWritable(FontMetrics.TimesRoman, d);
+            return new Standard14Font(FontMetrics.TimesRoman, d);
         }
-    }
 
 
-    internal class Standard14FontWritable : IWritableFont
-    {
         private FontMetrics _metrics;
         private Dictionary<char, Glyph> _glyphs;
         private Glyph[] _fastLookup;
@@ -36,7 +31,7 @@ namespace PdfLexer.Fonts
         public bool SpaceIsWordSpace() => true;
 
 
-        public Standard14FontWritable(FontMetrics metrics, Dictionary<char, Glyph> glyphs, Glyph[]? fastLookup = null, int fastStart = 0)
+        internal Standard14Font(FontMetrics metrics, Dictionary<char, Glyph> glyphs, Glyph[]? fastLookup = null, int fastStart = 0)
         {
             _metrics = metrics;
             _glyphs = glyphs;
@@ -65,8 +60,8 @@ namespace PdfLexer.Fonts
             var f = new FontType1();
             f.BaseFont = _metrics.BaseFont;
             var list = _glyphs.Values.Where(x => x.CodePoint.HasValue).OrderBy(x => x.CodePoint).ToList();
-            int min = (int)list.First().CodePoint;
-            int max = (int)list.Last().CodePoint;
+            int min = (int)(list.First().CodePoint ?? 0);
+            int max = (int)(list.Last().CodePoint ?? 0);
             var widths = new PdfArray(new List<IPdfObject>(max - min + 1));
 
             for (var i = min; i <= max; i++)
@@ -91,12 +86,12 @@ namespace PdfLexer.Fonts
 
         public IEnumerable<SizedChar> ConvertFromUnicode(string text, int start, int length, byte[] buffer)
         {
-            Glyph lc = null;
+            Glyph? lc = null;
             for (var i = start; i < start + length; i++)
             {
                 var c = text[i];
                 var g = GetGlyph(c);
-                buffer[0] = (byte)g.CodePoint; // 1 byte only
+                buffer[0] = (byte)(g.CodePoint ?? 0); // 1 byte only
                 var k = lc == null ? 0 : Getkerning(lc, c);
                 yield return new SizedChar { ByteCount = 1, Width = g.w0, PrevKern = k };
                 lc = g;

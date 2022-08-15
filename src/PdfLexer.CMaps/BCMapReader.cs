@@ -1,9 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
+
+namespace System.Runtime.CompilerServices
+{
+    public class IsExternalInit { }
+}
 
 namespace PdfLexer.CMaps
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Keeping pdfjs naming")]
     internal class BCMapReader
     {
         internal enum ToUnicodeState
@@ -14,6 +18,7 @@ namespace PdfLexer.CMaps
             ReadSpace
         }
 
+        
         private static void incHex(byte[] a, int size)
         {
             var c = 1;

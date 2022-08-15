@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PdfLexer.DOM
@@ -56,8 +57,10 @@ namespace PdfLexer.DOM
             set => Dictionary[PdfName.Kids] = value;
         }
 
-        public static implicit operator PageTreeNode(PdfDictionary dict) => new PageTreeNode(dict);
-        public static implicit operator PdfDictionary(PageTreeNode page) => page.Dictionary;
+        [return: NotNullIfNotNull("dict")]
+        public static implicit operator PageTreeNode?(PdfDictionary? dict) => dict == null ? null :new PageTreeNode(dict);
+        [return: NotNullIfNotNull("page")]
+        public static implicit operator PdfDictionary?(PageTreeNode? page) => page?.Dictionary;
 
         // Parent => IR dict
         // Kids => array IR to children

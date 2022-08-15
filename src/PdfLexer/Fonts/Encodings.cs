@@ -21,7 +21,7 @@ namespace PdfLexer.Fonts
      */
     internal class Encodings
     {
-        public static string[] MacStandardGlyphOrdering = new string[] {
+        public static string?[] MacStandardGlyphOrdering = new string?[] {
           ".notdef", ".null", "nonmarkingreturn", "space", "exclam", "quotedbl",
           "numbersign", "dollar", "percent", "ampersand", "quotesingle", "parenleft",
           "parenright", "asterisk", "plus", "comma", "hyphen", "period", "slash",
@@ -60,7 +60,7 @@ namespace PdfLexer.Fonts
           "scedilla", "Cacute", "cacute", "Ccaron", "ccaron", "dcroat" 
         };
 
-        public static string[] ExpertEncoding = new string[]
+        public static string?[] ExpertEncoding = new string?[]
         {
             null, null, null, null, null, null, null, null, null, null, null,
             null, null, null, null, null, null, null, null, null, null, null,
@@ -107,7 +107,7 @@ namespace PdfLexer.Fonts
             "Ydieresissmall"
         };
 
-        public static string[] MacExpertEncoding = new string[]
+        public static string?[] MacExpertEncoding = new string?[]
         {
             null, null, null, null, null, null, null, null, null, null, null, null, null, null,
   null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -151,7 +151,7 @@ namespace PdfLexer.Fonts
   "periodsuperior", "Dotaccentsmall", "Ringsmall", null, null, null, null
         };
 
-        public static string[] MacRomanEncoding = new string[]
+        public static string?[] MacRomanEncoding = new string?[]
 {
     null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
   null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -188,7 +188,7 @@ namespace PdfLexer.Fonts
   "tilde", "macron", "breve", "dotaccent", "ring", "cedilla", "hungarumlaut",
   "ogonek", "caron"
 };
-        public static string[] StandardEncoding = new string[]
+        public static string?[] StandardEncoding = new string?[]
 {
     null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
   null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -217,7 +217,7 @@ namespace PdfLexer.Fonts
   null, null, null, "dotlessi", null, null, "lslash", "oslash", "oe", "germandbls", null,
   null, null, null
 };
-        public static string[] WinAnsiEncoding = new string[]
+        public static string?[] WinAnsiEncoding = new string?[]
 {
     null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
   null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -254,7 +254,7 @@ namespace PdfLexer.Fonts
   "ugrave", "uacute", "ucircumflex", "udieresis", "yacute", "thorn",
   "ydieresis"
 };
-        public static string[] SymbolSetEncoding = new string[]
+        public static string?[] SymbolSetEncoding = new string?[]
 {
     null, null, null, null, null, null, null, null, null, null, null, null, null, null,
   null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -293,7 +293,7 @@ namespace PdfLexer.Fonts
   "bracketrightex", "bracketrightbt", "bracerighttp", "bracerightmid",
   "bracerightbt", null
 };
-        public static string[] ZapfDingbatsEncoding = new string[]
+        public static string?[] ZapfDingbatsEncoding = new string?[]
 {
     null, null, null, null, null, null, null, null, null, null, null, null, null, null,
   null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
@@ -320,7 +320,7 @@ namespace PdfLexer.Fonts
   "a199", "a181", "a200", "a182", null, "a201", "a183", "a184", "a197", "a185",
   "a194", "a198", "a186", "a195", "a187", "a188", "a189", "a190", "a191", null
 };
-        public static string[]? GetEncoding(PdfName encoding)
+        public static string?[]? GetEncoding(PdfName encoding)
         {
             switch (encoding?.Value)
             {

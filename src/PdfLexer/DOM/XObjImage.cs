@@ -6,7 +6,7 @@ namespace PdfLexer.DOM
 {
     public class XObjImage
     {
-        public PdfDictionary Dictionary { get => Stream.Dictionary; }
+        public PdfDictionary NativeObject { get => Stream.Dictionary; }
         public PdfStreamContents Contents { get => Stream.Contents; set => Stream.Contents = value; }
         public PdfStream Stream { get; }
 
@@ -14,8 +14,8 @@ namespace PdfLexer.DOM
         public XObjImage()
         {
             Stream = new PdfStream();
-            Dictionary[PdfName.TypeName] = PdfName.XObject;
-            Dictionary[PdfName.Subtype] = PdfName.Image;
+            NativeObject[PdfName.TypeName] = PdfName.XObject;
+            NativeObject[PdfName.Subtype] = PdfName.Image;
         }
 
         public XObjImage(PdfStream str)
@@ -26,67 +26,69 @@ namespace PdfLexer.DOM
         public static implicit operator XObjImage(PdfStream str) => new XObjImage(str);
         public static implicit operator PdfStream(XObjImage img) => img.Stream;
 
-        public PdfNumber Width { 
-            get => Dictionary.GetOrSetValue<PdfNumber>(PdfName.Width, PdfCommonNumbers.Zero); 
-            set => Dictionary[PdfName.Width] = value; 
+        public PdfNumber? Width { 
+            get => NativeObject.GetOrSetValue<PdfNumber>(PdfName.Width, PdfCommonNumbers.Zero); 
+            set => NativeObject.Set(PdfName.Width, value);
         }
 
-        public PdfNumber Height
+        public PdfNumber? Height
         {
-            get => Dictionary.GetOrSetValue<PdfNumber>(PdfName.Height, PdfCommonNumbers.Zero);
-            set => Dictionary[PdfName.Height] = value;
+            get => NativeObject.GetOrSetValue<PdfNumber>(PdfName.Height, PdfCommonNumbers.Zero);
+            set => NativeObject.Set(PdfName.Height, value);
         }
 
-        public PdfNumber BitsPerComponent
+        public PdfNumber? BitsPerComponent
         {
-            get => Dictionary.Get<PdfNumber>(PdfName.BitsPerComponent);
-            set => Dictionary[PdfName.BitsPerComponent] = value;
+            get => NativeObject.Get<PdfNumber>(PdfName.BitsPerComponent);
+            set => NativeObject.Set(PdfName.BitsPerComponent, value);
         }
 
-        public PdfBoolean ImageMask
+        public PdfBoolean? ImageMask
         {
-            get => Dictionary.GetOrSetValue<PdfBoolean>(PdfName.ImageMask, PdfBoolean.False);
-            set => Dictionary[PdfName.ImageMask] = value;
+            get => NativeObject.GetOrSetValue<PdfBoolean>(PdfName.ImageMask, PdfBoolean.False);
+            set => NativeObject.Set(PdfName.ImageMask, value);
         }
 
-        public PdfArray Decode
+        public PdfArray? Decode
         {
-            get => Dictionary.Get<PdfArray>(PdfName.Decode);
-            set => Dictionary[PdfName.Decode] = value;
+            get => NativeObject.Get<PdfArray>(PdfName.Decode);
+            set => NativeObject.Set(PdfName.Decode, value);
         }
 
-        public IPdfObject ColorSpace
+        public IPdfObject? ColorSpace
         {
-            get => Dictionary.Get(PdfName.ColorSpace);
-            set => Dictionary[PdfName.ColorSpace] = value;
+            get => NativeObject.Get(PdfName.ColorSpace);
+            set => NativeObject.Set(PdfName.ColorSpace, value);
         }
 
-        public IPdfObject Mask
+        public IPdfObject? Mask
         {
-            get => Dictionary.Get(PdfName.Mask);
+            get => NativeObject.Get(PdfName.Mask);
             set {
+                if (value == null) { return; }
                 if (value.Type == PdfObjectType.StreamObj)
                 {
-                    Dictionary[PdfName.Mask] = value.Indirect();
+                    NativeObject[PdfName.Mask] = value.Indirect();
                 } else
                 {
-                    Dictionary[PdfName.Mask] = value;
+                    NativeObject[PdfName.Mask] = value;
                 }
             }
         }
 
-        public IPdfObject SMask
+        public IPdfObject? SMask
         {
-            get => Dictionary.Get(PdfName.SMask);
+            get => NativeObject.Get(PdfName.SMask);
             set
             {
+                if (value == null) { return; }
                 if (value.Type == PdfObjectType.StreamObj)
                 {
-                    Dictionary[PdfName.SMask] = value.Indirect();
+                    NativeObject[PdfName.SMask] = value.Indirect();
                 }
                 else
                 {
-                    Dictionary[PdfName.SMask] = value;
+                    NativeObject[PdfName.SMask] = value;
                 }
             }
         }
