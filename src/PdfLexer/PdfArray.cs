@@ -8,7 +8,7 @@ namespace PdfLexer;
 /// </summary>
 public class PdfArray : PdfObject, IList<IPdfObject>
 {
-    internal List<IPdfObject> internalList = new List<IPdfObject>();
+    internal List<IPdfObject> internalList;
     internal bool ArrayModified {get;set;}
     internal bool IndirectOnly { get; set; }
 
@@ -40,6 +40,7 @@ public class PdfArray : PdfObject, IList<IPdfObject>
     /// </summary>
     public PdfArray()
     {
+        internalList = new();
         ArrayModified = true;
     }
 
