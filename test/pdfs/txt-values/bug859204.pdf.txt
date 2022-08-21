@@ -1,0 +1,12 @@
+1 10.00 20.0 • True False
+1 19.06 20.0   False False
+1 25.28 20.0 B False False
+1 38.22 20.0 u False False
+1 49.54 20.0 g False False
+1 61.52 20.0   False False
+1 67.74 20.0 8 False False
+1 80.18 20.0 5 False False
+1 92.62 20.0 9 False False
+1 105.06 20.0 2 False False
+1 117.50 20.0 0 False False
+1 129.94 20.0 4 False False

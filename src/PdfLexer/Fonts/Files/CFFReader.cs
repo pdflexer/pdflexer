@@ -284,13 +284,14 @@ internal ref struct CFFReader
 
                 case 1:
                     var rangesCount = Data[pos++];
+                    var gid = 1;
                     for (i = 0; i < rangesCount; i++)
                     {
                         var start = Data[pos++];
                         var left = Data[pos++];
                         for (var j = start; j <= start + left; j++)
                         {
-                            encoding[j] = charset.GetName(i); // ?? ReadString(gid++, strings);
+                            encoding[j] = charset.GetName(gid++); // ?? ReadString(gid++, strings);
                         }
                     }
                     break;

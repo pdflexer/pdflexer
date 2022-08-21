@@ -1,0 +1,2628 @@
+1 149.52 830.9 n True False
+1 154.56 830.9 ° False False
+1 158.16 830.9   False False
+1 160.68 830.9 d False False
+1 165.72 830.9 ' False False
+1 167.40 830.9 i False False
+1 169.44 830.9 d False False
+1 174.48 830.9 e False False
+1 179.52 830.9 n False False
+1 184.56 830.9 t False False
+1 187.08 830.9 i False False
+1 189.12 830.9 f False False
+1 191.64 830.9 i False False
+1 193.68 830.9 c False False
+1 198.24 830.9 a False False
+1 203.28 830.9 t False False
+1 205.80 830.9 i False False
+1 207.84 830.9 o False False
+1 212.88 830.9 n False False
+1 217.92 830.9   False False
+1 220.44 830.9 n False False
+1 225.48 830.9 a False False
+1 230.52 830.9 t False False
+1 233.04 830.9 i False False
+1 235.08 830.9 o False False
+1 240.12 830.9 n False False
+1 245.16 830.9 a False False
+1 250.20 830.9 l False False
+1 149.40 817.3 m True False
+1 156.24 817.3 o False False
+1 160.68 817.3 d False False
+1 165.12 817.3 è False False
+1 169.55 817.3 l False False
+1 171.35 817.3 e False False
+1 175.79 817.3   False False
+1 178.07 817.3 1 False False
+1 182.51 817.3 6 False False
+1 186.95 817.3 0 False False
+1 300.60 817.4 a True False
+1 305.64 817.4 n False False
+1 310.68 817.4 n False False
+1 315.72 817.4 é False False
+1 320.76 817.4 e False False
+1 325.80 817.4   False False
+1 328.32 817.4 : False False
+1 330.84 817.4   False False
+1 333.36 817.4   False False
+1 335.88 817.4 2 False False
+1 340.92 817.4 0 False False
+1 345.96 817.4 1 False False
+1 351.00 817.4 9 False False
+1 484.92 817.8 p True False
+1 489.36 817.8 a False False
+1 493.80 817.8 g False False
+1 498.23 817.8 e False False
+1 502.67 817.8   False False
+1 504.96 817.8 : False False
+1 507.24 817.8   False False
+1 509.52 817.8 1 False False
+1 513.96 817.8 / False False
+1 516.24 817.8 1 False False
+1 520.68 817.8   False False
+1 522.96 817.8   False False
+1 187.32 752.9 s True False
+1 191.40 752.9 a False False
+1 195.84 752.9 l False False
+1 197.64 752.9 a False False
+1 202.08 752.9 r False False
+1 204.72 752.9 i False False
+1 206.52 752.9 é False False
+1 210.95 752.9 ( False False
+1 213.59 752.9 e False False
+1 218.03 752.9 ) False False
+1 220.67 752.9 : False False
+1 243.96 742.3 n True False
+1 247.80 742.3 o False False
+1 251.64 742.3 m False False
+1 414.60 742.3 p True False
+1 418.44 742.3 r False False
+1 420.72 742.3 é False False
+1 424.56 742.3 n False False
+1 428.40 742.3 o False False
+1 432.25 742.3 m False False
+1 300.84 719.4 r True False
+1 303.12 719.4 u False False
+1 306.96 719.4 e False False
+1 35.40 696.5 l True False
+1 36.96 696.5 i False False
+1 38.52 696.5 g False False
+1 42.36 696.5 n False False
+1 46.20 696.5 e False False
+1 319.80 696.5 l True False
+1 321.36 696.5 o False False
+1 325.20 696.5 c False False
+1 328.68 696.5 a False False
+1 332.52 696.5 l False False
+1 334.07 696.5 i False False
+1 335.63 696.5 t False False
+1 337.55 696.5 é False False
+1 41.64 679.2 1 True False
+1 54.60 679.2   True False
+1 56.88 679.2 p False False
+1 61.32 679.2 é False False
+1 65.76 679.2 r False False
+1 68.40 679.2 i False False
+1 70.20 679.2 o False False
+1 74.64 679.2 d False False
+1 79.08 679.2 e False False
+1 83.51 679.2   False False
+1 85.80 679.2 d False False
+1 90.24 679.2 u False False
+1 191.16 679.2 a True False
+1 195.60 679.2 u False False
+1 320.04 679.8 c True False
+1 324.12 679.8 l False False
+1 325.92 679.8 a False False
+1 330.36 679.8 s False False
+1 334.44 679.8 s False False
+1 338.52 679.8 e False False
+1 342.96 679.8   False False
+1 345.24 679.8 d False False
+1 349.68 679.8 ' False False
+1 351.24 679.8 i False False
+1 353.04 679.8 m False False
+1 359.88 679.8 p False False
+1 364.32 679.8 ô False False
+1 368.75 679.8 t False False
+1 371.04 679.8   True False
+1 373.32 679.8 e False False
+1 377.76 679.8 t False False
+1 380.04 679.8   False False
+1 382.32 679.8 t False False
+1 384.60 679.8 a False False
+1 389.04 679.8 u False False
+1 393.48 679.8 x False False
+1 397.32 679.8   False False
+1 399.60 679.8 ( False False
+1 402.24 679.8 s False False
+1 406.32 679.8 u False False
+1 410.76 679.8 i False False
+1 412.56 679.8 v False False
+1 416.52 679.8 a False False
+1 420.96 679.8 n False False
+1 425.40 679.8 t False False
+1 427.68 679.8   False False
+1 429.96 679.8 f False False
+1 432.24 679.8 i False False
+1 434.04 679.8 c False False
+1 438.12 679.8 h False False
+1 442.56 679.8 e False False
+1 447.00 679.8 ) False False
+1 41.64 659.2 2 True False
+1 54.60 659.8 A True False
+1 60.00 659.8 ) False False
+1 62.64 659.8   False False
+1 64.92 659.8 r False False
+1 67.56 659.8 é False False
+1 72.00 659.8 m False False
+1 78.84 659.8 u False False
+1 83.28 659.8 n False False
+1 87.72 659.8 é False False
+1 92.16 659.8 r False False
+1 94.80 659.8 a False False
+1 99.23 659.8 t False False
+1 101.51 659.8 i False False
+1 103.31 659.8 o False False
+1 107.75 659.8 n False False
+1 112.19 659.8 s False False
+1 116.27 659.8   False False
+1 118.55 659.8 b False False
+1 122.99 659.8 r False False
+1 125.63 659.8 u False False
+1 130.07 659.8 t False False
+1 132.35 659.8 e False False
+1 136.79 659.8 s False False
+1 140.87 659.8   False False
+1 143.15 659.8   False False
+1 145.44 663.7 2 True False
+1 148.44 663.7 ) False False
+1 320.04 662.5 H True False
+1 325.80 662.5 ) False False
+1 328.44 662.5   False False
+1 330.72 662.5 d False False
+1 335.16 662.5 é False False
+1 339.60 662.5 s False False
+1 343.68 662.5 i False False
+1 345.48 662.5 g False False
+1 349.92 662.5 n False False
+1 354.36 662.5 a False False
+1 358.79 662.5 t False False
+1 361.07 662.5 i False False
+1 362.87 662.5 o False False
+1 367.31 662.5 n False False
+1 371.75 662.5   False False
+1 374.03 662.5 d False False
+1 378.47 662.5 e False False
+1 382.91 662.5   False False
+1 385.19 662.5 l False False
+1 386.99 662.5 ' False False
+1 388.55 662.5 e False False
+1 392.99 662.5 m False False
+1 399.83 662.5 p False False
+1 404.27 662.5 l False False
+1 406.07 662.5 o False False
+1 410.51 662.5 y False False
+1 414.47 662.5 e False False
+1 418.90 662.5 u False False
+1 423.34 662.5 r False False
+1 41.64 643.9 3 True False
+1 320.04 640.0 n True False
+1 324.48 640.0 o False False
+1 328.92 640.0 m False False
+1 335.76 640.0 : False False
+1 41.64 624.7 4 True False
+1 320.04 620.8 a True False
+1 324.48 620.8 d False False
+1 328.92 620.8 r False False
+1 331.56 620.8 e False False
+1 335.99 620.8 s False False
+1 340.07 620.8 s False False
+1 344.15 620.8 e False False
+1 348.59 620.8 : False False
+1 41.64 605.5 5 True False
+1 41.64 586.3 6 True False
+1 201.36 586.3 s True False
+1 205.44 586.3 o False False
+1 209.88 586.3 u False False
+1 214.32 586.3 s False False
+1 218.40 586.3 - False False
+1 221.04 586.3 t False False
+1 223.32 586.3 o False False
+1 227.76 586.3 t False False
+1 230.04 586.3 a False False
+1 234.47 586.3 l False False
+1 236.27 586.3 : False False
+1 238.55 586.3   False False
+1 320.04 582.3 n True False
+1 324.48 582.3 ° False False
+1 327.72 582.3   False False
+1 330.00 582.3 d False False
+1 334.44 582.3 o False False
+1 338.88 582.3 s False False
+1 342.96 582.3 s False False
+1 347.04 582.3 i False False
+1 348.84 582.3 e False False
+1 353.28 582.3 r False False
+1 355.92 582.3 : False False
+1 41.64 572.0 7 True False
+1 54.60 572.0 B True False
+1 60.00 572.0 ) False False
+1 62.64 572.0   False False
+1 64.92 572.0 d False False
+1 69.36 572.0 é False False
+1 73.80 572.0 d False False
+1 78.24 572.0 u False False
+1 82.68 572.0 c False False
+1 86.76 572.0 t False False
+1 89.04 572.0 i False False
+1 90.84 572.0 o False False
+1 95.27 572.0 n False False
+1 99.71 572.0 s False False
+1 41.64 556.8 8 True False
+1 63.48 556.8 1 True False
+1 67.91 556.8 . False False
+1 73.56 556.1 c True False
+1 77.64 556.1 o False False
+1 82.08 556.1 t False False
+1 84.36 556.1 i False False
+1 86.16 556.1 s False False
+1 90.24 556.1 a False False
+1 94.68 556.1 t False False
+1 96.95 556.1 i False False
+1 98.75 556.1 o False False
+1 103.19 556.1 n False False
+1 107.63 556.1 s False False
+1 111.71 556.1   False False
+1 113.99 556.1 s False False
+1 118.07 556.1 o False False
+1 122.51 556.1 c False False
+1 126.59 556.1 i False False
+1 128.39 556.1 a False False
+1 132.83 556.1 l False False
+1 134.63 556.1 e False False
+1 139.07 556.1 s False False
+1 143.15 556.1   False False
+1 145.43 556.1   False False
+1 147.72 560.0 4 True False
+1 150.72 560.0 ) False False
+1 320.04 542.5   True False
+1 322.32 542.5   False False
+1 324.61 542.5   False False
+1 320.04 533.0 n True False
+1 324.48 533.0 o False False
+1 328.92 533.0 m False False
+1 335.76 533.0 : False False
+1 39.48 517.8 1 True False
+1 43.92 517.8 0 False False
+1 59.40 517.8 c True False
+1 63.48 517.8 o False False
+1 67.92 517.8 t False False
+1 70.20 517.8 i False False
+1 72.00 517.8 s False False
+1 76.08 517.8 a False False
+1 80.52 517.8 t False False
+1 82.80 517.8 i False False
+1 84.60 517.8 o False False
+1 89.04 517.8 n False False
+1 93.48 517.8 s False False
+1 97.55 517.8   False False
+1 99.84 517.8 s False False
+1 103.92 517.8 o False False
+1 108.36 517.8 c False False
+1 112.44 517.8 i False False
+1 114.24 517.8 a False False
+1 118.67 517.8 l False False
+1 120.48 517.8 e False False
+1 124.91 517.8 s False False
+1 128.99 517.8   False False
+1 131.28 517.8 d False False
+1 135.71 517.8 é False False
+1 140.15 517.8 d False False
+1 144.59 517.8 u False False
+1 149.03 517.8 c False False
+1 153.11 517.8 t False False
+1 155.39 517.8 i False False
+1 157.19 517.8 b False False
+1 161.63 517.8 l False False
+1 163.43 517.8 e False False
+1 167.87 517.8 s False False
+1 171.94 517.8   False False
+1 174.23 517.8 ( False False
+1 176.87 517.8 l False False
+1 178.67 517.8 i False False
+1 180.47 517.8 g False False
+1 184.91 517.8 n False False
+1 189.34 517.8 e False False
+1 193.78 517.8   False False
+1 196.07 517.8 8 False False
+1 200.50 517.8   False False
+1 202.79 517.8 - False False
+1 205.43 517.8   False False
+1 207.71 517.8 l False False
+1 209.51 517.8 i False False
+1 211.31 517.8 g False False
+1 215.75 517.8 n False False
+1 220.19 517.8 e False False
+1 224.62 517.8   False False
+1 226.90 517.8 9 False False
+1 231.34 517.8 ) False False
+1 233.98 517.8 : False False
+1 236.26 517.8   False False
+1 238.54 517.8   False False
+1 320.04 513.8 a True False
+1 324.48 513.8 d False False
+1 328.92 513.8 r False False
+1 331.56 513.8 e False False
+1 336.00 513.8 s False False
+1 340.08 513.8 s False False
+1 344.16 513.8 e False False
+1 348.60 513.8 : False False
+1 39.48 503.0 1 True False
+1 43.92 503.0 1 False False
+1 63.48 503.0 2 True False
+1 67.92 503.0 . False False
+1 228.12 498.6 F True False
+1 233.04 498.6 D False False
+1 39.48 479.4 1 True False
+1 43.92 479.4 2 False False
+1 227.88 479.4 F True False
+1 232.80 479.4 O False False
+1 320.04 475.4 t True False
+1 322.32 475.4 é False False
+1 326.76 475.4 l False False
+1 328.56 475.4 é False False
+1 333.00 475.4 p False False
+1 337.44 475.4 h False False
+1 341.88 475.4 o False False
+1 346.31 475.4 n False False
+1 350.75 475.4 e False False
+1 355.19 475.4 : False False
+1 39.48 439.1 1 True False
+1 43.92 439.1 4 False False
+1 227.88 439.1 C True False
+1 233.64 439.1 E False False
+1 39.48 419.9 1 True False
+1 43.92 419.9 5 False False
+1 227.88 419.9 A True False
+1 233.28 419.9 C False False
+1 395.89 415.9 o True False
+1 400.32 415.9 u False False
+1 404.76 415.9 i False False
+1 452.77 415.9 n True False
+1 457.21 415.9 o False False
+1 461.64 415.9 n False False
+1 39.49 400.7 1 True False
+1 43.93 400.7 6 False False
+1 225.12 400.8 A True False
+1 230.16 400.8 M False False
+1 236.52 400.8 D False False
+1 342.84 396.7 d True False
+1 347.28 396.7 u False False
+1 437.64 396.7 a True False
+1 442.08 396.7 u False False
+1 39.48 381.5 1 True False
+1 43.92 381.5 7 False False
+1 54.61 381.5 C True False
+1 60.37 381.5 ) False False
+1 63.01 381.5   False False
+1 65.29 381.5 e False False
+1 69.73 381.5 x False False
+1 73.57 381.5 e False False
+1 78.01 381.5 m False False
+1 84.85 381.5 p False False
+1 89.28 381.5 t False False
+1 91.56 381.5 i False False
+1 93.36 381.5 o False False
+1 97.80 381.5 n False False
+1 102.24 381.5 s False False
+1 342.85 377.5 d True False
+1 347.29 377.5 u False False
+1 437.65 377.5 a True False
+1 442.09 377.5 u False False
+1 39.49 362.3 1 True False
+1 43.93 362.3 8 False False
+1 63.72 367.3 1 True False
+1 68.16 367.3 . False False
+1 342.84 358.3 d True False
+1 347.28 358.3 u False False
+1 437.64 358.3 a True False
+1 442.08 358.3 u False False
+1 39.48 292.3 2 True False
+1 43.92 292.3 1 False False
+1 63.48 292.3 2 True False
+1 67.92 292.3 . False False
+1 73.56 292.3 a True False
+1 78.00 292.3 u False False
+1 82.44 292.3 t False False
+1 84.72 292.3 r False False
+1 87.36 292.3 e False False
+1 91.80 292.3 s False False
+1 95.88 292.3   False False
+1 98.16 292.3 e False False
+1 102.60 292.3 x False False
+1 106.44 292.3 e False False
+1 110.88 292.3 m False False
+1 117.71 292.3 p False False
+1 122.15 292.3 t False False
+1 124.43 292.3 i False False
+1 126.23 292.3 o False False
+1 130.67 292.3 n False False
+1 135.11 292.3 s False False
+1 139.19 292.3   False False
+1 141.47 292.3 ( False False
+1 144.11 292.3 à False False
+1 148.55 292.3   False False
+1 150.83 292.3 s False False
+1 154.91 292.3 p False False
+1 159.35 292.3 é False False
+1 163.79 292.3 c False False
+1 167.87 292.3 i False False
+1 169.67 292.3 f False False
+1 171.95 292.3 i False False
+1 173.75 292.3 e False False
+1 178.19 292.3 r False False
+1 180.83 292.3 ) False False
+1 39.48 276.6 2 True False
+1 43.92 276.6 2 False False
+1 39.48 241.1 2 True False
+1 43.92 241.1 4 False False
+1 399.36 237.7 c True False
+1 403.44 237.7 e False False
+1 407.88 237.7 r False False
+1 410.52 237.7 t False False
+1 412.80 237.7 i False False
+1 414.60 237.7 f False False
+1 416.88 237.7 i False False
+1 418.68 237.7 é False False
+1 423.12 237.7   False False
+1 425.40 237.7 e False False
+1 429.84 237.7 x False False
+1 433.68 237.7 a False False
+1 438.11 237.7 c False False
+1 442.19 237.7 t False False
+1 444.47 237.7 , False False
+1 39.48 222.5 2 True False
+1 43.92 222.5 5 False False
+1 54.60 222.5 D True False
+1 60.36 222.5 ) False False
+1 63.00 222.5   False False
+1 65.29 222.5 r False False
+1 67.93 222.5 é False False
+1 72.36 222.5 m False False
+1 79.20 222.5 u False False
+1 83.64 222.5 n False False
+1 88.08 222.5 é False False
+1 92.52 222.5 r False False
+1 95.16 222.5 a False False
+1 99.60 222.5 t False False
+1 101.88 222.5 i False False
+1 103.68 222.5 o False False
+1 108.12 222.5 n False False
+1 112.55 222.5 s False False
+1 116.63 222.5   False False
+1 118.92 222.5 s False False
+1 123.00 222.5 e False False
+1 127.44 222.5 r False False
+1 130.07 222.5 v False False
+1 134.04 222.5 a False False
+1 138.47 222.5 n False False
+1 142.91 222.5 t False False
+1 145.19 222.5   False False
+1 147.47 222.5 d False False
+1 151.91 222.5 e False False
+1 156.35 222.5   False False
+1 158.63 222.5 b False False
+1 163.07 222.5 a False False
+1 167.51 222.5 s False False
+1 171.59 222.5 e False False
+1 176.03 222.5   False False
+1 178.31 222.5 à False False
+1 182.75 222.5   False False
+1 185.03 222.5 l False False
+1 186.83 222.5 a False False
+1 191.27 222.5   False False
+1 193.55 222.5 r False False
+1 196.19 222.5 e False False
+1 200.63 222.5 t False False
+1 202.91 222.5 e False False
+1 207.34 222.5 n False False
+1 211.78 222.5 u False False
+1 216.22 222.5 e False False
+1 414.84 207.7 , True False
+1 417.12 207.7   False False
+1 419.41 207.7 l False False
+1 421.21 207.7 e False False
+1 39.48 181.7 2 True False
+1 43.92 181.7 7 False False
+1 54.60 181.7 F True False
+1 59.52 181.7 ) False False
+1 62.16 181.7   False False
+1 64.45 181.7 c False False
+1 68.53 181.7 r False False
+1 71.17 181.7 é False False
+1 75.60 181.7 d False False
+1 80.04 181.7 i False False
+1 81.84 181.7 t False False
+1 84.12 181.7   False False
+1 86.41 181.7 d False False
+1 90.84 181.7 ' False False
+1 92.40 181.7 i False False
+1 94.20 181.7 m False False
+1 101.04 181.7 p False False
+1 105.48 181.7 ô False False
+1 109.92 181.7 t False False
+1 112.20 181.7   False False
+1 114.48 181.7 p False False
+1 118.92 181.7 o False False
+1 123.36 181.7 u False False
+1 127.80 181.7 r False False
+1 130.44 181.7   False False
+1 132.72 181.7 s False False
+1 136.80 181.7 a False False
+1 141.24 181.7 l False False
+1 143.04 181.7 a False False
+1 147.47 181.7 r False False
+1 150.12 181.7 i False False
+1 151.91 181.7 é False False
+1 156.35 181.7 s False False
+1 160.43 181.7   False False
+1 162.72 181.7 b False False
+1 167.15 181.7 o False False
+1 171.59 181.7 n False False
+1 176.03 181.7 i False False
+1 177.83 181.7 f False False
+1 180.11 181.7 i False False
+1 181.91 181.7 é False False
+1 226.80 181.7 C True False
+1 232.56 181.7 I False False
+1 234.84 181.7 S False False
+1 39.49 162.5 2 True False
+1 43.93 162.5 8 False False
+1 54.61 162.5 G True False
+1 60.85 162.5 ) False False
+1 63.49 162.5   False False
+1 65.77 162.5 c False False
+1 69.85 162.5 r False False
+1 72.49 162.5 é False False
+1 76.93 162.5 d False False
+1 81.37 162.5 i False False
+1 83.17 162.5 t False False
+1 85.45 162.5   False False
+1 87.73 162.5 d False False
+1 92.17 162.5 ' False False
+1 93.73 162.5 i False False
+1 95.53 162.5 m False False
+1 102.37 162.5 p False False
+1 106.81 162.5 ô False False
+1 111.25 162.5 t False False
+1 113.53 162.5   False False
+1 115.81 162.5 m False False
+1 122.65 162.5 o False False
+1 127.09 162.5 n False False
+1 131.53 162.5 o False False
+1 135.97 162.5 p False False
+1 140.40 162.5 a False False
+1 144.84 162.5 r False False
+1 147.48 162.5 e False False
+1 151.92 162.5 n False False
+1 156.36 162.5 t False False
+1 158.64 162.5 a False False
+1 163.08 162.5 l False False
+1 164.88 162.5   False False
+1 167.16 162.5 b False False
+1 171.59 162.5 o False False
+1 176.03 162.5 n False False
+1 180.47 162.5 i False False
+1 182.27 162.5 f False False
+1 184.55 162.5 i False False
+1 186.35 162.5 é False False
+1 226.21 162.5 C True False
+1 231.97 162.5 I False False
+1 234.25 162.5 M False False
+1 379.45 166.9 s True False
+1 383.53 166.9 i False False
+1 385.33 166.9 g False False
+1 389.77 166.9 n False False
+1 394.21 166.9 a False False
+1 398.65 166.9 t False False
+1 400.93 166.9 u False False
+1 405.36 166.9 r False False
+1 408.00 166.9 e False False
+1 412.44 166.9   False False
+1 414.72 166.9 d False False
+1 419.16 166.9 e False False
+1 423.60 166.9   False False
+1 425.88 166.9 l False False
+1 427.68 166.9 ' False False
+1 429.24 166.9 e False False
+1 433.68 166.9 m False False
+1 440.52 166.9 p False False
+1 444.96 166.9 l False False
+1 446.76 166.9 o False False
+1 451.19 166.9 y False False
+1 455.15 166.9 e False False
+1 459.59 166.9 u False False
+1 464.03 166.9 r False False
+1 41.52 144.2   True False
+1 43.44 144.2 1 False False
+1 47.28 144.2 ) False False
+1 49.56 144.2   False False
+1 54.36 144.2 l True False
+1 55.92 144.2 e False False
+1 59.76 144.2   False False
+1 61.68 144.2 c False False
+1 65.16 144.2 e False False
+1 69.00 144.2 r False False
+1 71.28 144.2 t False False
+1 73.20 144.2 i False False
+1 74.76 144.2 f False False
+1 76.68 144.2 i False False
+1 78.24 144.2 c False False
+1 81.72 144.2 a False False
+1 85.57 144.2 t False False
+1 87.49 144.2   False False
+1 89.41 144.2 n False False
+1 93.25 144.2 e False False
+1 97.09 144.2   False False
+1 99.01 144.2 s False False
+1 102.49 144.2 e False False
+1 106.33 144.2 r False False
+1 108.61 144.2 t False False
+1 110.53 144.2   False False
+1 112.45 144.2 p False False
+1 116.30 144.2 a False False
+1 120.14 144.2 s False False
+1 123.62 144.2   False False
+1 125.54 144.2 à False False
+1 129.38 144.2   False False
+1 131.30 144.2 l False False
+1 132.86 144.2 a False False
+1 136.70 144.2   False False
+1 138.62 144.2 t False False
+1 140.55 144.2 r False False
+1 142.82 144.2 a False False
+1 146.67 144.2 n False False
+1 150.51 144.2 s False False
+1 153.99 144.2 m False False
+1 159.87 144.2 i False False
+1 161.43 144.2 s False False
+1 164.91 144.2 s False False
+1 168.39 144.2 i False False
+1 169.95 144.2 o False False
+1 173.79 144.2 n False False
+1 177.63 144.2   False False
+1 179.55 144.2 d False False
+1 183.39 144.2 e False False
+1 187.24 144.2 s False False
+1 190.72 144.2   False False
+1 192.64 144.2 e False False
+1 196.48 144.2 x False False
+1 199.84 144.2 t False False
+1 201.76 144.2 r False False
+1 204.04 144.2 a False False
+1 207.88 144.2 i False False
+1 209.44 144.2 t False False
+1 211.36 144.2 s False False
+1 214.84 144.2   False False
+1 216.76 144.2 d False False
+1 220.60 144.2 e False False
+1 224.45 144.2   False False
+1 226.37 144.2 c False False
+1 229.85 144.2 o False False
+1 233.69 144.2 m False False
+1 239.57 144.2 p False False
+1 243.41 144.2 t False False
+1 245.33 144.2 e False False
+1 249.17 144.2   False False
+1 251.09 144.2 d False False
+1 254.94 144.2 e False False
+1 258.78 144.2 s False False
+1 262.26 144.2   False False
+1 264.18 144.2 s False False
+1 267.66 144.2 a False False
+1 271.50 144.2 l False False
+1 273.06 144.2 a False False
+1 276.90 144.2 r False False
+1 279.18 144.2 i False False
+1 280.74 144.2 é False False
+1 284.58 144.2 s False False
+1 288.06 144.2   False False
+1 289.99 144.2 p False False
+1 293.83 144.2 a False False
+1 297.67 144.2 r False False
+1 299.95 144.2   False False
+1 301.87 144.2 l False False
+1 303.43 144.2 e False False
+1 307.27 144.2 s False False
+1 310.75 144.2   False False
+1 312.67 144.2 e False False
+1 316.51 144.2 m False False
+1 322.39 144.2 p False False
+1 326.24 144.2 l False False
+1 327.80 144.2 o False False
+1 331.64 144.2 y False False
+1 334.88 144.2 e False False
+1 338.72 144.2 u False False
+1 342.56 144.2 r False False
+1 344.84 144.2 s False False
+1 348.32 144.2   False False
+1 350.24 144.2 à False False
+1 354.08 144.2   False False
+1 356.01 144.2 l False False
+1 357.57 144.2 ' False False
+1 358.89 144.2 a False False
+1 362.73 144.2 d False False
+1 366.57 144.2 m False False
+1 372.45 144.2 i False False
+1 374.01 144.2 n False False
+1 377.85 144.2 i False False
+1 379.41 144.2 s False False
+1 382.89 144.2 t False False
+1 384.81 144.2 r False False
+1 387.09 144.2 a False False
+1 390.93 144.2 t False False
+1 392.85 144.2 i False False
+1 394.41 144.2 o False False
+1 398.26 144.2 n False False
+1 402.10 144.2   False False
+1 404.02 144.2 d False False
+1 407.86 144.2 e False False
+1 411.70 144.2 s False False
+1 415.18 144.2   False False
+1 417.10 144.2 c False False
+1 420.58 144.2 o False False
+1 424.43 144.2 n False False
+1 428.27 144.2 t False False
+1 430.19 144.2 r False False
+1 432.47 144.2 i False False
+1 434.03 144.2 b False False
+1 437.87 144.2 u False False
+1 441.71 144.2 t False False
+1 443.63 144.2 i False False
+1 445.19 144.2 o False False
+1 449.03 144.2 n False False
+1 452.87 144.2 s False False
+1 456.35 144.2   False False
+1 458.28 144.2 d False False
+1 462.12 144.2 i False False
+1 463.68 144.2 r False False
+1 465.96 144.2 e False False
+1 469.80 144.2 c False False
+1 473.28 144.2 t False False
+1 475.20 144.2 e False False
+1 479.04 144.2 s False False
+1 482.52 144.2 , False False
+1 484.44 144.2   False False
+1 54.36 134.8 c True False
+1 57.84 134.8 e False False
+1 61.68 134.8 t False False
+1 63.60 134.8 t False False
+1 65.52 134.8 e False False
+1 69.36 134.8   False False
+1 71.28 134.8 t False False
+1 73.20 134.8 r False False
+1 75.48 134.8 a False False
+1 79.33 134.8 n False False
+1 83.17 134.8 s False False
+1 86.65 134.8 m False False
+1 92.53 134.8 i False False
+1 94.09 134.8 s False False
+1 97.57 134.8 s False False
+1 101.05 134.8 i False False
+1 102.61 134.8 o False False
+1 106.45 134.8 n False False
+1 110.29 134.8   False False
+1 112.21 134.8 n False False
+1 116.06 134.8 e False False
+1 119.90 134.8   False False
+1 121.82 134.8 p False False
+1 125.66 134.8 e False False
+1 129.50 134.8 u False False
+1 133.34 134.8 t False False
+1 135.26 134.8   False False
+1 137.18 134.8 s False False
+1 140.66 134.8 e False False
+1 144.51 134.8   False False
+1 146.43 134.8 f False False
+1 148.35 134.8 a False False
+1 152.19 134.8 i False False
+1 153.75 134.8 r False False
+1 156.03 134.8 e False False
+1 159.87 134.8   False False
+1 161.79 134.8 q False False
+1 165.63 134.8 u False False
+1 169.48 134.8 e False False
+1 173.32 134.8   False False
+1 175.24 134.8 p False False
+1 179.08 134.8 a False False
+1 182.92 134.8 r False False
+1 185.20 134.8   False False
+1 187.12 134.8 v False False
+1 190.60 134.8 o False False
+1 194.45 134.8 i False False
+1 196.01 134.8 e False False
+1 199.85 134.8   False False
+1 201.77 134.8 é False False
+1 205.61 134.8 l False False
+1 207.17 134.8 e False False
+1 211.01 134.8 c False False
+1 214.49 134.8 t False False
+1 216.41 134.8 r False False
+1 218.69 134.8 o False False
+1 222.53 134.8 n False False
+1 226.38 134.8 i False False
+1 227.94 134.8 q False False
+1 231.78 134.8 u False False
+1 235.62 134.8 e False False
+1 41.52 125.3   True False
+1 43.44 125.3 2 False False
+1 47.28 125.3 ) False False
+1 49.56 125.3   False False
+1 54.36 125.3 I True False
+1 56.16 125.3 n False False
+1 60.00 125.3 d False False
+1 63.84 125.3 i False False
+1 65.40 125.3 q False False
+1 69.25 125.3 u False False
+1 73.09 125.3 e False False
+1 76.93 125.3 r False False
+1 79.21 125.3   False False
+1 81.13 125.3 t False False
+1 83.05 125.3 o False False
+1 86.89 125.3 u False False
+1 90.73 125.3 t False False
+1 92.65 125.3 e False False
+1 96.50 125.3 s False False
+1 99.98 125.3   False False
+1 101.90 125.3 r False False
+1 104.18 125.3 é False False
+1 108.02 125.3 m False False
+1 113.90 125.3 u False False
+1 117.74 125.3 n False False
+1 121.58 125.3 é False False
+1 125.42 125.3 r False False
+1 127.70 125.3 a False False
+1 131.55 125.3 t False False
+1 133.47 125.3 i False False
+1 135.03 125.3 o False False
+1 138.87 125.3 n False False
+1 142.71 125.3 s False False
+1 146.19 125.3   False False
+1 148.11 125.3 e False False
+1 151.95 125.3 n False False
+1 155.80 125.3   False False
+1 157.72 125.3 e False False
+1 161.56 125.3 s False False
+1 165.04 125.3 p False False
+1 168.88 125.3 è False False
+1 172.72 125.3 c False False
+1 176.20 125.3 e False False
+1 180.04 125.3 s False False
+1 183.52 125.3   False False
+1 185.44 125.3 o False False
+1 189.29 125.3 u False False
+1 193.13 125.3   False False
+1 195.05 125.3 e False False
+1 198.89 125.3 n False False
+1 202.73 125.3   False False
+1 204.65 125.3 n False False
+1 208.50 125.3 a False False
+1 212.34 125.3 t False False
+1 214.26 125.3 u False False
+1 218.10 125.3 r False False
+1 220.38 125.3 e False False
+1 224.22 125.3 , False False
+1 226.14 125.3   False False
+1 228.06 125.3 y False False
+1 231.30 125.3   False False
+1 233.22 125.3 c False False
+1 236.70 125.3 o False False
+1 240.55 125.3 m False False
+1 246.43 125.3 p False False
+1 250.27 125.3 r False False
+1 252.55 125.3 i False False
+1 254.11 125.3 s False False
+1 257.59 125.3   False False
+1 259.51 125.3 l False False
+1 261.07 125.3 e False False
+1 264.91 125.3 s False False
+1 268.39 125.3   False False
+1 270.31 125.3 i False False
+1 271.87 125.3 n False False
+1 275.71 125.3 d False False
+1 279.55 125.3 e False False
+1 283.40 125.3 m False False
+1 289.28 125.3 n False False
+1 293.12 125.3 i False False
+1 294.68 125.3 t False False
+1 296.60 125.3 é False False
+1 300.44 125.3 s False False
+1 303.92 125.3   False False
+1 305.84 125.3 p False False
+1 309.68 125.3 é False False
+1 313.52 125.3 c False False
+1 317.00 125.3 u False False
+1 320.85 125.3 n False False
+1 324.69 125.3 i False False
+1 326.25 125.3 a False False
+1 330.09 125.3 i False False
+1 331.65 125.3 r False False
+1 333.93 125.3 e False False
+1 337.77 125.3 s False False
+1 341.25 125.3   False False
+1 343.17 125.3 d False False
+1 347.01 125.3 e False False
+1 350.86 125.3   False False
+1 352.78 125.3 m False False
+1 358.66 125.3 a False False
+1 362.50 125.3 l False False
+1 364.06 125.3 a False False
+1 367.90 125.3 d False False
+1 371.74 125.3 i False False
+1 373.30 125.3 e False False
+1 377.14 125.3   False False
+1 379.07 125.3 a False False
+1 382.91 125.3 v False False
+1 386.39 125.3 a False False
+1 390.23 125.3 n False False
+1 394.07 125.3 c False False
+1 397.55 125.3 é False False
+1 401.39 125.3 e False False
+1 405.24 125.3 s False False
+1 408.72 125.3   False False
+1 410.64 125.3 p False False
+1 414.48 125.3 o False False
+1 418.32 125.3 u False False
+1 422.16 125.3 r False False
+1 424.44 125.3   False False
+1 426.36 125.3 c False False
+1 429.84 125.3 o False False
+1 433.69 125.3 m False False
+1 439.57 125.3 p False False
+1 443.41 125.3 t False False
+1 445.33 125.3 e False False
+1 449.17 125.3   False False
+1 451.09 125.3 d False False
+1 454.93 125.3 e False False
+1 458.77 125.3   False False
+1 460.69 125.3 l False False
+1 462.25 125.3 a False False
+1 466.10 125.3   False False
+1 468.02 125.3 C False False
+1 473.06 125.3 a False False
+1 476.90 125.3 i False False
+1 478.46 125.3 s False False
+1 481.94 125.3 s False False
+1 485.42 125.3 e False False
+1 489.26 125.3   False False
+1 491.18 125.3   False False
+1 493.10 125.3   False False
+1 54.36 115.8 N True False
+1 59.40 115.8 a False False
+1 63.24 115.8 t False False
+1 65.16 115.8 i False False
+1 66.72 115.8 o False False
+1 70.56 115.8 n False False
+1 74.41 115.8 a False False
+1 78.25 115.8 l False False
+1 79.81 115.8 e False False
+1 83.65 115.8   False False
+1 85.57 115.8 d False False
+1 89.41 115.8 e False False
+1 93.25 115.8   False False
+1 95.17 115.8 S False False
+1 99.86 115.8 a False False
+1 103.70 115.8 n False False
+1 107.54 115.8 t False False
+1 109.46 115.8 é False False
+1 113.30 115.8 , False False
+1 115.22 115.8   False False
+1 117.14 115.8 l False False
+1 118.70 115.8 e False False
+1 122.54 115.8 s False False
+1 126.02 115.8   False False
+1 127.94 115.8 g False False
+1 131.79 115.8 r False False
+1 134.07 115.8 a False False
+1 137.91 115.8 t False False
+1 139.83 115.8 i False False
+1 141.39 115.8 f False False
+1 143.31 115.8 i False False
+1 144.87 115.8 c False False
+1 148.35 115.8 a False False
+1 152.19 115.8 t False False
+1 154.11 115.8 i False False
+1 155.67 115.8 o False False
+1 159.51 115.8 n False False
+1 163.35 115.8 s False False
+1 166.83 115.8   False False
+1 168.75 115.8 e False False
+1 172.60 115.8 t False False
+1 174.52 115.8   False False
+1 176.44 115.8 a False False
+1 180.28 115.8 u False False
+1 184.12 115.8 t False False
+1 186.04 115.8 r False False
+1 188.32 115.8 e False False
+1 192.16 115.8 s False False
+1 195.64 115.8   False False
+1 197.56 115.8 r False False
+1 199.84 115.8 é False False
+1 203.69 115.8 m False False
+1 209.57 115.8 u False False
+1 213.41 115.8 n False False
+1 217.25 115.8 é False False
+1 221.09 115.8 r False False
+1 223.37 115.8 a False False
+1 227.21 115.8 t False False
+1 229.13 115.8 i False False
+1 230.69 115.8 o False False
+1 234.53 115.8 n False False
+1 238.38 115.8 s False False
+1 241.86 115.8   False False
+1 243.78 115.8 n False False
+1 247.62 115.8 o False False
+1 251.46 115.8 n False False
+1 255.30 115.8   False False
+1 257.22 115.8 p False False
+1 261.07 115.8 é False False
+1 264.91 115.8 r False False
+1 267.19 115.8 i False False
+1 268.75 115.8 o False False
+1 272.59 115.8 d False False
+1 276.43 115.8 i False False
+1 277.99 115.8 q False False
+1 281.83 115.8 u False False
+1 285.67 115.8 e False False
+1 289.52 115.8 s False False
+1 293.00 115.8 , False False
+1 294.92 115.8   False False
+1 296.84 115.8 l False False
+1 298.40 115.8 ' False False
+1 299.72 115.8 a False False
+1 303.56 115.8 v False False
+1 307.04 115.8 a False False
+1 310.88 115.8 n False False
+1 314.72 115.8 t False False
+1 316.64 115.8 a False False
+1 320.49 115.8 g False False
+1 324.33 115.8 e False False
+1 328.17 115.8   False False
+1 330.09 115.8 f False False
+1 332.01 115.8 i False False
+1 333.57 115.8 s False False
+1 337.05 115.8 c False False
+1 340.53 115.8 a False False
+1 344.37 115.8 l False False
+1 345.93 115.8   False False
+1 347.85 115.8 d False False
+1 351.69 115.8 e False False
+1 355.54 115.8   False False
+1 357.46 115.8 l False False
+1 359.02 115.8 ' False False
+1 360.34 115.8 é False False
+1 364.18 115.8 c False False
+1 367.66 115.8 o False False
+1 371.50 115.8 n False False
+1 375.34 115.8 o False False
+1 379.19 115.8 m False False
+1 385.07 115.8 i False False
+1 386.63 115.8 e False False
+1 390.47 115.8   False False
+1 392.39 115.8 e False False
+1 396.23 115.8 t False False
+1 398.15 115.8   False False
+1 400.07 115.8 d False False
+1 403.91 115.8 e False False
+1 407.76 115.8   False False
+1 409.68 115.8 l False False
+1 411.24 115.8 a False False
+1 415.08 115.8   False False
+1 417.00 115.8 b False False
+1 420.84 115.8 o False False
+1 424.68 115.8 n False False
+1 428.53 115.8 i False False
+1 430.09 115.8 f False False
+1 432.01 115.8 i False False
+1 433.57 115.8 c False False
+1 437.05 115.8 a False False
+1 440.89 115.8 t False False
+1 442.81 115.8 i False False
+1 444.37 115.8 o False False
+1 448.21 115.8 n False False
+1 452.05 115.8   False False
+1 453.97 115.8 d False False
+1 457.81 115.8 ' False False
+1 459.13 115.8 i False False
+1 460.69 115.8 n False False
+1 464.54 115.8 t False False
+1 466.46 115.8 é False False
+1 470.30 115.8 r False False
+1 472.58 115.8 ê False False
+1 476.42 115.8 t False False
+1 478.34 115.8 s False False
+1 481.82 115.8 , False False
+1 483.74 115.8   False False
+1 485.66 115.8   False False
+1 54.36 106.3 l True False
+1 55.92 106.3 ' False False
+1 57.24 106.3 a False False
+1 61.08 106.3 v False False
+1 64.56 106.3 a False False
+1 68.40 106.3 n False False
+1 72.25 106.3 t False False
+1 74.17 106.3 a False False
+1 78.01 106.3 g False False
+1 81.85 106.3 e False False
+1 85.69 106.3   False False
+1 87.61 106.3 f False False
+1 89.53 106.3 i False False
+1 91.09 106.3 s False False
+1 94.57 106.3 c False False
+1 98.05 106.3 a False False
+1 101.89 106.3 l False False
+1 103.45 106.3   False False
+1 105.37 106.3 d False False
+1 109.22 106.3 e False False
+1 113.06 106.3   False False
+1 114.98 106.3 l False False
+1 116.54 106.3 a False False
+1 120.38 106.3   False False
+1 122.30 106.3 m False False
+1 128.18 106.3 i False False
+1 129.74 106.3 s False False
+1 133.22 106.3 e False False
+1 137.06 106.3   False False
+1 138.98 106.3 à False False
+1 142.83 106.3   False False
+1 144.75 106.3 l False False
+1 146.31 106.3 a False False
+1 150.15 106.3   False False
+1 152.07 106.3 d False False
+1 155.91 106.3 i False False
+1 157.47 106.3 s False False
+1 160.95 106.3 p False False
+1 164.79 106.3 o False False
+1 168.64 106.3 s False False
+1 172.12 106.3 i False False
+1 173.68 106.3 t False False
+1 175.60 106.3 i False False
+1 177.16 106.3 o False False
+1 181.00 106.3 n False False
+1 184.84 106.3   False False
+1 186.76 106.3 d False False
+1 190.60 106.3 ' False False
+1 191.92 106.3 u False False
+1 195.76 106.3 n False False
+1 199.61 106.3 e False False
+1 203.45 106.3   False False
+1 205.37 106.3 v False False
+1 208.85 106.3 o False False
+1 212.69 106.3 i False False
+1 214.25 106.3 t False False
+1 216.17 106.3 u False False
+1 220.01 106.3 r False False
+1 222.29 106.3 e False False
+1 226.13 106.3   False False
+1 228.06 106.3 d False False
+1 231.90 106.3 e False False
+1 235.74 106.3   False False
+1 237.66 106.3 s False False
+1 241.14 106.3 e False False
+1 244.98 106.3 r False False
+1 247.26 106.3 v False False
+1 250.74 106.3 i False False
+1 252.30 106.3 c False False
+1 255.78 106.3 e False False
+1 259.62 106.3 , False False
+1 261.54 106.3   False False
+1 263.47 106.3 e False False
+1 267.31 106.3 t False False
+1 269.23 106.3 c False False
+1 272.71 106.3 . False False
+1 274.63 106.3   False False
+1 276.55 106.3   False False
+1 41.52 96.8   True False
+1 43.44 96.8 3 False False
+1 47.28 96.8 ) False False
+1 49.56 96.8   False False
+1 54.36 96.8 I True False
+1 56.16 96.8 n False False
+1 60.00 96.8 d False False
+1 63.84 96.8 i False False
+1 65.40 96.8 q False False
+1 69.25 96.8 u False False
+1 73.09 96.8 e False False
+1 76.93 96.8 r False False
+1 79.21 96.8   False False
+1 81.13 96.8 s False False
+1 84.61 96.8 é False False
+1 88.45 96.8 p False False
+1 92.29 96.8 a False False
+1 96.14 96.8 r False False
+1 98.42 96.8 é False False
+1 102.26 96.8 m False False
+1 108.14 96.8 e False False
+1 111.98 96.8 n False False
+1 115.82 96.8 t False False
+1 117.74 96.8   False False
+1 119.66 96.8 e False False
+1 123.50 96.8 n False False
+1 127.35 96.8   False False
+1 129.27 96.8 s False False
+1 132.75 96.8 i False False
+1 134.31 96.8 g False False
+1 138.15 96.8 n False False
+1 141.99 96.8 a False False
+1 145.83 96.8 l False False
+1 147.39 96.8 a False False
+1 151.23 96.8 n False False
+1 155.08 96.8 t False False
+1 157.00 96.8   False False
+1 158.92 96.8 p False False
+1 162.76 96.8 a False False
+1 166.60 96.8 r False False
+1 168.88 96.8   False False
+1 170.80 96.8 d False False
+1 174.64 96.8 e False False
+1 178.49 96.8 s False False
+1 181.97 96.8   False False
+1 183.89 96.8 l False False
+1 185.45 96.8 e False False
+1 189.29 96.8 t False False
+1 191.21 96.8 t False False
+1 193.13 96.8 r False False
+1 195.41 96.8 e False False
+1 199.25 96.8 s False False
+1 202.73 96.8 : False False
+1 204.65 96.8   False False
+1 206.57 96.8 S False False
+1 211.25 96.8   False False
+1 213.17 96.8 = False False
+1 217.25 96.8   False False
+1 219.17 96.8 s False False
+1 222.65 96.8 a False False
+1 226.49 96.8 l False False
+1 228.06 96.8 a False False
+1 231.90 96.8 i False False
+1 233.46 96.8 r False False
+1 235.74 96.8 e False False
+1 239.58 96.8 , False False
+1 241.50 96.8   False False
+1 243.42 96.8 C False False
+1 248.46 96.8   False False
+1 250.38 96.8 = False False
+1 254.46 96.8   False False
+1 256.38 96.8 c False False
+1 259.86 96.8 o False False
+1 263.70 96.8 t False False
+1 265.62 96.8 i False False
+1 267.18 96.8 s False False
+1 270.66 96.8 a False False
+1 274.51 96.8 t False False
+1 276.43 96.8 i False False
+1 277.99 96.8 o False False
+1 281.83 96.8 n False False
+1 285.67 96.8   False False
+1 287.59 96.8 d False False
+1 291.43 96.8 e False False
+1 295.27 96.8   False False
+1 297.20 96.8 s False False
+1 300.68 96.8 é False False
+1 304.52 96.8 c False False
+1 308.00 96.8 u False False
+1 311.84 96.8 r False False
+1 314.12 96.8 i False False
+1 315.68 96.8 t False False
+1 317.60 96.8 é False False
+1 321.44 96.8   False False
+1 323.36 96.8 s False False
+1 326.84 96.8 o False False
+1 330.68 96.8 c False False
+1 334.16 96.8 i False False
+1 335.72 96.8 a False False
+1 339.57 96.8 l False False
+1 341.13 96.8 e False False
+1 344.97 96.8   False False
+1 346.89 96.8 c False False
+1 350.37 96.8 o False False
+1 354.21 96.8 m False False
+1 360.09 96.8 p False False
+1 363.93 96.8 l False False
+1 365.49 96.8 é False False
+1 369.34 96.8 m False False
+1 375.22 96.8 e False False
+1 379.06 96.8 n False False
+1 382.90 96.8 t False False
+1 384.82 96.8 a False False
+1 388.66 96.8 i False False
+1 390.22 96.8 r False False
+1 392.50 96.8 e False False
+1 396.34 96.8 , False False
+1 398.26 96.8   False False
+1 400.18 96.8 R False False
+1 405.22 96.8   False False
+1 407.14 96.8 = False False
+1 411.22 96.8   False False
+1 413.14 96.8 r False False
+1 415.43 96.8 a False False
+1 419.27 96.8 p False False
+1 423.11 96.8 p False False
+1 426.95 96.8 e False False
+1 430.79 96.8 l False False
+1 432.35 96.8 s False False
+1 435.83 96.8   False False
+1 437.75 96.8 d False False
+1 441.60 96.8 ' False False
+1 442.92 96.8 a False False
+1 446.76 96.8 n False False
+1 450.60 96.8 n False False
+1 454.44 96.8 é False False
+1 458.28 96.8 e False False
+1 462.13 96.8 s False False
+1 465.61 96.8   False False
+1 467.53 96.8 a False False
+1 471.37 96.8 n False False
+1 475.21 96.8 t False False
+1 477.13 96.8 é False False
+1 480.97 96.8 r False False
+1 483.25 96.8 i False False
+1 484.81 96.8 e False False
+1 488.65 96.8 u False False
+1 492.50 96.8 r False False
+1 494.78 96.8 e False False
+1 498.62 96.8 s False False
+1 502.10 96.8 , False False
+1 504.02 96.8   False False
+1 505.94 96.8   False False
+1 54.36 87.4 P True False
+1 59.04 87.4   False False
+1 60.96 87.4 = False False
+1 65.04 87.4   False False
+1 66.96 87.4 p False False
+1 70.80 87.4 e False False
+1 74.65 87.4 n False False
+1 78.49 87.4 s False False
+1 81.97 87.4 i False False
+1 83.53 87.4 o False False
+1 87.37 87.4 n False False
+1 91.21 87.4 . False False
+1 93.13 87.4   False False
+1 95.05 87.4   False False
+1 41.52 77.9   True False
+1 43.44 77.9 4 False False
+1 47.28 77.9 ) False False
+1 49.56 77.9   False False
+1 54.36 77.9 P True False
+1 59.04 77.9 a False False
+1 62.88 77.9 r False False
+1 65.16 77.9 t False False
+1 67.08 77.9   False False
+1 69.00 77.9 d False False
+1 72.85 77.9 e False False
+1 76.69 77.9   False False
+1 78.61 77.9 l False False
+1 80.17 77.9 ' False False
+1 81.49 77.9 a False False
+1 85.33 77.9 s False False
+1 88.81 77.9 s False False
+1 92.29 77.9 u False False
+1 96.13 77.9 r False False
+1 98.41 77.9 é False False
+1 102.25 77.9 , False False
+1 104.17 77.9   False False
+1 106.09 77.9 l False False
+1 107.65 77.9 e False False
+1 111.50 77.9 s False False
+1 114.98 77.9   False False
+1 116.90 77.9 c False False
+1 120.38 77.9 o False False
+1 124.22 77.9 t False False
+1 126.14 77.9 i False False
+1 127.70 77.9 s False False
+1 131.18 77.9 a False False
+1 135.02 77.9 t False False
+1 136.94 77.9 i False False
+1 138.50 77.9 o False False
+1 142.34 77.9 n False False
+1 146.18 77.9 s False False
+1 149.66 77.9   False False
+1 151.58 77.9 p False False
+1 155.43 77.9 o False False
+1 159.27 77.9 u False False
+1 163.11 77.9 r False False
+1 165.39 77.9   False False
+1 167.31 77.9 l False False
+1 168.87 77.9 ' False False
+1 170.19 77.9 a False False
+1 174.03 77.9 s False False
+1 177.51 77.9 s False False
+1 180.99 77.9 u False False
+1 184.83 77.9 r False False
+1 187.12 77.9 a False False
+1 190.96 77.9 n False False
+1 194.80 77.9 c False False
+1 198.28 77.9 e False False
+1 202.12 77.9   False False
+1 204.04 77.9 d False False
+1 207.88 77.9 é False False
+1 211.73 77.9 p False False
+1 215.57 77.9 e False False
+1 219.41 77.9 n False False
+1 223.25 77.9 d False False
+1 227.09 77.9 a False False
+1 230.94 77.9 n False False
+1 234.78 77.9 c False False
+1 238.26 77.9 e False False
+1 242.10 77.9   False False
+1 244.02 77.9 n False False
+1 247.86 77.9 o False False
+1 251.70 77.9 n False False
+1 255.55 77.9   False False
+1 257.47 77.9 c False False
+1 260.95 77.9 o False False
+1 264.79 77.9 m False False
+1 270.67 77.9 p False False
+1 274.51 77.9 r False False
+1 276.79 77.9 i False False
+1 278.35 77.9 s False False
+1 281.83 77.9 e False False
+1 285.67 77.9 s False False
+1 289.15 77.9 . False False
+1 291.07 77.9   False False
+1 292.99 77.9   False False
+1 41.52 68.4   True False
+1 43.44 68.4 5 False False
+1 47.28 68.4 ) False False
+1 49.56 68.4   False False
+1 54.36 68.4 D True False
+1 59.40 68.4 é False False
+1 63.24 68.4 d False False
+1 67.08 68.4 u False False
+1 70.93 68.4 c False False
+1 74.41 68.4 t False False
+1 76.33 68.4 i False False
+1 77.89 68.4 o False False
+1 81.73 68.4 n False False
+1 85.57 68.4   False False
+1 87.49 68.4 i False False
+1 89.05 68.4 n False False
+1 92.89 68.4 s False False
+1 96.37 68.4 c False False
+1 99.85 68.4 r False False
+1 102.13 68.4 i False False
+1 103.69 68.4 t False False
+1 105.61 68.4 e False False
+1 109.45 68.4   False False
+1 111.37 68.4 s False False
+1 114.85 68.4 u False False
+1 118.70 68.4 r False False
+1 120.98 68.4   False False
+1 122.90 68.4 l False False
+1 124.46 68.4 a False False
+1 128.30 68.4   False False
+1 130.22 68.4 f False False
+1 132.14 68.4 i False False
+1 133.70 68.4 c False False
+1 137.18 68.4 h False False
+1 141.02 68.4 e False False
+1 144.86 68.4   False False
+1 146.78 68.4 d False False
+1 150.63 68.4 e False False
+1 154.47 68.4   False False
+1 156.39 68.4 r False False
+1 158.67 68.4 e False False
+1 162.51 68.4 t False False
+1 164.43 68.4 e False False
+1 168.27 68.4 n False False
+1 172.12 68.4 u False False
+1 175.96 68.4 e False False
+1 179.80 68.4   False False
+1 181.72 68.4 p False False
+1 185.56 68.4 o False False
+1 189.40 68.4 u False False
+1 193.25 68.4 r False False
+1 195.53 68.4   False False
+1 197.45 68.4 f False False
+1 199.37 68.4 r False False
+1 201.65 68.4 a False False
+1 205.49 68.4 i False False
+1 207.05 68.4 s False False
+1 210.53 68.4   False False
+1 212.45 68.4 d False False
+1 216.29 68.4 e False False
+1 220.13 68.4   False False
+1 222.05 68.4 d False False
+1 225.90 68.4 é False False
+1 229.74 68.4 p False False
+1 233.58 68.4 l False False
+1 235.14 68.4 a False False
+1 238.98 68.4 c False False
+1 242.46 68.4 e False False
+1 246.30 68.4 m False False
+1 252.18 68.4 e False False
+1 256.03 68.4 n False False
+1 259.87 68.4 t False False
+1 261.79 68.4   False False
+1 263.71 68.4 ( False False
+1 265.99 68.4 F False False
+1 270.19 68.4 D False False
+1 275.23 68.4 ) False False
+1 277.51 68.4 , False False
+1 279.43 68.4   False False
+1 281.35 68.4 f False False
+1 283.27 68.4 r False False
+1 285.55 68.4 a False False
+1 289.39 68.4 i False False
+1 290.95 68.4 s False False
+1 294.43 68.4   False False
+1 296.35 68.4 d False False
+1 300.19 68.4 ' False False
+1 301.51 68.4 o False False
+1 305.36 68.4 b False False
+1 309.20 68.4 t False False
+1 311.12 68.4 e False False
+1 314.96 68.4 n False False
+1 318.80 68.4 t False False
+1 320.72 68.4 i False False
+1 322.28 68.4 o False False
+1 326.12 68.4 n False False
+1 329.97 68.4   False False
+1 331.89 68.4 ( False False
+1 334.17 68.4 F False False
+1 338.37 68.4 O False False
+1 343.77 68.4 ) False False
+1 346.05 68.4 , False False
+1 347.97 68.4   False False
+1 349.89 68.4 d False False
+1 353.73 68.4 é False False
+1 357.57 68.4 p False False
+1 361.41 68.4 e False False
+1 365.25 68.4 n False False
+1 369.10 68.4 s False False
+1 372.58 68.4 e False False
+1 376.42 68.4 s False False
+1 379.90 68.4   False False
+1 381.82 68.4 s False False
+1 385.30 68.4 p False False
+1 389.14 68.4 é False False
+1 392.98 68.4 c False False
+1 396.46 68.4 i False False
+1 398.02 68.4 a False False
+1 401.87 68.4 l False False
+1 403.42 68.4 e False False
+1 407.27 68.4 s False False
+1 410.75 68.4   False False
+1 412.67 68.4 ( False False
+1 414.95 68.4 D False False
+1 419.99 68.4 S False False
+1 424.67 68.4 ) False False
+1 426.95 68.4 , False False
+1 428.87 68.4   False False
+1 430.79 68.4 c False False
+1 434.27 68.4 h False False
+1 438.11 68.4 a False False
+1 441.95 68.4 r False False
+1 444.23 68.4 g False False
+1 448.07 68.4 e False False
+1 451.92 68.4 s False False
+1 455.40 68.4   False False
+1 457.32 68.4 e False False
+1 461.16 68.4 x False False
+1 464.52 68.4 t False False
+1 466.44 68.4 r False False
+1 468.72 68.4 a False False
+1 472.56 68.4 o False False
+1 476.40 68.4 r False False
+1 478.68 68.4 d False False
+1 482.53 68.4 i False False
+1 484.08 68.4 n False False
+1 487.93 68.4 a False False
+1 491.77 68.4 i False False
+1 493.33 68.4 r False False
+1 495.61 68.4 e False False
+1 499.45 68.4 s False False
+1 502.93 68.4   False False
+1 504.85 68.4 ( False False
+1 507.13 68.4 C False False
+1 512.17 68.4 E False False
+1 516.85 68.4 ) False False
+1 519.13 68.4 , False False
+1 521.05 68.4   False False
+1 522.97 68.4   False False
+1 54.36 58.9 a True False
+1 58.20 58.9 b False False
+1 62.04 58.9 a False False
+1 65.89 58.9 t False False
+1 67.81 58.9 t False False
+1 69.73 58.9 e False False
+1 73.57 58.9 m False False
+1 79.45 58.9 e False False
+1 83.29 58.9 n False False
+1 87.13 58.9 t False False
+1 89.05 58.9   False False
+1 90.97 58.9 c False False
+1 94.45 58.9 o False False
+1 98.29 58.9 n False False
+1 102.14 58.9 j False False
+1 103.70 58.9 o False False
+1 107.54 58.9 i False False
+1 109.10 58.9 n False False
+1 112.94 58.9 t False False
+1 114.86 58.9   False False
+1 116.78 58.9 ( False False
+1 119.06 58.9 A False False
+1 123.74 58.9 C False False
+1 128.78 58.9 ) False False
+1 131.06 58.9   False False
+1 132.98 58.9 o False False
+1 136.82 58.9 u False False
+1 140.66 58.9   False False
+1 142.59 58.9 a False False
+1 146.43 58.9 b False False
+1 150.27 58.9 a False False
+1 154.11 58.9 t False False
+1 156.03 58.9 t False False
+1 157.95 58.9 e False False
+1 161.79 58.9 m False False
+1 167.67 58.9 e False False
+1 171.51 58.9 n False False
+1 175.36 58.9 t False False
+1 177.28 58.9   False False
+1 179.20 58.9 p False False
+1 183.04 58.9 o False False
+1 186.88 58.9 u False False
+1 190.72 58.9 r False False
+1 193.00 58.9   False False
+1 194.92 58.9 m False False
+1 200.80 58.9 o False False
+1 204.65 58.9 b False False
+1 208.49 58.9 i False False
+1 210.05 58.9 l False False
+1 211.61 58.9 i False False
+1 213.17 58.9 t False False
+1 215.09 58.9 é False False
+1 218.93 58.9   False False
+1 220.85 58.9 d False False
+1 224.69 58.9 u False False
+1 228.54 58.9 r False False
+1 230.82 58.9 a False False
+1 234.66 58.9 b False False
+1 238.50 58.9 l False False
+1 240.06 58.9 e False False
+1 243.90 58.9   False False
+1 245.82 58.9 ( False False
+1 248.10 58.9 A False False
+1 252.78 58.9 M False False
+1 258.42 58.9 D False False
+1 263.46 58.9 ) False False
+1 265.74 58.9 . False False
+1 267.66 58.9   False False
+1 269.58 58.9   False False
+1 41.52 49.4   True False
+1 43.44 49.4 6 False False
+1 47.28 49.4 ) False False
+1 49.56 49.4   False False
+1 54.36 49.4 C True False
+1 59.40 49.4 o False False
+1 63.24 49.4 c False False
+1 66.72 49.4 h False False
+1 70.56 49.4 e False False
+1 74.40 49.4 r False False
+1 76.68 49.4 , False False
+1 78.60 49.4   False False
+1 80.53 49.4 s False False
+1 84.01 49.4 i False False
+1 85.57 49.4   False False
+1 87.49 49.4 o False False
+1 91.33 49.4 u False False
+1 95.17 49.4 i False False
+1 96.73 49.4   False False
+1 98.65 49.4 o False False
+1 102.49 49.4 u False False
+1 106.34 49.4   False False
+1 108.26 49.4 n False False
+1 112.10 49.4 o False False
+1 115.94 49.4 n False False
+1 119.78 49.4 , False False
+1 121.70 49.4   False False
+1 123.62 49.4 i False False
+1 125.18 49.4 l False False
+1 126.74 49.4   False False
+1 128.66 49.4 y False False
+1 131.90 49.4   False False
+1 133.83 49.4 a False False
+1 137.67 49.4   False False
+1 139.59 49.4 e False False
+1 143.43 49.4 u False False
+1 147.27 49.4 , False False
+1 149.19 49.4   False False
+1 151.11 49.4 a False False
+1 154.95 49.4 u False False
+1 158.80 49.4   False False
+1 160.72 49.4 c False False
+1 164.20 49.4 o False False
+1 168.04 49.4 u False False
+1 171.88 49.4 r False False
+1 174.16 49.4 a False False
+1 178.00 49.4 n False False
+1 181.84 49.4 t False False
+1 183.76 49.4   False False
+1 185.69 49.4 d False False
+1 189.53 49.4 e False False
+1 193.37 49.4   False False
+1 195.29 49.4 l False False
+1 196.85 49.4 ' False False
+1 198.17 49.4 a False False
+1 202.01 49.4 n False False
+1 205.85 49.4 n False False
+1 209.70 49.4 é False False
+1 213.54 49.4 e False False
+1 217.38 49.4 , False False
+1 219.30 49.4   False False
+1 221.22 49.4 u False False
+1 225.06 49.4 n False False
+1 228.90 49.4 e False False
+1 232.75 49.4   False False
+1 234.67 49.4 o False False
+1 238.51 49.4 u False False
+1 242.35 49.4   False False
+1 244.27 49.4 p False False
+1 248.11 49.4 l False False
+1 249.67 49.4 u False False
+1 253.52 49.4 s False False
+1 257.00 49.4 i False False
+1 258.56 49.4 e False False
+1 262.40 49.4 u False False
+1 266.24 49.4 r False False
+1 268.52 49.4 s False False
+1 272.00 49.4   False False
+1 273.92 49.4 i False False
+1 275.48 49.4 n False False
+1 279.32 49.4 t False False
+1 281.24 49.4 e False False
+1 285.09 49.4 r False False
+1 287.37 49.4 r False False
+1 289.64 49.4 u False False
+1 293.49 49.4 p False False
+1 297.33 49.4 t False False
+1 299.25 49.4 i False False
+1 300.81 49.4 o False False
+1 304.65 49.4 n False False
+1 308.49 49.4 s False False
+1 311.97 49.4   False False
+1 313.89 49.4 d False False
+1 317.74 49.4 e False False
+1 321.58 49.4   False False
+1 323.50 49.4 t False False
+1 325.42 49.4 r False False
+1 327.70 49.4 a False False
+1 331.54 49.4 v False False
+1 335.02 49.4 a False False
+1 338.86 49.4 i False False
+1 340.42 49.4 l False False
+1 341.98 49.4   False False
+1 343.90 49.4 p False False
+1 347.74 49.4 o False False
+1 351.59 49.4 u False False
+1 355.43 49.4 r False False
+1 357.71 49.4   False False
+1 359.63 49.4 m False False
+1 365.51 49.4 a False False
+1 369.35 49.4 l False False
+1 370.91 49.4 a False False
+1 374.75 49.4 d False False
+1 378.59 49.4 i False False
+1 380.15 49.4 e False False
+1 384.00 49.4 . False False
+1 385.92 49.4   False False
+1 387.84 49.4 C False False
+1 392.88 49.4 e False False
+1 396.72 49.4 t False False
+1 398.64 49.4 t False False
+1 400.56 49.4 e False False
+1 404.40 49.4   False False
+1 406.32 49.4 r False False
+1 408.60 49.4 u False False
+1 412.44 49.4 b False False
+1 416.29 49.4 r False False
+1 418.57 49.4 i False False
+1 420.13 49.4 q False False
+1 423.97 49.4 u False False
+1 427.81 49.4 e False False
+1 431.65 49.4   False False
+1 433.57 49.4 n False False
+1 437.42 49.4 e False False
+1 441.26 49.4   False False
+1 443.18 49.4 s False False
+1 446.66 49.4 ' False False
+1 447.98 49.4 a False False
+1 451.82 49.4 p False False
+1 455.66 49.4 p False False
+1 459.50 49.4 l False False
+1 461.06 49.4 i False False
+1 462.62 49.4 q False False
+1 466.46 49.4 u False False
+1 470.31 49.4 e False False
+1 474.15 49.4   False False
+1 476.07 49.4 p False False
+1 479.91 49.4 a False False
+1 483.75 49.4 s False False
+1 487.23 49.4   False False
+1 489.15 49.4 a False False
+1 493.00 49.4 u False False
+1 496.84 49.4 x False False
+1 500.20 49.4   False False
+1 502.12 49.4   False False
+1 54.36 40.0 e True False
+1 58.20 40.0 m False False
+1 64.08 40.0 p False False
+1 67.92 40.0 l False False
+1 69.48 40.0 o False False
+1 73.33 40.0 y False False
+1 76.57 40.0 e False False
+1 80.41 40.0 u False False
+1 84.25 40.0 r False False
+1 86.53 40.0 s False False
+1 90.01 40.0   False False
+1 91.93 40.0 q False False
+1 95.77 40.0 u False False
+1 99.61 40.0 i False False
+1 101.17 40.0   False False
+1 103.09 40.0 o False False
+1 106.94 40.0 n False False
+1 110.78 40.0 t False False
+1 112.70 40.0   False False
+1 114.62 40.0 l False False
+1 116.18 40.0 i False False
+1 117.74 40.0 q False False
+1 121.58 40.0 u False False
+1 125.42 40.0 i False False
+1 126.98 40.0 d False False
+1 130.83 40.0 é False False
+1 134.67 40.0   False False
+1 136.59 40.0 e False False
+1 140.43 40.0 u False False
+1 144.27 40.0 x False False
+1 147.63 40.0 - False False
+1 149.91 40.0 m False False
+1 155.79 40.0 ê False False
+1 159.63 40.0 m False False
+1 165.52 40.0 e False False
+1 169.36 40.0 s False False
+1 172.84 40.0   False False
+1 174.76 40.0 l False False
+1 176.32 40.0 e False False
+1 180.16 40.0 s False False
+1 183.64 40.0   False False
+1 185.56 40.0 i False False
+1 187.12 40.0 n False False
+1 190.96 40.0 d False False
+1 194.81 40.0 e False False
+1 198.65 40.0 m False False
+1 204.53 40.0 n False False
+1 208.37 40.0 i False False
+1 209.93 40.0 t False False
+1 211.85 40.0 é False False
+1 215.69 40.0 s False False
+1 219.17 40.0   False False
+1 221.09 40.0 p False False
+1 224.93 40.0 é False False
+1 228.78 40.0 c False False
+1 232.26 40.0 u False False
+1 236.10 40.0 n False False
+1 239.94 40.0 i False False
+1 241.50 40.0 a False False
+1 245.34 40.0 i False False
+1 246.90 40.0 r False False
+1 249.18 40.0 e False False
+1 253.02 40.0 s False False
+1 256.50 40.0   False False
+1 258.43 40.0 d False False
+1 262.27 40.0 e False False
+1 266.11 40.0   False False
+1 268.03 40.0 m False False
+1 273.91 40.0 a False False
+1 277.75 40.0 l False False
+1 279.31 40.0 a False False
+1 283.15 40.0 d False False
+1 287.00 40.0 i False False
+1 288.56 40.0 e False False
+1 292.40 40.0 , False False
+1 294.32 40.0   False False
+1 296.24 40.0 p False False
+1 300.08 40.0 o False False
+1 303.92 40.0 u False False
+1 307.76 40.0 r False False
+1 310.04 40.0   False False
+1 311.97 40.0 a False False
+1 315.81 40.0 u False False
+1 319.65 40.0 t False False
+1 321.57 40.0 a False False
+1 325.41 40.0 n False False
+1 329.25 40.0 t False False
+1 331.17 40.0   False False
+1 333.09 40.0 q False False
+1 336.94 40.0 u False False
+1 340.78 40.0 e False False
+1 344.62 40.0   False False
+1 346.54 40.0 c False False
+1 350.02 40.0 e False False
+1 353.86 40.0 s False False
+1 357.34 40.0   False False
+1 359.26 40.0 i False False
+1 360.82 40.0 n False False
+1 364.66 40.0 d False False
+1 368.51 40.0 e False False
+1 372.35 40.0 m False False
+1 378.23 40.0 n False False
+1 382.07 40.0 i False False
+1 383.63 40.0 t False False
+1 385.55 40.0 é False False
+1 389.39 40.0 s False False
+1 392.87 40.0   False False
+1 394.79 40.0 s False False
+1 398.27 40.0 o False False
+1 402.11 40.0 n False False
+1 405.96 40.0 t False False
+1 407.88 40.0   False False
+1 409.80 40.0 c False False
+1 413.28 40.0 o False False
+1 417.12 40.0 m False False
+1 423.00 40.0 p False False
+1 426.84 40.0 r False False
+1 429.12 40.0 i False False
+1 430.68 40.0 s False False
+1 434.16 40.0 e False False
+1 438.00 40.0 s False False
+1 441.48 40.0   False False
+1 443.40 40.0 s False False
+1 446.88 40.0 u False False
+1 450.73 40.0 b False False
+1 454.57 40.0 . False False
+1 456.49 40.0   False False
+1 458.41 40.0 A False False
+1 463.09 40.0 ) False False
+1 465.37 40.0 . False False
+1 467.29 40.0   False False
+1 469.21 40.0   False False
+1 35.28 31.3 m True False
+1 40.08 31.3 o False False
+1 43.44 31.3 d False False
+1 46.80 31.3 è False False
+1 50.16 31.3 l False False
+1 51.60 31.3 e False False
+1 54.96 31.3   False False
+1 56.64 31.3 d False False
+1 60.00 31.3 e False False
+1 63.36 31.3   False False
+1 65.04 31.3 c False False
+1 68.04 31.3 e False False
+1 71.40 31.3 r False False
+1 73.44 31.3 t False False
+1 75.12 31.3 i False False
+1 76.56 31.3 f False False
+1 78.24 31.3 i False False
+1 79.68 31.3 c False False
+1 82.68 31.3 a False False
+1 86.04 31.3 t False False
+1 87.72 31.3   False False
+1 89.40 31.3 d False False
+1 92.76 31.3 e False False
+1 96.12 31.3   False False
+1 97.80 31.3 s False False
+1 100.80 31.3 a False False
+1 104.16 31.3 l False False
+1 105.60 31.3 a False False
+1 108.96 31.3 i False False
+1 110.40 31.3 r False False
+1 112.44 31.3 e False False
+1 115.80 31.3   False False
+1 117.48 31.3 F False False
+1 121.20 31.3 R False False
+1 125.52 31.3 - False False
+1 127.56 31.3 2 False False
+1 130.92 31.3 0 False False
+1 134.28 31.3 1 False False
+1 137.64 31.3 9 False False
+1 141.00 31.3 - False False
+1 143.04 31.3 1 False False
+1 146.40 31.3 8 False False
+1 149.76 31.3 1 False False
+1 153.12 31.3 3 False False
+1 156.48 31.3 1 False False
+1 159.84 31.3 2 False False
+1 163.20 31.3   False False
+1 164.88 31.3   False False
+1 39.48 343.7 1 True False
+1 43.92 343.7 9 False False
+1 339.00 266.4 m True False
+1 345.84 266.4 o False False
+1 350.28 266.4 n False False
+1 354.72 266.4 t False False
+1 357.00 266.4 a False False
+1 361.43 266.4 n False False
+1 365.87 266.4 t False False
+1 368.15 266.4   False False
+1 370.44 266.4 n False False
+1 374.87 266.4 e False False
+1 379.31 266.4 t False False
+1 381.59 266.4   False False
+1 383.88 266.4 e False False
+1 388.31 266.4 x False False
+1 392.15 266.4 o False False
+1 396.59 266.4 n False False
+1 401.03 266.4 é False False
+1 405.47 266.4 r False False
+1 408.11 266.4 é False False
+1 339.00 328.7 n True False
+1 343.44 328.7 o False False
+1 347.88 328.7 m False False
+1 354.72 328.7 b False False
+1 359.15 328.7 r False False
+1 361.79 328.7 e False False
+1 366.23 328.7   False False
+1 368.52 328.7 d False False
+1 372.95 328.7 e False False
+1 377.39 328.7   False False
+1 379.68 328.7 j False False
+1 381.48 328.7 o False False
+1 385.91 328.7 u False False
+1 390.35 328.7 r False False
+1 392.99 328.7 s False False
+1 397.07 328.7   False False
+1 399.35 328.7 i False False
+1 401.15 328.7 m False False
+1 407.99 328.7 p False False
+1 412.43 328.7 o False False
+1 416.87 328.7 s False False
+1 420.95 328.7 a False False
+1 425.39 328.7 b False False
+1 429.82 328.7 l False False
+1 431.62 328.7 e False False
+1 436.06 328.7 s False False
+1 440.14 328.7   False False
+1 339.00 318.5 a True False
+1 343.44 318.5 u False False
+1 347.88 318.5   False False
+1 350.16 318.5 L False False
+1 354.60 318.5 u False False
+1 359.04 318.5 x False False
+1 362.88 318.5 e False False
+1 367.31 318.5 m False False
+1 374.15 318.5 b False False
+1 378.59 318.5 o False False
+1 383.03 318.5 u False False
+1 387.47 318.5 r False False
+1 390.11 318.5 g False False
+1 339.00 302.8 n True False
+1 343.44 302.8 o False False
+1 347.88 302.8 m False False
+1 354.72 302.8 b False False
+1 359.15 302.8 r False False
+1 361.79 302.8 e False False
+1 366.23 302.8   False False
+1 368.52 302.8 d False False
+1 372.95 302.8 e False False
+1 377.39 302.8   False False
+1 379.68 302.8 j False False
+1 381.48 302.8 o False False
+1 385.91 302.8 u False False
+1 390.35 302.8 r False False
+1 392.99 302.8 s False False
+1 397.07 302.8   False False
+1 399.35 302.8 n False False
+1 403.79 302.8 o False False
+1 408.23 302.8 n False False
+1 412.67 302.8   False False
+1 414.95 302.8 i False False
+1 416.75 302.8 m False False
+1 423.59 302.8 p False False
+1 428.03 302.8 o False False
+1 432.47 302.8 s False False
+1 436.55 302.8 a False False
+1 440.98 302.8 b False False
+1 445.42 302.8 l False False
+1 447.22 302.8 e False False
+1 451.66 302.8 s False False
+1 455.74 302.8   False False
+1 339.00 292.6 a True False
+1 343.44 292.6 u False False
+1 347.88 292.6   False False
+1 350.16 292.6 L False False
+1 354.60 292.6 u False False
+1 359.04 292.6 x False False
+1 362.88 292.6 e False False
+1 367.31 292.6 m False False
+1 374.15 292.6 b False False
+1 378.59 292.6 o False False
+1 383.03 292.6 u False False
+1 387.47 292.6 r False False
+1 390.11 292.6 g False False
+1 320.04 333.6 K True False
+1 325.44 333.6 ) False False
+1 328.08 333.6   False False
+1 51.60 789.2 C True False
+1 63.12 789.2 e False False
+1 72.00 789.2 r False False
+1 78.24 789.2 t False False
+1 83.52 789.2 i False False
+1 87.95 789.2 f False False
+1 93.23 789.2 i False False
+1 97.67 789.2 c False False
+1 106.54 789.2 a False False
+1 115.42 789.2 t False False
+1 120.70 789.2   False False
+1 125.13 789.2 d False False
+1 134.85 789.2 e False False
+1 143.73 789.2   False False
+1 148.16 789.2 s False False
+1 157.04 789.2 a False False
+1 165.91 789.2 l False False
+1 170.35 789.2 a False False
+1 179.22 789.2 i False False
+1 183.66 789.2 r False False
+1 189.90 789.2 e False False
+1 198.77 789.2 , False False
+1 203.21 789.2   False False
+1 207.65 789.2 d False False
+1 217.37 789.2 e False False
+1 226.24 789.2   False False
+1 230.68 789.2 r False False
+1 236.92 789.2 e False False
+1 245.79 789.2 t False False
+1 251.07 789.2 e False False
+1 259.95 789.2 n False False
+1 269.67 789.2 u False False
+1 279.39 789.2 e False False
+1 288.26 789.2   False False
+1 292.70 789.2 d False False
+1 302.42 789.2 ' False False
+1 306.26 789.2 i False False
+1 310.69 789.2 m False False
+1 324.85 789.2 p False False
+1 334.57 789.2 ô False False
+1 344.29 789.2 t False False
+1 349.57 789.2   False False
+1 354.01 789.2 e False False
+1 362.88 789.2 t False False
+1 368.16 789.2   False False
+1 372.60 789.2 d False False
+1 382.32 789.2 e False False
+1 391.19 789.2   False False
+1 395.63 789.2 c False False
+1 404.50 789.2 r False False
+1 410.74 789.2 é False False
+1 419.62 789.2 d False False
+1 429.34 789.2 i False False
+1 433.77 789.2 t False False
+1 439.05 789.2 s False False
+1 447.93 789.2   False False
+1 452.37 789.2 d False False
+1 462.08 789.2 ' False False
+1 465.92 789.2 i False False
+1 470.36 789.2 m False False
+1 484.52 789.2 p False False
+1 494.24 789.2 ô False False
+1 503.96 789.2 t False False
+1 509.24 789.2   False False
+1 223.07 766.4 b True False
+1 232.79 766.4 o False False
+1 242.52 766.4 n False False
+1 252.23 766.4 i False False
+1 256.67 766.4 f False False
+1 261.95 766.4 i False False
+1 266.39 766.4 é False False
+1 275.26 766.4 s False False
+1 284.14 766.4   False False
+1 288.57 766.4 2 False False
+1 297.45 766.4 0 False False
+1 306.32 766.4 1 False False
+1 315.19 766.4 9 False False
+1 324.07 766.4   False False
+1 328.56 774.4 1 True False
+1 334.44 774.4 ) False False
+1 338.04 774.4   False False
+1 341.04 774.4   False False
+1 344.04 774.4   False False
+1 39.48 459.7 1 True False
+1 43.92 459.7 3 False False
+1 73.56 542.4 c True False
+1 77.64 542.4 o False False
+1 82.08 542.4 t False False
+1 84.36 542.4 i False False
+1 86.16 542.4 s False False
+1 90.24 542.4 a False False
+1 94.68 542.4 t False False
+1 96.96 542.4 i False False
+1 98.76 542.4 o False False
+1 103.19 542.4 n False False
+1 107.63 542.4 s False False
+1 111.71 542.4   False False
+1 113.99 542.4 s False False
+1 118.08 542.4 o False False
+1 122.51 542.4 c False False
+1 126.59 542.4 i False False
+1 128.39 542.4 a False False
+1 132.83 542.4 l False False
+1 134.63 542.4 e False False
+1 139.07 542.4 s False False
+1 143.15 542.4   False False
+1 73.56 532.2 n True False
+1 78.00 532.2 o False False
+1 82.44 532.2 n False False
+1 86.87 532.2   False False
+1 89.16 532.2 d False False
+1 93.60 532.2 é False False
+1 98.03 532.2 d False False
+1 102.47 532.2 u False False
+1 106.91 532.2 c False False
+1 110.99 532.2 t False False
+1 113.27 532.2 i False False
+1 115.07 532.2 b False False
+1 119.51 532.2 l False False
+1 121.31 532.2 e False False
+1 125.75 532.2 s False False
+1 129.83 532.2   False False
+1 132.11 532.2   False False
+1 134.39 532.2   False False
+1 136.67 532.2   False False
+1 138.96 532.2   False False
+1 320.04 562.2 I True False
+1 322.32 562.2 ) False False
+1 324.96 562.2   False False
+1 327.24 562.2 f False False
+1 329.52 562.2 i False False
+1 331.32 562.2 d False False
+1 335.76 562.2 u False False
+1 340.20 562.2 c False False
+1 344.28 562.2 i False False
+1 346.08 562.2 a False False
+1 350.52 562.2 i False False
+1 352.32 562.2 r False False
+1 354.96 562.2 e False False
+1 359.40 562.2   False False
+1 361.68 562.2 o False False
+1 366.12 562.2 u False False
+1 370.56 562.2   False False
+1 372.84 562.2 p False False
+1 377.27 562.2 e False False
+1 381.71 562.2 r False False
+1 384.35 562.2 s False False
+1 388.43 562.2 o False False
+1 392.87 562.2 n False False
+1 397.31 562.2 n False False
+1 401.75 562.2 e False False
+1 406.18 562.2   False False
+1 408.47 562.2 d False False
+1 412.91 562.2 e False False
+1 417.34 562.2   False False
+1 419.63 562.2 c False False
+1 423.71 562.2 o False False
+1 428.15 562.2 n False False
+1 432.58 562.2 t False False
+1 434.86 562.2 a False False
+1 439.30 562.2 c False False
+1 443.38 562.2 t False False
+1 445.66 562.2   False False
+1 447.94 562.2 c False False
+1 452.02 562.2 h False False
+1 456.46 562.2 a False False
+1 460.90 562.2 r False False
+1 463.54 562.2 g False False
+1 467.98 562.2 é False False
+1 472.42 562.2 e False False
+1 476.85 562.2   False False
+1 479.14 562.2 d False False
+1 483.58 562.2 e False False
+1 488.01 562.2   False False
+1 490.29 562.2 l False False
+1 492.09 562.2 a False False
+1 496.53 562.2   False False
+1 320.04 552.0 c True False
+1 324.12 552.0 o False False
+1 328.56 552.0 m False False
+1 335.40 552.0 p False False
+1 339.84 552.0 t False False
+1 342.12 552.0 a False False
+1 346.55 552.0 b False False
+1 350.99 552.0 i False False
+1 352.79 552.0 l False False
+1 354.59 552.0 i False False
+1 356.39 552.0 t False False
+1 358.67 552.0 é False False
+1 363.11 552.0   False False
+1 365.39 552.0 d False False
+1 369.83 552.0 e False False
+1 374.27 552.0 s False False
+1 378.35 552.0   False False
+1 380.63 552.0 s False False
+1 384.71 552.0 a False False
+1 389.15 552.0 l False False
+1 390.95 552.0 a False False
+1 395.39 552.0 i False False
+1 397.19 552.0 r False False
+1 399.83 552.0 e False False
+1 404.27 552.0 s False False
+1 320.04 444.0 J True False
+1 324.12 444.0 ) False False
+1 326.76 444.0   False False
+1 329.04 444.0 i False False
+1 330.84 444.0 n False False
+1 335.28 444.0 d False False
+1 339.72 444.0 e False False
+1 344.16 444.0 m False False
+1 351.00 444.0 n False False
+1 355.44 444.0 i False False
+1 357.24 444.0 s False False
+1 361.32 444.0 a False False
+1 365.75 444.0 t False False
+1 368.03 444.0 i False False
+1 369.83 444.0 o False False
+1 374.27 444.0 n False False
+1 378.71 444.0   False False
+1 380.99 444.0 p False False
+1 385.43 444.0 a False False
+1 389.87 444.0 r False False
+1 392.51 444.0   False False
+1 394.79 444.0 l False False
+1 396.59 444.0 a False False
+1 401.03 444.0   False False
+1 403.31 444.0 C False False
+1 409.07 444.0 a False False
+1 413.51 444.0 i False False
+1 415.31 444.0 s False False
+1 419.39 444.0 s False False
+1 423.47 444.0 e False False
+1 427.91 444.0   False False
+1 430.19 444.0 N False False
+1 435.95 444.0 a False False
+1 440.39 444.0 t False False
+1 442.67 444.0 i False False
+1 444.47 444.0 o False False
+1 448.91 444.0 n False False
+1 453.34 444.0 a False False
+1 457.78 444.0 l False False
+1 459.58 444.0 e False False
+1 464.02 444.0   False False
+1 466.30 444.0 d False False
+1 470.74 444.0 e False False
+1 475.18 444.0   False False
+1 477.46 444.0 S False False
+1 482.86 444.0 a False False
+1 487.30 444.0 n False False
+1 491.74 444.0 t False False
+1 494.02 444.0 é False False
+1 498.45 444.0   False False
+1 500.73 444.0   False False
+1 503.02 444.0   False False
+1 505.30 444.0   False False
+1 507.60 448.0 6 True False
+1 510.60 448.0 ) False False
+1 73.56 501.5 d True False
+1 78.00 501.5 é False False
+1 82.44 501.5 d False False
+1 86.87 501.5 u False False
+1 91.31 501.5 c False False
+1 95.39 501.5 t False False
+1 97.67 501.5 i False False
+1 99.47 501.5 o False False
+1 103.91 501.5 n False False
+1 108.35 501.5 s False False
+1 112.43 501.5   False False
+1 114.71 501.5   False False
+1 117.00 501.5   False False
+1 119.28 505.4 5 True False
+1 122.28 505.4 ) False False
+1 162.48 620.5 N True False
+1 162.48 626.3 a False False
+1 162.48 630.7 t False False
+1 162.48 633.0 u False False
+1 162.48 637.4 r False False
+1 162.48 640.1 e False False
+1 162.48 644.5   False False
+1 162.48 646.8   False False
+1 158.52 649.1 3 True False
+1 158.52 652.1 ) False False
+1 243.96 719.4 n True False
+1 247.80 719.4 u False False
+1 251.64 719.4 m False False
+1 257.52 719.4 é False False
+1 261.37 719.4 r False False
+1 263.65 719.4 o False False
+1 39.48 202.6 2 True False
+1 43.92 202.6 6 False False
+1 39.12 323.6 2 True False
+1 43.56 323.6 0 False False
+1 243.96 696.5 c True False
+1 247.44 696.5 o False False
+1 251.28 696.5 d False False
+1 255.12 696.5 e False False
+1 258.97 696.5   False False
+1 260.89 696.5 p False False
+1 264.73 696.5 o False False
+1 268.57 696.5 s False False
+1 272.05 696.5 t False False
+1 273.97 696.5 a False False
+1 277.81 696.5 l False False
+1 73.56 367.8 s True False
+1 77.64 367.8 a False False
+1 82.08 367.8 l False False
+1 83.88 367.8 a False False
+1 88.32 367.8 i False False
+1 90.12 367.8 r False False
+1 92.76 367.8 e False False
+1 97.19 367.8 s False False
+1 101.27 367.8   False False
+1 103.56 367.8 p False False
+1 108.00 367.8 a False False
+1 112.43 367.8 y False False
+1 116.39 367.8 é False False
+1 120.83 367.8 s False False
+1 124.91 367.8   False False
+1 127.19 367.8 p False False
+1 131.63 367.8 o False False
+1 136.07 367.8 u False False
+1 140.51 367.8 r False False
+1 143.15 367.8   False False
+1 145.43 367.8 l False False
+1 147.23 367.8 e False False
+1 151.67 367.8 s False False
+1 155.75 367.8   False False
+1 158.03 367.8 h False False
+1 162.47 367.8 e False False
+1 166.91 367.8 u False False
+1 171.35 367.8 r False False
+1 173.99 367.8 e False False
+1 178.43 367.8 s False False
+1 182.51 367.8   False False
+1 73.56 357.6 s True False
+1 77.64 357.6 u False False
+1 82.08 357.6 p False False
+1 86.52 357.6 p False False
+1 90.95 357.6 l False False
+1 92.75 357.6 é False False
+1 97.19 357.6 m False False
+1 104.03 357.6 e False False
+1 108.47 357.6 n False False
+1 112.91 357.6 t False False
+1 115.19 357.6 a False False
+1 119.63 357.6 i False False
+1 121.43 357.6 r False False
+1 124.07 357.6 e False False
+1 128.50 357.6 s False False
+1 39.48 261.2 2 True False
+1 43.92 261.2 3 False False
+1 41.64 537.4 9 True False
+1 227.88 459.7 D True False
+1 233.64 459.7 S False False
+1 54.60 202.6 E True False
+1 60.00 202.6 ) False False
+1 62.64 202.6   False False
+1 64.93 202.6 i False False
+1 66.73 202.6 m False False
+1 73.57 202.6 p False False
+1 78.00 202.6 ô False False
+1 82.44 202.6 t False False
+1 84.72 202.6   False False
+1 87.00 202.6 r False False
+1 89.64 202.6 e False False
+1 94.08 202.6 t False False
+1 96.36 202.6 e False False
+1 100.80 202.6 n False False
+1 105.24 202.6 u False False
+1 109.67 202.6   False False
+1 111.96 202.6   False False
+1 114.24 202.6   False False
+1 73.56 343.7 s True False
+1 77.64 343.7 u False False
+1 82.08 343.7 p False False
+1 86.52 343.7 p False False
+1 90.96 343.7 l False False
+1 92.76 343.7 é False False
+1 97.19 343.7 m False False
+1 104.03 343.7 e False False
+1 108.47 343.7 n False False
+1 112.91 343.7 t False False
+1 115.19 343.7 s False False
+1 119.27 343.7   False False
+1 121.55 343.7 d False False
+1 125.99 343.7 e False False
+1 130.43 343.7   False False
+1 132.71 343.7 s False False
+1 136.79 343.7 a False False
+1 141.23 343.7 l False False
+1 143.03 343.7 a False False
+1 147.47 343.7 i False False
+1 149.27 343.7 r False False
+1 151.91 343.7 e False False
+1 156.35 343.7 s False False
+1 73.56 328.7 s True False
+1 77.64 328.7 u False False
+1 82.08 328.7 p False False
+1 86.52 328.7 p False False
+1 90.95 328.7 l False False
+1 92.75 328.7 é False False
+1 97.19 328.7 m False False
+1 104.03 328.7 e False False
+1 108.47 328.7 n False False
+1 112.91 328.7 t False False
+1 115.19 328.7 s False False
+1 119.27 328.7   False False
+1 121.55 328.7 d False False
+1 125.99 328.7 e False False
+1 130.43 328.7   False False
+1 132.71 328.7 s False False
+1 136.79 328.7 a False False
+1 141.23 328.7 l False False
+1 143.03 328.7 a False False
+1 147.47 328.7 i False False
+1 149.27 328.7 r False False
+1 151.91 328.7 e False False
+1 156.34 328.7 s False False
+1 160.42 328.7   False False
+1 162.71 328.7 p False False
+1 167.14 328.7 o False False
+1 171.58 328.7 u False False
+1 176.02 328.7 r False False
+1 178.66 328.7   False False
+1 180.94 328.7 t False False
+1 183.22 328.7 r False False
+1 185.86 328.7 a False False
+1 190.30 328.7 v False False
+1 194.26 328.7 a False False
+1 198.70 328.7 i False False
+1 200.50 328.7 l False False
+1 202.30 328.7   False False
+1 204.58 328.7 d False False
+1 209.02 328.7 e False False
+1 213.46 328.7   False False
+1 215.74 328.7 n False False
+1 220.18 328.7 u False False
+1 224.62 328.7 i False False
+1 226.42 328.7 t False False
+1 228.70 328.7 , False False
+1 230.98 328.7   False False
+1 73.56 318.5 d True False
+1 78.00 318.5 e False False
+1 82.44 318.5   False False
+1 84.72 318.5 d False False
+1 89.16 318.5 i False False
+1 90.96 318.5 m False False
+1 97.80 318.5 a False False
+1 102.24 318.5 n False False
+1 106.67 318.5 c False False
+1 110.75 318.5 h False False
+1 115.19 318.5 e False False
+1 119.63 318.5   False False
+1 121.91 318.5 e False False
+1 126.35 318.5 t False False
+1 128.63 318.5   False False
+1 130.91 318.5 d False False
+1 135.35 318.5 e False False
+1 139.79 318.5   False False
+1 142.07 318.5 j False False
+1 143.87 318.5 o False False
+1 148.31 318.5 u False False
+1 152.75 318.5 r False False
+1 155.39 318.5 s False False
+1 159.47 318.5   False False
+1 161.75 318.5 f False False
+1 164.03 318.5 é False False
+1 168.47 318.5 r False False
+1 171.11 318.5 i False False
+1 172.91 318.5 é False False
+1 177.35 318.5 s False False
+1 181.43 318.5   False False
+1 183.71 318.5   False False
+1 185.99 318.5   False False
+1 188.27 318.5   False False
+1 190.56 318.5   False False
+1 192.84 318.5   False False
+1 195.12 318.5   False False
+1 197.41 318.5   False False
+1 199.69 318.5   False False
+1 201.97 318.5   False False
+1 204.25 318.5   False False
+1 206.54 318.5   False False

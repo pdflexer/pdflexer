@@ -15,7 +15,6 @@ using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
 using Xunit;
 
 namespace PdfLexer.Tests

@@ -17,6 +17,7 @@ await BuildCommandLine()
                         sc
                             .AddSingleton(ctx.Configuration)
                             .AddTransient<ImageSampler>()
+                            .AddTransient<TextSampler>()
                             .AddLogging(x => x.AddConsole());
                     });
                 })
@@ -35,6 +36,10 @@ static CommandLineBuilder BuildCommandLine()
     gen.Handler = CommandHandler.Create<GenStdGlyph, IHost>(RunGen);
     root.AddCommand(gen);
 
+    var txt = RunTextCmd.CreateCommand();
+    txt.Handler = CommandHandler.Create<RunTextCmd, IHost>(RunText);
+    root.AddCommand(txt);
+
     return new CommandLineBuilder(root);
 
 }
@@ -43,6 +48,14 @@ static Task RunImages(RunImageCmd cmd, IHost host)
 {
     var provider = host.Services;
     var proc = provider.GetRequiredService<ImageSampler>();
+    proc.Run(cmd);
+    return Task.CompletedTask;
+}
+
+static Task RunText(RunTextCmd cmd, IHost host)
+{
+    var provider = host.Services;
+    var proc = provider.GetRequiredService<TextSampler>();
     proc.Run(cmd);
     return Task.CompletedTask;
 }

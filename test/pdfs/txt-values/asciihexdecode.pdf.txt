@@ -1,0 +1,11 @@
+1 350.00 750.0 H True False
+1 371.66 750.0 e False False
+1 388.34 750.0 l False False
+1 395.00 750.0 l False False
+1 401.66 750.0 o False False
+1 418.34 750.0   False False
+1 426.68 750.0 w False False
+1 448.34 750.0 o False False
+1 465.02 750.0 r False False
+1 475.01 750.0 l False False
+1 481.67 750.0 d False False

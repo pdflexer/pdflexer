@@ -1,0 +1,21 @@
+1 10.00 20.0 I True False
+1 19.77 20.0 N True False
+1 35.43 20.0 T False False
+1 50.10 20.0 E False False
+1 62.77 20.0 L False False
+1 75.10 20.0 L False False
+1 87.43 20.0 E False False
+1 100.10 20.0 C False False
+1 114.43 20.0 T False False
+1 129.10 20.0 U False False
+1 144.09 20.0 A False False
+1 156.77 20.0 L False False
+1 169.10 20.0   False False
+1 174.00 20.0 P True False
+1 190.01 20.0 R True False
+1 203.35 20.0 O False False
+1 219.01 20.0 P False False
+1 231.01 20.0 E False False
+1 243.69 20.0 R False False
+1 257.02 20.0 T False False
+1 271.69 20.0 Y False False

@@ -1,0 +1,8 @@
+1 10.00 20.0 ° True False
+1 18.00 20.0 µ False False
+1 29.52 20.0 ± False False
+1 40.50 20.0 Ω False False
+1 55.86 20.0 θ False False
+1 66.28 20.0 √ False False
+1 77.26 20.0 = False False
+1 88.24 20.0 + False False
