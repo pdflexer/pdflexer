@@ -89,7 +89,6 @@ internal partial class Type1Font
             string?[]? t1Names;
             using var buffer = file.Contents.GetDecodedBuffer();
             var data = buffer.GetData();
-            File.WriteAllBytes("c:\\temp\\type1.txt", data.ToArray());
             if (Type1Reader.IsType1File(data))
             {
                 var reader = new Type1Reader(ctx, data);

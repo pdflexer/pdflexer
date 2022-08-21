@@ -64,7 +64,7 @@ public class FontType0 : IPdfFont
     /// </summary>
     public FontCID? DescendantFont
     {
-        get => NativeObject.Get<PdfArray>(PdfName.DescendantFonts)?.FirstOrDefault()?.GetAs<PdfDictionary>();
+        get => NativeObject.Get<PdfArray>(PdfName.DescendantFonts)?.FirstOrDefault()?.GetValueOrNull<PdfDictionary>();
         set => NativeObject.Set(PdfName.DescendantFonts, value == null ? null : new PdfArray(new List<IPdfObject> { value.NativeObject.Indirect() }));
     }
 

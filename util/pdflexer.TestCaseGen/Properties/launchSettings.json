@@ -2,7 +2,7 @@
   "profiles": {
     "pdflexer.TestCaseGen": {
       "commandName": "Project",
-      "commandLineArgs": "std-fonts"
+      "commandLineArgs": "txt -i C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs -o C:\\source\\Github\\pdflexer\\test\\results\\txt-sample"
     }
   }
 }

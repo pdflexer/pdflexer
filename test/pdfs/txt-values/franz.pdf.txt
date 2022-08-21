@@ -1,0 +1,11 @@
+1 10.00 20.0 H True False
+1 24.44 20.0 e False False
+1 35.56 20.0 l False False
+1 41.12 20.0 l False False
+1 46.68 20.0 o False False
+1 58.90 20.0   False False
+1 64.46 20.0 W False False
+1 83.34 20.0 o False False
+1 95.56 20.0 r False False
+1 103.34 20.0 l False False
+1 108.90 20.0 d False False

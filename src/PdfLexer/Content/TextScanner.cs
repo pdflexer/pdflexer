@@ -23,6 +23,7 @@ namespace PdfLexer.Content
         private readonly List<UnappliedGlyph> CurrentGlyphs;
         private UnappliedGlyph CurrentGlyph;
         private PdfOperatorType LastOp;
+        private bool DataRead;
 
 
         /// <summary>
@@ -68,6 +69,7 @@ namespace PdfLexer.Content
             WasNewLine = false;
             WasNewStatement = false;
             LastOp = PdfOperatorType.Unknown;
+            DataRead = false;
         }
 
         public bool Advance()
@@ -182,16 +184,23 @@ namespace PdfLexer.Content
                                 {
                                     tao.Apply(TextState);
                                 }
-                                if (LastOp == PdfOperatorType.T_Star) { WasNewLine = true; }
+                                if (LastOp == PdfOperatorType.singlequote 
+                                    || LastOp == PdfOperatorType.doublequote 
+                                    || LastOp == PdfOperatorType.T_Star) { 
+                                    WasNewLine = true;
+                                    DataRead = false;
+                                }
+                                LastOp = nxt;
                                 Scanner.SkipCurrent();
                                 continue;
                         }
 
-                        if (LastOp == PdfOperatorType.singlequote || LastOp == PdfOperatorType.doublequote)
+                        if (LastOp == PdfOperatorType.singlequote || LastOp == PdfOperatorType.doublequote || LastOp == PdfOperatorType.T_Star)
                         {
                             WasNewLine = true;
                         }
                         WasNewStatement = true;
+                        DataRead = false;
 
                         LastOp = nxt;
 
@@ -281,12 +290,13 @@ namespace PdfLexer.Content
                     }
 
                     // delay setting false until user can read it once
-                    if (trigger)
+                    if (DataRead)
                     {
                         WasNewLine = false;
                         WasNewStatement = false;
                     }
 
+                    DataRead = true;
                     Glyph = CurrentGlyph.Glyph;
                     return true;
                 }

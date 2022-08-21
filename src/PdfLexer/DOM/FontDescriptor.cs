@@ -19,8 +19,10 @@ namespace PdfLexer.DOM
             NativeObject = dict;
         }
 
+        [return: NotNullIfNotNull("dict")]
         public static implicit operator FontDescriptor?(PdfDictionary? dict) => dict == null ? null : new FontDescriptor(dict);
-        public static implicit operator PdfDictionary?(FontDescriptor? page) => page?.NativeObject;
+        [return: NotNullIfNotNull("obj")]
+        public static implicit operator PdfDictionary?(FontDescriptor? obj) => obj?.NativeObject;
 
         /// <summary>
         /// required 
