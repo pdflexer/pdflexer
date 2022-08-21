@@ -1,0 +1,7 @@
+1 10.00 20.0 2 True False
+1 19.12 20.0 3 True False
+1 28.24 20.0 4 True False
+1 37.36 20.0 5 True False
+1 46.48 20.0 6 True False
+1 55.60 20.0 7 True False
+1 64.72 20.0 8 True False

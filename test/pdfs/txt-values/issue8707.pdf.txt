@@ -1,0 +1,2 @@
+1 10.00 20.0 E True False
+1 21.66 20.0   False False

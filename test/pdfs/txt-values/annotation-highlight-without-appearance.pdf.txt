@@ -1,0 +1,63 @@
+1 56.80 723.6 H True False
+1 64.20 723.6 i False False
+1 66.99 723.6 g False False
+1 72.59 723.6 h False False
+1 78.89 723.6 l False False
+1 81.68 723.6 i False False
+1 84.46 723.6 g False False
+1 90.06 723.6 h False False
+1 96.27 723.6 t False False
+1 100.26 723.6   False False
+1 102.96 723.6 ( False False
+1 106.56 723.6 w False False
+1 115.16 723.6 i False False
+1 117.94 723.6 t False False
+1 121.94 723.6 h False False
+1 128.24 723.6 o False False
+1 134.54 723.6 u False False
+1 140.84 723.6 t False False
+1 144.93 723.6   False False
+1 147.63 723.6 a False False
+1 153.33 723.6 p False False
+1 159.63 723.6 p False False
+1 165.93 723.6 e False False
+1 171.92 723.6 a False False
+1 177.70 723.6 r False False
+1 181.60 723.6 a False False
+1 187.30 723.6 n False False
+1 193.60 723.6 c False False
+1 198.69 723.6 e False False
+1 204.68 723.6   False False
+1 207.38 723.6 s False False
+1 211.97 723.6 t False False
+1 215.97 723.6 r False False
+1 219.96 723.6 e False False
+1 225.95 723.6 a False False
+1 231.65 723.6 m False False
+1 241.24 723.6 ) False False
+1 56.80 694.3 L True False
+1 61.80 694.3 o False False
+1 68.10 694.3 r False False
+1 72.10 694.3 e False False
+1 78.09 694.3 m False False
+1 87.68 694.3   False False
+1 90.38 694.3 i False False
+1 93.16 694.3 p False False
+1 99.36 694.3 s False False
+1 104.06 694.3 u False False
+1 110.36 694.3 m False False
+1 119.94 694.3   False False
+1 122.64 694.3 d False False
+1 128.94 694.3 o False False
+1 135.24 694.3 l False False
+1 138.03 694.3 o False False
+1 144.33 694.3 r False False
+1 148.52 694.3   False False
+1 151.22 694.3 s False False
+1 155.91 694.3 i False False
+1 158.69 694.3 t False False
+1 162.69 694.3   False False
+1 165.39 694.3 a False False
+1 171.09 694.3 m False False
+1 180.68 694.3 e False False
+1 186.58 694.3 t False False

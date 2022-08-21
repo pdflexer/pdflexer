@@ -1,0 +1,8 @@
+1 10.00 20.0 “ True False
+1 16.90 20.0 a False False
+1 27.06 20.0 a False False
+1 37.14 20.0 b False False
+1 48.18 20.0 b False False
+1 58.58 20.0 c False False
+1 69.66 20.0 c False False
+1 79.56 20.0 ” False False

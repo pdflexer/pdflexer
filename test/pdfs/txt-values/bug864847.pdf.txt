@@ -1,0 +1,13 @@
+1 70.00 50.0 H True False
+1 79.00 50.0 e False False
+1 88.00 50.0 l False False
+1 97.00 50.0 l False False
+1 106.00 50.0 o False False
+1 115.00 50.0 , False False
+1 124.00 50.0   False False
+1 127.34 50.0 8 False False
+1 136.34 50.0 6 False False
+1 145.34 50.0 4 False False
+1 154.34 50.0 8 False False
+1 163.34 50.0 4 False False
+1 172.34 50.0 7 False False

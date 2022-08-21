@@ -1,0 +1,20 @@
+1 10.00 20.0 A True False
+1 20.94 20.0 c False False
+1 29.02 20.0 c False False
+1 37.10 20.0 e False False
+1 46.14 20.0 s False False
+1 54.22 20.0 s False False
+1 62.30 20.0 o False False
+1 71.34 20.0 r False False
+1 76.56 20.0 y False False
+1 84.64 20.0   False False
+1 89.40 20.0 f False False
+1 94.16 20.0 a False False
+1 103.20 20.0 c False False
+1 111.28 20.0 i False False
+1 115.08 20.0 l False False
+1 118.88 20.0 i False False
+1 122.68 20.0 t False False
+1 127.44 20.0 i False False
+1 131.24 20.0 e False False
+1 140.28 20.0 s False False
