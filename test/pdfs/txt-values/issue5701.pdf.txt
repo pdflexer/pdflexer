@@ -1,0 +1,7 @@
+1 10.00 20.0 J True False
+1 17.76 20.0 o False False
+1 26.62 20.0 u False False
+1 36.62 20.0 r False False
+1 43.26 20.0 n False False
+1 53.26 20.0 a False False
+1 62.12 20.0 l False False

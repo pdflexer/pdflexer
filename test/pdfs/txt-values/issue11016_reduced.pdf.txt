@@ -1,0 +1,4 @@
+1 10.00 20.0 s True False
+1 18.58 20.0 t False False
+1 25.28 20.0 u False False
+1 35.14 20.0 ﬀ False False
