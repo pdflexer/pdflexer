@@ -133,7 +133,6 @@ namespace PdfLexer.Tests
         [Fact]
         public void It_Reads_Type0_Vertical_RKSJ() => RunSingle("issue11555.pdf");
 
-
         private void RunSingle(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
