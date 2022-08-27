@@ -73,7 +73,7 @@ internal ref struct CFFReader
         return GetSimpleEncoding(os.encodingOs, cset, lookup);
     }
 
-    public void AddCharactersToCid(PdfName fontName, Dictionary<uint, Glyph> all, Glyph?[] b1g)
+    public void AddCharactersToCid(PdfName fontName, Dictionary<uint, uint>? cidLu, Dictionary<uint, Glyph> all, Glyph?[] b1g)
     {
         // TODO
         // it may be useful to extract more info in case PDF hasn't 
@@ -86,23 +86,29 @@ internal ref struct CFFReader
         for (var c = 0; c < set.Count; c++)
         {
             var gid = (uint)set.GetId(c);
-            if (all.ContainsKey(gid))
+            var cid = gid;
+            if (cidLu != null)
+            {
+                cidLu.TryGetValue(gid, out cid);
+            }
+            if (all.ContainsKey(cid))
             {
                 continue;
             }
             var g = new Glyph
             {
                 GuessedUnicode = true,
-                Char = (char)gid,
-                CodePoint = gid
+                Char = (char)cid,
+                CID = cid
             };
-            all[gid] = g;
-            if (gid < b1g.Length)
+            all[cid] = g;
+            if (cid < b1g.Length)
             {
-                b1g[gid] = g;
+                b1g[cid] = g;
             }
         }
     }
+
 
     private int GetFontNumber(PdfName fontName)
     {

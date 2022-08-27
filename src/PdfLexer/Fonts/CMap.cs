@@ -18,6 +18,7 @@ namespace PdfLexer.Fonts
     {
         private List<CRange>[] rangeSets = new List<CRange>[4];
         private Dictionary<uint, CResult>? mapping;
+        internal List<CRange> Ranges;
 
         public CMap(List<CRange> ranges, Dictionary<uint, CResult>? mapping = null)
         {
@@ -31,16 +32,27 @@ namespace PdfLexer.Fonts
                 rangeSets[b].Add(range);
             }
             this.mapping = mapping;
+            Ranges = ranges;
         }
 
         public bool HasMapping { get => mapping != null; }
+
+
+        public bool TryGetMapping([NotNullWhen(true)]out Dictionary<uint, CResult>? val)
+        {
+            val = null;
+            if (mapping == null) { return false; }
+            val = mapping;
+            return true;
+        }
+
         public bool TryGetFallback(uint cp, out CResult val)
         {
             if (mapping == null) { val = default; return false; }
             return mapping.TryGetValue(cp, out val);
         }
 
-        public uint GetMappedCode(uint c)
+        public uint GetCID(uint c)
         {
             if (mapping != null && mapping.TryGetValue(c, out var cr))
             {
@@ -49,7 +61,7 @@ namespace PdfLexer.Fonts
             return c;
         }
 
-        public uint GetCharCode(ReadOnlySpan<byte> data, int os, out int l)
+        public uint GetCodePoint(ReadOnlySpan<byte> data, int os, out int l)
         {
             uint c = 0;
             var imax = 4;
@@ -146,14 +158,13 @@ namespace PdfLexer.Fonts
             int l;
             uint c;
 
-            c = _encoding.GetCharCode(data, os, out l);
+            c = _encoding.GetCodePoint(data, os, out l);
             if (l == 0)
             {
-
                 glyph = _glyphSet.notdef;
                 return _notdefBytes;
             }
-            c = _encoding.GetMappedCode(c); // convert cp to cid, does nothing with identity
+            c = _encoding.GetCID(c); // convert cp to cid, does nothing with identity
 
             glyph = _glyphSet.GetGlyph(c);
             if (glyph == _glyphSet.notdef && _cidInfo != null && _cidInfo.HasMapping)

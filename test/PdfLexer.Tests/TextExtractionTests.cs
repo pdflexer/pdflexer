@@ -121,17 +121,41 @@ namespace PdfLexer.Tests
         [Fact]
         public void It_Reads_Type0_To_Unicode() => RunSingle("basicapi.pdf");
         [Fact]
+        public void It_Reads_Type0_UNIJIS_KnownUnicode_NoEmbed2() => RunSingle("issue6286.pdf");
+        [Fact]
         public void It_Reads_Type0_UNIJIS_KnownUnicode_NoEmbed() => RunSingle("mixedfonts.pdf");
         [Fact]
         public void It_Reads_Type0_Identity_Japan1() => RunSingle("arial_unicode_en_cidfont.pdf");
         [Fact]
         public void It_Reads_Type0_EUCJP1_KnownUnicode_NoEmbed() => RunSingle("noembed-eucjp.pdf");
+
         [Fact]
         public void It_Reads_Type0_Guessed_Unicode_CIDToGID() => RunSingle("bug1650302_reduced.pdf");
         [Fact]
         public void It_Reads_Type0_Vertical_Identity() => RunSingle("vertical.pdf");
         [Fact]
         public void It_Reads_Type0_Vertical_RKSJ() => RunSingle("issue11555.pdf");
+        
+        [Fact]
+        public void It_Reads_Type0_TrueType_Embedded_CMap() => RunSingle("Test-plusminus.pdf");
+
+        [Fact]
+        public void It_Reads_Type0_ToUnicode_Identity() => RunSingle("issue12418_reduced.pdf");
+
+        [Fact]
+        public void It_Reads_Type0_ToUnicode_Identity2() => RunSingle("issue4402_reduced.pdf");
+
+        [Fact]
+        public void It_Reads_Type0_TrueType_Embedded_CMap2() => RunSingle("issue3323.pdf");
+        [Fact]
+        public void It_Reads_Type0_TrueType_Embedded_CMap3() => RunSingle("javauninstall-7r.pdf");
+
+        [Fact]
+        public void It_Reads_Type0_JIS() => RunSingle("noembed-jis7.pdf");
+        [Fact]
+        public void It_Reads_Type0_SJIS() => RunSingle("noembed-sjis.pdf");
+        [Fact]
+        public void It_Reads_Type0_Vert() => RunSingle("issue6387.pdf"); // bounding box estimate is not great here, font has huge bbox
 
         private void RunSingle(string name)
         {
