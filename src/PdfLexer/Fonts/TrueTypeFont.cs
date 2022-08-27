@@ -150,7 +150,7 @@ namespace PdfLexer.Fonts
         private static Glyph?[] GetToUnicodeGlyphs(ParsingContext ctx, ISimpleUnicode dict, PdfStream data)
         {
             using var buffer = data.Contents.GetDecodedBuffer();
-            var (ranges, glyphs, _) = CMapReader.ReadCMap(ctx, buffer.GetData());
+            var (ranges, glyphs, _, _) = CMapReader.ReadCMap(ctx, buffer.GetData());
 
             var lookup = new Glyph?[256];
             foreach (var glyph in glyphs.Values)

@@ -266,7 +266,7 @@ internal partial class Type1Font
             return;
         }
         using var buffer = str.Contents.GetDecodedBuffer();
-        var (ranges, glyphs, _) = CMapReader.ReadCMap(ctx, buffer.GetData());
+        var (ranges, glyphs, _, _) = CMapReader.ReadCMap(ctx, buffer.GetData());
 
         foreach (var glyph in glyphs.Values)
         {

@@ -28,11 +28,12 @@ internal class CMapReader
     private static byte[] cidRangeEnd = Encoding.ASCII.GetBytes("endcidrange");
     private static byte[] rangeStart = Encoding.ASCII.GetBytes("beginbfrange");
     private static byte[] rangeEnd = Encoding.ASCII.GetBytes("endbfrange");
-    private static byte[] wmode = Encoding.ASCII.GetBytes("WMode");
+    private static byte[] wmode = Encoding.ASCII.GetBytes("/WMode");
     private static UnicodeEncoding ucBO = new UnicodeEncoding(true, true, false);
     private static UnicodeEncoding uc = new UnicodeEncoding(true, false, false);
-    public static (List<CRange> Ranges, Dictionary<uint, Glyph> Glyphs, Dictionary<uint, CResult> Cids) ReadCMap(ParsingContext ctx, ReadOnlySpan<byte> data, bool skipGlyphs = false)
+    public static (List<CRange> Ranges, Dictionary<uint, Glyph> Glyphs, Dictionary<uint, CResult> Cids, bool isVertical) ReadCMap(ParsingContext ctx, ReadOnlySpan<byte> data, bool skipGlyphs = false)
     {
+        var isVertical = false;
         var ranges = new List<CRange>();
         var glyphs = new Dictionary<uint, Glyph>();
         var cids = new Dictionary<uint, CResult>();
@@ -263,6 +264,22 @@ internal class CMapReader
                     End = cp2,
                     Bytes = bytes
                 });
+            } else if (state == ToUnicodeState.None && type == PdfTokenType.NameObj)
+            {
+                var token = scanner.GetCurrentData();
+                if (token.SequenceEqual(wmode))
+                {
+                    scanner.SkipCurrent();
+                    var wm = scanner.Peek();
+                    if (wm == PdfTokenType.NumericObj)
+                    {
+                        var num = scanner.GetCurrentObject().GetAs<PdfNumber>();
+                        if (num != null && num == 1)
+                        {
+                            isVertical = true;
+                        }
+                    }
+                }
             }
             scanner.SkipCurrent();
         }
@@ -317,7 +334,7 @@ internal class CMapReader
             }
         }
 
-        return (ranges, glyphs, cids);
+        return (ranges, glyphs, cids, isVertical);
     }
 
     private static uint ReadCodePoint(ParsingContext ctx, ReadOnlySpan<byte> token, Span<byte> buffer)

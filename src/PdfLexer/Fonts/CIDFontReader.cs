@@ -13,6 +13,7 @@ internal class Type0Font
         var enc = t0.Encoding;
         PdfName? encodingName = null;
         CMap? encoding = null;
+        var vertical = false;
         if (enc?.Type == PdfObjectType.NameObj)
         {
             encodingName = enc.GetAs<PdfName>();
@@ -21,11 +22,11 @@ internal class Type0Font
             // TODO WMode
             var encodingStream = enc.GetAs<PdfStream>();
             using var buffer = encodingStream.Contents.GetDecodedBuffer();
-            var (ranges, _, cids) = CMapReader.ReadCMap(ctx, buffer.GetData(), true);
+            var (ranges, _, cids, isVert) = CMapReader.ReadCMap(ctx, buffer.GetData(), true);
+            vertical = isVert;
             encoding = new CMap(ranges, cids);
         }
-
-        var vertical = false;
+        
         var identityEncoded = encodingName != null && (encodingName.Value == "/Identity-H" || encodingName.Value == "/Identity-V");
         if (!identityEncoded && encodingName != null)
         {
@@ -290,7 +291,7 @@ internal class Type0Font
         }
         var str = t0.ToUnicode;
         using var buffer = str.Contents.GetDecodedBuffer();
-        var (ranges, glyphs, _) = CMapReader.ReadCMap(ctx, buffer.GetData());
+        var (ranges, glyphs, _, _) = CMapReader.ReadCMap(ctx, buffer.GetData());
         foreach (var glyph in glyphs.Values)
         {
             var cid = glyph.CodePoint ?? 0;
