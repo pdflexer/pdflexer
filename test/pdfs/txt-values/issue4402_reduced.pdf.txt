@@ -1,0 +1,24 @@
+1 22.70 794.7 K True False
+1 31.58 794.7 E False False
+1 40.46 794.7 Y False False
+1 49.34 794.7   False False
+1 53.78 794.7 I False False
+1 58.22 794.7 N False False
+1 68.22 794.7 V False False
+1 77.10 794.7 E False False
+1 85.98 794.7 S False False
+1 94.86 794.7 T False False
+1 102.64 794.7 O False False
+1 112.64 794.7 R False False
+1 122.64 794.7   False False
+1 127.08 794.7 I False False
+1 131.52 794.7 N False False
+1 141.52 794.7 F False False
+1 149.30 794.7 O False False
+1 159.30 794.7 R False False
+1 169.30 794.7 M False False
+1 181.52 794.7 A False False
+1 189.66 794.7 T False False
+1 197.44 794.7 I False False
+1 201.88 794.7 O False False
+1 211.88 794.7 N False False

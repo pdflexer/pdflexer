@@ -1,0 +1,12 @@
+1 143.35 705.3 A True False
+1 150.82 705.3 B False False
+1 157.88 705.3 C False False
+1 167.48 705.3 あ True False
+1 177.06 705.3 い False False
+1 186.64 705.3 う False False
+1 196.22 705.3 え False False
+1 205.81 705.3 お False False
+1 217.80 705.3 1 True False
+1 222.78 705.3 2 False False
+1 227.76 705.3 3 False False
+1 294.17 93.4 1 True False

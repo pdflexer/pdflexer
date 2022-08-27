@@ -1,0 +1,5 @@
+1 10.00 20.0 T True False
+1 22.26 20.0 H False False
+1 37.10 20.0 A False False
+1 50.64 20.0 N False False
+1 65.48 20.0 N False False

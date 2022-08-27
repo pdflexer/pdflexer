@@ -11,35 +11,8 @@ internal class Type0Font
     public static IReadableFont CreateReadable(ParsingContext ctx, FontType0 t0)
     {
         var enc = t0.Encoding;
-        PdfName? encodingName = null;
-        CMap? encoding = null;
-        var vertical = false;
-        if (enc?.Type == PdfObjectType.NameObj)
-        {
-            encodingName = enc.GetAs<PdfName>();
-        } else if (enc?.Type == PdfObjectType.StreamObj)
-        {
-            // TODO WMode
-            var encodingStream = enc.GetAs<PdfStream>();
-            using var buffer = encodingStream.Contents.GetDecodedBuffer();
-            var (ranges, _, cids, isVert) = CMapReader.ReadCMap(ctx, buffer.GetData(), true);
-            vertical = isVert;
-            encoding = new CMap(ranges, cids);
-        }
-        
-        var identityEncoded = encodingName != null && (encodingName.Value == "/Identity-H" || encodingName.Value == "/Identity-V");
-        if (!identityEncoded && encodingName != null)
-        {
-            var (ranges, maps, isVert) = KnownCMaps.GetCMap(encodingName.Value.Substring(1));
-            if (ranges != null)
-            {
-                vertical = isVert;
-                encoding = new CMap(ranges, maps);
-            }
-        } else if (encodingName != null && encodingName.Value == "/Identity-V")
-        {
-            vertical = true;
-        }
+
+        var (encoding, vertical) = GetEncoding(ctx, t0.Encoding);
 
         // if encodingmap is null we CMapFont assumes identity
         var cidCharSet = t0.DescendantFont?.CIDSystemInfo?.Registry?.Value + "-" + t0.DescendantFont?.CIDSystemInfo?.Ordering?.Value;
@@ -56,22 +29,11 @@ internal class Type0Font
         }
         AddWidths(t0, all, b1g);
 
-        AddToUnicodeValues(ctx, t0, all, b1g);
+        AddCodePoints(encoding, all);
 
+        AddToUnicodeValues(ctx, t0, encoding, all, b1g);
 
-        if (encoding == null)
-        {
-            // this matches the identity ranges, should probably just read from BCMAP
-            var twoByte = new CRange
-            {
-                Start = 0x0000,
-                End = 0xFFFF,
-                Bytes = 2
-            };
-            encoding = new CMap(new List<CRange> { twoByte });
-        }
-
-        CMap cidInfo = null;
+        CMap? cidInfo = null;
         if (knownDesc)
         {
             // add unicode values from known cmap
@@ -128,21 +90,91 @@ internal class Type0Font
     }
 
     [return: NotNullIfNotNull("name")]
-    private static Glyph? MapGlyph(uint cc, string? name)
+    private static Glyph? MapGlyph(uint cid, string? name)
     {
         if (name == null) { return null; }
         var g = new Glyph
         {
             Name = name,
-            CodePoint = cc
+            CID = cid
         };
         if (!GlyphNames.Lookup.TryGetValue(name, out char value))
         {
-            value = (char)cc;
+            value = (char)cid;
             g.GuessedUnicode = true;
         }
         g.Char = value;
         return g;
+    }
+
+    private static (CMap encoding, bool isVertical) GetEncoding(ParsingContext ctx, IPdfObject? encoding)
+    {
+        if (encoding == null)
+        {
+            return FallbackEncoding();
+        }
+        encoding = encoding.Resolve();
+
+        if (encoding.Type == PdfObjectType.NameObj)
+        {
+            var name = encoding.GetAs<PdfName>();
+            if (name == null)
+            {
+                return FallbackEncoding();
+            }
+            var identityEncoded = (name.Value == "/Identity-H" || name.Value == "/Identity-V");
+            if (!identityEncoded)
+            {
+                var (ranges, maps, isVert) = KnownCMaps.GetCMap(name.Value.Substring(1));
+                if (ranges != null)
+                {
+                    return (new CMap(ranges, maps), isVert);
+                }
+            } 
+            else if (name.Value == "/Identity-V")
+            {
+                var def = FallbackEncoding();
+                return (def.encoding, true);
+            }
+            return FallbackEncoding();
+        }
+        else if (encoding?.Type == PdfObjectType.StreamObj)
+        {
+            var stream = encoding.GetAs<PdfStream>();
+            using var buffer = stream.Contents.GetDecodedBuffer();
+            var (ranges, _, cids, isVert) = CMapReader.ReadCMap(ctx, buffer.GetData(), true);
+            if (stream.Dictionary.TryGetValue("/UseCMap", out var other))
+            {
+                var prev = GetEncoding(ctx, other);
+                if (ranges.Count == 0)
+                {
+                    ranges = prev.encoding.Ranges;
+                }
+                if (prev.encoding.TryGetMapping(out var map))
+                {
+                    foreach (var item in map)
+                    {
+                        if (!cids.ContainsKey(item.Key))
+                        {
+                            cids[item.Key] = item.Value;
+                        }
+                    }
+                }
+            }
+            return (new CMap(ranges, cids), isVert);
+        }
+        return FallbackEncoding();
+    }
+
+    private static (CMap encoding, bool isVertical) FallbackEncoding()
+    {
+        var twoByte = new CRange
+        {
+            Start = 0x0000,
+            End = 0xFFFF,
+            Bytes = 2
+        };
+        return (new CMap(new List<CRange> { twoByte }), false);
     }
 
     private static void AddEmbeddedValues(ParsingContext ctx, FontType0 t0, Dictionary<uint, Glyph> all, Glyph[] b1g)
@@ -154,17 +186,28 @@ internal class Type0Font
             return;
         }
 
+        var cidtogid = t0.DescendantFont?.ReadCIDToGid();
+        Dictionary<uint, uint>? cidLu = null;
+        if (cidtogid != null)
+        {
+            cidLu = new Dictionary<uint, uint>();
+            foreach (var (cid, gid) in cidtogid)
+            {
+                cidLu[gid] = cid;
+            }
+        }
+
         using var buff = ttf.Contents.GetDecodedBuffer();
         var data = buff.GetData();
         if (TrueTypeReader.IsTTFile(data) || TrueTypeReader.IsTTCollectionFile(data) || TrueTypeReader.IsOpenTypeFile(data))
         {
-            AddFromTrueType(ctx, t0, all, b1g, data);
+            AddFromTrueType(ctx, t0, cidtogid, cidLu, all, b1g, data);
         } else if (CFFReader.IsCFFfile(data))
         {
             try
             {
                 var cff = new CFFReader(ctx, data);
-                cff.AddCharactersToCid(t0.BaseFont ?? "Empty", all, b1g);
+                cff.AddCharactersToCid(t0.BaseFont ?? "Empty", cidLu, all, b1g);
             } catch (Exception e)
             {
                 ctx.Error($"CFF parsing error for t0 font {t0.BaseFont}: " + e.Message);
@@ -176,21 +219,12 @@ internal class Type0Font
         }
     }
 
-    private static void AddFromTrueType(ParsingContext ctx, FontType0 t0, Dictionary<uint, Glyph> all, Glyph?[] b1g, ReadOnlySpan<byte> data)
+    private static void AddFromTrueType(ParsingContext ctx, FontType0 t0,
+        Dictionary<uint, uint>? cidtogid, Dictionary<uint, uint>? cidLu,
+        Dictionary<uint, Glyph> all, Glyph?[] b1g, ReadOnlySpan<byte> data)
     {
         try
         {
-            var cidtogid = t0.DescendantFont?.ReadCIDToGid();
-            Dictionary<uint, uint>? cidLu = null;
-            if (cidtogid != null)
-            {
-                cidLu = new Dictionary<uint, uint>();
-                foreach (var (cid, gid) in cidtogid)
-                {
-                    cidLu[gid] = cid;
-                }
-            }
-
             var reader = new TrueTypeReader(ctx, data);
 
             if (reader.TryGetMaxpGlyphs(out int count) && reader.HasPostTable())
@@ -198,43 +232,23 @@ internal class Type0Font
                 var (_, names) = reader.ReadPostScriptTable(count);
                 if (names.Length != 0)
                 {
-                    if (cidLu != null)
-                    {
-                        for (uint i = 0; i < names.Length; i++)
-                        {
-                            var gid = i;
-                            var name = names[i];
-                            if (name == null) { continue; }
-                            if (cidLu.TryGetValue(gid, out var cid))
-                            {
-                                var g = MapGlyph(cid, name);
-                                all[cid] = g;
-                                if (cid < b1g.Length)
-                                {
-                                    b1g[cid] = g;
-                                }
-                            }
-                        }
-                    }
-
-                    // fallback for unmapped cidtogid && those without cidtogid
                     for (uint i = 0; i < names.Length; i++)
                     {
                         var gid = i;
                         var name = names[i];
                         if (name == null) { continue; }
                         var cid = gid;
-                        if (cidLu == null || !all.ContainsKey(cid))
+                        if (cidLu != null)
                         {
-                            var g = MapGlyph(cid, name);
-                            all[cid] = g;
-                            if (cid < b1g.Length)
-                            {
-                                b1g[cid] = g;
-                            }
+                            cidLu.TryGetValue(gid, out cid);
+                        }
+                        var g = MapGlyph(cid, name);
+                        all[cid] = g;
+                        if (cid < b1g.Length)
+                        {
+                            b1g[cid] = g;
                         }
                     }
-                    return;
                 }
             }
             
@@ -248,24 +262,25 @@ internal class Type0Font
                     {
                         var g = new Glyph
                         {
-                            CodePoint = i,
                             Char = (char)i,
                             GuessedUnicode = true
                         };
 
-                        if (cidLu != null && cidLu.TryGetValue(i, out var cid))
+                        uint cid = i;
+                        if (cidLu != null)
                         {
-                            g.CodePoint = cid;
-                            // pdfium seems to map this sometimes and other times not
-                            // TODO -> determine correct, this is required for bug1650302_reduced but
-                            // may break others
-                            g.Char = (char)cid;
+                            cidLu.TryGetValue(i, out cid);
                         }
+                        g.CID = cid;
+                        // pdfium seems to guess unicode sometimes using gid and other times using cid
+                        // TODO -> determine correct, this is required for bug1650302_reduced but
+                        // may break others
+                        g.Char = (char)cid;
 
-                        all[g.CodePoint.Value] = g;
-                        if (g.CodePoint < b1g.Length)
+                        all[cid] = g;
+                        if (cid < b1g.Length)
                         {
-                            b1g[g.CodePoint.Value] = g;
+                            b1g[cid] = g;
                         }
                     }
                 }
@@ -273,7 +288,35 @@ internal class Type0Font
             {
                 var cffData = reader.GetCFFData();
                 var cffReader = new CFFReader(ctx, cffData);
-                cffReader.AddCharactersToCid(t0.BaseFont ?? "Empty", all, b1g);
+                cffReader.AddCharactersToCid(t0.BaseFont ?? "Empty", cidLu, all, b1g);
+            }
+
+            if (reader.HasCMapTable())
+            {
+                var maps = reader.ReadCMapTables();
+                if (reader.TryGetNameMap(maps, out var gidToUnicode))
+                {
+                    foreach (var g in all)
+                    {
+                        if (!g.Value.GuessedUnicode) { continue;  }
+                        var cid = g.Key;
+                        var gid = cid;
+                        if (cidtogid != null)
+                        {
+                            cidtogid.TryGetValue(cid, out gid);
+                        }
+
+                        if (gidToUnicode.TryGetValue(gid, out var name))
+                        {
+                            var c = GlyphNames.Get(name, 0);
+                            if (c != null)
+                            {
+                                g.Value.Char = c.Value;
+                                g.Value.GuessedUnicode = false;
+                            }
+                        }
+                    }
+                }
             }
 
         } catch (Exception e)
@@ -283,32 +326,89 @@ internal class Type0Font
         
     }
 
-    private static void AddToUnicodeValues(ParsingContext ctx, FontType0 t0, Dictionary<uint, Glyph> all, Glyph[] b1g)
+    private static void AddToUnicodeValues(ParsingContext ctx, FontType0 t0, CMap encoding, Dictionary<uint, Glyph> all, Glyph[] b1g)
     {
-        if (t0.ToUnicode == null)
+        if (!t0.NativeObject.TryGetValue(PdfName.ToUnicode, out var obj))
         {
             return;
         }
-        var str = t0.ToUnicode;
-        using var buffer = str.Contents.GetDecodedBuffer();
-        var (ranges, glyphs, _, _) = CMapReader.ReadCMap(ctx, buffer.GetData());
-        foreach (var glyph in glyphs.Values)
+        obj = obj.Resolve();
+        switch (obj)
         {
-            var cid = glyph.CodePoint ?? 0;
-            if (all.TryGetValue(cid, out var existing))
-            {
-                if (existing.GuessedUnicode)
+            case PdfName nm:
+                if (!nm.Value.StartsWith("/Identity"))
                 {
-                    existing.GuessedUnicode = false;
-                    existing.Char = glyph.Char;
-                    existing.MultiChar = glyph.MultiChar;
+                    return;
                 }
-                continue;
-            }
-            all[cid] = glyph;
-            if (b1g != null && cid < b1g.Length)
+                foreach (var g in all.Values)
+                {
+                    if (g.GuessedUnicode && g.CodePoint.HasValue)
+                    {
+                        g.Char = (char)g.CodePoint.Value;
+                        g.GuessedUnicode = false;
+                    }
+                }
+                break;
+            case PdfStream stream:
+                {
+                    using var buffer = stream.Contents.GetDecodedBuffer();
+                    var (ranges, glyphs, _, _) = CMapReader.ReadCMap(ctx, buffer.GetData());
+                    encoding.TryGetMapping(out var lookup);
+                    foreach (var glyph in glyphs.Values)
+                    {
+                        var cp = glyph.CodePoint ?? 0;
+                        if (all.TryGetValue(cp, out var existing))
+                        {
+                            if (existing.GuessedUnicode)
+                            {
+                                existing.GuessedUnicode = false;
+                                existing.Char = glyph.Char;
+                                existing.MultiChar = glyph.MultiChar;
+                            }
+                            continue;
+                        }
+                        var cid = cp;
+                        if (lookup != null && lookup.TryGetValue(cp, out var cr))
+                        {
+                            cid = cr.Code;
+                        }
+                        all[cid] = glyph;
+                        if (b1g != null && cid < b1g.Length)
+                        {
+                            b1g[cid] = glyph;
+                        }
+                    }
+                }
+                break;
+        }
+        
+    }
+
+    private static void AddCodePoints(CMap encoding, Dictionary<uint, Glyph> all)
+    {
+        if (!encoding.TryGetMapping(out var mapping))
+        {
+            foreach (var g in all.Values)
             {
-                b1g[cid] = glyph;
+                g.CodePoint = g.CID;
+            }
+            return;
+        }
+        Dictionary<uint,uint> lookup = new Dictionary<uint, uint>();
+        foreach (var kvp in mapping)
+        {
+            lookup[kvp.Value.Code] = kvp.Key; ;
+        }
+
+        foreach (var g in all.Values)
+        {
+            if (g.CID == null) { continue; } // shouldn't hapen
+            if (lookup.TryGetValue(g.CID.Value, out var cp))
+            {
+                g.CodePoint = cp;
+                
+            } else {
+                g.CodePoint = g.CID;
             }
         }
     }
@@ -333,7 +433,7 @@ internal class Type0Font
                 var g = new Glyph
                 {
                     Char = (char)cid,
-                    CodePoint = cid,
+                    CID = cid,
                     w0 = rw,
                     IsWordSpace = false,
                     GuessedUnicode = true,
@@ -367,7 +467,7 @@ internal class Type0Font
                 var g = new Glyph
                 {
                     Char = (char)cid,
-                    CodePoint = cid,
+                    CID = cid,
                     w1 = rw,
                     IsWordSpace = false,
                     GuessedUnicode = true
@@ -417,12 +517,12 @@ internal class Type0Font
                 if (arr.Count > 0)
                 {
                     var dxt = arr[0].GetAs<PdfNumber>();
-                    if (dxt != null) { dx = dxt; }
+                    if (dxt != null) { dx = dxt; dx /= 1000f; }
                 }
                 if (arr.Count > 1)
                 {
                     var dyt = arr[1].GetAs<PdfNumber>();
-                    if (dyt != null) { dy = dyt; }
+                    if (dyt != null) { dy = dyt; dy /= 1000f; }
                 }
             }
         }

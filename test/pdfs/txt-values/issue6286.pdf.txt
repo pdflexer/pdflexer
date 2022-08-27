@@ -1,0 +1,46 @@
+1 100.00 748.0 E True False
+1 114.00 748.0 x False False
+1 128.00 748.0 a False False
+1 142.00 748.0 m False False
+1 156.00 748.0 p False False
+1 170.00 748.0 l False False
+1 184.00 748.0 e False False
+1 198.00 748.0   False False
+1 212.00 748.0 t False False
+1 226.00 748.0 e False False
+1 240.00 748.0 x False False
+1 254.00 748.0 t False False
+1 268.00 748.0 : False False
+1 282.00 748.0   False False
+1 296.00 748.0 好 False False
+1 310.00 748.0 酸 False False
+1 324.00 748.0 球 False False
+1 338.00 748.0 % False False
+1 352.00 748.0 ( False False
+1 366.00 748.0 E False False
+1 380.00 748.0 o False False
+1 394.00 748.0 s False False
+1 408.00 748.0 ) False False
+1 100.00 724.0 E True False
+1 109.17 724.0 x False False
+1 116.45 724.0 a False False
+1 124.54 724.0 m False False
+1 136.67 724.0 p False False
+1 144.76 724.0 l False False
+1 147.99 724.0 e False False
+1 156.08 724.0   False False
+1 160.13 724.0 t False False
+1 164.48 724.0 e False False
+1 172.58 724.0 x False False
+1 179.86 724.0 t False False
+1 184.21 724.0 : False False
+1 188.26 724.0   False False
+1 192.30 724.0 好 False False
+1 206.30 724.0 酸 False False
+1 220.30 724.0 球 False False
+1 234.30 724.0 % False False
+1 247.25 724.0 ( False False
+1 252.10 724.0 E False False
+1 261.27 724.0 o False False
+1 269.36 724.0 s False False
+1 276.64 724.0 ) False False

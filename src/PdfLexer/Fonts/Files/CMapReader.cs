@@ -149,8 +149,6 @@ internal class CMapReader
             }
             else if (state == ToUnicodeState.ReadCidRange)
             {
-
-
                 // c1
                 var token = scanner.GetCurrentData();
                 var bytes = (token.Length - 2) / 2;
