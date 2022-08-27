@@ -1,0 +1,5 @@
+1 10.00 20.0 - True False
+1 20.00 20.0 - False False
+1 30.00 20.0 - False False
+1 40.00 20.0 c False False
+1 50.00 20.0 m False False

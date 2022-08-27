@@ -1,0 +1,7 @@
+1 28.35 793.4 我 True False
+1 48.35 793.4 们 False False
+1 68.35 793.4 都 False False
+1 88.35 793.4 是 False False
+1 108.35 793.4 黑 False False
+1 128.35 793.4 体 False False
+1 148.35 793.4 字 False False

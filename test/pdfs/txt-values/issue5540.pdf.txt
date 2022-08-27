@@ -1,0 +1,14 @@
+1 10.00 30.0 ἄ True False
+1 19.58 30.0 γ False False
+1 19.58 30.0 γ False False
+1 36.02 30.0 ε False False
+1 43.28 30.0 λ False False
+1 52.32 30.0 ο False False
+1 60.22 30.0 ς False False
+1 10.00 10.0 ἀ True False
+1 19.58 10.0 γ False False
+1 28.68 10.0 ε False False
+1 35.94 10.0 λ False False
+1 45.08 10.0 ε False False
+1 52.54 10.0 ί False False
+1 57.38 10.0 α False False

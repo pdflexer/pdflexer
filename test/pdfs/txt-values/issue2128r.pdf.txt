@@ -1,0 +1,25 @@
+1 252.75 756.8 浅 True False
+1 265.50 756.8 谈 False False
+1 278.25 756.8 校 False False
+1 291.00 756.8 长 False False
+1 303.75 756.8 的 False False
+1 316.50 756.8 魅 False False
+1 329.25 756.8 力 False False
+1 302.25 741.0   True False
+1 308.25 741.0   False False
+1 211.50 725.3 山 True False
+1 224.25 725.3 西 False False
+1 237.00 725.3 省 False False
+1 249.75 725.3 闻 False False
+1 262.50 725.3 喜 False False
+1 275.25 725.3 县 False False
+1 288.00 725.3 诚 False False
+1 300.75 725.3 镇 False False
+1 313.50 725.3 初 False False
+1 326.25 725.3 中 False False
+1 339.00 725.3   True False
+1 345.00 725.3 李 True False
+1 357.75 725.3 新 False False
+1 370.50 725.3 录 False False
+1 302.25 709.5   True False
+1 308.25 709.5   False False

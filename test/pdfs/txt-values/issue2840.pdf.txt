@@ -1,0 +1,12 @@
+1 10.00 20.0 Н True False
+1 24.44 20.0 о False False
+1 36.66 20.0 м False False
+1 51.46 20.0 е False False
+1 62.58 20.0 р False False
+1 74.80 20.0   False False
+1 80.36 20.0 п False False
+1 92.44 20.0 о False False
+1 104.66 20.0 л False False
+1 117.36 20.0 и False False
+1 129.66 20.0 с False False
+1 140.78 20.0 а False False

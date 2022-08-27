@@ -122,12 +122,12 @@ namespace PdfLexer.CMaps
 
         private const int MAX_NUM_SIZE = 16;
         private const int MAX_ENCODED_NUM_SIZE = 19; // ceil(MAX_NUM_SIZE * 7 / 8)
-        public static (List<CRange> Ranges, Dictionary<uint, CResult> Mapping) GetGlyphsFromToUnicode(ReadOnlySpan<byte> data)
+        public static (List<CRange> Ranges, Dictionary<uint, CResult> Mapping, bool Vertical, string? extends) GetGlyphsFromToUnicode(ReadOnlySpan<byte> data)
         {
             var ranges = new List<CRange>();
             var mapping = new Dictionary<uint, CResult>();
 
-            string useCMap;
+            string? useCMap = null;
 
             var start = new byte[MAX_NUM_SIZE];
             var end = new byte[MAX_NUM_SIZE];
@@ -337,7 +337,7 @@ namespace PdfLexer.CMaps
                 }
             }
 
-            return (ranges, mapping);
+            return (ranges, mapping, vertical, useCMap);
         }
 
         private static string readString(ReadOnlySpan<byte> data, ref int i)

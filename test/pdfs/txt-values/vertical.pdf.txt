@@ -1,0 +1,8 @@
+1 233.86 299.1 あ True False
+1 233.86 289.8 い False False
+1 233.86 280.6 う False False
+1 233.86 271.4 え False False
+1 233.86 262.2 お False False
+1 218.27 299.1 日 True False
+1 218.27 289.8 本 False False
+1 218.27 280.6 語 False False

@@ -177,11 +177,87 @@ public class KnownCMaps
         "v",
         "wp-symbol",
     };
-    public static (List<CRange>? Ranges, Dictionary<uint, CResult>? Mapping) GetCMap(string name)
+    public static (List<CRange>? Ranges, Dictionary<uint, CResult>? Mapping, bool Vertical) GetCMap(string name)
     {
         var assembly = Assembly.GetExecutingAssembly();
 
-        var resource = name.ToLower() switch
+        var resource = GetResourceName(name);
+        if (resource == null) { return (null, null, false); }
+
+        lock (globalCache)
+        {
+            if (globalCache.TryGetValue(resource, out var cached))
+            {
+                return (cached.Ranges, cached.Mapping, cached.Vertical);
+            }
+        }
+
+        var current = resource;
+        CMapData? complete = null;
+        while (true)
+        {
+            using (Stream stream = assembly.GetManifestResourceStream(current))
+            {
+                int total = (int)stream.Length;
+                var rented = ArrayPool<byte>.Shared.Rent((int)total);
+                int totalRead = 0;
+                int read;
+                while ((read = stream.Read(rented, totalRead, total - totalRead)) > 0)
+                {
+                    totalRead += read;
+                }
+
+                ReadOnlySpan<byte> data = rented;
+
+                var result = BCMapReader.GetGlyphsFromToUnicode(data.Slice(0, total));
+                ArrayPool<byte>.Shared.Return(rented);
+                if (complete == null)
+                {
+                    complete = new CMapData(result.Ranges, result.Mapping, result.Vertical);
+                } else
+                {
+                    if (complete.Ranges.Count == 0)
+                    {
+                        complete.Ranges = result.Ranges;
+                    }
+                    foreach (var item in result.Mapping)
+                    {
+                        if (!complete.Mapping.ContainsKey(item.Key))
+                        {
+                            complete.Mapping[item.Key] = item.Value;
+                        }
+                    }
+                }
+                
+                if (result.extends == null)
+                {
+                    break;
+                }
+                current = GetResourceName(result.extends);
+                if (current == null)
+                {
+                    break;
+                }
+            }
+        }
+
+        lock (globalCache)
+        {
+            globalCache.AddOrUpdate(resource, complete);
+        }
+
+        return (complete.Ranges, complete.Mapping, complete.Vertical);
+
+    }
+
+
+    // not referenced anywhere so will get cleared quickly, look into how to optimize caching
+    private static ConditionalWeakTable<string, CMapData>
+        globalCache = new ConditionalWeakTable<string, CMapData>();
+
+    private static string? GetResourceName(string name)
+    {
+        return name.ToLower() switch
         {
             "78-euc-h" => "PdfLexer.CMaps.Resources.78-EUC-H.bcmap",
             "78-euc-v" => "PdfLexer.CMaps.Resources.78-EUC-V.bcmap",
@@ -355,56 +431,21 @@ public class KnownCMaps
             "wp-symbol" => "PdfLexer.CMaps.Resources.WP-Symbol.bcmap",
             _ => null
         };
-        if (resource == null) { return (null, null); }
-
-        lock (globalCache)
-        {
-            if (globalCache.TryGetValue(resource, out var cached))
-            {
-                return (cached.Ranges, cached.Mapping);
-            }
-        }
-
-        using (Stream stream = assembly.GetManifestResourceStream(resource))
-        {
-            int total = (int)stream.Length;
-            var rented = ArrayPool<byte>.Shared.Rent((int)total);
-            int totalRead = 0;
-            int read;
-            while ((read = stream.Read(rented, totalRead, total - totalRead)) > 0)
-            {
-                totalRead += read;
-            }
-
-            ReadOnlySpan<byte> data = rented;
-
-            var result = BCMapReader.GetGlyphsFromToUnicode(data.Slice(0, total));
-            ArrayPool<byte>.Shared.Return(rented);
-
-            lock (globalCache)
-            {
-                globalCache.AddOrUpdate(resource, new CMapData(result.Ranges, result.Mapping));
-            }
-            return result;
-        }
     }
-
-
-    // not referenced anywhere so will get cleared quickly, look into how to optimize caching
-    private static ConditionalWeakTable<string, CMapData>
-        globalCache = new ConditionalWeakTable<string, CMapData>();
 }
 
 
 public class CMapData
 {
-    public CMapData(List<CRange> ranges, Dictionary<uint, CResult> mapping)
+    public CMapData(List<CRange> ranges, Dictionary<uint, CResult> mapping, bool vertical)
     {
         Ranges = ranges;
         Mapping = mapping;
+        Vertical = vertical;
     }
     public List<CRange> Ranges { get; set; }
     public Dictionary<uint, CResult> Mapping { get; set; }
+    public bool Vertical { get; set; }
 }
 
 public struct CResult

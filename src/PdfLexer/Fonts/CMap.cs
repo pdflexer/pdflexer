@@ -17,9 +17,9 @@ namespace PdfLexer.Fonts
     internal class CMap
     {
         private List<CRange>[] rangeSets = new List<CRange>[4];
-        private Dictionary<uint, CResult>? fallback;
+        private Dictionary<uint, CResult>? mapping;
 
-        public CMap(List<CRange> ranges, Dictionary<uint, CResult>? fallback = null)
+        public CMap(List<CRange> ranges, Dictionary<uint, CResult>? mapping = null)
         {
             foreach (var range in ranges)
             {
@@ -30,14 +30,23 @@ namespace PdfLexer.Fonts
                 }
                 rangeSets[b].Add(range);
             }
-            this.fallback = fallback;
+            this.mapping = mapping;
         }
 
-        public bool HasFallbackUnicode { get => fallback != null; }
+        public bool HasMapping { get => mapping != null; }
         public bool TryGetFallback(uint cp, out CResult val)
         {
-            if (fallback == null) { val = default; return false; }
-            return fallback.TryGetValue(cp, out val);
+            if (mapping == null) { val = default; return false; }
+            return mapping.TryGetValue(cp, out val);
+        }
+
+        public uint GetMappedCode(uint c)
+        {
+            if (mapping != null && mapping.TryGetValue(c, out var cr))
+            {
+                c = cr.Code;
+            }
+            return c;
         }
 
         public uint GetCharCode(ReadOnlySpan<byte> data, int os, out int l)
@@ -112,21 +121,22 @@ namespace PdfLexer.Fonts
         }
     }
 
-    internal class CIDFont : IReadableFont
+    internal class CompositeFont : IReadableFont
     {
-        private readonly CMap _map;
-        private readonly CMap? _cidToGid;
+        private readonly CMap _encoding;
+        private readonly CMap? _cidInfo;
         private readonly FontGlyphSet _glyphSet;
         private readonly int _notdefBytes;
 
-        public bool IsVertical => false;
+        public bool IsVertical { get; }
         public string Name { get; }
 
-        public CIDFont(string name, CMap cmap, FontGlyphSet glyphSet, int notdefBytes, CMap? cidToGid=null)
+        public CompositeFont(string name, CMap encoding, FontGlyphSet glyphSet, int notdefBytes, bool vertical, CMap? cidInfo = null)
         {
             Name = name;
-            _map = cmap;
-            _cidToGid = cidToGid;
+            IsVertical = vertical;
+            _encoding = encoding;
+            _cidInfo = cidInfo;
             _glyphSet = glyphSet;
             _notdefBytes = notdefBytes;
         }
@@ -135,29 +145,25 @@ namespace PdfLexer.Fonts
         {
             int l;
             uint c;
-            if (_cidToGid != null)
-            {
-                c = _cidToGid.GetCharCode(data, os, out l);
-            } else
-            {
-                c = _map.GetCharCode(data, os, out l);
-            }
 
+            c = _encoding.GetCharCode(data, os, out l);
             if (l == 0)
             {
-                
+
                 glyph = _glyphSet.notdef;
                 return _notdefBytes;
             }
+            c = _encoding.GetMappedCode(c); // convert cp to cid, does nothing with identity
 
             glyph = _glyphSet.GetGlyph(c);
-            if (glyph == _glyphSet.notdef && _map.HasFallbackUnicode)
+            if (glyph == _glyphSet.notdef && _cidInfo != null && _cidInfo.HasMapping)
             {
-                if (_map.TryGetFallback(c, out var val))
+                if (_cidInfo.TryGetFallback(c, out var val))
                 {
                     glyph = glyph.Clone();
                     glyph.MultiChar = val.MultiChar;
                     glyph.Char = (char)val.Code;
+                    glyph.BBox = _glyphSet.notdef.BBox;
                 }
             }
 
