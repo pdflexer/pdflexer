@@ -12,30 +12,35 @@ internal class Type0Font
     {
         var enc = t0.Encoding;
         PdfName? encodingName = null;
-        CMap? encodingMap = null;
+        CMap? encoding = null;
         if (enc?.Type == PdfObjectType.NameObj)
         {
             encodingName = enc.GetAs<PdfName>();
         } else if (enc?.Type == PdfObjectType.StreamObj)
         {
+            // TODO WMode
             var encodingStream = enc.GetAs<PdfStream>();
             using var buffer = encodingStream.Contents.GetDecodedBuffer();
-            var (ranges, _) = CMapReader.ReadCMap(ctx, buffer.GetData(), true);
-            encodingMap = new CMap(ranges);
+            var (ranges, _, cids) = CMapReader.ReadCMap(ctx, buffer.GetData(), true);
+            encoding = new CMap(ranges, cids);
         }
 
-        var identityEncoded = encodingName != null && (encodingName.Value == "/Identity-H" || encodingName.Value == "Identity-V");
+        var vertical = false;
+        var identityEncoded = encodingName != null && (encodingName.Value == "/Identity-H" || encodingName.Value == "/Identity-V");
         if (!identityEncoded && encodingName != null)
         {
-            var (ranges, _) = KnownCMaps.GetCMap(encodingName.Value.Substring(1));
+            var (ranges, maps, isVert) = KnownCMaps.GetCMap(encodingName.Value.Substring(1));
             if (ranges != null)
             {
-                encodingMap = new CMap(ranges);
+                vertical = isVert;
+                encoding = new CMap(ranges, maps);
             }
+        } else if (encodingName != null && encodingName.Value == "/Identity-V")
+        {
+            vertical = true;
         }
 
         // if encodingmap is null we CMapFont assumes identity
-
         var cidCharSet = t0.DescendantFont?.CIDSystemInfo?.Registry?.Value + "-" + t0.DescendantFont?.CIDSystemInfo?.Ordering?.Value;
         var knownDesc = cidCharSet == "Adobe-GB1" || cidCharSet == "Adobe-CNS1" || cidCharSet == "Adobe-Japan1" || cidCharSet == "Adobe-Korea1";
 
@@ -44,13 +49,28 @@ internal class Type0Font
 
         AddEmbeddedValues(ctx, t0, all, b1g);
 
-        // todo vertical
+        if (vertical)
+        {
+            AddHeights(t0, all, b1g);
+        }
         AddWidths(t0, all, b1g);
 
         AddToUnicodeValues(ctx, t0, all, b1g);
 
 
-        CMap cmap;
+        if (encoding == null)
+        {
+            // this matches the identity ranges, should probably just read from BCMAP
+            var twoByte = new CRange
+            {
+                Start = 0x0000,
+                End = 0xFFFF,
+                Bytes = 2
+            };
+            encoding = new CMap(new List<CRange> { twoByte });
+        }
+
+        CMap cidInfo = null;
         if (knownDesc)
         {
             // add unicode values from known cmap
@@ -71,30 +91,39 @@ internal class Type0Font
                     }
                 }
             }
-            cmap = new CMap(e2.Ranges!, e2.Mapping);
-        } else 
-        {
-            // this matches the identity ranges
-            // need to dig into spec more to see as
-            // we are only using charset info for the UCS2 ones
-            var twoByte = new CRange
-            {
-                Start = 0x0000,
-                End = 0xFFFF,
-                Bytes = 2
-            };
-
-            cmap = new CMap(new List<CRange> { twoByte });
+            cidInfo = new CMap(e2.Ranges!, e2.Mapping);
         }
 
+
         SetDefaultWidths(t0, all);
+        if (vertical)
+        {
+            SetDefaultHeights(t0, all);
+        }
 
         var mw = (t0.DescendantFont?.DW ?? 1000f) / 1000f;
-        var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, 0m } };
+        var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
+        decimal bbx = 0, bby = 0;
+        if (bbox != null)
+        {
+            bbx = (decimal)bbox.LLx / 1000m;
+            bby = (decimal)bbox.LLy / 1000m;
+        }
+        Glyph notdef;
+        if (vertical)
+        {
+            var (dx, dy) = GetDW2(t0);
+            notdef = new Glyph { Char = '\u0000', w0 = mw, w1 = dy, IsWordSpace = false, 
+                BBox = new decimal[] { bbx, 0m, bbx + (decimal)dx, (decimal)dy } };
+        } else
+        {
+            notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false,
+                BBox = new decimal[] { 0m, bby, (decimal)mw, bby + (bbox?.URy ?? 0) / 1000.0m } };
+        }
 
         var gs = new FontGlyphSet(b1g, all, notdef);
 
-        return new CIDFont(t0.BaseFont?.Value ?? "/Empty", cmap, gs, 2, encodingMap);
+        return new CompositeFont(t0.BaseFont?.Value ?? "/Empty", encoding, gs, 2, vertical, cidInfo);
     }
 
     [return: NotNullIfNotNull("name")]
@@ -226,16 +255,16 @@ internal class Type0Font
                         if (cidLu != null && cidLu.TryGetValue(i, out var cid))
                         {
                             g.CodePoint = cid;
-                            // use original char for unicode those GID
-                            // consistent with pdfium, may not have a purpose
-                            // but makes testing consistent
-                            // g.Char = (char)cid;
+                            // pdfium seems to map this sometimes and other times not
+                            // TODO -> determine correct, this is required for bug1650302_reduced but
+                            // may break others
+                            g.Char = (char)cid;
                         }
 
-                        all[i] = g;
-                        if (i < b1g.Length)
+                        all[g.CodePoint.Value] = g;
+                        if (g.CodePoint < b1g.Length)
                         {
-                            b1g[i] = g;
+                            b1g[g.CodePoint.Value] = g;
                         }
                     }
                 }
@@ -261,7 +290,7 @@ internal class Type0Font
         }
         var str = t0.ToUnicode;
         using var buffer = str.Contents.GetDecodedBuffer();
-        var (ranges, glyphs) = CMapReader.ReadCMap(ctx, buffer.GetData());
+        var (ranges, glyphs, _) = CMapReader.ReadCMap(ctx, buffer.GetData());
         foreach (var glyph in glyphs.Values)
         {
             var cid = glyph.CodePoint ?? 0;
@@ -285,7 +314,6 @@ internal class Type0Font
 
     internal static void AddWidths(FontType0 t0, Dictionary<uint, Glyph> glyphs, Glyph[]? b1g=null)
     {
-        var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
         var widths = t0.DescendantFont?.W;
         if (widths == null) { return; }
         foreach (var (cid, w) in ReadWidths(widths))
@@ -308,7 +336,40 @@ internal class Type0Font
                     w0 = rw,
                     IsWordSpace = false,
                     GuessedUnicode = true,
-                    BBox = new decimal[] { 0m, 0m, (decimal)rw, (bbox?.URy ?? 0) / 1000.0m }
+                };
+                glyphs[cid] = g;
+                if (b1g != null && cid < b1g.Length)
+                {
+                    b1g[cid] = g;
+                }
+            }
+        }
+    }
+
+    internal static void AddHeights(FontType0 t0, Dictionary<uint, Glyph> glyphs, Glyph[]? b1g = null)
+    {
+        var widths = t0.DescendantFont?.W2;
+        if (widths == null) { return; }
+        foreach (var (cid, dx, dy, w) in ReadHeights(widths))
+        {
+            var rw = w / 1000f;
+            if (rw == 0f) // hack for tracking undefined vs set 0 widths... need to clean up at some point
+            {
+                rw = -9999f;
+            }
+            if (glyphs.TryGetValue(cid, out var glyph))
+            {
+                glyph.w1 = rw;
+            }
+            else
+            {
+                var g = new Glyph
+                {
+                    Char = (char)cid,
+                    CodePoint = cid,
+                    w1 = rw,
+                    IsWordSpace = false,
+                    GuessedUnicode = true
                 };
                 glyphs[cid] = g;
                 if (b1g != null && cid < b1g.Length)
@@ -322,6 +383,12 @@ internal class Type0Font
     internal static void SetDefaultWidths(FontType0 t0, Dictionary<uint, Glyph> glyphs)
     {
         var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
+        decimal bbx = 0, bby = 0;
+        if (bbox != null)
+        {
+            bbx = (decimal)bbox.LLx / 1000m;
+            bby = (decimal)bbox.LLy / 1000m;
+        }
         var mw = (t0.DescendantFont?.DW ?? 1000f) / 1000f;
         foreach (var glyph in glyphs.Values)
         {
@@ -333,7 +400,56 @@ internal class Type0Font
             {
                 glyph.w0 = 0;
             }
-            glyph.BBox = new decimal[] { 0m, 0m, (decimal)glyph.w0, (bbox?.URy ?? 0) / 1000.0m };
+            glyph.BBox = new decimal[] { 0, bby, 0 + (decimal)glyph.w0, bby + (bbox?.URy ?? 0) / 1000.0m };
+        }
+    }
+
+    internal static (float dx, float dy) GetDW2(FontType0 t0)
+    {
+        float dx = .88f;
+        float dy = -1f;
+        if (t0.DescendantFont?.DW2 != null)
+        {
+            var arr = t0.DescendantFont.DW2.GetAs<PdfArray>();
+            if (arr != null)
+            {
+                if (arr.Count > 0)
+                {
+                    var dxt = arr[0].GetAs<PdfNumber>();
+                    if (dxt != null) { dx = dxt; }
+                }
+                if (arr.Count > 1)
+                {
+                    var dyt = arr[1].GetAs<PdfNumber>();
+                    if (dyt != null) { dy = dyt; }
+                }
+            }
+        }
+        return (dx, dy);
+    }
+
+    internal static void SetDefaultHeights(FontType0 t0, Dictionary<uint, Glyph> glyphs)
+    {
+        var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
+        decimal bbx = 0, bby = 0;
+        if (bbox != null)
+        {
+            bbx = (decimal)bbox.LLx/1000m;
+            bby = (decimal)bbox.LLy/1000m;
+        }
+        var (dx, dy) = GetDW2(t0);
+        foreach (var glyph in glyphs.Values)
+        {
+            if (glyph == null) { continue; }
+            if (glyph.w1 == 0)
+            {
+                glyph.w1 = dy;
+            }
+            else if (glyph.w0 == -9999f) // hack for tracking undefined vs set 0 widths... need to clean up at some point
+            {
+                glyph.w1 = dy;
+            }
+            glyph.BBox = new decimal[] { bbx, 0, bbx + (decimal)dx, 0 + (decimal)glyph.w1 };
         }
     }
 
@@ -378,6 +494,51 @@ internal class Type0Font
                     }
                     firstCode = null;
                     lastCode = null;
+                    continue;
+            }
+        }
+    }
+
+    public static IEnumerable<(ushort cid, float dx, float dy, float w1)> ReadHeights(PdfArray array)
+    {
+        if (array == null) { yield break; }
+
+        for (var i=0;i<array.Count;i++)
+        {
+            var val = array[i].GetAs<PdfNumber>();
+            if (val == null)
+            {
+                continue;
+            }
+            i += 1;
+            var val2 = array[i].Resolve();
+            if (i >= array.Count) { yield break; }
+            switch (val2)
+            {
+                case PdfNumber cnt:
+                    {
+                        i++;
+                        ushort firstCode = (ushort)val;
+                        ushort lastCode = (ushort)cnt;
+                        var w1 = i < array.Count ? (float)array[i++].GetAs<PdfNumber>() : 0f;
+                        var dx = i < array.Count ? (float)array[i++].GetAs<PdfNumber>() : 0f;
+                        var dy = i < array.Count ? (float)array[i].GetAs<PdfNumber>() : 0f;
+                        for (var c = firstCode; c <= lastCode; c++)
+                        {
+                            yield return (c, dx, dy, w1);
+                        }
+                    }
+                    continue;
+                case PdfArray arr:
+                    ushort cp = (ushort)val;
+                    for (var c=0;c<arr.Count;c++)
+                    {
+                        var w1 = c < arr.Count ? (float)arr[c++].GetAs<PdfNumber>() : 0f;
+                        var dx = c < arr.Count ? (float)arr[c++].GetAs<PdfNumber>() : 0f;
+                        var dy = c < arr.Count ? (float)arr[c].GetAs<PdfNumber>() : 0f;
+                        yield return (cp, dx, dy, w1);
+                        cp++;
+                    }
                     continue;
             }
         }

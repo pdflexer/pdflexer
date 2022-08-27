@@ -1,0 +1,14 @@
+1 50.00 770.0 a True False
+1 50.00 734.0 b False False
+1 50.00 698.0 c False False
+1 50.00 662.0   False False
+1 50.00 626.0 あ False False
+1 50.00 590.0 い False False
+1 50.00 554.0 う False False
+1 50.00 518.0 a True False
+1 50.00 482.0 b False False
+1 50.00 446.0 c False False
+1 50.00 410.0   False False
+1 50.00 374.0 あ False False
+1 50.00 338.0 い False False
+1 50.00 302.0 う False False

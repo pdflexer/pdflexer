@@ -103,7 +103,35 @@ namespace PdfLexer.Tests
         [Fact]
         public void It_Reads_TrueType_WinAnsi_FF3() => RunSingle("issue4668.pdf");
 
+        [Fact]
+        public void It_Reads_Type0_To_Unicode_NoEmbed() => RunSingle("issue5747.pdf");
 
+        [Fact]
+        public void It_Reads_Type0_To_Unicode_NoEmbed2() => RunSingle("issue2840.pdf");
+        [Fact]
+        public void It_Reads_Type0_To_Unicode_NoEmbed3() => RunSingle("issue5540.pdf");
+        [Fact]
+        public void It_Reads_Type0_GBKEUCH_KnownUnicode_NoEmbed() => RunSingle("issue2128r.pdf");
+        [Fact]
+        public void It_Reads_Type0_GBKEUCH_KnownUnicode_NoEmbed2() => RunSingle("issue3521.pdf");
+        [Fact]
+        public void It_Reads_Type0_UniGB_KnownUnicode_NoEmbed() => RunSingle("issue8372.pdf");
+        [Fact]
+        public void It_Reads_Type0_CMapEncoding_Missing_Range() => RunSingle("issue11768_reduced.pdf");
+        [Fact]
+        public void It_Reads_Type0_To_Unicode() => RunSingle("basicapi.pdf");
+        [Fact]
+        public void It_Reads_Type0_UNIJIS_KnownUnicode_NoEmbed() => RunSingle("mixedfonts.pdf");
+        [Fact]
+        public void It_Reads_Type0_Identity_Japan1() => RunSingle("arial_unicode_en_cidfont.pdf");
+        [Fact]
+        public void It_Reads_Type0_EUCJP1_KnownUnicode_NoEmbed() => RunSingle("noembed-eucjp.pdf");
+        [Fact]
+        public void It_Reads_Type0_Guessed_Unicode_CIDToGID() => RunSingle("bug1650302_reduced.pdf");
+        [Fact]
+        public void It_Reads_Type0_Vertical_Identity() => RunSingle("vertical.pdf");
+        [Fact]
+        public void It_Reads_Type0_Vertical_RKSJ() => RunSingle("issue11555.pdf");
 
 
         private void RunSingle(string name)

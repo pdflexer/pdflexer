@@ -1,0 +1,5 @@
+1 72.00 770.0 あ True False
+1 96.00 770.0 い False False
+1 120.00 770.0 う False False
+1 144.00 770.0 え False False
+1 168.00 770.0 お False False

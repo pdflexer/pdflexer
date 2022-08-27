@@ -1,0 +1,15 @@
+1 16.62 813.6 V True False
+1 24.98 813.6 ý False False
+1 32.01 813.6 b False False
+1 39.74 813.6 a False False
+1 47.02 813.6 v False False
+1 54.05 813.6 a False False
+1 61.34 813.6   False False
+1 65.09 813.6 n False False
+1 72.78 813.6 a False False
+1 80.07 813.6   False False
+1 83.82 813.6 p False False
+1 91.55 813.6 ř False False
+1 96.88 813.6 á False False
+1 104.16 813.6 n False False
+1 111.86 813.6 í False False
