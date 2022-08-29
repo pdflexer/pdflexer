@@ -224,7 +224,14 @@ namespace PdfLexer.Tests
                                 sb.Append(reader.Glyph.Char);
                             }
                             var str = sb.ToString();
+                            sb.Clear();
 
+                            var words = new SimpleWordReader(doc.Context, page);
+                            while (words.Advance())
+                            {
+                                sb.AppendLine(words.CurrentWord);
+                            }
+                            var str2 = sb.ToString();
                         }
                     }
                     catch (NotSupportedException ex)

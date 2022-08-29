@@ -34,6 +34,9 @@ namespace PdfLexer.Content
         //  0      0                 0    0 
         //
 
+        // rotation -> 180/Math.PI * Math.Atan2(d, c) - 90
+        //          -> 180/Math.PI * Math.Atan2(b, a)
+
 
         public int TextMode { get; internal set; }
         public float FontSize { get; internal set; }

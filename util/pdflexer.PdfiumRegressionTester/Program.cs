@@ -7,6 +7,7 @@ using PdfLexer.Filters;
 using PdfLexer.Operators;
 using PdfLexer.Serializers;
 using System.CommandLine;
+using System.Numerics;
 using System.Text.Json;
 
 var corrupt = new Dictionary<string, ErrInfo>();
