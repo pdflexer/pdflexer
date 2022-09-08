@@ -186,8 +186,20 @@ namespace pdflexer.PdfiumRegressionTester
                 var font = Standard14Font.GetTimesRoman();
                 using var writer = pg.GetWriter();
                 writer.Form(form)
-                      .SetStrokingRGB(0, 0, 0);
+                      .SetStrokingRGB(0, 255, 0);
 
+                var words = new SimpleWordReader(doc.Context, page);
+                while (words.Advance())
+                {
+                    var word = words.CurrentWord;
+                    var (llx ,lly, urx, ury) = words.GetWordBoundingBox();
+                    writer
+                      .LineWidth(0.5m)
+                      .Rect((decimal)llx, (decimal)lly, (decimal)(urx - llx), (decimal)(ury - lly))
+                      .Stroke();
+                }
+
+                writer.SetStrokingRGB(0, 0, 0);
                 var reader = new TextScanner(doc.Context, page);
                 var lines = new List<(float x, float y, char c)>();
                 var unmatched = new List<(float x, float y, char c)>();

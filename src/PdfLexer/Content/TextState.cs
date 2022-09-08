@@ -24,8 +24,8 @@ public class TextState
           0, 0, 0, 1) * TextMatrix * GS.CTM;
     }
 
-    Matrix4x4 TextMatrix { get; set; }
-    Matrix4x4 TextLineMatrix { get; set; }
+    internal Matrix4x4 TextMatrix { get; private set; }
+    internal Matrix4x4 TextLineMatrix { get; private set; }
     internal ParsingContext Ctx { get; }
     internal PdfDictionary PageResources { get; }
     internal PdfDictionary? FormResources { get; set; }
@@ -121,7 +121,7 @@ public class TextState
         float ty = 0f;
         if (!(GS.Font?.IsVertical ?? false))
         {
-            tx = (-tj / 1000.0f) * GS.FontSize * GS.TextHScale; // TODO 1000 should be from fontmatrix?
+            tx = (-tj / 1000.0f) * GS.FontSize * GS.TextHScale;
         }
         else
         {

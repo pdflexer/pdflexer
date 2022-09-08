@@ -70,6 +70,11 @@ internal static class Util
 
     internal static string CreateDictProperty(Row row)
     {
+        if (string.IsNullOrWhiteSpace(row.Link) && string.IsNullOrWhiteSpace(row.Link))
+        {
+
+        }
+
         var type = Maps.typeDomMap[row.Type];
         var valsettxt = "value";
         if (row.IndirectReference == "TRUE")

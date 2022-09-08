@@ -431,7 +431,10 @@ internal class RentedArrayContents : DecodedStreamContents
     }
     public override void Dispose()
     {
-        ArrayPool<byte>.Shared.Return(_data);
+        if (_data != null)
+        {
+            ArrayPool<byte>.Shared.Return(_data);
+        }
         _data = null!;
     }
 
