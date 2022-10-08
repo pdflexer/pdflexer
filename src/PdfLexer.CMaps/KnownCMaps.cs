@@ -243,6 +243,7 @@ public class KnownCMaps
 
         lock (globalCache)
         {
+            // globalCache[resource] = complete;
             globalCache.AddOrUpdate(resource, complete);
         }
 

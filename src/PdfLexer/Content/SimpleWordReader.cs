@@ -5,9 +5,14 @@ using System.Text;
 
 namespace PdfLexer.Content;
 
+/// <summary>
+/// Returns words from PDF by scanning chars sequentially as they are written in the PDF
+/// and splitting into words if spacing between chars is significant or a word delimiting
+/// character is encountered.
+/// </summary>
 public ref struct SimpleWordReader
 {
-    public SimpleWordReader(ParsingContext ctx, PdfPage page)
+    public SimpleWordReader(ParsingContext ctx, PdfPage page, HashSet<char>? wordDelimiters = null)
     {
         Page = page;
         Scanner = new TextScanner(ctx, page);
@@ -19,10 +24,11 @@ public ref struct SimpleWordReader
         prevbb = null;
         prev = default;
         pw = 0;
+        customDelims = wordDelimiters;
     }
 
     private TextScanner Scanner;
-
+    private HashSet<char>? customDelims;
     public PdfPage Page { get; }
 
 
@@ -90,7 +96,8 @@ public ref struct SimpleWordReader
             else
             {
                 var c = Scanner.Glyph.Char;
-                if (c == ' ' || c == ',' || c == '\t' || c == '\t' || c == ':' || c == ';')
+                if ((customDelims != null && customDelims.Contains(c))
+                    || (customDelims == null && (c == ' ' || c == ',' || c == '\t' || c == ':' || c == ';')))
                 {
                     if (sb.Length > 0)
                     {
@@ -99,7 +106,8 @@ public ref struct SimpleWordReader
                         last = prevbb;
                         prevbb = null;
                         return true;
-                    } else
+                    }
+                    else
                     {
                         first = null;
                         continue;
@@ -109,7 +117,6 @@ public ref struct SimpleWordReader
                 {
                     sb.Append(c);
                 }
-
             }
 
             pw = vert ? Scanner.Glyph.w1 : Scanner.Glyph.w0;

@@ -293,8 +293,8 @@ internal ref struct CFFReader
                     var gid = 1;
                     for (i = 0; i < rangesCount; i++)
                     {
-                        var start = Data[pos++];
-                        var left = Data[pos++];
+                        int start = Data[pos++];
+                        int left = Data[pos++];
                         for (var j = start; j <= start + left; j++)
                         {
                             encoding[j] = charset.GetName(gid++); // ?? ReadString(gid++, strings);
@@ -660,7 +660,7 @@ internal class CFFNameCharSet : ICFFCharSet
     }
     public string GetName(int id)
     {
-        if (id < cids.Count)
+        if (id > -1 && id < cids.Count)
         {
             return cids[id];
         }

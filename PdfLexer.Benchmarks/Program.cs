@@ -23,13 +23,17 @@ namespace PdfLexer.Benchmarks
         static async Task Main(string[] args)
         {
             // var txt = new TextBenchmark();
+            // txt.testPdf = "issue2128r";
+            // txt.Setup();
+            // txt.ReadTxtPdfPig();
+            // txt.ReadTxtPdfLexer();
             // 
             // var total = 0;
             // for (var i = 0; i < 100000; i++)
             // {
             //     total += txt.ReadTxtPdfLexer();
             // }
-            
+
             // var i = txt.ReadTxtPdfPig();
             // var test = new ContentStreamBenchmark();
             // var total = 0;

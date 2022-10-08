@@ -6,9 +6,9 @@ namespace PdfLexer.Content;
 public ref struct ImageScanner
 {
     private readonly ParsingContext Context;
-    private readonly PageContentScanner Scanner;
     private readonly PdfDictionary Page;
-    
+    private PageContentScanner Scanner;
+
     public GraphicsState GraphicsState;
 
 

@@ -125,17 +125,17 @@ public static class ImageSharpExts
     private static Image GetFromDecoded(ParsingContext ctx, XObjImage image, Stream data)
     {
         // /Mask -> another image w/ /ImageMask true
-        var isMasked = image.ImageMask.Value;
-        var colorSpace = isMasked ? DeviceGray.Instance : ColorSpace.Get(ctx, image.ColorSpace);
+        var isMasked = image.ImageMask?.Value ?? false;
+        var colorSpace = isMasked ? DeviceGray.Instance : image.ColorSpace == null ? DeviceRGB.Instance : ColorSpace.Get(ctx, image.ColorSpace);
         var mask = image.Mask;
-        List<float> colourMask = null;
+        List<float>? colourMask = null;
         if (!isMasked && mask != null && mask.Type == PdfObjectType.ArrayObj)
         {
             var arr = mask.GetValue<PdfArray>();
             colourMask = arr.Select(x => (float)x.GetValue<PdfNumber>()).ToList();
         }
 
-        List<float> decode = null;
+        List<float>? decode = null;
         var dc = image.Decode;
         if (dc != null)
         {
@@ -165,11 +165,27 @@ public static class ImageSharpExts
             }
         }
 
+        if (!isMasked && image.BitsPerComponent == null)
+        {
+            ctx.Error("Non-masked image missing bits per component, defaulting to 8.");
+        }
+
+        if (image.Width == null)
+        {
+            ctx.Error("Attempted to extract image but was missing width");
+            return new Image<Rgba32>(1, 1);
+        }
+        if (image.Height == null)
+        {
+            ctx.Error("Attempted to extract image but was missing height");
+            return new Image<Rgba32>(1, 1);
+        }
+
         return GetFromDecoded(
             ctx,
             image.Width,
             image.Height,
-            isMasked ? (image.BitsPerComponent ?? 1) : image.BitsPerComponent,
+            isMasked ? (image.BitsPerComponent ?? 1) : (image.BitsPerComponent ?? 8),
             colorSpace,
             decode,
             data,

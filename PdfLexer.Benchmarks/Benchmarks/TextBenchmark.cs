@@ -31,7 +31,12 @@ namespace PdfLexer.Benchmarks.Benchmarks
         private List<string> paths;
         private List<MemoryStream> mems;
 
-        public TextBenchmark()
+        // "issue2128r" pdflexer need to research
+        [Params("__bpl13210.pdf", "bug1669099", "issue1905", "__ecma262.pdf", "__gesamt.pdf", "__issue1133.pdf", "issue2128r")]
+        public string testPdf;
+
+        [GlobalSetup]
+        public void Setup()
         {
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             var src = GetPathFromSegmentOfCurrent("PdfLexer.Benchmarks");
@@ -40,9 +45,9 @@ namespace PdfLexer.Benchmarks.Benchmarks
             pdfs = new List<byte[]>();
             paths = new List<string>();
             mems = new List<MemoryStream>();
-            Add("__bpl13210.pdf");
-            // Add("__bug1123803.pdf");
-
+            Add(testPdf);
+            ReadTxtPdfLexer();
+            ReadTxtPdfPig();
             void Add(string name)
             {
                 var path = Path.Combine(pdfRoot, name + ".pdf");

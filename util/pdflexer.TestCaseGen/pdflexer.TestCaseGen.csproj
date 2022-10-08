@@ -16,7 +16,7 @@
 	<ItemGroup>
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
-		<PackageReference Include="PDFiumCore" Version="105.0.5145" />
+		<PackageReference Include="PDFiumCore" Version="108.0.5337" />
 	</ItemGroup>
 
 	<ItemGroup>

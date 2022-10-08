@@ -4,6 +4,16 @@ Note: Alpha quality
 
 Image extraction is largely completed excluding several specialized colorspaces. Long term goal is to allow easy image extraction and modification scenarios (replace image, downsize image, etc).
 
+Gaps:
+
+- Colorspaces:
+  - /ICCBased
+  - /Separation
+- Filters / encodings:
+  - /JBIG2Decode
+  - /JPXDecode (works by using ImageSharp under some circumstances)
+  - /DCTDecode (works by using ImageSharp under some circumstances)
+
 ```csharp
 // get all chars
 using var doc = PdfDocument.Open(data);

@@ -9,9 +9,10 @@
 		<Product />
 		<Description>Lower level PDF parsing library.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.0.3-preview</Version>
+		<Version>0.0.5-preview</Version>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -19,7 +20,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.0" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
 		<PackageReference Include="System.IO.Pipelines" Version="6.0.3" />
 		<PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
 	</ItemGroup>
@@ -44,7 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
+		<ProjectReference Include="..\PdfLexer.CMaps\PdfLexer.CMaps.csproj" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -57,9 +58,18 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
 		<PackageReference Include="DotNext.Unsafe">
-			<Version>4.6.1</Version>
+			<Version>4.7.2</Version>
 		</PackageReference>
 	</ItemGroup>
+
+	<PropertyGroup>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+	</PropertyGroup>
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="ResolveReferences">
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
+		</ItemGroup>
+	</Target>
 
 
 </Project>
