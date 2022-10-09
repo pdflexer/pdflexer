@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using PDFiumCore;
 using PdfLexer.Content;
 using PdfLexer.Serializers;
 using System;
@@ -46,11 +47,14 @@ namespace PdfLexer.Benchmarks.Benchmarks
             paths = new List<string>();
             mems = new List<MemoryStream>();
             Add(testPdf);
+            fpdfview.FPDF_InitLibrary();
             ReadTxtPdfLexer();
             ReadTxtPdfPig();
+            ReadTxtPdfiumCore();
             void Add(string name)
             {
                 var path = Path.Combine(pdfRoot, name + ".pdf");
+                // var path = "c:\\temp\\vector2.pdf";
                 paths.Add(path);
                 var data = File.ReadAllBytes(path);
                 pdfs.Add(data);
@@ -111,6 +115,42 @@ namespace PdfLexer.Benchmarks.Benchmarks
                             unchecked { chars += (int)reader.Glyph.Char; }
                         }
                     }
+
+                }
+            }
+            unchecked { return chars + total; }
+        }
+
+        [Benchmark()]
+        public unsafe uint ReadTxtPdfiumCore()
+        {
+
+            uint total = 0;
+            uint chars = 0;
+            foreach (var pdf in pdfs)
+            {
+                fixed (byte* p = pdf)
+                {
+                    IntPtr ptr = (IntPtr)p;
+                    var doc = fpdfview.FPDF_LoadMemDocument(ptr, pdf.Length, null);
+                    var pgs = fpdfview.FPDF_GetPageCount(doc);
+                    for (var i=0;i<pgs;i++)
+                    {
+                        var pg = fpdfview.FPDF_LoadPage(doc, i);
+                        var txt = fpdf_text.FPDFTextLoadPage(pg);
+                        var cc = fpdf_text.FPDFTextCountChars(txt);
+                        for (var c=0;c<cc;c++)
+                        {
+                            var cv = fpdf_text.FPDFTextGetUnicode(txt, c);
+                            unchecked { chars += cv; }
+                        }
+
+                        fpdf_text.FPDFTextClosePage(txt);
+                        fpdfview.FPDF_ClosePage(pg);
+                    }
+
+
+                    fpdfview.FPDF_CloseDocument(doc);
 
                 }
             }

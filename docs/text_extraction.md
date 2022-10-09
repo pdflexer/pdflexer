@@ -41,29 +41,47 @@ while (reader.Advance())
 var str2 = sb.ToString();
 ```
 
-Initial benchmarking results with some random PDFs from tests set iterating over all characters in PDF. ~4x faster and ~10x less allocations with the exception of issue2128r.pdf (libraries getting different characters, need to determine which is correct and probably remove from set if PdfPig is wrong). Not exactly a 1-to-1 comparison as PdfPig is doing some extra work and tracking color etc.
+Initial benchmarking results with some random PDFs from tests set iterating over all characters in PDF. ~4x faster and ~10x less allocations with the exception of issue2128r.pdf (libraries getting different characters, need to determine which is correct and probably remove from set if PdfPig is wrong). Not exactly a 1-to-1 comparison as PdfPig / Pdfium are doing extra work but if you really just want text extracted with positions the results are realistic.
+Note: PdfiumCore is c++ wrapper so GC / memory stats not meaningful.
 
 ```
-|          Method |         testPdf |         Mean |        Error |       StdDev | Ratio | RatioSD |        Gen0 |       Gen1 |      Gen2 |    Allocated | Alloc Ratio |
-|---------------- |---------------- |-------------:|-------------:|-------------:|------:|--------:|------------:|-----------:|----------:|-------------:|------------:|
-|   ReadTxtPdfPig |  __bpl13210.pdf | 487,008.8 us |  7,958.25 us |  9,773.45 us |  1.00 |    0.00 |  63000.0000 | 19000.0000 |         - | 302536.42 KB |        1.00 |
-| ReadTxtPdfLexer |  __bpl13210.pdf | 137,776.8 us |  5,171.67 us |  6,156.51 us |  0.28 |    0.02 |   1750.0000 |  1000.0000 |         - |  13015.35 KB |        0.04 |
-|                 |                 |              |              |              |       |         |             |            |           |              |             |
-|   ReadTxtPdfPig |   __ecma262.pdf | 973,119.6 us | 18,345.77 us | 22,530.25 us |  1.00 |    0.00 | 100000.0000 | 40000.0000 | 1000.0000 | 558951.75 KB |        1.00 |
-| ReadTxtPdfLexer |   __ecma262.pdf | 300,097.0 us |  3,841.41 us |  5,128.18 us |  0.31 |    0.01 |   4000.0000 |  1500.0000 |         - |  27518.74 KB |        0.05 |
-|                 |                 |              |              |              |       |         |             |            |           |              |             |
-|   ReadTxtPdfPig |    __gesamt.pdf | 849,221.3 us | 26,122.46 us | 33,036.55 us |  1.00 |    0.00 | 111000.0000 | 34000.0000 |         - | 568520.13 KB |        1.00 |
-| ReadTxtPdfLexer |    __gesamt.pdf | 234,854.4 us |  4,125.68 us |  5,066.71 us |  0.28 |    0.01 |   1500.0000 |   500.0000 |         - |   9302.48 KB |        0.02 |
-|                 |                 |              |              |              |       |         |             |            |           |              |             |
-|   ReadTxtPdfPig | __issue1133.pdf | 248,139.3 us | 52,741.98 us | 66,701.72 us |  1.00 |    0.00 |  18500.0000 |  4000.0000 |  500.0000 | 110848.86 KB |        1.00 |
-| ReadTxtPdfLexer | __issue1133.pdf |  61,400.4 us |  6,567.24 us |  8,305.46 us |  0.26 |    0.07 |    800.0000 |   200.0000 |         - |   5393.27 KB |        0.05 |
-|                 |                 |              |              |              |       |         |             |            |           |              |             |
-|   ReadTxtPdfPig |      bug1669099 |  18,103.9 us |    323.04 us |    420.04 us |  1.00 |    0.00 |   1687.5000 |  1312.5000 |  687.5000 |   8528.11 KB |        1.00 |
-| ReadTxtPdfLexer |      bug1669099 |   5,002.0 us |    129.97 us |    164.37 us |  0.28 |    0.01 |    382.8125 |   250.0000 |  117.1875 |   1878.07 KB |        0.22 |
-|                 |                 |              |              |              |       |         |             |            |           |              |             |
-|   ReadTxtPdfPig |       issue1905 |  15,190.6 us |  1,691.24 us |  2,257.76 us |  1.00 |    0.00 |   1156.2500 |   562.5000 |         - |    6787.2 KB |        1.00 |
-| ReadTxtPdfLexer |       issue1905 |   3,153.6 us |     44.66 us |     59.62 us |  0.21 |    0.03 |    144.5313 |    46.8750 |         - |    671.11 KB |        0.10 |
-|                 |                 |              |              |              |       |         |             |            |           |              |             |
-|   ReadTxtPdfPig |      issue2128r |     888.6 us |     13.59 us |     16.68 us |  1.00 |    0.00 |     25.3906 |          - |         - |    110.91 KB |        1.00 |
-| ReadTxtPdfLexer |      issue2128r |   1,708.6 us |     84.45 us |    112.74 us |  1.91 |    0.13 |    210.9375 |   146.4844 |  136.7188 |    1425.3 KB |       12.85 |
+|            Method |         testPdf |           Mean |         Error |        StdDev | Ratio | RatioSD |        Gen0 |       Gen1 |      Gen2 |   Allocated | Alloc Ratio |
+|------------------ |---------------- |---------------:|--------------:|--------------:|------:|--------:|------------:|-----------:|----------:|------------:|------------:|
+|     ReadTxtPdfPig |  __bpl13210.pdf |   509,484.1 us |   8,884.91 us |  11,861.10 us |  1.00 |    0.00 |  64000.0000 |  9000.0000 |         - | 309797832 B |       1.000 |
+|   ReadTxtPdfLexer |  __bpl13210.pdf |   147,434.6 us |   2,670.07 us |   3,564.47 us |  0.29 |    0.01 |   1666.6667 |   666.6667 |         - |  13197616 B |       0.043 |
+| ReadTxtPdfiumCore |  __bpl13210.pdf | 1,060,009.4 us |  18,396.87 us |  23,266.15 us |  2.08 |    0.07 |           - |          - |         - |     24520 B |       0.000 |
+|                   |                 |                |               |               |       |         |             |            |           |             |             |
+|     ReadTxtPdfPig |   __ecma262.pdf | 1,015,502.2 us |  12,847.72 us |  16,248.25 us |  1.00 |    0.00 | 100000.0000 | 41000.0000 | 1000.0000 | 572231264 B |       1.000 |
+|   ReadTxtPdfLexer |   __ecma262.pdf |   321,015.2 us |   9,527.21 us |  12,388.07 us |  0.31 |    0.01 |   4500.0000 |  1000.0000 |         - |  27132032 B |       0.047 |
+| ReadTxtPdfiumCore |   __ecma262.pdf | 2,302,162.3 us | 177,576.93 us | 230,900.17 us |  2.26 |    0.22 |           - |          - |         - |     17352 B |       0.000 |
+|                   |                 |                |               |               |       |         |             |            |           |             |             |
+|     ReadTxtPdfPig |    __gesamt.pdf |   908,264.4 us |  56,108.65 us |  74,903.43 us |  1.00 |    0.00 | 111000.0000 | 37000.0000 |         - | 582032984 B |       1.000 |
+|   ReadTxtPdfLexer |    __gesamt.pdf |   251,910.0 us |  12,458.91 us |  16,200.10 us |  0.28 |    0.03 |   1500.0000 |   500.0000 |         - |   9267216 B |       0.016 |
+| ReadTxtPdfiumCore |    __gesamt.pdf |   919,024.3 us |  21,756.58 us |  26,719.03 us |  1.01 |    0.08 |           - |          - |         - |     26952 B |       0.000 |
+|                   |                 |                |               |               |       |         |             |            |           |             |             |
+|     ReadTxtPdfPig | __issue1133.pdf |   210,948.1 us |   7,061.49 us |   9,426.89 us |  1.00 |    0.00 |  19000.0000 |  4000.0000 |  500.0000 | 113377620 B |       1.000 |
+|   ReadTxtPdfLexer | __issue1133.pdf |    52,222.7 us |   1,256.24 us |   1,633.46 us |  0.25 |    0.01 |    800.0000 |   200.0000 |         - |   5313042 B |       0.047 |
+| ReadTxtPdfiumCore | __issue1133.pdf |   221,222.8 us |   4,062.85 us |   4,989.55 us |  1.05 |    0.06 |           - |          - |         - |      3432 B |       0.000 |
+|                   |                 |                |               |               |       |         |             |            |           |             |             |
+|     ReadTxtPdfPig |      bug1669099 |    18,518.0 us |     371.93 us |     496.52 us |  1.00 |    0.00 |   1687.5000 |  1343.7500 |  687.5000 |   8641014 B |       1.000 |
+|   ReadTxtPdfLexer |      bug1669099 |     4,570.1 us |      66.28 us |      88.48 us |  0.25 |    0.01 |    328.1250 |   179.6875 |   62.5000 |   1790457 B |       0.207 |
+| ReadTxtPdfiumCore |      bug1669099 |     9,053.9 us |     115.72 us |     150.47 us |  0.49 |    0.01 |           - |          - |         - |       195 B |       0.000 |
+|                   |                 |                |               |               |       |         |             |            |           |             |             |
+|     ReadTxtPdfPig |       issue1905 |    13,253.5 us |      89.13 us |     109.46 us |  1.00 |    0.00 |   1156.2500 |   578.1250 |         - |   6945942 B |       1.000 |
+|   ReadTxtPdfLexer |       issue1905 |     3,160.8 us |      97.22 us |     129.78 us |  0.24 |    0.01 |    148.4375 |    50.7813 |         - |    683350 B |       0.098 |
+| ReadTxtPdfiumCore |       issue1905 |    11,646.0 us |   1,381.62 us |   1,844.42 us |  0.90 |    0.14 |           - |          - |         - |       195 B |       0.000 |
+|                   |                 |                |               |               |       |         |             |            |           |             |             |
+|     ReadTxtPdfPig |      issue2128r |       914.8 us |       7.01 us |       9.12 us |  1.00 |    0.00 |     25.3906 |          - |         - |    113575 B |       1.000 |
+|   ReadTxtPdfLexer |      issue2128r |     1,730.9 us |      97.03 us |     129.54 us |  1.89 |    0.14 |    226.5625 |   152.3438 |  150.3906 |   1459370 B |      12.849 |
+| ReadTxtPdfiumCore |      issue2128r |    18,292.6 us |     215.00 us |     247.60 us | 20.01 |    0.37 |           - |          - |         - |       206 B |       0.002 |
+```
+
+In PDFs with heavy vector drawing usage, PdfLexer's performance advantage increases due to ignoring all non-text operations when extracting text. Below is an example of reading text from a CAD drawing with ~5X perf advantage to PdfPig and ~2X to Pdfium. In some edge cases performance differences are in the 20-50x range to PdfPig.
+
+```
+|          Method |      Mean |    Error |   StdDev | Ratio | RatioSD |      Gen0 |      Gen1 |      Gen2 |  Allocated | Alloc Ratio |
+|---------------- |----------:|---------:|---------:|------:|--------:|----------:|----------:|----------:|-----------:|------------:|
+|   ReadTxtPdfPig | 104.24 ms | 5.424 ms | 7.241 ms |  1.00 |    0.00 | 5800.0000 | 3200.0000 | 1400.0000 | 36897246 B |       1.000 |
+| ReadTxtPdfLexer |  18.19 ms | 0.243 ms | 0.307 ms |  0.18 |    0.01 |  531.2500 |         - |         - |  2349022 B |       0.064 |
+|   ReadTxtPdfium |  37.00 ms | 0.449 ms | 0.600 ms |  0.36 |    0.03 |         - |         - |         - |      235 B |       0.000 |
 ```
