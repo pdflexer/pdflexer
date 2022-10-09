@@ -6,11 +6,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace PdfLexer.Benchmarks.Benchmarks
 {
     [Config(typeof(BenchmarkConfig))]
-    public class TextBenchmark
+    public class WordBenchmark
     {
         public static string GetPathFromSegmentOfCurrent(string segment)
         {
@@ -48,13 +49,12 @@ namespace PdfLexer.Benchmarks.Benchmarks
             mems = new List<MemoryStream>();
             Add(testPdf);
             fpdfview.FPDF_InitLibrary();
-            ReadTxtPdfLexer();
-            ReadTxtPdfPig();
-            ReadTxtPdfiumCore();
+            PdfLexer();
+            PdfPig();
+            PdfiumCore();
             void Add(string name)
             {
                 var path = Path.Combine(pdfRoot, name + ".pdf");
-                // var path = "c:\\temp\\vector2.pdf";
                 paths.Add(path);
                 var data = File.ReadAllBytes(path);
                 pdfs.Add(data);
@@ -64,7 +64,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
 
 
         [Benchmark(Baseline = true)]
-        public int ReadTxtPdfLexer()
+        public int PdfLexer()
         {
 
             int total = 0;
@@ -74,31 +74,19 @@ namespace PdfLexer.Benchmarks.Benchmarks
                 using var doc = PdfDocument.Open(pdf);
                 foreach (var page in doc.Pages)
                 {
-                    var reader = new TextScanner(doc.Context, page);
+                    var reader = new SimpleWordReader(doc.Context, page);
                     while (reader.Advance())
                     {
-                        if (reader.Glyph.MultiChar != null)
-                        {
-                            foreach (var p in reader.Glyph.MultiChar)
-                            {
-                                total++;
-                                unchecked { chars += (int)p; }
-                            }
-                        }
-                        else
-                        {
-                            total++;
-                            unchecked { chars += (int)reader.Glyph.Char; }
-                        }
+                        unchecked { chars += reader.CurrentWord.Length; }
                     }
-
                 }
+                unchecked { total += chars; }
             }
-            unchecked { return chars + total; }
+            return total;
         }
 
         [Benchmark()]
-        public int ReadTxtPdfPig()
+        public int PdfPig()
         {
             int total = 0;
             int chars = 0;
@@ -108,25 +96,22 @@ namespace PdfLexer.Benchmarks.Benchmarks
                 for (var i = 0; i < doc.NumberOfPages; i++)
                 {
                     var pg = doc.GetPage(i + 1);
-                    foreach (var c in pg.Letters)
+                    foreach (var w in pg.GetWords())
                     {
-                        foreach (var p in c.Value) 
-                        {
-                            total++;
-                            unchecked { chars += (int)p; }
-                        }
+                        unchecked { chars += w.Text.Length; }
                     }
                 }
+                unchecked { total += chars; }
             }
-            unchecked { return chars + total; }
+            return total;
         }
 
         [Benchmark()]
-        public unsafe uint ReadTxtPdfiumCore()
+        public unsafe int PdfiumCore()
         {
 
-            uint total = 0;
-            uint chars = 0;
+            int total = 0;
+            int chars = 0;
             foreach (var pdf in pdfs)
             {
                 fixed (byte* p = pdf)
@@ -139,24 +124,28 @@ namespace PdfLexer.Benchmarks.Benchmarks
                         var pg = fpdfview.FPDF_LoadPage(doc, i);
                         var txt = fpdf_text.FPDFTextLoadPage(pg);
                         var cc = fpdf_text.FPDFTextCountChars(txt);
-                        for (var c=0;c<cc;c++)
+
+                        Span<byte> text = new byte[cc * 2 + 1];
+                        fixed (byte* ptrr = &text[0])
                         {
-                            var cv = fpdf_text.FPDFTextGetUnicode(txt, c);
-                            unchecked { chars += cv; }
+                            fpdf_text.FPDFTextGetText(txt, 0, cc, ref *(ushort*)ptrr);
+                        }
+                        var words = Encoding.Unicode.GetString(text).Split(' ');
+                        foreach (var w in words)
+                        {
+                            unchecked { chars += w.Length; }
                         }
 
                         fpdf_text.FPDFTextClosePage(txt);
                         fpdfview.FPDF_ClosePage(pg);
                     }
 
-
                     fpdfview.FPDF_CloseDocument(doc);
 
                 }
+                unchecked { total += chars; }
             }
-            unchecked { return chars + total; }
+            return total;
         }
-
-
     }
 }
