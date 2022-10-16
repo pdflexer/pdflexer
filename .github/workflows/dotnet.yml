@@ -29,14 +29,19 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
+      - name: Download previous benchmark data
+        uses: actions/cache@v1
+        with:
+          path: ./cache
+          key: ${{ runner.os }}-benchmark
       - name: Run benchmark
         run: cd PdfLexer.Benchmarks && dotnet run -c release -- --exporters json --filter '*TextBenchmark*'
-
       - name: Store benchmark result
         uses: rhysd/github-action-benchmark@v1
         with:
           name: Text Bench
           tool: 'benchmarkdotnet'
+          external-data-json-path: ./cache/benchmark-data.json
           output-file-path: PdfLexer.Benchmarks/BenchmarkDotNet.Artifacts/results/PdfLexer.Benchmarks.Benchmarks.TextBenchmark-report-full-compressed.json
           # github-token: ${{ secrets.GITHUB_TOKEN }}
           # auto-push: true
