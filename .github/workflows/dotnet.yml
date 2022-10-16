@@ -35,7 +35,7 @@ jobs:
           path: ./cache
           key: ${{ runner.os }}-benchmark
       - name: Run benchmark
-        run: cd PdfLexer.Benchmarks && dotnet run -c release -- --exporters json --filter '*TextBenchmark*'
+        run: cd PdfLexer.Benchmarks && dotnet run -c release -- --exporters json --filter '*TextBenchmark*PdfLexer*'
       - name: Store benchmark result
         uses: rhysd/github-action-benchmark@v1
         with:
