@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\PdfLexer.Images\PdfLexer.Images.csproj" />
+    <ProjectReference Include="..\..\src\PdfLexer.ImageSharpExts\PdfLexer.ImageSharpExts.csproj" />
     <ProjectReference Include="..\PdfLexer.Tests\PdfLexer.Tests.csproj" />
   </ItemGroup>
 

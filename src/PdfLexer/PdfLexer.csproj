@@ -9,10 +9,9 @@
 		<Product />
 		<Description>Lower level PDF parsing library.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.0.5-preview</Version>
+		<Version>0.0.6-preview</Version>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -45,10 +44,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\PdfLexer.CMaps\PdfLexer.CMaps.csproj" PrivateAssets="All" />
-	</ItemGroup>
-
-	<ItemGroup>
 		<Compile Update="Operators\PdfOperatorType.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>
@@ -62,6 +57,7 @@
 		</PackageReference>
 	</ItemGroup>
 
+	<!-- 
 	<PropertyGroup>
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 	</PropertyGroup>
@@ -70,6 +66,7 @@
 			<BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
 		</ItemGroup>
 	</Target>
+		-->
 
 
 </Project>

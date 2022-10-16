@@ -36,6 +36,7 @@ public class ParsingContext : IDisposable
     internal NestedParser NestedParser { get; }
     internal DictionaryParser DictionaryParser { get; }
     internal StringParser StringParser { get; }
+    internal ICMapProvider CMapProvider { get; }
     internal static readonly RecyclableMemoryStreamManager StreamManager = new RecyclableMemoryStreamManager();
     internal List<IDisposable> disposables = new List<IDisposable>();
     internal XRefParser XRefParser { get; }
@@ -61,6 +62,7 @@ public class ParsingContext : IDisposable
         CurrentOffset = 0;
         MainDocSource = null!;
         Document = null!;
+        CMapProvider = GlobalCMapProvider.Instance;
     }
 
     public (Dictionary<ulong, XRefEntry> XRefs, PdfDictionary? Trailer) Initialize(IPdfDataSource pdf)

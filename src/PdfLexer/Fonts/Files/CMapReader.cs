@@ -1,5 +1,4 @@
-﻿using PdfLexer.CMaps;
-using PdfLexer.Lexing;
+﻿using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using System.Buffers.Text;
 using System.Text;

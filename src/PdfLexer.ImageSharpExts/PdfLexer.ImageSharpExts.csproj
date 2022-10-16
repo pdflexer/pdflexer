@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net6.0</TargetFramework>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/pdflexer/pdflexer</PackageProjectUrl>
+		<Authors>pdflexer authors</Authors>
+		<Company></Company>
+		<Product />
+		<Description>Provides extensions to pdflexer pdf image type to convert to / from ImageSharp images.</Description>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Version>0.0.6-preview</Version>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="SixLabors.ImageSharp" Version="2.1.3" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\PdfLexer\PdfLexer.csproj" />
+	</ItemGroup>
+
+</Project>

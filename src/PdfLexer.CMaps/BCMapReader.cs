@@ -1,11 +1,12 @@
-﻿using System.Text;
+﻿using PdfLexer.Fonts;
+using System.Text;
 
 namespace System.Runtime.CompilerServices
 {
     public class IsExternalInit { }
 }
 
-namespace PdfLexer.CMaps
+namespace PdfLexer.KnownPdfCMaps
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Keeping pdfjs naming")]
     internal class BCMapReader
