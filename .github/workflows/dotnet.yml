@@ -8,9 +8,7 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -23,3 +21,27 @@ jobs:
       run: dotnet build --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal --filter FullyQualifiedName\!~ImageTests
+  benchmark:
+    name: Run benchmarks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      - name: Run benchmark
+        run: cd PdfLexer.Benchmarks && dotnet run -c release -- --exporters json --filter '*TextBenchmark*'
+
+      - name: Store benchmark result
+        uses: rhysd/github-action-benchmark@v1
+        with:
+          name: Text Bench
+          tool: 'benchmarkdotnet'
+          output-file-path: PdfLexer.Benchmarks/BenchmarkDotNet.Artifacts/results/PdfLexer.Benchmarks.Benchmarks.TextBenchmark-report-full-compressed.json
+          # github-token: ${{ secrets.GITHUB_TOKEN }}
+          # auto-push: true
+          # Show alert with commit comment on detecting possible performance regression
+          alert-threshold: '150%'
+          fail-on-alert: true
+          # comment-on-alert: true
+          # alert-comment-cc-users: '@plaisted'
