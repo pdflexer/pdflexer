@@ -1,184 +1,201 @@
-﻿using PdfLexer.CMaps;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Runtime.CompilerServices;
 
-namespace PdfLexer.Fonts
+namespace PdfLexer.Fonts;
+
+public class CMapData
 {
-
-    internal class CMapRange
+    public CMapData(List<CRange> ranges, Dictionary<uint, CResult> mapping, bool vertical)
     {
-        public uint Start { get; set; }
-        public uint End { get; set; }
-        public int Bytes { get; set; }
+        Ranges = ranges;
+        Mapping = mapping;
+        Vertical = vertical;
     }
+    public List<CRange> Ranges { get; set; }
+    public Dictionary<uint, CResult> Mapping { get; set; }
+    public bool Vertical { get; set; }
+}
 
-    internal class CMap
+public struct CResult
+{
+    public uint Code;
+    public string MultiChar;
+}
+
+public struct CRange
+{
+    public uint Start;
+    public uint End;
+    public int Bytes;
+
+    public static int EstimateByteSize(List<CRange> ranges, uint cid)
     {
-        private List<CRange>[] rangeSets = new List<CRange>[4];
-        private Dictionary<uint, CResult>? mapping;
-        internal List<CRange> Ranges;
-
-        public CMap(List<CRange> ranges, Dictionary<uint, CResult>? mapping = null)
+        var bytes = ranges.Select(x => x.Bytes).ToHashSet();
+        foreach (var rng in ranges)
         {
-            foreach (var range in ranges)
+            if (cid >= rng.Start && cid <= rng.End)
             {
-                var b = range.Bytes - 1;
-                if (rangeSets[b] == null)
-                {
-                    rangeSets[b] = new List<CRange>();
-                }
-                rangeSets[b].Add(range);
-            }
-            this.mapping = mapping;
-            Ranges = ranges;
-        }
-
-        public bool HasMapping { get => mapping != null; }
-
-
-        public bool TryGetMapping([NotNullWhen(true)]out Dictionary<uint, CResult>? val)
-        {
-            val = null;
-            if (mapping == null) { return false; }
-            val = mapping;
-            return true;
-        }
-
-        public bool TryGetFallback(uint cp, out CResult val)
-        {
-            if (mapping == null) { val = default; return false; }
-            return mapping.TryGetValue(cp, out val);
-        }
-
-        public uint GetCID(uint c)
-        {
-            if (mapping != null && mapping.TryGetValue(c, out var cr))
-            {
-                c = cr.Code;
-            }
-            return c;
-        }
-
-        public uint GetCodePoint(ReadOnlySpan<byte> data, int os, out int l)
-        {
-            uint c = 0;
-            var imax = 4;
-            var cl = data.Length - os;
-            if (cl < 4) { imax = cl; }
-            for (var i = 0; i < imax; i++)
-            {
-                c = (uint)(c << 8) | data[os + i];
-                var rangeSet = rangeSets[i];
-                if (rangeSet == null) { continue; }
-                foreach (var range in rangeSet)
-                {
-                    if (range.Start <= c && c <= range.End)
-                    {
-                        l = i + 1;
-                        return c;
-                    }
-                }
-            }
-            l = 0;
-            return 0;
-        }
-
-    }
-
-    internal class FontGlyphSet
-    {
-        public Glyph notdef { get; }
-        private Glyph[] b1;
-        private Dictionary<uint, Glyph> bm;
-
-        public FontGlyphSet(Glyph[] b1, Dictionary<uint, Glyph> glyphs, Glyph notdef)
-        {
-            this.notdef = notdef;
-            this.b1 = b1;
-            this.bm = glyphs;
-        }
-        public FontGlyphSet(IEnumerable<Glyph> glyphs, Glyph notdef)
-        {
-            this.notdef = notdef;
-            b1 = new Glyph[256];
-            bm = new Dictionary<uint, Glyph>();
-            foreach (var g in glyphs)
-            {
-                if (g.CodePoint < 256)
-                {
-                    b1[g.CodePoint.Value] = g;
-                }
-                else
-                {
-                    bm[g.CodePoint ?? 0] = g;
-                }
+                return rng.Bytes;
             }
         }
 
-        public Glyph GetGlyph(uint charCode)
+        if (bytes.Contains(1) && cid < 256)
         {
-            Glyph? glyph;
-            if (charCode < 256 && b1 != null)
-            {
-                glyph = b1[charCode];
-            }
-            else
-            {
-                bm.TryGetValue(charCode, out glyph);
-            }
-            glyph ??= notdef;
-            return glyph;
+            return 1;
+        }
+        else if (bytes.Contains(2) && cid <= 0xFFFF)
+        {
+            return 2;
+        }
+        else if (bytes.Contains(3) && cid <= 0xFFFFFF)
+        {
+            return 3;
+        }
+        else if (bytes.Contains(4))
+        {
+            return 4;
+        }
+        else
+        {
+            return cid < 256 ? 1 : 2; // fallback
         }
     }
+}
 
-    internal class CompositeFont : IReadableFont
+
+internal class CMap
+{
+    private List<CRange>[] rangeSets = new List<CRange>[4];
+    private Dictionary<uint, CResult>? mapping;
+    internal List<CRange> Ranges;
+
+    public CMap(List<CRange> ranges, Dictionary<uint, CResult>? mapping = null)
     {
-        private readonly CMap _encoding;
-        private readonly CMap? _cidInfo;
-        private readonly FontGlyphSet _glyphSet;
-        private readonly int _notdefBytes;
-
-        public bool IsVertical { get; }
-        public string Name { get; }
-
-        public CompositeFont(string name, CMap encoding, FontGlyphSet glyphSet, int notdefBytes, bool vertical, CMap? cidInfo = null)
+        foreach (var range in ranges)
         {
-            Name = name;
-            IsVertical = vertical;
-            _encoding = encoding;
-            _cidInfo = cidInfo;
-            _glyphSet = glyphSet;
-            _notdefBytes = notdefBytes;
-        }
-
-        public int GetGlyph(ReadOnlySpan<byte> data, int os, out Glyph glyph)
-        {
-            int l;
-            uint c;
-
-            c = _encoding.GetCodePoint(data, os, out l);
-            if (l == 0)
+            var b = range.Bytes - 1;
+            if (rangeSets[b] == null)
             {
-                glyph = _glyphSet.notdef;
-                return _notdefBytes;
+                rangeSets[b] = new List<CRange>();
             }
-            c = _encoding.GetCID(c); // convert cp to cid, does nothing with identity
+            rangeSets[b].Add(range);
+        }
+        this.mapping = mapping;
+        Ranges = ranges;
+    }
 
-            glyph = _glyphSet.GetGlyph(c);
-            if (glyph == _glyphSet.notdef && _cidInfo != null && _cidInfo.HasMapping)
+    public bool HasMapping { get => mapping != null; }
+
+
+    public bool TryGetMapping([NotNullWhen(true)]out Dictionary<uint, CResult>? val)
+    {
+        val = null;
+        if (mapping == null) { return false; }
+        val = mapping;
+        return true;
+    }
+
+    public bool TryGetFallback(uint cp, out CResult val)
+    {
+        if (mapping == null) { val = default; return false; }
+        return mapping.TryGetValue(cp, out val);
+    }
+
+    public uint GetCID(uint c)
+    {
+        if (mapping != null && mapping.TryGetValue(c, out var cr))
+        {
+            c = cr.Code;
+        }
+        return c;
+    }
+
+    public uint GetCodePoint(ReadOnlySpan<byte> data, int os, out int l)
+    {
+        uint c = 0;
+        var imax = 4;
+        var cl = data.Length - os;
+        if (cl < 4) { imax = cl; }
+        for (var i = 0; i < imax; i++)
+        {
+            c = (uint)(c << 8) | data[os + i];
+            var rangeSet = rangeSets[i];
+            if (rangeSet == null) { continue; }
+            foreach (var range in rangeSet)
             {
-                if (_cidInfo.TryGetFallback(c, out var val))
+                if (range.Start <= c && c <= range.End)
                 {
-                    glyph = glyph.Clone();
-                    glyph.MultiChar = val.MultiChar;
-                    glyph.Char = (char)val.Code;
-                    glyph.BBox = _glyphSet.notdef.BBox;
+                    l = i + 1;
+                    return c;
                 }
             }
+        }
+        l = 0;
+        return 0;
+    }
 
-            return l;
+}
+
+public class GlobalCMapProvider : ICMapProvider
+{
+    private static Dictionary<string, ICMapProvider> providers = new();
+
+    public static ICMapProvider Instance { get; } = new GlobalCMapProvider();
+    public GlobalCMapProvider()
+    {
+
+    }
+    public static void AddProvider(ICMapProvider provider)
+    {
+        lock(providers)
+        {
+            foreach (var cmap in provider.GetProvidedNames())
+            {
+                providers[cmap.ToLower()] = provider;
+            }
         }
     }
+
+    private static ConditionalWeakTable<string, CMapData>
+        globalCache = new ConditionalWeakTable<string, CMapData>();
+
+    public CMapData? GetCMapData(string name)
+    {
+        name = name.ToLower();
+        lock (globalCache)
+        {
+            if (globalCache.TryGetValue(name, out var data))
+            {
+                return data;
+            }
+        }
+        ICMapProvider? provider = null;
+        lock (providers)
+        {
+            if (!providers.TryGetValue(name, out provider))
+            {
+                return null;
+            }
+        }
+        var result =  provider.GetCMapData(name);
+        if (result == null) { return null; }
+        lock (globalCache)
+        {
+            globalCache.AddOrUpdate(name, result);
+        }
+        return result;
+    }
+
+    public IEnumerable<string> GetProvidedNames()
+    {
+        lock (providers)
+        {
+            return providers.Keys.ToList();
+        }
+    }
+}
+
+public interface ICMapProvider
+{
+    IEnumerable<string> GetProvidedNames();
+    CMapData? GetCMapData(string name);
 }

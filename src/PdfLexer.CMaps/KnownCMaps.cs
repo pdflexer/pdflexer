@@ -1,12 +1,38 @@
 ﻿using System.Buffers;
 using System.Reflection;
-using System.Runtime.CompilerServices;
+using PdfLexer.Fonts;
+using PdfLexer.KnownPdfCMaps;
 
-namespace PdfLexer.CMaps;
+namespace PdfLexer;
 
-public class KnownCMaps
+public static partial class CMaps {
+    private static int loaded = 0;
+    /// <summary>
+    /// Registers known pdf cmaps to the global static cmap provider.
+    /// Note: thread safe and calling multiple times is a no-op.
+    /// </summary>
+    public static void AddKnownPdfCMaps()
+    {
+        if (Interlocked.Increment(ref loaded) == 1)
+        {
+            GlobalCMapProvider.AddProvider(new KnownCMaps());
+        }
+    }
+
+    /// <summary>
+    /// Forces registration / re-registration of known pdf cmaps to 
+    /// the global static cmap provider. Generally should not be used.
+    /// Subject to removal.
+    /// </summary>
+    public static void AddKnownPdfCMapsForced()
+    {
+        GlobalCMapProvider.AddProvider(new KnownCMaps());
+    }
+}
+
+public class KnownCMaps : ICMapProvider
 {
-    public static IReadOnlyList<string> Names = new List<string>
+    private static IReadOnlyList<string> Names = new List<string>
     {
         "78-euc-h",
         "78-euc-v",
@@ -177,84 +203,6 @@ public class KnownCMaps
         "v",
         "wp-symbol",
     };
-    public static (List<CRange>? Ranges, Dictionary<uint, CResult>? Mapping, bool Vertical) GetCMap(string name)
-    {
-        var assembly = Assembly.GetExecutingAssembly();
-
-        var resource = GetResourceName(name);
-        if (resource == null) { return (null, null, false); }
-
-        lock (globalCache)
-        {
-            if (globalCache.TryGetValue(resource, out var cached))
-            {
-                return (cached.Ranges, cached.Mapping, cached.Vertical);
-            }
-        }
-
-        var current = resource;
-        CMapData? complete = null;
-        while (true)
-        {
-            using (Stream stream = assembly.GetManifestResourceStream(current))
-            {
-                int total = (int)stream.Length;
-                var rented = ArrayPool<byte>.Shared.Rent((int)total);
-                int totalRead = 0;
-                int read;
-                while ((read = stream.Read(rented, totalRead, total - totalRead)) > 0)
-                {
-                    totalRead += read;
-                }
-
-                ReadOnlySpan<byte> data = rented;
-
-                var result = BCMapReader.GetGlyphsFromToUnicode(data.Slice(0, total));
-                ArrayPool<byte>.Shared.Return(rented);
-                if (complete == null)
-                {
-                    complete = new CMapData(result.Ranges, result.Mapping, result.Vertical);
-                } else
-                {
-                    if (complete.Ranges.Count == 0)
-                    {
-                        complete.Ranges = result.Ranges;
-                    }
-                    foreach (var item in result.Mapping)
-                    {
-                        if (!complete.Mapping.ContainsKey(item.Key))
-                        {
-                            complete.Mapping[item.Key] = item.Value;
-                        }
-                    }
-                }
-                
-                if (result.extends == null)
-                {
-                    break;
-                }
-                current = GetResourceName(result.extends);
-                if (current == null)
-                {
-                    break;
-                }
-            }
-        }
-
-        lock (globalCache)
-        {
-            // globalCache[resource] = complete;
-            globalCache.AddOrUpdate(resource, complete);
-        }
-
-        return (complete.Ranges, complete.Mapping, complete.Vertical);
-
-    }
-
-
-    // not referenced anywhere so will get cleared quickly, look into how to optimize caching
-    private static ConditionalWeakTable<string, CMapData>
-        globalCache = new ConditionalWeakTable<string, CMapData>();
 
     private static string? GetResourceName(string name)
     {
@@ -433,64 +381,67 @@ public class KnownCMaps
             _ => null
         };
     }
-}
 
-
-public class CMapData
-{
-    public CMapData(List<CRange> ranges, Dictionary<uint, CResult> mapping, bool vertical)
+    public CMapData? GetCMapData(string name)
     {
-        Ranges = ranges;
-        Mapping = mapping;
-        Vertical = vertical;
-    }
-    public List<CRange> Ranges { get; set; }
-    public Dictionary<uint, CResult> Mapping { get; set; }
-    public bool Vertical { get; set; }
-}
+        var assembly = Assembly.GetExecutingAssembly();
 
-public struct CResult
-{
-    public uint Code;
-    public string MultiChar;
-}
+        var resource = GetResourceName(name);
+        if (resource == null) { return null; }
 
-public struct CRange
-{
-    public uint Start;
-    public uint End;
-    public int Bytes;
-
-    public static int EstimateByteSize(List<CRange> ranges, uint cid)
-    {
-        var bytes = ranges.Select(x => x.Bytes).ToHashSet();
-        foreach (var rng in ranges)
+        var current = resource;
+        CMapData? complete = null;
+        while (true)
         {
-            if (cid >= rng.Start && cid <= rng.End)
+            using (Stream stream = assembly.GetManifestResourceStream(current))
             {
-                return rng.Bytes;
+                int total = (int)stream.Length;
+                var rented = ArrayPool<byte>.Shared.Rent((int)total);
+                int totalRead = 0;
+                int read;
+                while ((read = stream.Read(rented, totalRead, total - totalRead)) > 0)
+                {
+                    totalRead += read;
+                }
+
+                ReadOnlySpan<byte> data = rented;
+
+                var result = BCMapReader.GetGlyphsFromToUnicode(data.Slice(0, total));
+                ArrayPool<byte>.Shared.Return(rented);
+                if (complete == null)
+                {
+                    complete = new CMapData(result.Ranges, result.Mapping, result.Vertical);
+                }
+                else
+                {
+                    if (complete.Ranges.Count == 0)
+                    {
+                        complete.Ranges = result.Ranges;
+                    }
+                    foreach (var item in result.Mapping)
+                    {
+                        if (!complete.Mapping.ContainsKey(item.Key))
+                        {
+                            complete.Mapping[item.Key] = item.Value;
+                        }
+                    }
+                }
+
+                if (result.extends == null)
+                {
+                    break;
+                }
+                current = GetResourceName(result.extends);
+                if (current == null)
+                {
+                    break;
+                }
             }
         }
 
-        if (bytes.Contains(1) && cid < 256)
-        {
-            return 1;
-        }
-        else if (bytes.Contains(2) && cid <= 0xFFFF)
-        {
-            return 2;
-        }
-        else if (bytes.Contains(3) && cid <= 0xFFFFFF)
-        {
-            return 3;
-        }
-        else if (bytes.Contains(4))
-        {
-            return 4;
-        }
-        else
-        {
-            return cid < 256 ? 1 : 2; // fallback
-        }
+        return new CMapData(complete.Ranges, complete.Mapping, complete.Vertical);
     }
+
+    public IEnumerable<string> GetProvidedNames() => Names;
 }
+

@@ -4,6 +4,8 @@ Note: Alpha quality
 
 Image extraction is largely completed excluding several specialized colorspaces. Long term goal is to allow easy image extraction and modification scenarios (replace image, downsize image, etc).
 
+Note: Extensions to convert pdf images to ImageSharp format provided by PdfLexer.ImageSharpExts nuget / project.
+
 Gaps:
 
 - Colorspaces:
@@ -33,7 +35,7 @@ while (reader.Advance())
     // pdfImg.H
 
     // ImageSharp conversion supported through
-    // from PdfLexer.Images project
+    // from PdfLexer.ImageSharpExts project / nuget
     using var imageSharpImage = pdfImg.GetImage(doc.Context);
     imageSharpImage.SaveAsPng("/tmp/path.png");
 }

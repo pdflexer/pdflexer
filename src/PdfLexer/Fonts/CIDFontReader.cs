@@ -1,5 +1,4 @@
-﻿using PdfLexer.CMaps;
-using PdfLexer.DOM;
+﻿using PdfLexer.DOM;
 using PdfLexer.Fonts.Files;
 using PdfLexer.Parsers;
 
@@ -37,24 +36,27 @@ internal class Type0Font
         if (knownDesc)
         {
             // add unicode values from known cmap
-            var e2 = KnownCMaps.GetCMap(cidCharSet + "-UCS2"); // we know not null for knownDesc
-            foreach (var (cid, gg) in all)
+            var e2 = ctx.CMapProvider.GetCMapData(cidCharSet + "-UCS2"); // we know not null for knownDesc
+            if (e2 != null)
             {
-                if (e2.Mapping!.TryGetValue(cid, out var info))
+                foreach (var (cid, gg) in all)
                 {
-                    gg.GuessedUnicode = false;
-                    if (info.MultiChar != null)
+                    if (e2.Mapping!.TryGetValue(cid, out var info))
                     {
-                        gg.MultiChar = info.MultiChar;
-                        gg.Char = default;
-                    }
-                    else
-                    {
-                        gg.Char = (char)info.Code;
+                        gg.GuessedUnicode = false;
+                        if (info.MultiChar != null)
+                        {
+                            gg.MultiChar = info.MultiChar;
+                            gg.Char = default;
+                        }
+                        else
+                        {
+                            gg.Char = (char)info.Code;
+                        }
                     }
                 }
+                cidInfo = new CMap(e2.Ranges!, e2.Mapping);
             }
-            cidInfo = new CMap(e2.Ranges!, e2.Mapping);
         }
 
 
@@ -84,7 +86,7 @@ internal class Type0Font
                 BBox = new decimal[] { 0m, bby, (decimal)mw, bby + (bbox?.URy ?? 0) / 1000.0m } };
         }
 
-        var gs = new FontGlyphSet(b1g, all, notdef);
+        var gs = new GlyphSet(b1g, all, notdef);
 
         return new CompositeFont(t0.BaseFont?.Value ?? "/Empty", encoding, gs, 2, vertical, cidInfo);
     }
@@ -125,10 +127,10 @@ internal class Type0Font
             var identityEncoded = (name.Value == "/Identity-H" || name.Value == "/Identity-V");
             if (!identityEncoded)
             {
-                var (ranges, maps, isVert) = KnownCMaps.GetCMap(name.Value.Substring(1));
-                if (ranges != null)
+                var cmap = ctx.CMapProvider.GetCMapData(name.Value.Substring(1));
+                if (cmap != null)
                 {
-                    return (new CMap(ranges, maps), isVert);
+                    return (new CMap(cmap.Ranges, cmap.Mapping), cmap.Vertical);
                 }
             } 
             else if (name.Value == "/Identity-V")

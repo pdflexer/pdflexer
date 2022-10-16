@@ -11,6 +11,10 @@ namespace PdfLexer.Tests
 {
     public class TextExtractionTests
     {
+        public TextExtractionTests()
+        {
+            CMaps.AddKnownPdfCMaps();
+        }
         [Fact]
         public void It_Reads_Type1_Embedded_No_Encoding() => RunSingle("bug859204.pdf");
 

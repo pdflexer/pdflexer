@@ -2,6 +2,8 @@
 
 Note: Beta quality
 
+For most accurate text extraction the PdfLexer.CMaps nuget / project should be referenced and `CMaps.AddKnownPdfCMaps();` called before attempting extraction.
+
 ```csharp
 // get all chars
 using var doc = PdfDocument.Open(data);

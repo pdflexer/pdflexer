@@ -40,6 +40,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [GlobalSetup]
         public void Setup()
         {
+            CMaps.AddKnownPdfCMaps();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             var src = GetPathFromSegmentOfCurrent("PdfLexer.Benchmarks");
             var root = Path.GetFullPath(Path.Combine(src, ".."));

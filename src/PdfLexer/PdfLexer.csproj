@@ -9,10 +9,9 @@
 		<Product />
 		<Description>Lower level PDF parsing library.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.0.5-preview</Version>
+		<Version>0.0.6-preview</Version>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
-
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -42,10 +41,6 @@
 
 	<ItemGroup>
 		<InternalsVisibleTo Include="pdflexer.TestCaseGen" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\PdfLexer.CMaps\PdfLexer.CMaps.csproj" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>

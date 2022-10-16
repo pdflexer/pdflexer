@@ -9,14 +9,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\..\src\PdfLexer.Images\PdfLexer.Images.csproj" />
+		<ProjectReference Include="..\..\src\PdfLexer.ImageSharpExts\PdfLexer.ImageSharpExts.csproj" />
 		<ProjectReference Include="..\..\src\PdfLexer\PdfLexer.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
 		<PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
-		<PackageReference Include="PDFiumCore" Version="108.0.5337" />
+		<PackageReference Include="PDFiumCore" Version="108.0.5351" />
 	</ItemGroup>
 
 	<ItemGroup>
