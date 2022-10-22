@@ -166,6 +166,10 @@ public sealed class PdfImage
     public float W { get; set; }
     public float H { get; set; }
     public XObjImage XObj { get; set; } = null!;
+
+    // TODO need to pass through access default colorspaces if 
+    // they exist in Resources dict for Device* overrides
+
     internal PdfImage()
     {
 
