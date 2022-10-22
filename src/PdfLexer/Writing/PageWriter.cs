@@ -36,6 +36,8 @@ public sealed class PageWriter : ContentWriter, IDisposable
             case PageWriteMode.Append:
                 {
                     // have to copy to ensure q/Q
+                    // TODO: should just make existing content a form which
+                    // natively ensures q/Q and will save decode / encode step
                     var fw = new FlateWriter();
                     q_Op.WriteLn(fw);
                     foreach (var existing in Page.Contents)

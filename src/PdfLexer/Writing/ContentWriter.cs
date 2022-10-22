@@ -109,19 +109,6 @@ public partial class ContentWriter
         return this;
     }
 
-
-    public ContentWriter SetStrokingRGB(int r, int g, int b)
-    {
-        RG_Op.WriteLn((r & 0xFF) / 255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, Stream);
-        return this;
-    }
-
-    public ContentWriter SetFillRGB(int r, int g, int b)
-    {
-        rg_Op.WriteLn((r & 0xFF) / 255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, Stream);
-        return this;
-    }
-
     public ContentWriter LineWidth(decimal w)
     {
         if (scale != 1) { w *= (decimal)scale; }

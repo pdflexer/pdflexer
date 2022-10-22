@@ -6,6 +6,7 @@ internal class ColorSpace
 {
     public static IColorSpace Get(ParsingContext ctx, IPdfObject cs)
     {
+        // TODO if Device* colorspace selected check Resources -> ColorSpace for Default* to replace default with.
         cs = cs.Resolve();
         switch (cs)
         {
