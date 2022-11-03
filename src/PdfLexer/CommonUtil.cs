@@ -1,7 +1,12 @@
 using System.Buffers;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using PdfLexer.DOM;
+
+#if NET6_0_OR_GREATER
+using System.Runtime.Intrinsics.X86;
+#endif
 
 namespace PdfLexer;
 
@@ -470,6 +475,54 @@ internal static class CommonUtil
         }
     }
 
+    internal static byte[] TokenTerms = new byte[] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
+        (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%',
+         (byte)'+', (byte)'-', (byte)'.' };
+
+    internal static byte[] TokenTermsAll = new byte[] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
+        (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%',
+         (byte)'+', (byte)'-', (byte)'.', 48, 49, 50, 51, 52, 53, 54, 55, 56, 57 };
+
+
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static void ScanTokenEnd3(ReadOnlySpan<byte> bytes, ref int pos)
+    {
+        ReadOnlySpan<byte> local = bytes;
+        ReadOnlySpan<byte> terms = TokenTermsAll;
+        for (; pos < local.Length; pos++)
+        {
+            var b = local[pos];
+            if (
+                terms.IndexOf(b) > -1
+                )
+            {
+                return;
+            }
+        }
+    }
+
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    internal static void ScanTokenEnd2(ReadOnlySpan<byte> bytes, ref int pos)
+    {
+        ReadOnlySpan<byte> local = bytes;
+        ReadOnlySpan<byte> terms = TokenTerms;
+        for (; pos < local.Length; pos++)
+        {
+            var b = local[pos];
+            if (
+                terms.IndexOf(b) > -1
+                || (b > 47 && b < 58)
+                )
+            {
+                return;
+            }
+        }
+    }
+
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static void ScanTokenEnd(ReadOnlySpan<byte> bytes, ref int pos)
     {
@@ -479,6 +532,7 @@ internal static class CommonUtil
             // ugly but benched better than Span IndexOf / IndexOfAny alternatives
             // TODO rebench with extra number chars
             var b = local[pos];
+            
             if (
                 b == 0x00 || b == 0x09 || b == 0x0A || b == 0x0C || b == 0x0D || b == 0x20
                 || b == (byte)'(' || b == (byte)')' || b == (byte)'<' || b == (byte)'>'
@@ -492,6 +546,8 @@ internal static class CommonUtil
             }
         }
     }
+
+
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     internal static bool IsEndOfToken(byte b)
