@@ -9,7 +9,7 @@
 		<Product />
 		<Description>Provides pdflexer with known pdf cmaps to use during text extraction.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.0.6-preview</Version>
+		<Version>0.0.7-preview</Version>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
