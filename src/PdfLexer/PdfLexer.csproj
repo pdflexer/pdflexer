@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;net5.0;net6.0</TargetFrameworks>
+		<TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/pdflexer/pdflexer</PackageProjectUrl>
 		<Authors>Michael Plaisted</Authors>
@@ -9,7 +9,7 @@
 		<Product />
 		<Description>Lower level PDF parsing library.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.0.6-preview</Version>
+		<Version>0.0.7-preview</Version>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
@@ -51,9 +51,9 @@
 		</Compile>
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0'">
 		<PackageReference Include="DotNext.Unsafe">
-			<Version>4.7.2</Version>
+			<Version>4.7.4</Version>
 		</PackageReference>
 	</ItemGroup>
 
