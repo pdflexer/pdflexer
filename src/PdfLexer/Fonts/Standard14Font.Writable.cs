@@ -20,6 +20,45 @@ namespace PdfLexer.Fonts
             return new Standard14Font(FontMetrics.TimesRoman, d);
         }
 
+        public static IWritableFont GetTimesRomanItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in TimesItalicGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.TimesItalic, d);
+        }
+
+        public static IWritableFont GetTimesRomanBold()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in TimesBoldGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.TimesBold, d);
+        }
+
+        public static IWritableFont GetTimesRomanBoldItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in TimesBoldItalicGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.TimesBoldItalic, d);
+        }
+
 
         private FontMetrics _metrics;
         private Dictionary<char, Glyph> _glyphs;

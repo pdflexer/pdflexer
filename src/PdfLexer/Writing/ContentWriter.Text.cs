@@ -14,6 +14,33 @@ public partial class ContentWriter
         return this;
     }
 
+    public enum Base14
+    {
+        TimesRoman,
+        TimesRomanItalic,
+        TimesRomanBold,
+        TimesRomanBoldItalic,
+    }
+
+    private Dictionary<Base14, IWritableFont> used = new();
+
+    public ContentWriter Font(Base14 font, double size)
+    {
+        if (!used.TryGetValue(font, out var wf))
+        {
+            wf = font switch
+            {
+                Base14.TimesRoman => Standard14Font.GetTimesRoman(),
+                Base14.TimesRomanItalic => Standard14Font.GetTimesRomanItalic(),
+                Base14.TimesRomanBold => Standard14Font.GetTimesRomanBold(),
+                Base14.TimesRomanBoldItalic => Standard14Font.GetTimesRomanBoldItalic(),
+                _ => throw new PdfLexerException("Base14 not implemented: " + font.ToString())
+            };
+            used[font] = wf;
+        }
+        return Font(wf, size);
+    }
+
     public ContentWriter Text(string text)
     {
         if (currentFont == null) { throw new NotSupportedException("Must set current font before writing."); }
