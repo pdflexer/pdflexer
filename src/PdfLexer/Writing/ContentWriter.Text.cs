@@ -23,7 +23,13 @@ public partial class ContentWriter
         Courier,
         CourierBold,
         CourierBoldItalic,
-        CourierItalic
+        CourierItalic,
+        Helvetica,
+        HelveticaBold,
+        HelveticaBoldItalic,
+        HelveticaItalic,
+        Symbol,
+        ZapfDingbats,
     }
 
     private Dictionary<Base14, IWritableFont> used = new();
@@ -42,6 +48,12 @@ public partial class ContentWriter
                 Base14.CourierBold => Standard14Font.GetCourierBold(),
                 Base14.CourierBoldItalic => Standard14Font.GetCourierBoldItalic(),
                 Base14.CourierItalic => Standard14Font.GetCourierItalic(),
+                Base14.Helvetica => Standard14Font.GetHelvetica(),
+                Base14.HelveticaBold => Standard14Font.GetHelveticaBold(),
+                Base14.HelveticaBoldItalic => Standard14Font.GetHelveticaBoldItalic(),
+                Base14.HelveticaItalic => Standard14Font.GetHelveticaItalic(),
+                Base14.Symbol => Standard14Font.GetSymbol(),
+                Base14.ZapfDingbats => Standard14Font.GetZapfDingbats(),
                 _ => throw new PdfLexerException("Base14 not implemented: " + font.ToString())
             };
             used[font] = wf;

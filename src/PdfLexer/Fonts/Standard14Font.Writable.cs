@@ -111,6 +111,84 @@ namespace PdfLexer.Fonts
             return new Standard14Font(FontMetrics.CourierItalic, d);
         }
 
+        public static IWritableFont GetHelvetica()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in HelveticaGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.Helvetica, d);
+        }
+
+        public static IWritableFont GetHelveticaBold()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in HelveticaBoldGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.HelveticaBold, d);
+        }
+
+        public static IWritableFont GetHelveticaBoldItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in HelveticaBoldObliqueGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.HelveticaBoldItalic, d);
+        }
+
+        public static IWritableFont GetHelveticaItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in HelveticaObliqueGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.HelveticaItalic, d);
+        }
+
+        public static IWritableFont GetSymbol()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in SymbolGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.Symbol, d);
+        }
+
+        public static IWritableFont GetZapfDingbats()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in ZapfDingbatsGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.ZapfDingbats, d);
+        }
+
 
         private FontMetrics _metrics;
         private Dictionary<char, Glyph> _glyphs;
