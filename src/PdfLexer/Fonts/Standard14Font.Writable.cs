@@ -20,6 +20,175 @@ namespace PdfLexer.Fonts
             return new Standard14Font(FontMetrics.TimesRoman, d);
         }
 
+        public static IWritableFont GetTimesRomanItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in TimesItalicGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.TimesItalic, d);
+        }
+
+        public static IWritableFont GetTimesRomanBold()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in TimesBoldGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.TimesBold, d);
+        }
+
+        public static IWritableFont GetTimesRomanBoldItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in TimesBoldItalicGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.TimesBoldItalic, d);
+        }
+
+        public static IWritableFont GetCourier()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in CourierGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.Courier, d);
+        }
+
+        public static IWritableFont GetCourierBold()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in CourierBoldGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.CourierBold, d);
+        }
+
+        public static IWritableFont GetCourierBoldItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in CourierBoldObliqueGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.CourierBoldItalic, d);
+        }
+
+        public static IWritableFont GetCourierItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in CourierObliqueGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.CourierItalic, d);
+        }
+
+        public static IWritableFont GetHelvetica()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in HelveticaGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.Helvetica, d);
+        }
+
+        public static IWritableFont GetHelveticaBold()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in HelveticaBoldGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.HelveticaBold, d);
+        }
+
+        public static IWritableFont GetHelveticaBoldItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in HelveticaBoldObliqueGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.HelveticaBoldItalic, d);
+        }
+
+        public static IWritableFont GetHelveticaItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in HelveticaObliqueGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.HelveticaItalic, d);
+        }
+
+        public static IWritableFont GetSymbol()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in SymbolGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.Symbol, d);
+        }
+
+        public static IWritableFont GetZapfDingbats()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in ZapfDingbatsGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.ZapfDingbats, d);
+        }
+
 
         private FontMetrics _metrics;
         private Dictionary<char, Glyph> _glyphs;

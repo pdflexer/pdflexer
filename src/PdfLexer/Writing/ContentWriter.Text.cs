@@ -14,6 +14,53 @@ public partial class ContentWriter
         return this;
     }
 
+    public enum Base14
+    {
+        TimesRoman,
+        TimesRomanBold,
+        TimesRomanBoldItalic,
+        TimesRomanItalic,
+        Courier,
+        CourierBold,
+        CourierBoldItalic,
+        CourierItalic,
+        Helvetica,
+        HelveticaBold,
+        HelveticaBoldItalic,
+        HelveticaItalic,
+        Symbol,
+        ZapfDingbats,
+    }
+
+    private Dictionary<Base14, IWritableFont> used = new();
+
+    public ContentWriter Font(Base14 font, double size)
+    {
+        if (!used.TryGetValue(font, out var wf))
+        {
+            wf = font switch
+            {
+                Base14.TimesRoman => Standard14Font.GetTimesRoman(),
+                Base14.TimesRomanBold => Standard14Font.GetTimesRomanBold(),
+                Base14.TimesRomanBoldItalic => Standard14Font.GetTimesRomanBoldItalic(),
+                Base14.TimesRomanItalic => Standard14Font.GetTimesRomanItalic(),
+                Base14.Courier => Standard14Font.GetCourier(),
+                Base14.CourierBold => Standard14Font.GetCourierBold(),
+                Base14.CourierBoldItalic => Standard14Font.GetCourierBoldItalic(),
+                Base14.CourierItalic => Standard14Font.GetCourierItalic(),
+                Base14.Helvetica => Standard14Font.GetHelvetica(),
+                Base14.HelveticaBold => Standard14Font.GetHelveticaBold(),
+                Base14.HelveticaBoldItalic => Standard14Font.GetHelveticaBoldItalic(),
+                Base14.HelveticaItalic => Standard14Font.GetHelveticaItalic(),
+                Base14.Symbol => Standard14Font.GetSymbol(),
+                Base14.ZapfDingbats => Standard14Font.GetZapfDingbats(),
+                _ => throw new PdfLexerException("Base14 not implemented: " + font.ToString())
+            };
+            used[font] = wf;
+        }
+        return Font(wf, size);
+    }
+
     public ContentWriter Text(string text)
     {
         if (currentFont == null) { throw new NotSupportedException("Must set current font before writing."); }
@@ -80,7 +127,7 @@ public partial class ContentWriter
         {
             return existing;
         }
-        
+
         var fnt = obj.GetPdfFont();
         PdfName name = $"/F{objCnt++}";
         while (Fonts.ContainsKey(name))
