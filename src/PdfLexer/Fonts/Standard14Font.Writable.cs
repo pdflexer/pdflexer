@@ -59,6 +59,58 @@ namespace PdfLexer.Fonts
             return new Standard14Font(FontMetrics.TimesBoldItalic, d);
         }
 
+        public static IWritableFont GetCourier()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in CourierGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.Courier, d);
+        }
+
+        public static IWritableFont GetCourierBold()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in CourierBoldGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.CourierBold, d);
+        }
+
+        public static IWritableFont GetCourierBoldItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in CourierBoldObliqueGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.CourierBoldItalic, d);
+        }
+
+        public static IWritableFont GetCourierItalic()
+        {
+            var d = new Dictionary<char, Glyph>();
+            foreach (var g in CourierObliqueGlyphs.DefaultEncoding)
+            {
+                if (g != null)
+                {
+                    d[g.Char] = g;
+                }
+            }
+            return new Standard14Font(FontMetrics.CourierItalic, d);
+        }
+
 
         private FontMetrics _metrics;
         private Dictionary<char, Glyph> _glyphs;

@@ -17,9 +17,13 @@ public partial class ContentWriter
     public enum Base14
     {
         TimesRoman,
-        TimesRomanItalic,
         TimesRomanBold,
         TimesRomanBoldItalic,
+        TimesRomanItalic,
+        Courier,
+        CourierBold,
+        CourierBoldItalic,
+        CourierItalic
     }
 
     private Dictionary<Base14, IWritableFont> used = new();
@@ -31,9 +35,13 @@ public partial class ContentWriter
             wf = font switch
             {
                 Base14.TimesRoman => Standard14Font.GetTimesRoman(),
-                Base14.TimesRomanItalic => Standard14Font.GetTimesRomanItalic(),
                 Base14.TimesRomanBold => Standard14Font.GetTimesRomanBold(),
                 Base14.TimesRomanBoldItalic => Standard14Font.GetTimesRomanBoldItalic(),
+                Base14.TimesRomanItalic => Standard14Font.GetTimesRomanItalic(),
+                Base14.Courier => Standard14Font.GetCourier(),
+                Base14.CourierBold => Standard14Font.GetCourierBold(),
+                Base14.CourierBoldItalic => Standard14Font.GetCourierBoldItalic(),
+                Base14.CourierItalic => Standard14Font.GetCourierItalic(),
                 _ => throw new PdfLexerException("Base14 not implemented: " + font.ToString())
             };
             used[font] = wf;
@@ -107,7 +115,7 @@ public partial class ContentWriter
         {
             return existing;
         }
-        
+
         var fnt = obj.GetPdfFont();
         PdfName name = $"/F{objCnt++}";
         while (Fonts.ContainsKey(name))

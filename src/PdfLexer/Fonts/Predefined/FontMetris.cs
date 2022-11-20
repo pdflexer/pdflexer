@@ -102,4 +102,100 @@ internal class FontMetrics
             StemV = 76,
         }
     };
+
+    public static FontMetrics Courier = new FontMetrics
+    {
+        BaseFont = "/Courier",
+        Descriptor = new FontDescriptor
+        {
+            FontName = "/Courier",
+            FontFamily = new PdfString("Courier"),
+            Flags = FontFlags.Nonsymbolic | FontFlags.Serif,
+            FontBBox = new PdfRectangle
+            {
+                LLx = -23,
+                LLy = -250,
+                URx = 715,
+                URy = 805
+            },
+            ItalicAngle = PdfCommonNumbers.Zero,
+            CapHeight = 562,
+            Ascent = 629,
+            Descent = -157,
+            StemH = 51,
+            StemV = 51,
+        }
+    };
+
+    public static FontMetrics CourierBold = new FontMetrics
+    {
+        BaseFont = "/Courier-Bold",
+        Descriptor = new FontDescriptor
+        {
+            FontName = "/Courier-Bold",
+            FontFamily = new PdfString("Courier"),
+            Flags = FontFlags.Nonsymbolic | FontFlags.Serif | FontFlags.ForceBold,
+            FontBBox = new PdfRectangle
+            {
+                LLx = -113,
+                LLy = -250,
+                URx = 749,
+                URy = 801
+            },
+            ItalicAngle = PdfCommonNumbers.Zero,
+            CapHeight = 562,
+            Ascent = 629,
+            Descent = -157,
+            StemH = 84,
+            StemV = 106,
+        }
+    };
+
+    public static FontMetrics CourierBoldItalic = new FontMetrics
+    {
+        BaseFont = "/Courier-BoldOblique",
+        Descriptor = new FontDescriptor
+        {
+            FontName = "/Courier-BoldOblique",
+            FontFamily = new PdfString("Courier"),
+            Flags = FontFlags.Nonsymbolic | FontFlags.Serif | FontFlags.ForceBold | FontFlags.Italic,
+            FontBBox = new PdfRectangle
+            {
+                LLx = -57,
+                LLy = -250,
+                URx = 869,
+                URy = 801
+            },
+            ItalicAngle = new PdfDecimalNumber(-12),
+            CapHeight = 562,
+            Ascent = 629,
+            Descent = -157,
+            StemH = 84,
+            StemV = 106,
+        }
+    };
+
+    public static FontMetrics CourierItalic = new FontMetrics
+    {
+        BaseFont = "/Courier-Oblique",
+        Descriptor = new FontDescriptor
+        {
+            FontName = "/Courier-Oblique",
+            FontFamily = new PdfString("Courier"),
+            Flags = FontFlags.Nonsymbolic | FontFlags.Serif | FontFlags.Italic,
+            FontBBox = new PdfRectangle
+            {
+                LLx = -27,
+                LLy = -250,
+                URx = 849,
+                URy = 805
+            },
+            ItalicAngle = new PdfDecimalNumber(-12),
+            CapHeight = 562,
+            Ascent = 629,
+            Descent = -157,
+            StemH = 51,
+            StemV = 51,
+        }
+    };
 }
