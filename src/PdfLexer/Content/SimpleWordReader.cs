@@ -5,6 +5,15 @@ using System.Text;
 
 namespace PdfLexer.Content;
 
+public struct WordInfo
+{
+    public string word;
+    public float llx;
+    public float lly;
+    public float urx;
+    public float ury;
+}
+
 /// <summary>
 /// Returns words from PDF by scanning chars sequentially as they are written in the PDF
 /// and splitting into words if spacing between chars is significant or a word delimiting
@@ -69,18 +78,19 @@ public ref struct SimpleWordReader
                     sb.Clear();
                     last = prevbb;
                     returnWord = true;
-                }
-
-                Matrix4x4.Invert(prev, out var iv);
-                var change = current * iv;
-                var dw = vert ? change.M32 : change.M31;
-                var dh = vert ? change.M31 : change.M32;
-                if (Math.Abs(pw - dw) > 0.25 * pw || Math.Abs(dh) > pw * 0.25)
+                } else
                 {
-                    CurrentWord = sb.ToString();
-                    sb.Clear();
-                    last = prevbb;
-                    returnWord = true;
+                    Matrix4x4.Invert(prev, out var iv);
+                    var change = current * iv;
+                    var dw = vert ? change.M32 : change.M31;
+                    var dh = vert ? change.M31 : change.M32;
+                    if (Math.Abs(pw - dw) > 0.25 * pw || Math.Abs(dh) > pw * 0.25)
+                    {
+                        CurrentWord = sb.ToString();
+                        sb.Clear();
+                        last = prevbb;
+                        returnWord = true;
+                    }
                 }
             }
 
@@ -141,5 +151,18 @@ public ref struct SimpleWordReader
         }
 
         return false;
+    }
+
+    public WordInfo GetInfo()
+    {
+        var pos = GetWordBoundingBox();
+        return new WordInfo
+        {
+            word = CurrentWord,
+            llx = pos.llx,
+            lly = pos.lly,
+            urx = pos.urx,
+            ury = pos.ury
+        };
     }
 }

@@ -35,7 +35,7 @@ public struct XRef
 
     public override string ToString()
     {
-        return $"{ObjectNumber} {Generation}";
+        return $"{ObjectNumber} {Generation} R";
     }
 
     public ulong GetId() => ((ulong)ObjectNumber << 16) | ((uint)Generation & 0xFFFF);

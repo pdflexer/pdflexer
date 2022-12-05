@@ -49,12 +49,12 @@ namespace PdfLexer.DOM
 
         public PdfNumber Width
         {
-            get => URx - LLx;
+            get => new PdfDecimalNumber((decimal)URx - (decimal)LLx);
         }
 
         public PdfNumber Height
         {
-            get => URy - LLy;
+            get => new PdfDecimalNumber((decimal)URy - (decimal)LLy);
         }
 
         private PdfNumber GetValue(int i)

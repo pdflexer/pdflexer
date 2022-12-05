@@ -85,6 +85,11 @@ internal class ExistingIndirectRef : PdfIndirectRef
 
         return SourceId == oir.SourceId && Reference.Equals(oir.Reference);
     }
+
+    public override string ToString()
+    {
+        return Reference.ToString();
+    }
 }
 
 
