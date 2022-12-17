@@ -52,13 +52,14 @@ namespace PdfLexer.Fonts
 
     public readonly struct UnappliedGlyph
     {
-        public UnappliedGlyph(Glyph? glyph, float shift)
+        public UnappliedGlyph(Glyph? glyph, float shift, int bytes=0)
         {
             Glyph = glyph;
             Shift = shift;
-
+            Bytes = bytes;
         }
         public readonly Glyph? Glyph;
         public readonly float Shift;
+        public readonly int Bytes;
     }
 }

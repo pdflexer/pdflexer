@@ -79,38 +79,8 @@ public class TextState
         int u = 0;
         while (i < data.Length && (u = GetGlyph(data, i, out var glyph)) > 0)
         {
-            glyphs.Add(new UnappliedGlyph(glyph, 0f));
+            glyphs.Add(new UnappliedGlyph(glyph, 0f, u));
             i += u;
-        }
-    }
-
-    internal void FillGlyphs(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
-    {
-        glyphs.Clear();
-        FillGlyphsNoReset(data, glyphs);
-    }
-
-    internal void FillGlyphs(TJ_Op op, List<UnappliedGlyph> glyphs)
-    {
-        float offset = 0f;
-        glyphs.Clear();
-        foreach (var info in op.info)
-        {
-            if (info.Data != null)
-            {
-                int i = 0;
-                int u = 0;
-                while (i < info.Data.Length && (u = GetGlyph(info.Data, i, out var glyph)) > 0)
-                {
-                    glyphs.Add(new UnappliedGlyph(glyph, offset));
-                    offset = 0f;
-                    i += u;
-                }
-            }
-            else if (info.Shift != 0)
-            {
-                offset += (float)info.Shift;
-            }
         }
     }
 
@@ -130,12 +100,6 @@ public class TextState
         }
 
         ShiftTextMatrix(tx, ty);
-    }
-
-    public void Apply(UnappliedGlyph glyph)
-    {
-        if (glyph.Shift != 0) { ApplyTj(glyph.Shift); }
-        if (glyph.Glyph != null) { Apply(glyph.Glyph); }
     }
 
     internal void ApplyShift(UnappliedGlyph glyph)

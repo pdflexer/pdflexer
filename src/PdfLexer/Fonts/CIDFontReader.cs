@@ -78,11 +78,11 @@ internal class Type0Font
         if (vertical)
         {
             var (dx, dy) = GetDW2(t0);
-            notdef = new Glyph { Char = '\u0000', w0 = mw, w1 = dy, IsWordSpace = false, 
+            notdef = new Glyph { Char = '\u0000', w0 = mw, w1 = dy, IsWordSpace = false, Undefined = true,
                 BBox = new decimal[] { bbx, 0m, bbx + (decimal)dx, (decimal)dy } };
         } else
         {
-            notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false,
+            notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, Undefined = true,
                 BBox = new decimal[] { 0m, bby, (decimal)mw, bby + (bbox?.URy ?? 0) / 1000.0m } };
         }
 

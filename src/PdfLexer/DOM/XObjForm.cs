@@ -71,8 +71,8 @@ public class XObjForm
             form.Contents = flate.Complete();
         }
 
-        form.BBox = page.MediaBox.NativeObject.CloneShallow();
-        form.Resources = page.Resources;
+        form.BBox = page.CropBox.NativeObject.CloneShallow();
+        form.Resources = page.Resources.CloneShallow();
         return form;
     }
 }

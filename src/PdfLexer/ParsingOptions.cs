@@ -39,6 +39,7 @@ public class ParsingOptions
     public bool LazyStrings { get; set; } = false;
     public bool LowMemoryMode { get; set; } = false;
     public int MaxErrorRetention { get; set; } = 250;
+    public int MaxFormDepth { get; set; } = 25;
     public int MaxMemorySegment { get; set; } = 1024*8;
     public int BufferSize { get; set; } = 4096;
     private StreamPipeReaderOptions opts = new StreamPipeReaderOptions(bufferSize: 1024, leaveOpen: true);

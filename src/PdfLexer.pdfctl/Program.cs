@@ -14,4 +14,7 @@ rootCommand.AddCommand(inspect);
 var read = ReadCmd.Create();
 read.Handler = CommandHandler.Create<ReadCmd>(ReadCmd.Handler);
 rootCommand.AddCommand(read);
+var search = SearchCmd.Create();
+search.Handler = CommandHandler.Create<SearchCmd>(SearchCmd.Handler);
+rootCommand.AddCommand(search);
 return await rootCommand.InvokeAsync(args);

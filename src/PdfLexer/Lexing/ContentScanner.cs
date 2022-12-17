@@ -272,6 +272,15 @@ public ref struct ContentScanner
             return Data.Slice(sp, Scanner.Position - sp + Scanner.CurrentLength);
         }
         return Data.Slice(Scanner.Position, Scanner.CurrentLength);
+    }
 
+    public (int start, int lenth) GetCurrentSize()
+    {
+        if (Operands.Count > 0)
+        {
+            var sp = Operands[0].StartAt;
+            return (sp, Scanner.Position - sp + Scanner.CurrentLength);
+        }
+        return (Scanner.Position, Scanner.CurrentLength);
     }
 }

@@ -23,6 +23,7 @@ pdflexer differs from existing .net libraries in that it:
 | [Resource dedup](docs/streaming_writer.md#resource-deduplication)                  |                    | :heavy_check_mark: |                    |                    |
 | [Image extraction](docs/image_extraction.md)                                       | :heavy_check_mark: |                    |                    |                    |
 | [Content creation ](docs/content_creation.md)                                      | :heavy_check_mark: |                    |                    |                    |
+| [Content redaction ](docs/redaction.md)                                            | :heavy_check_mark: |                    |                    |                    |
 | Page content modification                                                          |                    |                    |                    |                    |
 
 ### Major Gaps

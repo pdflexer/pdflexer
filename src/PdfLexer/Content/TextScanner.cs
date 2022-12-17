@@ -11,17 +11,28 @@ namespace PdfLexer.Content;
 public ref struct TextScanner
 {
     private ParsingContext Context;
-    private PageContentScanner Scanner;
     private PdfDictionary? PgRes;
     private readonly List<TJ_Lazy_Item> TJCache;
     private int CurrentTextPos;
     private TextReadState ReadState;
-    private readonly List<UnappliedGlyph> CurrentGlyphs;
     private UnappliedGlyph CurrentGlyph;
-    private PdfOperatorType LastOp;
+    
     private bool DataRead;
 
+    
 
+    internal readonly List<UnappliedGlyph> CurrentGlyphs;
+    internal PageContentScanner Scanner;
+    internal int TxtOpStart;
+    internal int TxtOpLength;
+    internal PdfOperatorType LastOp;
+
+    /// <summary>
+    /// Graphics state at the point form Do operations were encountered
+    /// Only populated if (readForms = false) or TextScanner is 
+    /// created using a form.
+    /// </summary>
+    public Dictionary<PdfName, List<GraphicsState>>? FormsRead;
     /// <summary>
     /// Current text state
     /// </summary>
@@ -47,10 +58,11 @@ public ref struct TextScanner
     /// </summary>
     public bool WasNewStatement;
 
-    public TextScanner(ParsingContext ctx, PdfDictionary page)
+    public TextScanner(ParsingContext ctx, PdfDictionary page, bool readForms=true)
     {
         Context = ctx;
-        Scanner = new PageContentScanner(ctx, page, true);
+        FormsRead = readForms ? null : new Dictionary<PdfName, List<GraphicsState>>();
+        Scanner = new PageContentScanner(ctx, page, readForms);
         PgRes = page.Get<PdfDictionary>(PdfName.Resources);
         GraphicsState = new GraphicsState();
         TextState = new TextState(ctx, GraphicsState, PgRes);
@@ -65,6 +77,32 @@ public ref struct TextScanner
         WasNewLine = false;
         WasNewStatement = false;
         LastOp = PdfOperatorType.Unknown;
+        TxtOpStart = 0;
+        TxtOpLength = 0;
+        DataRead = false;
+    }
+
+    public TextScanner(ParsingContext ctx, PdfDictionary page, PdfStream form, GraphicsState state)
+    {
+        FormsRead = new Dictionary<PdfName, List<GraphicsState>>();
+        Context = ctx;
+        Scanner = new PageContentScanner(ctx, page, form);
+        PgRes = page.Get<PdfDictionary>(PdfName.Resources);
+        GraphicsState = state;
+        TextState = new TextState(ctx, GraphicsState, PgRes);
+        TextState.stack = Scanner.stack;
+        TextState.UpdateTRM();
+        CurrentTextPos = 0;
+        ReadState = TextReadState.Normal;
+        CurrentGlyphs = new List<UnappliedGlyph>(50);
+        CurrentGlyph = default;
+        Glyph = default;
+        TJCache = new List<TJ_Lazy_Item>(10);
+        WasNewLine = false;
+        WasNewStatement = false;
+        LastOp = PdfOperatorType.Unknown;
+        TxtOpStart = 0;
+        TxtOpLength = 0;
         DataRead = false;
     }
 
@@ -82,6 +120,27 @@ public ref struct TextScanner
 
             switch (nxt)
             {
+                case PdfOperatorType.Do:
+                    if (FormsRead == null)
+                    {
+                        break;
+                    }
+                    if (!Scanner.TryGetCurrentOperation(out var doOpI))
+                    {
+                        break;
+                    }
+                    var doOp = (Do_Op)doOpI;
+                    if (!Scanner.TryGetForm(doOp.name, out _))
+                    {
+                        break;
+                    }
+                    if (!FormsRead.TryGetValue(doOp.name, out var states))
+                    {
+                        states = new List<GraphicsState>();
+                        FormsRead[doOp.name] = states;
+                    }
+                    states.Add(GraphicsState.CloneNoPrev());
+                    break;
                 case PdfOperatorType.EOC:
                     // Glyph = null;
                     return false;
@@ -112,6 +171,8 @@ public ref struct TextScanner
             var b = Scanner.Scanner.Data[Scanner.Scanner.Position];
             if (b == (byte)'T' || b == (byte)'\'' || b == (byte)'"')
             {
+                (TxtOpStart, TxtOpLength) = Scanner.Scanner.GetCurrentSize();
+
                 // need to brainstorm if way to deduplicate the parsing logic here
                 try
                 {

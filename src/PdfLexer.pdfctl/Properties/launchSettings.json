@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PdfLexer.pdfctl": {
+      "commandName": "Project",
+      "commandLineArgs": "search -f \"C:\\Users\\plamic01\\OneDrive - CSG Systems Inc\\Desktop\\PDF17Copyable.pdf\" -g pdf"
+    }
+  }
+}

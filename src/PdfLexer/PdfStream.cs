@@ -54,6 +54,15 @@ public class PdfStream : PdfObject
     // /Length required
     // /Filter /DecodeParms -> if filters
     // /F, /FFilter, /FDecodeParms -> external file
+
+    /// <summary>
+    /// clones stream / dict shallow
+    /// </summary>
+    /// <returns></returns>
+    public PdfStream CloneShallow()
+    {
+        return new PdfStream(Dictionary.CloneShallow(), _contents);
+    }
 }
 
 /// <summary>

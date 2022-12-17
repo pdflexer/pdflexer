@@ -27,26 +27,28 @@ internal class CompositeFont : IReadableFont
     public int GetGlyph(ReadOnlySpan<byte> data, int os, out Glyph glyph)
     {
         int l;
-        uint c;
 
-        c = _encoding.GetCodePoint(data, os, out l);
+        uint cp = _encoding.GetCodePoint(data, os, out l);
         if (l == 0)
         {
             glyph = _glyphSet.notdef;
+            // TODO set codepoint on new notdef glyph
             return _notdefBytes;
         }
-        c = _encoding.GetCID(c); // convert cp to cid, does nothing with identity
+        var cid = _encoding.GetCID(cp); // convert cp to cid, does nothing with identity
 
-        glyph = _glyphSet.GetGlyph(c);
-        if (glyph == _glyphSet.notdef && _cidInfo != null && _cidInfo.HasMapping)
+        glyph = _glyphSet.GetGlyph(cid);
+        if (glyph == _glyphSet.notdef)
         {
-            if (_cidInfo.TryGetFallback(c, out var val))
+            glyph = glyph.Clone();
+            if (_cidInfo != null && _cidInfo.HasMapping && _cidInfo.TryGetFallback(cid, out var val))
             {
-                glyph = glyph.Clone();
                 glyph.MultiChar = val.MultiChar;
                 glyph.Char = (char)val.Code;
-                glyph.BBox = _glyphSet.notdef.BBox;
+                return l;
             }
+            glyph.CodePoint = cp;
+            glyph.CID = cid;
         }
 
         return l;

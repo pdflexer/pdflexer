@@ -37,8 +37,6 @@ public ref struct PageContentScanner
 
     internal List<ScannerInfo> stack;
 
-
-
     public ContentScanner Scanner;
     public PdfDictionary? CurrentForm;
     public PdfOperatorType CurrentOperator => Scanner.CurrentOperator;
@@ -47,7 +45,12 @@ public ref struct PageContentScanner
     public string? FormName { get => CurrentFormName; }
 
 
-
+    /// <summary>
+    /// Reads content from a PDF Page
+    /// </summary>
+    /// <param name="ctx"></param>
+    /// <param name="page"></param>
+    /// <param name="flattenForms"></param>
     public PageContentScanner(ParsingContext ctx, PdfDictionary page, bool flattenForms = false)
     {
         CurrentBuffer = null;
@@ -110,6 +113,39 @@ public ref struct PageContentScanner
     }
 
 
+    public PageContentScanner(ParsingContext ctx, PdfDictionary page, PdfStream form)
+    {
+        CurrentBuffer = null;
+        FlattenForms = false;
+        State = MultiPageState.ReadingForm;
+        Page = page;
+        Context = ctx;
+        stack = new List<ScannerInfo>();
+        NextStreams = new List<PdfStream>();
+        CurrentForm = null;
+        NextForm = null;
+        NextFormName = null;
+        CurrentStream = null;
+        CurrentFormName = null;
+        SkipBytes = 0;
+
+
+        CurrentStream = form;
+        CurrentForm = form.Dictionary;
+        CurrentFormName = "/FNA";
+        CurrentBuffer = form.Contents.GetDecodedBuffer();
+        Scanner = new ContentScanner(Context, CurrentBuffer.GetData());
+
+        if (CurrentForm.Get<PdfArray>(PdfName.Matrix) != null)
+        {
+            State = MultiPageState.CTMForm;
+        }
+        else
+        {
+            State = MultiPageState.ReadingForm;
+        }
+    }
+
 
     public PdfOperatorType Peek()
     {
@@ -150,7 +186,7 @@ public ref struct PageContentScanner
         }
         else if (nxt == PdfOperatorType.EOC)
         {
-            if (State == MultiPageState.ReadingForm)
+            if (State == MultiPageState.ReadingForm && FlattenForms) // may be reading form directly not from flattened, in that case exit
             {
                 State = MultiPageState.EndForm;
                 return PdfOperatorType.Q;
@@ -294,7 +330,6 @@ public ref struct PageContentScanner
         {
             State = MultiPageState.ReadingForm;
         }
-
     }
 
     private void PopForm()
@@ -311,7 +346,7 @@ public ref struct PageContentScanner
         Scanner = new ContentScanner(Context, CurrentBuffer.GetData(), prev.Position);
     }
 
-    private bool TryGetForm(PdfName name, [NotNullWhen(true)] out PdfStream? found)
+    internal bool TryGetForm(PdfName name, [NotNullWhen(true)] out PdfStream? found)
     {
         if (CurrentForm != null && TryGetForm(CurrentForm, out found, out var isForm))
         {

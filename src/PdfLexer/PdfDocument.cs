@@ -79,6 +79,16 @@ public sealed class PdfDocument : IDisposable
     }
 
     /// <summary>
+    /// Saves the document to provided location
+    /// </summary>
+    /// <param name="stream"></param>
+    public void SaveTo(string path)
+    {
+        using var fo = File.Create(path);
+        SaveTo(fo);
+    }
+
+    /// <summary>
     /// Saves the document to the provided stream.
     /// </summary>
     /// <param name="stream"></param>

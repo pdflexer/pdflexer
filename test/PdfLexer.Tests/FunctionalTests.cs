@@ -15,12 +15,18 @@ using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using SixLabors.ImageSharp;
+using UglyToad.PdfPig.Graphics;
 using Xunit;
 
 namespace PdfLexer.Tests
 {
     public class FunctionalTests
     {
+        public FunctionalTests()
+        {
+            CMaps.AddKnownPdfCMaps();
+        }
+
         [InlineData("pdfjs/160F-2019.pdf")]
         [Theory]
         public void It_Loads_Pages(string pdfPath)
@@ -103,6 +109,41 @@ namespace PdfLexer.Tests
                 }
                 return total;
             }
+        }
+
+
+        [Fact]
+        public void It_Redacts()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdf = Path.Combine(pdfRoot, "bug921409.pdf");
+            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            var redact = new Redactor(doc.Context, doc.Pages[0]);
+            var result = redact.RedactContent(c => c.Char == 's');
+            doc.Pages[0] = result;
+            var data = result.Contents.First().Contents.GetDecodedData();
+            var str = Encoding.UTF8.GetString(data);
+            var output = Path.Combine(tp, "results", "redact.pdf");
+            doc.SaveTo(output);
+        }
+
+        [Fact]
+        public void It_Redacts_Form()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdf = Path.Combine(pdfRoot, "mixedfonts.pdf");
+            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            var redact = new Redactor(doc.Context, doc.Pages[0]);
+            var result = redact.RedactContent(c => c.Char == 'e');
+            doc.Pages[0] = result;
+            var data = result.Contents.First().Contents.GetDecodedData();
+            var str = Encoding.UTF8.GetString(data);
+            var output = Path.Combine(tp, "results", "redact_form.pdf");
+            doc.SaveTo(output);
         }
 
         [Fact]
@@ -216,7 +257,7 @@ namespace PdfLexer.Tests
                             var sb = new StringBuilder();
                             while (reader.Advance())
                             {
-                                
+
                                 if (reader.Glyph == null)
                                 {
 
@@ -1005,7 +1046,7 @@ namespace PdfLexer.Tests
                 {
                     using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { ForceSerialize = true });
                     if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
-                    foreach (var page in doc.Pages) 
+                    foreach (var page in doc.Pages)
                     {
                         writer.AddPage(page);
                         // merged.Pages.Add(CommonUtil.RecursePage(page));
@@ -1037,7 +1078,7 @@ namespace PdfLexer.Tests
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var output = Path.Combine(tp, "results", "syntax");
             var errors = new List<string>();
-            
+
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
             {
                 var rewrite = PdfDocument.Create();
@@ -1062,7 +1103,8 @@ namespace PdfLexer.Tests
                 {
                     using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = true });
                     EnumerateObjects(doc2.Trailer, new HashSet<int>());
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     File.WriteAllBytes(Path.Combine(output, Path.GetFileName(pdf)), ms.ToArray());
                     errors.Add(pdf + ": " + e.Message);
@@ -1080,7 +1122,7 @@ namespace PdfLexer.Tests
             //var writer = new StreamingWriter();
             var merged = PdfDocument.Create();
 
-            for (var i =0; i<1000;i++)
+            for (var i = 0; i < 1000; i++)
             {
                 using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                 foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.NativeObject); }
