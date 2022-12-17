@@ -34,6 +34,15 @@ internal class GlyphSet
         }
     }
 
+    public void Add(uint charCode, Glyph g)
+    {
+        bm[charCode] = g;
+        if (charCode < 256)
+        {
+            b1[charCode] = g;
+        }
+    }
+
     public Glyph GetGlyph(uint charCode)
     {
         Glyph? glyph;

@@ -41,14 +41,15 @@ internal class CompositeFont : IReadableFont
         if (glyph == _glyphSet.notdef)
         {
             glyph = glyph.Clone();
-            if (_cidInfo != null && _cidInfo.HasMapping && _cidInfo.TryGetFallback(cid, out var val))
-            {
-                glyph.MultiChar = val.MultiChar;
-                glyph.Char = (char)val.Code;
-                return l;
-            }
             glyph.CodePoint = cp;
             glyph.CID = cid;
+            if (_cidInfo != null && _cidInfo.HasMapping && _cidInfo.TryGetFallback(cid, out var val))
+            {
+                glyph.Undefined = false;
+                glyph.MultiChar = val.MultiChar;
+                glyph.Char = (char)val.Code;
+            }
+            _glyphSet.Add(cid, glyph);
         }
 
         return l;
