@@ -33,7 +33,8 @@ namespace PdfLexer.Benchmarks.Benchmarks
         private List<MemoryStream> mems;
 
         // "issue2128r" pdflexer need to research
-        [Params("__bpl13210.pdf", "bug1669099", "issue1905", "__ecma262.pdf", "__gesamt.pdf", "__issue1133.pdf", "issue2128r")]
+        // [Params("__bpl13210.pdf", "bug1669099", "issue1905", "__ecma262.pdf", "__gesamt.pdf", "__issue1133.pdf", "issue2128r")]
+        [Params("bug1669099", "issue1905", "issue5874", "issue6410")]
         public string testPdf;
 
         [GlobalSetup]
