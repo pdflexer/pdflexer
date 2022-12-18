@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Parsers;
-using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace PdfLexer.Lexing;

@@ -10,24 +10,27 @@ public ref struct Redactor
 {
     private bool Randomize;
     private Random RNG;
-    private PdfDictionary Page;
+    private PdfPage Page;
     private ParsingContext Ctx;
 
     public Redactor(ParsingContext ctx, PdfPage page, bool randomize=false)
     {
         Ctx = ctx;
-        Page = page;
+        Page = page.NativeObject.CloneShallow();
         Randomize = randomize;
         RNG = randomize ? new Random() : null!;
     }
     public PdfPage RedactContent(Func<CharInfo, bool> shouldRedact)
     {
-        PdfPage pg = Page.CloneShallow();
-        var main = new TextScanner(Ctx, Page, false);
+        Page.Resources = Page.Resources.CloneShallow();
+        var xobj = Page.Resources.GetOrCreateValue<PdfDictionary>(PdfName.XObject).CloneShallow();
+        Page.Resources[PdfName.XObject] = xobj;
+
+        var main = new TextScanner(Ctx, Page, false, false);
         var mc = RunSingleStream(main, shouldRedact);
-        pg.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(new PdfStream(mc));
-        if (main.FormsRead == null) { return pg; }
-        pg.Resources = pg.Resources.CloneShallow();
+        Page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(new PdfStream(mc));
+        if (main.FormsRead == null) { return Page; }
+
         foreach (var form in main.FormsRead)
         {
             if (!main.Scanner.TryGetForm(form.Key, out var str))
@@ -38,9 +41,9 @@ public ref struct Redactor
             {
                 str = RunForm(str, item, shouldRedact, 1);
             }
-            pg.Resources[form.Key] = PdfIndirectRef.Create(str);
+            xobj[form.Key] = PdfIndirectRef.Create(str);
         }
-        return pg;
+        return Page;
     }
 
     private PdfStream RunForm(PdfStream str, GraphicsState state, Func<CharInfo, bool> shouldRedact, int depth)
@@ -50,11 +53,16 @@ public ref struct Redactor
             throw new ApplicationException($"Max form scan depth of {Ctx.Options.MaxFormDepth} exceeded");
         }
         str = str.CloneShallow();
-        var fr = new TextScanner(Ctx, Page, str, state);
-        str.Contents = RunSingleStream(fr, shouldRedact);
         var res = str.Dictionary.GetOrCreateValue<PdfDictionary>(PdfName.Resources);
         res = res.CloneShallow();
+        str.Dictionary[PdfName.Resources] = res;
+        var xobj = res.GetOrCreateValue<PdfDictionary>(PdfName.XObject).CloneShallow();
+        res[PdfName.XObject] = xobj;
+
+        var fr = new TextScanner(Ctx, Page, str, state, false);
+        str.Contents = RunSingleStream(fr, shouldRedact);
         if (fr.FormsRead == null) { return str; }
+        
         foreach (var form in fr.FormsRead)
         {
             if (!fr.Scanner.TryGetForm(form.Key, out var currentForm))
@@ -66,7 +74,7 @@ public ref struct Redactor
             {
                 cf = RunForm(cf, item, shouldRedact, depth+1);
             }
-            res[form.Key] = PdfIndirectRef.Create(cf);
+            xobj[form.Key] = PdfIndirectRef.Create(cf);
         }
         return str;
     }
@@ -227,7 +235,7 @@ public ref struct Redactor
                 int i = 0;
                 foreach (var g in glyphs)
                 {
-                    if (seqs.Contains(i))
+                    if (g.Shift == 0 && seqs.Contains(i))
                     {
                         if (bp > 0)
                         {

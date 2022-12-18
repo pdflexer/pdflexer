@@ -18,8 +18,8 @@ public ref struct TextScanner
     private UnappliedGlyph CurrentGlyph;
     
     private bool DataRead;
+    private bool IgnoreUndefined;
 
-    
 
     internal readonly List<UnappliedGlyph> CurrentGlyphs;
     internal PageContentScanner Scanner;
@@ -58,7 +58,7 @@ public ref struct TextScanner
     /// </summary>
     public bool WasNewStatement;
 
-    public TextScanner(ParsingContext ctx, PdfDictionary page, bool readForms=true)
+    public TextScanner(ParsingContext ctx, PdfDictionary page, bool readForms=true, bool ignoreUndefined=true)
     {
         Context = ctx;
         FormsRead = readForms ? null : new Dictionary<PdfName, List<GraphicsState>>();
@@ -80,9 +80,10 @@ public ref struct TextScanner
         TxtOpStart = 0;
         TxtOpLength = 0;
         DataRead = false;
+        IgnoreUndefined = ignoreUndefined;
     }
 
-    public TextScanner(ParsingContext ctx, PdfDictionary page, PdfStream form, GraphicsState state)
+    public TextScanner(ParsingContext ctx, PdfDictionary page, PdfStream form, GraphicsState state, bool ignoreUndefined = true)
     {
         FormsRead = new Dictionary<PdfName, List<GraphicsState>>();
         Context = ctx;
@@ -104,6 +105,7 @@ public ref struct TextScanner
         TxtOpStart = 0;
         TxtOpLength = 0;
         DataRead = false;
+        IgnoreUndefined = ignoreUndefined;
     }
 
     public bool Advance()
@@ -334,7 +336,7 @@ public ref struct TextScanner
             } else if (CurrentGlyph.Glyph != null)
             {
                 // special not def handling if char is wordspace
-                if (CurrentGlyph.Glyph.Undefined)
+                if (IgnoreUndefined && CurrentGlyph.Glyph.Undefined)
                 {
                     if (CurrentGlyph.Glyph.IsWordSpace)
                     {

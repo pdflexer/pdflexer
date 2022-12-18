@@ -15,6 +15,7 @@ using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using SixLabors.ImageSharp;
+using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Graphics;
 using Xunit;
 
@@ -109,41 +110,6 @@ namespace PdfLexer.Tests
                 }
                 return total;
             }
-        }
-
-
-        [Fact]
-        public void It_Redacts()
-        {
-            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
-            var pdf = Path.Combine(pdfRoot, "bug921409.pdf");
-            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
-
-            var redact = new Redactor(doc.Context, doc.Pages[0]);
-            var result = redact.RedactContent(c => c.Char == 's');
-            doc.Pages[0] = result;
-            var data = result.Contents.First().Contents.GetDecodedData();
-            var str = Encoding.UTF8.GetString(data);
-            var output = Path.Combine(tp, "results", "redact.pdf");
-            doc.SaveTo(output);
-        }
-
-        [Fact]
-        public void It_Redacts_Form()
-        {
-            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
-            var pdf = Path.Combine(pdfRoot, "mixedfonts.pdf");
-            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
-
-            var redact = new Redactor(doc.Context, doc.Pages[0]);
-            var result = redact.RedactContent(c => c.Char == 'e');
-            doc.Pages[0] = result;
-            var data = result.Contents.First().Contents.GetDecodedData();
-            var str = Encoding.UTF8.GetString(data);
-            var output = Path.Combine(tp, "results", "redact_form.pdf");
-            doc.SaveTo(output);
         }
 
         [Fact]

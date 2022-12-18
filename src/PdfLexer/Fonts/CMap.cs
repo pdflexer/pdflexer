@@ -100,13 +100,13 @@ internal class CMap
         return mapping.TryGetValue(cp, out val);
     }
 
-    public uint GetCID(uint c)
+    public uint GetCID(uint cp)
     {
-        if (mapping != null && mapping.TryGetValue(c, out var cr))
+        if (mapping != null && mapping.TryGetValue(cp, out var cr))
         {
-            c = cr.Code;
+            cp = cr.Code;
         }
-        return c;
+        return cp;
     }
 
     public uint GetCodePoint(ReadOnlySpan<byte> data, int os, out int l)
