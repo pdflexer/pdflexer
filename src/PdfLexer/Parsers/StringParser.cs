@@ -14,11 +14,11 @@ internal enum StringStatus
 internal class StringParser : Parser<PdfString>
 {
     internal static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
-    // Require codepages nuget package... determine if really needed
-    // private static Encoding Win1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252); // WinAnsiEncoding
-    // private static Encoding MacRoman = CodePagesEncodingProvider.Instance.GetEncoding("macintosh"); // WinAnsiEncoding
-                                                                                                    // PdfEncoding : ???-255 same, 20-126 same, 127 undefined, 0-21 same
-                                                                                                    // MaxExpert??
+                                                                            // Require codepages nuget package... determine if really needed
+                                                                            // private static Encoding Win1252 = CodePagesEncodingProvider.Instance.GetEncoding(1252); // WinAnsiEncoding
+                                                                            // private static Encoding MacRoman = CodePagesEncodingProvider.Instance.GetEncoding("macintosh"); // WinAnsiEncoding
+                                                                            // PdfEncoding : ???-255 same, 20-126 same, 127 undefined, 0-21 same
+                                                                            // MaxExpert??
     private static int[] mapping = new int[]{
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 0x2D8, 0x2C7, 0x2C6, 0x2D9, 0x2DD, 0x2DB, 0x2DA, 0x2DC, 0, 0, 0, 0, 0, 0, 0,
@@ -74,7 +74,8 @@ internal class StringParser : Parser<PdfString>
             Span<byte> writeBuffer = stackalloc byte[buffer.Length];
             var l = ConvertBytes(buffer, writeBuffer);
             return writeBuffer.Slice(0, l).ToArray();
-        } else 
+        }
+        else
         {
             var rented = ArrayPool<byte>.Shared.Rent(buffer.Length);
             var l = ConvertBytes(buffer, rented);
@@ -99,7 +100,7 @@ internal class StringParser : Parser<PdfString>
         if (length > 1 && output[0] == 0xFE && output[1] == 0xFF)
         {
             encoding = PdfTextEncodingType.UTF16BE;
-            var str = new PdfString(Encoding.BigEndianUnicode.GetString(output.Slice(2, length-2)),
+            var str = new PdfString(Encoding.BigEndianUnicode.GetString(output.Slice(2, length - 2)),
                 input[0] == '(' ? PdfStringType.Literal : PdfStringType.Hex, encoding);
             return str;
         }
@@ -158,7 +159,8 @@ internal class StringParser : Parser<PdfString>
                 if (!Utf8Parser.TryParse(hexBuffer, out byte value, out int consumed, 'x'))
                 {
                     _ctx.Error(CommonUtil.DisplayDataError(buffer, i, "Bad hex string data"));
-                } else
+                }
+                else
                 {
                     // Debug.Assert(consumed == 2);
                     data[di++] = value;
@@ -178,12 +180,13 @@ internal class StringParser : Parser<PdfString>
             if (!Utf8Parser.TryParse(hexBuffer, out byte v, out int c, 'x'))
             {
                 _ctx.Error(CommonUtil.DisplayDataError(buffer, buffer.Length - 1, "Bad hex string data at end"));
-            } else
+            }
+            else
             {
                 Debug.Assert(c == 2);
                 data[di++] = v;
             }
-            
+
         }
 
         return di;
@@ -412,7 +415,6 @@ internal class StringParser : Parser<PdfString>
     }
     internal static bool AdvancePastStringLiteral(ReadOnlySpan<byte> data, ref int i)
     {
-        // TODO data.IndexOfAny
         ReadOnlySpan<byte> local = data;
         var depth = 0;
         for (; i < local.Length; i++)
@@ -443,6 +445,57 @@ internal class StringParser : Parser<PdfString>
             }
         }
         return false;
+    }
+
+    internal static bool AdvancePastStringLiteralLong(ReadOnlySpan<byte> data, ref int i)
+    {
+        i += 1; // (
+        var depth = 1;
+        while (true)
+        {
+            var current = data.Slice(i);
+
+            var ie = current.IndexOf((byte)')');
+            if (ie == -1) { return false; }
+            var es = 0;
+            while (data[i + ie - es - 1] == (byte)'\\')
+            {
+                es++;
+            }
+            if (es % 2 != 0)
+            {
+                i += ie + 1;
+                continue;
+            }
+
+
+            var ii = i;
+            current = current.Slice(0, ie);
+        CHECK_OP:
+            var ib = current.IndexOf((byte)'(');
+            if (ib != -1)
+            {
+                es = 0;
+                while (data[ii + ib - es - 1] == (byte)'\\')
+                {
+                    es++;
+                }
+                if (es % 2 == 0)
+                {
+                    depth++;
+                    current = current.Slice(ib + 1);
+                    ii += ib + 1;
+                    goto CHECK_OP;
+                }
+
+            }
+            depth--;
+            i += ie + 1;
+            if (depth == 0)
+            {
+                return true;
+            }
+        }
     }
     internal static bool AdvancePastStringLiteral(ref SequenceReader<byte> reader)
     {

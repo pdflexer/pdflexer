@@ -1038,6 +1038,68 @@ namespace PdfLexer.Tests
         }
 
         [Fact]
+        public void It_Lexes_Streams()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var errs = false;
+            foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+            {
+                try
+                {
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { ForceSerialize = true });
+                    if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
+                    var p = 1;
+                    foreach (var page in doc.Pages)
+                    {
+                        var ow = new List<PdfOperatorType>();
+                        var nw = new List<PdfOperatorType>();
+                        var scanner = new PageContentScanner(doc.Context, page, true);
+                        PdfOperatorType type;
+                        while ((type = scanner.Peek()) != PdfOperatorType.EOC)
+                        {
+                            ow.Add(type);
+                            scanner.SkipCurrent();
+                        }
+                        var scanner2 = new PageContentScanner2(doc.Context, page, true);
+                        while (scanner2.Advance())
+                        {
+                            if (scanner2.CurrentOperator == PdfOperatorType.EI)
+                            {
+                                nw.Add(PdfOperatorType.BI);
+                            } else
+                            {
+                                nw.Add(scanner2.CurrentOperator);
+                            }
+                        }
+
+                        if (!ow.SequenceEqual(nw))
+                        {
+                            var ows = string.Join('\n', ow);
+                            var nws = string.Join('\n', nw);
+                            errs = true;
+                            File.WriteAllText(Path.Combine(tp, "results", Path.GetFileNameWithoutExtension(pdf) + "_" + p + "_a.txt"), ows);
+                            File.WriteAllText(Path.Combine(tp, "results", Path.GetFileNameWithoutExtension(pdf) + "_" + p + "_b.txt"), nws);
+                        } else
+                        {
+
+                        }
+                        p++;
+                    }
+                }
+                catch (NotSupportedException ex)
+                {
+                    // for compressed object streams
+                    if (ex.Message.Contains("encryption"))
+                    {
+                        continue;
+                    }
+                }
+
+            }
+        }
+
+        [Fact]
         public void It_Fixes_Syntax_When_Writing()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");

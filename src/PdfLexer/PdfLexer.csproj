@@ -9,7 +9,7 @@
 		<Product />
 		<Description>Lower level PDF parsing library.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.0.7-preview</Version>
+		<Version>0.0.8-preview</Version>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
@@ -53,7 +53,7 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0'">
 		<PackageReference Include="DotNext.Unsafe">
-			<Version>4.7.4</Version>
+			<Version>4.8.1</Version>
 		</PackageReference>
 	</ItemGroup>
 

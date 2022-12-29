@@ -9,6 +9,9 @@ using System.Buffers;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Pipelines;
+using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.X86;
+using System.Runtime.Intrinsics;
 using System.Text;
 
 namespace PdfLexer.Benchmarks.Benchmarks
@@ -26,6 +29,8 @@ namespace PdfLexer.Benchmarks.Benchmarks
             "   \r \n  \r    \n       \r    \t \t \n    \n",
             "     \r \n    \r\n       \r \t \t \n       \n",
             " \r \n  \r\n     \r \t    \t \n \n",
+            " <\r \n  \r\n     \r \t    \t \n \n",
+            "<               ",
         };
         private List<byte[]> samples = new List<byte[]>();
 
@@ -66,7 +71,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return count;
         }
                
-        [Benchmark()]
+        //[Benchmark()]
         public int Array()
         {
             int count = 0;
@@ -101,7 +106,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return count;
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public int FindTerminatorArray()
         {
             Span<byte> terms = Terminators;
@@ -121,7 +126,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return count;
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public int FindTerminatorAny()
         {
             Span<byte> terms = Terminators;
@@ -139,7 +144,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return count;
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public int FindTerminatorRaw()
         {
             int count = 0;
@@ -160,5 +165,39 @@ namespace PdfLexer.Benchmarks.Benchmarks
             }
             return count;
         }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal unsafe static void ScanTokenEndAvx(ReadOnlySpan<byte> bytes, ref int pos)
+        {
+            ReadOnlySpan<byte> local = bytes;
+            if (Avx2.IsSupported)
+            {
+                fixed (byte* p = TokenTerms256)
+                {
+                    Vector256<byte> termarray = Avx2.LoadVector256(p);
+
+                    for (; pos < local.Length; pos++)
+                    {
+                        var b = local[pos];
+                        var searcharray = Vector256.Create(b);
+                        var equals = Avx2.CompareEqual(termarray, searcharray);
+                        var result = Avx2.MoveMask(equals);
+                        if (Avx2.MoveMask(equals) != 0)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                CommonUtil.ScanTokenEnd(local, ref pos);
+            }
+        }
+
+        internal static byte[] TokenTerms256 = new byte[32] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
+        (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%',
+         (byte)'+', (byte)'-', (byte)'.', 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 57, 57, 57 };
     }
 }

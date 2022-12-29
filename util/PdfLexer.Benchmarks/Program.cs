@@ -2,6 +2,7 @@
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
+using PdfLexer.Benchmarks.Benchmarks;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -21,6 +22,17 @@ namespace PdfLexer.Benchmarks
     {
         static async Task Main(string[] args)
         {
+            var tst = new TextBenchmark();
+            tst.testPdf = "issue2128r";
+            tst.Setup();
+
+            // 
+            // for (var i=0;i<100000; i++)
+            // {
+            //     var a = tst.ReadTxtPdfLexer();
+            // }
+            // return;
+            // tst.V2();
             // var img = new ImageBenchmark();
             // img.testPdf = "8bit_rgb";
             // img.Setup();

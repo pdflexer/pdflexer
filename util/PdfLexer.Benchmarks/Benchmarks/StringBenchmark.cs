@@ -161,8 +161,38 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return results;
         }
 
+        [Benchmark(Baseline =true)]
+        public int Skip()
+        {
+            var total = 0;
+            foreach (var item in samples)
+            {
+                ReadOnlySpan<byte> data = "(        )                                                                                 "u8;
+                var pos = 0;
+                StringParser.AdvancePastStringLiteral(data, ref pos);
+                total += pos;
 
-        [Benchmark(Baseline = true)]
+            }
+            return total;
+        }
+
+        [Benchmark()]
+        public int Skip2()
+        {
+            var total = 0;
+            foreach (var item in samples)
+            {
+                ReadOnlySpan<byte> data = "(        )                                                                                 "u8;
+                var pos = 0;
+                StringParser.AdvancePastStringLiteralLong(data, ref pos);
+                total += pos;
+
+            }
+            return total;
+        }
+
+
+        //[Benchmark(Baseline = true)]
         public void CalcBytes()
         {
             var data = new int[numbers.Count*4];
@@ -178,7 +208,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             }
         }
 
-        [Benchmark()]
+        //[Benchmark()]
         public void CalcBitShift()
         {
             var ZeroChar = (byte)'0';

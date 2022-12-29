@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using DotNext.Threading;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,7 @@ using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
+using UglyToad.PdfPig.Graphics.Operations.SpecialGraphicsState;
 
 namespace PdfLexer.Benchmarks.Benchmarks
 {
@@ -103,7 +105,6 @@ namespace PdfLexer.Benchmarks.Benchmarks
                         var b = local[pos];
                         var searcharray = Vector256.Create(b);
                         var equals = Avx2.CompareEqual(termarray, searcharray);
-                        var result = Avx2.MoveMask(equals);
                         if (Avx2.MoveMask(equals) != 0)
                         {
                             return;
@@ -113,6 +114,43 @@ namespace PdfLexer.Benchmarks.Benchmarks
             } else
             {
                 CommonUtil.ScanTokenEnd(local, ref pos);
+            }
+
+            // comments
+            // string literals
+            // hex strings
+        }
+
+        internal unsafe static void Tokenize(ReadOnlySpan<byte> bytes)
+        {
+            fixed (byte* p = bytes)
+            {
+                Vector256<byte> data = Avx2.LoadVector256(p);
+
+                var cchar = Vector256.Create((byte)'%');
+                var equals = Avx2.CompareEqual(cchar, data);
+                var cmask = Avx2.MoveMask(equals);
+                if (cmask != 0)
+                {
+                    // comments
+                }
+
+                var schar = Vector256.Create((byte)'(');
+                var sequals = Avx2.CompareEqual(cchar, data);
+                var smask = Avx2.MoveMask(equals);
+                if (smask != 0)
+                {
+                    // string literals
+                }
+
+                var hchar = Vector256.Create((byte)'<');
+                var hequals = Avx2.CompareEqual(cchar, data);
+                var hmask = Avx2.MoveMask(equals);
+                if (hmask != 0)
+                {
+                    // string literals
+                }
+
             }
         }
 

@@ -11,11 +11,11 @@ namespace PdfLexer.Operators
 {
     public enum PdfOperatorType
     {
-        Unknown,
-        NoOp,
-        RawOp,
+        Unknown = 200,
+        NoOp = 201,
+        RawOp = 202,
         // End of content
-        EOC,
+        EOC = 203,
         // Close, fill, and stroke path using nonzero winding number rule
         b = 98,
         // Fill and stroke path using nonzero winding number rule

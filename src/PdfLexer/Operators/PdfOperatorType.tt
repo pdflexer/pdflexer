@@ -93,11 +93,11 @@ namespace PdfLexer.Operators
 {
     public enum PdfOperatorType
     {
-        Unknown,
-        NoOp,
-        RawOp,
+        Unknown = 200,
+        NoOp = 201,
+        RawOp = 202,
         // End of content
-        EOC,
+        EOC = 203,
 <#
 foreach (var op in operators) 
 {

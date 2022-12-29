@@ -94,7 +94,7 @@ internal class PdfSpanLexer
             case (byte)'(':
                 {
                     var se = i;
-                    if (!StringParser.AdvancePastStringLiteral(buffer, ref se))
+                    if (!StringParser.AdvancePastStringLiteralLong(buffer, ref se))
                     {
                         length = buffer.Length - 1 - se;
                         return -1;

@@ -22,7 +22,6 @@ public class ParsingContext : IDisposable
     
     public IPdfDataSource MainDocSource { get; private set; }
     public PdfDocument Document { get; internal set; }
-
     internal Dictionary<ulong, XRefEntry> XRefs = null!;
     internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
     internal Dictionary<ulong, WeakReference<IPdfObject>> IndirectCache = new Dictionary<ulong, WeakReference<IPdfObject>>();
