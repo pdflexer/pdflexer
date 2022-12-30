@@ -182,18 +182,6 @@ namespace PdfLexer.Tests
         }
 
         [Fact]
-        public void Manual_Testing()
-        {
-            var merge = new MergePdfObjects();
-            merge.FilePath = "c:\\temp\\pji\\dedup.pdf";
-            merge.OutputPath = "c:\\temp\\pji\\dedup-results.pdf";
-            foreach (var item in merge.Invoke())
-            {
-
-            }
-        }
-
-            [Fact]
         public void It_Reads_Text()
         {
             var errors = new List<string>();
