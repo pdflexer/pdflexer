@@ -65,8 +65,8 @@ public struct ContentItem
 /// </summary>
 public ref struct ContentStreamScanner
 {
-    internal ReadOnlySpan<byte> Data;
-    internal Span<ContentItem> Items;
+    public ReadOnlySpan<byte> Data;
+    public ReadOnlySpan<ContentItem> Items;
     //internal RentedStreamLexInfo LexInfo;
 
     private byte[] BackingArray;
@@ -215,7 +215,7 @@ public ref struct ContentStreamScanner
 
     public bool TryGetCurrentOperation([NotNullWhen(true)] out IPdfOperation? op)
     {
-        if (CurrentOperator == PdfOperatorType.BI)
+        if (CurrentOperator == PdfOperatorType.EI)
         {
             op = GetImage();
             return true;
@@ -288,6 +288,7 @@ public ref struct ContentStreamScanner
                 // ID
                 pos += length;
             }
+            else  
             {
                 header.Add(Ctx.GetKnownPdfItem((PdfObjectType)current, Data, pos, length));
                 pos += length;

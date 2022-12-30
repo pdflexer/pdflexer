@@ -16,9 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\src\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
-    <ProjectReference Include="..\src\PdfLexer.ImageSharpExts\PdfLexer.ImageSharpExts.csproj" />
-    <ProjectReference Include="..\src\PdfLexer\PdfLexer.csproj" />
+    <ProjectReference Include="..\..\src\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
+    <ProjectReference Include="..\..\src\PdfLexer.ImageSharpExts\PdfLexer.ImageSharpExts.csproj" />
+    <ProjectReference Include="..\..\src\PdfLexer\PdfLexer.csproj" />
   </ItemGroup>
 
 </Project>

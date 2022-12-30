@@ -119,6 +119,8 @@ public abstract class PdfStreamContents
         dict[PdfName.Length] = new PdfIntNumber(Length);
     }
 
+    public DecodedStreamContents GetDecodedBuffer() => GetDecodedBuffer(true);
+
     /// <summary>
     /// Gets the decoded data for this stream.
     /// </summary>
