@@ -88,7 +88,7 @@ internal class Type0Font
 
         var gs = new GlyphSet(b1g, all, notdef);
 
-        return new CompositeFont(t0.BaseFont?.Value ?? "/Empty", encoding, gs, 2, vertical, cidInfo);
+        return new CompositeFont(t0.BaseFont?.Value ?? "Empty", encoding, gs, 2, vertical, cidInfo);
     }
 
     [return: NotNullIfNotNull("name")]
@@ -124,16 +124,16 @@ internal class Type0Font
             {
                 return FallbackEncoding();
             }
-            var identityEncoded = (name.Value == "/Identity-H" || name.Value == "/Identity-V");
+            var identityEncoded = (name.Value == "Identity-H" || name.Value == "Identity-V");
             if (!identityEncoded)
             {
-                var cmap = ctx.CMapProvider.GetCMapData(name.Value.Substring(1));
+                var cmap = ctx.CMapProvider.GetCMapData(name.Value);
                 if (cmap != null)
                 {
                     return (new CMap(cmap.Ranges, cmap.Mapping), cmap.Vertical);
                 }
             } 
-            else if (name.Value == "/Identity-V")
+            else if (name.Value == "Identity-V")
             {
                 var def = FallbackEncoding();
                 return (def.encoding, true);
@@ -145,7 +145,7 @@ internal class Type0Font
             var stream = encoding.GetAs<PdfStream>();
             using var buffer = stream.Contents.GetDecodedBuffer();
             var (ranges, _, cids, isVert) = CMapReader.ReadCMap(ctx, buffer.GetData(), true);
-            if (stream.Dictionary.TryGetValue("/UseCMap", out var other))
+            if (stream.Dictionary.TryGetValue("UseCMap", out var other))
             {
                 var prev = GetEncoding(ctx, other);
                 if (ranges.Count == 0)
@@ -338,7 +338,7 @@ internal class Type0Font
         switch (obj)
         {
             case PdfName nm:
-                if (!nm.Value.StartsWith("/Identity"))
+                if (!nm.Value.StartsWith("Identity"))
                 {
                     return;
                 }

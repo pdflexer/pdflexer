@@ -129,10 +129,10 @@ public partial class ContentWriter
         }
 
         var fnt = obj.GetPdfFont();
-        PdfName name = $"/F{objCnt++}";
+        PdfName name = $"F{objCnt++}";
         while (Fonts.ContainsKey(name))
         {
-            name = $"/F{objCnt++}";
+            name = $"F{objCnt++}";
         }
         fonts[obj] = name;
 

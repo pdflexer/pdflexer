@@ -54,7 +54,7 @@ internal ref struct Type1Reader
     {
         var scanner = new Scanner(Ctx, Data);
         PdfTokenType type;
-        while ((type = scanner.Peek()) != PdfTokenType.NameObj || scanner.GetCurrentObject().GetAs<PdfName>().Value != "/Encoding")
+        while ((type = scanner.Peek()) != PdfTokenType.NameObj || scanner.GetCurrentObject().GetAs<PdfName>().Value != "Encoding")
         {
             scanner.SkipCurrent();
         }
@@ -95,7 +95,7 @@ internal ref struct Type1Reader
             {
                 if (num != -1 && num < 256)
                 {
-                    encoding[num] = scanner.GetCurrentObject()?.GetAs<PdfName>()?.Value?.Substring(1);
+                    encoding[num] = scanner.GetCurrentObject()?.GetAs<PdfName>()?.Value;
                 }
             } else if (nxt == PdfTokenType.NumericObj)
             {

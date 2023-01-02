@@ -22,11 +22,11 @@ public class ContentUtil
             {
                 var im = (InlineImage_Op)op;
                 var i = 1;
-                var nm = "/Im" + i;
+                var nm = "Im" + i;
                 while (xobjs.ContainsKey(nm))
                 {
                     i++;
-                    nm = "/Im" + i;
+                    nm = "Im" + i;
                 }
                 var imageStream = im.ConvertToStream();
                 xobjs[nm] = imageStream.Indirect();

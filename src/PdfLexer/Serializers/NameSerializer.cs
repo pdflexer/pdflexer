@@ -8,16 +8,16 @@ internal class NameSerializer : ISerializer<PdfName>
     private static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
     public void WriteToStream(PdfName obj, Stream stream)
     {
-        if (obj.Value.Length == 1) { stream.Write(Iso88591.GetBytes("/Empty")); return; }
+        if (obj.Value.Length == 0) { stream.Write(Iso88591.GetBytes("/Empty")); return; }
         if (obj.Value.Length < 50)
         {
-            Span<byte> bytes = stackalloc byte[obj.Value.Length * 3];
+            Span<byte> bytes = stackalloc byte[obj.Value.Length * 3+1];
             var written = GetBytes(obj, bytes);
             stream.Write(bytes.Slice(0, written));
         }
         else
         {
-            var buffer = ArrayPool<byte>.Shared.Rent(obj.Value.Length * 3);
+            var buffer = ArrayPool<byte>.Shared.Rent(obj.Value.Length * 3+1);
             var written = GetBytes(obj, buffer);
             stream.Write(buffer, 0, written);
             ArrayPool<byte>.Shared.Return(buffer);
@@ -32,7 +32,7 @@ internal class NameSerializer : ISerializer<PdfName>
             return WriteCached(obj, data);
         }
 
-        if (obj.Value.Length == 1) { Iso88591.GetBytes("/Empty").CopyTo(data); return 6; }
+        if (obj.Value.Length == 0) { Iso88591.GetBytes("/Empty").CopyTo(data); return 6; }
 
         if (data.Length < 150)
         {
@@ -54,7 +54,7 @@ internal class NameSerializer : ISerializer<PdfName>
     {
         data[0] = '/';
         var ci = 1; // TODO perf analysis
-        for (var i = 1; i < obj.Value.Length; i++)
+        for (var i = 0; i < obj.Value.Length; i++)
         {
             var cc = obj.Value[i];
             if (cc == (char)0 || cc == (char)9 || cc == (char)10 || cc == (char)12

@@ -331,7 +331,7 @@ internal static class CommonUtil
         var type = dict.GetRequiredValue<PdfName>(PdfName.TypeName);
         switch (type.Value)
         {
-            case "/Pages":
+            case "Pages":
                 if (dict.TryGetValue<PdfDictionary>(PdfName.Resources, out var next))
                 {
                     resources = next;
@@ -373,7 +373,7 @@ internal static class CommonUtil
                     }
                 }
                 break;
-            case "/Page":
+            case "Page":
                 if (!dict.ContainsKey(PdfName.Resources) && resources != null)
                 {
                     dict[PdfName.Resources] = resources;

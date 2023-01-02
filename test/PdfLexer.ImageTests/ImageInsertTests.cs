@@ -39,7 +39,7 @@ namespace PdfLexer.ImageTests
             
             var pg = new PdfPage();
             doc.Pages.Add(pg);
-            pg.AddXObj("/Im1", xobj.Stream);
+            pg.AddXObj("Im1", xobj.Stream);
             var bx = pg.MediaBox;
             bx.URx = xobj.Width;
             bx.URy = xobj.Height;
@@ -53,7 +53,7 @@ namespace PdfLexer.ImageTests
             var cs = new MemoryStream();
             q_Op.WriteLn(cs);
             cm_Op.WriteLn(bx.URx, 0, 0, bx.URy, 0, 0, cs);
-            Do_Op.WriteLn("/Im1", cs);
+            Do_Op.WriteLn("Im1", cs);
             Q_Op.WriteLn(cs);
             var cnt = new PdfStream(new PdfDictionary(), content); // new PdfByteArrayStreamContents(cs.ToArray()));
             pg.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(cnt);

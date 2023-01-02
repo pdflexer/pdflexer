@@ -9,10 +9,10 @@ internal class FontMetrics
 
     public static FontMetrics TimesRoman = new FontMetrics
     {
-        BaseFont = "/Times-Roman",
+        BaseFont = "Times-Roman",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Times-Roman",
+            FontName = "Times-Roman",
             FontFamily = new PdfString("Times"),
             Flags = FontFlags.Nonsymbolic | FontFlags.Serif,
             FontBBox = new PdfRectangle
@@ -33,10 +33,10 @@ internal class FontMetrics
 
     public static FontMetrics TimesBold = new FontMetrics
     {
-        BaseFont = "/Times-Bold",
+        BaseFont = "Times-Bold",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Times-Bold",
+            FontName = "Times-Bold",
             FontFamily = new PdfString("Times"),
             Flags = FontFlags.Nonsymbolic | FontFlags.Serif | FontFlags.ForceBold,
             FontBBox = new PdfRectangle
@@ -57,10 +57,10 @@ internal class FontMetrics
 
     public static FontMetrics TimesBoldItalic = new FontMetrics
     {
-        BaseFont = "/Times-BoldItalic",
+        BaseFont = "Times-BoldItalic",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Times-BoldItalic",
+            FontName = "Times-BoldItalic",
             FontFamily = new PdfString("Times"),
             Flags = FontFlags.Nonsymbolic | FontFlags.Serif | FontFlags.ForceBold | FontFlags.Italic,
             FontBBox = new PdfRectangle
@@ -81,10 +81,10 @@ internal class FontMetrics
 
     public static FontMetrics TimesItalic = new FontMetrics
     {
-        BaseFont = "/Times-Italic",
+        BaseFont = "Times-Italic",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Times-Italic",
+            FontName = "Times-Italic",
             FontFamily = new PdfString("Times"),
             Flags = FontFlags.Nonsymbolic | FontFlags.Serif | FontFlags.Italic,
             FontBBox = new PdfRectangle
@@ -105,10 +105,10 @@ internal class FontMetrics
 
     public static FontMetrics Courier = new FontMetrics
     {
-        BaseFont = "/Courier",
+        BaseFont = "Courier",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Courier",
+            FontName = "Courier",
             FontFamily = new PdfString("Courier"),
             Flags = FontFlags.Nonsymbolic | FontFlags.FixedPitch | FontFlags.Serif,
             FontBBox = new PdfRectangle
@@ -129,10 +129,10 @@ internal class FontMetrics
 
     public static FontMetrics CourierBold = new FontMetrics
     {
-        BaseFont = "/Courier-Bold",
+        BaseFont = "Courier-Bold",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Courier-Bold",
+            FontName = "Courier-Bold",
             FontFamily = new PdfString("Courier"),
             Flags = FontFlags.Nonsymbolic | FontFlags.FixedPitch | FontFlags.Serif | FontFlags.ForceBold,
             FontBBox = new PdfRectangle
@@ -153,10 +153,10 @@ internal class FontMetrics
 
     public static FontMetrics CourierBoldItalic = new FontMetrics
     {
-        BaseFont = "/Courier-BoldOblique",
+        BaseFont = "Courier-BoldOblique",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Courier-BoldOblique",
+            FontName = "Courier-BoldOblique",
             FontFamily = new PdfString("Courier"),
             Flags = FontFlags.Nonsymbolic | FontFlags.FixedPitch | FontFlags.Serif | FontFlags.ForceBold | FontFlags.Italic,
             FontBBox = new PdfRectangle
@@ -177,10 +177,10 @@ internal class FontMetrics
 
     public static FontMetrics CourierItalic = new FontMetrics
     {
-        BaseFont = "/Courier-Oblique",
+        BaseFont = "Courier-Oblique",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Courier-Oblique",
+            FontName = "Courier-Oblique",
             FontFamily = new PdfString("Courier"),
             Flags = FontFlags.Nonsymbolic | FontFlags.FixedPitch | FontFlags.Serif | FontFlags.Italic,
             FontBBox = new PdfRectangle
@@ -201,10 +201,10 @@ internal class FontMetrics
 
     public static FontMetrics Helvetica = new FontMetrics
     {
-        BaseFont = "/Helvetica",
+        BaseFont = "Helvetica",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Helvetica",
+            FontName = "Helvetica",
             FontFamily = new PdfString("Helvetica"),
             Flags = FontFlags.Nonsymbolic,
             FontBBox = new PdfRectangle
@@ -225,10 +225,10 @@ internal class FontMetrics
 
     public static FontMetrics HelveticaBold = new FontMetrics
     {
-        BaseFont = "/Helvetica-Bold",
+        BaseFont = "Helvetica-Bold",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Helvetica-Bold",
+            FontName = "Helvetica-Bold",
             FontFamily = new PdfString("Helvetica"),
             Flags = FontFlags.Nonsymbolic | FontFlags.ForceBold,
             FontBBox = new PdfRectangle
@@ -249,10 +249,10 @@ internal class FontMetrics
 
     public static FontMetrics HelveticaBoldItalic = new FontMetrics
     {
-        BaseFont = "/Helvetica-BoldOblique",
+        BaseFont = "Helvetica-BoldOblique",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Helvetica-BoldOblique",
+            FontName = "Helvetica-BoldOblique",
             FontFamily = new PdfString("Helvetica"),
             Flags = FontFlags.Nonsymbolic | FontFlags.ForceBold | FontFlags.Italic,
             FontBBox = new PdfRectangle
@@ -273,10 +273,10 @@ internal class FontMetrics
 
     public static FontMetrics HelveticaItalic = new FontMetrics
     {
-        BaseFont = "/Helvetica-Oblique",
+        BaseFont = "Helvetica-Oblique",
         Descriptor = new FontDescriptor
         {
-            FontName = "/Helvetica-Oblique",
+            FontName = "Helvetica-Oblique",
             FontFamily = new PdfString("Helvetica"),
             Flags = FontFlags.Nonsymbolic | FontFlags.Italic,
             FontBBox = new PdfRectangle
@@ -297,7 +297,7 @@ internal class FontMetrics
 
     public static FontMetrics Symbol = new FontMetrics
     {
-        BaseFont = "/Symbol",
+        BaseFont = "Symbol",
         Descriptor = new FontDescriptor
         {
             FontName = "Symbol",
@@ -318,7 +318,7 @@ internal class FontMetrics
 
     public static FontMetrics ZapfDingbats = new FontMetrics
     {
-        BaseFont = "/ZapfDingbats",
+        BaseFont = "ZapfDingbats",
         Descriptor = new FontDescriptor
         {
             FontName = "ZapfDingbats",

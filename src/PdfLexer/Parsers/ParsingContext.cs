@@ -37,6 +37,7 @@ public class ParsingContext : IDisposable
     internal BoolParser BoolParser { get; }
     internal NameParser NameParser { get; }
     internal NestedParser NestedParser { get; }
+    internal CryptFilter CryptFilter { get; }
     internal DictionaryParser DictionaryParser { get; }
     internal StringParser StringParser { get; }
     internal ICMapProvider CMapProvider { get; }
@@ -62,6 +63,7 @@ public class ParsingContext : IDisposable
         StringParser = new StringParser(this);
         XRefParser = new XRefParser(this);
         NestedParser = new NestedParser(this);
+        CryptFilter = new CryptFilter(this);
         CurrentOffset = 0;
         MainDocSource = null!;
         Document = null!;
@@ -115,7 +117,7 @@ public class ParsingContext : IDisposable
         }
     }
 
-    internal static IDecoder GetDecoder(PdfName name)
+    internal static IDecoder GetDecoder(PdfName name, ParsingContext? ctx)
     {
         // Not technically valid outside of inline image
         // but used (eg. ghostscript)
@@ -128,24 +130,30 @@ public class ParsingContext : IDisposable
         //   DCT -> DCTDecode
         switch (name.Value)
         {
-            case "/FlateDecode":
-            case "/Fl":
+            case "FlateDecode":
+            case "Fl":
                 return FlateFilter.Instance;
-            case "/ASCIIHexDecode":
-            case "/AHx":
+            case "ASCIIHexDecode":
+            case "AHx":
                 return AsciiHexFilter.Instance;
-            case "/ASCII85Decode":
-            case "/A85":
+            case "ASCII85Decode":
+            case "A85":
                 return Ascii85Filter.Instance;
-            case "/RL":
-            case "/RunLengthDecode":
+            case "RL":
+            case "RunLengthDecode":
                 return RunLengthFilter.Instance;
-            case "/CCF":
-            case "/CCITTFaxDecode":
+            case "CCF":
+            case "CCITTFaxDecode":
                 return CCITTFilter.Instance;
-            case "/LZW":
-            case "/LZWDecode":
+            case "LZW":
+            case "LZWDecode":
                 return LZWFilter.Instance;
+            case "Crypt":
+                if (ctx == null)
+                {
+                    throw new PdfLexerException("Crypt filter used in stream without source context attached.");
+                }
+                return ctx.CryptFilter;
             default:
                 throw new NotImplementedException($"Stream decoding of type {name.Value} has not been implemented.");
         }
@@ -208,10 +216,10 @@ public class ParsingContext : IDisposable
         }
         var created = type.Value switch
         {
-            "/Type0" => Type0Font.CreateReadable(this, dict),
-            "/Type1" => Type1Font.CreateReadable(this, dict),
-            "/TrueType" => TrueTypeFont.CreateReadable(this, dict),
-            "/Type3" => GetType3(dict),
+            "Type0" => Type0Font.CreateReadable(this, dict),
+            "Type1" => Type1Font.CreateReadable(this, dict),
+            "TrueType" => TrueTypeFont.CreateReadable(this, dict),
+            "Type3" => GetType3(dict),
             _ => throw new PdfLexerException("Uknown font type: " + type.Value)
         };
         fontCache.AddOrUpdate(dict, created);

@@ -12,17 +12,17 @@ namespace PdfLexer.Tests
 {
     public class NameTests
     {
-        [InlineData("/Test ", "/Test", 5)]
-        [InlineData("/Test  ", "/Test", 5)]
-        [InlineData(" /Test", "/Test", 5)]
-        [InlineData("/Test\r", "/Test", 5)]
-        [InlineData("/Test\n", "/Test", 5)]
-        [InlineData("/Test\r\n", "/Test", 5)]
-        [InlineData("/Test#20Test ", "/Test Test", 12)]
-        [InlineData("/PANTONE#205757#20CV ", "/PANTONE 5757 CV", -1)]
-        [InlineData("/paired#28#29parentheses ", "/paired()parentheses", -1)]
-        [InlineData("/The_Key_of_F#23_Minor ", "/The_Key_of_F#_Minor", -1)]
-        [InlineData("/A#42 ", "/AB", -1)]
+        [InlineData("/Test ", "Test", 5)]
+        [InlineData("/Test  ", "Test", 5)]
+        [InlineData(" /Test", "Test", 5)]
+        [InlineData("/Test\r", "Test", 5)]
+        [InlineData("/Test\n", "Test", 5)]
+        [InlineData("/Test\r\n", "Test", 5)]
+        [InlineData("/Test#20Test ", "Test Test", 12)]
+        [InlineData("/PANTONE#205757#20CV ", "PANTONE 5757 CV", -1)]
+        [InlineData("/paired#28#29parentheses ", "paired()parentheses", -1)]
+        [InlineData("/The_Key_of_F#23_Minor ", "The_Key_of_F#_Minor", -1)]
+        [InlineData("/A#42 ", "AB", -1)]
         // /ºÚÌå-GBKp-EUC-H
         [Theory]
         public void It_Gets_Name_Span(string input, string output, int length)
@@ -52,8 +52,8 @@ namespace PdfLexer.Tests
             Assert.True(Object.ReferenceEquals(result, result2));
             var result3 = parser.Parse(key2Bytes);
             Assert.False(Object.ReferenceEquals(result, result3));
-            Assert.Equal(key, result.Value);
-            Assert.Equal(key2, result3.Value);
+            Assert.Equal(key.Substring(1), result.Value);
+            Assert.Equal(key2.Substring(1), result3.Value);
         }
 
         [Fact]
@@ -69,13 +69,13 @@ namespace PdfLexer.Tests
             Assert.True(data.SequenceEqual(buffer.Slice(0, c).ToArray()));
         }
 
-        [InlineData("/Test", "/Test")]
-        [InlineData("/Test#20Test", "/Test Test")]
-        [InlineData("/PANTONE#205757#20CV", "/PANTONE 5757 CV")]
-        [InlineData("/paired#28#29parentheses", "/paired()parentheses")]
-        [InlineData("/The_Key_of_F#23_Minor", "/The_Key_of_F#_Minor")]
-        [InlineData("/#23", "/#")]
-        [InlineData("/Empty", "/")]
+        [InlineData("/Test", "Test")]
+        [InlineData("/Test#20Test", "Test Test")]
+        [InlineData("/PANTONE#205757#20CV", "PANTONE 5757 CV")]
+        [InlineData("/paired#28#29parentheses", "paired()parentheses")]
+        [InlineData("/The_Key_of_F#23_Minor", "The_Key_of_F#_Minor")]
+        [InlineData("/#23", "#")]
+        [InlineData("/Empty", "")]
         [Theory]
         public void It_Writes_Name(string expected, string input)
         {

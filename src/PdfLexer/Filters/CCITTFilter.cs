@@ -15,13 +15,13 @@ public class CCITTFilter : IDecoder
     public Stream Decode(Stream stream, PdfDictionary? filterParams) 
     {
         return new CCITTStream(
-            filterParams?.Get<PdfNumber>("/K"),
-            filterParams?.Get<PdfBoolean>("/EndOfLine"),
-            filterParams?.Get<PdfBoolean>("/EndOfBlock"),
-            filterParams?.Get<PdfBoolean>("/BlackIs1"),
-            filterParams?.Get<PdfBoolean>("/EncodedByteAlign"),
-            filterParams?.Get<PdfNumber>("/Columns"),
-            filterParams?.Get<PdfNumber>("/Rows"),
+            filterParams?.Get<PdfNumber>("K"),
+            filterParams?.Get<PdfBoolean>("EndOfLine"),
+            filterParams?.Get<PdfBoolean>("EndOfBlock"),
+            filterParams?.Get<PdfBoolean>("BlackIs1"),
+            filterParams?.Get<PdfBoolean>("EncodedByteAlign"),
+            filterParams?.Get<PdfNumber>("Columns"),
+            filterParams?.Get<PdfNumber>("Rows"),
             new BufferedStream(stream),
             _ctx
             );

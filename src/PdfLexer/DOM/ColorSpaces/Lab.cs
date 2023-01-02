@@ -126,7 +126,7 @@ internal class Lab : IColorSpace
 
     public static Lab FromObject(PdfDictionary dict)
     {
-        var wp = dict.Get<PdfArray>("/WhitePoint");
+        var wp = dict.Get<PdfArray>("WhitePoint");
         if (wp == null)
         {
             throw new PdfLexerException("No whitepoint entry for Lab colorspace");
@@ -143,7 +143,7 @@ internal class Lab : IColorSpace
         }
 
         var (xb, yb, zb) = (0f, 0f, 0f);
-        var bp = dict.Get<PdfArray>("/BlackPoint");
+        var bp = dict.Get<PdfArray>("BlackPoint");
         if (bp != null)
         {
             var bps = bp.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
@@ -158,7 +158,7 @@ internal class Lab : IColorSpace
         }
 
         double amin = -100, amax = 100, bmin = -100, bmax = 100;
-        var range = dict.Get<PdfArray>("/Range");
+        var range = dict.Get<PdfArray>("Range");
         if (range != null)
         {
             var rng = range.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();

@@ -113,7 +113,7 @@ public ref struct PageContentScanner2
         SkipOps = -1;
         CurrentStream = form;
         CurrentForm = form.Dictionary;
-        CurrentFormName = "/FNA";
+        CurrentFormName = "FNA";
         CurrentBuffer = form.Contents.GetDecodedBuffer(true);
         Scanner = CurrentBuffer.GetScanner(Context);
 

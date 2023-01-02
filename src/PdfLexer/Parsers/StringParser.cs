@@ -1,3 +1,4 @@
+using System;
 using System.Buffers;
 using System.Buffers.Text;
 using System.Diagnostics;
@@ -90,10 +91,12 @@ internal class StringParser : Parser<PdfString>
     {
         var length = ConvertBytes(input, output);
 
+        byte[]? extraRent = null;
         ReadOnlySpan<byte> converted = output;
         if (_ctx.IsEncrypted)
         {
-            converted = _ctx.Decryption.Decrypt(_ctx.CurrentReference, Encryption.CryptoType.Strings, converted.Slice(0,length));
+            extraRent = ArrayPool<byte>.Shared.Rent(length);
+            converted = _ctx.Decryption.Decrypt(_ctx.CurrentReference, Encryption.CryptoType.Strings, converted.Slice(0, length), extraRent);
             length = converted.Length;
         }
 
@@ -103,11 +106,20 @@ internal class StringParser : Parser<PdfString>
             encoding = PdfTextEncodingType.UTF16BE;
             var str = new PdfString(Encoding.BigEndianUnicode.GetString(converted.Slice(2, length - 2)),
                 input[0] == '(' ? PdfStringType.Literal : PdfStringType.Hex, encoding);
+            if (extraRent != null)
+            {
+                ArrayPool<byte>.Shared.Return(extraRent);
+            }
             return str;
         }
 
         // TODO real PdfDocEncoded decoding
-        return new PdfString(Iso88591.GetString(converted.Slice(0, length)), input[0] == '(' ? PdfStringType.Literal : PdfStringType.Hex, encoding);
+        var s = Iso88591.GetString(converted.Slice(0, length));
+        if (extraRent != null)
+        {
+            ArrayPool<byte>.Shared.Return(extraRent);
+        }
+        return new PdfString(s, input[0] == '(' ? PdfStringType.Literal : PdfStringType.Hex, encoding);
     }
 
     public int ConvertBytes(ReadOnlySpan<byte> input, Span<byte> buffer)

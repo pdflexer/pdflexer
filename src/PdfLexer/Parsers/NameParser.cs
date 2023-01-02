@@ -29,7 +29,7 @@ internal class NameParser : Parser<PdfName>
                 return result;
             }
         }
-        var val = buffer.IndexOf((byte)'#') == -1 ? ParseFastNoHex(buffer) : ParseWithHex(buffer, 0, buffer.Length);
+        var val = buffer.IndexOf((byte)'#') == -1 ? ParseFastNoHex(buffer) : ParseWithHex(buffer, 1, buffer.Length-1);
         if (key > 0)
         {
             _ctx.NameCache.AddValue(key, val);
@@ -40,7 +40,7 @@ internal class NameParser : Parser<PdfName>
     private PdfName ParseFastNoHex(ReadOnlySpan<byte> buffer)
     {
         // note, pdf1.7 spec names should be treated at utf-8 for cases where they need a text representation
-        return new PdfName(Iso88591.GetString(buffer), false);
+        return new PdfName(Iso88591.GetString(buffer.Slice(1)), false);
     }
 
     private PdfName ParseWithHex(ReadOnlySpan<byte> buffer, int start, int length)
@@ -92,7 +92,7 @@ internal class NameParser : Parser<PdfName>
         var name = new PdfName(Iso88591.GetString(bytes.Slice(0, ci)), true);
         return name;
     }
-    private static readonly PdfName Err = new PdfName("/Err");
+    private static readonly PdfName Err = new PdfName("Err");
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static void SkipName(ReadOnlySpan<byte> bytes, ref int i)
     {

@@ -108,8 +108,8 @@ internal class ImageSampler
                                 WriteIfNotNull(img.XObj.NativeObject.Get(PdfName.BitsPerComponent));
                                 WriteIfNotNull(img.XObj.NativeObject.Get(PdfName.Filter));
                                 WriteIfNotNull(img.XObj.NativeObject.Get(PdfName.Decode));
-                                WriteIfNotNull(img.XObj.NativeObject.Get<PdfDictionary>(PdfName.DecodeParms)?.Get("/K"));
-                                WriteIfNotNull(img.XObj.NativeObject.Get<PdfDictionary>(PdfName.DecodeParms)?.Get("/BlackIs1"));
+                                WriteIfNotNull(img.XObj.NativeObject.Get<PdfDictionary>(PdfName.DecodeParms)?.Get("K"));
+                                WriteIfNotNull(img.XObj.NativeObject.Get<PdfDictionary>(PdfName.DecodeParms)?.Get("BlackIs1"));
                                 WriteIfNotNull(img.XObj.NativeObject.Get(PdfName.ImageMask));
                                 var css = img.XObj.NativeObject.Get(PdfName.ColorSpace)?.Resolve();
                                 if (css?.Type == PdfObjectType.ArrayObj)
@@ -136,7 +136,7 @@ internal class ImageSampler
                                 if (smask != null)
                                 {
                                     WriteIfNotNull(PdfName.SMask);
-                                    WriteIfNotNull(smask.Dictionary.Get("/Matte"));
+                                    WriteIfNotNull(smask.Dictionary.Get("Matte"));
                                 }
 
                                 var data = ms.ToArray();
@@ -156,7 +156,7 @@ internal class ImageSampler
                                 using var od = PdfDocument.Create();
                                 var pg = new PdfPage(new PdfDictionary());
                                 od.Pages.Add(pg);
-                                pg.AddXObj("/Im1", img.XObj.Stream);
+                                pg.AddXObj("Im1", img.XObj.Stream);
                                 var bx = pg.MediaBox;
                                 bx.URx = img.XObj.NativeObject.Get<PdfNumber>(PdfName.Width);
                                 bx.URy = img.XObj.NativeObject.Get<PdfNumber>(PdfName.Height);
@@ -164,7 +164,7 @@ internal class ImageSampler
                                 var cs = new MemoryStream();
                                 q_Op.WriteLn(cs);
                                 cm_Op.WriteLn(bx.URx, 0, 0, bx.URy, 0, 0, cs);
-                                Do_Op.WriteLn("/Im1", cs);
+                                Do_Op.WriteLn("Im1", cs);
                                 Q_Op.WriteLn(cs);
                                 var cnt = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(cs.ToArray()));
                                 pg.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(cnt);

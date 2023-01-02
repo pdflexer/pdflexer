@@ -153,7 +153,7 @@ namespace PdfLexer.Tests
             var data = Encoding.ASCII.GetBytes(text);
             var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
             var dict = parser.Parse(data);
-            Assert.Equal(2, (int)dict.GetRequiredValue<PdfNumber>(new PdfName("/Two")));
+            Assert.Equal(2, (int)dict.GetRequiredValue<PdfNumber>(new PdfName("Two")));
         }
 
         [Fact]

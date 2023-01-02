@@ -113,7 +113,7 @@ namespace PdfLexer.Fonts
                 diffs = new Dictionary<int, string>();
                 foreach (var (code, name) in diff.ReadDifferences())
                 {
-                    diffs[code] = name.Value.Substring(1);
+                    diffs[code] = name.Value;
                 }
             }
 

@@ -94,7 +94,8 @@ internal class StandardEncryption : IDecryptionHandler
                 aesStreams = GetFilterType(ei, cf, PdfName.StmF);
                 aesEmbedded = GetFilterType(ei, cf, PdfName.EFF, aesStreams);
             }
-        } else
+        }
+        else
         {
             aesString = FilterType.RC4;
             aesStreams = FilterType.RC4;
@@ -107,17 +108,21 @@ internal class StandardEncryption : IDecryptionHandler
             return ownerKey; // TODO, may need both
         }
 
+        var userEmpty = GetKeyFromUserPassword(ei, empty);
+        if (userEmpty != null) { return userEmpty; }
+
         var userKey = GetKeyFromUserPassword(ei);
         if (userKey == null)
         {
-            _ctx.Error("Passwords provided were not valid for pdf.");
-            return empty;
+            throw new PdfLexerException("Passwords provided were not valid for pdf.");
+            // _ctx.Error("Passwords provided were not valid for pdf.");
+            // return empty;
         }
 
         return userKey;
     }
 
-    private FilterType GetFilterType(StandardEncryptionInfo ei, PdfDictionary cf, PdfName key, FilterType def=FilterType.Identity)
+    private FilterType GetFilterType(StandardEncryptionInfo ei, PdfDictionary cf, PdfName key, FilterType def = FilterType.Identity)
     {
         var val = ei.NativeObject.Get<PdfName>(key);
         if (val == null) { return def; }
@@ -134,12 +139,12 @@ internal class StandardEncryption : IDecryptionHandler
             return def;
         }
         var sv = cfm.Value;
-        return sv == "/AESV2" || sv == "/AESV3" ? FilterType.AES : FilterType.RC4;
+        return sv == "AESV2" || sv == "AESV3" ? FilterType.AES : FilterType.RC4;
 
     }
     private byte[]? GetKeyFromOwnerPass(StandardEncryptionInfo info)
     {
-        if (info.R == 5)
+        if (info.R == 5 || info.R == 6)
         {
             return GetKeyFromOwnerPassAES256(info);
         }
@@ -183,7 +188,7 @@ internal class StandardEncryption : IDecryptionHandler
 
     private byte[]? GetKeyFromUserPassword(StandardEncryptionInfo info, byte[] userPw)
     {
-        if (info.R == 5)
+        if (info.R == 5 || info.R == 6)
         {
             return GetKeyFromUserPasswordAES256(info, userPw);
         }
@@ -201,7 +206,8 @@ internal class StandardEncryption : IDecryptionHandler
             case 3:
             case 4:
             default:
-                var u = info.U?.GetRawBytes() ?? new byte[16];
+                var u = info.U_Bytes;
+                if (digest.Length < 16 || u.Length < 16) { return null; }
                 for (var i = 0; i < 16; i++)
                 {
                     if (u[i] != digest[i])
@@ -221,19 +227,40 @@ internal class StandardEncryption : IDecryptionHandler
             userPw = userPw[..127];
         }
 
+        byte[] key;
         var u = info.U_Bytes;
-        var s = Sha265Hash(userPw, GetValidationSalt(u));
-
-        for (var i = 0; i < s.Length; i++)
+        if (info.R == 5)
         {
-            if (u.Length <= i) { return null; }
-            if (u[i] != s[i]) { return null; }
+            var s = Sha265Hash(userPw, GetValidationSalt(u));
+
+            if (u.Length < 32 || s.Length < 32) { return null; }
+            for (var i = 0; i < 32; i++)
+            {
+                if (u[i] != s[i]) { return null; }
+            }
+
+            key = Sha265Hash(userPw, GetKeySalt(u));
+        }
+        else
+        {
+            var input = new byte[userPw.Length + 8];
+            userPw.CopyTo(input, 0);
+            GetValidationSalt(u).CopyTo(input, userPw.Length);
+            var s = IsoHash(userPw, input, empty);
+            if (u.Length < 32 || s.Length < 32) { return null; }
+            for (var i = 0; i < 32; i++)
+            {
+                if (u[i] != s[i]) { return null; }
+            }
+
+            var ks = GetKeySalt(u);
+            input = new byte[userPw.Length + ks.Length];
+            userPw.CopyTo(input, 0);
+            ks.CopyTo(input, userPw.Length);
+            key = IsoHash(userPw, input, empty);
         }
 
-        var key = Sha265Hash(userPw, GetKeySalt(u));
-
         var iv = new byte[16];
-
         using var aes = Aes.Create();
         aes.Key = key;
         aes.IV = iv;
@@ -262,6 +289,7 @@ internal class StandardEncryption : IDecryptionHandler
     {
         using (var sha = SHA256.Create())
         {
+
             sha.TransformBlock(input1, 0, input1.Length, null, 0);
             sha.TransformBlock(input2, 0, input2.Length, null, 0);
 
@@ -338,16 +366,41 @@ internal class StandardEncryption : IDecryptionHandler
         }
 
         var o = info.O_Bytes;
+        ReadOnlySpan<byte> os = o;
         var u = info.U_Bytes;
-        var s = Sha265Hash(opw, GetValidationSalt(o), info.U_Bytes);
 
-        for (var i = 0; i < s.Length; i++)
+        byte[] key;
+
+        if (info.R == 5)
         {
-            if (o.Length <= i) { return null; }
-            if (o[i] != s[i]) { return null; }
-        }
+            ReadOnlySpan<byte> s = Sha265Hash(opw, GetValidationSalt(o), u);
+            
+            if (!s.Slice(0,32).SequenceEqual(os.Slice(0,32))) { return null; }
 
-        var key = Sha265Hash(opw, GetKeySalt(o), u);
+            key = Sha265Hash(opw, GetKeySalt(o), u);
+        } else
+        {
+            // password
+            // validation salt
+            // user bytes
+            var input = new byte[opw.Length + 8 + u.Length];
+            opw.CopyTo(input, 0);
+            GetValidationSalt(o).CopyTo(input, opw.Length);
+            u.CopyTo(input, opw.Length + 8);
+            ReadOnlySpan<byte> s = IsoHash(opw, input, u);
+
+            if (!s.SequenceEqual(os.Slice(0, 32))) { return null; }
+
+            // password
+            // key salt
+            // user bytes
+            var ks = GetKeySalt(o);
+            input = new byte[opw.Length + ks.Length + u.Length];
+            opw.CopyTo(input, 0);
+            ks.CopyTo(input, opw.Length);
+            u.CopyTo(input, opw.Length+ks.Length);
+            key = IsoHash(opw, input, u);
+        }
 
         var iv = new byte[16];
 
@@ -483,7 +536,7 @@ internal class StandardEncryption : IDecryptionHandler
     private byte[] lastkey;
     private byte[] GetKey(ulong id, bool aes)
     {
-        if (aes && R == 5)
+        if (aes && (R == 5 || R == 6))
         {
             return _baseKey;
         }
@@ -518,7 +571,8 @@ internal class StandardEncryption : IDecryptionHandler
         }
     }
 
-    public ReadOnlySpan<byte> Decrypt(ulong id, CryptoType type, ReadOnlySpan<byte> data)
+    private byte[] ivBuffer = new byte[16];
+    public ReadOnlySpan<byte> Decrypt(ulong id, CryptoType type, ReadOnlySpan<byte> data, Span<byte> writeBuffer)
     {
         var filter = type switch
         {
@@ -535,37 +589,43 @@ internal class StandardEncryption : IDecryptionHandler
 
         if (aes)
         {
-            // todo optimize;
-            var iv = new byte[16];
-            data.Slice(0, 16).CopyTo(iv);
+            data.Slice(0, 16).CopyTo(ivBuffer);
 
-            var ms = new MemoryStream(data.Slice(16).ToArray());
+            
 
             using var enc = Aes.Create();
             enc.Key = key;
-            enc.IV = iv;
+            enc.IV = ivBuffer;
+
+#if NET5_0_OR_GREATER
+
+            if (!enc.TryDecryptCbc(data.Slice(16), ivBuffer, writeBuffer, out int bytes))
+            {
+                _ctx.Error($"Failed to decrypt data of {type} type from obj {id}");
+                return data;
+            }
+
+            return writeBuffer.Slice(0, bytes);
+#else
+            var ms = new MemoryStream(data.Slice(16).ToArray());
             var decryptor = enc.CreateDecryptor(enc.Key, enc.IV);
             var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
             var mso = new MemoryStream();
             cs.CopyTo(mso);
             return mso.ToArray();
+#endif
+
+
+
         }
         else
         {
-            if (data.Length < 200)
-            {
-                Span<byte> output = stackalloc byte[data.Length];
-                Rc4Encrypt(key, data, output);
-                return data;
-            }
-
-            var array = new byte[data.Length];
-            Rc4Encrypt(key, data, array);
-            return array;
+            Rc4Encrypt(key, data, writeBuffer);
+            return writeBuffer.Slice(0, data.Length);
         }
 
     }
-
+    private static byte[] emptyIV = new byte[16];
     public Stream Decrypt(ulong id, CryptoType type, Stream data)
     {
         var filter = type switch
@@ -637,7 +697,7 @@ internal class StandardEncryption : IDecryptionHandler
     }
 
 
-    // below algorithm ported from:
+    // below functions Rc4Encrypt and IsoHash ported from:
     // https://github.com/mozilla/pdf.js/blob/master/src/core/crypto.js
     // originally licenses as:
     /* Copyright 2012 Mozilla Foundation
@@ -682,6 +742,69 @@ internal class StandardEncryption : IDecryptionHandler
             s[b] = tmp;
             result[i] = (byte)(data[i] ^ s[(tmp + tmp2) & 0xff]);
         }
+    }
+    private byte[] IsoHash(byte[] password, byte[] input, byte[] userBytes)
+    {
+        using var sha256 = SHA256.Create();
+        using var sha384 = SHA384.Create();
+        using var sha512 = SHA512.Create();
+
+        var k = sha256.ComputeHash(input)[..32];
+        var e = new byte[] { 0x00 };
+
+        var i = 0;
+        while (i < 64 || e[e.Length - 1] > i - 32)
+        {
+            var combinedLength = password.Length + k.Length + userBytes.Length;
+            var combinedArray = new byte[combinedLength];
+            var writeOffset = 0;
+            password.CopyTo(combinedArray, 0);
+            writeOffset += password.Length;
+            k.CopyTo(combinedArray, writeOffset);
+            writeOffset += k.Length;
+            userBytes.CopyTo(combinedArray, writeOffset);
+
+            var k1 = new byte[combinedLength * 64];
+            var pos = 0;
+            for (var j = 0; j < 64; j++)
+            {
+                combinedArray.CopyTo(k1, pos);
+                pos += combinedLength;
+            }
+
+            using (var aes = Aes.Create())
+            {
+                aes.Key = k[..16];
+                aes.IV = k[16..32];
+                aes.Mode = CipherMode.CBC;
+                aes.Padding = PaddingMode.None;
+                using (var enc = aes.CreateEncryptor())
+                {
+                    e = enc.TransformFinalBlock(k1, 0, k1.Length);
+                }
+            }
+
+            var r = 0;
+            for (var ii = 0; ii < 16; ii++)
+            {
+                r += e[ii];
+            }
+            r = r % 3;
+            if (r == 0)
+            {
+                k = sha256.ComputeHash(e);
+            }
+            else if (r == 1)
+            {
+                k = sha384.ComputeHash(e);
+            }
+            else if (r == 2)
+            {
+                k = sha512.ComputeHash(e);
+            }
+            i++;
+        }
+        return k[..32];
     }
 }
 

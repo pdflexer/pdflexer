@@ -235,7 +235,7 @@ public abstract class PdfStreamContents
             var arr = obj.GetValue<PdfArray>();
 
             // decrypt only if no crypt filter
-            if (!arr.Any(x=> x.GetAsOrNull<PdfName>() == "/Crypt"))
+            if (!arr.Any(x=> x.GetAsOrNull<PdfName>() == "Crypt"))
             {
                 if (Context?.IsEncrypted ?? false)
                 {
@@ -256,7 +256,7 @@ public abstract class PdfStreamContents
         else
         {
             var filter = obj.GetValue<PdfName>();
-            if (filter != "/Crypt" && (Context?.IsEncrypted ?? false))
+            if (filter != "Crypt" && (Context?.IsEncrypted ?? false))
             {
                 source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
             }
@@ -281,7 +281,7 @@ public abstract class PdfStreamContents
 
         Stream DecodeSingle(PdfName filterName, Stream input, PdfDictionary? decodeParams)
         {
-            var decode = ParsingContext.GetDecoder(filterName);
+            var decode = ParsingContext.GetDecoder(filterName, Context);
             if (Context != null)
             {
                 return decode.Decode(input, decodeParams, Context.Error);

@@ -316,16 +316,16 @@ namespace PdfLexer.Tests
             File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-flat.pdf", doc2.Save());
 
             File.WriteAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111-cp2.pdf", doc3.Save());
-            doc.Trailer.Remove(new PdfName("/ID"));
-            doc.Trailer.Remove(new PdfName("/Info"));
+            doc.Trailer.Remove(new PdfName("ID"));
+            doc.Trailer.Remove(new PdfName("Info"));
             var res = doc.Pages[0].NativeObject.GetRequiredValue<PdfDictionary>(PdfName.Resources);
-            var fonts = res.GetRequiredValue<PdfDictionary>("/Font");
-            res["/Font"] = new PdfDictionary
+            var fonts = res.GetRequiredValue<PdfDictionary>("Font");
+            res["Font"] = new PdfDictionary
             {
-                ["/wspe_F1"] = fonts["/wspe_F1"],
+                ["wspe_F1"] = fonts["wspe_F1"],
                 // ["/wspe_F2"] = fonts["/wspe_F2"],
                 // ["/wspe_F3"] = fonts["/wspe_F3"],
-                ["/wspe_F4"] = fonts["/wspe_F4"],
+                ["wspe_F4"] = fonts["wspe_F4"],
             };
             // var empty = new DOM.PdfPage(new PdfDictionary());
             // empty.Dictionary[PdfName.Contents] = 
@@ -900,7 +900,7 @@ namespace PdfLexer.Tests
                     {
                         continue;
                     }
-                    doc.Trailer["/NewKey"] = new PdfString("NewValue");
+                    doc.Trailer["NewKey"] = new PdfString("NewValue");
                     var fn = Path.Combine(temp.TempPath, Path.GetFileName(pdf));
                     if (copyPages)
                     {
@@ -1219,7 +1219,7 @@ namespace PdfLexer.Tests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "doc_actions.pdf");
             var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
-            doc.Trailer["/Dummy"] = PdfName.Count;
+            doc.Trailer["Dummy"] = PdfName.Count;
             var count = doc.XrefEntries.Where(x => x.Value.Reference.Generation > 0).Count();
             var ms = new MemoryStream();
             doc.SaveTo(ms);

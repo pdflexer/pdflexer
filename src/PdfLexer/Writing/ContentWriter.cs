@@ -186,10 +186,10 @@ public partial class ContentWriter
         {
             return existing;
         }
-        PdfName name = $"/{pfx}{objCnt++}";
+        PdfName name = $"{pfx}{objCnt++}";
         while (XObjs.ContainsKey(name))
         {
-            name = $"/{pfx}{objCnt++}";
+            name = $"{pfx}{objCnt++}";
         }
         added[obj] = name;
         XObjs[name] = PdfIndirectRef.Create(obj);

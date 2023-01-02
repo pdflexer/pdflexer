@@ -6,7 +6,7 @@ namespace PdfLexer.Encryption;
 
 internal interface IDecryptionHandler
 {
-    ReadOnlySpan<byte> Decrypt(ulong id, CryptoType type, ReadOnlySpan<byte> data);
+    ReadOnlySpan<byte> Decrypt(ulong id, CryptoType type, ReadOnlySpan<byte> data, Span<byte> writeBuffer);
     Stream Decrypt(ulong id, CryptoType type, Stream data);
     Stream DecryptCryptStream(ulong id, PdfDictionary? decodeParams, Stream data);
 }

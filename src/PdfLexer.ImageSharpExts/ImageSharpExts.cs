@@ -113,8 +113,8 @@ public static class ImageSharpExts
     {
         switch (filter.Value)
         {
-            case "/DCTDecode":
-            case "/JPXDecode":
+            case "DCTDecode":
+            case "JPXDecode":
                 return Image.Load(img.Contents.GetEncodedData());
 
         }

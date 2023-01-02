@@ -112,14 +112,15 @@ public sealed class PdfDocument : IDisposable
         var trailer = Trailer.CloneShallow();
 
         // remove page tree specific items
-        catalog.Remove("/Names");
-        catalog.Remove("/Outlines");
-        catalog.Remove("/StructTreeRoot");
+        catalog.Remove("Names");
+        catalog.Remove("Outlines");
+        catalog.Remove("StructTreeRoot");
 
         var cir = PdfIndirectRef.Create(catalog);
         trailer[PdfName.Root] = cir;
 
         // remove page tree specific items
+        trailer.Remove(PdfName.Encrypt); // TODO support encryption
         trailer.Remove(PdfName.DecodeParms);
         trailer.Remove(PdfName.Filter);
         trailer.Remove(PdfName.Length);
