@@ -33,3 +33,11 @@ public class PdfLexerTokenMismatchException : PdfLexerException
 
     }
 }
+
+public class PdfLexerPasswordException : PdfLexerException
+{
+    public PdfLexerPasswordException(string message) : base(message)
+    {
+
+    }
+}

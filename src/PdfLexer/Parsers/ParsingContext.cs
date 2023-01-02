@@ -77,9 +77,23 @@ public class ParsingContext : IDisposable
         disposables.Add(MainDocSource);
         var (xr, tr) = XRefParser.LoadCrossReferences(pdf);
         XRefs = xr;
-        if (IsEncrypted) { 
+        if (IsEncrypted) {
+            IsEncrypted = false; // encryption handlers set encrypted true again when setup completed
             Options.Eagerness = Eagerness.FullEager;
-            Decryption = new StandardEncryption(this, tr ?? new PdfDictionary());
+            var enc = tr!.Get<PdfDictionary>(PdfName.Encrypt); // not null if set encrypt true;
+            if (enc != null)
+            {
+                var filter = enc.Get<PdfName>(PdfName.Filter);
+                switch (filter?.Value) {
+                    case "Standard":
+                    case null:
+                        Decryption = new StandardEncryption(this, tr ?? new PdfDictionary());
+                        break;
+                    default:
+                        throw new PdfLexerException($"Encryption of type {filter.Value} is not supported.");
+                }
+            }
+            
         }
         return (xr, tr);
     }

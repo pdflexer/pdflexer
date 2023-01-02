@@ -34,9 +34,6 @@ internal class StandardEncryption : IDecryptionHandler
     {
         _trailer = trailer;
         _ctx = ctx;
-
-        _ctx.IsEncrypted = false;
-
         var id = trailer.Get<PdfArray>(PdfName.ID);
         if (id != null && id.Count > 0)
         {
@@ -114,7 +111,7 @@ internal class StandardEncryption : IDecryptionHandler
         var userKey = GetKeyFromUserPassword(ei);
         if (userKey == null)
         {
-            throw new PdfLexerException("Passwords provided were not valid for pdf.");
+            throw new PdfLexerPasswordException("Passwords provided were not valid for pdf.");
             // _ctx.Error("Passwords provided were not valid for pdf.");
             // return empty;
         }

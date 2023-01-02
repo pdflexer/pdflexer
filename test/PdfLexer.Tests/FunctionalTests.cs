@@ -128,13 +128,9 @@ namespace PdfLexer.Tests
                     if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
                     EnumerateObjects(doc.Trailer, new HashSet<int>());
                 }
-                catch (NotSupportedException ex)
+                catch (PdfLexerPasswordException)
                 {
-                    // for compressed object streams
-                    if (ex.Message.Contains("encryption"))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 catch (Exception e)
                 {
@@ -162,13 +158,9 @@ namespace PdfLexer.Tests
                     var doc = PdfDocument.Open(fs);
                     EnumerateObjects(doc.Trailer, new HashSet<int>());
                 }
-                catch (NotSupportedException ex)
+                catch (PdfLexerPasswordException)
                 {
-                    // for compressed object streams
-                    if (ex.Message.Contains("encryption"))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 catch (Exception e)
                 {
@@ -242,13 +234,9 @@ namespace PdfLexer.Tests
                             var str2 = sb.ToString();
                         }
                     }
-                    catch (NotSupportedException ex)
+                    catch (PdfLexerPasswordException)
                     {
-                        // for compressed object streams
-                        if (ex.Message.Contains("encryption"))
-                        {
-                            continue;
-                        }
+                        continue;
                     }
                 }
                 catch (Exception e)
@@ -547,27 +535,15 @@ namespace PdfLexer.Tests
                     using var doc2 = PdfDocument.Open(ms.ToArray());
                     EnumerateObjects(doc2.Catalog, new HashSet<int>());
                 }
-                catch (NotSupportedException ex)
+                catch (PdfLexerPasswordException)
                 {
-                    // for compressed object streams
-                    if (ex.Message.Contains("encryption"))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 catch (Exception e)
                 {
                     errors.Add(pdf + ": " + e.Message);
                 }
 
-                try
-                {
-
-                }
-                catch (Exception e)
-                {
-                    errors.Add(pdf + ": " + e.Message);
-                }
             }
             if (errors.Any())
             {
@@ -1019,12 +995,19 @@ namespace PdfLexer.Tests
                         // merged.Pages.Add(CommonUtil.RecursePage(page));
                     }
                 }
-                catch (NotSupportedException ex)
+                catch (PdfLexerPasswordException)
                 {
-                    // for compressed object streams
-                    if (ex.Message.Contains("encryption"))
+                    continue;
+                }
+                catch (PdfLexerException ex)
+                {
+                    if (ex.Message.Contains("Encryption"))
                     {
                         continue;
+                    }
+                    else
+                    {
+                        throw;
                     }
                 }
 
@@ -1088,14 +1071,21 @@ namespace PdfLexer.Tests
                         p++;
                     }
                 }
-                catch (NotSupportedException ex)
+                catch (PdfLexerPasswordException)
                 {
-                    // for compressed object streams
-                    if (ex.Message.Contains("encryption"))
+                    continue;
+                }
+                catch (PdfLexerException ex)
+                {
+                    if (ex.Message.Contains("Encryption"))
                     {
                         continue;
+                    } else
+                    {
+                        throw;
                     }
                 }
+
 
             }
         }
@@ -1119,12 +1109,19 @@ namespace PdfLexer.Tests
                     rewrite.Pages.AddRange(doc.Pages);
                     rewrite.SaveTo(ms);
                 }
-                catch (NotSupportedException ex)
+                catch (PdfLexerPasswordException)
                 {
-                    // for compressed object streams
-                    if (ex.Message.Contains("encryption"))
+                    continue;
+                }
+                catch (PdfLexerException ex)
+                {
+                    if (ex.Message.Contains("Encryption"))
                     {
                         continue;
+                    }
+                    else
+                    {
+                        throw;
                     }
                 }
 
