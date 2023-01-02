@@ -52,7 +52,10 @@ namespace PdfLexer.Tests
         [InlineData("(Test \\\\\\(Test Test )", "Test \\(Test Test ")]
         [InlineData("(Test \\) Test )", "Test ) Test ")]
         [InlineData("(Test \\\\\\) Test )", "Test \\) Test ")]
+        //[InlineData("(Test \\\\( ) Test )", "Test \\\\\\( \\) Test ")]
         [InlineData("(Test \\036 Test )", "Test \u001E Test ")]
+        //[InlineData("(Test (Test (Test) ) Test )", "Test (Test (Test) ) Test ")]
+
         [InlineData("()", "")]
         [InlineData("(\\216\\217)", "\u008e\u008f")] // octal unhappy
         [InlineData("(Test \\310Line)", "Test ÈLine")] // "happy" > 128 chars
@@ -66,7 +69,7 @@ namespace PdfLexer.Tests
 
             // scan past
             int s = 0;
-            var succeeded = StringParser.AdvancePastStringLiteral(bytes, ref s);
+            var succeeded = StringParser.AdvancePastStringLiteralLong(bytes, ref s);
             Assert.True(succeeded);
             Assert.Equal(input.Length, s);
 
@@ -110,6 +113,32 @@ namespace PdfLexer.Tests
             var result = StringParser.TryAdvancePastString(ref reader);
             Assert.True(result);
             Assert.Equal(seq.GetPosition(pos), reader.Position);
+        }
+
+        [InlineData("(Test) ", 6)]
+        [InlineData("(Te(())st) ", 10)]
+        [InlineData("(Test Test Test )\r\n", 17)]
+        [InlineData("(Test (Test) Test )\n", 19)]
+        [InlineData("(Test \\\\(Test) Test )\n", 21)]
+        [InlineData("(Test \\) Test )\n", 15)]
+        [InlineData("(Test \\\\\\) Test )\n", 17)]
+        [InlineData("(Test \\\\( \\\\) Test )\n () () ()", 20)]
+        [InlineData("(Test \\\\\\( Test )\n (())))0", 17)]
+        [InlineData("() () ()", 2)]
+        [InlineData("()", 2)]
+        [Theory]
+        public void It_Skips_String_Literals_Skipper(string input, int pos)
+        {
+            var bytes = Encoding.ASCII.GetBytes(input);
+            var i = 0;
+            var result = StringParser.AdvancePastStringLiteralLong(bytes, ref i);
+            Assert.True(result);
+            Assert.Equal(pos, i);
+
+            i = 0;
+            result = StringParser.AdvancePastStringLiteral(bytes, ref i);
+            Assert.True(result);
+            Assert.Equal(pos, i);
         }
 
         [Fact]

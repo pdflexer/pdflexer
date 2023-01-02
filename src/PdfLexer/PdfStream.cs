@@ -1,4 +1,5 @@
-﻿using PdfLexer.IO;
+﻿using PdfLexer.Content;
+using PdfLexer.IO;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using System.Buffers;
@@ -118,13 +119,19 @@ public abstract class PdfStreamContents
         dict[PdfName.Length] = new PdfIntNumber(Length);
     }
 
+    public DecodedStreamContents GetDecodedBuffer() => GetDecodedBuffer(true);
+
     /// <summary>
     /// Gets the decoded data for this stream.
     /// </summary>
     /// <param name="ctx"></param>
     /// <returns></returns>
-    internal DecodedStreamContents GetDecodedBuffer()
+    internal DecodedStreamContents GetDecodedBuffer(bool cache=false)
     {
+        if (cache && StreamBufferCache.StaticCache.Value != null)
+        {
+            return StreamBufferCache.StaticCache.Value.GetOrDecodeBuffer(this);
+        }
         if (DecodedData != null)
         {
             return new ArrayContents(DecodedData);
@@ -140,19 +147,13 @@ public abstract class PdfStreamContents
             // slow fallback
             var ms = new MemoryStream();
             str.CopyTo(ms);
-            DecodedData = new byte[l + ms.Length];
-            Buffer.BlockCopy(rented, 0, DecodedData, 0, rented.Length);
-            int pos = rented.Length;
-            int toRead = (int)ms.Length;
-            ms.Seek(0, SeekOrigin.Begin);
-            int total = 0;
-            int read;
-            while ((read = ms.Read(DecodedData, pos, toRead - total)) > 0)
-            {
-                total += read;
-            }
+            var totalLength = l + (int)ms.Length;
+            var second = ArrayPool<byte>.Shared.Rent(totalLength);
+            Buffer.BlockCopy(rented, 0, second, 0, rented.Length);
             ArrayPool<byte>.Shared.Return(rented);
-            return new ArrayContents(DecodedData);
+            ms.Position = 0;
+            ms.TryFillArray(second, (int) ms.Length, l);
+            return new RentedArrayContents(second, totalLength);
         }
         return new RentedArrayContents(rented, l);
     }
@@ -211,27 +212,37 @@ public abstract class PdfStreamContents
     /// <returns></returns>
     public Stream GetDecodedStream()
     {
-        if (Context?.IsEncrypted ?? false)
-        {
-            throw new NotSupportedException("Pdf encryption is not supported.");
-        }
         if (DecodedData != null)
         {
             return new MemoryStream(DecodedData);
         }
-        if (Filters == null)
-        {
-            return GetEncodedData();
-        }
 
         var source = GetEncodedData();
 
+        if (Filters == null)
+        {
+            if (Context?.IsEncrypted ?? false)
+            {
+                source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+            }
+            return source;
+        }
 
         var obj = Filters.Resolve();
         var parms = DecodeParams?.Resolve();
         if (obj.Type == PdfObjectType.ArrayObj)
         {
             var arr = obj.GetValue<PdfArray>();
+
+            // decrypt only if no crypt filter
+            if (!arr.Any(x=> x.GetAsOrNull<PdfName>() == "Crypt"))
+            {
+                if (Context?.IsEncrypted ?? false)
+                {
+                    source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+                }
+            }
+
             var parmArray = parms?.GetValue<PdfArray>();
             for (var i = 0; i < arr.Count; i++)
             {
@@ -245,6 +256,11 @@ public abstract class PdfStreamContents
         else
         {
             var filter = obj.GetValue<PdfName>();
+            if (filter != "Crypt" && (Context?.IsEncrypted ?? false))
+            {
+                source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+            }
+
             PdfDictionary? currentParms = null;
 
             switch (DecodeParams?.Type)
@@ -265,7 +281,7 @@ public abstract class PdfStreamContents
 
         Stream DecodeSingle(PdfName filterName, Stream input, PdfDictionary? decodeParams)
         {
-            var decode = ParsingContext.GetDecoder(filterName);
+            var decode = ParsingContext.GetDecoder(filterName, Context);
             if (Context != null)
             {
                 return decode.Decode(input, decodeParams, Context.Error);
@@ -301,17 +317,13 @@ internal class PdfExistingStreamContents : PdfStreamContents
     {
         if (Source.Context.IsEncrypted)
         {
-            throw new NotSupportedException("Pdf encryption is not supported.");
+            throw new NotSupportedException("Pdf encryption is not supported for copying.");
         }
         Source.CopyData(Offset, Length, destination);
     }
 
     public override Stream GetEncodedData()
     {
-        if (Source.Context.IsEncrypted)
-        {
-            throw new NotSupportedException("Pdf encryption is not supported.");
-        }
         return Source.GetDataAsStream(Offset, Length);
     }
 }
@@ -347,10 +359,6 @@ internal class PdfXRefStreamContents : PdfStreamContents
 
     public override Stream GetEncodedData()
     {
-        if (Source.Context.IsEncrypted)
-        {
-            throw new NotSupportedException("Pdf encryption is not supported.");
-        }
         return Source.Context.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
     }
 }
@@ -425,26 +433,64 @@ public class PdfFileStreamContents : PdfStreamContents
 public abstract class DecodedStreamContents : IDisposable
 {
     public abstract ReadOnlySpan<byte> GetData();
-    public abstract void Dispose();
+    public virtual bool TryGetLexInfo(ParsingContext ctx, [NotNullWhen(true)]out RentedStreamLexInfo? contents) { contents = null; return false; }
+    public void Dispose()
+    {
+        Users -= 1;
+        if (Users > 0)
+        {
+            return;
+        }
+        DisposeFinal();
+    }
+    internal int Users = 0;
+    public ContentStreamScanner GetScanner(ParsingContext ctx)
+    {
+        if (TryGetLexInfo(ctx, out var cached))
+        {
+            return new ContentStreamScanner(ctx, GetData(), cached);
+        }
+        //var data = GetData();
+        //var li = RentedStreamLexInfo.Create(ctx, data);
+        return new ContentStreamScanner(ctx, GetData());
+    }
+
+    public abstract void DisposeFinal();
 }
 
 internal class RentedArrayContents : DecodedStreamContents
 {
     private byte[] _data;
     private int _length;
+    private RentedStreamLexInfo? _cached;
 
     public RentedArrayContents(byte[] data, int length)
     {
         _data = data;
         _length = length;
     }
-    public override void Dispose()
+    public override void DisposeFinal()
     {
         if (_data != null)
         {
             ArrayPool<byte>.Shared.Return(_data);
         }
         _data = null!;
+        if (_cached != null)
+        {
+            _cached.Dispose();
+        }
+        _cached = null;
+    }
+
+    public override bool TryGetLexInfo(ParsingContext ctx, [NotNullWhen(true)] out RentedStreamLexInfo? contents)
+    {
+        if (_cached != null) { contents = _cached;  return true; }
+        var data = GetData();
+        var span = ContentStreamScanner.FillListWithLexedItems(ctx, data, out var arr);
+        _cached = new RentedStreamLexInfo(arr, span.Length);
+        contents = _cached;
+        return true;
     }
 
     public override ReadOnlySpan<byte> GetData()
@@ -463,7 +509,7 @@ internal class ArrayContents : DecodedStreamContents
     {
         _data = data;
     }
-    public override void Dispose()
+    public override void DisposeFinal()
     {
         _data = null!;
     }
@@ -472,5 +518,44 @@ internal class ArrayContents : DecodedStreamContents
     {
         if (_data == null) { throw new ObjectDisposedException("GetData() called on disposed DecodedStreamContents."); }
         return _data;
+    }
+}
+
+public class StreamBufferCache : IDisposable
+{
+    internal static AsyncLocal<StreamBufferCache?> StaticCache = new AsyncLocal<StreamBufferCache?>();
+    private Dictionary<PdfStreamContents, DecodedStreamContents> cache = new();
+    public StreamBufferCache()
+    {
+        StaticCache.Value = this;
+    }
+
+    internal DecodedStreamContents GetOrDecodeBuffer(PdfStreamContents stream)
+    {
+        if (cache.TryGetValue(stream, out var decoded))
+        {
+            decoded.Users += 1;
+            return decoded;
+        }
+
+        var buffer = stream.GetDecodedBuffer(false);
+        cache[stream] = buffer;
+        buffer.Users = 2; // cache and requestor
+        return buffer;
+    }
+
+    public void Clear()
+    {
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        foreach (var item in cache.Values)
+        {
+            item.Dispose();
+        }
+        cache.Clear();
+        StaticCache.Value = null;
     }
 }

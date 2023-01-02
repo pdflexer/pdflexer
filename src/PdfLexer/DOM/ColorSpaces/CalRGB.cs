@@ -239,7 +239,7 @@ internal class CalRGB : IColorSpace
 
     public static CalRGB FromObject(PdfDictionary dict)
     {
-        var wp = dict.Get<PdfArray>("/WhitePoint");
+        var wp = dict.Get<PdfArray>("WhitePoint");
         if (wp == null)
         {
             throw new PdfLexerException("No whitepoint entry for CalRGB colorspace");
@@ -256,7 +256,7 @@ internal class CalRGB : IColorSpace
         }
 
         var (xb, yb, zb) = (0f, 0f, 0f);
-        var bp = dict.Get<PdfArray>("/BlackPoint");
+        var bp = dict.Get<PdfArray>("BlackPoint");
         if (bp != null)
         {
             var bps = bp.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
@@ -276,7 +276,7 @@ internal class CalRGB : IColorSpace
         }
 
         var (gr, gg, gb) = (1f, 1f, 1f);
-        var ga = dict.Get<PdfArray>("/Gamma");
+        var ga = dict.Get<PdfArray>("Gamma");
         if (ga != null)
         {
             var gav = ga.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
@@ -299,7 +299,7 @@ internal class CalRGB : IColorSpace
         var mxc = 0f;
         var myc = 0f;
         var mzc = 1f;
-        var m = dict.Get<PdfArray>("/Matrix");
+        var m = dict.Get<PdfArray>("Matrix");
         if (m != null)
         {
             var mv = m.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();

@@ -238,7 +238,7 @@ Q";
             var dp = scanner.Peek();
             Assert.Equal(PdfOperatorType.DP, dp);
             var op = (DP_Op)scanner.GetCurrentOperation();
-            Assert.Equal("/DocumentSetup", op.tag);
+            Assert.Equal("DocumentSetup", op.tag);
             Assert.Equal(PdfObjectType.DictionaryObj, op.props.Type);
             var dict = (PdfDictionary)op.props;
             Assert.Equal(2, dict.Count);

@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.Tests", "test\PdfL
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "bench", "bench", "{582EC350-900E-4119-B8EB-4ED6DD02D45F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.Benchmarks", "PdfLexer.Benchmarks\PdfLexer.Benchmarks.csproj", "{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6FC35F3D-F989-434B-8FF3-929881B88BAA}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
@@ -32,7 +30,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pdflexer.ArlingtonGen", "ut
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.ImageSharpExts", "src\PdfLexer.ImageSharpExts\PdfLexer.ImageSharpExts.csproj", "{F316B279-7D63-4847-B62B-74496C573639}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfLexer.pdfctl", "src\PdfLexer.pdfctl\PdfLexer.pdfctl.csproj", "{332AC91B-5B08-428E-8561-47219A590423}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.pdfctl", "src\PdfLexer.pdfctl\PdfLexer.pdfctl.csproj", "{332AC91B-5B08-428E-8561-47219A590423}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfLexer.Powershell", "src\PdfLexer.Powershell\PdfLexer.Powershell.csproj", "{EEBFBBBC-A8FC-410A-B42F-94D2FF77A963}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.Benchmarks", "util\PdfLexer.Benchmarks\PdfLexer.Benchmarks.csproj", "{C68F91F5-F936-4DE0-998D-10438B518B47}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,10 +50,6 @@ Global
 		{3483147C-037D-47AB-972D-F95EE245F114}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3483147C-037D-47AB-972D-F95EE245F114}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3483147C-037D-47AB-972D-F95EE245F114}.Release|Any CPU.Build.0 = Release|Any CPU
-		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755}.Release|Any CPU.Build.0 = Release|Any CPU
 		{39094293-ADE2-4D9E-BEB7-9713642D12B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{39094293-ADE2-4D9E-BEB7-9713642D12B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39094293-ADE2-4D9E-BEB7-9713642D12B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -80,17 +78,25 @@ Global
 		{332AC91B-5B08-428E-8561-47219A590423}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{332AC91B-5B08-428E-8561-47219A590423}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{332AC91B-5B08-428E-8561-47219A590423}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EEBFBBBC-A8FC-410A-B42F-94D2FF77A963}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEBFBBBC-A8FC-410A-B42F-94D2FF77A963}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEBFBBBC-A8FC-410A-B42F-94D2FF77A963}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEBFBBBC-A8FC-410A-B42F-94D2FF77A963}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C68F91F5-F936-4DE0-998D-10438B518B47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C68F91F5-F936-4DE0-998D-10438B518B47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C68F91F5-F936-4DE0-998D-10438B518B47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C68F91F5-F936-4DE0-998D-10438B518B47}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{3483147C-037D-47AB-972D-F95EE245F114} = {255B3635-FE74-4930-ABE3-4927692218F6}
-		{92DFD8E0-A3EF-4A36-9887-0CC80EE27755} = {582EC350-900E-4119-B8EB-4ED6DD02D45F}
 		{39094293-ADE2-4D9E-BEB7-9713642D12B0} = {825C7D8C-848E-49F7-BC3C-FF1C9AE7EB74}
 		{9CF0AC91-B1AA-4114-90FC-19A93DD59505} = {825C7D8C-848E-49F7-BC3C-FF1C9AE7EB74}
 		{45CC7FD2-D89C-47FA-97C9-FA884B681E61} = {255B3635-FE74-4930-ABE3-4927692218F6}
 		{DFAA8A69-56D7-4638-A059-322344F1945F} = {825C7D8C-848E-49F7-BC3C-FF1C9AE7EB74}
+		{C68F91F5-F936-4DE0-998D-10438B518B47} = {582EC350-900E-4119-B8EB-4ED6DD02D45F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2CA4BE97-518D-4374-BAC7-469AFC1F69AF}

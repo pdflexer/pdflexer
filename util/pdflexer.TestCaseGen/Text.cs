@@ -164,9 +164,9 @@ internal class TextSampler
                             WriteIfNotNull(font.Get<PdfName>(PdfName.Subtype));
                             switch (type.Value)
                             {
-                                case "/Type3":
-                                case "/Type1":
-                                case "/TrueType":
+                                case "Type3":
+                                case "Type1":
+                                case "TrueType":
                                     {
                                         var t1 = (FontType1)font;
                                         WriteEncoding(t1.Encoding);
@@ -181,7 +181,7 @@ internal class TextSampler
                                         WriteDescriptor(t1.FontDescriptor?.NativeObject);
                                     }
                                     break;
-                                case "/Type0":
+                                case "Type0":
                                     {
                                         var t0 = (FontType0)font;
                                         WriteEncoding(t0.Encoding);

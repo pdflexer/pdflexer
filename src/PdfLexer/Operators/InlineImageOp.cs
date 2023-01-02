@@ -78,43 +78,43 @@ public class InlineImage_Op : IPdfOperation
     {
         switch (name.Value)
         {
-            case "/BPC":
+            case "BPC":
                 return PdfName.BitsPerComponent;
-            case "/CS":
+            case "CS":
                 return PdfName.ColorSpace;
-            case "/G":
+            case "G":
                 return PdfName.DeviceGray;
-            case "/RGB":
+            case "RGB":
                 return PdfName.DeviceRGB;
-            case "/CMYK":
+            case "CMYK":
                 return PdfName.DeviceCMYK;
-            case "/D":
+            case "D":
                 return PdfName.Decode;
-            case "/F":
+            case "F":
                 return PdfName.Filter;
-            case "/AHx":
+            case "AHx":
                 return PdfName.ASCIIHexDecode;
-            case "/A85":
+            case "A85":
                 return PdfName.ASCII85Decode;
-            case "/LZW":
+            case "LZW":
                 return PdfName.LZWDecode;
-            case "/Fl":
+            case "Fl":
                 return PdfName.FlateDecode;
-            case "/RL":
+            case "RL":
                 return PdfName.RunLengthDecode;
-            case "/CCF":
+            case "CCF":
                 return PdfName.CCITTFaxDecode;
-            case "/DCT":
+            case "DCT":
                 return PdfName.DCTDecode;
-            case "/DP":
+            case "DP":
                 return PdfName.DecodeParms;
-            case "/W":
+            case "W":
                 return PdfName.Width;
-            case "/H":
+            case "H":
                 return PdfName.Height;
-            case "/I":
+            case "I":
                 return PdfName.Interpolate;
-            case "/IM":
+            case "IM":
                 return PdfName.ImageMask;
         }
         return name;

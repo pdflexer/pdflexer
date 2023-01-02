@@ -13,7 +13,7 @@ public class LZWFilter : IDecoder
 
     public Stream Decode(Stream stream, PdfDictionary? filterParams)
     {
-        var ec = filterParams?.Get<PdfNumber>("/EarlyChange");
+        var ec = filterParams?.Get<PdfNumber>("EarlyChange");
         if (ec != null)
         {
             return FlateFilter.Instance.Decode(

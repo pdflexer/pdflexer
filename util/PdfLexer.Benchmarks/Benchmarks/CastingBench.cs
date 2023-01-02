@@ -19,10 +19,10 @@ namespace PdfLexer.Benchmarks.Benchmarks
             objects.Add(PdfNull.Value);
             objects.Add(PdfBoolean.True);
             objects.Add(new PdfStream(null, null));
-            objects.Add(new PdfName("/Test"));
+            objects.Add(new PdfName("Test"));
             objects.Add(new PdfIntNumber(1));
             objects.Add(new PdfString("Test", PdfStringType.Literal, PdfTextEncodingType.PdfDocument));
-            objects.Add(PdfIndirectRef.Create(new PdfName("/A")));
+            objects.Add(PdfIndirectRef.Create(new PdfName("A")));
         }
 
         [Benchmark(Baseline = true)]

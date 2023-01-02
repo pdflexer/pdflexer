@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Runtime.CompilerServices;
 using Microsoft.IO;
+using PdfLexer.Encryption;
 using PdfLexer.Filters;
 using PdfLexer.Fonts;
 using PdfLexer.IO;
@@ -14,7 +15,10 @@ public class ParsingContext : IDisposable
 {
     internal int SourceId { get; }
     internal bool IsEncrypted { get; set; } = false;
+    internal IDecryptionHandler Decryption { get; private set; }
 
+    // tracked here to support encryption
+    internal ulong CurrentReference { get; set; }
     // tracked here to support lazy parsing
     internal long CurrentOffset { get; set; }
     // tracked here to support lazy parsing
@@ -22,7 +26,6 @@ public class ParsingContext : IDisposable
     
     public IPdfDataSource MainDocSource { get; private set; }
     public PdfDocument Document { get; internal set; }
-
     internal Dictionary<ulong, XRefEntry> XRefs = null!;
     internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
     internal Dictionary<ulong, WeakReference<IPdfObject>> IndirectCache = new Dictionary<ulong, WeakReference<IPdfObject>>();
@@ -34,6 +37,7 @@ public class ParsingContext : IDisposable
     internal BoolParser BoolParser { get; }
     internal NameParser NameParser { get; }
     internal NestedParser NestedParser { get; }
+    internal CryptFilter CryptFilter { get; }
     internal DictionaryParser DictionaryParser { get; }
     internal StringParser StringParser { get; }
     internal ICMapProvider CMapProvider { get; }
@@ -59,6 +63,7 @@ public class ParsingContext : IDisposable
         StringParser = new StringParser(this);
         XRefParser = new XRefParser(this);
         NestedParser = new NestedParser(this);
+        CryptFilter = new CryptFilter(this);
         CurrentOffset = 0;
         MainDocSource = null!;
         Document = null!;
@@ -72,6 +77,24 @@ public class ParsingContext : IDisposable
         disposables.Add(MainDocSource);
         var (xr, tr) = XRefParser.LoadCrossReferences(pdf);
         XRefs = xr;
+        if (IsEncrypted) {
+            IsEncrypted = false; // encryption handlers set encrypted true again when setup completed
+            Options.Eagerness = Eagerness.FullEager;
+            var enc = tr!.Get<PdfDictionary>(PdfName.Encrypt); // not null if set encrypt true;
+            if (enc != null)
+            {
+                var filter = enc.Get<PdfName>(PdfName.Filter);
+                switch (filter?.Value) {
+                    case "Standard":
+                    case null:
+                        Decryption = new StandardEncryption(this, tr ?? new PdfDictionary());
+                        break;
+                    default:
+                        throw new PdfLexerException($"Encryption of type {filter.Value} is not supported.");
+                }
+            }
+            
+        }
         return (xr, tr);
     }
 
@@ -108,7 +131,7 @@ public class ParsingContext : IDisposable
         }
     }
 
-    internal static IDecoder GetDecoder(PdfName name)
+    internal static IDecoder GetDecoder(PdfName name, ParsingContext? ctx)
     {
         // Not technically valid outside of inline image
         // but used (eg. ghostscript)
@@ -121,24 +144,30 @@ public class ParsingContext : IDisposable
         //   DCT -> DCTDecode
         switch (name.Value)
         {
-            case "/FlateDecode":
-            case "/Fl":
+            case "FlateDecode":
+            case "Fl":
                 return FlateFilter.Instance;
-            case "/ASCIIHexDecode":
-            case "/AHx":
+            case "ASCIIHexDecode":
+            case "AHx":
                 return AsciiHexFilter.Instance;
-            case "/ASCII85Decode":
-            case "/A85":
+            case "ASCII85Decode":
+            case "A85":
                 return Ascii85Filter.Instance;
-            case "/RL":
-            case "/RunLengthDecode":
+            case "RL":
+            case "RunLengthDecode":
                 return RunLengthFilter.Instance;
-            case "/CCF":
-            case "/CCITTFaxDecode":
+            case "CCF":
+            case "CCITTFaxDecode":
                 return CCITTFilter.Instance;
-            case "/LZW":
-            case "/LZWDecode":
+            case "LZW":
+            case "LZWDecode":
                 return LZWFilter.Instance;
+            case "Crypt":
+                if (ctx == null)
+                {
+                    throw new PdfLexerException("Crypt filter used in stream without source context attached.");
+                }
+                return ctx.CryptFilter;
             default:
                 throw new NotImplementedException($"Stream decoding of type {name.Value} has not been implemented.");
         }
@@ -201,10 +230,10 @@ public class ParsingContext : IDisposable
         }
         var created = type.Value switch
         {
-            "/Type0" => Type0Font.CreateReadable(this, dict),
-            "/Type1" => Type1Font.CreateReadable(this, dict),
-            "/TrueType" => TrueTypeFont.CreateReadable(this, dict),
-            "/Type3" => GetType3(dict),
+            "Type0" => Type0Font.CreateReadable(this, dict),
+            "Type1" => Type1Font.CreateReadable(this, dict),
+            "TrueType" => TrueTypeFont.CreateReadable(this, dict),
+            "Type3" => GetType3(dict),
             _ => throw new PdfLexerException("Uknown font type: " + type.Value)
         };
         fontCache.AddOrUpdate(dict, created);
@@ -226,6 +255,7 @@ public class ParsingContext : IDisposable
 
     internal IPdfObject GetIndirectObject(ulong id)
     {
+        CurrentReference = id;
         if (IndirectCache.TryGetValue(id, out var weak) && weak.TryGetTarget(out var cached))
         {
             return cached;

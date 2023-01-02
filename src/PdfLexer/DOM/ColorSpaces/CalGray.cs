@@ -63,7 +63,7 @@ internal class CalGray : IColorSpace
 
     public static CalGray FromObject(PdfDictionary dict)
     {
-        var wp = dict.Get<PdfArray>("/WhitePoint");
+        var wp = dict.Get<PdfArray>("WhitePoint");
         if (wp == null)
         {
             throw new PdfLexerException("No whitepoint entry for calgray colorspace");
@@ -80,7 +80,7 @@ internal class CalGray : IColorSpace
         }
 
         var (xb, yb, zb) = (0f, 0f, 0f);
-        var bp = dict.Get<PdfArray>("/BlackPoint");
+        var bp = dict.Get<PdfArray>("BlackPoint");
         if (bp != null)
         {
             var bps = bp.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
@@ -96,7 +96,7 @@ internal class CalGray : IColorSpace
 
         var gamma = 1f;
         
-        var g = dict.Get<PdfNumber>("/Gamma");
+        var g = dict.Get<PdfNumber>("Gamma");
         if (g != null && (double)g > 1)
         {
             gamma = g;

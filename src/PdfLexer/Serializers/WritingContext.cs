@@ -106,7 +106,7 @@ public class WritingContext
         }
         Stream.Write(XRefParser.Trailer);
         Stream.WriteByte((byte)'\n');
-        trailer["/Size"] = new PdfIntNumber(mos + 1);
+        trailer["Size"] = new PdfIntNumber(mos + 1);
         Serializers.DictionarySerializer.WriteToStream(trailer, Stream, SerializeRef);
         Stream.WriteByte((byte)'\n');
         Stream.Write(XRefParser.startxref);

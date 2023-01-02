@@ -74,7 +74,7 @@ internal partial class Type1Font
 
         AddWidths(t1, encoding);
 
-        PdfName fn = t1.BaseFont ?? "/Empty";
+        PdfName fn = t1.BaseFont ?? "Empty";
         return new SingleByteFont(fn, encoding, notdef);
     }
 
@@ -213,7 +213,7 @@ internal partial class Type1Font
             {
                 continue;
             }
-            var nm = name.Value[1..];
+            var nm = name.Value;
             encoding[code] = GetOrCreate(nm, (uint)code, known);
         }
         return hadBase;
@@ -306,115 +306,115 @@ internal partial class Type1Font
 
         switch (fontName)
         {
-            case "/Times-Roman":
-            case "/TimesNewRoman":
-            case "/TimesNewRomanPS":
-            case "/TimesNewRomanPSMT":
+            case "Times-Roman":
+            case "TimesNewRoman":
+            case "TimesNewRomanPS":
+            case "TimesNewRomanPSMT":
                 defaultEnc = TimesRomanGlyphs.DefaultEncoding;
                 allGlyphs = TimesRomanGlyphs.AllGlyphs;
                 break;
-            case "/Helvetica":
-            case "/ArialNarrow":
-            case "/ArialBlack":
-            case "/Arial-Black":
-            case "/Arial":
-            case "/ArialMT":
-            case "/ArialUnicodeMS":
+            case "Helvetica":
+            case "ArialNarrow":
+            case "ArialBlack":
+            case "Arial-Black":
+            case "Arial":
+            case "ArialMT":
+            case "ArialUnicodeMS":
                 defaultEnc = HelveticaGlyphs.DefaultEncoding;
                 allGlyphs = HelveticaGlyphs.AllGlyphs;
                 break;
-            case "/Courier":
-            case "/CourierNew":
-            case "/CourierNewPSMT":
+            case "Courier":
+            case "CourierNew":
+            case "CourierNewPSMT":
                 defaultEnc = CourierGlyphs.DefaultEncoding;
                 allGlyphs = CourierGlyphs.AllGlyphs;
                 break;
-            case "/Symbol":
-            case "/Symbol-Bold":
-            case "/Symbol-BoldItalic":
-            case "/Symbol-Italic":
+            case "Symbol":
+            case "Symbol-Bold":
+            case "Symbol-BoldItalic":
+            case "Symbol-Italic":
                 defaultEnc = SymbolGlyphs.DefaultEncoding;
                 allGlyphs = SymbolGlyphs.AllGlyphs;
                 break;
-            case "/Times-Bold":
-            case "/TimesNewRoman-Bold":
-            case "/TimesNewRomanPS-Bold":
-            case "/TimesNewRomanPSMT-Bold":
+            case "Times-Bold":
+            case "TimesNewRoman-Bold":
+            case "TimesNewRomanPS-Bold":
+            case "TimesNewRomanPSMT-Bold":
                 defaultEnc = TimesBoldGlyphs.DefaultEncoding;
                 allGlyphs = TimesBoldGlyphs.AllGlyphs;
                 break;
-            case "/Helvetica-Bold":
-            case "/ArialNarrow-Bold":
-            case "/ArialBlack-Bold":
-            case "/Arial-Black-Bold":
-            case "/Arial-Bold":
-            case "/Arial-BoldMT":
-            case "/ArialUnicodeMS-Bold":
+            case "Helvetica-Bold":
+            case "ArialNarrow-Bold":
+            case "ArialBlack-Bold":
+            case "Arial-Black-Bold":
+            case "Arial-Bold":
+            case "Arial-BoldMT":
+            case "ArialUnicodeMS-Bold":
                 defaultEnc = HelveticaBoldGlyphs.DefaultEncoding;
                 allGlyphs = HelveticaBoldGlyphs.AllGlyphs;
                 break;
-            case "/Courier-Bold":
-            case "/CourierNew-Bold":
-            case "/CourierNewPS-BoldMT":
+            case "Courier-Bold":
+            case "CourierNew-Bold":
+            case "CourierNewPS-BoldMT":
                 defaultEnc = CourierBoldGlyphs.DefaultEncoding;
                 allGlyphs = CourierBoldGlyphs.AllGlyphs;
                 break;
-            case "/ZapfDingbats":
-                // case "/Wingdings":
-                // case "/Wingdings-Regular":
+            case "ZapfDingbats":
+                // case "Wingdings":
+                // case "Wingdings-Regular":
                 defaultEnc = ZapfDingbatsGlyphs.DefaultEncoding;
                 allGlyphs = ZapfDingbatsGlyphs.AllGlyphs;
                 break;
-            case "/Times-Italic":
-            case "/TimesNewRoman-Italic":
-            case "/TimesNewRomanPS-ItalicMT":
-            case "/TimesNewRomanPS-Italic":
-            case "/TimesNewRomanPSMT-Italic":
+            case "Times-Italic":
+            case "TimesNewRoman-Italic":
+            case "TimesNewRomanPS-ItalicMT":
+            case "TimesNewRomanPS-Italic":
+            case "TimesNewRomanPSMT-Italic":
                 defaultEnc = TimesItalicGlyphs.DefaultEncoding;
                 allGlyphs = TimesItalicGlyphs.AllGlyphs;
                 break;
-            case "/Helvetica-Oblique":
-            case "/Helvetica-Italic":
-            case "/ArialUnicodeMS-Italic":
-            case "/Arial-ItalicMT":
-            case "/Arial-Italic":
-            case "/Arial-Black-Italic":
-            case "/ArialBlack-Italic":
-            case "/ArialNarrow-Italic":
+            case "Helvetica-Oblique":
+            case "Helvetica-Italic":
+            case "ArialUnicodeMS-Italic":
+            case "Arial-ItalicMT":
+            case "Arial-Italic":
+            case "Arial-Black-Italic":
+            case "ArialBlack-Italic":
+            case "ArialNarrow-Italic":
                 defaultEnc = HelveticaObliqueGlyphs.DefaultEncoding;
                 allGlyphs = HelveticaObliqueGlyphs.AllGlyphs;
                 break;
-            case "/Courier-Oblique":
-            case "/Courier-Italic":
-            case "/CourierNew-Italic":
-            case "/CourierNewPS-ItalicMT":
+            case "Courier-Oblique":
+            case "Courier-Italic":
+            case "CourierNew-Italic":
+            case "CourierNewPS-ItalicMT":
                 defaultEnc = CourierObliqueGlyphs.DefaultEncoding;
                 allGlyphs = CourierObliqueGlyphs.AllGlyphs;
                 break;
-            case "/Times-BoldItalic":
-            case "/TimesNewRoman-BoldItalic":
-            case "/TimesNewRomanPS-BoldItalic":
-            case "/TimesNewRomanPS-BoldItalicMT":
-            case "/TimesNewRomanPSMT-BoldItalic":
+            case "Times-BoldItalic":
+            case "TimesNewRoman-BoldItalic":
+            case "TimesNewRomanPS-BoldItalic":
+            case "TimesNewRomanPS-BoldItalicMT":
+            case "TimesNewRomanPSMT-BoldItalic":
                 defaultEnc = TimesBoldItalicGlyphs.DefaultEncoding;
                 allGlyphs = TimesBoldItalicGlyphs.AllGlyphs;
                 break;
-            case "/Helvetica-BoldOblique":
-            case "/Helvetica-BoldItalic":
-            case "/ArialUnicodeMS-BoldItalic":
-            case "/Arial-BoldItalicMT":
-            case "/Arial-BoldItalic":
-            case "/Arial,Bold":
-            case "/Arial-Black-BoldItalic":
-            case "/ArialBlack-BoldItalic":
-            case "/ArialNarrow-BoldItalic":
+            case "Helvetica-BoldOblique":
+            case "Helvetica-BoldItalic":
+            case "ArialUnicodeMS-BoldItalic":
+            case "Arial-BoldItalicMT":
+            case "Arial-BoldItalic":
+            case "Arial,Bold":
+            case "Arial-Black-BoldItalic":
+            case "ArialBlack-BoldItalic":
+            case "ArialNarrow-BoldItalic":
                 defaultEnc = HelveticaBoldObliqueGlyphs.DefaultEncoding;
                 allGlyphs = HelveticaBoldObliqueGlyphs.AllGlyphs;
                 break;
-            case "/Courier-BoldOblique":
-            case "/Courier-BoldItalic":
-            case "/CourierNew-BoldItalic":
-            case "/CourierNewPS-BoldItalicMT":
+            case "Courier-BoldOblique":
+            case "Courier-BoldItalic":
+            case "CourierNew-BoldItalic":
+            case "CourierNewPS-BoldItalicMT":
                 defaultEnc = CourierBoldObliqueGlyphs.DefaultEncoding;
                 allGlyphs = CourierBoldObliqueGlyphs.AllGlyphs;
                 break;

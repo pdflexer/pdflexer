@@ -58,12 +58,12 @@ internal static class CommonUtil
         return total;
     }
 
-    public static bool TryFillArray(this Stream stream, byte[] array, int requiredBytes = -1)
+    public static bool TryFillArray(this Stream stream, byte[] array, int requiredBytes = -1, int offset=0)
     {
-        if (requiredBytes < 0) { requiredBytes = array.Length; }
-        int total = 0;
+        if (requiredBytes < 0) { requiredBytes = array.Length-offset; }
+        int total = offset;
         int read;
-        while ((read = stream.Read(array, total, requiredBytes - total)) > 0)
+        while ((read = stream.Read(array, total, requiredBytes - total+offset)) > 0)
         {
             total += read;
         }
@@ -331,7 +331,7 @@ internal static class CommonUtil
         var type = dict.GetRequiredValue<PdfName>(PdfName.TypeName);
         switch (type.Value)
         {
-            case "/Pages":
+            case "Pages":
                 if (dict.TryGetValue<PdfDictionary>(PdfName.Resources, out var next))
                 {
                     resources = next;
@@ -373,7 +373,7 @@ internal static class CommonUtil
                     }
                 }
                 break;
-            case "/Page":
+            case "Page":
                 if (!dict.ContainsKey(PdfName.Resources) && resources != null)
                 {
                     dict[PdfName.Resources] = resources;

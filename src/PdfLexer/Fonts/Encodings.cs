@@ -324,19 +324,19 @@ namespace PdfLexer.Fonts
         {
             switch (encoding?.Value)
             {
-                case "/WinAnsiEncoding":
+                case "WinAnsiEncoding":
                     return WinAnsiEncoding;
-                case "/StandardEncoding":
+                case "StandardEncoding":
                     return StandardEncoding;
-                case "/MacRomanEncoding":
+                case "MacRomanEncoding":
                     return MacRomanEncoding;
-                case "/SymbolSetEncoding":
+                case "SymbolSetEncoding":
                     return SymbolSetEncoding;
-                case "/ZapfDingbatsEncoding":
+                case "ZapfDingbatsEncoding":
                     return ZapfDingbatsEncoding;
-                case "/ExpertEncoding":
+                case "ExpertEncoding":
                     return ExpertEncoding;
-                case "/MacExpertEncoding":
+                case "MacExpertEncoding":
                     return MacExpertEncoding;
                 default:
                     return null;

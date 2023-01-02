@@ -44,6 +44,7 @@ public abstract class PdfNumber : PdfObject
     {
         return num switch {
             PdfIntNumber val => val.Value,
+            PdfDoubleNumber val => (int)val.Value,
             PdfLongNumber val => (int)val.Value,
             _ => throw new ApplicationException("Unable to convert PdfNumber to int for type " + num.GetType())
         };

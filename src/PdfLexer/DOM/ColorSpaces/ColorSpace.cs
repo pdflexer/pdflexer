@@ -13,14 +13,14 @@ internal class ColorSpace
             case PdfName nm:
                 switch (nm.Value)
                 {
-                    case "/DeviceGray":
+                    case "DeviceGray":
                         return DeviceGray.Instance;
-                    case "/DeviceRGB":
+                    case "DeviceRGB":
                         return DeviceRGB.Instance;
-                    case "/DeviceCMYK":
-                    case "/CalCMYK":
+                    case "DeviceCMYK":
+                    case "CalCMYK":
                         return DeviceCMYK.Instance;
-                    case "/Pattern":
+                    case "Pattern":
                     default:
                         throw new NotImplementedException($"Colorspace {nm.Value} is not implemented.");
                 }
@@ -29,28 +29,28 @@ internal class ColorSpace
                 var mode = arr[0].GetValue<PdfName>();
                 switch (mode.Value)
                 {
-                    case "/DeviceGray":
+                    case "DeviceGray":
                         return DeviceGray.Instance;
-                    case "/DeviceRGB":
+                    case "DeviceRGB":
                         return DeviceRGB.Instance;
-                    case "/DeviceCMYK":
-                    case "/CalCMYK":
+                    case "DeviceCMYK":
+                    case "CalCMYK":
                         return DeviceCMYK.Instance;
-                    case "/CalGray":
+                    case "CalGray":
                         if (arr.Count < 2) { throw new PdfLexerException($"CalGray colorspace had no dictionary."); }
                         return CalGray.FromObject(arr[1].GetValue<PdfDictionary>());
-                    case "/CalRGB":
+                    case "CalRGB":
                         if (arr.Count < 2) { throw new PdfLexerException($"CalRGB colorspace had no dictionary."); }
                         return CalRGB.FromObject(arr[1].GetValue<PdfDictionary>());
-                    case "/Lab":
+                    case "Lab":
                         if (arr.Count < 2) { throw new PdfLexerException($"Lab colorspace had no dictionary."); }
                         return Lab.FromObject(arr[1].GetValue<PdfDictionary>());
-                    case "/ICCBased":
-                    case "/Pattern":
-                    case "/Separation":
-                    case "/DeviceN":
+                    case "ICCBased":
+                    case "Pattern":
+                    case "Separation":
+                    case "DeviceN":
                         throw new NotImplementedException($"Colorspace {mode.Value} is not implemented.");
-                    case "/Indexed":
+                    case "Indexed":
                         if (arr.Count < 4) { throw new PdfLexerException($"Indexed colorspace had less than 4 entries."); }
                         return Indexed.FromArray(ctx, arr);
 

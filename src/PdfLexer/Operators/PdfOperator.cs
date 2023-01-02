@@ -97,7 +97,7 @@ public class PdfOperator
         if (operands.Count == 0)
         {
             ctx.Error("BDC had no operands, falling back to BMC w/ unknown.");
-            return new BMC_Op(new PdfName("/Unknown"));
+            return new BMC_Op(new PdfName("Unknown"));
         }
         if (operands.Count == 1)
         {
