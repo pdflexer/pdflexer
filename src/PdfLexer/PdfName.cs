@@ -36,7 +36,10 @@ public class PdfName : PdfObject, IEquatable<PdfName>
         {
             if (str.Length > 0 && str[0] == '/')
             {
-                return Value.AsSpan().SequenceEqual(str.AsSpan().Slice(1));
+                if (Value.Length > 0 && Value[0] != '/')
+                {
+                    return Value.AsSpan().SequenceEqual(str.AsSpan().Slice(1));
+                }
             }
             return Value.Equals(str);
         }
@@ -63,7 +66,6 @@ public class PdfName : PdfObject, IEquatable<PdfName>
 
     public static bool operator !=(PdfName? n1, PdfName? n2) => !(n1 == n2);
 
-    
     public static readonly PdfName Name = new("Name", false);
     public static readonly PdfName CharProcs = new("CharProcs", false);
     public static readonly PdfName Prev = new("Prev", false);
