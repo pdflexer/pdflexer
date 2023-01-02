@@ -32,6 +32,14 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public override bool Equals(object? obj)
     {
         if (obj == null) { return false; }
+        if (obj is string str)
+        {
+            if (str.Length > 0 && str[0] == '/')
+            {
+                return Value.AsSpan().SequenceEqual(str.AsSpan().Slice(1));
+            }
+            return Value.Equals(str);
+        }
         return obj is PdfName name && Value.Equals(name?.Value);
     }
 

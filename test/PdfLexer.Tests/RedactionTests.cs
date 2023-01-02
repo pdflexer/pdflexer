@@ -76,6 +76,7 @@ public class RedactionTests
         var od = PdfDocument.Create();
         od.Pages.Add(redacted);
         od.Pages.Add(pg);
+        Directory.CreateDirectory(Path.Combine(tp, "results"));
         var output = Path.Combine(tp, "results", name);
         od.SaveTo(output);
 

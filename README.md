@@ -31,3 +31,6 @@ pdflexer differs from existing .net libraries in that it:
 - [ ] Filter support (ascii85, asciihex, ccitt, deflate, lzw, and run length completed)
 - [ ] Public API cleanup / documentation. Lots of classes / properties exposed that will likely be internalized.
 - [ ] Documentation / examples
+
+### PdfName Breaking Change
+Warning: PdfLexers PdfName had a major breaking change in v0.0.9-alpha. Previously the string value of a PdfName on property PdfName.Value included a leading "/".  This has been removed. This will silenty break any comparisons made on PdfName.Value. Comparisons on PdfName should continue working.

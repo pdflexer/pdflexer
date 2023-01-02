@@ -806,13 +806,9 @@ namespace PdfLexer.Tests
                         Assert.Equal(hc, hc7);
                     }
                 }
-                catch (NotSupportedException ex)
+                catch (PdfLexerPasswordException)
                 {
-                    // for compressed object streams
-                    if (ex.Message.Contains("encryption"))
-                    {
-                        continue;
-                    }
+                    continue;
                 }
                 catch (Exception e)
                 {
