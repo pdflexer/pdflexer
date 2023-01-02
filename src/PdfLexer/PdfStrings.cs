@@ -61,8 +61,10 @@ public class PdfString : PdfObject, IEquatable<PdfString>
         return Value.GetHashCode();
     }
 
-    public static bool operator ==(PdfString n1, PdfString n2)
+    public static bool operator ==(PdfString? n1, PdfString? n2)
     {
+        if (n1 is null && n2 is null) { return true; }
+        if (n1 is null || n2 is null) return false;
         if (ReferenceEquals(n1, n2)) { return true; }
         if (ReferenceEquals(n1, null)) { return false; }
         if (ReferenceEquals(n2, null)) { return false; }

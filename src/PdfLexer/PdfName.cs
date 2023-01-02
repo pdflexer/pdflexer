@@ -196,6 +196,22 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName ExpertEncoding = new("/ExpertEncoding", false);
     public static readonly PdfName MacExpertEncoding = new("/MacExpertEncoding", false);
 
+    public static readonly PdfName V = new("/V", false);
+    public static readonly PdfName R = new("/R", false);
+    public static readonly PdfName O = new("/O", false);
+    public static readonly PdfName OE = new("/OE", false);
+    public static readonly PdfName U = new("/U", false);
+    public static readonly PdfName UE = new("/UE", false);
+    public static readonly PdfName P = new("/P", false);
+    public static readonly PdfName CF = new("/CF", false);
+    public static readonly PdfName CFM = new("/CFM", false);
+    public static readonly PdfName StmF = new("/StmF", false);
+    public static readonly PdfName StrF = new("/StrF", false);
+    public static readonly PdfName EFF = new("/EFF", false);
+    public static readonly PdfName SubFilter = new("/SubFilter", false);
+    public static readonly PdfName EncryptMetadata = new("/EncryptMetadata", false);
+    public static readonly PdfName ID = new("/ID", false);
+
     public static implicit operator PdfName(string name)
     {
         // TODO common lookups for above?

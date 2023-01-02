@@ -1,0 +1,71 @@
+﻿using PdfLexer.Content;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Xunit;
+
+namespace PdfLexer.Tests;
+
+public class EncryptionTests
+{
+    [Fact]
+    public void It_Handles_AES_128_Streams()
+    {
+        RunSingle("passwords_aes_128.pdf", true, false);
+        RunSingle("passwords_aes_128.pdf", false, true);
+        RunSingle("passwords_aes_128.pdf", true, true);
+    }
+
+    [Fact]
+    public void It_Handles_AES_256_Streams()
+    {
+        RunSingle("passwords_aes_256.pdf", true, false);
+        RunSingle("passwords_aes_256.pdf", false, true);
+        RunSingle("passwords_aes_256.pdf", true, true);
+    }
+
+    // [Fact] TODO
+    public void It_Handles_AES_256_Hardened_Streams()
+    {
+        RunSingle("passwords_aes_256_hardened.pdf", true, false);
+        RunSingle("passwords_aes_256_hardened.pdf", false, true);
+        RunSingle("passwords_aes_256_hardened.pdf", true, true);
+    }
+
+    [Fact]
+    public void It_Handles_RC4_rev2_Streams()
+    {
+        RunSingle("passwords_rc4_rev2.pdf", true, false);
+        RunSingle("passwords_rc4_rev2.pdf", false, true);
+        RunSingle("passwords_rc4_rev2.pdf", true, true);
+    }
+
+    [Fact]
+    public void It_Handles_RC4_rev3_Streams()
+    {
+        RunSingle("passwords_rc4_rev3.pdf", true, false);
+        RunSingle("passwords_rc4_rev3.pdf", false, true);
+        RunSingle("passwords_rc4_rev3.pdf", true, true);
+    }
+
+    private void RunSingle(string name, bool owner, bool user)
+    {
+        var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var pdfRoot = Path.Combine(tp, "pdfs", "pdfrs");
+        var pdf = Path.Combine(pdfRoot, name);
+        using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions
+        {
+            OwnerPass = owner ? "ownerpassword" : null,
+            UserPass = user ? "userpassword" : null
+        });
+
+        var pg = doc.Pages.First();
+
+        var words = SimpleWordReader.GetWords(doc.Context, pg);
+        Assert.Contains("Hello", words);
+        Assert.Contains("World!", words);
+    }
+}

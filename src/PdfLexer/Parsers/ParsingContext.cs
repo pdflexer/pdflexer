@@ -1,6 +1,7 @@
 ﻿using System.Buffers;
 using System.Runtime.CompilerServices;
 using Microsoft.IO;
+using PdfLexer.Encryption;
 using PdfLexer.Filters;
 using PdfLexer.Fonts;
 using PdfLexer.IO;
@@ -14,7 +15,10 @@ public class ParsingContext : IDisposable
 {
     internal int SourceId { get; }
     internal bool IsEncrypted { get; set; } = false;
+    internal IDecryptionHandler Decryption { get; private set; }
 
+    // tracked here to support encryption
+    internal ulong CurrentReference { get; set; }
     // tracked here to support lazy parsing
     internal long CurrentOffset { get; set; }
     // tracked here to support lazy parsing
@@ -71,6 +75,10 @@ public class ParsingContext : IDisposable
         disposables.Add(MainDocSource);
         var (xr, tr) = XRefParser.LoadCrossReferences(pdf);
         XRefs = xr;
+        if (IsEncrypted) { 
+            Options.Eagerness = Eagerness.FullEager;
+            Decryption = new StandardEncryption(this, tr ?? new PdfDictionary());
+        }
         return (xr, tr);
     }
 
@@ -225,6 +233,7 @@ public class ParsingContext : IDisposable
 
     internal IPdfObject GetIndirectObject(ulong id)
     {
+        CurrentReference = id;
         if (IndirectCache.TryGetValue(id, out var weak) && weak.TryGetTarget(out var cached))
         {
             return cached;

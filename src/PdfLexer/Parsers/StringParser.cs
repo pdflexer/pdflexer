@@ -90,23 +90,24 @@ internal class StringParser : Parser<PdfString>
     {
         var length = ConvertBytes(input, output);
 
+        ReadOnlySpan<byte> converted = output;
         if (_ctx.IsEncrypted)
         {
-            // DECRYPTION TODO
-            throw new NotSupportedException("Pdf encryption is not supported.");
+            converted = _ctx.Decryption.Decrypt(_ctx.CurrentReference, Encryption.CryptoType.Strings, converted);
+
         }
 
         var encoding = PdfTextEncodingType.PdfDocument;
-        if (length > 1 && output[0] == 0xFE && output[1] == 0xFF)
+        if (length > 1 && converted[0] == 0xFE && converted[1] == 0xFF)
         {
             encoding = PdfTextEncodingType.UTF16BE;
-            var str = new PdfString(Encoding.BigEndianUnicode.GetString(output.Slice(2, length - 2)),
+            var str = new PdfString(Encoding.BigEndianUnicode.GetString(converted.Slice(2, length - 2)),
                 input[0] == '(' ? PdfStringType.Literal : PdfStringType.Hex, encoding);
             return str;
         }
 
         // TODO real PdfDocEncoded decoding
-        return new PdfString(Iso88591.GetString(output.Slice(0, length)), input[0] == '(' ? PdfStringType.Literal : PdfStringType.Hex, encoding);
+        return new PdfString(Iso88591.GetString(converted.Slice(0, length)), input[0] == '(' ? PdfStringType.Literal : PdfStringType.Hex, encoding);
     }
 
     public int ConvertBytes(ReadOnlySpan<byte> input, Span<byte> buffer)

@@ -212,27 +212,37 @@ public abstract class PdfStreamContents
     /// <returns></returns>
     public Stream GetDecodedStream()
     {
-        if (Context?.IsEncrypted ?? false)
-        {
-            throw new NotSupportedException("Pdf encryption is not supported.");
-        }
         if (DecodedData != null)
         {
             return new MemoryStream(DecodedData);
         }
-        if (Filters == null)
-        {
-            return GetEncodedData();
-        }
 
         var source = GetEncodedData();
 
+        if (Filters == null)
+        {
+            if (Context?.IsEncrypted ?? false)
+            {
+                source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+            }
+            return source;
+        }
 
         var obj = Filters.Resolve();
         var parms = DecodeParams?.Resolve();
         if (obj.Type == PdfObjectType.ArrayObj)
         {
             var arr = obj.GetValue<PdfArray>();
+
+            // decrypt only if no crypt filter
+            if (!arr.Any(x=> x.GetAsOrNull<PdfName>() == "/Crypt"))
+            {
+                if (Context?.IsEncrypted ?? false)
+                {
+                    source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+                }
+            }
+
             var parmArray = parms?.GetValue<PdfArray>();
             for (var i = 0; i < arr.Count; i++)
             {
@@ -246,6 +256,11 @@ public abstract class PdfStreamContents
         else
         {
             var filter = obj.GetValue<PdfName>();
+            if (filter != "/Crypt" && (Context?.IsEncrypted ?? false))
+            {
+                source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+            }
+
             PdfDictionary? currentParms = null;
 
             switch (DecodeParams?.Type)
@@ -302,17 +317,13 @@ internal class PdfExistingStreamContents : PdfStreamContents
     {
         if (Source.Context.IsEncrypted)
         {
-            throw new NotSupportedException("Pdf encryption is not supported.");
+            throw new NotSupportedException("Pdf encryption is not supported for copying.");
         }
         Source.CopyData(Offset, Length, destination);
     }
 
     public override Stream GetEncodedData()
     {
-        if (Source.Context.IsEncrypted)
-        {
-            throw new NotSupportedException("Pdf encryption is not supported.");
-        }
         return Source.GetDataAsStream(Offset, Length);
     }
 }
@@ -348,10 +359,6 @@ internal class PdfXRefStreamContents : PdfStreamContents
 
     public override Stream GetEncodedData()
     {
-        if (Source.Context.IsEncrypted)
-        {
-            throw new NotSupportedException("Pdf encryption is not supported.");
-        }
         return Source.Context.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
     }
 }

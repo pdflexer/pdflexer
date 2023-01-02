@@ -28,7 +28,6 @@ pdflexer differs from existing .net libraries in that it:
 
 ### Major Gaps
 
-- [ ] PDF encryption support
 - [ ] Filter support (ascii85, asciihex, ccitt, deflate, lzw, and run length completed)
 - [ ] Public API cleanup / documentation. Lots of classes / properties exposed that will likely be internalized.
 - [ ] Documentation / examples

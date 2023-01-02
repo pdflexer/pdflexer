@@ -21,6 +21,16 @@ public struct WordInfo
 /// </summary>
 public ref struct SimpleWordReader
 {
+    public static List<string> GetWords(ParsingContext ctx, PdfPage page, HashSet<char>? wordDelimiters = null)
+    {
+        var words = new List<string>();
+        var reader = new SimpleWordReader(ctx, page, wordDelimiters);
+        while (reader.Advance())
+        {
+            words.Add(reader.CurrentWord);
+        }
+        return words;
+    }
     public SimpleWordReader(ParsingContext ctx, PdfPage page, HashSet<char>? wordDelimiters = null)
     {
         Page = page;
