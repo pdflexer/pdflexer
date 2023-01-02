@@ -93,8 +93,8 @@ internal class StringParser : Parser<PdfString>
         ReadOnlySpan<byte> converted = output;
         if (_ctx.IsEncrypted)
         {
-            converted = _ctx.Decryption.Decrypt(_ctx.CurrentReference, Encryption.CryptoType.Strings, converted);
-
+            converted = _ctx.Decryption.Decrypt(_ctx.CurrentReference, Encryption.CryptoType.Strings, converted.Slice(0,length));
+            length = converted.Length;
         }
 
         var encoding = PdfTextEncodingType.PdfDocument;
