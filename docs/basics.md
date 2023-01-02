@@ -105,7 +105,7 @@ The `PdfDocument` class includes a `SaveTo(Stream stream)` method. Pdf documents
 
 ```csharp
 using var doc = PdfDocument.Open(File.ReadAllBytes("input.pdf"));
-doc.Trailer["/NewValue"] = new PdfString("This is a new value added to existing pdf.");
+doc.Trailer["NewValue"] = new PdfString("This is a new value added to existing pdf.");
 using var fs = File.Create("output.pdf");
 doc.SaveTo(fs);
 ```
