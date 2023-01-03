@@ -72,9 +72,10 @@ public ref struct ContentStreamScanner
     private byte[] BackingArray;
 
 
-    private ContentItem CurrentInfo;
+    
     private ParsingContext Ctx;
 
+    public ContentItem CurrentInfo;
     public PdfOperatorType CurrentOperator;
     public int Position;
 
@@ -197,7 +198,7 @@ public ref struct ContentStreamScanner
         return (start, CurrentInfo.StartAt - start + oplen);
     }
 
-    private List<OperandInfo> GetOperands()
+    internal List<OperandInfo> GetOperands()
     {
         Operands.Clear();
         for (var i = Position - CurrentInfo.Length; i < Position; i++)
@@ -334,7 +335,7 @@ public ref struct ContentStreamScanner
         int position = 0;
         int length = 0;
         var count = 0;
-        var lastOp = 0;
+        var lastOp = -1;
         while ((position = PdfSpanLexer.TryReadNextToken(data, out var current, position, out length)) != -1)
         {
             if (max <= i + 3) // 3 in case image
@@ -358,7 +359,7 @@ public ref struct ContentStreamScanner
                     items[i++] = new ContentItem
                     {
                         StartAt = position,
-                        Length = count - lastOp,
+                        Length = count - lastOp - 1,
                         Type = (int)type,
                     };
                 }

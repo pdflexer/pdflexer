@@ -6,14 +6,14 @@ using System.Resources;
 
 namespace PdfLexer.Content;
 
-public ref struct Redactor
+public ref struct SinglePassRedactor
 {
     private bool Randomize;
     private Random RNG;
     private PdfPage Page;
     private ParsingContext Ctx;
 
-    public Redactor(ParsingContext ctx, PdfPage page, bool randomize=false)
+    public SinglePassRedactor(ParsingContext ctx, PdfPage page, bool randomize = false)
     {
         Ctx = ctx;
         Page = page.NativeObject.CloneShallow();
@@ -62,7 +62,7 @@ public ref struct Redactor
         var fr = new TextScanner(Ctx, Page, str, state, false);
         str.Contents = RunSingleStream(fr, shouldRedact);
         if (fr.FormsRead == null) { return str; }
-        
+
         foreach (var form in fr.FormsRead)
         {
             if (!fr.Scanner.TryGetForm(form.Key, out var currentForm))
@@ -72,7 +72,7 @@ public ref struct Redactor
             var cf = currentForm.CloneShallow();
             foreach (var item in form.Value)
             {
-                cf = RunForm(cf, item, shouldRedact, depth+1);
+                cf = RunForm(cf, item, shouldRedact, depth + 1);
             }
             xobj[form.Key] = PdfIndirectRef.Create(cf);
         }
@@ -99,7 +99,6 @@ public ref struct Redactor
 
         var writers = new List<FlateWriter>() { new FlateWriter() };
 
- 
         while (true)
         {
             var content = text.Advance();
@@ -118,7 +117,7 @@ public ref struct Redactor
                 widths.Clear();
                 pos = 0;
             }
-            
+
 
             var (x, y) = text.GetCurrentTextPos();
             bool redactCurrent = false;
@@ -126,14 +125,31 @@ public ref struct Redactor
             {
                 foreach (var c in text.Glyph.MultiChar)
                 {
-                    if (shouldRedact(new CharInfo { Char = c, X = x, Y = y }))
+                    if (shouldRedact(
+                        new CharInfo
+                        {
+                            Char = c,
+                            X = x,
+                            Y = y,
+                            OpPos = text.CurrentTextPos,
+                            Pos = text.Scanner.Scanner.Position,
+                            Stream = text.Scanner.CurrentStreamId
+                        }))
                     {
                         SetStatementForRedaction(text);
                         break;
                     }
                 }
             }
-            else if (shouldRedact(new CharInfo { Char = text.Glyph.Char, X = x, Y = y }))
+            else if (shouldRedact(new CharInfo
+            {
+                Char = text.Glyph.Char,
+                X = x,
+                Y = y,
+                OpPos = text.CurrentTextPos,
+                Pos = text.Scanner.Scanner.Position,
+                Stream = text.Scanner.CurrentStreamId
+            }))
             {
                 SetStatementForRedaction(text);
             }
@@ -173,7 +189,7 @@ public ref struct Redactor
                     type = txt.LastOp;
                     glyphs.Clear();
                     glyphs.AddRange(txt.CurrentGlyphs);
-                    if (type == PdfOperatorType.doublequote) 
+                    if (type == PdfOperatorType.doublequote)
                     {
                         ws = txt.GraphicsState.WordSpacing;
                         cs = txt.GraphicsState.CharSpacing;
@@ -195,7 +211,8 @@ public ref struct Redactor
 
                     str.Write(data.Slice(start, length));
                     str.WriteByte((byte)'\n');
-                } else
+                }
+                else
                 {
                     switch (type)
                     {
@@ -316,7 +333,7 @@ public ref struct Redactor
 
                 void CompleteBuffer(Span<byte> buff)
                 {
-                    tj.info.Add(new TJ_Item { Data = buff.Slice(0,bp).ToArray() });
+                    tj.info.Add(new TJ_Item { Data = buff.Slice(0, bp).ToArray() });
                     bp = 0;
                 }
 
@@ -331,7 +348,7 @@ public ref struct Redactor
     private float RandomizeVal(float val)
     {
         // +/- 10%
-        var sf = 1+(0.2*RNG.NextDouble()-0.1);
+        var sf = 1 + (0.2 * RNG.NextDouble() - 0.1);
         return val * (float)sf;
     }
 }
@@ -341,4 +358,8 @@ public struct CharInfo
     public char Char;
     public float X;
     public float Y;
+    internal ulong Stream;
+    internal int Pos;
+    internal int OpPos;
 }
+

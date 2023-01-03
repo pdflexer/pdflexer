@@ -21,7 +21,7 @@ function Slice-Array {
 
 Push-Location $PSScriptRoot;
 
-dotnet publish -c release -f net6.0
+dotnet publish -c release -f net7.0
 
 $pdfs = "$PSScriptRoot/../../test/pdfs/pdfjs/*.pdf"
 # $pdfs = "C:\source\Github\pdfium\testing\resources\*.pdf"

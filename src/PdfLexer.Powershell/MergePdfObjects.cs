@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Content;
-using PdfLexer.Operators;
 using PdfLexer.Serializers;
 using System.Management.Automation;
 

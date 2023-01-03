@@ -37,6 +37,7 @@ public ref struct PageContentScanner
 
     internal List<ScannerInfo> stack;
 
+    internal ulong CurrentStreamId;
     public ContentScanner Scanner;
     public PdfDictionary? CurrentForm;
     public PdfOperatorType CurrentOperator => Scanner.CurrentOperator;
@@ -65,6 +66,7 @@ public ref struct PageContentScanner
         NextFormName = null;
         CurrentStream = null;
         CurrentFormName = null;
+        CurrentStreamId = 0;
         SkipBytes = 0;
         if (!page.TryGetValue(PdfName.Contents, out var contents))
         {
@@ -110,6 +112,7 @@ public ref struct PageContentScanner
 
         CurrentBuffer = CurrentStream.Contents.GetDecodedBuffer();
         Scanner = new ContentScanner(ctx, CurrentBuffer.GetData());
+        UpdateCurrentStreamId();
     }
 
 
@@ -128,6 +131,7 @@ public ref struct PageContentScanner
         CurrentStream = null;
         CurrentFormName = null;
         SkipBytes = 0;
+        CurrentStreamId = 0;
 
 
         CurrentStream = form;
@@ -144,8 +148,24 @@ public ref struct PageContentScanner
         {
             State = MultiPageState.ReadingForm;
         }
+        UpdateCurrentStreamId();
     }
 
+    private void UpdateCurrentStreamId()
+    {
+        if (CurrentStream == null)
+        {
+            CurrentStreamId = 0;
+            return;
+        }
+        if (!Context.IndirectLookup.TryGetValue(CurrentStream, out var xref))
+        {
+            CurrentStreamId = 0;
+            return;
+        }
+
+        CurrentStreamId = xref.Reference.GetId();
+    }
 
     public PdfOperatorType Peek()
     {
@@ -225,6 +245,7 @@ public ref struct PageContentScanner
                     CurrentBuffer = CurrentStream.Contents.GetDecodedBuffer();
                     Scanner = new ContentScanner(Context, CurrentBuffer.GetData(), SkipBytes);
                     SkipBytes = 0;
+                    UpdateCurrentStreamId();
                     return Peek();
                 }
             }
@@ -319,6 +340,8 @@ public ref struct PageContentScanner
         CurrentFormName = NextFormName;
         CurrentBuffer = NextForm.Contents.GetDecodedBuffer();
         Scanner = new ContentScanner(Context, CurrentBuffer.GetData());
+        UpdateCurrentStreamId();
+
         NextForm = null;
         NextFormName = null;
 
@@ -344,6 +367,7 @@ public ref struct PageContentScanner
         CurrentForm = prev.Form ? prev.Stream.Dictionary : null;
         CurrentFormName = prev.FormName;
         Scanner = new ContentScanner(Context, CurrentBuffer.GetData(), prev.Position);
+        UpdateCurrentStreamId();
     }
 
     internal bool TryGetForm(PdfName name, [NotNullWhen(true)] out PdfStream? found)
