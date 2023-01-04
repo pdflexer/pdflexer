@@ -20,11 +20,11 @@ public class MergePdfObjects : Cmdlet
     public string FilePath { get; set; } = null!;
 
     [Parameter(
-        Mandatory = true,
+        Mandatory = false,
         ValueFromPipelineByPropertyName = true,
-        HelpMessage = "Path to save deduplicated pdf document to")]
+        HelpMessage = "Path to save deduplicated pdf document to. If not provided, original overwritten")]
     [ValidateNotNullOrEmpty]
-    public string OutputPath { get; set; } = null!;
+    public string? OutputPath { get; set; } = null!;
 
     [Parameter(
         Mandatory = false,
@@ -32,9 +32,16 @@ public class MergePdfObjects : Cmdlet
     [ValidateNotNullOrEmpty]
     public bool InlineImages { get; set; }
 
-    protected override void BeginProcessing()
+    protected override void ProcessRecord()
     {
-        using var doc = PdfDocument.Open(FilePath);
+        if (OutputPath == null)
+        {
+            OutputPath = FilePath;
+            var bak = FilePath + ".tmp";
+            File.Move(FilePath, bak);
+            FilePath = bak;
+        }
+        using var doc = PdfDocument.Open(FilePath, new ParsingOptions { ThrowOnErrors = false });
         using var fo = File.Create(OutputPath);
         using var writer = new StreamingWriter(fo, true, true);
         foreach (var pg in doc.Pages)
@@ -47,5 +54,9 @@ public class MergePdfObjects : Cmdlet
             writer.AddPage(pgr);
         }
         writer.Complete(doc.Trailer, doc.Catalog);
+        foreach (var err in doc.Context.ParsingErrors)
+        {
+            WriteWarning(err);
+        }
     }
 }

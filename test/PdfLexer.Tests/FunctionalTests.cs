@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CliWrap;
+using DotNext.Text;
 using PdfLexer.Content;
 using PdfLexer.DOM;
 using PdfLexer.Images;
@@ -1032,13 +1033,26 @@ namespace PdfLexer.Tests
                     var p = 1;
                     foreach (var page in doc.Pages)
                     {
+                        var stra = new MemoryStream();
+                        var strb = new MemoryStream();
                         var ow = new List<PdfOperatorType>();
+                        var owc = new List<int>();
                         var nw = new List<PdfOperatorType>();
+                        var nwc = new List<int>();
                         var scanner = new PageContentScanner(doc.Context, page, true);
                         PdfOperatorType type;
                         while ((type = scanner.Peek()) != PdfOperatorType.EOC)
                         {
                             ow.Add(type);
+                            if ((scanner.State == MultiPageState.Reading || scanner.State == MultiPageState.ReadingForm) && type != PdfOperatorType.BI)
+                            {
+                                owc.Add(scanner.Operands.Count);
+                            }
+                            if (scanner.TryGetCurrentOperation(out var op))
+                            {
+                                op.Serialize(stra);
+                                stra.WriteByte((byte)'\n');
+                            }
                             scanner.SkipCurrent();
                         }
                         var scanner2 = new PageContentScanner2(doc.Context, page, true);
@@ -1049,23 +1063,46 @@ namespace PdfLexer.Tests
                                 nw.Add(PdfOperatorType.BI);
                             } else
                             {
+                                if (scanner2.State == MultiPageState.Reading || scanner2.State == MultiPageState.ReadingForm)
+                                {
+                                    nwc.Add(scanner2.Scanner.GetOperands().Count);
+                                }
                                 nw.Add(scanner2.CurrentOperator);
+                            }
+                            
+                            if (scanner2.TryGetCurrentOperation(out var op))
+                            {
+                                op.Serialize(strb);
+                                strb.WriteByte((byte)'\n');
                             }
                         }
 
-                        if (!ow.SequenceEqual(nw))
+                        var txtA = stra.ToArray();
+                        var txtB = strb.ToArray();
+
+                        if (!ow.SequenceEqual(nw) || !txtA.SequenceEqual(txtB) || !owc.SequenceEqual(nwc))
                         {
+                            errs = true;
                             var ows = string.Join('\n', ow);
                             var nws = string.Join('\n', nw);
-                            errs = true;
                             File.WriteAllText(Path.Combine(tp, "results", Path.GetFileNameWithoutExtension(pdf) + "_" + p + "_a.txt"), ows);
                             File.WriteAllText(Path.Combine(tp, "results", Path.GetFileNameWithoutExtension(pdf) + "_" + p + "_b.txt"), nws);
+                            var owsc = string.Join('\n', owc);
+                            var nwsc = string.Join('\n', nwc);
+                            File.WriteAllText(Path.Combine(tp, "results", Path.GetFileNameWithoutExtension(pdf) + "_c_" + p + "_a.txt"), owsc);
+                            File.WriteAllText(Path.Combine(tp, "results", Path.GetFileNameWithoutExtension(pdf) + "_c_" + p + "_b.txt"), nwsc);
+                            File.WriteAllBytes(Path.Combine(tp, "results", Path.GetFileNameWithoutExtension(pdf) + "_cs_" + p + "_a.txt"), txtA);
+                            File.WriteAllBytes(Path.Combine(tp, "results", Path.GetFileNameWithoutExtension(pdf) + "_cs_" + p + "_b.txt"), txtB);
                         } else
                         {
 
                         }
                         p++;
                     }
+                }
+                catch (NotImplementedException)
+                {
+                    continue;
                 }
                 catch (PdfLexerPasswordException)
                 {

@@ -19,11 +19,11 @@ public class NewPdfWriter : Cmdlet
 
     [Parameter(
     Mandatory = false,
-    HelpMessage = "If xobjects shoudl be deduplicated when writing.")]
+    HelpMessage = "If xobjects should be deduplicated when writing.")]
     [ValidateNotNullOrEmpty]
     public bool DedupObjects { get; set; }
 
-    protected override void BeginProcessing()
+    protected override void ProcessRecord()
     {
         var so = File.Create(FilePath);
 

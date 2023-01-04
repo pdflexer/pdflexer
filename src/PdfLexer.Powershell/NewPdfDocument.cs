@@ -9,8 +9,7 @@ namespace PdfLexer.Powershell;
 
 public class NewPdfDocument : Cmdlet
 {
-
-    protected override void BeginProcessing()
+    protected override void ProcessRecord()
     {
         WriteObject(PdfDocument.Create());
     }

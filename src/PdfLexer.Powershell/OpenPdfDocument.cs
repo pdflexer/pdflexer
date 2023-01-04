@@ -24,11 +24,11 @@ public class OpenPdfDocument : Cmdlet
 
     [Parameter(
     Mandatory = false,
-    ValueFromPipelineByPropertyName = false,
+    ValueFromPipelineByPropertyName = true,
     HelpMessage = "Password to use if document is encrypted.")]
     public string? Password { get; set; }
 
-    protected override void BeginProcessing()
+    protected override void ProcessRecord()
     {
         var opts = new ParsingOptions { OwnerPass = Password, UserPass = Password };
         if (InMemory) 

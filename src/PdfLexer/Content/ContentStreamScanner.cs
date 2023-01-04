@@ -273,8 +273,18 @@ public ref struct ContentStreamScanner
     private InlineImage_Op GetImage()
     {
         var header = new PdfArray();
+        if (Position < 2)
+        {
+            Ctx.Error("Found EI in stream but did not have proper format");
+            return new InlineImage_Op(new PdfArray(), new byte[0]);
+        }
         var h = Items[Position - 2];
         var d = Items[Position - 1];
+        if (h.Type != 21 || d.Type != 21)
+        {
+            Ctx.Error("Found EI in stream but did not have proper format");
+            return new InlineImage_Op(new PdfArray(), new byte[0]);
+        }
         var pos = h.StartAt + 2; // skip BI
         var he = h.StartAt + h.Length;
         while ((pos = PdfSpanLexer.TryReadNextToken(Data, out var current, pos, out var length)) != -1)

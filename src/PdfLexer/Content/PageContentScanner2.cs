@@ -9,7 +9,7 @@ public ref struct PageContentScanner2
     private readonly PdfDictionary Page;
     private readonly ParsingContext Context;
     private readonly List<PdfStream> NextStreams;
-    private MultiPageState State;
+    internal MultiPageState State;
     private PdfStream? CurrentStream;
     private PdfStream? NextForm;
     private string? NextFormName;
