@@ -9,16 +9,8 @@ namespace PdfLexer.Powershell;
         "PdfObjects")
     ]
 
-public class MergePdfObjects : Cmdlet
+public class MergePdfObjects : PathCmdlet
 {
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipelineByPropertyName = true,
-        HelpMessage = "Path to pdf document")]
-    [ValidateNotNullOrEmpty]
-    [Alias("FullName")]
-    public string FilePath { get; set; } = null!;
-
     [Parameter(
         Mandatory = false,
         ValueFromPipelineByPropertyName = true,
@@ -34,29 +26,34 @@ public class MergePdfObjects : Cmdlet
 
     protected override void ProcessRecord()
     {
-        if (OutputPath == null)
+        foreach (var path in GetPaths())
         {
-            OutputPath = FilePath;
-            var bak = FilePath + ".tmp";
-            File.Move(FilePath, bak);
-            FilePath = bak;
-        }
-        using var doc = PdfDocument.Open(FilePath, new ParsingOptions { ThrowOnErrors = false });
-        using var fo = File.Create(OutputPath);
-        using var writer = new StreamingWriter(fo, true, true);
-        foreach (var pg in doc.Pages)
-        {
-            var pgr = pg;
-            if (InlineImages)
+            var filePath = path;
+            if (OutputPath == null)
             {
-                pgr = ContentUtil.ConvertInlineImagesToXObjs(doc.Context, pgr);
+                OutputPath = filePath;
+                var bak = filePath + ".tmp";
+                File.Move(filePath, bak);
+                filePath = bak;
             }
-            writer.AddPage(pgr);
+            using var doc = PdfDocument.Open(filePath, new ParsingOptions { ThrowOnErrors = false });
+            using var fo = File.Create(OutputPath);
+            using var writer = new StreamingWriter(fo, true, true);
+            foreach (var pg in doc.Pages)
+            {
+                var pgr = pg;
+                if (InlineImages)
+                {
+                    pgr = ContentUtil.ConvertInlineImagesToXObjs(doc.Context, pgr);
+                }
+                writer.AddPage(pgr);
+            }
+            writer.Complete(doc.Trailer, doc.Catalog);
+            foreach (var err in doc.Context.ParsingErrors)
+            {
+                WriteWarning(err);
+            }
         }
-        writer.Complete(doc.Trailer, doc.Catalog);
-        foreach (var err in doc.Context.ParsingErrors)
-        {
-            WriteWarning(err);
-        }
+
     }
 }

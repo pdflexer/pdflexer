@@ -66,8 +66,8 @@ public class StreamingWriter : IDisposable
         }
 
         var pgRef = PdfIndirectRef.Create(pg);
-        currentBagArray.Add(pgRef);
-        _ctx.WriteIndirectObject(pgRef);
+        var written = new WrittenIndirectRef(_ctx.WriteIndirectObject(pgRef));
+        currentBagArray.Add(written);
         pageCount++;
         if (currentBagArray.Count >= 25)
         {

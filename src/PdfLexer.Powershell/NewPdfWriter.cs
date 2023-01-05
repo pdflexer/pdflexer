@@ -8,14 +8,8 @@ namespace PdfLexer.Powershell;
         "PdfWriter"),
     OutputType(typeof(StreamingWriter))]
 
-public class NewPdfWriter : Cmdlet
+public class NewPdfWriter : PathCmdlet
 {
-    [Parameter(
-    Mandatory = true,
-    ValueFromPipelineByPropertyName = true,
-    HelpMessage = "Path to output pdf document")]
-    [ValidateNotNullOrEmpty]
-    public string FilePath { get; set; } = null!;
 
     [Parameter(
     Mandatory = false,
@@ -25,9 +19,12 @@ public class NewPdfWriter : Cmdlet
 
     protected override void ProcessRecord()
     {
-        var so = File.Create(FilePath);
+        foreach (var path in GetPaths())
+        {
+            var so = File.Create(path);
 
-        var sw = new StreamingWriter(so, DedupObjects, true, true);
-        WriteObject(sw);
+            var sw = new StreamingWriter(so, DedupObjects, true, true);
+            WriteObject(sw);
+        }
     }
 }

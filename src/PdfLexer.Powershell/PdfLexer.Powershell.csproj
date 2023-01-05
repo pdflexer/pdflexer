@@ -17,4 +17,8 @@
 		<ProjectReference Include="..\PdfLexer\PdfLexer.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="NewFolder\" />
+	</ItemGroup>
+
 </Project>

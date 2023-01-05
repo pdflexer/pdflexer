@@ -11,18 +11,8 @@ namespace PdfLexer.Powershell;
         "PdfText"),
      OutputType(typeof(string))
    ]
-public class GetPdfText : Cmdlet
+public class GetPdfText : PathCmdlet
 {
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipeline = true,
-        ValueFromPipelineByPropertyName = true,
-        ParameterSetName = "file",
-        HelpMessage = "Path to input pdf document")]
-    [ValidateNotNullOrEmpty]
-    [Alias("FullName")]
-    public string? FilePath { get; set; } = null!;
-
     [Parameter(
         Mandatory = true,
         ValueFromPipeline = true,
@@ -41,16 +31,19 @@ public class GetPdfText : Cmdlet
 
     protected override void ProcessRecord()
     {
-        if (!string.IsNullOrEmpty(FilePath))
+        if (HasPaths())
         {
-            using var pdf = PdfDocument.Open(FilePath);
-            foreach (var pg in pdf.Pages)
+            foreach (var path in GetPaths())
             {
-                WriteObject(pg.GetTextVisually(pdf.Context));
-            }
-            foreach (var err in pdf.Context.ParsingErrors)
-            {
-                WriteWarning(err);
+                using var pdf = PdfDocument.Open(path);
+                foreach (var pg in pdf.Pages)
+                {
+                    WriteObject(pg.GetTextVisually(pdf.Context));
+                }
+                foreach (var err in pdf.Context.ParsingErrors)
+                {
+                    WriteWarning(err);
+                }
             }
         }
         else if (PdfPage != null)

@@ -8,20 +8,10 @@ namespace PdfLexer.Powershell;
         "Out",
         "Pdf"),
    ]
-public class OutPdf : Cmdlet, IDisposable
+public class OutPdf : PathCmdlet, IDisposable
 {
     private FileStream? _fo;
     private StreamingWriter? _sw;
-
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipeline = true,
-        ValueFromPipelineByPropertyName = true,
-        ParameterSetName = "file",
-        HelpMessage = "Path to input pdf document")]
-    [ValidateNotNullOrEmpty]
-    [Alias("FullName")]
-    public string? InputFilePath { get; set; } = null!;
 
     [Parameter(
         Mandatory = true,
@@ -60,11 +50,12 @@ public class OutPdf : Cmdlet, IDisposable
 
     protected override void BeginProcessing()
     {
-        if (Append && File.Exists(OutputPath))
+        var path = GetCorrectPath(OutputPath);
+        if (Append && File.Exists(path))
         {
-            var tmp = OutputPath + ".tmp";
-            File.Move(OutputPath, tmp);
-            _fo = File.Create(OutputPath);
+            var tmp = path + ".tmp";
+            File.Move(path, tmp);
+            _fo = File.Create(path);
             _sw = new StreamingWriter(_fo, DedupObjects, true, true);
             using var pv = PdfDocument.Open(tmp);
             foreach (var pg in pv.Pages)
@@ -74,21 +65,23 @@ public class OutPdf : Cmdlet, IDisposable
         }
         else
         {
-            _fo = File.Create(OutputPath);
+            _fo = File.Create(path);
             _sw = new StreamingWriter(_fo, DedupObjects, true, true);
         }
     }
     protected override void ProcessRecord()
     {
-        if (!string.IsNullOrEmpty(InputFilePath))
+        if (HasPaths())
         {
-            using var pv = PdfDocument.Open(InputFilePath);
-            foreach (var pg in pv.Pages)
+            foreach (var path in GetPaths())
             {
-                _sw!.AddPage(pg);
+                using var pv = PdfDocument.Open(path);
+                foreach (var pg in pv.Pages)
+                {
+                    _sw!.AddPage(pg);
+                }
             }
-        }
-        else if (PdfPage != null)
+        } else if (PdfPage != null)
         {
             _sw!.AddPage(PdfPage);
         }
@@ -99,6 +92,7 @@ public class OutPdf : Cmdlet, IDisposable
                 _sw!.AddPage(pg);
             }
         }
+        GC.Collect();
     }
 
     protected override void EndProcessing()
@@ -108,6 +102,7 @@ public class OutPdf : Cmdlet, IDisposable
         _fo?.Dispose();
         _sw = null;
         _fo = null;
+        GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
     }
 
     public void Dispose()

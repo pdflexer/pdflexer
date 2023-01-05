@@ -1,7 +1,4 @@
-﻿using PdfLexer.Content;
-using PdfLexer.DOM;
-using PdfLexer.Parsers;
-using PdfLexer.Serializers;
+﻿using PdfLexer.DOM;
 using System.Management.Automation;
 
 namespace PdfLexer.Powershell;
@@ -11,17 +8,8 @@ namespace PdfLexer.Powershell;
         "PdfPages"),
      OutputType(typeof(PdfPage))
    ]
-public class GetPdfPages : Cmdlet
+public class GetPdfPages : PathCmdlet
 {
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipeline = true,
-        ValueFromPipelineByPropertyName = true,
-        ParameterSetName = "file",
-        HelpMessage = "Path to input pdf document")]
-    [ValidateNotNullOrEmpty]
-    [Alias("FullName")]
-    public string? FilePath { get; set; } = null!;
 
     [Parameter(
         Mandatory = true,
@@ -39,24 +27,28 @@ public class GetPdfPages : Cmdlet
 
     protected override void ProcessRecord()
     {
-        if (!string.IsNullOrEmpty(FilePath))
+        if (HasPaths())
         {
-            using var pdf = PdfDocument.Open(FilePath);
-            if (Number != null)
+            foreach (var path in GetPaths())
             {
-                HandlePages(pdf, Number);
-            } else
-            {
-                foreach (var pg in pdf.Pages)
+                using var pdf = PdfDocument.Open(path);
+                if (Number != null)
                 {
-                    pg.NativeObject.FullyLoad();
-                    WriteObject(pg);
+                    HandlePages(pdf, Number);
                 }
-            }
+                else
+                {
+                    foreach (var pg in pdf.Pages)
+                    {
+                        pg.NativeObject.FullyLoad();
+                        WriteObject(pg);
+                    }
+                }
 
-            foreach (var err in pdf.Context.ParsingErrors)
-            {
-                WriteWarning(err);
+                foreach (var err in pdf.Context.ParsingErrors)
+                {
+                    WriteWarning(err);
+                }
             }
         }
         else if (Document != null)
@@ -88,7 +80,7 @@ public class GetPdfPages : Cmdlet
                     var ip = Math.Abs(i);
                     if (ip > pdf.Pages.Count)
                     {
-                        throw new Exception($"Index {i} was greater than total pages {pdf.Pages.Count} for {FilePath}");
+                        throw new Exception($"Index {i} was greater than total pages {pdf.Pages.Count}");
                     }
                     var pg = pdf.Pages[^ip];
                     pg.NativeObject.FullyLoad();
@@ -98,7 +90,7 @@ public class GetPdfPages : Cmdlet
                 {
                     if (i > pdf.Pages.Count)
                     {
-                        throw new Exception($"Index {i} was greater than total pages {pdf.Pages.Count} for {FilePath}");
+                        throw new Exception($"Index {i} was greater than total pages {pdf.Pages.Count}");
                     }
                     var pg = pdf.Pages[i - 1];
                     pg.NativeObject.FullyLoad();

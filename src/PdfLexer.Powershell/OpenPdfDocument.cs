@@ -7,15 +7,8 @@ namespace PdfLexer.Powershell;
         "PdfDocument"),
     OutputType(typeof(PdfDocument))]
 
-public class OpenPdfDocument : Cmdlet
+public class OpenPdfDocument : PathCmdlet
 {
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipelineByPropertyName = true,
-        HelpMessage = "Path to pdf document")]
-    [ValidateNotNullOrEmpty]
-    public string FilePath { get; set; } = null!;
-
     [Parameter(
         Mandatory = false,
         ValueFromPipelineByPropertyName = false,
@@ -31,12 +24,17 @@ public class OpenPdfDocument : Cmdlet
     protected override void ProcessRecord()
     {
         var opts = new ParsingOptions { OwnerPass = Password, UserPass = Password };
-        if (InMemory) 
+        foreach (var path in GetPaths())
         {
-            WriteObject(PdfDocument.Open(File.ReadAllBytes(FilePath), opts));
-        } else
-        {
-            WriteObject(PdfDocument.Open(FilePath, opts));
+            if (InMemory)
+            {
+                WriteObject(PdfDocument.Open(File.ReadAllBytes(path), opts));
+            }
+            else
+            {
+                WriteObject(PdfDocument.Open(path, opts));
+            }
         }
+
     }
 }

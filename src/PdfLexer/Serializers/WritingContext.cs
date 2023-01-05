@@ -118,6 +118,7 @@ public class WritingContext
         Stream.Write(buff.Slice(0, count));
         Stream.WriteByte((byte)'\n');
         Stream.Write(oef);
+        Tracker.Reset();
     }
 
     internal void SerializeRef(Stream str, PdfIndirectRef ir)
