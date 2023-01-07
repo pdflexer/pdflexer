@@ -183,12 +183,11 @@ public ref struct TextScanner
             }
 
             
+            if (nxt == PdfOperatorType.EI) { continue; } // EI can spill outside bounds if data is corrupt
             var b = Scanner.Scanner.Data[Scanner.Scanner.CurrentInfo.StartAt];
             if (b == (byte)'T' || b == (byte)'\'' || b == (byte)'"')
             {
                 (TxtOpStart, TxtOpLength) = Scanner.Scanner.GetCurrentLength();
-
-                // need to brainstorm if way to deduplicate the parsing logic here
                 try
                 {
                     switch (nxt)

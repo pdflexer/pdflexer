@@ -8,33 +8,10 @@ namespace PdfLexer.Powershell;
         "Out",
         "Pdf"),
    ]
-public class OutPdf : PathCmdlet, IDisposable
+public class OutPdf : InputOutputPathCmdlet, IDisposable
 {
     private FileStream? _fo;
     private StreamingWriter? _sw;
-
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipeline = true,
-        ParameterSetName = "page",
-        HelpMessage = "Pdf page to write.")]
-    [ValidateNotNullOrEmpty]
-    public PdfPage? PdfPage { get; set; } = null!;
-
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipeline = true,
-        ParameterSetName = "document",
-        HelpMessage = "Pdf document to write")]
-    [ValidateNotNullOrEmpty]
-    public PdfDocument? Document { get; set; } = null!;
-
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipelineByPropertyName = false,
-        HelpMessage = "Path to output pdf document")]
-    [ValidateNotNullOrEmpty]
-    public string OutputPath { get; set; } = null!;
 
     [Parameter(
         Mandatory = false,
@@ -50,7 +27,11 @@ public class OutPdf : PathCmdlet, IDisposable
 
     protected override void BeginProcessing()
     {
-        var path = GetCorrectPath(OutputPath);
+        var path = GetOutputPath();
+        if (path == null)
+        {
+            return;
+        }
         if (Append && File.Exists(path))
         {
             var tmp = path + ".tmp";
@@ -71,32 +52,22 @@ public class OutPdf : PathCmdlet, IDisposable
     }
     protected override void ProcessRecord()
     {
-        if (HasPaths())
+        if (_sw == null) { return; }
+        foreach (var pg in GetInputPages())
         {
-            foreach (var path in GetPaths())
-            {
-                using var pv = PdfDocument.Open(path);
-                foreach (var pg in pv.Pages)
-                {
-                    _sw!.AddPage(pg);
-                }
-            }
-        } else if (PdfPage != null)
-        {
-            _sw!.AddPage(PdfPage);
-        }
-        else if (Document != null)
-        {
-            foreach (var pg in Document.Pages)
-            {
-                _sw!.AddPage(pg);
-            }
+            _sw.AddPage(pg);
         }
         GC.Collect();
     }
 
+    protected override void StopProcessing()
+    {
+        WriteVerbose("Stop processing triggered.");
+    }
+
     protected override void EndProcessing()
     {
+
         _sw?.Complete(new PdfDictionary());
         _sw?.Dispose();
         _fo?.Dispose();

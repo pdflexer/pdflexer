@@ -20,6 +20,7 @@ using SixLabors.ImageSharp;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Graphics;
 using Xunit;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PdfLexer.Tests
 {
@@ -171,6 +172,38 @@ namespace PdfLexer.Tests
             if (errors.Any())
             {
                 throw new ApplicationException(string.Join(Environment.NewLine, errors));
+            }
+        }
+
+        [Fact]
+        public void It_Reads_issue10388_reduced()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue10388_reduced.pdf");
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+
+            foreach (var page in doc.Pages)
+            {
+                var reader = new TextScanner(doc.Context, page);
+                var sb = new StringBuilder();
+                while (reader.Advance())
+                {
+
+                    if (reader.Glyph == null)
+                    {
+
+                    }
+                    sb.Append(reader.Glyph.Char);
+                }
+                var str = sb.ToString();
+                sb.Clear();
+
+                var words = new SimpleWordReader(doc.Context, page);
+                while (words.Advance())
+                {
+                    sb.AppendLine(words.CurrentWord);
+                }
+                var str2 = sb.ToString();
             }
         }
 

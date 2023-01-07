@@ -72,7 +72,7 @@ public ref struct ContentStreamScanner
     private byte[] BackingArray;
 
 
-    
+
     private ParsingContext Ctx;
 
     public ContentItem CurrentInfo;
@@ -299,7 +299,7 @@ public ref struct ContentStreamScanner
                 // ID
                 pos += length;
             }
-            else  
+            else
             {
                 header.Add(Ctx.GetKnownPdfItem((PdfObjectType)current, Data, pos, length));
                 pos += length;
@@ -449,12 +449,20 @@ public ref struct ContentStreamScanner
         //     // this isn't beginstream allowed but seen in inline images
         //     start++;
         // }
+        bool requireStartBreak = true;
+    FINDEND:
         var current = start;
         while (true)
         {
             var i = data[current..].IndexOf(EI);
             if (i == -1)
             {
+                if (requireStartBreak)
+                {
+                    ctx.Error("End of image not found, trying with relaxed rules.");
+                    requireStartBreak = false;
+                    goto FINDEND;
+                }
                 ctx.Error("End of image not found, assuming rest of content is data.");
 
                 items[1] = new ContentItem
@@ -473,7 +481,7 @@ public ref struct ContentStreamScanner
             }
             i += current; // correct for slice offset
 
-            if (IsStartOfToken(data, i) && IsEndOfToken(data, i + 1) && NoBinaryData(data, i + 2, 5))
+            if ((!requireStartBreak || IsStartOfToken(data, i)) && IsEndOfToken(data, i + 1) && NoBinaryData(data, i + 2, 5))
             {
                 // var wsCount = 0;
                 // if (data[i - 1] == '\n') { wsCount++; }
