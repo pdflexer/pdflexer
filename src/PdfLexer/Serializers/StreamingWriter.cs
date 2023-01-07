@@ -7,21 +7,24 @@ public class StreamingWriter : IDisposable
     private readonly WritingContext _ctx;
     private readonly bool dedup;
     private readonly bool memoryDedup;
+    private readonly bool disposeOnComplete;
     private readonly TreeHasher hasher;
     private readonly Dictionary<PdfStreamHash, PdfIndirectRef> refs;
 
-    public StreamingWriter(Stream stream, bool dedupXobj, bool inMemoryDedup)
+    public StreamingWriter(Stream stream, bool dedupXobj, bool inMemoryDedup, bool disposeOnComplete = false)
     {
         _ctx = new WritingContext(stream);
         _ctx.Initialize(1.7m);
         (currentBag, currentBagArray, currentBagRef) = CreateBag();
         dedup = dedupXobj;
         memoryDedup = inMemoryDedup;
+        this.disposeOnComplete = disposeOnComplete;
         if (dedup)
         {
             hasher = new TreeHasher();
             refs = new Dictionary<PdfStreamHash, PdfIndirectRef>(new FNVStreamComparison());
-        } else
+        }
+        else
         {
             hasher = null!;
             refs = null!;
@@ -45,7 +48,7 @@ public class StreamingWriter : IDisposable
         pg[PdfName.Parent] = currentBagRef;
 
         // 
-        if (dedup 
+        if (dedup
             && pg.TryGetValue<PdfDictionary>(PdfName.Resources, out var res)
             )
         {
@@ -63,8 +66,8 @@ public class StreamingWriter : IDisposable
         }
 
         var pgRef = PdfIndirectRef.Create(pg);
-        currentBagArray.Add(pgRef);
-        _ctx.WriteIndirectObject(pgRef);
+        var written = new WrittenIndirectRef(_ctx.WriteIndirectObject(pgRef));
+        currentBagArray.Add(written);
         pageCount++;
         if (currentBagArray.Count >= 25)
         {
@@ -82,7 +85,8 @@ public class StreamingWriter : IDisposable
             stream.CopyTo(ms);
             ms.Position = 0;
             return ms;
-        } else
+        }
+        else
         {
             var tempFile = Path.Combine(Path.GetTempPath(), "pdflexer_" + Guid.NewGuid().ToString());
             var fs = new FileStream(tempFile, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
@@ -128,7 +132,7 @@ public class StreamingWriter : IDisposable
         }
     }
 
-    public void Complete(PdfDictionary trailer, PdfDictionary? catalog=null)
+    public void Complete(PdfDictionary trailer, PdfDictionary? catalog = null)
     {
         CompleteBag();
         catalog ??= new PdfDictionary();
@@ -145,7 +149,8 @@ public class StreamingWriter : IDisposable
         if (bags.Count == 1)
         {
             catalog[PdfName.Pages] = bags[0].BagRef;
-        } else if (bags.Count > 1)
+        }
+        else if (bags.Count > 1)
         {
             CreateBag();
             var count = 0;
@@ -163,6 +168,10 @@ public class StreamingWriter : IDisposable
         }
         _ctx.Complete(trailer);
         bags.Clear();
+        if (disposeOnComplete)
+        {
+            _ctx.Stream.Dispose();   
+        }
     }
 
     private void CompleteBag()

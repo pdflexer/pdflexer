@@ -72,9 +72,10 @@ public ref struct ContentStreamScanner
     private byte[] BackingArray;
 
 
-    private ContentItem CurrentInfo;
+
     private ParsingContext Ctx;
 
+    public ContentItem CurrentInfo;
     public PdfOperatorType CurrentOperator;
     public int Position;
 
@@ -197,7 +198,7 @@ public ref struct ContentStreamScanner
         return (start, CurrentInfo.StartAt - start + oplen);
     }
 
-    private List<OperandInfo> GetOperands()
+    internal List<OperandInfo> GetOperands()
     {
         Operands.Clear();
         for (var i = Position - CurrentInfo.Length; i < Position; i++)
@@ -272,8 +273,18 @@ public ref struct ContentStreamScanner
     private InlineImage_Op GetImage()
     {
         var header = new PdfArray();
+        if (Position < 2)
+        {
+            Ctx.Error("Found EI in stream but did not have proper format");
+            return new InlineImage_Op(new PdfArray(), new byte[0]);
+        }
         var h = Items[Position - 2];
         var d = Items[Position - 1];
+        if (h.Type != 21 || d.Type != 21)
+        {
+            Ctx.Error("Found EI in stream but did not have proper format");
+            return new InlineImage_Op(new PdfArray(), new byte[0]);
+        }
         var pos = h.StartAt + 2; // skip BI
         var he = h.StartAt + h.Length;
         while ((pos = PdfSpanLexer.TryReadNextToken(Data, out var current, pos, out var length)) != -1)
@@ -288,7 +299,7 @@ public ref struct ContentStreamScanner
                 // ID
                 pos += length;
             }
-            else  
+            else
             {
                 header.Add(Ctx.GetKnownPdfItem((PdfObjectType)current, Data, pos, length));
                 pos += length;
@@ -334,7 +345,7 @@ public ref struct ContentStreamScanner
         int position = 0;
         int length = 0;
         var count = 0;
-        var lastOp = 0;
+        var lastOp = -1;
         while ((position = PdfSpanLexer.TryReadNextToken(data, out var current, position, out length)) != -1)
         {
             if (max <= i + 3) // 3 in case image
@@ -358,7 +369,7 @@ public ref struct ContentStreamScanner
                     items[i++] = new ContentItem
                     {
                         StartAt = position,
-                        Length = count - lastOp,
+                        Length = count - lastOp - 1,
                         Type = (int)type,
                     };
                 }
@@ -438,12 +449,20 @@ public ref struct ContentStreamScanner
         //     // this isn't beginstream allowed but seen in inline images
         //     start++;
         // }
+        bool requireStartBreak = true;
+    FINDEND:
         var current = start;
         while (true)
         {
             var i = data[current..].IndexOf(EI);
             if (i == -1)
             {
+                if (requireStartBreak)
+                {
+                    ctx.Error("End of image not found, trying with relaxed rules.");
+                    requireStartBreak = false;
+                    goto FINDEND;
+                }
                 ctx.Error("End of image not found, assuming rest of content is data.");
 
                 items[1] = new ContentItem
@@ -462,7 +481,7 @@ public ref struct ContentStreamScanner
             }
             i += current; // correct for slice offset
 
-            if (IsStartOfToken(data, i) && IsEndOfToken(data, i + 1) && NoBinaryData(data, i + 2, 5))
+            if ((!requireStartBreak || IsStartOfToken(data, i)) && IsEndOfToken(data, i + 1) && NoBinaryData(data, i + 2, 5))
             {
                 // var wsCount = 0;
                 // if (data[i - 1] == '\n') { wsCount++; }

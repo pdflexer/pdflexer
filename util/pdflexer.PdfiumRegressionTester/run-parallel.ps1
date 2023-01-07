@@ -21,12 +21,12 @@ function Slice-Array {
 
 Push-Location $PSScriptRoot;
 
-dotnet publish -c release -f net6.0
+dotnet publish -c release -f net7.0
 
 $pdfs = "$PSScriptRoot/../../test/pdfs/pdfjs/*.pdf"
 # $pdfs = "C:\source\Github\pdfium\testing\resources\*.pdf"
 
-$outputPath = "$PSScriptRoot/../../test/results/rewrite"
+$outputPath = "$PSScriptRoot/../../test/results/txt2"
 $outputPath = [IO.Path]::GetFullPath($outputPath);
 $threads = 5;
 [System.Collections.ArrayList]$all = @()
@@ -38,7 +38,7 @@ $size = $size - ($size % 2) + 2;
 
 $failures = $false;
 # '--strict', 
-$all | Slice-Array -Size $size | ForEach-Object -Throttle $threads  -Parallel { $outputPath = $using:outputPath; $a = @('--strict', '--type', 'rebuild', '--output', $outputPath, $_ ); .\bin\Release\net6.0\publish\pdflexer.PdfiumRegressionTester.exe @a; if (!$?) { Write-Host "HAD FAILURES"; $failures = $true }; }
+$all | Slice-Array -Size $size | ForEach-Object -Throttle $threads  -Parallel { $outputPath = $using:outputPath; $a = @('--strict', '--type', 'text', '--output', $outputPath, $_ ); .\bin\Release\net6.0\publish\pdflexer.PdfiumRegressionTester.exe @a; if (!$?) { Write-Host "HAD FAILURES"; $failures = $true }; }
 if ($failures) {
     Write-Error "HAD A FAILURE";
 }

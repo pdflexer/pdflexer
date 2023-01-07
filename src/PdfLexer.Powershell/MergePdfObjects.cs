@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Content;
-using PdfLexer.Operators;
 using PdfLexer.Serializers;
 using System.Management.Automation;
 
@@ -10,22 +9,15 @@ namespace PdfLexer.Powershell;
         "PdfObjects")
     ]
 
-public class MergePdfObjects : Cmdlet
+public class MergePdfObjects : InputOutputPathCmdlet
 {
     [Parameter(
-        Mandatory = true,
-        ValueFromPipelineByPropertyName = true,
-        HelpMessage = "Path to pdf document")]
-    [ValidateNotNullOrEmpty]
-    [Alias("FullName")]
-    public string FilePath { get; set; } = null!;
-
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipelineByPropertyName = true,
-        HelpMessage = "Path to save deduplicated pdf document to")]
-    [ValidateNotNullOrEmpty]
-    public string OutputPath { get; set; } = null!;
+        Mandatory = false,
+        ValueFromPipeline = false,
+        ValueFromPipelineByPropertyName = false,
+        ParameterSetName = "no-output")
+    ]
+    public string? __ { get; set; }
 
     [Parameter(
         Mandatory = false,
@@ -33,20 +25,50 @@ public class MergePdfObjects : Cmdlet
     [ValidateNotNullOrEmpty]
     public bool InlineImages { get; set; }
 
-    protected override void BeginProcessing()
+    protected override void ProcessRecord()
     {
-        using var doc = PdfDocument.Open(FilePath);
-        using var fo = File.Create(OutputPath);
-        using var writer = new StreamingWriter(fo, true, true);
-        foreach (var pg in doc.Pages)
+        throw new NotImplementedException("TODO rework this");
+        if (HasInputPaths())
         {
-            var pgr = pg;
-            if (InlineImages)
+            foreach (var path in GetInputPaths())
             {
-                pgr = ContentUtil.ConvertInlineImagesToXObjs(doc.Context, pgr);
+                var filePath = path;
+                var output = filePath;
+                var bak = filePath + ".tmp";
+                File.Move(filePath, bak);
+                filePath = bak;
+                using var doc = PdfDocument.Open(filePath, new ParsingOptions { ThrowOnErrors = false });
+                using var fo = File.Create(output);
+                using var writer = new StreamingWriter(fo, true, true);
+                foreach (var pg in doc.Pages)
+                {
+                    var pgr = pg;
+                    if (InlineImages)
+                    {
+                        pgr = ContentUtil.ConvertInlineImagesToXObjs(doc.Context, pgr);
+                    }
+                    writer.AddPage(pgr);
+                }
+                writer.Complete(doc.Trailer, doc.Catalog);
+                foreach (var err in doc.Context.ParsingErrors)
+                {
+                    WriteWarning(err);
+                }
+                try
+                {
+                    File.Delete(bak);
+                }
+                catch (Exception ex)
+                {
+                    WriteWarning("Failed to delete tmp file:" + ex.Message);
+                }
             }
-            writer.AddPage(pgr);
+        } else if (PdfPage != null)
+        {
+            foreach (var pg in PdfPage)
+            {
+                
+            }
         }
-        writer.Complete(doc.Trailer, doc.Catalog);
     }
 }

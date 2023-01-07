@@ -9,7 +9,7 @@ public ref struct PageContentScanner2
     private readonly PdfDictionary Page;
     private readonly ParsingContext Context;
     private readonly List<PdfStream> NextStreams;
-    private MultiPageState State;
+    internal MultiPageState State;
     private PdfStream? CurrentStream;
     private PdfStream? NextForm;
     private string? NextFormName;
@@ -19,6 +19,7 @@ public ref struct PageContentScanner2
     private DecodedStreamContents? CurrentBuffer;
 
     internal List<ScannerInfo> stack;
+    internal ulong CurrentStreamId;
 
     public ContentStreamScanner Scanner;
     public PdfDictionary? CurrentForm;
@@ -48,6 +49,7 @@ public ref struct PageContentScanner2
         CurrentStream = null;
         CurrentFormName = null;
         SkipOps = -1;
+        CurrentStreamId = 0;
         if (!page.TryGetValue(PdfName.Contents, out var contents))
         {
             Scanner = new ContentStreamScanner(ctx, Array.Empty<byte>());
@@ -92,6 +94,7 @@ public ref struct PageContentScanner2
 
         CurrentBuffer = CurrentStream.Contents.GetDecodedBuffer(true);
         Scanner = CurrentBuffer.GetScanner(Context);
+        UpdateCurrentStreamId();
     }
 
 
@@ -116,7 +119,7 @@ public ref struct PageContentScanner2
         CurrentFormName = "FNA";
         CurrentBuffer = form.Contents.GetDecodedBuffer(true);
         Scanner = CurrentBuffer.GetScanner(Context);
-
+        CurrentStreamId = 0;
         if (CurrentForm.Get<PdfArray>(PdfName.Matrix) != null)
         {
             State = MultiPageState.CTMForm;
@@ -125,6 +128,7 @@ public ref struct PageContentScanner2
         {
             State = MultiPageState.ReadingForm;
         }
+        UpdateCurrentStreamId();
     }
 
     public bool Advance()
@@ -139,7 +143,8 @@ public ref struct PageContentScanner2
             return PushForm();
         }
         if (State == MultiPageState.EndForm) { 
-            PopForm(); return true;
+            PopForm();
+            return Advance();
         }
         
         if (Scanner.Advance())
@@ -179,7 +184,7 @@ public ref struct PageContentScanner2
             {
                 State = MultiPageState.EndForm;
                 CurrentOperator = PdfOperatorType.Q;
-                PopForm();
+                // PopForm();
                 return true;
             }
             else if (NextStreams.Count > 0)
@@ -225,7 +230,8 @@ public ref struct PageContentScanner2
                     CurrentBuffer?.Dispose();
                     CurrentBuffer = CurrentStream.Contents.GetDecodedBuffer(true);
                     Scanner = CurrentBuffer.GetScanner(Context);
-                    
+                    UpdateCurrentStreamId();
+
                     if (SkipOps > -1)
                     {
                         Scanner.SetPosition(SkipOps);
@@ -306,6 +312,8 @@ public ref struct PageContentScanner2
         NextForm = null;
         NextFormName = null;
 
+        UpdateCurrentStreamId();
+
         if (CurrentForm.Get<PdfArray>(PdfName.Matrix) != null)
         {
             State = MultiPageState.CTMForm;
@@ -321,7 +329,6 @@ public ref struct PageContentScanner2
 
     private void PopForm()
     {
-        CurrentOperator = PdfOperatorType.Q;
         State = MultiPageState.Reading;
         var prev = stack.Last();
         State = prev.Form ? MultiPageState.ReadingForm : MultiPageState.Reading;
@@ -333,6 +340,23 @@ public ref struct PageContentScanner2
         CurrentFormName = prev.FormName;
         Scanner = CurrentBuffer.GetScanner(Context);
         Scanner.SetPosition(prev.Position);
+        UpdateCurrentStreamId();
+    }
+
+    private void UpdateCurrentStreamId()
+    {
+        if (CurrentStream == null)
+        {
+            CurrentStreamId = 0;
+            return;
+        }
+        if (!Context.IndirectLookup.TryGetValue(CurrentStream, out var xref))
+        {
+            CurrentStreamId = 0;
+            return;
+        }
+
+        CurrentStreamId = xref.Reference.GetId();
     }
 
     internal bool TryGetForm(PdfName name, [NotNullWhen(true)] out PdfStream? found)

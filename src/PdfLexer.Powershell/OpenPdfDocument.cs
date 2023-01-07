@@ -7,29 +7,34 @@ namespace PdfLexer.Powershell;
         "PdfDocument"),
     OutputType(typeof(PdfDocument))]
 
-public class OpenPdfDocument : Cmdlet
+public class OpenPdfDocument : PathCmdlet
 {
-    [Parameter(
-        Mandatory = true,
-        ValueFromPipelineByPropertyName = true,
-        HelpMessage = "Path to pdf document")]
-    [ValidateNotNullOrEmpty]
-    public string FilePath { get; set; } = null!;
-
     [Parameter(
         Mandatory = false,
         ValueFromPipelineByPropertyName = false,
         HelpMessage = "If entire file should be read in memory. If false, file is memory mapped.")]
     public bool InMemory { get; set; }
 
-    protected override void BeginProcessing()
+    [Parameter(
+    Mandatory = false,
+    ValueFromPipelineByPropertyName = true,
+    HelpMessage = "Password to use if document is encrypted.")]
+    public string? Password { get; set; }
+
+    protected override void ProcessRecord()
     {
-        if (InMemory) 
+        var opts = new ParsingOptions { OwnerPass = Password, UserPass = Password };
+        foreach (var path in GetPaths())
         {
-            WriteObject(PdfDocument.Open(File.ReadAllBytes(FilePath)));
-        } else
-        {
-            WriteObject(PdfDocument.Open(FilePath));
+            if (InMemory)
+            {
+                WriteObject(PdfDocument.Open(File.ReadAllBytes(path), opts));
+            }
+            else
+            {
+                WriteObject(PdfDocument.Open(path, opts));
+            }
         }
+
     }
 }

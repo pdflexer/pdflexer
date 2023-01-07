@@ -104,6 +104,7 @@ internal class StandardEncryption : IDecryptionHandler
         {
             return ownerKey; // TODO, may need both
         }
+        _ctx.Options.OwnerPass = null;
 
         var userEmpty = GetKeyFromUserPassword(ei, empty);
         if (userEmpty != null) { return userEmpty; }

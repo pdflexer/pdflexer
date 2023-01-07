@@ -29,6 +29,7 @@ public class ParsingContext : IDisposable
     internal Dictionary<ulong, XRefEntry> XRefs = null!;
     internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
     internal Dictionary<ulong, WeakReference<IPdfObject>> IndirectCache = new Dictionary<ulong, WeakReference<IPdfObject>>();
+    internal ConditionalWeakTable<IPdfObject, XRefEntry> IndirectLookup = new ConditionalWeakTable<IPdfObject, XRefEntry>();
     internal NumberCache NumberCache = new NumberCache();
     internal NameCache NameCache = new NameCache();
     internal NumberParser NumberParser { get; }
@@ -282,6 +283,7 @@ public class ParsingContext : IDisposable
 
         var obj = value.GetObject();
         IndirectCache[id] = new WeakReference<IPdfObject>(obj);
+        IndirectLookup.AddOrUpdate(obj, value);
         
         return obj;
     }

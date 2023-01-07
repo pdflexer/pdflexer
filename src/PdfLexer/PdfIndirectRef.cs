@@ -20,11 +20,20 @@ public abstract class PdfIndirectRef : PdfObject
     /// <param name="obj">Object to point to</param>
     /// <returns>PdfIndirectRef</returns>
     public static PdfIndirectRef Create(IPdfObject obj) => new NewIndirectRef(obj);
-    internal abstract bool IsOwned(int sourceId, bool attemptOwnership);
-    internal abstract XRef Reference { get; set; }
-    internal abstract int SourceId { get; set; }
-    internal abstract bool DeferWriting { get; set; }
+    internal virtual bool IsOwned(int sourceId, bool attemptOwnership)
+    {
+        if (SourceId == 0 && attemptOwnership)
+        {
+            SourceId = sourceId;
+            return true;
+        }
+        return SourceId == sourceId;
+    }
 
+    internal virtual XRef Reference { get; set; }
+    internal virtual int SourceId { get; set; }
+    internal virtual bool DeferWriting { get; set; }
+    public override PdfObjectType Type => PdfObjectType.IndirectRefObj;
 }
 
 /// <summary>
@@ -51,9 +60,6 @@ internal class ExistingIndirectRef : PdfIndirectRef
     }
 
     public ParsingContext Context { get; }
-    internal override XRef Reference { get; set; }
-    internal override int SourceId { get; set; }
-    public override PdfObjectType Type => PdfObjectType.IndirectRefObj;
     public override IPdfObject GetObject() 
     {
         if (Object == null)
@@ -65,7 +71,6 @@ internal class ExistingIndirectRef : PdfIndirectRef
     internal override bool IsOwned(int sourceId, bool attemptOwnership) => SourceId == sourceId;
 
     internal IPdfObject? Object {get;set;}
-    internal override bool DeferWriting { get; set; }
 
     public override int GetHashCode()
     {
@@ -98,25 +103,11 @@ internal class ExistingIndirectRef : PdfIndirectRef
 /// </summary>
 internal class NewIndirectRef : PdfIndirectRef
 {
-    public override PdfObjectType Type => PdfObjectType.IndirectRefObj;
     public override IPdfObject GetObject() => Object;
 
-    internal bool IsDefined => Reference.ObjectNumber != 0;
-    internal override XRef Reference { get; set; }
-    internal override int SourceId { get; set; }
-
-    internal override bool DeferWriting { get; set; }
     public IPdfObject Object { get; internal set; }
 
-    internal override bool IsOwned(int sourceId, bool attemptOwnership) 
-    {
-        if (SourceId == 0 && attemptOwnership)
-        {
-            SourceId = sourceId;
-            return true;
-        }
-        return SourceId == sourceId;
-    }
+    internal bool IsDefined => Reference.ObjectNumber != 0;
 
     public NewIndirectRef(IPdfObject obj)
     {
@@ -161,4 +152,21 @@ internal class IndirectRefToken : IPdfObject
     public PdfObjectType Type => throw new NotImplementedException();
     public bool IsLazy => throw new NotImplementedException();
     public bool IsModified => throw new NotImplementedException();
+}
+
+
+internal class WrittenIndirectRef : PdfIndirectRef
+{
+    public WrittenIndirectRef(PdfIndirectRef reference)
+    {
+        Reference = reference.Reference;
+        SourceId = reference.SourceId;
+    }
+
+    public override IPdfObject GetObject()
+    {
+        throw new NotSupportedException();
+    }
+
+    internal override bool IsOwned(int sourceId, bool attemptOwnership) => sourceId == SourceId;
 }

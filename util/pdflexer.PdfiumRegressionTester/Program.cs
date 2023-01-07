@@ -376,6 +376,9 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                     }
                 }
             }
+            catch (PdfLexerPasswordException) {
+                continue;
+            }
             catch (NotSupportedException ex)
             {
                 // for compressed object streams
@@ -477,19 +480,23 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
 
 static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
 {
-    var scanner = new PageContentScanner(doc.Context, page);
+    var scanner = new PageContentScanner2(doc.Context, page);
     var ms = new MemoryStream();
     var fl = new FlateWriter();
 
-    while (scanner.Peek() != PdfOperatorType.EOC)
+    while (scanner.Advance())
     {
         if (scanner.TryGetCurrentOperation(out var op))
         {
             op.Serialize(fl.Stream);
             fl.Stream.WriteByte((byte)'\n');
         }
-        scanner.SkipCurrent();
     }
+    // while (scanner.Peek() != PdfOperatorType.EOC)
+    // {
+    // 
+    //     scanner.SkipCurrent();
+    // }
 
     var content = fl.Complete();
 
