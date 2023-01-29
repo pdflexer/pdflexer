@@ -116,8 +116,8 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName ExtGState = new("ExtGState", false);
     public static readonly PdfName Form = new("Form", false);
     public static readonly PdfName BBox = new("BBox", false);
+    public static readonly PdfName Version = new("Version", false);
 
-    
 
 
     public static readonly PdfName Widths = new("Widths", false);

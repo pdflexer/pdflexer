@@ -9,7 +9,7 @@
 		<Product />
 		<Description>Provides extensions to pdflexer pdf image type to convert to / from ImageSharp images.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.0.10-preview</Version>
+		<Version>0.0.11-preview</Version>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>

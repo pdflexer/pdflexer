@@ -7,6 +7,7 @@ public sealed class PdfPage
 {
     public PdfDictionary NativeObject { get; }
     internal ExistingIndirectRef? SourceRef { get; }
+    internal decimal? SourceVersion { get; set; }
 
     internal PdfPage(PdfDictionary page, ExistingIndirectRef ir)
     {

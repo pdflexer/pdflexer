@@ -9,7 +9,7 @@
 		<Product />
 		<Description>Lower level PDF parsing library.</Description>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<Version>0.0.10-preview</Version>
+		<Version>0.0.11-preview</Version>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
