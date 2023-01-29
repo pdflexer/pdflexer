@@ -1341,29 +1341,44 @@ namespace PdfLexer.Tests
             // }
         }
 
-        // [Fact]
-        public async Task It_Handles13()
+        [Fact]
+        public void It_Tracks_Versions()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "annotation-polyline-polygon.pdf");
-            var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
+            var pdf14 = Path.Combine(tp, "pdfs", "pdfjs", "issue8823.pdf"); // 1.4
+            var pdf14_2 = Path.Combine(tp, "pdfs", "pdfjs", "issue9278.pdf"); // 1.4
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf14));
+            var doc2 = PdfDocument.Open(File.ReadAllBytes(pdf14_2));
 
-            var read = new HashSet<int>();
-            EnumerateObjects(doc.Catalog, read);
-
-            var copy = PdfDocument.Create();
-            copy.Pages = doc.Pages;
+            var od = PdfDocument.Create();
+            od.Pages.AddRange(doc.Pages);
+            od.Pages.AddRange(doc2.Pages);
             var ms = new MemoryStream();
-            copy.SaveTo(ms);
-            File.WriteAllBytes("c:\\temp\\temp.pdf", ms.ToArray());
-            ms = new MemoryStream();
-            doc.SaveTo(ms);
-            using var doc2 = PdfDocument.Open(ms.ToArray());
-            EnumerateObjects(doc2.Catalog, read);
-            // foreach (var item in doc.XrefEntries)
-            // {
-            //     doc.Context.GetIndirectObject(item.Key);
-            // }
+            od.SaveTo(ms);
+            var dataA = ms.ToArray();
+            ReadOnlySpan<byte> data = dataA;
+            ReadOnlySpan<byte> expected = "%PDF-1.4"u8;
+            Assert.True(expected.SequenceEqual(data.Slice(0, expected.Length)));
+        }
+
+        [Fact]
+        public void It_Tracks_Versions_Highest()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf14 = Path.Combine(tp, "pdfs", "pdfjs", "issue8823.pdf"); // 1.4
+            var pdf17 = Path.Combine(tp, "pdfs", "pdfjs", "issue9084.pdf"); // 1.7
+            var doc = PdfDocument.Open(File.ReadAllBytes(pdf14));
+            var doc2 = PdfDocument.Open(File.ReadAllBytes(pdf17));
+
+            var od = PdfDocument.Create();
+            od.Pages.AddRange(doc.Pages);
+            od.Pages.AddRange(doc2.Pages);
+            var ms = new MemoryStream();
+            od.SaveTo(ms);
+            var dataA = ms.ToArray();
+            ReadOnlySpan<byte> data = dataA;
+            ReadOnlySpan<byte> expected = "%PDF-1.7"u8;
+            Assert.True(expected.SequenceEqual(data.Slice(0, expected.Length)));
         }
         //
     }
