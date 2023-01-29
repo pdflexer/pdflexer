@@ -3,6 +3,7 @@ using PdfLexer.IO;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
+using System.Threading.Tasks.Sources;
 
 namespace PdfLexer;
 
@@ -22,7 +23,7 @@ public sealed class PdfDocument : IDisposable
     /// <summary>
     /// Version of the PDF document.
     /// </summary>
-    public decimal PdfVersion { get; set; } = 1.7m; // TODO
+    public decimal PdfVersion { get; set; }
     /// <summary>
     /// PDF trailer dictionary.
     /// Note: The /Root entry pointing to the PDF catalog will be overwritten if PDF is saved.
@@ -101,7 +102,15 @@ public sealed class PdfDocument : IDisposable
             nextId = nums.Max() + 1;
         }
         var ctx = new WritingContext(stream, nextId, DocumentId);
-        ctx.Initialize(PdfVersion);
+
+        var wv = 0m;
+        if (Pages != null && Pages.Count > 0)
+        {
+            wv = Pages.Max(x => x.SourceVersion ?? 0);
+        }
+        wv = Math.Max(wv, PdfVersion);
+        if (wv == 0) { wv = 1.7m; } // default to 1.7
+        ctx.Initialize(wv);
         if (XrefEntries?.Count > 0)
         {
             SaveExistingObjects(ctx);
@@ -323,6 +332,19 @@ public sealed class PdfDocument : IDisposable
                 cat = matched;
             }
         }
+
+        var v = ctx.GetHeaderVersion();
+        if (v >= 1.4m && cat != null)
+        {
+            var ver = cat.Get<PdfName>(PdfName.Version);
+            if (ver != null)
+            {
+                if (decimal.TryParse(ver.Value, out var cv))
+                {
+                    v = cv;
+                }
+            }
+        }
         
         var pagesRef = cat?.GetOptionalValue<PdfDictionary>(PdfName.Pages);
         List<PdfPage> pages = new();
@@ -330,10 +352,12 @@ public sealed class PdfDocument : IDisposable
         {
             foreach (var pg in CommonUtil.EnumeratePageTree(pagesRef))
             {
+                pg.SourceVersion = v;
                 pages.Add(pg);
             }
         }
         var doc = new PdfDocument(ctx, cat ?? new PdfDictionary(), trailer, pages);
+        doc.PdfVersion = v ?? 1.5m;
         ctx.Document = doc;
         return doc;
     }

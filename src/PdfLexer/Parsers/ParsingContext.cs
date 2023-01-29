@@ -1,4 +1,5 @@
 ﻿using System.Buffers;
+using System.Buffers.Text;
 using System.Runtime.CompilerServices;
 using Microsoft.IO;
 using PdfLexer.Encryption;
@@ -130,6 +131,30 @@ public class ParsingContext : IDisposable
         {
             return StreamManager.GetStream();
         }
+    }
+
+    internal decimal? GetHeaderVersion()
+    {
+        // %PDF-X.N
+        MainDocSource.GetData(0, MainDocSource.TotalBytes > 50 ? 50 : (int)MainDocSource.TotalBytes, out var data);
+        // correct for bad start
+        var i = data.IndexOf((byte)'%');
+        if (i == -1)
+        {
+            return null;
+        }
+        
+        if (data.Length < i + 8)
+        {
+            return null;
+        }
+
+        if (!Utf8Parser.TryParse(data.Slice(i+5, 3), out decimal value, out int _))
+        {
+            return null;
+        }
+
+        return value;
     }
 
     internal static IDecoder GetDecoder(PdfName name, ParsingContext? ctx)
