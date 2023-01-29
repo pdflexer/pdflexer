@@ -1,4 +1,5 @@
 ﻿using PdfLexer.DOM;
+using System.Globalization;
 
 namespace PdfLexer.Serializers;
 
@@ -10,11 +11,13 @@ public class StreamingWriter : IDisposable
     private readonly bool disposeOnComplete;
     private readonly TreeHasher hasher;
     private readonly Dictionary<PdfStreamHash, PdfIndirectRef> refs;
+    private decimal maxVersion = 1.4m;
 
     public StreamingWriter(Stream stream, bool dedupXobj, bool inMemoryDedup, bool disposeOnComplete = false)
     {
         _ctx = new WritingContext(stream);
-        _ctx.Initialize(1.7m);
+        _ctx.Initialize(1.4m); // start with 1.4, minimum version where catalog version overrides header
+                               // max version is tracked from each page and then added to catalog
         (currentBag, currentBagArray, currentBagRef) = CreateBag();
         dedup = dedupXobj;
         memoryDedup = inMemoryDedup;
@@ -43,6 +46,11 @@ public class StreamingWriter : IDisposable
 
     public void AddPage(PdfPage page)
     {
+        if (page.SourceVersion != null && page.SourceVersion > maxVersion)
+        {
+            maxVersion = page.SourceVersion.Value;
+        }
+
         var pg = page.NativeObject.CloneShallow();
         WritingUtil.RemovedUnusedLinks(pg, ir => false);
         pg[PdfName.Parent] = currentBagRef;
@@ -137,6 +145,7 @@ public class StreamingWriter : IDisposable
         CompleteBag();
         catalog ??= new PdfDictionary();
         catalog[PdfName.TypeName] = PdfName.Catalog;
+        catalog[PdfName.Version] = new PdfName(maxVersion.ToString("0.0", CultureInfo.InvariantCulture), false);
         var catRef = PdfIndirectRef.Create(catalog);
         trailer[PdfName.Root] = catRef;
 

@@ -342,45 +342,6 @@ internal class XRefParser
         }
     }
 
-    private async ValueTask<List<XRefEntry>> GetEntries(PipeReader pipe)
-    {
-        var entries = new List<XRefEntry>();
-        while (true)
-        {
-            var result = await pipe.ReadAsync();
-            if (TryProcess(result, entries, out var pos))
-            {
-                pipe.AdvanceTo(pos);
-                return entries;
-            }
-
-            if (result.IsCanceled || result.IsCompleted)
-            {
-                throw new ApplicationException("Unable to find end of xref table.");
-            }
-
-            pipe.AdvanceTo(pos, result.Buffer.End);
-        }
-    }
-
-    private bool TryProcess(ReadResult result, List<XRefEntry> entries, out SequencePosition position)
-    {
-        // TODO optimize... easy for now
-        var reader = new SequenceReader<byte>(result.Buffer);
-        var start = reader.Position;
-        while (reader.TryAdvanceTo((byte)'t', false))
-        {
-            if (reader.IsNext(Trailer, false))
-            {
-                GetEntries(result.Buffer.Slice(start, reader.Position).ToArray(), entries);
-                reader.Advance(7); // trailer
-                position = reader.Position;
-                return true;
-            }
-        }
-        position = start;
-        return false;
-    }
 
     internal List<XRefEntry> GetEntries(ReadOnlySpan<byte> data, List<XRefEntry> entries)
     {

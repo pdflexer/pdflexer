@@ -6,11 +6,10 @@
 		<Nullable>enable</Nullable>
 		<PsModuleName>PdfPowershell</PsModuleName>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-		<Version>0.0.11-preview</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="System.Management.Automation" Version="7.3.0" />
+		<PackageReference Include="System.Management.Automation" Version="7.3.2" />
 	</ItemGroup>
 
 	<ItemGroup>
