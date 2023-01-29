@@ -33,7 +33,7 @@ internal ref struct PipeScanner
     private void InitReader()
     {
         // why no sync version? review this
-        var result = Pipe.ReadAsync().GetAwaiter().GetResult();
+        var result = Pipe.ReadAsync().AsTask().GetAwaiter().GetResult();
         IsCompleted = result.IsCompleted;
         Reader = new SequenceReader<byte>(result.Buffer);
     }
