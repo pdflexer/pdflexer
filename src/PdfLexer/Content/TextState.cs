@@ -316,16 +316,18 @@ public class TextState
         if (fa != null)
         {
             // holds array of [ font_iref size ] -> similar to Tf but iref instead of name
-            // TODO harden
+            // TODO ensure test coverage
             GS.Font = Ctx.GetFont(fa[0]);
             GS.FontObject = fa[0].GetAs<PdfDictionary>();
             if (fa.Count > 1 && fa[1].GetPdfObjType() == PdfObjectType.NumericObj)
             {
                 GS.FontSize = fa[1].GetValue<PdfNumber>();
             }
+            UpdateTRM();
         }
-        UpdateTRM();
+        
         // TODO any other text props in GS?
+        // TOOD other graphics state parms -> probably not here though
     }
 
     public void Apply(Tf_Op op)

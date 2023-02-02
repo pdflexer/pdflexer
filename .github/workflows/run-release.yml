@@ -1,0 +1,36 @@
+name: 'Run Release'
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 7.0.x
+    - name: Build
+      shell: pwsh
+      run: |
+        $vr = '${{ github.ref }}';
+        $justVersion = $vr.Substring(11);
+        if ($justVersion -match "^[0-9]+\.[0-9]+\.[0-9]+$") 
+        {
+          Write-Host "Found version $justVersion"
+        } else {
+          throw "Unable to extract semver from tag: $vr"
+        }
+        $version = $justVersion + "-preview"
+        dotnet build PdfLexer.sln -c release /p:Version=$version  /p:FileVersion=$justVersion /p:AssemblyVersion=$justVersion
+    - name: 'Push Packages'
+      run: dotnet nuget push src/**/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+    - name: 'Create Release'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: "src/**/Release/*.nupkg"
+        generate_release_notes: true

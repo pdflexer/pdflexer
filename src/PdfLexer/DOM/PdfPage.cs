@@ -1,5 +1,6 @@
-﻿using PdfLexer.Writing;
-using System.Diagnostics.CodeAnalysis;
+﻿using PdfLexer.Content;
+using PdfLexer.Parsers;
+using PdfLexer.Writing;
 
 namespace PdfLexer.DOM;
 
@@ -19,6 +20,13 @@ public sealed class PdfPage
     {
         NativeObject = page;
         page[PdfName.TypeName] = PdfName.Page;
+    }
+
+    public PdfPage(PageSize size)
+    {
+        NativeObject = new PdfDictionary();
+        NativeObject[PdfName.TypeName] = PdfName.Page;
+        MediaBox = PageSizeHelpers.GetMediaBox(size);
     }
 
     public PdfPage() : this(new PdfDictionary())
@@ -99,6 +107,11 @@ public sealed class PdfPage
     public PageWriter GetWriter(PageWriteMode mode=PageWriteMode.Append)
     {
         return new PageWriter(this, mode);
+    }
+
+    public TextScanner GetTextScanner(ParsingContext ctx)
+    {
+        return new TextScanner(ctx, this);
     }
 }
 

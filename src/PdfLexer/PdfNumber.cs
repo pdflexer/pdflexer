@@ -113,10 +113,20 @@ public abstract class PdfNumber : PdfObject
         return (decimal)num;
     }
 
+    public static implicit operator PdfNumber(int num)
+    {
+        return new PdfIntNumber(num);
+    }
+
     public static implicit operator PdfNumber(float num)
     {
         return new PdfDoubleNumber(num);
     }
+    public static implicit operator PdfNumber(decimal num)
+    {
+        return new PdfDecimalNumber(num);
+    }
+
 }
 
 public static class PdfCommonNumbers

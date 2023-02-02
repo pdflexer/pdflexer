@@ -72,9 +72,18 @@ public sealed class PdfDocument : IDisposable
         return ms.ToArray();
     }
 
-    public PdfPage AddPage()
+    public PdfPage AddPage(PageSize size=PageSize.LETTER)
     {
         var pg = new PdfPage();
+        pg.MediaBox = PageSizeHelpers.GetMediaBox(size);
+        Pages.Add(pg);
+        return pg;
+    }
+
+    public PdfPage AddPage(double width, double height)
+    {
+        var pg = new PdfPage();
+        pg.MediaBox = new PdfArray { PdfCommonNumbers.Zero, PdfCommonNumbers.Zero, new PdfDoubleNumber(width), new PdfDoubleNumber(height) };
         Pages.Add(pg);
         return pg;
     }
