@@ -170,6 +170,12 @@ public ref struct TextScanner
                 case PdfOperatorType.ET:
                     ReadState = TextReadState.Normal;
                     continue;
+                case PdfOperatorType.gs:
+                    if (Scanner.TryGetCurrentOperation(out var gs))
+                    {
+                        gs.Apply(TextState);
+                    }
+                    continue;
                 case PdfOperatorType.q:
                 case PdfOperatorType.Q:
                 case PdfOperatorType.cm:

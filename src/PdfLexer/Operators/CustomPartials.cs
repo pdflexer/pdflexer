@@ -289,6 +289,14 @@ public partial class TJ_Op
     }
 }
 
+public partial class gs_Op
+{
+    public void Apply(TextState state)
+    {
+        state.Apply(this);
+    }
+}
+
 public partial class NoOp_Op : IPdfOperation
 {
     public NoOp_Op Value { get; } = new NoOp_Op();

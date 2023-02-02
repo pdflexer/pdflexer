@@ -1,4 +1,7 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Fonts;
+using PdfLexer.Operators;
+using PdfLexer.Writing;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -97,7 +100,7 @@ namespace PdfLexer.Tests
 
         [Fact]
         public void It_Reads_TrueType_None_Embedded_ToUnicode() => RunSingle("annotation-highlight-without-appearance.pdf");
-        
+
         // [Fact]
         // public void It_Reads_TrueType_None_Embedded() => RunSingle("bug894572.pdf");
 
@@ -139,7 +142,7 @@ namespace PdfLexer.Tests
         public void It_Reads_Type0_Vertical_Identity() => RunSingle("vertical.pdf");
         [Fact]
         public void It_Reads_Type0_Vertical_RKSJ() => RunSingle("issue11555.pdf");
-        
+
         [Fact]
         public void It_Reads_Type0_TrueType_Embedded_CMap() => RunSingle("Test-plusminus.pdf");
 
@@ -160,6 +163,37 @@ namespace PdfLexer.Tests
         public void It_Reads_Type0_SJIS() => RunSingle("noembed-sjis.pdf");
         [Fact]
         public void It_Reads_Type0_Vert() => RunSingle("issue6387.pdf"); // bounding box estimate is not great here, font has huge bbox
+
+        [Fact]
+        public void It_Reads_With_GS_Op()
+        {
+            using var doc = PdfDocument.Create();
+            var pg = doc.AddPage();
+            {
+                using var writer = pg.GetWriter();
+
+                writer.Font(ContentWriter.Base14.Courier, 10)
+                      .CustomOp(new gs_Op("GSName"))
+                      .Text("Hello world");
+                // writer.Complete();
+            }
+            var dict = Standard14Font.GetHelvetica().GetPdfFont();
+            pg.Resources[PdfName.ExtGState] = new PdfDictionary()
+            {
+                ["GSName"] = new PdfDictionary
+                {
+                    [PdfName.Font] = new PdfArray { dict.Indirect(), new PdfIntNumber(15) }
+                }
+            };
+
+
+            var scanner = pg.GetTextScanner(doc.Context);
+            while (scanner.Advance())
+            {
+                Assert.Equal(15f, scanner.GraphicsState.FontSize);
+            }
+        }
+
 
         private void RunSingle(string name)
         {
@@ -182,7 +216,8 @@ namespace PdfLexer.Tests
                         {
                             sb.Append($"{pg} {x:0.00} {y:0.0} {c} {reader.WasNewStatement} {reader.WasNewLine}\n");
                         }
-                    } else
+                    }
+                    else
                     {
                         sb.Append($"{pg} {x:0.00} {y:0.0} {reader.Glyph.Char} {reader.WasNewStatement} {reader.WasNewLine}\n");
                     }

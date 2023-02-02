@@ -72,6 +72,8 @@ public class PdfArray : PdfObject, IList<IPdfObject>
         
     }
 
+    public void Add(PdfNumber item) => Add((IPdfObject)item);
+    
     public void Clear()
     {
         ArrayModified = true;

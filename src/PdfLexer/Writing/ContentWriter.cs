@@ -129,6 +129,13 @@ public partial class ContentWriter
         return this;
     }
 
+    public ContentWriter CustomOp(IPdfOperation op)
+    {
+        op.Serialize(Stream);
+        Stream.Stream.WriteByte((byte)'\n');
+        return this;
+    }
+
     public enum JoinStyle
     {
         MITER = 0,
