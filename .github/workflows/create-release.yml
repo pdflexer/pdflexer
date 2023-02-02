@@ -22,6 +22,8 @@ jobs:
       run: |
         $version = '${{ github.event.inputs.version }}';
         $branch = '${{ github.event.inputs.branch }}';
-        git checkout -b $branch --track origin/$branch
+        git config user.email "pdflexer@github.com"
+        git config user.name "pdflexer"
+        git checkout -b $branch
         git tag -a "v$version" -m 'trigger github release'
         git push --tags
