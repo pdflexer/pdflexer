@@ -61,7 +61,7 @@ public class InputOutputPathCmdlet : OutputPathCmdlet
         {
             foreach (var path in GetInputPaths())
             {
-                using var doc = PdfDocument.Open(path, new ParsingOptions { ThrowOnErrors = false });
+                using var doc = PsHelpers.OpenDocument(path, new ParsingOptions { ThrowOnErrors = false });
                 foreach (var pg in doc.Pages)
                 {
                     yield return pg;
