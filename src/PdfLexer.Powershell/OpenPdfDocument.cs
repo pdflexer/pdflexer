@@ -2,6 +2,11 @@
 
 namespace PdfLexer.Powershell;
 
+
+/// <summary>
+/// <para type="synopsis">Opens a pdf document.</para>
+/// <para type="description">Open.</para>
+/// </summary>
 [Cmdlet(
         "Open",
         "PdfDocument"),
@@ -32,7 +37,7 @@ public class OpenPdfDocument : PathCmdlet
             }
             else
             {
-                WriteObject(PdfDocument.Open(path, opts));
+                WriteObject(PsHelpers.OpenDocument(path, opts));
             }
         }
 

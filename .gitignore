@@ -12,7 +12,7 @@
 .vscode
 .test-pdfs
 pngjs
-
+.psm
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

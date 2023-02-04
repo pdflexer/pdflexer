@@ -31,7 +31,7 @@ public class GetPdfPages : PathCmdlet
         {
             foreach (var path in GetPaths())
             {
-                using var pdf = PdfDocument.Open(path);
+                using var pdf = PsHelpers.OpenDocument(path);
                 if (Number != null)
                 {
                     HandlePages(pdf, Number);

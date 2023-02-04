@@ -35,7 +35,7 @@ public class GetPdfText : PathCmdlet
         {
             foreach (var path in GetPaths())
             {
-                using var pdf = PdfDocument.Open(path);
+                using var pdf = PsHelpers.OpenDocument(path);
                 foreach (var pg in pdf.Pages)
                 {
                     WriteObject(pg.GetTextVisually(pdf.Context));

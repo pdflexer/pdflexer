@@ -1,24 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<PsModuleName>PdfPowershell</PsModuleName>
+		<PsModuleName>PdfLexer</PsModuleName>
+		<AssemblyName>PdfLexer.Powershell</AssemblyName>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<LangVersion>10.0</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	</PropertyGroup>
+
 	<ItemGroup>
-		<PackageReference Include="System.Management.Automation" Version="7.3.2" />
+	  <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
 		<ProjectReference Include="..\PdfLexer\PdfLexer.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="NewFolder\" />
 	</ItemGroup>
 
 </Project>

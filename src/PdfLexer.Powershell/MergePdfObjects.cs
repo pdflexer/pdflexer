@@ -9,7 +9,7 @@ namespace PdfLexer.Powershell;
         "PdfObjects")
     ]
 
-public class MergePdfObjects : InputOutputPathCmdlet
+internal class MergePdfObjects : InputOutputPathCmdlet
 {
     [Parameter(
         Mandatory = false,

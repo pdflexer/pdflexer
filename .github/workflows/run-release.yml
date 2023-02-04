@@ -27,6 +27,15 @@ jobs:
         }
         $version = $justVersion + "-preview"
         dotnet build PdfLexer.sln -c release /p:Version=$version  /p:FileVersion=$justVersion /p:AssemblyVersion=$justVersion
+
+        ./create-module.ps1
+        $Params = @{
+          Path = "$pwd/.psm/PdfLexer/PdfLexer.psd1"
+          ModuleVersion = $justVersion
+        }
+        Update-ModuleManifest @Params
+        $PSModulePath = "$pwd/.psm"
+        Publish-Module -Name PdfLexer -NuGetApiKey ${{ secrets.PSG_API_KEY }}
     - name: 'Push Packages'
       run: dotnet nuget push src/**/Release/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
     - name: 'Create Release'

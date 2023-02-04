@@ -38,7 +38,7 @@ public class OutPdf : InputOutputPathCmdlet, IDisposable
             File.Move(path, tmp);
             _fo = File.Create(path);
             _sw = new StreamingWriter(_fo, DedupObjects, true, true);
-            using var pv = PdfDocument.Open(tmp);
+            using var pv = PsHelpers.OpenDocument(tmp);
             foreach (var pg in pv.Pages)
             {
                 _sw.AddPage(pg);
@@ -73,7 +73,11 @@ public class OutPdf : InputOutputPathCmdlet, IDisposable
         _fo?.Dispose();
         _sw = null;
         _fo = null;
+#if NET7_0_OR_GREATER
         GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
+#else
+        GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
+#endif
     }
 
     public void Dispose()
