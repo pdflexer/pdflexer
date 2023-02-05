@@ -51,7 +51,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'PDF','pdf-files','pdf-generation','pdf-document-processor','pdf-redaction','PSEdition_Desktop','PSEdition_Core','Windows','Linux','MacOS'
+        Tags = 'PDF','pdf-files','pdf-generation','pdf-document-processor','pdf-redaction','PSEdition_Core','Windows','Linux','MacOS'
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/pdflexer/pdflexer/blob/main/LICENSE'
