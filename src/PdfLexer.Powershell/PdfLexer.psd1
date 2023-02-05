@@ -9,7 +9,7 @@ ModuleVersion = '0.0.0'
 Author = "PdfLexer Authors"
 
 # Supported PSEditions
-CompatiblePSEditions = 'Desktop', 'Core'
+CompatiblePSEditions = 'Core'
 
 # ID used to uniquely identify this module
 GUID = '8861488f-09f2-4e35-b590-142d41a7f0b9'
@@ -18,11 +18,11 @@ GUID = '8861488f-09f2-4e35-b590-142d41a7f0b9'
 Copyright = '(c) 2023 PdfLexer Authors. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'PdfLexer is powershell pdf manipulation 
+Description = 'PdfLexer is a powershell pdf manipulation library for Powershell 7+.
  https://github.com/pdflexer/pdflexer'
 
 # Minimum version of the PowerShell engine required by this module
-PowerShellVersion = '5.1'
+PowerShellVersion = '7.0'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @()
