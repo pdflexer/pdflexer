@@ -60,7 +60,7 @@ PrivateData = @{
         ProjectUri = 'https://github.com/pdflexer/pdflexer'
 
         # A URL to an icon representing this module.
-        IconUri = 'https://raw.githubusercontent.com/PoShLog/PoShLog/master/images/icons/poshlog-icon-256.png'
+        # IconUri = ''
 
         # ReleaseNotes of this module
         ReleaseNotes = 'https://github.com/pdflexer/pdflexer/releases'
