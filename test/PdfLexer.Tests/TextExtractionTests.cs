@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Xunit;
 
 namespace PdfLexer.Tests
@@ -194,6 +195,18 @@ namespace PdfLexer.Tests
             }
         }
 
+
+        [Fact]
+        public void It_Reads_Visually()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdfFile = Path.Combine(pdfRoot, "issue1002.pdf");
+            using var pdf = PdfDocument.Open(pdfFile);
+
+            var text= pdf.Pages[0].GetTextVisually(pdf.Context);
+            Assert.NotEqual(' ', text[text.Length - 2]);
+        }
 
         private void RunSingle(string name)
         {
