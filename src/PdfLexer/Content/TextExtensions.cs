@@ -73,10 +73,10 @@ public static class TextExtensions
             regions.Add(current);
         }
 
-        var pl = 0;
         var prev = regions[0];
         foreach (var region in regions)
         {
+
             if (prev.Start - region.Start > 6)
             {
                 sb.Append('\n');
@@ -121,18 +121,29 @@ public static class TextExtensions
                 }
 
                 int lc = 0;
+                int cwc = 0;
                 foreach (var w in lineWords.OrderBy(x => x.llx))
                 {
+                    cwc++;
                     var sp = (int)Math.Ceiling(w.llx / wpc);
                     while (sp > lc)
                     {
                         sb.Append(' ');
                         lc += 1;
                     }
-                    sb.Append(w.word + ' ');
-                    lc += w.word.Length + 1;
+                    
+                    sb.Append(w.word);
+                    if (cwc < lineWords.Count)
+                    {
+                        sb.Append(' ');
+                        lc++;
+                    }
+                    lc += w.word.Length;
                 }
-                sb.Append('\n');
+                if (lc > 0)
+                {
+                    sb.Append('\n');
+                }
             }
         }
 

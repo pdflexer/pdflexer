@@ -18,7 +18,7 @@ public class OpenPdfDocument : PathCmdlet
         Mandatory = false,
         ValueFromPipelineByPropertyName = false,
         HelpMessage = "If entire file should be read in memory. If false, file is memory mapped.")]
-    public bool InMemory { get; set; }
+    public SwitchParameter InMemory { get; set; }
 
     [Parameter(
     Mandatory = false,

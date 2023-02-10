@@ -23,7 +23,7 @@ internal class MergePdfObjects : InputOutputPathCmdlet
         Mandatory = false,
         HelpMessage = "If inline images should be converted to xobjs to improve deduplication")]
     [ValidateNotNullOrEmpty]
-    public bool InlineImages { get; set; }
+    public SwitchParameter InlineImages { get; set; }
 
     protected override void ProcessRecord()
     {

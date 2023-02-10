@@ -15,7 +15,7 @@ public class NewPdfWriter : PathCmdlet
     Mandatory = false,
     HelpMessage = "If xobjects should be deduplicated when writing.")]
     [ValidateNotNullOrEmpty]
-    public bool DedupObjects { get; set; }
+    public SwitchParameter DedupObjects { get; set; }
 
     protected override void ProcessRecord()
     {

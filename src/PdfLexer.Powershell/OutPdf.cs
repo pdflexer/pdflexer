@@ -17,13 +17,13 @@ public class OutPdf : InputOutputPathCmdlet, IDisposable
         Mandatory = false,
         HelpMessage = "If xobjects should be deduplicated when writing.")]
     [ValidateNotNullOrEmpty]
-    public bool DedupObjects { get; set; }
+    public SwitchParameter DedupObjects { get; set; }
 
     [Parameter(
         Mandatory = false,
         HelpMessage = "If pages should be appended to existing document.")]
     [ValidateNotNullOrEmpty]
-    public bool Append { get; set; }
+    public SwitchParameter Append { get; set; }
 
     protected override void BeginProcessing()
     {
