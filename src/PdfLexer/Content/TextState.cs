@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Fonts;
-using PdfLexer.Parsers;
 using System.Buffers;
 using System.Numerics;
 

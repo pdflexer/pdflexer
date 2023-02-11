@@ -1,5 +1,6 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Encryption;
+using PdfLexer.Filters;
 using PdfLexer.IO;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
@@ -18,6 +19,9 @@ public sealed partial class PdfDocument
     internal IDecryptionHandler Decryption { get; private set; }
     internal List<IDisposable> disposables = new List<IDisposable>();
     public IPdfDataSource MainDocSource { get; private set; }
+
+    internal CryptFilter CryptFilter { get; }
+
 
     internal void Initialize(ParsingContext ctx, IPdfDataSource pdf)
     {
@@ -47,14 +51,14 @@ public sealed partial class PdfDocument
         }
 
         // TODO clean doc id during parsing up
-        foreach (var item in Trailer.Values)
-        {
-            if (item.Type == PdfObjectType.IndirectRefObj)
-            {
-                var eir = (ExistingIndirectRef)item;
-                eir.SourceId = DocumentId;
-            }
-        }
+        // foreach (var item in Trailer.Values)
+        // {
+        //     if (item.Type == PdfObjectType.IndirectRefObj)
+        //     {
+        //         var eir = (ExistingIndirectRef)item;
+        //         eir.SourceId = DocumentId;
+        //     }
+        // }
 
         var cat = Trailer.GetOptionalValue<PdfDictionary>(PdfName.Root);
         if (cat == null ||
@@ -98,13 +102,13 @@ public sealed partial class PdfDocument
         }
 
         var pagesRef = cat?.GetOptionalValue<PdfDictionary>(PdfName.Pages);
-        List<PdfPage> pages = new();
+        Pages = new();
         if (ctx.Options.LoadPageTree && pagesRef != null)
         {
             foreach (var pg in CommonUtil.EnumeratePageTree(pagesRef))
             {
                 pg.SourceVersion = v;
-                pages.Add(pg);
+                Pages.Add(pg);
             }
         }
         PdfVersion = v ?? 1.5m;

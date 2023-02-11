@@ -17,7 +17,7 @@ internal class NestedParser
         _ctx = ctx;
     }
 
-    public IPdfObject ParseNestedItem(ReadOnlySpan<byte> buffer, int startAt, out int itemEnd)
+    public IPdfObject ParseNestedItem(PdfDocument? doc, ReadOnlySpan<byte> buffer, int startAt, out int itemEnd)
     {
         var eager = _ctx.Options.Eagerness;
         if (_ctx.CurrentSource == null)
@@ -36,7 +36,7 @@ internal class NestedParser
                 case PdfTokenType.NullObj:
                 case PdfTokenType.DecimalObj:
                 case PdfTokenType.NumericObj:
-                    CurrentState.Bag.Add(_ctx.GetKnownPdfItem((PdfObjectType)tokenType, buffer, startAt, currentLength));
+                    CurrentState.Bag.Add(_ctx.GetKnownPdfItem((PdfObjectType)tokenType, buffer, startAt, currentLength, doc));
                     startAt += currentLength;
                     continue;
                 case PdfTokenType.StringStart:
@@ -126,7 +126,7 @@ internal class NestedParser
                         startAt += currentLength;
                         continue;
                     }
-                    CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx);
+                    CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx, doc);
                     if (StateStack.Count > 0)
                     {
                         var last = StateStack[^1];
@@ -149,7 +149,7 @@ internal class NestedParser
                         startAt += currentLength;
                         continue;
                     }
-                    CurrentState.Array = CurrentState.GetArrayFromBag(_ctx);
+                    CurrentState.Array = CurrentState.GetArrayFromBag(doc);
                     if (StateStack.Count > 0)
                     {
                         var last = StateStack[^1];
@@ -192,7 +192,7 @@ internal class NestedParser
 
         if (!completed)
         {
-            return AttemptRepairCurrentState(buffer, lastStart);
+            return AttemptRepairCurrentState(doc, buffer, lastStart);
         }
 
         IPdfObject obj = (IPdfObject)CurrentState.Dict ?? CurrentState.Array;
@@ -209,17 +209,17 @@ internal class NestedParser
 
     }
 
-    private IPdfObject AttemptRepairCurrentState(ReadOnlySpan<byte> buffer, int lastStart)
+    private IPdfObject AttemptRepairCurrentState(PdfDocument? doc, ReadOnlySpan<byte> buffer, int lastStart)
     {
         var info = CommonUtil.GetDataErrorInfo(buffer, lastStart);
         _ctx.Error("Parsing ended unexpectedly for looking nested item end: " + info);
         if (CurrentState.State == ParseState.ReadDict)
         {
-            CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx);
+            CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx, doc);
         }
         else
         {
-            CurrentState.Array = CurrentState.GetArrayFromBag(_ctx);
+            CurrentState.Array = CurrentState.GetArrayFromBag(doc);
         }
 
         while (StateStack.Count > 0)
@@ -231,11 +231,11 @@ internal class NestedParser
 
             if (CurrentState.State == ParseState.ReadDict)
             {
-                CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx);
+                CurrentState.Dict = CurrentState.GetDictionaryFromBag(_ctx, doc);
             }
             else
             {
-                CurrentState.Array = CurrentState.GetArrayFromBag(_ctx);
+                CurrentState.Array = CurrentState.GetArrayFromBag(doc);
             }
         }
         IPdfObject obj = (IPdfObject)CurrentState.Dict ?? CurrentState.Array;

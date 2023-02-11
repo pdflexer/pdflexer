@@ -112,7 +112,7 @@ public sealed partial class PdfDocument
             }
             else
             {
-                ctx.WriteIndirectObject(new ExistingIndirectRef(Context, obj.Reference));
+                ctx.WriteIndirectObject(new ExistingIndirectRef(this, obj.Reference));
             }
         }
     }

@@ -1,5 +1,4 @@
-﻿using PdfLexer.Parsers;
-using PdfLexer.Parsers.Structure;
+﻿using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 using System;
 using System.IO;

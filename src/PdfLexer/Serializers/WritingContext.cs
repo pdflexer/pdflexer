@@ -164,7 +164,7 @@ public class WritingContext
         Debug.Assert(entry.Reference.ObjectNumber != 0);
         writtenObjs[entry.Reference.ObjectNumber] = (Stream.Position, entry.Reference);
         WriteObjStart(entry.Reference);
-        entry.CopyUnwrappedData(this);
+        entry.CopyUnwrappedData(ctx, this);
         WriteObjEnd();
     }
 

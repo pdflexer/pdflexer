@@ -1,4 +1,5 @@
 ﻿using PdfLexer.DOM;
+using PdfLexer.Parsers;
 using System.Management.Automation;
 
 namespace PdfLexer.Powershell;
@@ -61,12 +62,13 @@ public class InputOutputPathCmdlet : OutputPathCmdlet
         {
             foreach (var path in GetInputPaths())
             {
-                using var doc = PsHelpers.OpenDocument(path, new ParsingOptions { ThrowOnErrors = false });
+                using var ctx = new ParsingContext(new ParsingOptions { ThrowOnErrors = false });
+                using var doc = PsHelpers.OpenDocument(path);
                 foreach (var pg in doc.Pages)
                 {
                     yield return pg;
                 }
-                foreach (var err in doc.Context.ParsingErrors)
+                foreach (var err in ctx.ParsingErrors)
                 {
                     WriteWarning(err);
                 }

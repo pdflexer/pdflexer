@@ -1,5 +1,4 @@
 ﻿using PdfLexer.DOM;
-using PdfLexer.Parsers;
 
 namespace PdfLexer.Content;
 

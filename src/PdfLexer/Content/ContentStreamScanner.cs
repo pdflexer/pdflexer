@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Lexing;
-using PdfLexer.Parsers;
 using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -291,7 +290,7 @@ public ref struct ContentStreamScanner
         {
             if (current == PdfTokenType.ArrayStart || current == PdfTokenType.DictionaryStart)
             {
-                header.Add(Ctx.GetPdfItem(Data, pos, out var len));
+                header.Add(Ctx.GetPdfItem(Data, pos, out var len, null));
                 pos += len;
             }
             else if (current == PdfTokenType.Unknown)
@@ -301,7 +300,7 @@ public ref struct ContentStreamScanner
             }
             else
             {
-                header.Add(Ctx.GetKnownPdfItem((PdfObjectType)current, Data, pos, length));
+                header.Add(Ctx.GetKnownPdfItem((PdfObjectType)current, Data, pos, length, null));
                 pos += length;
             }
 

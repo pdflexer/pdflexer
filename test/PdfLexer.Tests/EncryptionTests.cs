@@ -72,7 +72,7 @@ public class EncryptionTests
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
         var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
         var pdf = Path.Combine(pdfRoot, "pr6531_2.pdf");
-        using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions
+        using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new DocumentOptions
         {
             UserPass = "asdfasdf"
         });
@@ -87,7 +87,7 @@ public class EncryptionTests
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
         var pdfRoot = Path.Combine(tp, "pdfs", "pdfrs");
         var pdf = Path.Combine(pdfRoot, name);
-        using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions
+        using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new DocumentOptions
         {
             OwnerPass = owner ? "ownerpassword" : null,
             UserPass = user ? "userpassword" : null

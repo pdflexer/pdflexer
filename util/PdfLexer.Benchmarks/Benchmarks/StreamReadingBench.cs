@@ -1,6 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
 using PdfLexer.Lexing;
-using PdfLexer.Parsers;
 using System;
 using System.Buffers;
 using System.Collections.Generic;

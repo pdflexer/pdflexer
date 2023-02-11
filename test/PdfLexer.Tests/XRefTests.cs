@@ -50,7 +50,7 @@ startxref
             var bytes = Encoding.ASCII.GetBytes(input);
             var ctx = new ParsingContext();
             var parser = new XRefParser(ctx);
-            var source = new InMemoryDataSource(ctx, bytes);
+            var source = new InMemoryDataSource(new PdfDocument(), bytes);
             var data = parser.LoadCrossReference(source);
             Assert.Equal(objectCount, data.Item1.Count);
             Assert.Equal(lastObjNum, data.Item1.Max(x=>x.Reference.ObjectNumber));
@@ -109,7 +109,7 @@ startxref
             var bytes = Encoding.ASCII.GetBytes(input);
             var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager });
             var parser = new XRefParser(ctx);
-            var source = new InMemoryDataSource(ctx, bytes);
+            var source = new InMemoryDataSource(new PdfDocument(), bytes);
             var (results, trailer) = parser.LoadCrossReference(source);
             Assert.Equal(entries, results.Count);
             var last = results.OrderByDescending(x=>x.Reference.ObjectNumber).First();
@@ -154,7 +154,7 @@ startxref
             var bytes = Encoding.ASCII.GetBytes(input);
             var ctx = new ParsingContext();
             var parser = new XRefParser(ctx);
-            var source = new InMemoryDataSource(ctx, bytes);
+            var source = new InMemoryDataSource(new PdfDocument(), bytes);
             var data = new List<XRefEntry>();
             var results = parser.GetEntries(bytes, data);
             Assert.Equal(entries, results.Count);
@@ -186,7 +186,9 @@ endobj
 ";
             var bytes = Encoding.ASCII.GetBytes(data);
             var ms = new MemoryStream(bytes);
-            var (xrefs, trailer) = StructuralRepairs.BuildFromRawData(new ParsingContext(), ms);
+            var ctx = new ParsingContext(new ParsingOptions());
+            ctx.CurrentSource = new InMemoryDataSource(new PdfDocument(), new byte[0]); // to make IR work
+            var (xrefs, trailer) = StructuralRepairs.BuildFromRawData(ctx, ms);
             Assert.Contains(xrefs, x =>x.Reference.ObjectNumber == 17);
             Assert.Contains(xrefs, x =>x.Reference.ObjectNumber == 1);
             Assert.Contains(xrefs, x =>x.Reference.ObjectNumber == 4);

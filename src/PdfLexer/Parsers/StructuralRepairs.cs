@@ -66,7 +66,7 @@ internal static class StructuralRepairs
 
     public static bool TryRepairXRef(ParsingContext ctx, XRefEntry entry, out XRefEntry repaired)
     {
-        var stream = entry.Source.GetStream(0);
+        var stream = entry.Source.GetStream(ctx, 0);
         stream.Seek(0, SeekOrigin.Begin);
         var reader = ctx.Options.CreateReader(stream);
         var scanner = new PipeScanner(ctx, reader);
@@ -193,7 +193,7 @@ internal static class StructuralRepairs
     public static bool TryFindStreamEnd(ParsingContext ctx, XRefEntry xref, PdfName? filter, int predictedLength)
     {
         var startOs = xref.Offset + xref.KnownStreamStart;
-        var stream = xref.Source.GetStream(startOs);
+        var stream = xref.Source.GetStream(ctx, startOs);
         var reader = ctx.Options.CreateReader(stream);
         var scanner = new PipeScanner(ctx, reader);
         if (!scanner.TrySkipToToken(IndirectSequences.endstream, 5))
@@ -314,7 +314,7 @@ internal static class StructuralRepairs
             }
             scanner.SkipCurrent(); // obj
 
-            entries.Add(new XRefEntry { Offset = offset + scanStart, Reference = new XRef { ObjectNumber = n, Generation = g } });
+            entries.Add(new XRefEntry { Offset = offset + scanStart, Reference = new XRef { ObjectNumber = n, Generation = g }, Source = ctx.CurrentSource });
             if (scanner.Peek() == PdfTokenType.DictionaryStart)
             {
                 var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
@@ -353,7 +353,7 @@ internal static class StructuralRepairs
 
                 var current = GetOSOffsets(ctx, data, str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N), n);
                 var first = str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
-                var source = new ObjectStreamDataSource(ctx, n, data, current.Select(x => (int)x.Offset).ToList(), first);
+                var source = new ObjectStreamDataSource(ctx.CurrentSource.Document, n, data, current.Select(x => (int)x.Offset).ToList(), first);
                 foreach (var item in current)
                 {
                     item.Source = source;

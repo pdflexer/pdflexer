@@ -1,6 +1,4 @@
-﻿
-
-namespace PdfLexer.Parsers;
+﻿namespace PdfLexer.Parsers;
 
 internal class ArrayParser : Parser<PdfArray>
 {
@@ -12,7 +10,7 @@ internal class ArrayParser : Parser<PdfArray>
     }
     public override PdfArray Parse(ReadOnlySpan<byte> buffer)
     {
-        var obj = _ctx.NestedParser.ParseNestedItem(buffer, 0, out _) as PdfArray;
+        var obj = _ctx.NestedParser.ParseNestedItem(_ctx.CurrentSource?.Document, buffer, 0, out _) as PdfArray;
         return obj!;
     }
 }

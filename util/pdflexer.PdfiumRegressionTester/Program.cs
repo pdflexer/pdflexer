@@ -5,6 +5,7 @@ using PdfLexer.Content;
 using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.Operators;
+using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using System.CommandLine;
 using System.Numerics;
@@ -175,12 +176,13 @@ async Task<int> RunBase(string type, string pdfRoot, string[] pdfPaths, string o
                     {
                         success = false;
                     }
-                } catch (Exception e)
+                }
+                catch (Exception e)
                 {
                     Console.WriteLine("Failure: " + e.Message);
                     success = false;
                 }
-                
+
             }
             return success ? 0 : 1;
         case "MERGE":
@@ -325,13 +327,8 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
         {
             try
             {
-                var opts = new ParsingOptions { MaxErrorRetention = 10 };
-                opts.ThrowOnErrors = strict && !(errorInfo?.Failure ?? false) && errorInfo?.ErrCount == 0;
-                // using var fs = File.OpenRead(pdf);
-                // using var doc = PdfDocument.Open(fs, opts);
-                using var doc = PdfDocument.OpenMapped(pdf, opts);
-                //using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), opts);
-                // for non compressed object strams
+                using var ctx = new ParsingContext(new ParsingOptions { MaxErrorRetention = 10, ThrowOnErrors = strict && !(errorInfo?.Failure ?? false) && errorInfo?.ErrCount == 0 });
+                using var doc = PdfDocument.Open(pdf);
                 if (doc.Trailer.Get(PdfName.Encrypt) != null)
                 {
                     continue;
@@ -365,18 +362,21 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                             success = false;
                             WriteError(errorOutput);
                             continue;
-                        } else if (errorInfo.ErrCount != doc.Context.ErrorCount)
+                        }
+                        else if (errorInfo.ErrCount != doc.Context.ErrorCount)
                         {
                             Log($"[{nm}] pdflexer mismatched errors in strict mode {errorInfo.ErrCount} vs {doc.Context.ErrorCount}.");
                             success = false;
-                        } else
+                        }
+                        else
                         {
                             Log($"[{nm}] pdflexer error count matched.");
                         }
                     }
                 }
             }
-            catch (PdfLexerPasswordException) {
+            catch (PdfLexerPasswordException)
+            {
                 continue;
             }
             catch (NotSupportedException ex)
@@ -395,16 +395,17 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                 errorOutput.FailureMsg = ex.Message;
                 if (strict)
                 {
-                    if (errorInfo?.Failure ?? false && errorInfo?.FailureMsg == ex.Message) 
+                    if (errorInfo?.Failure ?? false && errorInfo?.FailureMsg == ex.Message)
                     {
                         Log($"[{nm}] pdflexer failure matched existing.");
-                    } else
+                    }
+                    else
                     {
                         Log($"[{nm}] pdflexer failure not known.");
                         success = false;
                     }
                 }
-                
+
                 WriteError(errorOutput);
                 continue;
             }
@@ -454,13 +455,14 @@ bool RunRebuildTests(string[] pdfs, string output, bool strict)
                 if (errorInfo?.FailedPages != null && errorInfo.FailedPages.SequenceEqual(changedpages))
                 {
                     Log($"[{nm}] failed paged match previous run.");
-                } else
+                }
+                else
                 {
                     Log($"[{nm}] failed");
                     success = false;
                 }
             }
-            
+
             File.Copy(pdf, Path.Combine(output, Path.GetFileNameWithoutExtension(pdf) + "_baseline.pdf"), true);
         }
         writer.Flush();
@@ -534,7 +536,8 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
 
                 op.Serialize(ms);
                 ms.WriteByte((byte)'\n');
-            } else
+            }
+            else
             {
                 if (!Object.ReferenceEquals(currentForm, scanner.CurrentForm))
                 {
@@ -581,7 +584,7 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
                     case PdfOperatorType.Do:
                         {
                             var orig = (Do_Op)op;
-                            
+
 
                             var rn = GetReplacedName(
                                 orig.name,
@@ -602,7 +605,7 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
                 }
             }
 
-            
+
         }
         scanner.SkipCurrent();
     }
@@ -616,7 +619,7 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
     page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
     return page;
 
-    PdfName GetReplacedName(PdfName name, PdfDictionary pageSubDict, PdfDictionary? formSubDict, Dictionary<PdfName,PdfName> replacement)
+    PdfName GetReplacedName(PdfName name, PdfDictionary pageSubDict, PdfDictionary? formSubDict, Dictionary<PdfName, PdfName> replacement)
     {
         if (!replacement.TryGetValue(name, out var nm))
         {

@@ -107,22 +107,22 @@ public class XRefEntry
     /// Gets the object this entry points to.
     /// </summary>
     /// <returns>IPdfObject</returns>
-    internal IPdfObject GetObject() 
+    internal IPdfObject GetObject(ParsingContext ctx) 
     {
         try
         {
-            return Source.GetIndirectObject(this);
+            return Source.GetIndirectObject(ctx, this);
         }
         catch (PdfLexerException e)
         {
-            Source.Context.Error($"XRef offset for {Reference} was not valid: " + e.Message);
-            if (!StructuralRepairs.TryRepairXRef(Source.Context, this, out var repaired))
+            ctx.Error($"XRef offset for {Reference} was not valid: " + e.Message);
+            if (!StructuralRepairs.TryRepairXRef(ctx, this, out var repaired))
             {
                 return PdfNull.Value;
             }
-            Source.Context.Error("XRef offset repairs to " + repaired.Offset);
-            Source.Context.XRefs[repaired.Reference.GetId()] = repaired;
-            return Source.GetIndirectObject(repaired);
+            ctx.Error("XRef offset repairs to " + repaired.Offset);
+            Source.Document.XRefs[repaired.Reference.GetId()] = repaired;
+            return Source.GetIndirectObject(ctx, repaired);
         }
     } 
     /// <summary>
@@ -130,27 +130,27 @@ public class XRefEntry
     /// Excludes object header and trailer (obj/endobj).
     /// </summary>
     /// <param name="destination">Stream to write to</param>
-    internal void CopyUnwrappedData(WritingContext destination) {
+    internal void CopyUnwrappedData(ParsingContext ctx, WritingContext destination) {
         try
         {
             if (CachedSource?.TryGetTarget(out var source) ?? false)
             {
-                source.CopyIndirectObject(this, destination);
+                source.CopyIndirectObject(ctx, this, destination);
             } else
             {
-                Source.CopyIndirectObject(this, destination);
+                Source.CopyIndirectObject(ctx, this, destination);
             }
         }
         catch (PdfLexerException e)
         {
-            Source.Context.Error($"XRef offset for {Reference} was not valid: " + e.Message);
-            if (!StructuralRepairs.TryRepairXRef(Source.Context, this, out var repaired))
+            ctx.Error($"XRef offset for {Reference} was not valid: " + e.Message);
+            if (!StructuralRepairs.TryRepairXRef(ctx, this, out var repaired))
             {
                 return; // will be null;
             }
-            Source.Context.Error("XRef offset repairs to " + repaired.Offset);
-            Source.Context.XRefs[repaired.Reference.GetId()] = repaired;
-            Source.CopyIndirectObject(repaired, destination);
+            ctx.Error("XRef offset repairs to " + repaired.Offset);
+            Source.Document.XRefs[repaired.Reference.GetId()] = repaired;
+            Source.CopyIndirectObject(ctx, repaired, destination);
         }
     }
 }

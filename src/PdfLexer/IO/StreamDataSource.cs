@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Lexing;
-using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 
@@ -44,9 +43,9 @@ internal class StreamDataSource : StreamBase
                 // fallback to stream
             }
         }
-        return this.ReadWrappedFromStream(xref);
+        return this.ReadWrappedFromStream(ctx, xref);
     }
 
     public override void CopyIndirectObject(ParsingContext ctx, XRefEntry xref, WritingContext destination)
-        => this.WriteWrappedFromStream(xref, destination.Stream);
+        => this.WriteWrappedFromStream(ctx, xref, destination.Stream);
 }

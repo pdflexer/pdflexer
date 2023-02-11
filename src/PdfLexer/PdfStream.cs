@@ -1,6 +1,5 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.IO;
-using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using System.Buffers;
 
@@ -224,7 +223,7 @@ public abstract class PdfStreamContents
         {
             if (Source?.IsEncrypted ?? false)
             {
-                source = Source.Document.Decryption.Decrypt(ctx.CurrentReference, Encryption.CryptoType.Streams, source);
+                source = Source.Document.Decryption.Decrypt(ctx, ctx.CurrentReference, Encryption.CryptoType.Streams, source);
             }
             return source;
         }
@@ -240,7 +239,7 @@ public abstract class PdfStreamContents
             {
                 if (Source?.IsEncrypted ?? false)
                 {
-                    source = Source.Document.Decryption.Decrypt(ctx.CurrentReference, Encryption.CryptoType.Streams, source);
+                    source = Source.Document.Decryption.Decrypt(ctx, ctx.CurrentReference, Encryption.CryptoType.Streams, source);
                 }
             }
 
@@ -259,7 +258,7 @@ public abstract class PdfStreamContents
             var filter = obj.GetValue<PdfName>();
             if (filter != "Crypt" && (Source?.IsEncrypted ?? false))
             {
-                source = Source.Document.Decryption.Decrypt(ParsingContext.Current.CurrentReference, Encryption.CryptoType.Streams, source);
+                source = Source.Document.Decryption.Decrypt(ctx, ctx.CurrentReference, Encryption.CryptoType.Streams, source);
             }
 
             PdfDictionary? currentParms = null;
@@ -282,7 +281,7 @@ public abstract class PdfStreamContents
 
         Stream DecodeSingle(PdfName filterName, Stream input, PdfDictionary? decodeParams)
         {
-            var decode = ParsingContext.GetDecoder(filterName, ctx);
+            var decode = ParsingContext.GetDecoder(filterName, Source?.Document);
             if (ctx != null)
             {
                 return decode.Decode(input, decodeParams, ctx.Error);

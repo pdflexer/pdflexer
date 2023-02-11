@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Lexing;
-using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 using System.Diagnostics;
@@ -70,7 +69,7 @@ internal class ObjectStreamDataSource : IPdfDataSource
         data = data.Slice(os);
         var orig = ctx.Options.Eagerness;
         ctx.Options.Eagerness = Eagerness.FullEager; // TODO fix so this works lazy
-        var obj = ctx.GetPdfItem(data, 0, out _);
+        var obj = ctx.GetPdfItem(data, 0, out _, Document);
         ctx.Options.Eagerness = orig;
         return obj;
     }
@@ -82,7 +81,7 @@ internal class ObjectStreamDataSource : IPdfDataSource
         ctx.CurrentOffset = os;
         ReadOnlySpan<byte> data = _data;
         var scanner = new Scanner(ctx, data.Slice(os), 0);
-        this.CopyRawObjFromSpan(ref scanner, destination);
+        this.CopyRawObjFromSpan(ctx, ref scanner, destination);
     }
 
     public void Dispose()

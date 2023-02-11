@@ -1,6 +1,4 @@
-﻿using PdfLexer.Parsers;
-
-namespace PdfLexer.DOM.ColorSpaces;
+﻿namespace PdfLexer.DOM.ColorSpaces;
 
 internal class ColorSpace
 {

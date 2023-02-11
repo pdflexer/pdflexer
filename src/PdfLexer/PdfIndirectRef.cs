@@ -1,5 +1,4 @@
-﻿using PdfLexer.Parsers;
-using PdfLexer.Parsers.Structure;
+﻿using PdfLexer.Parsers.Structure;
 using System.Runtime.CompilerServices;
 
 namespace PdfLexer;
@@ -13,7 +12,12 @@ public abstract class PdfIndirectRef : PdfObject
     /// Gets the referenced PDF object.
     /// </summary>
     /// <returns>PDF object</returns>
-    public abstract IPdfObject GetObject();
+    public virtual IPdfObject GetObject() => GetObject(ParsingContext.Current);
+    /// <summary>
+    /// Gets the referenced PDF object.
+    /// </summary>
+    /// <returns>PDF object</returns>
+    public abstract IPdfObject GetObject(ParsingContext ctx);
     /// <summary>
     /// Creates a new reference to a PDF object.
     /// </summary>
@@ -41,10 +45,11 @@ public abstract class PdfIndirectRef : PdfObject
 /// </summary>
 internal class ExistingIndirectRef : PdfIndirectRef
 {
-    public ExistingIndirectRef(ParsingContext ctx, long objectNumber, int generation)
+    public PdfDocument Document { get; }
+    public ExistingIndirectRef(PdfDocument doc, long objectNumber, int generation)
     {
-        Context = ctx;
-        SourceId = ctx.SourceId;
+
+        Document = doc;
         Reference = new XRef 
         {
             ObjectNumber = (int)objectNumber,
@@ -52,25 +57,24 @@ internal class ExistingIndirectRef : PdfIndirectRef
         };
     }
 
-    public ExistingIndirectRef(ParsingContext ctx, XRef reference)
+    public ExistingIndirectRef(PdfDocument doc, XRef reference)
     {
-        Context = ctx;
-        SourceId = ctx.SourceId;
+        Document = doc;
         Reference = reference;
     }
-
-    public ParsingContext Context { get; }
-    public override IPdfObject GetObject() 
+    public override IPdfObject GetObject(ParsingContext ctx) 
     {
         if (Object == null)
         {
-            Object = Context.GetIndirectObject(Reference);
+            Object = ctx.GetIndirectObject(Document, Reference);
         }
         return Object;
     } 
     internal override bool IsOwned(int sourceId, bool attemptOwnership) => SourceId == sourceId;
 
     internal IPdfObject? Object {get;set;}
+
+    internal override int SourceId { get => Document.DocumentId ; set => throw new PdfLexerException("Updating source id on existing indirect reference is not supported."); }
 
     public override int GetHashCode()
     {
@@ -103,7 +107,7 @@ internal class ExistingIndirectRef : PdfIndirectRef
 /// </summary>
 internal class NewIndirectRef : PdfIndirectRef
 {
-    public override IPdfObject GetObject() => Object;
+    public override IPdfObject GetObject(ParsingContext ctx) => Object;
 
     public IPdfObject Object { get; internal set; }
 
@@ -163,7 +167,7 @@ internal class WrittenIndirectRef : PdfIndirectRef
         SourceId = reference.SourceId;
     }
 
-    public override IPdfObject GetObject()
+    public override IPdfObject GetObject(ParsingContext ctx)
     {
         throw new NotSupportedException();
     }

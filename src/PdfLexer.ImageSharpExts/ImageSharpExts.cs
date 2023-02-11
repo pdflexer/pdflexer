@@ -2,7 +2,6 @@
 using PdfLexer.DOM;
 using PdfLexer.DOM.ColorSpaces;
 using PdfLexer.Filters;
-using PdfLexer.Parsers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Runtime.InteropServices;

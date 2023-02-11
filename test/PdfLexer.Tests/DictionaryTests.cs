@@ -31,6 +31,7 @@ namespace PdfLexer.Tests
         {
             var buffer = Encoding.ASCII.GetBytes(data);
             var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager, ThrowOnErrors = true });
+            ctx.CurrentSource = new InMemoryDataSource(new PdfDocument(), new byte[0]);
             if (!found)
             {
                 Assert.ThrowsAny<Exception>(() => ctx.DictionaryParser.Parse(buffer));
@@ -75,11 +76,15 @@ namespace PdfLexer.Tests
         public void It_Gets_Real_Dicts(string data)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
-            var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
+
+            var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager });
+            ctx.CurrentSource = new InMemoryDataSource(new PdfDocument(), new byte[0]); // to make IR work
+            var parser = new DictionaryParser(ctx);
             var dict = parser.Parse(buffer);
             var seq = new ReadOnlySequence<byte>(buffer);
             var dict3 = parser.Parse(seq);
-            var parser2 = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.Lazy }));
+            ctx.Options.Eagerness = Eagerness.Lazy;
+            var parser2 = new DictionaryParser(ctx);
             var dict2 = parser2.Parse(buffer);
             var dict4 = parser2.Parse(seq);
             // Do_Get_Dict(data, true, data);
@@ -126,7 +131,9 @@ namespace PdfLexer.Tests
 /Size 6
 /ID [<904e5a162f03815bfbf836e313c7e¤Iž@Á#Ø½÷PÓyq`z÷ëRÎŽZ6äqÎÖ„ìDX€T»‘ƒÆ3õ§™@;#‰ÏÞž ¨Qæ|¨?7lU";
             var data = Encoding.ASCII.GetBytes(text);
-            var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
+            var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager });
+            ctx.CurrentSource = new InMemoryDataSource(new PdfDocument(), new byte[0]); // to make IR work
+            var parser = new DictionaryParser(ctx);
             var dict = parser.Parse(data);
             Assert.Equal(6, (int)dict.GetRequiredValue<PdfNumber>(PdfName.Size));
         }
@@ -164,7 +171,9 @@ namespace PdfLexer.Tests
 /Pages 2 0 R
 ";
             var data = Encoding.ASCII.GetBytes(text);
-            var parser = new DictionaryParser(new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager }));
+            var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager });
+            ctx.CurrentSource = new InMemoryDataSource(new PdfDocument(), new byte[0]); // to make IR work
+            var parser = new DictionaryParser(ctx);
             var dict = parser.Parse(data);
             var ir = dict[PdfName.Pages] as PdfIndirectRef;
             Assert.Equal(2, ir.Reference.ObjectNumber);
@@ -178,7 +187,9 @@ namespace PdfLexer.Tests
             var buffer = Encoding.ASCII.GetBytes(data);
             var ms = new MemoryStream(buffer);
             var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 30, minimumReadSize: 15));
-            var scanner = new PipeScanner(new ParsingContext(), reader);
+            var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager });
+            ctx.CurrentSource = new InMemoryDataSource(new PdfDocument(), new byte[0]); // to make IR work
+            var scanner = new PipeScanner(ctx, reader);
             int cnt = 0;
             while (true)
             {

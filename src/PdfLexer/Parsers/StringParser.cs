@@ -93,10 +93,10 @@ internal class StringParser : Parser<PdfString>
 
         byte[]? extraRent = null;
         ReadOnlySpan<byte> converted = output;
-        if (_ctx.IsEncrypted)
+        if (_ctx.CurrentSource?.IsEncrypted ?? false)
         {
             extraRent = ArrayPool<byte>.Shared.Rent(length);
-            converted = _ctx.Decryption.Decrypt(_ctx.CurrentReference, Encryption.CryptoType.Strings, converted.Slice(0, length), extraRent);
+            converted = _ctx.CurrentSource.Document.Decryption.Decrypt(_ctx, _ctx.CurrentReference, Encryption.CryptoType.Strings, converted.Slice(0, length), extraRent);
             length = converted.Length;
         }
 

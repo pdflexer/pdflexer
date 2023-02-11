@@ -1,5 +1,4 @@
 ﻿using PdfLexer.DOM;
-using PdfLexer.Parsers;
 using System.Buffers;
 using System.Security.Cryptography;
 using System.Text;
@@ -69,11 +68,12 @@ internal class StandardEncryption : IDecryptionHandler
 
     private byte[] Initialize(StandardEncryptionInfo ei)
     {
+        var ctx = ParsingContext.Current;
         // TODO validation
         var v = (int)ei.V;
         if (v != 1 && v != 2 && v != 4 && v != 5)
         {
-            _ctx.Error("Encrypt V is not 1, 2, 4, or 5");
+            ctx.Error("Encrypt V is not 1, 2, 4, or 5");
         }
 
         R = ei.R ?? 1;
@@ -83,7 +83,7 @@ internal class StandardEncryption : IDecryptionHandler
             var cf = ei.CF;
             if (cf == null)
             {
-                _ctx.Error("Encrypt dict missing CF.");
+                ctx.Error("Encrypt dict missing CF.");
             }
             else
             {
@@ -104,7 +104,7 @@ internal class StandardEncryption : IDecryptionHandler
         {
             return ownerKey; // TODO, may need both
         }
-        _ctx.Options.OwnerPass = null;
+        _doc.OwnerPass = null;
 
         var userEmpty = GetKeyFromUserPassword(ei, empty);
         if (userEmpty != null) { return userEmpty; }
@@ -147,7 +147,7 @@ internal class StandardEncryption : IDecryptionHandler
             return GetKeyFromOwnerPassAES256(info);
         }
 
-        var key = BaseKey(info, _ctx.Options.OwnerPass, _ctx.Options.UserPass);
+        var key = BaseKey(info, _doc.OwnerPass, _doc.UserPass);
 
         if (info.O?.Value == null) { throw new PdfLexerException("O entry not in standard encryption info"); }
         var upw = info.O.GetRawBytes();
@@ -177,11 +177,11 @@ internal class StandardEncryption : IDecryptionHandler
 
     private byte[]? GetKeyFromUserPassword(StandardEncryptionInfo info)
     {
-        if (string.IsNullOrEmpty(_ctx.Options.UserPass))
+        if (string.IsNullOrEmpty(_doc.UserPass))
         {
             return GetKeyFromUserPassword(info, empty);
         }
-        return GetKeyFromUserPassword(info, Encoding.UTF8.GetBytes(_ctx.Options.UserPass));
+        return GetKeyFromUserPassword(info, Encoding.UTF8.GetBytes(_doc.UserPass));
     }
 
     private byte[]? GetKeyFromUserPassword(StandardEncryptionInfo info, byte[] userPw)
@@ -352,12 +352,12 @@ internal class StandardEncryption : IDecryptionHandler
 
     private byte[]? GetKeyFromOwnerPassAES256(StandardEncryptionInfo info)
     {
-        if (string.IsNullOrEmpty(_ctx.Options.OwnerPass))
+        if (string.IsNullOrEmpty(_doc.OwnerPass))
         {
             return null;
         }
 
-        var opw = Encoding.UTF8.GetBytes(_ctx.Options.OwnerPass);
+        var opw = Encoding.UTF8.GetBytes(_doc.OwnerPass);
         if (opw.Length > 127)
         {
             opw = opw[..127];
@@ -570,7 +570,7 @@ internal class StandardEncryption : IDecryptionHandler
     }
 
     private byte[] ivBuffer = new byte[16];
-    public ReadOnlySpan<byte> Decrypt(ulong id, CryptoType type, ReadOnlySpan<byte> data, Span<byte> writeBuffer)
+    public ReadOnlySpan<byte> Decrypt(ParsingContext ctx, ulong id, CryptoType type, ReadOnlySpan<byte> data, Span<byte> writeBuffer)
     {
         var filter = type switch
         {
@@ -599,7 +599,7 @@ internal class StandardEncryption : IDecryptionHandler
 
             if (!enc.TryDecryptCbc(data.Slice(16), ivBuffer, writeBuffer, out int bytes))
             {
-                _ctx.Error($"Failed to decrypt data of {type} type from obj {id}");
+                ctx.Error($"Failed to decrypt data of {type} type from obj {id}");
                 return data;
             }
 
@@ -624,7 +624,7 @@ internal class StandardEncryption : IDecryptionHandler
 
     }
     private static byte[] emptyIV = new byte[16];
-    public Stream Decrypt(ulong id, CryptoType type, Stream data)
+    public Stream Decrypt(ParsingContext ctx, ulong id, CryptoType type, Stream data)
     {
         var filter = type switch
         {
@@ -669,7 +669,7 @@ internal class StandardEncryption : IDecryptionHandler
         }
     }
 
-    public Stream DecryptCryptStream(ulong id, PdfDictionary? decodeParams, Stream data)
+    public Stream DecryptCryptStream(ParsingContext ctx, ulong id, PdfDictionary? decodeParams, Stream data)
     {
         var nm = decodeParams?.Get<PdfName>(PdfName.Name);
         if (nm == null) // Identity
@@ -679,7 +679,7 @@ internal class StandardEncryption : IDecryptionHandler
         var cd = _ei.CF?.Get<PdfDictionary>(nm);
         if (cd == null)
         {
-            _ctx.Error($"Stream {id} specified crypt filter {nm} but was not found in CF dict");
+            ctx.Error($"Stream {id} specified crypt filter {nm} but was not found in CF dict");
             return data;
         }
 

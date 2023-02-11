@@ -50,7 +50,7 @@ Q
 f";
             var data = Encoding.ASCII.GetBytes(text);
 
-            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var scanner = new ContentScanner(new ParsingContext(), data);
             Assert.Equal(PdfOperatorType.q, scanner.Peek());
             Assert.Empty(scanner.Operands);
             var op = scanner.GetCurrentOperation();
@@ -101,7 +101,7 @@ f";
             var text = "q\n0.06000 0 0 -0.06000 1 594 cm\n870 1095 768 176 re\nh\nW*\nn\nQ\nf\n";
             var data = Encoding.ASCII.GetBytes(text);
 
-            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var scanner = new ContentScanner(new ParsingContext(), data);
             var ops = new List<IPdfOperation>();
             PdfOperatorType nxt = PdfOperatorType.Unknown;
             while ((nxt = scanner.Peek()) != PdfOperatorType.EOC)
@@ -144,7 +144,7 @@ EI
             var data = Encoding.ASCII.GetBytes(txt);
 
             // read then skip
-            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var scanner = new ContentScanner(new ParsingContext(), data);
             var cm = scanner.Peek();
             Assert.Equal(PdfOperatorType.cm, cm);
             scanner.SkipCurrent();
@@ -156,7 +156,7 @@ EI
             Assert.Equal(PdfOperatorType.cm, cm);
 
             // just skip
-            scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            scanner = new ContentScanner(new ParsingContext(), data);
             cm = scanner.Peek();
             Assert.Equal(PdfOperatorType.cm, cm);
             scanner.SkipCurrent();
@@ -167,7 +167,7 @@ EI
             Assert.Equal(PdfOperatorType.cm, cm);
 
             // just data
-            scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            scanner = new ContentScanner(new ParsingContext(), data);
             cm = scanner.Peek();
             Assert.Equal(PdfOperatorType.cm, cm);
             scanner.SkipCurrent();
@@ -194,7 +194,7 @@ EI";
             var data = Encoding.ASCII.GetBytes(txt);
 
             // read then skip
-            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var scanner = new ContentScanner(new ParsingContext(), data);
             var cm = scanner.Peek();
             Assert.Equal(PdfOperatorType.cm, cm);
             scanner.SkipCurrent();
@@ -205,7 +205,7 @@ EI";
             Assert.Equal(PdfOperatorType.EOC, scanner.Peek());
 
             // read data
-            scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            scanner = new ContentScanner(new ParsingContext(), data);
             cm = scanner.Peek();
             Assert.Equal(PdfOperatorType.cm, cm);
             scanner.SkipCurrent();
@@ -234,7 +234,7 @@ Q";
             var data = Encoding.ASCII.GetBytes(txt);
 
             // read then skip
-            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var scanner = new ContentScanner(new ParsingContext(), data);
             var dp = scanner.Peek();
             Assert.Equal(PdfOperatorType.DP, dp);
             var op = (DP_Op)scanner.GetCurrentOperation();
@@ -269,7 +269,7 @@ q";
             var data = Encoding.ASCII.GetBytes(txt);
 
             // read then skip
-            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var scanner = new ContentScanner(new ParsingContext(), data);
             var bdc = scanner.Peek();
             Assert.Equal(PdfOperatorType.BDC, bdc);
             var op = scanner.GetCurrentOperation();
@@ -285,7 +285,7 @@ q";
             var data = Encoding.ASCII.GetBytes(txt);
 
             // read then skip
-            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var scanner = new ContentScanner(new ParsingContext(), data);
             var doOp = scanner.Peek();
             Assert.Equal(PdfOperatorType.Do, doOp);
             var succeeded = scanner.TryGetCurrentOperation(out var doOpObj);
@@ -302,7 +302,7 @@ q";
             var data = Encoding.ASCII.GetBytes(txt);
 
             // read then skip
-            var scanner = new ContentScanner(new Parsers.ParsingContext(), data);
+            var scanner = new ContentScanner(new ParsingContext(), data);
             var op = scanner.Peek();
             Assert.Equal(PdfOperatorType.cm, op);
             var succeeded = scanner.TryGetCurrentOperation(out var opObj);

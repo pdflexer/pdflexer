@@ -1,16 +1,18 @@
-﻿using PdfLexer.Parsers;
-
-namespace PdfLexer.Filters;
+﻿namespace PdfLexer.Filters;
 
 internal class CryptFilter : IDecoder
 {
-    private ParsingContext _ctx;
+    private PdfDocument _doc;
 
-    public CryptFilter(ParsingContext ctx)
+    public CryptFilter(PdfDocument doc)
     {
-        _ctx = ctx;
+        _doc = doc;
     }
-    public Stream Decode(Stream stream, PdfDictionary? filterParams) =>
-        _ctx.Decryption.DecryptCryptStream(_ctx.CurrentReference, filterParams, stream);
+    public Stream Decode(Stream stream, PdfDictionary? filterParams)
+    {
+        var ctx = ParsingContext.Current;
+        return _doc.Decryption.DecryptCryptStream(ctx, ctx.CurrentReference, filterParams, stream);
+    }
+        
     
 }

@@ -20,7 +20,7 @@ internal struct ObjParseState
         return State != ParseState.None;
     }
 
-    public PdfArray GetArrayFromBag(ParsingContext ctx)
+    public PdfArray GetArrayFromBag(PdfDocument? doc)
     {
         var arr = new PdfArray(new List<IPdfObject>(Bag.Count));
         for (var i=0;i<Bag.Count;i++)
@@ -31,7 +31,8 @@ internal struct ObjParseState
                 && Bag[i+1] is PdfIntNumber num2
                 && Bag[i+2] is IndirectRefToken)
             {
-                arr.Add(new ExistingIndirectRef(ctx, (long)num, num2.Value));
+                if (doc == null) { throw new PdfLexerException("Indirect reference found without source doc."); }
+                arr.Add(new ExistingIndirectRef(doc, (long)num, num2.Value));
                 i+=2;
             } else
             {
@@ -41,7 +42,7 @@ internal struct ObjParseState
         return arr;
     }
 
-    public PdfDictionary GetDictionaryFromBag(ParsingContext ctx)
+    public PdfDictionary GetDictionaryFromBag(ParsingContext ctx, PdfDocument? doc)
     {
         var dict = new PdfDictionary(Bag.Count / 2);
         bool key = true;
@@ -66,7 +67,9 @@ internal struct ObjParseState
                     && Bag[i+1] is PdfIntNumber num2
                     && Bag[i+2] is IndirectRefToken)
                 {
-                    dict[name] = new ExistingIndirectRef(ctx, (long)num, num2.Value);
+
+                    if (doc == null) { throw new PdfLexerException("Indirect reference found without source doc."); }
+                    dict[name] = new ExistingIndirectRef(doc, (long)num, num2.Value);
                     i+=2;
                 } else
                 {

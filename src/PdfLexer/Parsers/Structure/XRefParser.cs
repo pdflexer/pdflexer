@@ -39,7 +39,7 @@ internal class XRefParser
         catch (Exception e)
         {
             _ctx.Error("Error during crossref parsing: " + e.Message);
-            results = StructuralRepairs.BuildFromRawData(_ctx, pdf.GetStream(0));
+            results = StructuralRepairs.BuildFromRawData(_ctx, pdf.GetStream(_ctx, 0));
         }
 
         var entries = new Dictionary<ulong, XRefEntry>();
@@ -49,7 +49,7 @@ internal class XRefParser
         }
         UpdateRefs(results.Refs);
 
-        pdf.Context.IsEncrypted = results.Trailer?.ContainsKey(PdfName.Encrypt) ?? false;
+        pdf.Document.IsEncrypted = results.Trailer?.ContainsKey(PdfName.Encrypt) ?? false;
         return (entries, results.Trailer);
 
         void UpdateRefs(List<XRefEntry> refs)
@@ -91,7 +91,7 @@ internal class XRefParser
             readStart = 0;
         }
 
-        var stream = source.GetStream(readStart);
+        var stream = source.GetStream(_ctx, readStart);
         var pipe = _ctx.Options.CreateReader(stream);
         var scanner = new PipeScanner(_ctx, pipe);
         if (!scanner.TrySkipToToken(IndirectSequences.strartxref, 0))
@@ -110,7 +110,7 @@ internal class XRefParser
             throw new PdfLexerException($"XRef offset larger than document size, {num} ({source.TotalBytes} size)");
         }
         long strStart = num;
-        stream = source.GetStream(strStart);
+        stream = source.GetStream(_ctx, strStart);
         pipe = _ctx.Options.CreateReader(stream);
         scanner = new PipeScanner(_ctx, pipe);
         var result = scanner.Peek();
@@ -133,7 +133,7 @@ internal class XRefParser
                 }
 
                 var offset = (long)lastOffset;
-                stream = source.GetStream(offset);
+                stream = source.GetStream(_ctx, offset);
                 pipe = _ctx.Options.CreateReader(stream);
                 scanner = new PipeScanner(_ctx, pipe);
                 result = scanner.Peek();
@@ -215,7 +215,7 @@ internal class XRefParser
                     return (entries, original);
                 }
 
-                stream = source.GetStream(oss);
+                stream = source.GetStream(_ctx, oss);
                 strStart = oss;
                 pipe = _ctx.Options.CreateReader(stream);
                 scanner = new PipeScanner(_ctx, pipe);

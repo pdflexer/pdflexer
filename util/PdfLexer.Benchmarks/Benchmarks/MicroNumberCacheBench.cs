@@ -3,7 +3,6 @@ using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using PdfLexer.Lexing;
-using PdfLexer.Parsers;
 using System;
 using System.Buffers;
 using System.Buffers.Text;
@@ -14,7 +13,7 @@ using System.Text;
 
 namespace PdfLexer.Benchmarks.Benchmarks
 {
-    
+
     /// <summary>
     /// Looked at using string to look up common number values but the utf8 parser is faster than
     /// just getting ascii.

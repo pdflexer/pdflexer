@@ -1,6 +1,6 @@
 ﻿using PdfLexer.DOM;
+using PdfLexer.Filters;
 using PdfLexer.IO;
-using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 using System.Threading.Tasks.Sources;
@@ -50,11 +50,13 @@ public sealed partial class PdfDocument : IDisposable
 #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
     {
         DocumentId = GetNextId();
+        CryptFilter = new CryptFilter(this);
     }
 
     internal PdfDocument(int id)
     {
         DocumentId = id;
+        CryptFilter = new CryptFilter(this);
     }
 
     internal PdfDocument(int id, PdfDictionary catalog, PdfDictionary trailer, List<PdfPage> pages)
@@ -63,6 +65,7 @@ public sealed partial class PdfDocument : IDisposable
         Trailer = trailer;
         Pages = pages;
         Catalog = catalog;
+        CryptFilter = new CryptFilter(this);
     }
 
     public void Dispose()
@@ -80,7 +83,7 @@ public sealed partial class PdfDocument : IDisposable
         return ms.ToArray();
     }
 
-    public PdfPage AddPage(PageSize size=PageSize.LETTER)
+    public PdfPage AddPage(PageSize size = PageSize.LETTER)
     {
         var pg = new PdfPage();
         pg.MediaBox = PageSizeHelpers.GetMediaBox(size);
@@ -96,7 +99,7 @@ public sealed partial class PdfDocument : IDisposable
         return pg;
     }
 
-    
+
 
     /// <summary>
     /// Create a new empty PDF document.
@@ -116,11 +119,12 @@ public sealed partial class PdfDocument : IDisposable
     /// <param name="data">PDF data</param>
     /// <param name="options">Optional parsing options</param>
     /// <returns>PdfDocument</returns>
-    public static PdfDocument Open(Stream data, ParsingOptions? options = null)
+    public static PdfDocument Open(Stream data, DocumentOptions? options = null)
     {
-        options ??= new ParsingOptions { };
         var ctx = ParsingContext.Current;
         var doc = new PdfDocument();
+        doc.UserPass = options?.UserPass;
+        doc.OwnerPass = options?.OwnerPass;
         var source = new StreamDataSource(doc, data);
         doc.Initialize(ctx, source);
         return doc;
@@ -132,16 +136,50 @@ public sealed partial class PdfDocument : IDisposable
     /// <param name="data">PDF data</param>
     /// <param name="options">Optional parsing options</param>
     /// <returns>PdfDocument</returns>
-    public static PdfDocument OpenLowMemory(Stream data, ParsingOptions? options = null)
+    [Obsolete]
+    public static PdfDocument Open(Stream data, ParsingOptions options)
     {
-        options ??= new ParsingOptions();
-        options.CacheNames = false;
-        options.CacheNumbers = false;
-        options.LowMemoryMode = true;
-        var ctx = ParsingContext.Current;
+        var ctx = new ParsingContext(options);
         var doc = new PdfDocument();
+        var source = new StreamDataSource(doc, data);
+        doc.Initialize(ctx, source);
+        doc.disposables.Add(ctx);
+        return doc;
+    }
+
+    /// <summary>
+    /// Opens a PDF document from the provided seekable stream.
+    /// </summary>
+    /// <param name="data">PDF data</param>
+    /// <param name="options">Optional parsing options</param>
+    /// <returns>PdfDocument</returns>
+    [Obsolete]
+    public static PdfDocument OpenLowMemory(Stream data, DocumentOptions? options = null)
+    {
+        var ctx = ParsingContext.CreateLowMemory();
+        var doc = new PdfDocument();
+        doc.UserPass = options?.UserPass;
+        doc.OwnerPass = options?.OwnerPass;
 
         var source = new StreamDataSource(doc, data);
+        doc.Initialize(ctx, source);
+        doc.disposables.Add(ctx);
+        return doc;
+    }
+
+    /// <summary>
+    /// Opens a PDF document from the provided byte array.
+    /// </summary>
+    /// <param name="data">PDF data</param>
+    /// <param name="options">Optional parsing options</param>
+    /// <returns>PdfDocument</returns>
+    public static PdfDocument Open(byte[] data, DocumentOptions? options = null)
+    {
+        var ctx = ParsingContext.Current;
+        var doc = new PdfDocument();
+        doc.UserPass = options?.UserPass;
+        doc.OwnerPass = options?.OwnerPass;
+        var source = new InMemoryDataSource(doc, data);
         doc.Initialize(ctx, source);
         return doc;
     }
@@ -152,12 +190,14 @@ public sealed partial class PdfDocument : IDisposable
     /// <param name="data">PDF data</param>
     /// <param name="options">Optional parsing options</param>
     /// <returns>PdfDocument</returns>
-    public static PdfDocument Open(byte[] data, ParsingOptions? options = null)
+    [Obsolete]
+    public static PdfDocument Open(byte[] data, ParsingOptions options)
     {
-        var ctx = ParsingContext.Current;
+        var ctx = new ParsingContext(options);
         var doc = new PdfDocument();
         var source = new InMemoryDataSource(doc, data);
         doc.Initialize(ctx, source);
+        doc.disposables.Add(ctx);
         return doc;
     }
 
@@ -167,16 +207,32 @@ public sealed partial class PdfDocument : IDisposable
     /// <param name="data">PDF data</param>
     /// <param name="options">Optional parsing options</param>
     /// <returns>PdfDocument</returns>
-    public static PdfDocument Open(string file, ParsingOptions? options = null)
+    public static PdfDocument Open(string file, ParsingOptions options)
     {
-        options ??= new ParsingOptions { };
+
+        var ctx = new ParsingContext(options);
+        var doc = Open(file, (DocumentOptions?)null);
+        doc.disposables?.Add(ctx);
+        return doc;
+    }
+
+    /// <summary>
+    /// Opens a PDF document from the provided file path.
+    /// </summary>
+    /// <param name="data">PDF data</param>
+    /// <param name="options">Optional parsing options</param>
+    /// <returns>PdfDocument</returns>
+    public static PdfDocument Open(string file, DocumentOptions? options = null)
+    {
         IPdfDataSource source;
         var ctx = ParsingContext.Current;
         var doc = new PdfDocument();
+        doc.UserPass = options?.UserPass;
+        doc.OwnerPass = options?.OwnerPass;
 #if NET6_0_OR_GREATER
         try
         {
-            source = new MemoryMappedDataSource(ctx, file);
+            source = new MemoryMappedDataSource(doc, file);
         }
         catch (NotSupportedException)
         {
@@ -185,7 +241,7 @@ public sealed partial class PdfDocument : IDisposable
         }
 #else
         var fs = File.OpenRead(file);
-        source = new StreamDataSource(ctx, fs, false);
+        source = new StreamDataSource(doc, fs, false);
 #endif
 
         doc.Initialize(ctx, source);
@@ -195,7 +251,7 @@ public sealed partial class PdfDocument : IDisposable
 
 #if NET6_0_OR_GREATER
     [Obsolete()]
-    public static PdfDocument OpenMapped(string file, ParsingOptions? options = null) => Open(file, options);
+    public static PdfDocument OpenMapped(string file, DocumentOptions? options = null) => Open(file, options);
 #endif
 
 

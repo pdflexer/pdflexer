@@ -1,5 +1,4 @@
-﻿using PdfLexer.Parsers;
-using PdfLexer.Parsers.Nested;
+﻿using PdfLexer.Parsers.Nested;
 using System.Buffers;
 using System.IO.Pipelines;
 

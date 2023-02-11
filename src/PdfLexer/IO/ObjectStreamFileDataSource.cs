@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Lexing;
-using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 using System.Buffers;
@@ -33,7 +32,7 @@ internal class ObjectStreamFileDataSource : StreamBase
         var data = GetRented(ctx, xref);
         var orig = ctx.Options.Eagerness;
         ctx.Options.Eagerness = Eagerness.FullEager; // TODO fix so this works lazy
-        var obj = ctx.GetPdfItem(data, 0, out _);
+        var obj = ctx.GetPdfItem(data, 0, out _, Document);
         ctx.Options.Eagerness = orig;
         ArrayPool<byte>.Shared.Return(data);
         return obj;
@@ -44,7 +43,7 @@ internal class ObjectStreamFileDataSource : StreamBase
         // todo use sequence?
         var data = GetRented(ctx, xref);
         var scanner = new Scanner(ctx, data, 0);
-        this.CopyRawObjFromSpan(ref scanner, destination);
+        this.CopyRawObjFromSpan(ctx, ref scanner, destination);
         ArrayPool<byte>.Shared.Return(data);
     }
 
