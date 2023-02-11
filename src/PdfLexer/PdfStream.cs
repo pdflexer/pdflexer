@@ -99,7 +99,7 @@ public abstract class PdfStreamContents
     /// </summary>
     internal byte[]? DecodedData { get; private set; }
 
-    internal ParsingContext? Context { get; set; }
+    internal IPdfDataSource? Source { get; set; }
     /// <summary>
     /// Updates the stream dictionary with this streams filter information
     /// </summary>
@@ -185,7 +185,7 @@ public abstract class PdfStreamContents
             else
             {
                 // don't know length, have to copy
-                using var copy = Context?.GetTemporaryStream() ?? new MemoryStream();
+                using var copy = ParsingContext.Current?.GetTemporaryStream() ?? new MemoryStream();
                 stream.CopyTo(copy);
                 DecodedData = new byte[copy.Length];
                 copy.Seek(0, SeekOrigin.Begin);
@@ -212,6 +212,7 @@ public abstract class PdfStreamContents
     /// <returns></returns>
     public Stream GetDecodedStream()
     {
+        var ctx = ParsingContext.Current;
         if (DecodedData != null)
         {
             return new MemoryStream(DecodedData);
@@ -221,9 +222,9 @@ public abstract class PdfStreamContents
 
         if (Filters == null)
         {
-            if (Context?.IsEncrypted ?? false)
+            if (Source?.IsEncrypted ?? false)
             {
-                source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+                source = Source.Document.Decryption.Decrypt(ctx.CurrentReference, Encryption.CryptoType.Streams, source);
             }
             return source;
         }
@@ -237,9 +238,9 @@ public abstract class PdfStreamContents
             // decrypt only if no crypt filter
             if (!arr.Any(x=> x.GetAsOrNull<PdfName>() == "Crypt"))
             {
-                if (Context?.IsEncrypted ?? false)
+                if (Source?.IsEncrypted ?? false)
                 {
-                    source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+                    source = Source.Document.Decryption.Decrypt(ctx.CurrentReference, Encryption.CryptoType.Streams, source);
                 }
             }
 
@@ -256,9 +257,9 @@ public abstract class PdfStreamContents
         else
         {
             var filter = obj.GetValue<PdfName>();
-            if (filter != "Crypt" && (Context?.IsEncrypted ?? false))
+            if (filter != "Crypt" && (Source?.IsEncrypted ?? false))
             {
-                source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+                source = Source.Document.Decryption.Decrypt(ParsingContext.Current.CurrentReference, Encryption.CryptoType.Streams, source);
             }
 
             PdfDictionary? currentParms = null;
@@ -281,10 +282,10 @@ public abstract class PdfStreamContents
 
         Stream DecodeSingle(PdfName filterName, Stream input, PdfDictionary? decodeParams)
         {
-            var decode = ParsingContext.GetDecoder(filterName, Context);
-            if (Context != null)
+            var decode = ParsingContext.GetDecoder(filterName, ctx);
+            if (ctx != null)
             {
-                return decode.Decode(input, decodeParams, Context.Error);
+                return decode.Decode(input, decodeParams, ctx.Error);
             } else
             {
                 return decode.Decode(input, decodeParams);
@@ -303,7 +304,6 @@ internal class PdfExistingStreamContents : PdfStreamContents
     public PdfExistingStreamContents(IPdfDataSource source, long offset, int length)
     {
         Source = source;
-        Context = source.Context;
         Offset = offset;
         Length = length;
     }
@@ -315,7 +315,7 @@ internal class PdfExistingStreamContents : PdfStreamContents
     /// <param name="destination"></param>
     public override void CopyEncodedData(Stream destination)
     {
-        if (Source.Context.IsEncrypted)
+        if (Source.IsEncrypted)
         {
             throw new NotSupportedException("Pdf encryption is not supported for copying.");
         }
@@ -324,7 +324,7 @@ internal class PdfExistingStreamContents : PdfStreamContents
 
     public override Stream GetEncodedData()
     {
-        return Source.GetDataAsStream(Offset, Length);
+        return Source.GetDataAsStream(ParsingContext.Current, Offset, Length);
     }
 }
 
@@ -349,17 +349,17 @@ internal class PdfXRefStreamContents : PdfStreamContents
     /// <param name="destination"></param>
     public override void CopyEncodedData(Stream destination)
     {
-        if (Source.Context.IsEncrypted)
+        if (Source.IsEncrypted)
         {
             throw new NotSupportedException("Pdf encryption is not supported.");
         }
-        using var str = Source.Context.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
+        using var str = ParsingContext.Current.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
         str.CopyTo(destination);
     }
 
     public override Stream GetEncodedData()
     {
-        return Source.Context.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
+        return ParsingContext.Current.GetStreamOfContents(XRef, CommonUtil.GetFirstFilterFromList(Filters), Length);
     }
 }
 

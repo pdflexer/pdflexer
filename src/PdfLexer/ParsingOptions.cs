@@ -7,8 +7,6 @@ namespace PdfLexer;
 /// </summary>
 public class ParsingOptions
 {
-    public string? OwnerPass { get; set; }
-    public string? UserPass { get; set; }
     /// <summary>
     /// Determines if the page tree should automatically be parsed and loaded
     /// when a PDF document is opened.

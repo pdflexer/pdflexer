@@ -1,10 +1,10 @@
 using System.Buffers;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using PdfLexer.DOM;
 
 #if NET6_0_OR_GREATER
+using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.X86;
 #endif
 
@@ -18,7 +18,7 @@ internal static class CommonUtil
 
     internal static byte[] WhiteSpaces = new byte[6] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20 };
 
-    internal static byte[] EOLs = new byte[2] { (byte)'\r', (byte)'n' };
+    internal static byte[] EOLs = new byte[2] { (byte)'\r', (byte)'\n' };
 
     // internal static byte[] numeric = new byte[13] { (byte)'0', (byte)'1', (byte)'2', (byte)'3', (byte)'4', (byte)'5', (byte)'6',
     // (byte)'7', (byte)'8', (byte)'9', (byte)'.', (byte)'-', (byte)'+'};
@@ -522,11 +522,35 @@ internal static class CommonUtil
         }
     }
 
-
+    private static byte[] TokenTerms256 = new byte[32] { 0x00, 0x09, 0x0A, 0x0C, 0x0D, 0x20,
+        (byte)'(', (byte)')', (byte)'<', (byte)'>', (byte)'[', (byte)']', (byte)'{', (byte)'}', (byte)'/', (byte)'%',
+         (byte)'+', (byte)'-', (byte)'.', 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 57, 57, 57 };
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal static void ScanTokenEnd(ReadOnlySpan<byte> bytes, ref int pos)
+    internal static unsafe void ScanTokenEnd(ReadOnlySpan<byte> bytes, ref int pos)
     {
         ReadOnlySpan<byte> local = bytes;
+
+#if NET6_0_OR_GREATER
+        if (Avx2.IsSupported)
+        {
+            fixed (byte* p = TokenTerms256)
+            {
+                Vector256<byte> termarray = Avx2.LoadVector256(p);
+
+                for (; pos < local.Length; pos++)
+                {
+                    var b = local[pos];
+                    var searcharray = Vector256.Create(b);
+                    var equals = Avx2.CompareEqual(termarray, searcharray);
+                    if (Avx2.MoveMask(equals) != 0)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
+#endif
+
         for (; pos < local.Length; pos++)
         {
             // ugly but benched better than Span IndexOf / IndexOfAny alternatives

@@ -8,6 +8,9 @@ public sealed class PageWriter : ContentWriter, IDisposable
     private readonly PageWriteMode Mode;
     private PdfPage Page;
     public PageWriter(PdfPage page, PageWriteMode mode = PageWriteMode.Append, PageUnit unit = PageUnit.Points) : base(page.Resources, unit)
+    // append without encode / decode ->
+    // need to first make sure can turn page into a form (no nested forms with resources on page)
+    // mode == PageWriteMode.Append && page.NativeObject?.Get(PdfName.Contents)?.Resolve()?.Type == PdfObjectType.StreamObj ? new PdfDictionary() : 
     {
         Page = page;
         Mode = mode;
@@ -35,21 +38,41 @@ public sealed class PageWriter : ContentWriter, IDisposable
                 }
             case PageWriteMode.Append:
                 {
-                    // have to copy to ensure q/Q
-                    // TODO: should just make existing content a form which
-                    // natively ensures q/Q and will save decode / encode step
-                    var fw = new FlateWriter();
-                    q_Op.WriteLn(fw);
-                    foreach (var existing in Page.Contents)
+                    var content = Page.NativeObject?.Get(PdfName.Contents)?.Resolve();
+                    if (content == null)
                     {
-                        using var es = existing.Contents.GetDecodedStream();
-                        es.CopyTo(fw);
-                    }
-                    Q_Op.WriteLn(fw);
-                    var arr = new PdfArray();
-                    arr.Add(PdfIndirectRef.Create(new PdfStream(fw.Complete())));
-                    arr.Add(PdfIndirectRef.Create(new PdfStream(data)));
-                    Page.NativeObject[PdfName.Contents] = arr;
+                        Page.NativeObject[PdfName.Contents] = new PdfStream(data).Indirect();
+                    } else // if (content.Type == PdfObjectType.ArrayObj)
+                    {
+                        // can't make form without rewritting to single stream so just write
+                        // with Q q
+                        var fw = new FlateWriter();
+                        q_Op.WriteLn(fw);
+                        foreach (var existing in Page.Contents)
+                        {
+                            using var es = existing.Contents.GetDecodedStream();
+                            es.CopyTo(fw);
+                        }
+                        Q_Op.WriteLn(fw);
+                        var arr = new PdfArray();
+                        arr.Add(PdfIndirectRef.Create(new PdfStream(fw.Complete())));
+                        arr.Add(PdfIndirectRef.Create(new PdfStream(data)));
+                        Page.NativeObject[PdfName.Contents] = arr;
+                    } 
+                    // else
+                    // {
+                    //     var fm = XObjForm.FromPage(Page);
+                    //     var fm2 = new XObjForm(new PdfStream(data));
+                    //     fm2.Resources = this.Resources;
+                    //     var fw = new FlateWriter();
+                    //     Do_Op.WriteLn("F1", fw);
+                    //     Do_Op.WriteLn("F2", fw);
+                    //     Page.Resources = new PdfDictionary();
+                    //     Page.AddXObj("F1", fm.NativeObject);
+                    //     Page.AddXObj("F1", fm2.NativeObject);
+                    //     Page.NativeObject[PdfName.Contents] = new PdfStream(fw.Complete()).Indirect();
+                    // }
+                   
                     break;
                 }
         }

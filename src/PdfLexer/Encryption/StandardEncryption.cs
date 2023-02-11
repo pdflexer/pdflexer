@@ -18,7 +18,7 @@ internal class StandardEncryption : IDecryptionHandler
 {
     private readonly byte[] _baseKey;
     private readonly PdfDictionary _trailer;
-    private readonly ParsingContext _ctx;
+    private readonly PdfDocument _doc;
     private readonly StandardEncryptionInfo _ei;
     private static readonly byte[] padding = new byte[] {
         0x28, 0xBF, 0x4E, 0x5E, 0x4E, 0x75, 0x8A, 0x41, 0x64, 0x00, 0x4E, 0x56, 0xFF, 0xFA, 0x01, 0x08,
@@ -30,10 +30,10 @@ internal class StandardEncryption : IDecryptionHandler
     private FilterType aesStreams;
     private FilterType aesEmbedded;
 
-    public StandardEncryption(ParsingContext ctx, PdfDictionary trailer)
+    public StandardEncryption(PdfDocument doc, PdfDictionary trailer)
     {
         _trailer = trailer;
-        _ctx = ctx;
+        _doc = doc;
         var id = trailer.Get<PdfArray>(PdfName.ID);
         if (id != null && id.Count > 0)
         {
@@ -61,7 +61,7 @@ internal class StandardEncryption : IDecryptionHandler
 
         _ei = new StandardEncryptionInfo(enc);
         _baseKey = Initialize(_ei);
-        _ctx.IsEncrypted = true;
+        _doc.IsEncrypted = true;
         lastkey = empty;
     }
 

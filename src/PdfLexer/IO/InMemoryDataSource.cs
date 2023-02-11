@@ -13,61 +13,20 @@ internal class InMemoryDataSource : IPdfDataSource
 
     // TODO in memory larger than int.maxvalue bytes
     // TODO -> Memory<byte>??
-    public InMemoryDataSource(ParsingContext ctx, byte[] data, long startOs=0)
+    public InMemoryDataSource(PdfDocument doc, byte[] data, long startOs = 0)
     {
-        Context = ctx;
+        Document = doc;
         _data = data;
         _os = startOs;
     }
 
     public long TotalBytes => _data.LongLength;
-    public bool ReturnsCompleteData => true;
-    public bool SupportsCloning => true;
 
-    public ParsingContext Context { get; }
+    public PdfDocument Document { get; }
 
     public bool Disposed { get; private set; }
-    public IPdfDataSource Clone() => throw new NotImplementedException(); // TODO currently setting Context.Current* on source so not sharable
 
-    public Stream GetStream(long startPosition)
-    {
-        Context.CurrentSource = this;
-        Context.CurrentOffset = startPosition;
-        var s = (int)(startPosition - _os);
-        var l = _data.Length - s;
-        return new MemoryStream(_data, s, l, false, true);
-    }
-
-    public Stream GetDataAsStream(long startPosition, int desiredBytes)
-    {
-        Context.CurrentSource = this;
-        Context.CurrentOffset = startPosition; // TODO move this somewhere else
-        return new MemoryStream(_data, (int)(startPosition-_os), desiredBytes, false, true);
-    }
-
-    public void GetData(long startPosition, int desiredBytes, out ReadOnlySpan<byte> data)
-    {
-        ReadOnlySpan<byte> span = _data;
-        if (startPosition > int.MaxValue)
-        {
-            throw new NotSupportedException(
-                "In memory data source does not support offsets greater than Int32.MaxValue");
-        }
-        var start = (int)(startPosition-_os);
-        if (desiredBytes > _data.Length - start)
-        {
-            throw new PdfLexerException("More data requested from data source than available.");
-        }
-        Context.CurrentSource = this;
-        Context.CurrentOffset = startPosition;
-        if (desiredBytes == -1)
-        {
-            data = span[start..];
-        } else
-        {
-            data = span.Slice(start, desiredBytes);
-        }
-    }
+    public bool IsEncrypted => Document.IsEncrypted;
 
     public void CopyData(long startPosition, int requiredBytes, Stream stream)
     {
@@ -85,13 +44,55 @@ internal class InMemoryDataSource : IPdfDataSource
         stream.Write(_data, start, requiredBytes);
     }
 
-    public IPdfObject GetIndirectObject(XRefEntry xref) => this.GetWrappedFromSpan(xref);
+    public void GetData(ParsingContext ctx, long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer)
+    {
+        ReadOnlySpan<byte> span = _data;
+        if (startPosition > int.MaxValue)
+        {
+            throw new NotSupportedException(
+                "In memory data source does not support offsets greater than Int32.MaxValue");
+        }
+        var start = (int)(startPosition - _os);
+        if (requiredBytes > _data.Length - start)
+        {
+            throw new PdfLexerException("More data requested from data source than available.");
+        }
+        ctx.CurrentSource = this;
+        ctx.CurrentOffset = startPosition;
+        if (requiredBytes == -1)
+        {
+            buffer = span[start..];
+        }
+        else
+        {
+            buffer = span.Slice(start, requiredBytes);
+        }
+    }
 
-    public void CopyIndirectObject(XRefEntry xref, WritingContext destination) => this.UnwrapAndCopyFromSpan(xref, destination);
+    public Stream GetDataAsStream(ParsingContext ctx, long startPosition, int desiredBytes)
+    {
+        ctx.CurrentSource = this;
+        ctx.CurrentOffset = startPosition;
+        return new MemoryStream(_data, (int)(startPosition - _os), desiredBytes, false, true);
+    }
+
+    public Stream GetStream(ParsingContext ctx, long startPosition)
+    {
+        ctx.CurrentSource = this;
+        ctx.CurrentOffset = startPosition;
+        var s = (int)(startPosition - _os);
+        var l = _data.Length - s;
+        return new MemoryStream(_data, s, l, false, true);
+    }
+
+    public IPdfObject GetIndirectObject(ParsingContext ctx, XRefEntry xref) => this.GetWrappedFromSpan(ctx, xref);
+
+    public void CopyIndirectObject(ParsingContext ctx, XRefEntry xref, WritingContext destination) => this.UnwrapAndCopyFromSpan(ctx, xref, destination);
 
     public void Dispose()
     {
         _data = null!;
         Disposed = true;
     }
+
 }

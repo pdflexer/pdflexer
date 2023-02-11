@@ -9,7 +9,8 @@
   <ItemGroup>
     <PackageReference Include="BenchmarkDotNet" Version="0.13.4" />
     <PackageReference Include="CliWrap" Version="3.6.0" />
-    <PackageReference Include="PDFiumCore" Version="111.0.5541" />
+    <PackageReference Include="iTextSharp.LGPLv2.Core" Version="3.3.2" />
+    <PackageReference Include="PDFiumCore" Version="112.0.5579" />
     <PackageReference Include="PdfPig" Version="0.1.7" />
     <PackageReference Include="PdfSharp" Version="1.50.5147" />
     <PackageReference Include="System.Text.Encoding.CodePages" Version="7.0.0" />

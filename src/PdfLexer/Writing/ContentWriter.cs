@@ -19,7 +19,7 @@ public partial class ContentWriter
     private static decimal KAPPA = (decimal)(4 * ((Math.Sqrt(2) - 1) / 3.0));
     private GraphicsState GfxState;
     internal PageState State { get; private set; }
-    private PdfDictionary Resources { get; }
+    internal PdfDictionary Resources { get; }
     private PdfDictionary XObjs { get; }
     private PdfDictionary Fonts { get; }
     public FlateWriter Stream { get; private set; }
