@@ -66,6 +66,32 @@ public class EncryptionTests
         Assert.Contains("Personal", words);
     }
 
+
+    [Fact]
+    public void It_Handles_Writing_From_Encrypted()
+    {
+        var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var pdfRoot = Path.Combine(tp, "pdfs", "pdfrs");
+        var pdf = Path.Combine(pdfRoot, "passwords_aes_256_hardened.pdf");
+        using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions
+        {
+            OwnerPass = "ownerpassword",
+            UserPass = "userpassword"
+        });
+
+        var pg = doc.Pages.First();
+
+        using var doc2 = PdfDocument.Create();
+        doc2.Pages.AddRange(doc.Pages);
+        var result = doc2.Save();
+
+        using var d3 = PdfDocument.Open(result);
+
+        var words = SimpleWordReader.GetWords(d3.Context, d3.Pages.First());
+        Assert.Contains("Hello", words);
+        Assert.Contains("World!", words);
+    }
+
     [Fact]
     public void It_handles_pr6531()
     {

@@ -1,4 +1,5 @@
-﻿using PdfLexer.Parsers;
+﻿using PdfLexer.Filters;
+using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using System.Buffers.Text;
 using System.Diagnostics;
@@ -64,6 +65,14 @@ internal class Serializers
                 return;
             case PdfObjectType.StreamObj:
                 var str = (PdfStream)obj;
+                if (str.Contents.IsEncrypted)
+                {
+                    var copied = new FlateWriter();
+                    using var ds = str.Contents.GetDecodedStream();
+                    ds.CopyTo(copied);
+                    var dict = str.Dictionary.CloneShallow();
+                    str = new PdfStream(dict, copied.Complete());
+                }
                 str.Contents.UpdateStreamDictionary(str.Dictionary);
                 DictionarySerializer.WriteToStream(str.Dictionary, stream, handler);
                 stream.WriteByte((byte)'\n');

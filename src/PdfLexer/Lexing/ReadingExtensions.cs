@@ -165,7 +165,7 @@ internal static class ReadingExtensions
                     dict[PdfName.Length] = streamLength;
                 }
             }
-            var contents = new PdfExistingStreamContents(source, xref.Offset + startPos, streamLength);
+            var contents = new PdfExistingStreamContents(source, xref.Offset + startPos, streamLength, xref.Reference.GetId());
             contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
             contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
             var stream = new PdfStream(dict, contents);
