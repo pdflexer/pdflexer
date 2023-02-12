@@ -164,9 +164,15 @@ internal class XRefParser
             PdfDictionary? original = null;
             while (true)
             {
-                scanner.SkipCurrent(); // objnum
+                var objNum = scanner.GetCurrentObject();
+                var on = (int)objNum.GetAs<PdfNumber>();
+                scanner.SkipCurrent();  // objnum
+                var objGen = scanner.GetCurrentObject();
+                var gen = (int)objGen.GetAs<PdfNumber>();
                 scanner.SkipCurrent(); // gen
                 scanner.SkipCurrent(); // R
+
+                var xref = new XRef(gen, on);
 
                 var dt = scanner.Peek();
                 if (dt != PdfTokenType.DictionaryStart)
@@ -185,7 +191,7 @@ internal class XRefParser
 
                 var len = dict.GetRequiredValue<PdfNumber>(PdfName.Length);
 
-                PdfStreamContents contents = new PdfExistingStreamContents(source, strStart + scanner.GetOffset(), len);
+                PdfStreamContents contents = new PdfExistingStreamContents(source, strStart + scanner.GetOffset(), len, xref.GetId());
 
                 contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
                 contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);

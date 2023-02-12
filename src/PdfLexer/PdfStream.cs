@@ -73,6 +73,10 @@ public abstract class PdfStreamContents
 {
     public static PdfStreamContents Empty { get; } = new PdfByteArrayStreamContents(Array.Empty<byte>());
     /// <summary>
+    /// Designates if contents are encrypted
+    /// </summary>
+    public virtual bool IsEncrypted { get; } = false;
+    /// <summary>
     /// Reads data of the stream.
     /// </summary>
     /// <param name="destination"></param>
@@ -223,7 +227,8 @@ public abstract class PdfStreamContents
         {
             if (Context?.IsEncrypted ?? false)
             {
-                source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+                var es = (PdfExistingStreamContents)this;
+                source = Context.Decryption.Decrypt(es.ObjectNumber, Encryption.CryptoType.Streams, source);
             }
             return source;
         }
@@ -239,7 +244,8 @@ public abstract class PdfStreamContents
             {
                 if (Context?.IsEncrypted ?? false)
                 {
-                    source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+                    var es = (PdfExistingStreamContents)this;
+                    source = Context.Decryption.Decrypt(es.ObjectNumber, Encryption.CryptoType.Streams, source);
                 }
             }
 
@@ -258,7 +264,8 @@ public abstract class PdfStreamContents
             var filter = obj.GetValue<PdfName>();
             if (filter != "Crypt" && (Context?.IsEncrypted ?? false))
             {
-                source = Context.Decryption.Decrypt(Context.CurrentReference, Encryption.CryptoType.Streams, source);
+                var es = (PdfExistingStreamContents)this;
+                source = Context.Decryption.Decrypt(es.ObjectNumber, Encryption.CryptoType.Streams, source);
             }
 
             PdfDictionary? currentParms = null;
@@ -298,14 +305,17 @@ public abstract class PdfStreamContents
 /// </summary>
 internal class PdfExistingStreamContents : PdfStreamContents
 {
+    public override bool IsEncrypted => Source.Context.IsEncrypted;
     internal IPdfDataSource Source { get; }
     internal long Offset { get; }
-    public PdfExistingStreamContents(IPdfDataSource source, long offset, int length)
+    internal ulong ObjectNumber { get; }
+    public PdfExistingStreamContents(IPdfDataSource source, long offset, int length, ulong objectNumber)
     {
         Source = source;
         Context = source.Context;
         Offset = offset;
         Length = length;
+        ObjectNumber = objectNumber;
     }
 
     public override int Length { get; }
