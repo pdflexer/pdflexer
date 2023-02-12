@@ -164,12 +164,8 @@ internal class XRefParser
             PdfDictionary? original = null;
             while (true)
             {
-                var objNum = scanner.GetCurrentObject();
-                var on = (int)objNum.GetAs<PdfNumber>();
-                scanner.SkipCurrent();  // objnum
-                var objGen = scanner.GetCurrentObject();
-                var gen = (int)objGen.GetAs<PdfNumber>();
-                scanner.SkipCurrent(); // gen
+                var on = scanner.GetCurrentObject().GetAs<PdfNumber>(); // objnum
+                var gen = scanner.GetCurrentObject().GetAs<PdfNumber>(); // gen
                 scanner.SkipCurrent(); // R
 
                 var xref = new XRef(gen, on);
