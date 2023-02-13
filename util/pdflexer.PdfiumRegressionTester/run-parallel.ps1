@@ -18,6 +18,8 @@ function Slice-Array {
     }
 }
 
+$testType = "rebuild"
+
 Push-Location $PSScriptRoot;
 
 dotnet publish -c release -f net7.0
@@ -25,10 +27,10 @@ dotnet publish -c release -f net7.0
 $pdfs = "$PSScriptRoot/../../test/pdfs/pdfjs/*.pdf"
 # $pdfs = "C:\source\Github\pdfium\testing\resources\*.pdf"
 
-$outputPath = "$PSScriptRoot/../../test/results/txt2"
+$outputPath = "$PSScriptRoot/../../test/results/$type"
 $outputPath = [IO.Path]::GetFullPath($outputPath);
 rm $outputPath/*.jsonl
-$threads = 18;
+$threads = 24;
 [System.Collections.ArrayList]$all = @()
 gci $pdfs | % { $all.Add($_) | Out-Null; }
 gci "$PSScriptRoot/../../test/pdfs/pdfjs/need_repair/*.pdf" | % { $all.Add($_) | Out-Null; }
@@ -44,6 +46,7 @@ $lock = [System.Threading.ReaderWriterLockSlim]::new()
 
 $all | Slice-Array -Size $size | ForEach-Object -Throttle $threads  -Parallel { 
     $locker = $using:lock
+    $t = $using:testType;
     $cnt = $using:counter;
     $iv = "";
     try{
@@ -57,13 +60,13 @@ $all | Slice-Array -Size $size | ForEach-Object -Throttle $threads  -Parallel {
         }
     }
     Write-Host $iv;
-    $outputPath = $using:outputPath; $a = @('--strict', '--index', $iv, '--type', 'rebuild', '--output', $outputPath, $_ ); .\bin\Release\net7.0\publish\pdflexer.PdfiumRegressionTester.exe @a; if (!$?) { Write-Host "HAD FAILURES"; $failures = $true }; }
+    $outputPath = $using:outputPath; $a = @('--strict', '--data', $PSScriptRoot,'--index', $iv, '--type', $t, '--output', $outputPath, $_ ); .\bin\Release\net7.0\publish\pdflexer.PdfiumRegressionTester.exe @a; if (!$?) { Write-Host "HAD FAILURES"; $failures = $true }; }
 if ($failures) {
     Write-Error "HAD A FAILURE";
 }
-cat $outputPath/*res.jsonl | Out-File "$PSScriptRoot/results.jsonl"
+cat $outputPath/*res.jsonl | Out-File "$PSScriptRoot/bin/$type.results.jsonl"
 $results = @{}
-foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/results.jsonl")) {
+foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/bin/$type.results.jsonl")) {
     $data = $line | ConvertFrom-Json -AsHashtable;
     $nm = $data.Result;
     if ($null -eq $results[$nm]) {
@@ -75,7 +78,7 @@ foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/results.jsonl")) {
 "Current run results:"
 $results;
 
-cat $outputPath/*err.jsonl | Out-File "$PSScriptRoot/pdf-info.jsonl"
+cat $outputPath/*err.jsonl | Out-File "$PSScriptRoot/bin/$type.pdf-info.jsonl"
 $status = @{
     "0" = 'PdfLexerError'
     "1" = 'PdfLexerSkip'
@@ -85,7 +88,7 @@ $status = @{
 }
 $results = @{}
 $errs = [System.Collections.ArrayList]@()
-foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/pdf-info.jsonl")) {
+foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/bin/$type.pdf-info.jsonl")) {
     $data = $line | ConvertFrom-Json -AsHashtable;
     if ($null -ne $data.FailureMsg) {
         $errs.Add($data.PdfName + " - " + $data.FailureMsg) | Out-Null

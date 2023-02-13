@@ -9,29 +9,14 @@ using PdfLexer.Operators;
 using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using System.CommandLine;
+using System.ComponentModel.DataAnnotations;
 using System.Numerics;
 using System.Text.Json;
 
-var corrupt = new Dictionary<string, ErrInfo>();
-var errs = Path.Combine(ExePath(), "known-errors.jsonl");
-if (File.Exists(errs))
-{
-    foreach (var line in File.ReadLines(errs))
-    {
-        if (string.IsNullOrEmpty(line)) { continue; }
-        var info = JsonSerializer.Deserialize<ErrInfo>(line);
-        corrupt[info.PdfName] = info;
-    }
-    Console.WriteLine("Loaded error info.");
-}
-StreamWriter? writer = null;
-StreamWriter? errInfo = null;
 
-void Log(string message)
-{
-    writer?.WriteLine(message);
-    Console.WriteLine(message);
-}
+var data = new Option<string>(
+            name: "--data",
+            description: "Path where previous results re.");
 
 var output = new Option<string>(
             name: "--output",
@@ -64,6 +49,7 @@ var strict = new Option<bool>(
             description: "Error on any issue found.");
 
 var rootCommand = new RootCommand("PDF regression testing");
+rootCommand.AddOption(data);
 rootCommand.AddOption(pdfRoot);
 rootCommand.AddOption(pdfPaths);
 rootCommand.AddOption(output);
@@ -74,17 +60,30 @@ rootCommand.AddOption(strict);
 
 int returnCode = 0;
 
-rootCommand.SetHandler(async (type, root, pdfPaths, prefix, index, dl, strict) =>
+rootCommand.SetHandler(async (data, type, root, pdfPaths, prefix, index, dl, strict) =>
 {
-    returnCode = await RunBase(type, root, pdfPaths, prefix, index, dl, strict);
-}, type, pdfRoot, pdfPaths, output, index, download, strict);
+    returnCode = await RunBase(data, type, root, pdfPaths, prefix, index, dl, strict);
+}, data, type, pdfRoot, pdfPaths, output, index, download, strict);
 
 await rootCommand.InvokeAsync(args);
 
 return returnCode;
 
-async Task<int> RunBase(string type, string pdfRoot, string[] pdfPaths, string output, string index, bool download, bool strict)
+async Task<int> RunBase(string data, string type, string pdfRoot, string[] pdfPaths, string output, string index, bool download, bool strict)
 {
+    var corrupt = new Dictionary<string, ErrInfo>();
+    var errs = Path.Combine(data, type + ".pdf-info.jsonl");
+    if (File.Exists(errs))
+    {
+        foreach (var line in File.ReadLines(errs))
+        {
+            if (string.IsNullOrEmpty(line)) { continue; }
+            var info = JsonSerializer.Deserialize<ErrInfo>(line);
+            corrupt[info.PdfName] = info;
+        }
+        Console.WriteLine("Loaded error info.");
+    }
+
     Directory.CreateDirectory(output);
 
     using var lo = File.OpenWrite(Path.Combine(output, type.ToLower() + index + ".log"));
@@ -136,7 +135,7 @@ async Task<int> RunBase(string type, string pdfRoot, string[] pdfPaths, string o
             }
             catch (Exception e)
             {
-                Log($"[DLFailed] {Path.GetFileName(link)} ({url}): {e.Message}");
+                Console.WriteLine($"[DLFailed] {Path.GetFileName(link)} ({url}): {e.Message}");
             }
         }
     }
@@ -195,6 +194,11 @@ bool RunMergeTests(string[] pdfs, string output)
 {
     bool success = true;
     var merged = Path.Combine(output, "all.pdf");
+
+    void Log(string msg)
+    {
+        // todo rework this test to new format
+    }
 
     var counts = new List<(string, int, int)>();
     {
