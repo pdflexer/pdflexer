@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging.Abstractions;
 using pdflexer.PdfiumRegressionTester;
+using pdflexer.PdfiumRegressionTester.Tests;
 using PdfLexer;
 using PdfLexer.Content;
 using PdfLexer.DOM;
@@ -23,8 +24,6 @@ if (File.Exists(errs))
     }
     Console.WriteLine("Loaded error info.");
 }
-
-
 StreamWriter? writer = null;
 StreamWriter? errInfo = null;
 
@@ -50,6 +49,10 @@ var type = new Option<string>(
             name: "--type",
             description: "Type of test to run, merge or rebuild.");
 
+var index = new Option<string>(
+            name: "--index",
+            description: "Index to use for results.");
+
 var download = new Option<bool>(
             name: "--download",
             getDefaultValue: () => false,
@@ -64,62 +67,44 @@ var rootCommand = new RootCommand("PDF regression testing");
 rootCommand.AddOption(pdfRoot);
 rootCommand.AddOption(pdfPaths);
 rootCommand.AddOption(output);
+rootCommand.AddOption(index);
 rootCommand.AddOption(type);
 rootCommand.AddOption(download);
 rootCommand.AddOption(strict);
 
 int returnCode = 0;
 
-rootCommand.SetHandler(async (type, root, pdfPaths, prefix, dl, strict) =>
+rootCommand.SetHandler(async (type, root, pdfPaths, prefix, index, dl, strict) =>
 {
-    returnCode = await RunBase(type, root, pdfPaths, prefix, dl, strict);
-}, type, pdfRoot, pdfPaths, output, download, strict);
+    returnCode = await RunBase(type, root, pdfPaths, prefix, index, dl, strict);
+}, type, pdfRoot, pdfPaths, output, index, download, strict);
 
 await rootCommand.InvokeAsync(args);
 
 return returnCode;
 
-async Task<int> RunBase(string type, string pdfRoot, string[] pdfPaths, string output, bool download, bool strict)
+async Task<int> RunBase(string type, string pdfRoot, string[] pdfPaths, string output, string index, bool download, bool strict)
 {
     Directory.CreateDirectory(output);
 
-    var i = 0;
-    FileStream lo = null;
-    FileStream er = null;
-    while (i < 10 && lo == null)
-    {
-        try
-        {
-            lo = File.OpenWrite(Path.Combine(output, type.ToLower() + i + ".log"));
-            lo.Seek(0, SeekOrigin.End);
-            er = File.OpenWrite(Path.Combine(output, type.ToLower() + i + ".err.jsonl"));
-            er.Seek(0, SeekOrigin.End);
-        }
-        catch (Exception)
-        {
-            i++;
-        }
-    }
+    using var lo = File.OpenWrite(Path.Combine(output, type.ToLower() + index + ".log"));
+    lo.Seek(0, SeekOrigin.End);
+    using var er = File.OpenWrite(Path.Combine(output, type.ToLower() + index + ".err.jsonl"));
+    er.Seek(0, SeekOrigin.End);
+    using var re = File.OpenWrite(Path.Combine(output, type.ToLower() + index + ".res.jsonl"));
+    re.Seek(0, SeekOrigin.End);
 
-    if (lo == null || er == null)
-    {
-        throw new ApplicationException("Unable to create log file");
-    }
+    using var errInfo = new StreamWriter(er);
+    using var writer = new StreamWriter(lo);
+    using var summary = new StreamWriter(re);
 
-    using var er_ = er;
-    errInfo = new StreamWriter(er);
-    using var eiw = errInfo;
-    using var lo_ = lo;
-    writer = new StreamWriter(lo);
-    using var _ = writer;
 
     if (download)
     {
         var client = new HttpClient();
         foreach (var link in Directory.GetFiles(pdfRoot, "*.link"))
         {
-            var pdf = Path.ChangeExtension(link, ".pdf");
-            pdf = Path.Combine(pdfRoot, "__" + Path.GetFileName(pdf));
+            var pdf = Path.Combine(pdfRoot, "__" + Path.GetFileNameWithoutExtension(link));
             if (File.Exists(pdf))
             {
                 continue;
@@ -162,7 +147,7 @@ async Task<int> RunBase(string type, string pdfRoot, string[] pdfPaths, string o
         pdfPaths = Directory.GetFiles(pdfRoot, "*.pdf");
     }
 
-
+    var runner = new TestRunner(corrupt);
     switch (type.ToUpper())
     {
         case "TEXT":
@@ -188,53 +173,23 @@ async Task<int> RunBase(string type, string pdfRoot, string[] pdfPaths, string o
         case "MERGE":
             return RunMergeTests(pdfPaths, output) ? 0 : 1;
         case "REBUILD":
-            return RunRebuildTests(pdfPaths, output, strict) ? 0 : 1;
+            {
+                var rb = new Rebuild();
+                foreach (var file in pdfPaths) 
+                {
+                    var result = runner.RunTest(rb, file, output);
+                    writer.WriteLine($"[{Path.GetFileName(file)}] {result.Status} {result.Message}");
+                    errInfo.WriteLine(JsonSerializer.Serialize(result.Info));
+                    summary.WriteLine(JsonSerializer.Serialize(new { Result = result.Status.ToString(), PdfName = Path.GetFileName(file), result.Message }));
+                }
+                return 0;
+            }
         default:
             Console.WriteLine("Unknown test type: " + type);
             return 1;
     }
 }
 
-void DumpPageContent(PdfDocument doc, int pg, Stream output)
-{
-    if (doc.Pages.Count <= pg) { return; }
-    var scanner = new PageContentScanner(doc.Context, doc.Pages[pg]);
-    while (scanner.Peek() != PdfOperatorType.EOC)
-    {
-        output.Write(scanner.GetCurrentData());
-        output.WriteByte((byte)'\n');
-        scanner.SkipCurrent();
-    }
-}
-
-void DumpRawPageContent(PdfDocument doc, int pg, Stream output)
-{
-    if (doc.Pages == null || doc.Pages.Count <= pg) { return; }
-    var page = doc.Pages[pg];
-    var contents = page.NativeObject.Get(PdfName.Contents)?.Resolve();
-    switch (contents)
-    {
-        case PdfArray arr:
-            foreach (var item in arr)
-            {
-                var str = item.GetValueOrNull<PdfStream>();
-                if (str != null)
-                {
-                    using var wo = str.Contents.GetDecodedStream();
-                    wo.CopyTo(output);
-                    output.WriteByte((byte)'\n');
-                }
-            }
-            break;
-        case PdfStream stream:
-            {
-                using var wo = stream.Contents.GetDecodedStream();
-                wo.CopyTo(output);
-                output.WriteByte((byte)'\n');
-            }
-            break;
-    }
-}
 
 bool RunMergeTests(string[] pdfs, string output)
 {
@@ -308,205 +263,6 @@ bool RunMergeTests(string[] pdfs, string output)
     }
     File.Delete(merged);
     return success;
-}
-
-bool RunRebuildTests(string[] pdfs, string output, bool strict)
-{
-    bool success = true;
-    Directory.CreateDirectory(output);
-    foreach (var pdf in pdfs)
-    {
-        var nm = Path.GetFileName(pdf);
-        var errorOutput = new ErrInfo
-        {
-            PdfName = nm
-        };
-        corrupt.TryGetValue(nm, out var errorInfo);
-        var comparer = new Compare(Path.Combine(output, Path.GetFileNameWithoutExtension(pdf)), 2);
-        var modified = Path.Combine(output, Path.GetFileName(pdf));
-        {
-            try
-            {
-                using var ctx = new ParsingContext(new ParsingOptions { MaxErrorRetention = 10, ThrowOnErrors = strict && !(errorInfo?.Failure ?? false) && errorInfo?.ErrCount == 0 });
-                using var doc = PdfDocument.Open(pdf);
-                if (doc.Trailer.Get(PdfName.Encrypt) != null)
-                {
-                    continue;
-                }
-                using var fo = File.Create(modified);
-                var sw = new StreamingWriter(fo, true, true);
-                foreach (var pg in doc.Pages)
-                {
-                    var np = ReWriteStream(doc, pg);
-                    sw.AddPage(np);
-                }
-                sw.Complete(doc.Trailer.CloneShallow(), doc.Catalog.CloneShallow());
-
-                if (doc.Context.ErrorCount > 0)
-                {
-                    Log($"[{nm}] parsing errors");
-                    foreach (var err in doc.Context.ParsingErrors)
-                    {
-                        Log(err);
-                    }
-                    Log("err total ->" + doc.Context.ErrorCount);
-                    errorOutput.ErrCount = doc.Context.ErrorCount;
-                    errorOutput.Errs = doc.Context.ParsingErrors.ToList();
-
-                    if (strict)
-                    {
-                        // TODO compare actual errors
-                        if (errorInfo == null)
-                        {
-                            Log($"[{nm}] pdflexer had unknown errors in strict mode but no failure.");
-                            success = false;
-                            WriteError(errorOutput);
-                            continue;
-                        }
-                        else if (errorInfo.ErrCount != doc.Context.ErrorCount)
-                        {
-                            Log($"[{nm}] pdflexer mismatched errors in strict mode {errorInfo.ErrCount} vs {doc.Context.ErrorCount}.");
-                            success = false;
-                        }
-                        else
-                        {
-                            Log($"[{nm}] pdflexer error count matched.");
-                        }
-                    }
-                }
-            }
-            catch (PdfLexerPasswordException)
-            {
-                continue;
-            }
-            catch (NotSupportedException ex)
-            {
-                // for compressed object streams
-                if (ex.Message.Contains("encryption"))
-                {
-                    continue;
-                }
-                Log($"[{nm}] pdflexer failure: {ex.Message}");
-            }
-            catch (Exception ex)
-            {
-                Log($"[{nm}] pdflexer failure: {ex.Message}");
-                errorOutput.Failure = true;
-                errorOutput.FailureMsg = ex.Message;
-                if (strict)
-                {
-                    if (errorInfo?.Failure ?? false && errorInfo?.FailureMsg == ex.Message)
-                    {
-                        Log($"[{nm}] pdflexer failure matched existing.");
-                    }
-                    else
-                    {
-                        Log($"[{nm}] pdflexer failure not known.");
-                        success = false;
-                    }
-                }
-
-                WriteError(errorOutput);
-                continue;
-            }
-
-        }
-        var pgs = comparer.CompareAllPages(pdf, modified);
-
-        bool changes = false;
-        var changedpages = new List<int>();
-        for (var i = 0; i < pgs.Count; i++)
-        {
-            var pg = pgs[i];
-            if (pg.HadChanges)
-            {
-                if (pg.Type == ChangeType.ErrorBaseline)
-                {
-                    Log($"[{nm}] pdfium failed to open pg on baseline{i}");
-                }
-                else
-                {
-                    changes = true;
-                    changedpages.Add(i);
-                    Log($"[{nm}] failed pg {i} -> {pg.Type.ToString()}");
-
-                    var bn = Path.GetFileNameWithoutExtension(pdf);
-                    using var fco = File.Create(Path.Combine(output, $"{bn}_c{i}.txt"));
-                    using var fc = PdfDocument.Open(File.ReadAllBytes(modified));
-                    DumpPageContent(fc, i, fco);
-                    using var fbo = File.Create(Path.Combine(output, $"{bn}_b{i}.txt"));
-                    using var fb = PdfDocument.Open(File.ReadAllBytes(pdf));
-                    DumpPageContent(fb, i, fbo);
-                    using var fbr = File.Create(Path.Combine(output, $"{bn}_b{i}_raw.txt"));
-                    DumpRawPageContent(fb, i, fbr);
-                }
-            }
-        }
-        if (!changes)
-        {
-            File.Delete(modified);
-            Log($"[{nm}] passed");
-        }
-        else
-        {
-            errorOutput.FailedPages = changedpages;
-            if (strict)
-            {
-                if (errorInfo?.FailedPages != null && errorInfo.FailedPages.SequenceEqual(changedpages))
-                {
-                    Log($"[{nm}] failed paged match previous run.");
-                }
-                else
-                {
-                    Log($"[{nm}] failed");
-                    success = false;
-                }
-            }
-
-            File.Copy(pdf, Path.Combine(output, Path.GetFileNameWithoutExtension(pdf) + "_baseline.pdf"), true);
-        }
-        writer.Flush();
-        if (errorOutput.FailedPages != null || errorOutput.ErrCount > 0 || errorOutput.Failure)
-        {
-            WriteError(errorOutput);
-        }
-    }
-    return success;
-
-    void WriteError(ErrInfo err)
-    {
-        errInfo.WriteLine(JsonSerializer.Serialize(err));
-        errInfo.Flush();
-    }
-}
-
-static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
-{
-    var scanner = new PageContentScanner2(doc.Context, page);
-    var ms = new MemoryStream();
-    var fl = new FlateWriter();
-
-    while (scanner.Advance())
-    {
-        if (scanner.TryGetCurrentOperation(out var op))
-        {
-            op.Serialize(fl.Stream);
-            fl.Stream.WriteByte((byte)'\n');
-        }
-    }
-    // while (scanner.Peek() != PdfOperatorType.EOC)
-    // {
-    // 
-    //     scanner.SkipCurrent();
-    // }
-
-    var content = fl.Complete();
-
-    page = page.NativeObject.CloneShallow();
-
-    var updatedStr = new PdfStream(new PdfDictionary(), content);
-    page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
-    return page;
 }
 
 static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
@@ -672,5 +428,15 @@ public class ErrInfo
     public List<int> FailedPages { get; set; }
     public bool Failure { get; set; }
     public string FailureMsg { get; set; }
+    public TestStatus Status { get; set; }
+}
+
+public enum TestStatus
+{
+    PdfLexerError,
+    PdfLexerSkip,
+    Differences,
+    PdfiumError,
+    Match
 }
 

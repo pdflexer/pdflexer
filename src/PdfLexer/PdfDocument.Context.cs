@@ -87,6 +87,7 @@ public sealed partial class PdfDocument
                 cat = matched;
             }
         }
+        Catalog = cat ?? new PdfDictionary();
 
         var v = ctx.GetHeaderVersion(MainDocSource);
         if (v >= 1.4m && cat != null)

@@ -258,7 +258,6 @@ public class ParsingContext : IDisposable
 
     internal IPdfObject GetIndirectObject(PdfDocument doc, ulong id)
     {
-        if (CurrentSource == null) { throw new PdfLexerException("Indirect object requested with no document source."); }
         CurrentReference = id;
         if (doc.IndirectCache.TryGetValue(id, out var weak) && weak.TryGetTarget(out var cached))
         {

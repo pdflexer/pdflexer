@@ -117,6 +117,7 @@ internal class XRefParser
         var entries = new List<XRefEntry>();
         if (result == PdfTokenType.Xref)
         {
+            HashSet<long> read = new HashSet<long> { strStart };
             scanner.SkipCurrent();
             var seq = scanner.ReadTo(Trailer);
 
@@ -127,12 +128,12 @@ internal class XRefParser
             var original = dict;
             while (true)
             {
-                if (!dict.TryGetValue<PdfNumber>(PdfName.Prev, out var lastOffset))
+                if (!dict.TryGetValue<PdfNumber>(PdfName.Prev, out var lastOffset) || read.Contains(lastOffset))
                 {
                     break;
                 }
-
                 var offset = (long)lastOffset;
+                read.Add(offset);
                 stream = source.GetStream(_ctx, offset);
                 pipe = _ctx.Options.CreateReader(stream);
                 scanner = new PipeScanner(_ctx, pipe);
@@ -159,17 +160,14 @@ internal class XRefParser
         }
         else if (result == PdfTokenType.NumericObj)
         {
-            var oss = num.GetValue<PdfNumber>();
+            HashSet<long> read = new HashSet<long> { strStart };
+            PdfNumber? oss = null;
 
             PdfDictionary? original = null;
             while (true)
             {
-                var objNum = scanner.GetCurrentObject();
-                var on = (int)objNum.GetAs<PdfNumber>();
-                scanner.SkipCurrent();  // objnum
-                var objGen = scanner.GetCurrentObject();
-                var gen = (int)objGen.GetAs<PdfNumber>();
-                scanner.SkipCurrent(); // gen
+                var on = scanner.GetCurrentObject().GetAs<PdfNumber>(); // objnum
+                var gen = scanner.GetCurrentObject().GetAs<PdfNumber>(); // gen
                 scanner.SkipCurrent(); // R
 
                 var xref = new XRef(gen, on);
@@ -215,11 +213,13 @@ internal class XRefParser
                 {
                     original = dict;
                 }
-                if (oss == null)
+                if (oss == null || read.Contains(oss))
                 {
                     _ctx.Options.Eagerness = orig;
                     return (entries, original);
                 }
+
+                read.Add(oss);
 
                 stream = source.GetStream(_ctx, oss);
                 strStart = oss;
