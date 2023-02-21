@@ -2,7 +2,7 @@
   "profiles": {
     "pdflexer.PdfiumRegressionTester": {
       "commandName": "Project",
-      "commandLineArgs": "--strict --type rebuild --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\need_repair\\operator-in-TJ-array.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\pdfium"
+      "commandLineArgs": "--strict --type quicksave --data C:\\source\\Github\\pdflexer\\pdflexer.PdfiumRegressionTester --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\need_repair\\bug1020226.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\manual"
     }
   }
 }

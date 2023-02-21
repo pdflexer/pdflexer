@@ -6,7 +6,7 @@ public ref struct ImageScanner
 {
     private readonly ParsingContext Context;
     private readonly PdfDictionary Page;
-    private PageContentScanner Scanner;
+    private PageContentScanner2 Scanner;
 
     public GraphicsState GraphicsState;
 
@@ -14,7 +14,7 @@ public ref struct ImageScanner
     public ImageScanner(ParsingContext ctx, PdfDictionary page)
     {
         Context = ctx;
-        Scanner = new PageContentScanner(ctx, page, true);
+        Scanner = new PageContentScanner2(ctx, page, true);
         GraphicsState = new GraphicsState();
         Page = page;
         lastDoImg = null;
@@ -32,10 +32,9 @@ public ref struct ImageScanner
     public bool Advance()
     {
         lastDoImg = null;
-        if (Scanner.CurrentOperator != PdfOperatorType.Unknown) { Scanner.SkipCurrent(); }
-        while (true)
+        while (Scanner.Advance())
         {
-            var op = Scanner.Peek();
+            var op = Scanner.CurrentOperator;
             switch (op)
             {
                 case PdfOperatorType.EOC:
@@ -47,23 +46,22 @@ public ref struct ImageScanner
                     {
                         gso.Apply(ref GraphicsState);
                     }
-                    Scanner.SkipCurrent();
                     continue;
                 case PdfOperatorType.BI:
                     return true;
                 case PdfOperatorType.Do:
-                    if (TryGetXObjImage(out lastDoImg)) 
+                    if (TryGetXObjImage(out lastDoImg))
                     {
                         return true;
                     }
                     break;
             }
-            Scanner.SkipCurrent();
         }
+        return false;
     }
     private PdfStream? lastDoImg;
 
-    public bool TryGetImage([NotNullWhen(true)]out PdfImage image)
+    public bool TryGetImage([NotNullWhen(true)] out PdfImage image)
     {
         if (Scanner.CurrentOperator == PdfOperatorType.BI)
         {
@@ -75,7 +73,8 @@ public ref struct ImageScanner
             var iim = (InlineImage_Op)gso;
             image = GetImage(iim.ConvertToStream());
             return true;
-        } else if (Scanner.CurrentOperator == PdfOperatorType.Do)
+        }
+        else if (Scanner.CurrentOperator == PdfOperatorType.Do)
         {
             if (lastDoImg == null)
             {
@@ -83,7 +82,8 @@ public ref struct ImageScanner
             }
             image = GetImage(lastDoImg);
             return true;
-        } else
+        }
+        else
         {
             image = null!;
             return false;

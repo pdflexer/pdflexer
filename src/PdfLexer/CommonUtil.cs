@@ -328,7 +328,8 @@ internal static class CommonUtil
         // CropBox => default to MediaBox (rectangle)
         // Rotate (integer)
         read.Add(dict);
-        var type = dict.GetRequiredValue<PdfName>(PdfName.TypeName);
+        var type = dict.Get<PdfName>(PdfName.TypeName);
+        if (type == null) { yield break; }
         switch (type.Value)
         {
             case "Pages":
@@ -350,7 +351,8 @@ internal static class CommonUtil
                 }
 
 
-                var kids = dict.GetRequiredValue<PdfArray>(PdfName.Kids);
+                var kids = dict.Get<PdfArray>(PdfName.Kids);
+                if (kids == null) { yield break; }
                 foreach (var child in kids)
                 {
                     var ir = child as ExistingIndirectRef;

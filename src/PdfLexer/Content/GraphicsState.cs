@@ -16,7 +16,7 @@ namespace PdfLexer.Content
 
         public (float x, float y, float w, float h) GetCurrentSize()
         {
-            return (CTM.M31, CTM.M32, CTM.M22, CTM.M11);
+            return (CTM.M31, CTM.M32, CTM.M11, CTM.M22);
         }
 
         // a b 0  ->  0 1 - -> 1 0 (translation) -> x 0 (scale)

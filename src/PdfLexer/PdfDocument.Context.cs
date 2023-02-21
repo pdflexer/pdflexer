@@ -8,6 +8,13 @@ using System.Runtime.CompilerServices;
 
 namespace PdfLexer;
 
+internal class ObjLocation
+{
+    public XRef Reference { get; set; }
+    public long Location { get; set; }
+    public PdfObjectType ObjType { get; set; }
+}
+
 public sealed partial class PdfDocument
 {
     internal string? OwnerPass { get; set; }
@@ -18,6 +25,8 @@ public sealed partial class PdfDocument
     internal bool IsEncrypted { get; set; } = false;
     internal IDecryptionHandler Decryption { get; private set; }
     internal List<IDisposable> disposables = new List<IDisposable>();
+    internal List<ObjLocation>? searchedXRefs;
+
     public IPdfDataSource MainDocSource { get; private set; }
 
     internal CryptFilter CryptFilter { get; }

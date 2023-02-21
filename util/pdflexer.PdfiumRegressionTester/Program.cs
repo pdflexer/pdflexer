@@ -6,11 +6,8 @@ using PdfLexer.Content;
 using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.Operators;
-using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using System.CommandLine;
-using System.ComponentModel.DataAnnotations;
-using System.Numerics;
 using System.Text.Json;
 
 
@@ -171,6 +168,18 @@ async Task<int> RunBase(string data, string type, string pdfRoot, string[] pdfPa
             return success ? 0 : 1;
         case "MERGE":
             return RunMergeTests(pdfPaths, output) ? 0 : 1;
+        case "QUICKSAVE":
+            {
+                var rb = new QuickSave();
+                foreach (var file in pdfPaths)
+                {
+                    var result = runner.RunTest(rb, file, output);
+                    writer.WriteLine($"[{Path.GetFileName(file)}] {result.Status} {result.Message}");
+                    errInfo.WriteLine(JsonSerializer.Serialize(result.Info));
+                    summary.WriteLine(JsonSerializer.Serialize(new { Result = result.Status.ToString(), PdfName = Path.GetFileName(file), result.Message }));
+                }
+                return 0;
+            }
         case "REBUILD":
             {
                 var rb = new Rebuild();

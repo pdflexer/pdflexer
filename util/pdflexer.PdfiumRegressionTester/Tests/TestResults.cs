@@ -70,7 +70,21 @@ internal class TestRunner
     public (RunResult Status, ErrInfo Info, string Message) RunTest(ITest test, string filePath, string output)
     {
         var nm = Path.GetFileName(filePath);
-        var result = GetTestResults(test, filePath, output);
+        
+        ErrInfo result;
+
+        try
+        {
+            result = GetTestResults(test, filePath, output);
+        } catch (Exception ex)
+        {
+            result = new ErrInfo
+            {
+                Status = TestStatus.PdfLexerError,
+                FailureMsg = ex.Message
+            };
+        }
+         
         if (!existing.TryGetValue(nm, out var ei))
         {
             // new file

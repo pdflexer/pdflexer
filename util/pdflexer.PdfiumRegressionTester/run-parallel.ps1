@@ -27,7 +27,7 @@ dotnet publish -c release -f net7.0
 $pdfs = "$PSScriptRoot/../../test/pdfs/pdfjs/*.pdf"
 # $pdfs = "C:\source\Github\pdfium\testing\resources\*.pdf"
 
-$outputPath = "$PSScriptRoot/../../test/results/$type"
+$outputPath = "$PSScriptRoot/../../test/results/$testType"
 $outputPath = [IO.Path]::GetFullPath($outputPath);
 rm $outputPath/*.jsonl
 $threads = 24;
@@ -64,9 +64,9 @@ $all | Slice-Array -Size $size | ForEach-Object -Throttle $threads  -Parallel {
 if ($failures) {
     Write-Error "HAD A FAILURE";
 }
-cat $outputPath/*res.jsonl | Out-File "$PSScriptRoot/bin/$type.results.jsonl"
+cat $outputPath/*res.jsonl | Out-File "$PSScriptRoot/bin/$testType.results.jsonl"
 $results = @{}
-foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/bin/$type.results.jsonl")) {
+foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/bin/$testType.results.jsonl")) {
     $data = $line | ConvertFrom-Json -AsHashtable;
     $nm = $data.Result;
     if ($null -eq $results[$nm]) {
@@ -78,7 +78,7 @@ foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/bin/$type.results.jsonl
 "Current run results:"
 $results;
 
-cat $outputPath/*err.jsonl | Out-File "$PSScriptRoot/bin/$type.pdf-info.jsonl"
+cat $outputPath/*err.jsonl | Out-File "$PSScriptRoot/bin/$testType.pdf-info.jsonl"
 $status = @{
     "0" = 'PdfLexerError'
     "1" = 'PdfLexerSkip'
@@ -88,9 +88,9 @@ $status = @{
 }
 $results = @{}
 $errs = [System.Collections.ArrayList]@()
-foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/bin/$type.pdf-info.jsonl")) {
+foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/bin/$testType.pdf-info.jsonl")) {
     $data = $line | ConvertFrom-Json -AsHashtable;
-    if ($null -ne $data.FailureMsg) {
+    if ($null -ne $data.FailureMsg -and $data.Status -ne 1) {
         $errs.Add($data.PdfName + " - " + $data.FailureMsg) | Out-Null
     }
     $nm = $status[$data.Status.ToString()]
@@ -104,4 +104,5 @@ foreach ($line in [io.file]::ReadAllLines("$PSScriptRoot/bin/$type.pdf-info.json
 $results;
 "Current run errors:"
 $errs;
+$errs.Count;
 Pop-Location;

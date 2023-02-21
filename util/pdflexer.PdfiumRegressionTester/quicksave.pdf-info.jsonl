@@ -1,22 +1,22 @@
 {"PdfName":"__20130226130259.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__aboutstacks.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__annotation-as.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__artofwar.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__artofwar.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"The archive entry was compressed using an unsupported compression method.","Status":0}
 {"PdfName":"__bpl13210.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1037816.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1064894.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1072164.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__bug1077808.pdf","Errs":["Error during crossref parsing: Unable to find startxref token."],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":3}
+{"PdfName":"__bug1077808.pdf","Errs":["Error during crossref parsing: Unable to find startxref token.","Pdf dictionary followed by start stream token did not contain /Length.","Endstream not found at end of stream when parsing when copying data.","Unable to find endstream in contents, writing provided length.","Pdf dictionary followed by start stream token did not contain /Length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":3}
 {"PdfName":"__bug1108753.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1123803.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__bug1130815.pdf","Errs":["Incorrect operand count for l, got 4, expected 2.","Incorrect operand count for Tm, got 2, expected 6.","Incorrect operand count for Tf, got 1, expected 2.","Incorrect operand count for gs, got 10, expected 1.","Incorrect operand count for Do, got 11, expected 1.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":1305,"FailedPages":[0],"Failure":false,"FailureMsg":null,"Status":2}
+{"PdfName":"__bug1130815.pdf","Errs":["Error during crossref parsing: Xref offset pointed to object that was not dictionary.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":7,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue11052.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue11139.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue11230.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type Unknown: \u0027\r\n0003750623 00000 n\r\n000\u0027","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":7,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue11230.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type Unknown: \u0027\r\n0003750623 00000 n\r\n000\u0027","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":9,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1127.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue11287.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1133.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"multiple-filters-length-zero.pdf","Errs":["Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":2,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"multiple-filters-length-zero.pdf","Errs":["Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":2,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"noembed-eucjp.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"noembed-identity-2.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"noembed-identity.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -34,7 +34,7 @@
 {"PdfName":"pr12564.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"pr12828.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"pr4922.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"pr6531_2.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
+{"PdfName":"pr6531_2.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
 {"PdfName":"pr7352.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"quadpoints.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"rotated.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -62,36 +62,36 @@
 {"PdfName":"ZapfDingbats.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"zero_descent.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"zerowidthline.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"bug1020226.pdf","Errs":["Found end of data before dictionary end\r\n","Unknown token encountered parsing nested item:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Parsing ended unexpectedly for looking nested item end:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Unknown token encountered parsing nested item:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Parsing ended unexpectedly for looking nested item end:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Indirect object not followed by endobj token: 1 0 obj \r\n\u003C\u003C\r\n/Pages 2 0 ","Indirect object not followed by endobj token: /Contents 811 0 R\r\n811 0 "],"ErrCount":12,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":3}
+{"PdfName":"bug1020226.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Required value not present in dictionary for key Type, available keys: ","Status":0}
 {"PdfName":"bug1250079.pdf","Errs":["Error during crossref parsing: Unable to find startxref token.","Found end of data before dictionary end904e5a162f03815bfbf836e31","Parsing ended unexpectedly for looking nested item end: \u003C904e5a162f03815bfbf836e3"],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":3}
 {"PdfName":"bug1606566.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":3}
 {"PdfName":"close-path-bug.pdf","Errs":["Error during crossref parsing: XRef offset larger than document size, 1556 (1520 size)","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"helloworld-bad.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type Unknown: \u0027\r\n(Hello, world!) Tj\r\nET\r\u0027","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue10438_reduced.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Indirect object not followed by endobj token: 2 0 obj\u003C\u003C\r\n/Pages 3 0 R\r\n"],"ErrCount":4,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue11549_reduced.pdf","Errs":["Unknown token encountered parsing nested item:  MS\n/DescendantFonts [ 56","Unknown token encountered parsing nested item:  MS\n/CIDSystemInfo \u003C\u003C\n/Or","Unknown token encountered parsing nested item:  MS\n/ItalicAngle 0\n/StemV"],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"issue10438_reduced.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","endobj not found after object while copying data, found: EOS","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":4,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"issue11549_reduced.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue1293r.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type Unknown: \u0027\r\n(Issue 1293) Tj\r\nET\r\n\r\n\u0027","Pdf dictionary followed by start stream token did not contain /Length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":4,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue12963.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue3371.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
+{"PdfName":"issue3371.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
 {"PdfName":"issue6069.pdf","Errs":["Error during crossref parsing: Token following startxref was not numeric.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue7229.pdf","Errs":[],"ErrCount":0,"FailedPages":[0,1],"Failure":false,"FailureMsg":null,"Status":2}
-{"PdfName":"issue9105_reduced.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Indirect object not followed by endobj token: 2 0 obj \r\n\u003C\u003C\r\n/Pages 3 0 "],"ErrCount":4,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue9252.pdf","Errs":["Error during crossref parsing: XRef offset larger than document size, 36673 (1289 size)","Bad decimal found in content stream: ."],"ErrCount":2,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"issue9105_reduced.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","endobj not found after object while copying data, found: EOS","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":4,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"issue9252.pdf","Errs":["Error during crossref parsing: XRef offset larger than document size, 36673 (1289 size)"],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue11330.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type ArrayEnd: \u0027\u003E\u003E\rendobj\r             \r\n\u0027"],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue11385.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue11526.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue11678.pdf","Errs":["Unknown token encountered parsing nested item: \u0007??!)??3g??\u0018?}?:q????D?\u0015A","Unknown token encountered parsing nested item: )??3g??\u0018?}?:q????D?\u0015A\u0015CR?","Unknown token encountered parsing nested item: g??\u0018?}?:q????D?\u0015A\u0015CR?s???","Unknown token encountered parsing nested item: }?:q????D?\u0015A\u0015CR?s???\u000F\b\b07","Unknown token encountered parsing nested item: ?Y??g?}\u0026??yW\u0004U\u0003IA?)\u0014?\u001D;v?","Unknown token encountered parsing nested item: }\u0026??yW\u0004U\u0003IA?)\u0014?\u001D;v?)?{???","Unknown token encountered parsing nested item: )\u0014?\u001D;v?)?{???????\u0022\u0000?:p???","Unknown token encountered parsing nested item: )?{???????\u0022\u0000?:p????~??g?-","Unknown token encountered parsing nested item: {???????\u0022\u0000?:p????~??g?-?\u0014","Unknown token encountered parsing nested item: \u0000?:p????~??g?-?\u0014?JJJ???Sk","Unknown token encountered parsing nested item: ?\u0014?JJJ???Sk??E;?k???\u000E\u001D?]"],"ErrCount":2406,"FailedPages":[1],"Failure":false,"FailureMsg":null,"Status":2}
+{"PdfName":"__issue11526.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Index was outside the bounds of the array.","Status":0}
+{"PdfName":"__issue11678.pdf","Errs":["Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got StringObj","XRef offset repairs to 23844","endobj not found after object while copying data, found: Unknown","Endstream not found at end of stream when parsing when copying data.","Unable to find endstream in contents, writing provided length."],"ErrCount":1171,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1169.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue11794.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue9418.pdf","Errs":["XRef offset repairs to 5112","Pdf dictionary followed by start stream token did not contain /Length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","XRef offset for 11 0 R was not valid: Mismatched token, found EndObj, expected NumericObj: endobj\r\n17 0 obj\r\n1620 \r\n","XRef offset repairs to 7521","Pdf dictionary followed by start stream token did not contain /Length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","XRef offset for 4 0 R was not valid: Mismatched token, found Unknown, expected NumericObj: x???\u002B\u001C?;[??J??#?x2???3\u001E?6","XRef offset repairs to 7981"],"ErrCount":46,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"operator-in-TJ-array.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Pdf dictionary followed by start stream token did not contain /Length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Incorrect operand count for Tc, got 3, expected 1.","Incorrect operand count for Tc, got 3, expected 1.","Incorrect operand count for Tc, got 3, expected 1.","Incorrect operand count for Tc, got 3, expected 1.","Indirect object not followed by endobj token: xref\r\n0 11\r\n0000000000 65"],"ErrCount":9,"FailedPages":[0],"Failure":false,"FailureMsg":null,"Status":2}
-{"PdfName":"pr6531_1.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
+{"PdfName":"issue9418.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Specified argument was out of the range of valid values.","Status":0}
+{"PdfName":"operator-in-TJ-array.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Pdf dictionary followed by start stream token did not contain /Length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Indirect object not followed by endobj token: xref\r\n0 11\r\n0000000000 65","endobj not found after object while copying data, found: Xref"],"ErrCount":6,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"pr6531_1.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
 {"PdfName":"prefilled_f1040.pdf","Errs":["Error during crossref parsing: Token that /Prev entry pointed to at 299157 was not a numeric, expected N N obj. Got: Xref"],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"scan-bad.pdf","Errs":["Error during crossref parsing: Unable to find startxref token."],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"ThuluthFeatures.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"xref_command_missing.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: StringStart","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue11871.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue12233.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue12294.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue12294.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Index was outside the bounds of the array.","Status":0}
 {"PdfName":"__issue1233.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue12392.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue12402.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type Unknown: \u0027\u003E\n/CreationDate(D:2019072\u0027"],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -104,7 +104,7 @@
 {"PdfName":"__issue12909.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1309.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1317.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue1419.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__issue1419.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
 {"PdfName":"__issue1466.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1536.pdf","Errs":["Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":127,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1597.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -124,10 +124,10 @@
 {"PdfName":"__issue1940.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1998.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue2006.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue2098.pdf","Errs":["Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":307,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue2098.pdf","Errs":["Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":307,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue2129.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue2139.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue2386.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__issue2386.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
 {"PdfName":"__issue2442.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue2531.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue2627.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -142,34 +142,34 @@
 {"PdfName":"__bug1199237.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1260585.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1292316.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__bug1354114.pdf","Errs":["Bad decimal found in content stream: -"],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__bug1354114.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue2984.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3062.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3064.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3115r.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue3248.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":null,"Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
 {"PdfName":"__issue3384.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3427.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3591.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3666.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3848.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3903.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue3925.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue3925.pdf","Errs":["Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj.","Data for indirect object was not a valid type: EndObj."],"ErrCount":18,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3999.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue4090.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue4244.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue4387.pdf","Errs":["Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":90,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue4387.pdf","Errs":["Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":106,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue4872.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue4883.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue4890.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue4914.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue4926.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__issue4926.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
 {"PdfName":"__issue5509.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue5592.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue5644.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue5726.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue5752.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
-{"PdfName":"__issue5909_original.pdf","Errs":["Error during crossref parsing: Unable to find startxref token."],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue5752.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__issue5909_original.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"The archive entry was compressed using an unsupported compression method.","Status":0}
 {"PdfName":"__issue5939.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue6066.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue6071.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -178,12 +178,12 @@
 {"PdfName":"__issue6238.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue6289.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue6360.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":9,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue6364.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__issue6364.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Index was outside the bounds of the array.","Status":0}
 {"PdfName":"__issue6549.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue6692.pdf","Errs":["Invalid hex found, ignoring: "],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue6692.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue6707.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue6737.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue7303.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__issue7303.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
 {"PdfName":"__issue7308.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue7496.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue7828.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -196,7 +196,7 @@
 {"PdfName":"__issue8330.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue8380.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue8613.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue8614.pdf","Errs":["Error during crossref parsing: XRef offset larger than document size, 2161985 (976910 size)","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue8614.pdf","Errs":["Error during crossref parsing: XRef offset larger than document size, 2161985 (976910 size)","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue8895.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue9129.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown"],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue919.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -205,11 +205,11 @@
 {"PdfName":"__issue9425.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1393476.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1425312.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__bug1443140.pdf","Errs":["Incorrect operand count for Td, got 3, expected 2.","Bad decimal found in content stream: .","Incorrect operand count for Td, got 3, expected 2.","Bad decimal found in content stream: .","Incorrect operand count for Tf, got 3, expected 2.","Bad decimal found in content stream: .","Incorrect operand count for Tf, got 3, expected 2.","Bad decimal found in content stream: .","Incorrect operand count for Td, got 3, expected 2.","Bad decimal found in content stream: .","Incorrect operand count for Tm, got 5, expected 6."],"ErrCount":19795,"FailedPages":[3],"Failure":false,"FailureMsg":null,"Status":2}
+{"PdfName":"__bug1443140.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1627030.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug766138.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__bug808084.pdf","Errs":["Unknown token encountered parsing nested item:  initializer expression (","Unknown token encountered parsing nested item:  expression (revision 4) ","Unknown token encountered parsing nested item:  Jaakko J?rvi, Bjarne Str","Unknown token encountered parsing nested item:  J?rvi, Bjarne Stroustrup","Unknown token encountered parsing nested item:  Bjarne Stroustrup, and G","Unknown token encountered parsing nested item:  Stroustrup, and Gabriel ","Unknown token encountered parsing nested item:  and Gabriel Dos Reis /Su","Unknown token encountered parsing nested item:  Gabriel Dos Reis /Subjec","Unknown token encountered parsing nested item:  Dos Reis /Subject (???) ","Unknown token encountered parsing nested item:  Reis /Subject (???) /Key","Pdf dictionary was malformed, expected PdfName for key, got StringObj"],"ErrCount":18,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue9462.pdf","Errs":["Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","XRef offset for 341 0 R was not valid: Mismatched token, found Unknown, expected NumericObj: ??|??\u00600?\u00071???a??\u0017L?\u0017\u0060?F\u0003r"],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__bug808084.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue9462.pdf","Errs":["XRef offset for 341 0 R was not valid: Mismatched token, found Unknown, expected NumericObj: ??|??\u00600?\u00071???a??\u0017L?\u0017\u0060?F\u0003r","Endstream not found at end of stream when parsing when copying data.","Unable to find endstream in contents, writing provided length.","Data for indirect object was not a valid type: EndObj."],"ErrCount":4,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue9540.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue9552.pdf","Errs":["Error during crossref parsing: Prev entry did not point to xref token."],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue9650.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -224,7 +224,7 @@
 {"PdfName":"__mao.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__ocs.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__ohkubo-SS04.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__P020121130574743273239.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__P020121130574743273239.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
 {"PdfName":"__pal-o47.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__pdf.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__pdkids.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -235,16 +235,16 @@
 {"PdfName":"__pr8491.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__pr8808.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__preistabelle.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__protectip.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__protectip.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"The archive entry was compressed using an unsupported compression method.","Status":0}
 {"PdfName":"__SFAA_Japanese.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__shavian.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__TaroUTR50SortedList112.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__tutorial.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__tutorial.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
 {"PdfName":"__txt2pdf.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__unix01.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__usmanm-bad.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown"],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__vesta.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__wdsg_fitc.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__wdsg_fitc.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
 {"PdfName":"__wnv_chinese.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"083014_hanrei.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"160F-2019.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -269,7 +269,7 @@
 {"PdfName":"annotation-strikeout-without-appearance.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"annotation-strikeout.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"annotation-text-widget.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__bug865858.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type JPXDecode has not been implemented.","Status":0}
+{"PdfName":"__bug865858.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type JPXDecode has not been implemented.","Status":0}
 {"PdfName":"__bug867484.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug878194.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug887152.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -312,7 +312,7 @@
 {"PdfName":"bug1245391_reduced.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"bug1252420.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"bug1308536.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"bug1337429.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"bug1337429.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"bug1392647.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"bug1473809.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"bug1513120_reduced.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -336,7 +336,7 @@
 {"PdfName":"bug878026.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"bug886717.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug921760.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__bug951051.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
+{"PdfName":"__bug951051.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
 {"PdfName":"__bug956965.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__cable.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__ecma262.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -389,7 +389,7 @@
 {"PdfName":"issue10665_reduced.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue11016_reduced.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue11045.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue11124.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: EndStream","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[0],"Failure":false,"FailureMsg":null,"Status":2}
+{"PdfName":"issue11124.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: EndStream","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue11131_reduced.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue11144_reduced.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue11150_reduced.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -441,13 +441,13 @@
 {"PdfName":"issue1985.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue2017r.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue2074.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue2099-1.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"issue2099-1.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue2128r.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue215.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue2176.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue2177.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue2391-1.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Unkown operator found: und","Incorrect operand count for Tf, got 1, expected 2.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":7,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue2391-2.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"issue2391-1.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"issue2391-2.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue2462.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue2537r.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue269_1.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -469,10 +469,10 @@
 {"PdfName":"issue3323.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__html5checker.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__hudsonsurvey.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__i9.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"The input data is not a complete block.","Status":0}
-{"PdfName":"__ibwa-bad.pdf","Errs":["Unkown operator found: )","Failure parsing op (Non-negative number required. (Parameter \u0027capacity\u0027)): ]TJ\n","Unkown operator found: Sn,","Unkown operator found: )","Incorrect operand count for Td, got 3, expected 2.","Unkown operator found: TJa","Incorrect operand count for Td, got 3, expected 2.","Unkown operator found: Tum","Unkown operator found: TJy","Unkown operator found: the","Unkown operator found: cla"],"ErrCount":14,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__ichiji.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__intelisa.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__i9.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Index was outside the bounds of the array.","Status":0}
+{"PdfName":"__ibwa-bad.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown"],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__ichiji.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Index was outside the bounds of the array.","Status":0}
+{"PdfName":"__intelisa.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"The archive entry was compressed using an unsupported compression method.","Status":0}
 {"PdfName":"issue3405r.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue3438.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue3458.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -533,7 +533,7 @@
 {"PdfName":"issue5677.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue5686.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue5701.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue10004.pdf","Errs":["Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object.","Endstream not found at end of stream when parsing indirect object."],"ErrCount":29,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue10004.pdf","Errs":["Unable to find endstream in contents, writing provided length.","Endstream not found at end of stream when parsing when copying data.","Unable to find endstream in contents, writing provided length.","Endstream not found at end of stream when parsing when copying data.","Unable to find endstream in contents, writing provided length.","Endstream not found at end of stream when parsing when copying data.","Unable to find endstream in contents, writing provided length.","Endstream not found at end of stream when parsing when copying data.","Unable to find endstream in contents, writing provided length.","Endstream not found at end of stream when parsing when copying data.","Unable to find endstream in contents, writing provided length."],"ErrCount":58,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1010.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue1015.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue10326.pdf","Errs":[],"ErrCount":0,"FailedPages":[0],"Failure":false,"FailureMsg":null,"Status":2}
@@ -553,8 +553,8 @@
 {"PdfName":"issue5972.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue5994.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue6006.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue6010_1.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
-{"PdfName":"issue6010_2.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
+{"PdfName":"issue6010_1.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
+{"PdfName":"issue6010_2.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"PdfLexerPasswordException","Status":1}
 {"PdfName":"issue6019.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue6068.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue6081.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -569,7 +569,7 @@
 {"PdfName":"issue6231_1.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue6286.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue6296.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue6298.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type Unknown: \u0027)\r\n/CreationDate (D:20151\u0027","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"issue6298.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type Unknown: \u0027)\r\n/CreationDate (D:20151\u0027","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue6336.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue6342.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":5,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue6387.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -602,7 +602,7 @@
 {"PdfName":"__issue10614.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue10717.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue10880.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue1096.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
+{"PdfName":"__issue1096.pdf","Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Index was outside the bounds of the array.","Status":0}
 {"PdfName":"__issue10989.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue11004.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue7446.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -621,7 +621,7 @@
 {"PdfName":"issue7901.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue8061.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue8088.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length.","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":7,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"issue8092.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type Unknown: \u0027)\r\n/ModDate(D:20140731040\u0027","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"issue8092.pdf","Errs":["Error during crossref parsing: No object found at offset, found token of type Unknown: \u0027)\r\n/ModDate(D:20140731040\u0027","Endstream not found at end of stream when parsing when copying data.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue8097_reduced.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue8125.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue8187.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}

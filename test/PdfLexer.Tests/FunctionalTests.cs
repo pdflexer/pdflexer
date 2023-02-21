@@ -307,7 +307,7 @@ namespace PdfLexer.Tests
                     }
                     try
                     {
-                        using var isa = img.GetImage(doc.Context);
+                        using var isa = img.GetImageSharp(doc.Context);
                         isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
                         i++;
                     }

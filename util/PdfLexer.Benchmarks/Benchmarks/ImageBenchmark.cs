@@ -87,7 +87,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
                     {
                         if (reader.TryGetImage(out var img))
                         {
-                            var imageSharp = img.GetImage(doc.Context);
+                            using var imageSharp = img.GetImageSharp(doc.Context);
                             unchecked { chars += imageSharp.Width; }
                         }
                         else

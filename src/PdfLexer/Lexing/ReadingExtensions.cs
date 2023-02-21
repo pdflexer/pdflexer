@@ -196,6 +196,12 @@ internal static class ReadingExtensions
 
     internal static void CopyRawObjFromSpan(this IPdfDataSource source, ParsingContext ctx, ref Scanner scanner, WritingContext wtx)
     {
+        var objType = scanner.Peek();
+        if ((int)objType > 7)
+        {
+            ctx.Error($"Data for indirect object was not a valid type: {objType}.");
+            return;
+        }
         var objLength = scanner.SkipObject();
         var objStart = scanner.Position - objLength;
         var type = scanner.Peek();
@@ -205,20 +211,25 @@ internal static class ReadingExtensions
             return;
         }
         else if (type == PdfTokenType.StartStream)
+
         {
-            // TODO can we not parse dict here?
+            if (objType != PdfTokenType.DictionaryStart)
+            {
+                ctx.Error($"Indirect object followed by startstream was {objType} instead of dictionary.");
+                wtx.Stream.Write(scanner.Data.Slice(objStart, objLength));
+                return;
+            }
+
             scanner.SkipCurrent(); // startstream
             var startPos = scanner.Position;
             var existing = ctx.Options.Eagerness;
             ctx.Options.Eagerness = Eagerness.Lazy;
-            var obj = ctx.GetKnownPdfItem(PdfObjectType.DictionaryObj, scanner.Data, objStart, objLength, source.Document);
-            if (!(obj is PdfDictionary dict))
+
+            var dict = (PdfDictionary)ctx.GetKnownPdfItem(PdfObjectType.DictionaryObj, scanner.Data, objStart, objLength, source.Document);
+            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength, errorOnMismatch: false))
             {
-                throw CommonUtil.DisplayDataErrorException(scanner.Data, scanner.Position, "Indirect object followed by start stream token but was not dictionary");
-            }
-            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
-            {
-                throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
+                ctx.Error("Pdf dictionary followed by start stream token did not contain /Length.");
+                streamLength = PdfCommonNumbers.Zero;
             }
 
             scanner.Advance(streamLength);
@@ -257,6 +268,12 @@ internal static class ReadingExtensions
                 wtx.SerializeObject(stream, true);
             }
             ctx.Options.Eagerness = existing;
+            return;
+        }
+        else
+        {
+            ctx.Error($"endobj not found after object while copying data, found: {type}");
+            wtx.Stream.Write(scanner.Data.Slice(objStart, objLength));
             return;
         }
     }

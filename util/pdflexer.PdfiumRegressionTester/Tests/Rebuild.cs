@@ -2,13 +2,9 @@
 using PdfLexer.Content;
 using PdfLexer.DOM;
 using PdfLexer.Filters;
-using PdfLexer.Operators;
 using PdfLexer.Serializers;
-using System.Text.Json;
 
 namespace pdflexer.PdfiumRegressionTester.Tests;
-
-
 
 internal class Rebuild : ITest
 {

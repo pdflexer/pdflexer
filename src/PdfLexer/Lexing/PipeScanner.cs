@@ -407,7 +407,7 @@ internal ref struct PipeScanner
 
             if (cnt >= count)
             {
-                return total;
+                return total-1;
             }
         }
         return -1;
