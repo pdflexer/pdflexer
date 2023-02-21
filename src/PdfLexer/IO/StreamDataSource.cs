@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Lexing;
-using PdfLexer.Parsers;
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 
@@ -7,13 +6,15 @@ namespace PdfLexer.IO;
 
 internal class StreamDataSource : StreamBase
 {
-    public StreamDataSource(ParsingContext ctx, Stream stream) : base(ctx, stream, true) { }
+    public override bool IsEncrypted => Document.IsEncrypted;
 
-    public StreamDataSource(ParsingContext ctx, Stream stream, bool leaveOpen) : base(ctx, stream, leaveOpen) { }
+    public StreamDataSource(PdfDocument doc, Stream stream) : base(doc, stream, true) { }
 
-    public override IPdfObject GetIndirectObject(XRefEntry xref)
+    public StreamDataSource(PdfDocument doc, Stream stream, bool leaveOpen) : base(doc, stream, leaveOpen) { }
+
+    public override IPdfObject GetIndirectObject(ParsingContext ctx, XRefEntry xref)
     {
-        if (xref.MaxLength < Context.Options.MaxMemorySegment)
+        if (xref.MaxLength < ctx.Options.MaxMemorySegment)
         {
             var requiredBytes = xref.MaxLength;
             var startPosition = xref.Offset;
@@ -31,20 +32,20 @@ internal class StreamDataSource : StreamBase
                 total += read;
             }
             data[requiredBytes] = (byte)'\n';
-            var ims = new InMemoryDataSource(Context, data, startPosition);
+            var ims = new InMemoryDataSource(Document, data, startPosition);
             xref.CachedSource = new WeakReference<IPdfDataSource>(ims);
             try
             {
-                return ims.GetIndirectObject(xref);
+                return ims.GetIndirectObject(ctx, xref);
             } catch
             {
                 xref.CachedSource = null;
                 // fallback to stream
             }
         }
-        return this.ReadWrappedFromStream(xref);
+        return this.ReadWrappedFromStream(ctx, xref);
     }
 
-    public override void CopyIndirectObject(XRefEntry xref, WritingContext destination)
-        => this.WriteWrappedFromStream(xref, destination.Stream);
+    public override void CopyIndirectObject(ParsingContext ctx, XRefEntry xref, WritingContext destination)
+        => this.WriteWrappedFromStream(ctx, xref, destination.Stream);
 }

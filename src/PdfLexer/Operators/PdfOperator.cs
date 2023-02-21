@@ -1,6 +1,5 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Lexing;
-using PdfLexer.Parsers;
 using System.Buffers.Text;
 using System.Text;
 
@@ -114,12 +113,13 @@ public class PdfOperator
             ctx.Error("BDC had more than two operands, using first two.");
         }
         var di = operands[1];
+        var doc = ctx.CurrentSource?.Document;
         ctx.CurrentSource = null; // force no lazy
         if (di.Type != PdfTokenType.ArrayStart || di.Type != PdfTokenType.DictionaryStart)
         {
-            return new BDC_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetPdfItem(data, di.StartAt, out _));
+            return new BDC_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetPdfItem(data, di.StartAt, out _, doc));
         }
-        return new BDC_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetKnownPdfItem((PdfObjectType)di.Type, data, di.StartAt, di.Length));
+        return new BDC_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetKnownPdfItem((PdfObjectType)di.Type, data, di.StartAt, di.Length, doc));
     }
 
     internal static DP_Op ParseDP(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
@@ -138,8 +138,9 @@ public class PdfOperator
             throw new PdfLexerException("DP only had single operand and was not name.");
         }
         var di = operands[1];
+        var doc = ctx.CurrentSource?.Document;
         ctx.CurrentSource = null; // force no lazy
-        return new DP_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetKnownPdfItem((PdfObjectType)di.Type, data, di.StartAt, di.Length));
+        return new DP_Op(ParsePdfName(ctx, data, operands[0]), ctx.GetKnownPdfItem((PdfObjectType)di.Type, data, di.StartAt, di.Length, doc));
     }
 
     internal static SC_Op ParseSC(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
@@ -318,7 +319,7 @@ public class PdfOperator
 
     public static PdfArray ParsePdfArrayAndLength(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op, out int length)
     {
-        var obj = ctx.NestedParser.ParseNestedItem(data, op.StartAt, out length);
+        var obj = ctx.NestedParser.ParseNestedItem(ctx.CurrentSource?.Document, data, op.StartAt, out length);
         if (obj.Type != PdfObjectType.ArrayObj)
         {
             ctx.Error("Bad array found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));

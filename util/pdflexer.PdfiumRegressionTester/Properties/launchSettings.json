@@ -2,7 +2,7 @@
   "profiles": {
     "pdflexer.PdfiumRegressionTester": {
       "commandName": "Project",
-      "commandLineArgs": "--strict --type TEXT --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\Test-plusminus.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\pdfium"
+      "commandLineArgs": "--strict --type quicksave --data C:\\source\\Github\\pdflexer\\pdflexer.PdfiumRegressionTester --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\need_repair\\bug1020226.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\manual"
     }
   }
 }

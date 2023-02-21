@@ -42,7 +42,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             CMaps.AddKnownPdfCMaps();
             System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
             var src = GetPathFromSegmentOfCurrent("PdfLexer.Benchmarks");
-            var root = Path.GetFullPath(Path.Combine(src, ".."));
+            var root = Path.GetFullPath(Path.Combine(src, "..", ".."));
             var pdfRoot = Path.Combine(root, "test", "pdfs", "pdfjs");
             pdfs = new List<byte[]>();
             paths = new List<string>();

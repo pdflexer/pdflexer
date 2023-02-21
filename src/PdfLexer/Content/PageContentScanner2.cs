@@ -1,5 +1,4 @@
-﻿using PdfLexer.Parsers;
-using System.Text;
+﻿using System.Text;
 
 namespace PdfLexer.Content;
 
@@ -350,13 +349,13 @@ public ref struct PageContentScanner2
             CurrentStreamId = 0;
             return;
         }
-        if (!Context.IndirectLookup.TryGetValue(CurrentStream, out var xref))
-        {
-            CurrentStreamId = 0;
-            return;
-        }
 
-        CurrentStreamId = xref.Reference.GetId();
+        // if (!Context.IndirectLookup.TryGetValue(CurrentStream, out var xref))
+        // {
+        //     CurrentStreamId = 0;
+        //     return;
+        // }
+        // CurrentStreamId = xref.Reference.GetId();
     }
 
     internal bool TryGetForm(PdfName name, [NotNullWhen(true)] out PdfStream? found)

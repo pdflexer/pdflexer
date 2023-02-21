@@ -37,17 +37,17 @@ namespace PdfLexer.Tests
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf = Path.Combine(tp, "pdfs", pdfPath);
-            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { LoadPageTree = true });
+            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
 
             var raw = new MemoryStream();
             doc.SaveTo(raw);
             File.WriteAllBytes("c:\\temp\\raw.pdf", raw.ToArray());
-            using var docReRead = PdfDocument.Open(raw.ToArray(), new ParsingOptions { LoadPageTree = true });
+            using var docReRead = PdfDocument.Open(raw.ToArray());
             var ms = new MemoryStream();
             var ctx = new WritingContext(ms);
             ctx.Initialize(1.7m);
             ctx.Complete(doc.Trailer);
-            using var docReRead2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { LoadPageTree = true });
+            using var docReRead2 = PdfDocument.Open(ms.ToArray());
 
             var c1 = GetCount(doc);
             var c2 = GetCount(docReRead);
@@ -307,7 +307,7 @@ namespace PdfLexer.Tests
                     }
                     try
                     {
-                        using var isa = img.GetImage(doc.Context);
+                        using var isa = img.GetImageSharp(doc.Context);
                         isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
                         i++;
                     }
@@ -1017,7 +1017,8 @@ namespace PdfLexer.Tests
             {
                 try
                 {
-                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { ForceSerialize = true });
+                    using var ctx = new ParsingContext(new ParsingOptions { ForceSerialize = true });
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                     if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
                     foreach (var page in doc.Pages)
                     {
@@ -1047,7 +1048,8 @@ namespace PdfLexer.Tests
             writer.Complete(new PdfDictionary());
 
             // File.WriteAllBytes("c:\\temp\\megamerge.pdf", ms.ToArray());
-            using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = false });
+            using var ctx2 = new ParsingContext(new ParsingOptions { ThrowOnErrors = false });
+            using var doc2 = PdfDocument.Open(ms.ToArray());
             EnumerateObjects(doc2.Trailer, new HashSet<int>());
         }
 
@@ -1061,7 +1063,8 @@ namespace PdfLexer.Tests
             {
                 try
                 {
-                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { ForceSerialize = true });
+                    using var ctx = new ParsingContext(new ParsingOptions { ForceSerialize = true });
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                     if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
                     var p = 1;
                     foreach (var page in doc.Pages)
@@ -1170,7 +1173,9 @@ namespace PdfLexer.Tests
                 var ms = new MemoryStream();
                 try
                 {
-                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new ParsingOptions { ForceSerialize = true });
+
+                    using var ctx = new ParsingContext(new ParsingOptions { ForceSerialize = true });
+                    using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
                     if (doc.Trailer.ContainsKey(PdfName.Encrypt)) { continue; }
                     rewrite.Pages.AddRange(doc.Pages);
                     rewrite.SaveTo(ms);
@@ -1193,7 +1198,8 @@ namespace PdfLexer.Tests
 
                 try
                 {
-                    using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = true });
+                    using var ctx2 = new ParsingContext(new ParsingOptions { ThrowOnErrors = true });
+                    using var doc2 = PdfDocument.Open(ms.ToArray());
                     EnumerateObjects(doc2.Trailer, new HashSet<int>());
                 }
                 catch (Exception e)
@@ -1220,12 +1226,13 @@ namespace PdfLexer.Tests
                 foreach (var page in doc.Pages) { CommonUtil.RecursiveLoad(page.NativeObject); }
                 merged.Pages.AddRange(doc.Pages);
                 // ensure we can't look cached items after
-                doc.Context.IndirectCache.Clear();
+                doc.IndirectCache.Clear();
             }
 
             var ms = new MemoryStream();
             merged.SaveTo(ms);
-            using var doc2 = PdfDocument.Open(ms.ToArray(), new ParsingOptions { ThrowOnErrors = true });
+            using var ctx2 = new ParsingContext(new ParsingOptions { ThrowOnErrors = true });
+            using var doc2 = PdfDocument.Open(ms.ToArray());
             EnumerateObjects(doc2.Trailer, new HashSet<int>());
         }
 
@@ -1241,7 +1248,7 @@ namespace PdfLexer.Tests
                     var contents = File.ReadAllBytes(pdf);
 
                     var ctx = new ParsingContext();
-                    var source = new InMemoryDataSource(ctx, contents);
+                    var source = new InMemoryDataSource(new PdfDocument(), contents);
                     var normal = ctx.XRefParser.LoadCrossReference(source);
                     var ms = new MemoryStream(contents);
                     var ctx2 = new ParsingContext();
@@ -1272,7 +1279,7 @@ namespace PdfLexer.Tests
 
             foreach (var item in doc.XrefEntries)
             {
-                doc.Context.GetIndirectObject(item.Key);
+                doc.Context.GetIndirectObject(doc, item.Key);
             }
         }
 

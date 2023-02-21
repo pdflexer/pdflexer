@@ -7,20 +7,20 @@ namespace PdfLexer.Lexing;
 
 internal static class ReadingExtensions
 {
-    public static IPdfObject ReadWrappedFromStream(this IPdfDataSource source, XRefEntry xref)
+    public static IPdfObject ReadWrappedFromStream(this IPdfDataSource source, ParsingContext ctx, XRefEntry xref)
     {
         if (source.Disposed) { throw new ObjectDisposedException("Attempted to get object from disposed data source."); }
         // TODO
         // quick path if xref offsets known
-        var stream = source.GetStream(xref.Offset);
-        var reader = source.Context.Options.CreateReader(stream);
-        var scanner = new PipeScanner(source.Context, reader);
+        var stream = source.GetStream(ctx, xref.Offset);
+        var reader = ctx.Options.CreateReader(stream);
+        var scanner = new PipeScanner(ctx, reader);
         scanner.SkipExpected(PdfTokenType.NumericObj);
         scanner.SkipExpected(PdfTokenType.NumericObj);
         scanner.SkipExpected(PdfTokenType.StartObj);
         xref.KnownObjType = scanner.Peek();
         xref.KnownObjStart = (int)scanner.GetStartOffset();
-        source.Context.CurrentOffset = xref.Offset + xref.KnownObjStart;
+        ctx.CurrentOffset = xref.Offset + xref.KnownObjStart;
         var obj = scanner.GetCurrentObject();
         xref.KnownObjLength = (int)scanner.GetOffset() - xref.KnownObjStart;
         var nxt = scanner.Peek();
@@ -35,20 +35,20 @@ internal static class ReadingExtensions
         }
         else
         {
-            source.Context.Error($"XRef obj did not end with endobj: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+            ctx.Error($"XRef obj did not end with endobj: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
             return obj;
         }
 
         if (!(obj is PdfDictionary dict))
         {
-            source.Context.Error($"Obj followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
+            ctx.Error($"Obj followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
             xref.KnownStreamStart = 0;
             return obj;
         }
 
         if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
         {
-            source.Context.Error("Pdf dictionary followed by start stream token did not contain /Length.");
+            ctx.Error("Pdf dictionary followed by start stream token did not contain /Length.");
             streamLength = PdfCommonNumbers.Zero;
         }
 
@@ -58,14 +58,14 @@ internal static class ReadingExtensions
         return new PdfStream(dict, contents);
     }
 
-    public static void WriteWrappedFromStream(this IPdfDataSource source, XRefEntry xref, Stream output)
+    public static void WriteWrappedFromStream(this IPdfDataSource source, ParsingContext ctx, XRefEntry xref, Stream output)
     {
         if (source.Disposed) { throw new ObjectDisposedException("Attempted to get object data from disposed data source."); }
         // TODO
         // quick path if xref offsets known
-        var stream = source.GetStream(xref.Offset);
-        var reader = source.Context.Options.CreateReader(stream);
-        var scanner = new PipeScanner(source.Context, reader);
+        var stream = source.GetStream(ctx, xref.Offset);
+        var reader = ctx.Options.CreateReader(stream);
+        var scanner = new PipeScanner(ctx, reader);
         scanner.SkipExpected(PdfTokenType.NumericObj);
         scanner.SkipExpected(PdfTokenType.NumericObj);
         scanner.SkipExpected(PdfTokenType.StartObj);
@@ -91,22 +91,22 @@ internal static class ReadingExtensions
         }
         else
         {
-            source.Context.Error($"XRef obj did not end with endobj: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
+            ctx.Error($"XRef obj did not end with endobj: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
         }
-        var obj = source.Context.GetPdfItem(PdfObjectType.DictionaryObj, in dat);
+        var obj = ctx.GetPdfItem(PdfObjectType.DictionaryObj, in dat);
 
         reader.Complete();
 
         if (!(obj is PdfDictionary dict))
         {
-            source.Context.Error($"Obj followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
+            ctx.Error($"Obj followed by startstream was {obj.Type} instead of dictionary ({xref.Reference.ObjectNumber} {xref.Reference.Generation})");
             xref.KnownStreamStart = 0;
             return;
         }
 
         if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
         {
-            source.Context.Error("Pdf dictionary followed by start stream token did not contain /Length.");
+            ctx.Error("Pdf dictionary followed by start stream token did not contain /Length.");
             streamLength = PdfCommonNumbers.Zero;
         }
 
@@ -114,20 +114,20 @@ internal static class ReadingExtensions
 
         output.Write(IndirectSequences.stream);
         output.WriteByte((byte)'\n');
-        using var so = source.Context.GetStreamOfContents(xref, filterName, streamLength);
+        using var so = ctx.GetStreamOfContents(xref, filterName, streamLength);
         so.CopyTo(output);
         output.WriteByte((byte)'\n');
         output.Write(IndirectSequences.endstream);
     }
 
-    internal static IPdfObject GetWrappedFromSpan(this IPdfDataSource source, XRefEntry xref)
+    internal static IPdfObject GetWrappedFromSpan(this IPdfDataSource source, ParsingContext ctx, XRefEntry xref)
     {
         if (source.Disposed) { throw new ObjectDisposedException("Attempted to get object from disposed data source."); }
         // TODO
         // quick path if xref offsets known
         // set xref offsets
-        source.GetData(xref.Offset, -1, out var data);
-        var scanner = new Scanner(source.Context, data, 0);
+        source.GetData(ctx, xref.Offset, -1, out var data);
+        var scanner = new Scanner(ctx, data, 0, source.Document);
         scanner.SkipExpected(PdfTokenType.NumericObj);
         scanner.SkipExpected(PdfTokenType.NumericObj);
         scanner.SkipExpected(PdfTokenType.StartObj);
@@ -141,12 +141,12 @@ internal static class ReadingExtensions
         {
             if (!(obj is PdfDictionary dict))
             {
-                source.Context.Error($"Pdf dictionary followed by startstream was {obj.Type} instead of dictionary.");
+                ctx.Error($"Pdf dictionary followed by startstream was {obj.Type} instead of dictionary.");
                 return obj;
             }
             if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
             {
-                source.Context.Error("Pdf dictionary followed by start stream token did not contain /Length.");
+                ctx.Error("Pdf dictionary followed by start stream token did not contain /Length.");
                 streamLength = PdfCommonNumbers.Zero;
             }
 
@@ -156,11 +156,11 @@ internal static class ReadingExtensions
             var endstream = scanner.Peek();
             if (endstream != PdfTokenType.EndStream)
             {
-                source.Context.Error("Endstream not found at end of stream when parsing indirect object.");
+                ctx.Error("Endstream not found at end of stream when parsing indirect object.");
                 scanner.Position = startPos; // + streamLength - Math.Min(data.Length, 100); need to be smarter than this for content without filter
                 if (scanner.TryFindEndStream())
                 {
-                    source.Context.Error("Found endstream in contents, using repaired length.");
+                    ctx.Error("Found endstream in contents, using repaired length.");
                     streamLength = new PdfIntNumber(scanner.Position - startPos);
                     dict[PdfName.Length] = streamLength;
                 }
@@ -172,30 +172,36 @@ internal static class ReadingExtensions
 
             return stream;
         }
-        source.Context.Error("Indirect object not followed by endobj token: " + CommonUtil.GetDataErrorInfo(data, scanner.Position));
+        ctx.Error("Indirect object not followed by endobj token: " + CommonUtil.GetDataErrorInfo(data, scanner.Position));
         return obj;
     }
 
-    internal static void UnwrapAndCopyFromSpan(this IPdfDataSource source, XRefEntry xref, WritingContext wtx)
+    internal static void UnwrapAndCopyFromSpan(this IPdfDataSource source, ParsingContext ctx, XRefEntry xref, WritingContext wtx)
     {
         if (source.Disposed) { throw new ObjectDisposedException("Attempted to get object data from disposed data source."); }
         // TODO
         // quick path if xref offsets known
         // set xref offsets
-        if (source.Context.IsEncrypted)
+        if (source.Document.IsEncrypted)
         {
             throw new NotSupportedException("Copying raw data from encrypted PDF is not supported.");
         }
-        source.GetData(xref.Offset, xref.MaxLength, out var data);
-        var scanner = new Scanner(source.Context, data, 0);
+        source.GetData(ctx, xref.Offset, xref.MaxLength, out var data);
+        var scanner = new Scanner(ctx, data, 0);
         scanner.SkipExpected(PdfTokenType.NumericObj);
         scanner.SkipExpected(PdfTokenType.NumericObj);
         scanner.SkipExpected(PdfTokenType.StartObj);
-        CopyRawObjFromSpan(source, ref scanner, wtx);
+        CopyRawObjFromSpan(source, ctx, ref scanner, wtx);
     }
 
-    internal static void CopyRawObjFromSpan(this IPdfDataSource source, ref Scanner scanner, WritingContext wtx)
+    internal static void CopyRawObjFromSpan(this IPdfDataSource source, ParsingContext ctx, ref Scanner scanner, WritingContext wtx)
     {
+        var objType = scanner.Peek();
+        if ((int)objType > 7)
+        {
+            ctx.Error($"Data for indirect object was not a valid type: {objType}.");
+            return;
+        }
         var objLength = scanner.SkipObject();
         var objStart = scanner.Position - objLength;
         var type = scanner.Peek();
@@ -205,20 +211,25 @@ internal static class ReadingExtensions
             return;
         }
         else if (type == PdfTokenType.StartStream)
+
         {
-            // TODO can we not parse dict here?
+            if (objType != PdfTokenType.DictionaryStart)
+            {
+                ctx.Error($"Indirect object followed by startstream was {objType} instead of dictionary.");
+                wtx.Stream.Write(scanner.Data.Slice(objStart, objLength));
+                return;
+            }
+
             scanner.SkipCurrent(); // startstream
             var startPos = scanner.Position;
-            var existing = source.Context.Options.Eagerness;
-            source.Context.Options.Eagerness = Eagerness.Lazy;
-            var obj = source.Context.GetKnownPdfItem(PdfObjectType.DictionaryObj, scanner.Data, objStart, objLength);
-            if (!(obj is PdfDictionary dict))
+            var existing = ctx.Options.Eagerness;
+            ctx.Options.Eagerness = Eagerness.Lazy;
+
+            var dict = (PdfDictionary)ctx.GetKnownPdfItem(PdfObjectType.DictionaryObj, scanner.Data, objStart, objLength, source.Document);
+            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength, errorOnMismatch: false))
             {
-                throw CommonUtil.DisplayDataErrorException(scanner.Data, scanner.Position, "Indirect object followed by start stream token but was not dictionary");
-            }
-            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength))
-            {
-                throw new ApplicationException("Pdf dictionary followed by start stream token did not contain /Length.");
+                ctx.Error("Pdf dictionary followed by start stream token did not contain /Length.");
+                streamLength = PdfCommonNumbers.Zero;
             }
 
             scanner.Advance(streamLength);
@@ -231,23 +242,23 @@ internal static class ReadingExtensions
             }
             else
             {
-                source.Context.Error("Endstream not found at end of stream when parsing when copying data.");
+                ctx.Error("Endstream not found at end of stream when parsing when copying data.");
                 if (endstream == PdfTokenType.EOS)
                 {
                     scanner.Position = scanner.Data.Length - Math.Min(scanner.Data.Length, 100);
                 }
                 if (!scanner.TryFindEndStream())
                 {
-                    source.Context.Error("Unable to find endstream in contents, writing provided length.");
+                    ctx.Error("Unable to find endstream in contents, writing provided length.");
                     // no way to repair this.. simply write existing data length
                     wtx.Stream.Write(scanner.Data.Slice(objStart, eosByLength - objStart));
                     wtx.Stream.WriteByte((byte)'\n');
                     wtx.Stream.Write(IndirectSequences.endstream);
-                    source.Context.Options.Eagerness = existing;
+                    ctx.Options.Eagerness = existing;
                     return;
                 }
 
-                source.Context.Error("Found endstream in contents, using repaired length.");
+                ctx.Error("Found endstream in contents, using repaired length.");
                 streamLength = new PdfIntNumber(scanner.Position - startPos);
                 dict[PdfName.Length] = streamLength;
                 var contents = new PdfByteArrayStreamContents(scanner.Data.Slice(startPos, scanner.Position - startPos).ToArray());
@@ -256,7 +267,13 @@ internal static class ReadingExtensions
                 contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
                 wtx.SerializeObject(stream, true);
             }
-            source.Context.Options.Eagerness = existing;
+            ctx.Options.Eagerness = existing;
+            return;
+        }
+        else
+        {
+            ctx.Error($"endobj not found after object while copying data, found: {type}");
+            wtx.Stream.Write(scanner.Data.Slice(objStart, objLength));
             return;
         }
     }

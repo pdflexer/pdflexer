@@ -1,6 +1,7 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Fonts;
 using PdfLexer.Operators;
+using PdfLexer.Parsers;
 using PdfLexer.Writing;
 using System;
 using System.Collections.Generic;
@@ -168,6 +169,7 @@ namespace PdfLexer.Tests
         [Fact]
         public void It_Reads_With_GS_Op()
         {
+            using var ctx = new ParsingContext();
             using var doc = PdfDocument.Create();
             var pg = doc.AddPage();
             {
@@ -199,6 +201,7 @@ namespace PdfLexer.Tests
         [Fact]
         public void It_Reads_Visually()
         {
+            using var ctx = new ParsingContext();
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var pdfFile = Path.Combine(pdfRoot, "issue1002.pdf");
@@ -210,6 +213,7 @@ namespace PdfLexer.Tests
 
         private void RunSingle(string name)
         {
+            // using var ctx = new ParsingContext();
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var txtFile = Path.Combine(tp, "pdfs", "txt-values", name + ".txt");

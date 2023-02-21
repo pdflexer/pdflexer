@@ -372,7 +372,7 @@ namespace PdfLexer.ImageTests
                     throw new ApplicationException("Read failure");
                 }
                 var name = Path.GetFileNameWithoutExtension(pdf);
-                using var isa = img.GetImage(doc.Context);
+                using var isa = img.GetImageSharp(doc.Context);
                 var imgout = Path.Combine(output, name + ".png");
                 isa.SaveAsPng(imgout);
                 using var cl = Image.Load<Bgra32>(imgout);
@@ -420,7 +420,7 @@ namespace PdfLexer.ImageTests
                                 }
                                 try
                                 {
-                                    using var isa = img.GetImage(doc.Context);
+                                    using var isa = img.GetImageSharp(doc.Context);
                                     isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
                                     using var cl = Image.Load<Bgra32>($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
                                     using var bl = Image.Load<Bgra32>(Path.Combine(pdfRoot, Path.GetFileNameWithoutExtension(pdf) + ".png"));

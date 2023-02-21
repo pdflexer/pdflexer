@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Parsers;
 using PdfLexer.Serializers;
 using System.Management.Automation;
 
@@ -37,7 +38,9 @@ internal class MergePdfObjects : InputOutputPathCmdlet
                 var bak = filePath + ".tmp";
                 File.Move(filePath, bak);
                 filePath = bak;
-                using var doc = PdfDocument.Open(filePath, new ParsingOptions { ThrowOnErrors = false });
+
+                using var ctx = new ParsingContext(new ParsingOptions { ThrowOnErrors = false });
+                using var doc = PdfDocument.Open(filePath);
                 using var fo = File.Create(output);
                 using var writer = new StreamingWriter(fo, true, true);
                 foreach (var pg in doc.Pages)
@@ -50,7 +53,7 @@ internal class MergePdfObjects : InputOutputPathCmdlet
                     writer.AddPage(pgr);
                 }
                 writer.Complete(doc.Trailer, doc.Catalog);
-                foreach (var err in doc.Context.ParsingErrors)
+                foreach (var err in ctx.ParsingErrors)
                 {
                     WriteWarning(err);
                 }

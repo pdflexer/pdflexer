@@ -24,7 +24,8 @@ internal class PdfLazyObject : PdfObject
         LazyObjectType = type;
     }
 
-    public IPdfObject Resolve()
+    public IPdfObject Resolve() => Resolve(ParsingContext.Current);
+    public IPdfObject Resolve(ParsingContext ctx)
     {
         if (Parsed != null)
         {
@@ -34,8 +35,9 @@ internal class PdfLazyObject : PdfObject
         {
             throw new PdfLexerException("Attempted to parse lazy object from disposed source.");
         }
-        Source.GetData(Offset, Length, out var buffer);
-        Parsed = Source.Context.GetKnownPdfItem(LazyObjectType, buffer, 0, Length);
+        
+        Source.GetData(ctx,Offset, Length, out var buffer);
+        Parsed = ctx.GetKnownPdfItem(LazyObjectType, buffer, 0, Length, Source.Document);
         return Parsed;
     }
 }

@@ -2,7 +2,6 @@
 using PdfLexer.DOM;
 using PdfLexer.DOM.ColorSpaces;
 using PdfLexer.Filters;
-using PdfLexer.Parsers;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 using System.Runtime.InteropServices;
@@ -78,7 +77,9 @@ public static class ImageSharpExts
         return xi;
     }
 
-    public static Image GetImage(this PdfImage img, ParsingContext ctx)
+    [Obsolete("Use GetImageSharp.")]
+    public static Image GetImage(this PdfImage img, ParsingContext ctx) => GetImageSharp(img, ctx);
+    public static Image GetImageSharp(this PdfImage img, ParsingContext ctx)
     {
         var dict = img.XObj.NativeObject;
         if (!dict.TryGetValue(PdfName.Filter, out var filter))

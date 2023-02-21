@@ -1,5 +1,4 @@
-﻿using PdfLexer.Parsers;
-using PdfLexer.Parsers.Nested;
+﻿using PdfLexer.Parsers.Nested;
 using System.Buffers;
 using System.IO.Pipelines;
 
@@ -408,7 +407,7 @@ internal ref struct PipeScanner
 
             if (cnt >= count)
             {
-                return total;
+                return total-1;
             }
         }
         return -1;

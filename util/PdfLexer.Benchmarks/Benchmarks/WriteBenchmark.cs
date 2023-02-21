@@ -24,56 +24,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             data = File.ReadAllBytes("C:\\temp\\PRIV\\Origrk.pdf");
             data2 = File.ReadAllBytes("C:\\temp\\test-pdfs\\kjped-53-661.pdf");
         }
-        //[Benchmark(Baseline = true)]
-        public int Eager()
-        {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.FullEager });
-            return Run(doc);
-        }
 
-        //[Benchmark()]
-        public int EagerNoCache()
-        {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.FullEager, CacheNames = false });
-            return Run(doc);
-        }
-
-        //[Benchmark()]
-        public int EagerSmall()
-        {
-            using var doc = PdfDocument.Open(data2, new ParsingOptions { Eagerness = Eagerness.FullEager });
-            return Run(doc);
-        }
-
-        //[Benchmark(Baseline = true)]
-        public int Lazy()
-        {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.Lazy });
-            return Run(doc);
-        }
-
-        //[Benchmark()]
-        public int LazyNoCacheNames()
-        {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.Lazy, CacheNames = false });
-            return Run(doc);
-        }
-
-
-        //[Benchmark()]
-        public int LazySmall()
-        {
-            using var doc = PdfDocument.Open(data2, new ParsingOptions { Eagerness = Eagerness.Lazy });
-            return Run(doc);
-        }
-
-
-        //[Benchmark()]
-        public int NoLoad()
-        {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
-            return 0;
-        }
 
         //[Benchmark()]
         public int PdfPig()
@@ -100,7 +51,8 @@ namespace PdfLexer.Benchmarks.Benchmarks
         //[Benchmark()]
         public int EagerCopy()
         {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { Eagerness = Eagerness.FullEager });
+            using var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager });
+            using var doc = PdfDocument.Open(data);
             ms.Position = 0;
             var writer = new WritingContext(ms);
             writer.Complete(doc.Trailer);
@@ -110,7 +62,8 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [Benchmark()]
         public int LazyCopy()
         {
-            using var doc = PdfDocument.Open(data2, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
+            using var ctx = new ParsingContext(new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
+            using var doc = PdfDocument.Open(data2);
             ms.Position = 0;
             var writer = new WritingContext(ms);
             writer.Complete(doc.Trailer);
@@ -119,7 +72,8 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [Benchmark()]
         public int LazyModify()
         {
-            using var doc = PdfDocument.Open(data2, new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy });
+            using var ctx = new ParsingContext(new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy });
+            using var doc = PdfDocument.Open(data2);
             ms.Position = 0;
             doc.Pages[0].NativeObject[PdfName.Colors] = PdfCommonNumbers.Zero; // add dummy data to page
             doc.SaveTo(ms);
@@ -129,7 +83,9 @@ namespace PdfLexer.Benchmarks.Benchmarks
         [Benchmark()]
         public int LazyModifyNoPages()
         {
-            using var doc = PdfDocument.Open(data2, new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
+
+            using var ctx = new ParsingContext(new ParsingOptions { LoadPageTree = false, Eagerness = Eagerness.Lazy });
+            using var doc = PdfDocument.Open(data2);
             ms.Position = 0;
             doc.Trailer[PdfName.Colors] = PdfCommonNumbers.Zero; // add dummy data to page
             doc.SaveTo(ms);
@@ -139,7 +95,9 @@ namespace PdfLexer.Benchmarks.Benchmarks
         //[Benchmark()]
         public int LazyCopyPageTree()
         {
-            using var doc = PdfDocument.Open(data, new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy });
+
+            using var ctx = new ParsingContext(new ParsingOptions { LoadPageTree = true, Eagerness = Eagerness.Lazy });
+            using var doc = PdfDocument.Open(data);
             ms.Position = 0;
             var writer = new WritingContext(ms);
             writer.Complete(doc.Trailer);

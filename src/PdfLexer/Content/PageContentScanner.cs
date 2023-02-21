@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Lexing;
-using PdfLexer.Parsers;
 
 namespace PdfLexer.Content;
 
@@ -158,13 +157,15 @@ public ref struct PageContentScanner
             CurrentStreamId = 0;
             return;
         }
-        if (!Context.IndirectLookup.TryGetValue(CurrentStream, out var xref))
-        {
-            CurrentStreamId = 0;
-            return;
-        }
 
-        CurrentStreamId = xref.Reference.GetId();
+        // TODO
+        // if (!Context.IndirectLookup.TryGetValue(CurrentStream, out var xref))
+        // {
+        //     CurrentStreamId = 0;
+        //     return;
+        // }
+        // 
+        // CurrentStreamId = xref.Reference.GetId();
     }
 
     public PdfOperatorType Peek()

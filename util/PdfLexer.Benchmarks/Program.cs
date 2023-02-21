@@ -22,9 +22,9 @@ namespace PdfLexer.Benchmarks
     {
         static async Task Main(string[] args)
         {
-            var tst = new TextBenchmark();
-            tst.testPdf = "issue2128r";
-            tst.Setup();
+            //var tst = new TextBenchmark();
+            //tst.testPdf = "issue2128r";
+            //tst.Setup();
 
             // 
             // for (var i=0;i<100000; i++)

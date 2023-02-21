@@ -28,7 +28,7 @@ public class OpenPdfDocument : PathCmdlet
 
     protected override void ProcessRecord()
     {
-        var opts = new ParsingOptions { OwnerPass = Password, UserPass = Password };
+        var opts = new DocumentOptions { OwnerPass = Password, UserPass = Password };
         foreach (var path in GetPaths())
         {
             if (InMemory)

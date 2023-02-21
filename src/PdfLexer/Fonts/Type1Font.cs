@@ -1,7 +1,6 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Fonts.Files;
 using PdfLexer.Fonts.Predefined;
-using PdfLexer.Parsers;
 
 namespace PdfLexer.Fonts;
 

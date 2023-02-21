@@ -1,6 +1,5 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Fonts.Files;
-using PdfLexer.Parsers;
 using System;
 using System.Collections.Generic;
 

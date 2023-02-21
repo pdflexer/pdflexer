@@ -1,5 +1,4 @@
-﻿using PdfLexer.Parsers;
-using System.IO;
+﻿using System.IO;
 
 namespace PdfLexer.Filters;
 

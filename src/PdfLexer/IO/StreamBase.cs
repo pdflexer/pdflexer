@@ -1,5 +1,4 @@
-﻿using PdfLexer.Parsers;
-using PdfLexer.Parsers.Structure;
+﻿using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 using System;
 using System.IO;
@@ -10,33 +9,26 @@ internal abstract class StreamBase : IPdfDataSource
 {
     public long TotalBytes { get; }
 
-    public bool SupportsCloning => false;
 
-    public ParsingContext Context => _ctx;
+    public PdfDocument Document => _doc;
+    private readonly PdfDocument _doc;
 
-    private readonly ParsingContext _ctx;
     protected Stream _stream;
     private readonly bool _leaveOpen;
     protected readonly SubStream _sub;
 
-    public StreamBase(ParsingContext ctx, Stream stream, bool leaveOpen)
+    public StreamBase(PdfDocument doc, Stream stream, bool leaveOpen)
     {
         if (!stream.CanSeek)
         {
             throw new NotSupportedException("Streams must be seekable.");
         }
         TotalBytes = stream.Length;
-        _ctx = ctx;
+        _doc = doc;
         _stream = stream;
         _leaveOpen = leaveOpen;
         _sub = new SubStream(stream, 0, stream.Length, false);
     }
-
-    public IPdfDataSource Clone()
-    {
-        throw new NotSupportedException("Stream Pdf data source does not support cloning");
-    }
-
     public void CopyData(long startPosition, int requiredBytes, Stream stream)
     {
         if (requiredBytes > TotalBytes - startPosition)
@@ -49,6 +41,8 @@ internal abstract class StreamBase : IPdfDataSource
 
     public bool Disposed { get; private set; }
 
+    public abstract bool IsEncrypted { get; }
+
     public void Dispose()
     {
         if (!_leaveOpen) { _stream.Dispose(); }
@@ -56,8 +50,11 @@ internal abstract class StreamBase : IPdfDataSource
         _sub.ActuallyDispose(true);
         Disposed = true;
     }
+    public abstract IPdfObject GetIndirectObject(ParsingContext ctx, XRefEntry xref);
 
-    public void GetData(long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer)
+    public abstract void CopyIndirectObject(ParsingContext ctx, XRefEntry xref, WritingContext destination);
+
+    public void GetData(ParsingContext ctx, long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer)
     {
         if (requiredBytes > TotalBytes - startPosition)
         {
@@ -73,36 +70,31 @@ internal abstract class StreamBase : IPdfDataSource
             total += read;
         }
         buffer = data;
-        Context.CurrentSource = this;
-        Context.CurrentOffset = startPosition;
+        ctx.CurrentSource = this;
+        ctx.CurrentOffset = startPosition;
     }
 
-    public Stream GetDataAsStream(long startPosition, int desiredBytes)
+    public Stream GetDataAsStream(ParsingContext ctx, long startPosition, int desiredBytes)
     {
         if (desiredBytes > TotalBytes - startPosition)
         {
             throw new ApplicationException("More data requested from data source than available.");
         }
-        Context.CurrentSource = this;
-        Context.CurrentOffset = startPosition;
+        ctx.CurrentSource = this;
+        ctx.CurrentOffset = startPosition;
         _sub.Reset(startPosition, desiredBytes);
         return _sub;
     }
 
-    public Stream GetStream(long startPosition)
+    public Stream GetStream(ParsingContext ctx, long startPosition)
     {
         if (startPosition > TotalBytes - 1)
         {
             throw new ApplicationException("More data requested from data source than available.");
         }
-        Context.CurrentSource = this;
-        Context.CurrentOffset = startPosition;
+        ctx.CurrentSource = this;
+        ctx.CurrentOffset = startPosition;
         _sub.Reset(startPosition, TotalBytes - startPosition);
         return _sub;
     }
-
-    public abstract IPdfObject GetIndirectObject(XRefEntry xref);
-
-    public abstract void CopyIndirectObject(XRefEntry xref, WritingContext destination);
-
 }

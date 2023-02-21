@@ -39,7 +39,7 @@ internal class XRefParser
         catch (Exception e)
         {
             _ctx.Error("Error during crossref parsing: " + e.Message);
-            results = StructuralRepairs.BuildFromRawData(_ctx, pdf.GetStream(0));
+            results = StructuralRepairs.BuildFromRawData(_ctx, pdf.GetStream(_ctx, 0));
         }
 
         var entries = new Dictionary<ulong, XRefEntry>();
@@ -49,7 +49,7 @@ internal class XRefParser
         }
         UpdateRefs(results.Refs);
 
-        pdf.Context.IsEncrypted = results.Trailer?.ContainsKey(PdfName.Encrypt) ?? false;
+        pdf.Document.IsEncrypted = results.Trailer?.ContainsKey(PdfName.Encrypt) ?? false;
         return (entries, results.Trailer);
 
         void UpdateRefs(List<XRefEntry> refs)
@@ -91,7 +91,7 @@ internal class XRefParser
             readStart = 0;
         }
 
-        var stream = source.GetStream(readStart);
+        var stream = source.GetStream(_ctx, readStart);
         var pipe = _ctx.Options.CreateReader(stream);
         var scanner = new PipeScanner(_ctx, pipe);
         if (!scanner.TrySkipToToken(IndirectSequences.strartxref, 0))
@@ -110,13 +110,14 @@ internal class XRefParser
             throw new PdfLexerException($"XRef offset larger than document size, {num} ({source.TotalBytes} size)");
         }
         long strStart = num;
-        stream = source.GetStream(strStart);
+        stream = source.GetStream(_ctx, strStart);
         pipe = _ctx.Options.CreateReader(stream);
         scanner = new PipeScanner(_ctx, pipe);
         var result = scanner.Peek();
         var entries = new List<XRefEntry>();
         if (result == PdfTokenType.Xref)
         {
+            HashSet<long> read = new HashSet<long> { strStart };
             scanner.SkipCurrent();
             var seq = scanner.ReadTo(Trailer);
 
@@ -127,13 +128,13 @@ internal class XRefParser
             var original = dict;
             while (true)
             {
-                if (!dict.TryGetValue<PdfNumber>(PdfName.Prev, out var lastOffset))
+                if (!dict.TryGetValue<PdfNumber>(PdfName.Prev, out var lastOffset) || read.Contains(lastOffset))
                 {
                     break;
                 }
-
                 var offset = (long)lastOffset;
-                stream = source.GetStream(offset);
+                read.Add(offset);
+                stream = source.GetStream(_ctx, offset);
                 pipe = _ctx.Options.CreateReader(stream);
                 scanner = new PipeScanner(_ctx, pipe);
                 result = scanner.Peek();
@@ -159,7 +160,8 @@ internal class XRefParser
         }
         else if (result == PdfTokenType.NumericObj)
         {
-            var oss = num.GetValue<PdfNumber>();
+            HashSet<long> read = new HashSet<long> { strStart };
+            PdfNumber? oss = null;
 
             PdfDictionary? original = null;
             while (true)
@@ -211,13 +213,15 @@ internal class XRefParser
                 {
                     original = dict;
                 }
-                if (oss == null)
+                if (oss == null || read.Contains(oss))
                 {
                     _ctx.Options.Eagerness = orig;
                     return (entries, original);
                 }
 
-                stream = source.GetStream(oss);
+                read.Add(oss);
+
+                stream = source.GetStream(_ctx, oss);
                 strStart = oss;
                 pipe = _ctx.Options.CreateReader(stream);
                 scanner = new PipeScanner(_ctx, pipe);

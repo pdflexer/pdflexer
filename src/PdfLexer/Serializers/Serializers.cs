@@ -41,7 +41,7 @@ internal class Serializers
         if (obj.IsLazy)
         {
             var lz = (PdfLazyObject)obj;
-            if (lz.HasLazyIndirect || lz.IsModified || lz.Source.Context.Options.ForceSerialize || lz.Source.Disposed)
+            if (lz.HasLazyIndirect || lz.IsModified || lz.Source.Disposed) // lz.Source.Context.Options.ForceSerialize
             {
                 obj = lz.Resolve();
             }

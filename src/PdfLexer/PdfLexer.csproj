@@ -10,6 +10,7 @@
 		<Description>PDF parsing and manipulation library.</Description>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -23,7 +24,7 @@
 
 	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0'">
 		<PackageReference Include="DotNext.Unsafe">
-			<Version>4.9.0</Version>
+			<Version>4.10.0</Version>
 		</PackageReference>
 	</ItemGroup>
 
@@ -32,7 +33,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.2.1" />
+		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.1" />
 		<PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
 		<PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
 	</ItemGroup>

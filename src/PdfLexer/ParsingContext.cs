@@ -2,35 +2,50 @@
 using System.Buffers.Text;
 using System.Runtime.CompilerServices;
 using Microsoft.IO;
-using PdfLexer.Encryption;
+
 using PdfLexer.Filters;
 using PdfLexer.Fonts;
 using PdfLexer.IO;
 using PdfLexer.Lexing;
+using PdfLexer.Parsers;
 using PdfLexer.Parsers.Nested;
 using PdfLexer.Parsers.Structure;
 
-namespace PdfLexer.Parsers;
+namespace PdfLexer;
+
 
 public class ParsingContext : IDisposable
 {
-    internal int SourceId { get; }
-    internal bool IsEncrypted { get; set; } = false;
-    internal IDecryptionHandler Decryption { get; private set; }
-
+    public static ParsingContext CreateLowMemory()
+    {
+        var options = new ParsingOptions();
+        options.CacheNames = false;
+        options.CacheNumbers = false;
+        options.LowMemoryMode = true;
+        var ctx = new ParsingContext(options);
+        return ctx;
+    }
+    public static ParsingContext Current
+    {
+        get
+        {
+            var val = CurrentCtx.Value;
+            if (val == null || val.disposed)
+            {
+                val = new ParsingContext();
+                CurrentCtx.Value = val;
+            }
+            return val;
+        }
+    }
+    private static AsyncLocal<ParsingContext?> CurrentCtx = new AsyncLocal<ParsingContext?>();
     // tracked here to support encryption
     internal ulong CurrentReference { get; set; }
     // tracked here to support lazy parsing
     internal long CurrentOffset { get; set; }
     // tracked here to support lazy parsing
     internal IPdfDataSource? CurrentSource { get; set; }
-    
-    public IPdfDataSource MainDocSource { get; private set; }
-    public PdfDocument Document { get; internal set; }
-    internal Dictionary<ulong, XRefEntry> XRefs = null!;
     internal Dictionary<int, PdfIntNumber> CachedInts = new Dictionary<int, PdfIntNumber>();
-    internal Dictionary<ulong, WeakReference<IPdfObject>> IndirectCache = new Dictionary<ulong, WeakReference<IPdfObject>>();
-    internal ConditionalWeakTable<IPdfObject, XRefEntry> IndirectLookup = new ConditionalWeakTable<IPdfObject, XRefEntry>();
     internal NumberCache NumberCache = new NumberCache();
     internal NameCache NameCache = new NameCache();
     internal NumberParser NumberParser { get; }
@@ -39,23 +54,16 @@ public class ParsingContext : IDisposable
     internal BoolParser BoolParser { get; }
     internal NameParser NameParser { get; }
     internal NestedParser NestedParser { get; }
-    internal CryptFilter CryptFilter { get; }
     internal DictionaryParser DictionaryParser { get; }
     internal StringParser StringParser { get; }
     internal ICMapProvider CMapProvider { get; }
     internal static readonly RecyclableMemoryStreamManager StreamManager = new RecyclableMemoryStreamManager();
-    internal List<IDisposable> disposables = new List<IDisposable>();
     internal XRefParser XRefParser { get; }
-
     public ParsingOptions Options { get; }
 
-    public ParsingContext(ParsingOptions? options = null) : this(PdfDocument.GetNextId(), options)
-    {
-    }
-    internal ParsingContext(int sourceId, ParsingOptions? options = null)
+    public ParsingContext(ParsingOptions? options = null, bool setAsCurrent = true)
     {
         Options = options ?? new ParsingOptions() { Eagerness = Eagerness.FullEager };
-        SourceId = sourceId;
         ArrayParser = new ArrayParser(this);
         BoolParser = new BoolParser();
         DictionaryParser = new DictionaryParser(this);
@@ -65,39 +73,12 @@ public class ParsingContext : IDisposable
         StringParser = new StringParser(this);
         XRefParser = new XRefParser(this);
         NestedParser = new NestedParser(this);
-        CryptFilter = new CryptFilter(this);
         CurrentOffset = 0;
-        MainDocSource = null!;
-        Document = null!;
         CMapProvider = GlobalCMapProvider.Instance;
-    }
-
-    public (Dictionary<ulong, XRefEntry> XRefs, PdfDictionary? Trailer) Initialize(IPdfDataSource pdf)
-    {
-        MainDocSource = pdf;
-        CurrentSource = MainDocSource;
-        disposables.Add(MainDocSource);
-        var (xr, tr) = XRefParser.LoadCrossReferences(pdf);
-        XRefs = xr;
-        if (IsEncrypted) {
-            IsEncrypted = false; // encryption handlers set encrypted true again when setup completed
-            Options.Eagerness = Eagerness.FullEager;
-            var enc = tr!.Get<PdfDictionary>(PdfName.Encrypt); // not null if set encrypt true;
-            if (enc != null)
-            {
-                var filter = enc.Get<PdfName>(PdfName.Filter);
-                switch (filter?.Value) {
-                    case "Standard":
-                    case null:
-                        Decryption = new StandardEncryption(this, tr ?? new PdfDictionary());
-                        break;
-                    default:
-                        throw new PdfLexerException($"Encryption of type {filter.Value} is not supported.");
-                }
-            }
-            
+        if (setAsCurrent)
+        {
+            CurrentCtx.Value = this;
         }
-        return (xr, tr);
     }
 
     internal List<string> Errors { get; set; } = new List<string>();
@@ -112,7 +93,7 @@ public class ParsingContext : IDisposable
         }
 
         errors++;
-        
+
         if (Errors.Count > Options.MaxErrorRetention)
         {
             Errors.RemoveAt(0);
@@ -127,29 +108,30 @@ public class ParsingContext : IDisposable
         {
             var path = Path.Combine(Path.GetTempPath(), "pdflexer_" + Guid.NewGuid().ToString());
             return new FileStream(path, FileMode.CreateNew, FileAccess.ReadWrite, FileShare.None, 4096, FileOptions.DeleteOnClose);
-        } else
+        }
+        else
         {
             return StreamManager.GetStream();
         }
     }
 
-    internal decimal? GetHeaderVersion()
+    internal decimal? GetHeaderVersion(IPdfDataSource mainSource)
     {
         // %PDF-X.N
-        MainDocSource.GetData(0, MainDocSource.TotalBytes > 50 ? 50 : (int)MainDocSource.TotalBytes, out var data);
+        mainSource.GetData(this, 0, mainSource.TotalBytes > 50 ? 50 : (int)mainSource.TotalBytes, out var data);
         // correct for bad start
         var i = data.IndexOf((byte)'%');
         if (i == -1)
         {
             return null;
         }
-        
+
         if (data.Length < i + 8)
         {
             return null;
         }
 
-        if (!Utf8Parser.TryParse(data.Slice(i+5, 3), out decimal value, out int _))
+        if (!Utf8Parser.TryParse(data.Slice(i + 5, 3), out decimal value, out int _))
         {
             return null;
         }
@@ -157,7 +139,7 @@ public class ParsingContext : IDisposable
         return value;
     }
 
-    internal static IDecoder GetDecoder(PdfName name, ParsingContext? ctx)
+    internal static IDecoder GetDecoder(PdfName name, PdfDocument? doc)
     {
         // Not technically valid outside of inline image
         // but used (eg. ghostscript)
@@ -189,25 +171,25 @@ public class ParsingContext : IDisposable
             case "LZWDecode":
                 return LZWFilter.Instance;
             case "Crypt":
-                if (ctx == null)
+                if (doc == null)
                 {
-                    throw new PdfLexerException("Crypt filter used in stream without source context attached.");
+                    throw new PdfLexerException("Crypt filter used in stream without source document attached.");
                 }
-                return ctx.CryptFilter;
+                return doc.CryptFilter;
             default:
                 throw new NotImplementedException($"Stream decoding of type {name.Value} has not been implemented.");
         }
     }
 
-    internal bool IsDataCopyable(XRef entry)
+    internal bool IsDataCopyable(IPdfDataSource source, XRef entry)
     {
-        if (IsEncrypted || Options.ForceSerialize)
+        if (source.IsEncrypted || Options.ForceSerialize)
         {
             return false;
         }
 
-        ulong id = ((ulong)entry.ObjectNumber << 16) | ((uint)entry.Generation & 0xFFFF);
-        if (IndirectCache.TryGetValue(id, out var weak) && weak.TryGetTarget(out var value))
+        ulong id = (ulong)entry.ObjectNumber << 16 | (uint)entry.Generation & 0xFFFF;
+        if (source.Document.IndirectCache.TryGetValue(id, out var weak) && weak.TryGetTarget(out var value))
         {
             switch (value.Type)
             {
@@ -272,22 +254,17 @@ public class ParsingContext : IDisposable
         return Type1Font.CreateReadable(this, dict);
     }
 
-    internal IPdfObject? RepairFindLastMatching(PdfTokenType type, Func<IPdfObject, bool> matcher)
-    {
-        return StructuralRepairs.RepairFindLastMatching(this, MainDocSource.GetStream(0), type, matcher);
-    }
+    internal IPdfObject GetIndirectObject(PdfDocument doc, XRef xref) => GetIndirectObject(doc, xref.GetId());
 
-    internal IPdfObject GetIndirectObject(XRef xref) => GetIndirectObject(xref.GetId());
-
-    internal IPdfObject GetIndirectObject(ulong id)
+    internal IPdfObject GetIndirectObject(PdfDocument doc, ulong id)
     {
         CurrentReference = id;
-        if (IndirectCache.TryGetValue(id, out var weak) && weak.TryGetTarget(out var cached))
+        if (doc.IndirectCache.TryGetValue(id, out var weak) && weak.TryGetTarget(out var cached))
         {
             return cached;
         }
 
-        if (XRefs == null || !XRefs.TryGetValue(id, out var value) || value.IsFree)
+        if (doc.XRefs == null || !doc.XRefs.TryGetValue(id, out var value) || value.IsFree)
         {
             // A indirect reference to an undefined object shall not be considered an error by
             // a conforming reader; it shall be treated as a reference to the null object.
@@ -298,42 +275,28 @@ public class ParsingContext : IDisposable
         {
             try
             {
-                LoadObjectStream(value);
-            } catch (PdfLexerException ex)
+                LoadObjectStream(doc, value);
+            }
+            catch (PdfLexerException ex)
             {
                 Error($"Error loading object stream, return null obj: " + ex.Message);
                 return PdfNull.Value;
             }
         }
 
-        var obj = value.GetObject();
-        IndirectCache[id] = new WeakReference<IPdfObject>(obj);
-        IndirectLookup.AddOrUpdate(obj, value);
-        
+        var obj = value.GetObject(this);
+        doc.IndirectCache[id] = new WeakReference<IPdfObject>(obj);
+        doc.IndirectLookup.AddOrUpdate(obj, value);
+
         return obj;
     }
 
-    internal void LoadObjectStream(XRefEntry entry)
+    internal void LoadObjectStream(PdfDocument doc, XRefEntry entry)
     {
-        var stream = GetIndirectObject(XRef.GetId(entry.ObjectStreamNumber, 0)).GetValue<PdfStream>();
+        var stream = GetIndirectObject(doc, XRef.GetId(entry.ObjectStreamNumber, 0)).GetValue<PdfStream>();
         var start = stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
 
         var ctx = this;
-        if (IsEncrypted)
-        {
-            // create new ctx for object stream as it's contents won't be encrypted
-            // may be better way to handle this but should work for now
-            ctx = new ParsingContext(Options)
-            {
-                MainDocSource = MainDocSource,
-                CurrentSource = MainDocSource,
-                IsEncrypted = false,
-                Document = Document,
-                CachedInts = CachedInts,
-                NameCache = NameCache,
-                NumberCache = NumberCache
-            };
-        }
 
         IPdfDataSource? source;
         if (Options.LowMemoryMode)
@@ -348,17 +311,18 @@ public class ParsingContext : IDisposable
             Span<byte> spanned = data;
             var os = GetOffsets(spanned.Slice(0, start), stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
             ArrayPool<byte>.Shared.Return(data);
-            source = new ObjectStreamFileDataSource(ctx, entry.ObjectStreamNumber, str, os, start);
-        } else
+            source = new ObjectStreamFileDataSource(doc, entry.ObjectStreamNumber, str, os, start);
+        }
+        else
         {
             var data = stream.Contents.GetDecodedData();
             var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
-            source = new ObjectStreamDataSource(ctx, entry.ObjectStreamNumber, data, os, start);
+            source = new ObjectStreamDataSource(doc, entry.ObjectStreamNumber, data, os, start);
         }
 
-        disposables.Add(source);
+        doc.disposables.Add(source);
 
-        foreach (var item in XRefs.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
+        foreach (var item in doc.XRefs.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
         {
             item.Source = source;
         }
@@ -388,9 +352,9 @@ public class ParsingContext : IDisposable
         }
         if (xref.KnownStreamLength > 0)
         {
-            return xref.Source.GetDataAsStream(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+            return xref.Source.GetDataAsStream(this, xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
         }
-        var stream = xref.Source.GetStream(xref.Offset + xref.KnownStreamStart + predictedLength);
+        var stream = xref.Source.GetStream(this, xref.Offset + xref.KnownStreamStart + predictedLength);
         var reader = Options.CreateReader(stream);
         var scanner = new PipeScanner(this, reader);
         var nxt = scanner.Peek();
@@ -398,7 +362,7 @@ public class ParsingContext : IDisposable
         if (nxt == PdfTokenType.EndStream)
         {
             xref.KnownStreamLength = predictedLength;
-            return xref.Source.GetDataAsStream(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+            return xref.Source.GetDataAsStream(this, xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
         }
         Error($"Stream did not end with endstream: {xref.Reference.ObjectNumber} {xref.Reference.Generation}");
         if (!StructuralRepairs.TryFindStreamEnd(this, xref, filter, predictedLength))
@@ -407,7 +371,7 @@ public class ParsingContext : IDisposable
             Error($"Unable to find endstream, using provided length");
         }
         Error($"Found endstream in contents, using repaired length: {xref.KnownStreamLength}");
-        return xref.Source.GetDataAsStream(xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+        return xref.Source.GetDataAsStream(this, xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
     }
 
     internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data)
@@ -454,12 +418,12 @@ public class ParsingContext : IDisposable
 
     // review this, seems wasteful to scan twice
     // some paths don't need to know length
-    internal PdfObject GetPdfItem(ReadOnlySpan<byte> data, int start, out int length)
+    internal PdfObject GetPdfItem(ReadOnlySpan<byte> data, int start, out int length, PdfDocument? doc)
     {
         var orig = start;
         length = GetCompleteLength(data, ref start, out var type);
 
-        var item = GetKnownPdfItem((PdfObjectType)type, data, start, length);
+        var item = GetKnownPdfItem(type, data, start, length, doc);
         length = length + start - orig;
         return item;
     }
@@ -494,7 +458,7 @@ public class ParsingContext : IDisposable
         return length;
     }
 
-    internal PdfObject GetKnownPdfItem(PdfObjectType type, ReadOnlySpan<byte> data, int start, int length)
+    internal PdfObject GetKnownPdfItem(PdfObjectType type, ReadOnlySpan<byte> data, int start, int length, PdfDocument? doc)
     {
         switch (type)
         {
@@ -512,7 +476,7 @@ public class ParsingContext : IDisposable
                 return StringParser.Parse(data, start, length);
             case PdfObjectType.DictionaryObj:
             case PdfObjectType.ArrayObj:
-                return (PdfObject)NestedParser.ParseNestedItem(data, start, out _); // TODO lazy support?
+                return (PdfObject)NestedParser.ParseNestedItem(doc, data, start, out _); // TODO lazy support?
         }
         throw new NotImplementedException($"Pdf Object type {type} was passed for parsing but is not known.");
     }
@@ -526,15 +490,13 @@ public class ParsingContext : IDisposable
 
     public List<string> GetCachedNames() => NameCache.Cache.Select(x => x.Value.Value).ToList();
 
+    internal bool disposed = false;
     public void Dispose()
     {
+        CurrentCtx.Value = null;
+        disposed = true;
         CachedInts = null!;
         NameCache = null!;
         NumberCache = null!;
-        // IndirectCache = null;
-        foreach (var disp in disposables)
-        {
-            disp.Dispose();
-        }
     }
 }

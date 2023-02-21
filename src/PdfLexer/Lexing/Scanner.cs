@@ -1,6 +1,5 @@
 ﻿using PdfLexer.Parsers;
 using PdfLexer.Parsers.Nested;
-
 namespace PdfLexer.Lexing;
 
 internal ref struct Scanner
@@ -8,18 +7,22 @@ internal ref struct Scanner
     private ParsingContext Context;
     internal ReadOnlySpan<byte> Data;
 
-    public Scanner(ParsingContext ctx, ReadOnlySpan<byte> data, int startAt = 0)
+    public Scanner(ParsingContext ctx, ReadOnlySpan<byte> data, int startAt = 0, PdfDocument? doc=null)
     {
         Context = ctx;
         Data = data;
         Position = startAt;
+        Document = doc;
         CurrentTokenType = PdfTokenType.TBD;
         CurrentLength = 0;
     }
 
     public PdfTokenType CurrentTokenType;
     public int CurrentLength;
+    private PdfDocument? Document; 
     public int Position;
+
+    
 
     public PdfTokenType Peek()
     {
@@ -133,14 +136,14 @@ internal ref struct Scanner
             case PdfTokenType.DictionaryStart:
             case PdfTokenType.ArrayStart:
                 {
-                    var obj = Context.NestedParser.ParseNestedItem(Data, Position, out var end);
+                    var obj = Context.NestedParser.ParseNestedItem(Document, Data, Position, out var end);
                     Position = end;
                     CurrentTokenType = PdfTokenType.TBD;
                     return obj;
                 }
             default:
                 {
-                    var obj = Context.GetKnownPdfItem((PdfObjectType)CurrentTokenType, Data, Position, CurrentLength);
+                    var obj = Context.GetKnownPdfItem((PdfObjectType)CurrentTokenType, Data, Position, CurrentLength, Document);
                     Position += CurrentLength;
                     CurrentTokenType = PdfTokenType.TBD;
                     return obj;
