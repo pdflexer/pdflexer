@@ -7,7 +7,7 @@ internal class QuickSave : ITest
     public (List<string>, int) RunTest(string inputPath, string outputPath)
     {
         using var ctx = new ParsingContext(new ParsingOptions { MaxErrorRetention = 10, ThrowOnErrors = false });
-        using var doc = PdfDocument.Open(File.ReadAllBytes(inputPath));
+        using var doc = PdfDocument.Open(inputPath);
 
         // add page and save existing doc -> uses logic for saving existing doc
         var pg = doc.AddPage();

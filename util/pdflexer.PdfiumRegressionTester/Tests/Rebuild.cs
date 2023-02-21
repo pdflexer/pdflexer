@@ -11,7 +11,7 @@ internal class Rebuild : ITest
     public (List<string>, int) RunTest(string inputPath, string outputPath)
     {
         using var ctx = new ParsingContext(new ParsingOptions { MaxErrorRetention = 10, ThrowOnErrors = false });
-        using var doc = PdfDocument.Open(File.ReadAllBytes(inputPath));
+        using var doc = PdfDocument.Open(inputPath);
         using var fo = File.Create(outputPath);
         using var sw = new StreamingWriter(fo, true, true);
         foreach (var pg in doc.Pages)

@@ -1165,6 +1165,7 @@ namespace PdfLexer.Tests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var output = Path.Combine(tp, "results", "syntax");
+            Directory.CreateDirectory(output);
             var errors = new List<string>();
 
             foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
@@ -1374,8 +1375,8 @@ namespace PdfLexer.Tests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdf14 = Path.Combine(tp, "pdfs", "pdfjs", "issue8823.pdf"); // 1.4
             var pdf17 = Path.Combine(tp, "pdfs", "pdfjs", "issue9084.pdf"); // 1.7
-            var doc = PdfDocument.Open(File.ReadAllBytes(pdf14));
-            var doc2 = PdfDocument.Open(File.ReadAllBytes(pdf17));
+            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf14));
+            using var doc2 = PdfDocument.Open(File.ReadAllBytes(pdf17));
 
             var od = PdfDocument.Create();
             od.Pages.AddRange(doc.Pages);
@@ -1387,6 +1388,23 @@ namespace PdfLexer.Tests
             ReadOnlySpan<byte> expected = "%PDF-1.7"u8;
             Assert.True(expected.SequenceEqual(data.Slice(0, expected.Length)));
         }
-        //
+
+
+        [Fact]
+        public void It_Disposes()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue8823.pdf");
+
+            var p = 0;
+            for (var i =0;i<10;i++)
+            {
+                using var doc = PdfDocument.Open(pdf);
+                p += doc.Pages.Count;
+            }
+
+            Assert.Equal(10, p);
+        }
+
     }
 }

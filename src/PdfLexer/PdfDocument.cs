@@ -70,7 +70,10 @@ public sealed partial class PdfDocument : IDisposable
 
     public void Dispose()
     {
-        Context?.Dispose();
+        foreach (var item in disposables)
+        {
+            item.Dispose();
+        }
         Pages = null!;
         Catalog = null!;
         Trailer = null!;

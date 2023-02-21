@@ -21,7 +21,7 @@ namespace PdfLexer.ImageTests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             // var output = Path.Combine(tp, "results", "images");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
-            using var doc = PdfDocument.OpenMapped(Path.Combine(pdfRoot, pdf));
+            using var doc = PdfDocument.Open(Path.Combine(pdfRoot, pdf));
 
             int i = 0;
             foreach (var page in doc.Pages)
