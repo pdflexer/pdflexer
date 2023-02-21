@@ -112,6 +112,11 @@ public sealed class PdfPage
     {
         return new TextScanner(ctx, this);
     }
+
+    public TextScanner GetTextScanner()
+    {
+        return new TextScanner(ParsingContext.Current, this);
+    }
 }
 
 

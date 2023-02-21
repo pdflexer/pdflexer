@@ -1,8 +1,6 @@
 # Image Extraction
 
-Note: Alpha quality
-
-Image extraction is largely completed excluding several specialized colorspaces. Long term goal is to allow easy image extraction and modification scenarios (replace image, downsize image, etc).
+Image extraction is largely completed excluding several specialized colorspaces and image filters. Long term goal is to allow easy image extraction and modification scenarios (replace image, downsize image, etc).
 
 Note: Extensions to convert pdf images to ImageSharp format provided by PdfLexer.ImageSharpExts nuget / project.
 
@@ -36,7 +34,7 @@ while (reader.Advance())
 
     // ImageSharp conversion supported through
     // from PdfLexer.ImageSharpExts project / nuget
-    using var imageSharpImage = pdfImg.GetImage(doc.Context);
+    using var imageSharpImage = pdfImg.GetImageSharp(doc.Context);
     imageSharpImage.SaveAsPng("/tmp/path.png");
 }
 ```

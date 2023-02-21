@@ -6,9 +6,10 @@ For most accurate text extraction the PdfLexer.CMaps nuget / project should be r
 
 ```csharp
 // get all chars
+CMaps.AddKnownPdfCMaps();
 using var doc = PdfDocument.Open(data);
 var page = doc.Pages.First();
-var reader = new TextScanner(doc.Context, page);
+var reader = page.GetTextScanner();
 while (reader.Advance())
 {
     sb.Append(reader.Glyph.Char);
@@ -20,7 +21,7 @@ var str = sb.ToString();
 // get filtered chars
 var doc = PdfDocument.Open(data);
 using var page = doc.Pages.First();
-var reader = new TextScanner(doc.Context, page);
+var reader = page.GetTextScanner();
 while (reader.Advance())
 {
     if (reader.Position.LLy > miny && reader.Position.LLx > minx) {

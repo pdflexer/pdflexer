@@ -1,7 +1,5 @@
 # StreamingWriter
 
-Note: Beta quality
-
 The `StreamingWriter` (in the `PdfLexer.Serializers` namespace) provides the ability to create large documents while not holding the contents in memory. As each page is added using `AddPage()` the `StreamingWriter` writes the required contents to the provided `Stream`. A basic example is shown below:
 
 ```csharp

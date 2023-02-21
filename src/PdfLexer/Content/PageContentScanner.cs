@@ -18,6 +18,7 @@ public struct ScannerInfo
     public bool Form { get; internal set; }
     public string FormName { get; internal set; }
 }
+[Obsolete("Use PageContentScanner2")]
 public ref struct PageContentScanner
 {
     private readonly bool FlattenForms;

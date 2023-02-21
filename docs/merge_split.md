@@ -4,7 +4,7 @@ Splitting and merging of PDFs can be accomplished by copying pages from one PDF 
 
 ```csharp
 // splitting pdf
-using var doc = PdfDocument.Open(File.ReadAllBytes("input.pdf"));
+using var doc = PdfDocument.Open("input.pdf");
 using var doc2 = PdfDocument.Create();
 using var doc3 = PdfDocument.Create();
 doc2.Pages.AddRange(doc.Pages.Take(10));
@@ -13,8 +13,8 @@ doc2.SaveTo(fsOne);
 doc2.SaveTo(fsTwo);
 
 // merging
-using var docA = PdfDocument.Open(File.ReadAllBytes("inputA.pdf"));
-using var docB = PdfDocument.Open(File.ReadAllBytes("inputB.pdf"));
+using var docA = PdfDocument.Open("inputA.pdf");
+using var docB = PdfDocument.Open("inputB.pdf");
 using var combined = PdfDocument.Create();
 combined.Pages.AddRange(docA.Pages);
 combined.Pages.AddRange(docb.Pages);
