@@ -111,7 +111,6 @@ public abstract class PdfStreamContents
     {
         dict.Remove(PdfName.DecodeParms);
         dict.Remove(PdfName.Filter);
-        dict.Remove(PdfName.Length1);
         if (DecodeParams != null)
         {
             dict[PdfName.DecodeParms] = DecodeParams;

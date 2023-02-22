@@ -80,6 +80,7 @@ internal class TestRunner
         {
             result = new ErrInfo
             {
+                PdfName = nm,
                 Status = TestStatus.PdfLexerError,
                 FailureMsg = ex.Message
             };

@@ -147,7 +147,6 @@
 {"PdfName":"__issue3062.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3064.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3115r.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":null,"Errs":null,"ErrCount":0,"FailedPages":null,"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
 {"PdfName":"__issue3384.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3427.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3591.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}

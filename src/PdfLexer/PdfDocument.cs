@@ -146,7 +146,6 @@ public sealed partial class PdfDocument : IDisposable
         var doc = new PdfDocument();
         var source = new StreamDataSource(doc, data);
         doc.Initialize(ctx, source);
-        doc.disposables.Add(ctx);
         return doc;
     }
 
@@ -166,7 +165,6 @@ public sealed partial class PdfDocument : IDisposable
 
         var source = new StreamDataSource(doc, data);
         doc.Initialize(ctx, source);
-        doc.disposables.Add(ctx);
         return doc;
     }
 
@@ -200,7 +198,6 @@ public sealed partial class PdfDocument : IDisposable
         var doc = new PdfDocument();
         var source = new InMemoryDataSource(doc, data);
         doc.Initialize(ctx, source);
-        doc.disposables.Add(ctx);
         return doc;
     }
 
@@ -210,12 +207,11 @@ public sealed partial class PdfDocument : IDisposable
     /// <param name="data">PDF data</param>
     /// <param name="options">Optional parsing options</param>
     /// <returns>PdfDocument</returns>
+    [Obsolete]
     public static PdfDocument Open(string file, ParsingOptions options)
     {
-
-        var ctx = new ParsingContext(options);
+        _ = new ParsingContext(options);
         var doc = Open(file, (DocumentOptions?)null);
-        doc.disposables?.Add(ctx);
         return doc;
     }
 
