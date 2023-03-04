@@ -134,6 +134,15 @@ public class PdfArray : PdfObject, IList<IPdfObject>
         }
     }
 
+    public IPdfObject? Get(int i)
+    { 
+        if (internalList.Count > i)
+        {
+            return internalList[i];
+        }
+        return null;
+    }
+
 
     /// <summary>
     /// Creates a new dictionary with the same contents.

@@ -34,7 +34,7 @@ public abstract class PdfIndirectRef : PdfObject
         return SourceId == sourceId;
     }
 
-    internal virtual XRef Reference { get; set; }
+    public virtual XRef Reference { get; set; }
     internal virtual int SourceId { get; set; }
     internal virtual bool DeferWriting { get; set; }
     public override PdfObjectType Type => PdfObjectType.IndirectRefObj;

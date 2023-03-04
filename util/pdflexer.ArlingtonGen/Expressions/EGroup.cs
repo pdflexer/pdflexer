@@ -1,0 +1,83 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace pdflexer.ArlingtonGen.Expressions;
+
+internal class EGroup : INode
+{
+    public EGroup(string text)
+    {
+        Children = Exp.Tokenize(text);
+    }
+
+    public List<INode> Children { get; }
+
+    public void Write(StringBuilder sw)
+    {
+
+        if (Children.Count == 3 && Children[1] is EOp op)
+        {
+            if (op.Text == "==")
+            {
+                sw.Append("eq");
+            }
+            else if (op.Text == "!=")
+            {
+                sw.Append("!eq");
+            }
+            else if (op.Text == "<")
+            {
+                sw.Append("lt");
+            }
+            else if (op.Text == ">")
+            {
+                sw.Append("gt");
+            }
+            else if (op.Text == "<=")
+            {
+                sw.Append("lte");
+            }
+            else if (op.Text == ">=")
+            {
+                sw.Append("gte");
+            }
+            else if (op.Text == "%")
+            {
+                sw.Append("mod");
+            }
+            else
+            {
+                sw.Append("(");
+                foreach (var part in Children)
+                {
+                    part.Write(sw);
+                }
+                sw.Append(")");
+                return;
+            }
+            sw.Append("(");
+            Children[0].Write(sw);
+            sw.Append(",");
+            Children[2].Write(sw);
+            sw.Append(")");
+
+
+        }
+        else
+        {
+            // sw.Append("(");
+            foreach (var part in Children)
+            {
+                part.Write(sw);
+            }
+            // sw.Append(")");
+        }
+
+    }
+
+    public bool WritesRequired() => Children.Where(x => x is EOp).Where(x => { var op = (EOp)x; return op.IsComparator(); }).Any();
+
+}

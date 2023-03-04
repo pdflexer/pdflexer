@@ -1,4 +1,6 @@
-﻿namespace PdfLexer;
+﻿using System.Runtime.CompilerServices;
+
+namespace PdfLexer;
 
 
 /// <summary>

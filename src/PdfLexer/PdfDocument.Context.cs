@@ -31,6 +31,14 @@ public sealed partial class PdfDocument
 
     internal CryptFilter CryptFilter { get; }
 
+    public XRef? GetXRef(IPdfObject obj)
+    {
+        if (IndirectLookup.TryGetValue(obj, out var xr))
+        {
+            return xr.Reference;
+        }
+        return null;
+    }
 
     internal void Initialize(ParsingContext ctx, IPdfDataSource pdf)
     {
