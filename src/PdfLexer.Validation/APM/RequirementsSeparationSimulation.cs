@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsSeparationSimulation : APM_RequirementsSeparationSimulation_Base
+internal partial class APM_RequirementsSeparationSimulation : APM_RequirementsSeparationSimulation__Base
 {
 }
 
-internal partial class APM_RequirementsSeparationSimulation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSeparationSimulation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsSeparationSimulation";
@@ -58,12 +58,12 @@ internal partial class APM_RequirementsSeparationSimulation_Base : ISpecificatio
 /// <summary>
 /// RequirementsSeparationSimulation_Type Table 273 and Table 275
 /// </summary>
-internal partial class APM_RequirementsSeparationSimulation_Type : APM_RequirementsSeparationSimulation_Type_Base
+internal partial class APM_RequirementsSeparationSimulation_Type : APM_RequirementsSeparationSimulation_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsSeparationSimulation_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSeparationSimulation_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSeparationSimulation_Type";
     public static bool RuleGroup() { return false; }
@@ -74,13 +74,11 @@ internal partial class APM_RequirementsSeparationSimulation_Type_Base : ISpecifi
         var val = ctx.GetOptional<PdfName, APM_RequirementsSeparationSimulation_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Requirement")) 
         {
             ctx.Fail<APM_RequirementsSeparationSimulation_Type>($"Invalid value {val}, allowed are: [Requirement]");
-        }
         }
         // no linked objects
         
@@ -92,12 +90,12 @@ internal partial class APM_RequirementsSeparationSimulation_Type_Base : ISpecifi
 /// <summary>
 /// RequirementsSeparationSimulation_S 
 /// </summary>
-internal partial class APM_RequirementsSeparationSimulation_S : APM_RequirementsSeparationSimulation_S_Base
+internal partial class APM_RequirementsSeparationSimulation_S : APM_RequirementsSeparationSimulation_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsSeparationSimulation_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSeparationSimulation_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSeparationSimulation_S";
     public static bool RuleGroup() { return false; }
@@ -108,13 +106,11 @@ internal partial class APM_RequirementsSeparationSimulation_S_Base : ISpecificat
         var val = ctx.GetRequired<PdfName, APM_RequirementsSeparationSimulation_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SeparationSimulation")) 
         {
             ctx.Fail<APM_RequirementsSeparationSimulation_S>($"Invalid value {val}, allowed are: [SeparationSimulation]");
-        }
         }
         // no linked objects
         
@@ -126,12 +122,12 @@ internal partial class APM_RequirementsSeparationSimulation_S_Base : ISpecificat
 /// <summary>
 /// RequirementsSeparationSimulation_V 
 /// </summary>
-internal partial class APM_RequirementsSeparationSimulation_V : APM_RequirementsSeparationSimulation_V_Base
+internal partial class APM_RequirementsSeparationSimulation_V : APM_RequirementsSeparationSimulation_V__Base
 {
 }
 
 
-internal partial class APM_RequirementsSeparationSimulation_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSeparationSimulation_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSeparationSimulation_V";
     public static bool RuleGroup() { return false; }
@@ -174,12 +170,12 @@ internal partial class APM_RequirementsSeparationSimulation_V_Base : ISpecificat
 /// <summary>
 /// RequirementsSeparationSimulation_RH 
 /// </summary>
-internal partial class APM_RequirementsSeparationSimulation_RH : APM_RequirementsSeparationSimulation_RH_Base
+internal partial class APM_RequirementsSeparationSimulation_RH : APM_RequirementsSeparationSimulation_RH__Base
 {
 }
 
 
-internal partial class APM_RequirementsSeparationSimulation_RH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSeparationSimulation_RH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSeparationSimulation_RH";
     public static bool RuleGroup() { return false; }
@@ -222,12 +218,12 @@ internal partial class APM_RequirementsSeparationSimulation_RH_Base : ISpecifica
 /// <summary>
 /// RequirementsSeparationSimulation_Penalty 
 /// </summary>
-internal partial class APM_RequirementsSeparationSimulation_Penalty : APM_RequirementsSeparationSimulation_Penalty_Base
+internal partial class APM_RequirementsSeparationSimulation_Penalty : APM_RequirementsSeparationSimulation_Penalty__Base
 {
 }
 
 
-internal partial class APM_RequirementsSeparationSimulation_Penalty_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSeparationSimulation_Penalty__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSeparationSimulation_Penalty";
     public static bool RuleGroup() { return false; }
@@ -238,13 +234,11 @@ internal partial class APM_RequirementsSeparationSimulation_Penalty_Base : ISpec
         var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsSeparationSimulation_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Penalty = val;
-        if (!((gte(@Penalty,0)&&lte(@Penalty,100)))) 
+        var Penalty = obj.Get("Penalty");
+        if (!((gte(Penalty,0)&&lte(Penalty,100)))) 
         {
             ctx.Fail<APM_RequirementsSeparationSimulation_Penalty>($"Invalid value {val}, allowed are: [fn:Eval((@Penalty>=0) && (@Penalty<=100))]");
-        }
         }
         // no linked objects
         

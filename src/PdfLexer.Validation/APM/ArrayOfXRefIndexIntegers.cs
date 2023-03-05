@@ -19,7 +19,7 @@ internal partial class APM_ArrayOfXRefIndexIntegers : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -42,7 +42,11 @@ internal partial class APM_ArrayOfXRefIndexIntegers_0x : ISpecification<PdfArray
         {
             var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefIndexIntegers_0x>(obj, n, IndirectRequirement.MustBeDirect);
             if (val == null) { return; }
-            // TODO special case
+            
+            if (!(gte(val,0))) 
+            {
+                ctx.Fail<APM_ArrayOfXRefIndexIntegers_0x>($"Value failed special case check: fn:Eval(@0*>=0)");
+            }
             // no value restrictions
             // no linked objects
             
@@ -69,7 +73,11 @@ internal partial class APM_ArrayOfXRefIndexIntegers_1x : ISpecification<PdfArray
         {
             var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefIndexIntegers_1x>(obj, n, IndirectRequirement.MustBeDirect);
             if (val == null) { return; }
-            // TODO special case
+            
+            if (!(gte(val,0))) 
+            {
+                ctx.Fail<APM_ArrayOfXRefIndexIntegers_1x>($"Value failed special case check: fn:Eval(@1*>=0)");
+            }
             // no value restrictions
             // no linked objects
             

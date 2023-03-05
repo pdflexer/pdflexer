@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_LinearizationParameterDict : APM_LinearizationParameterDict_Base
+internal partial class APM_LinearizationParameterDict : APM_LinearizationParameterDict__Base
 {
 }
 
-internal partial class APM_LinearizationParameterDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_LinearizationParameterDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "LinearizationParameterDict";
@@ -135,12 +135,12 @@ internal partial class APM_LinearizationParameterDict_Base : ISpecification<PdfD
 /// <summary>
 /// LinearizationParameterDict_Linearized Table F.1 version - https://github.com/pdf-association/pdf-issues/issues/153
 /// </summary>
-internal partial class APM_LinearizationParameterDict_Linearized : APM_LinearizationParameterDict_Linearized_Base
+internal partial class APM_LinearizationParameterDict_Linearized : APM_LinearizationParameterDict_Linearized__Base
 {
 }
 
 
-internal partial class APM_LinearizationParameterDict_Linearized_Base : ISpecification<PdfDictionary>
+internal partial class APM_LinearizationParameterDict_Linearized__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LinearizationParameterDict_Linearized";
     public static bool RuleGroup() { return false; }
@@ -151,13 +151,11 @@ internal partial class APM_LinearizationParameterDict_Linearized_Base : ISpecifi
         var val = ctx.GetRequired<PdfNumber, APM_LinearizationParameterDict_Linearized>(obj, "Linearized", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1.0m)) 
         {
             ctx.Fail<APM_LinearizationParameterDict_Linearized>($"Invalid value {val}, allowed are: [1.0]");
-        }
         }
         // no linked objects
         
@@ -169,12 +167,12 @@ internal partial class APM_LinearizationParameterDict_Linearized_Base : ISpecifi
 /// <summary>
 /// LinearizationParameterDict_L length of file
 /// </summary>
-internal partial class APM_LinearizationParameterDict_L : APM_LinearizationParameterDict_L_Base
+internal partial class APM_LinearizationParameterDict_L : APM_LinearizationParameterDict_L__Base
 {
 }
 
 
-internal partial class APM_LinearizationParameterDict_L_Base : ISpecification<PdfDictionary>
+internal partial class APM_LinearizationParameterDict_L__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LinearizationParameterDict_L";
     public static bool RuleGroup() { return false; }
@@ -185,13 +183,11 @@ internal partial class APM_LinearizationParameterDict_L_Base : ISpecification<Pd
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_L>(obj, "L", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @L = val;
-        if (!(gt(@L,0))) 
+        var L = obj.Get("L");
+        if (!(gt(L,0))) 
         {
             ctx.Fail<APM_LinearizationParameterDict_L>($"Invalid value {val}, allowed are: [fn:Eval(@L>0)]");
-        }
         }
         // no linked objects
         
@@ -203,12 +199,12 @@ internal partial class APM_LinearizationParameterDict_L_Base : ISpecification<Pd
 /// <summary>
 /// LinearizationParameterDict_H 
 /// </summary>
-internal partial class APM_LinearizationParameterDict_H : APM_LinearizationParameterDict_H_Base
+internal partial class APM_LinearizationParameterDict_H : APM_LinearizationParameterDict_H__Base
 {
 }
 
 
-internal partial class APM_LinearizationParameterDict_H_Base : ISpecification<PdfDictionary>
+internal partial class APM_LinearizationParameterDict_H__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LinearizationParameterDict_H";
     public static bool RuleGroup() { return false; }
@@ -239,12 +235,12 @@ internal partial class APM_LinearizationParameterDict_H_Base : ISpecification<Pd
 /// <summary>
 /// LinearizationParameterDict_O object number of the first pages page object
 /// </summary>
-internal partial class APM_LinearizationParameterDict_O : APM_LinearizationParameterDict_O_Base
+internal partial class APM_LinearizationParameterDict_O : APM_LinearizationParameterDict_O__Base
 {
 }
 
 
-internal partial class APM_LinearizationParameterDict_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_LinearizationParameterDict_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LinearizationParameterDict_O";
     public static bool RuleGroup() { return false; }
@@ -255,13 +251,11 @@ internal partial class APM_LinearizationParameterDict_O_Base : ISpecification<Pd
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_O>(obj, "O", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @O = val;
-        if (!(gt(@O,0))) 
+        var O = obj.Get("O");
+        if (!(gt(O,0))) 
         {
             ctx.Fail<APM_LinearizationParameterDict_O>($"Invalid value {val}, allowed are: [fn:Eval(@O>0)]");
-        }
         }
         // no linked objects
         
@@ -273,12 +267,12 @@ internal partial class APM_LinearizationParameterDict_O_Base : ISpecification<Pd
 /// <summary>
 /// LinearizationParameterDict_E offset of the end of the first page
 /// </summary>
-internal partial class APM_LinearizationParameterDict_E : APM_LinearizationParameterDict_E_Base
+internal partial class APM_LinearizationParameterDict_E : APM_LinearizationParameterDict_E__Base
 {
 }
 
 
-internal partial class APM_LinearizationParameterDict_E_Base : ISpecification<PdfDictionary>
+internal partial class APM_LinearizationParameterDict_E__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LinearizationParameterDict_E";
     public static bool RuleGroup() { return false; }
@@ -289,14 +283,12 @@ internal partial class APM_LinearizationParameterDict_E_Base : ISpecification<Pd
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_E>(obj, "E", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @E = val;
+        var E = obj.Get("E");
         var L = obj.Get("L");
-        if (!((gt(@E,0)&&lte(@E,L)))) 
+        if (!((gt(E,0)&&lte(E,L)))) 
         {
             ctx.Fail<APM_LinearizationParameterDict_E>($"Invalid value {val}, allowed are: [fn:Eval((@E>0) && (@E<=@L))]");
-        }
         }
         // no linked objects
         
@@ -308,12 +300,12 @@ internal partial class APM_LinearizationParameterDict_E_Base : ISpecification<Pd
 /// <summary>
 /// LinearizationParameterDict_N number of pages
 /// </summary>
-internal partial class APM_LinearizationParameterDict_N : APM_LinearizationParameterDict_N_Base
+internal partial class APM_LinearizationParameterDict_N : APM_LinearizationParameterDict_N__Base
 {
 }
 
 
-internal partial class APM_LinearizationParameterDict_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_LinearizationParameterDict_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LinearizationParameterDict_N";
     public static bool RuleGroup() { return false; }
@@ -324,13 +316,11 @@ internal partial class APM_LinearizationParameterDict_N_Base : ISpecification<Pd
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_N>(obj, "N", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @N = val;
-        if (!(gt(@N,0))) 
+        var N = obj.Get("N");
+        if (!(gt(N,0))) 
         {
             ctx.Fail<APM_LinearizationParameterDict_N>($"Invalid value {val}, allowed are: [fn:Eval(@N>0)]");
-        }
         }
         // no linked objects
         
@@ -342,12 +332,12 @@ internal partial class APM_LinearizationParameterDict_N_Base : ISpecification<Pd
 /// <summary>
 /// LinearizationParameterDict_T 
 /// </summary>
-internal partial class APM_LinearizationParameterDict_T : APM_LinearizationParameterDict_T_Base
+internal partial class APM_LinearizationParameterDict_T : APM_LinearizationParameterDict_T__Base
 {
 }
 
 
-internal partial class APM_LinearizationParameterDict_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_LinearizationParameterDict_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LinearizationParameterDict_T";
     public static bool RuleGroup() { return false; }
@@ -358,13 +348,11 @@ internal partial class APM_LinearizationParameterDict_T_Base : ISpecification<Pd
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_T>(obj, "T", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @T = val;
-        if (!(gt(@T,0))) 
+        var T = obj.Get("T");
+        if (!(gt(T,0))) 
         {
             ctx.Fail<APM_LinearizationParameterDict_T>($"Invalid value {val}, allowed are: [fn:Eval(@T>0)]");
-        }
         }
         // no linked objects
         
@@ -376,12 +364,12 @@ internal partial class APM_LinearizationParameterDict_T_Base : ISpecification<Pd
 /// <summary>
 /// LinearizationParameterDict_P page index of first page
 /// </summary>
-internal partial class APM_LinearizationParameterDict_P : APM_LinearizationParameterDict_P_Base
+internal partial class APM_LinearizationParameterDict_P : APM_LinearizationParameterDict_P__Base
 {
 }
 
 
-internal partial class APM_LinearizationParameterDict_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_LinearizationParameterDict_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LinearizationParameterDict_P";
     public static bool RuleGroup() { return false; }
@@ -392,13 +380,11 @@ internal partial class APM_LinearizationParameterDict_P_Base : ISpecification<Pd
         var val = ctx.GetOptional<PdfIntNumber, APM_LinearizationParameterDict_P>(obj, "P", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @P = val;
-        if (!(gte(@P,0))) 
+        var P = obj.Get("P");
+        if (!(gte(P,0))) 
         {
             ctx.Fail<APM_LinearizationParameterDict_P>($"Invalid value {val}, allowed are: [fn:Eval(@P>=0)]");
-        }
         }
         // no linked objects
         

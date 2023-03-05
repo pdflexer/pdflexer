@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfCIDGlyphMetricsW2 : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -47,7 +47,11 @@ internal partial class APM_ArrayOfCIDGlyphMetricsW2_x : ISpecification<PdfArray>
                     {
                         var val =  (PdfArray)utval;
                         // no indirect obj reqs
-                        // TODO special case
+                        
+                        if (!(eq(mod(((val as PdfArray)?.Count),3),0))) 
+                        {
+                            ctx.Fail<APM_ArrayOfCIDGlyphMetricsW2_x>($"Value failed special case check: fn:Eval((fn:ArrayLength(*) mod 3)==0)");
+                        }
                         // no value restrictions
                         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
                         return;

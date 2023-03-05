@@ -21,7 +21,7 @@ internal partial class APM_SeparationColorSpace : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -39,13 +39,11 @@ internal partial class APM_SeparationColorSpace_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_SeparationColorSpace_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Separation")) 
         {
             ctx.Fail<APM_SeparationColorSpace_0>($"Invalid value {val}, allowed are: [Separation]");
-        }
         }
         // no linked objects
         
@@ -102,6 +100,9 @@ internal partial class APM_SeparationColorSpace_2 : ISpecification<PdfArray>
                     } else if (APM_LabColorSpace.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_LabColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_SeparationColorSpace_2>("2 did not match any allowable types: '[CalGrayColorSpace,CalRGBColorSpace,LabColorSpace,fn:SinceVersion(1.3,ICCBasedColorSpace)]'");
@@ -113,13 +114,11 @@ internal partial class APM_SeparationColorSpace_2 : ISpecification<PdfArray>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                     {
                         ctx.Fail<APM_SeparationColorSpace_2>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -147,7 +146,7 @@ internal partial class APM_SeparationColorSpace_3 : ISpecification<PdfArray>
         if (utval == null) { ctx.Fail<APM_SeparationColorSpace_3>("3 is required"); return; }
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.3,dictionary)
+            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -157,6 +156,9 @@ internal partial class APM_SeparationColorSpace_3 : ISpecification<PdfArray>
                     if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                    {
+                        ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
                     {
                         ctx.Fail<APM_SeparationColorSpace_3>("3 did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");

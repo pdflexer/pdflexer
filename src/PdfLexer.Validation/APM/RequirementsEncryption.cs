@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsEncryption : APM_RequirementsEncryption_Base
+internal partial class APM_RequirementsEncryption : APM_RequirementsEncryption__Base
 {
 }
 
-internal partial class APM_RequirementsEncryption_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEncryption__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsEncryption";
@@ -59,12 +59,12 @@ internal partial class APM_RequirementsEncryption_Base : ISpecification<PdfDicti
 /// <summary>
 /// RequirementsEncryption_Type Table 273 and Table 274 and Table 275
 /// </summary>
-internal partial class APM_RequirementsEncryption_Type : APM_RequirementsEncryption_Type_Base
+internal partial class APM_RequirementsEncryption_Type : APM_RequirementsEncryption_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsEncryption_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEncryption_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEncryption_Type";
     public static bool RuleGroup() { return false; }
@@ -75,13 +75,11 @@ internal partial class APM_RequirementsEncryption_Type_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_RequirementsEncryption_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Requirement")) 
         {
             ctx.Fail<APM_RequirementsEncryption_Type>($"Invalid value {val}, allowed are: [Requirement]");
-        }
         }
         // no linked objects
         
@@ -93,12 +91,12 @@ internal partial class APM_RequirementsEncryption_Type_Base : ISpecification<Pdf
 /// <summary>
 /// RequirementsEncryption_S 
 /// </summary>
-internal partial class APM_RequirementsEncryption_S : APM_RequirementsEncryption_S_Base
+internal partial class APM_RequirementsEncryption_S : APM_RequirementsEncryption_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsEncryption_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEncryption_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEncryption_S";
     public static bool RuleGroup() { return false; }
@@ -109,13 +107,11 @@ internal partial class APM_RequirementsEncryption_S_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfName, APM_RequirementsEncryption_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Encryption")) 
         {
             ctx.Fail<APM_RequirementsEncryption_S>($"Invalid value {val}, allowed are: [Encryption]");
-        }
         }
         // no linked objects
         
@@ -127,12 +123,12 @@ internal partial class APM_RequirementsEncryption_S_Base : ISpecification<PdfDic
 /// <summary>
 /// RequirementsEncryption_V 
 /// </summary>
-internal partial class APM_RequirementsEncryption_V : APM_RequirementsEncryption_V_Base
+internal partial class APM_RequirementsEncryption_V : APM_RequirementsEncryption_V__Base
 {
 }
 
 
-internal partial class APM_RequirementsEncryption_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEncryption_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEncryption_V";
     public static bool RuleGroup() { return false; }
@@ -175,12 +171,12 @@ internal partial class APM_RequirementsEncryption_V_Base : ISpecification<PdfDic
 /// <summary>
 /// RequirementsEncryption_RH 
 /// </summary>
-internal partial class APM_RequirementsEncryption_RH : APM_RequirementsEncryption_RH_Base
+internal partial class APM_RequirementsEncryption_RH : APM_RequirementsEncryption_RH__Base
 {
 }
 
 
-internal partial class APM_RequirementsEncryption_RH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEncryption_RH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEncryption_RH";
     public static bool RuleGroup() { return false; }
@@ -223,12 +219,12 @@ internal partial class APM_RequirementsEncryption_RH_Base : ISpecification<PdfDi
 /// <summary>
 /// RequirementsEncryption_Penalty 
 /// </summary>
-internal partial class APM_RequirementsEncryption_Penalty : APM_RequirementsEncryption_Penalty_Base
+internal partial class APM_RequirementsEncryption_Penalty : APM_RequirementsEncryption_Penalty__Base
 {
 }
 
 
-internal partial class APM_RequirementsEncryption_Penalty_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEncryption_Penalty__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEncryption_Penalty";
     public static bool RuleGroup() { return false; }
@@ -239,13 +235,11 @@ internal partial class APM_RequirementsEncryption_Penalty_Base : ISpecification<
         var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsEncryption_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Penalty = val;
-        if (!((gte(@Penalty,0)&&lte(@Penalty,100)))) 
+        var Penalty = obj.Get("Penalty");
+        if (!((gte(Penalty,0)&&lte(Penalty,100)))) 
         {
             ctx.Fail<APM_RequirementsEncryption_Penalty>($"Invalid value {val}, allowed are: [fn:Eval((@Penalty>=0) && (@Penalty<=100))]");
-        }
         }
         // no linked objects
         
@@ -257,12 +251,12 @@ internal partial class APM_RequirementsEncryption_Penalty_Base : ISpecification<
 /// <summary>
 /// RequirementsEncryption_Encrypt 
 /// </summary>
-internal partial class APM_RequirementsEncryption_Encrypt : APM_RequirementsEncryption_Encrypt_Base
+internal partial class APM_RequirementsEncryption_Encrypt : APM_RequirementsEncryption_Encrypt__Base
 {
 }
 
 
-internal partial class APM_RequirementsEncryption_Encrypt_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEncryption_Encrypt__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEncryption_Encrypt";
     public static bool RuleGroup() { return false; }

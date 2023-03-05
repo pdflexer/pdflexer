@@ -22,7 +22,7 @@ internal partial class APM_DeviceNColorSpace : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -40,13 +40,11 @@ internal partial class APM_DeviceNColorSpace_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_DeviceNColorSpace_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DeviceN")) 
         {
             ctx.Fail<APM_DeviceNColorSpace_0>($"Invalid value {val}, allowed are: [DeviceN]");
-        }
         }
         // no linked objects
         
@@ -117,13 +115,11 @@ internal partial class APM_DeviceNColorSpace_2 : ISpecification<PdfArray>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                     {
                         ctx.Fail<APM_DeviceNColorSpace_2>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                    }
                     }
                     // no linked objects
                     return;

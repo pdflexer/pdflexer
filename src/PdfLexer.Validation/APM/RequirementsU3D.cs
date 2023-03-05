@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsU3D : APM_RequirementsU3D_Base
+internal partial class APM_RequirementsU3D : APM_RequirementsU3D__Base
 {
 }
 
-internal partial class APM_RequirementsU3D_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsU3D__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsU3D";
@@ -58,12 +58,12 @@ internal partial class APM_RequirementsU3D_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RequirementsU3D_Type Table 273 and Table 275
 /// </summary>
-internal partial class APM_RequirementsU3D_Type : APM_RequirementsU3D_Type_Base
+internal partial class APM_RequirementsU3D_Type : APM_RequirementsU3D_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsU3D_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsU3D_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsU3D_Type";
     public static bool RuleGroup() { return false; }
@@ -74,13 +74,11 @@ internal partial class APM_RequirementsU3D_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_RequirementsU3D_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Requirement")) 
         {
             ctx.Fail<APM_RequirementsU3D_Type>($"Invalid value {val}, allowed are: [Requirement]");
-        }
         }
         // no linked objects
         
@@ -92,12 +90,12 @@ internal partial class APM_RequirementsU3D_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// RequirementsU3D_S 
 /// </summary>
-internal partial class APM_RequirementsU3D_S : APM_RequirementsU3D_S_Base
+internal partial class APM_RequirementsU3D_S : APM_RequirementsU3D_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsU3D_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsU3D_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsU3D_S";
     public static bool RuleGroup() { return false; }
@@ -108,13 +106,11 @@ internal partial class APM_RequirementsU3D_S_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_RequirementsU3D_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "U3D")) 
         {
             ctx.Fail<APM_RequirementsU3D_S>($"Invalid value {val}, allowed are: [U3D]");
-        }
         }
         // no linked objects
         
@@ -126,12 +122,12 @@ internal partial class APM_RequirementsU3D_S_Base : ISpecification<PdfDictionary
 /// <summary>
 /// RequirementsU3D_V 
 /// </summary>
-internal partial class APM_RequirementsU3D_V : APM_RequirementsU3D_V_Base
+internal partial class APM_RequirementsU3D_V : APM_RequirementsU3D_V__Base
 {
 }
 
 
-internal partial class APM_RequirementsU3D_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsU3D_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsU3D_V";
     public static bool RuleGroup() { return false; }
@@ -174,12 +170,12 @@ internal partial class APM_RequirementsU3D_V_Base : ISpecification<PdfDictionary
 /// <summary>
 /// RequirementsU3D_RH 
 /// </summary>
-internal partial class APM_RequirementsU3D_RH : APM_RequirementsU3D_RH_Base
+internal partial class APM_RequirementsU3D_RH : APM_RequirementsU3D_RH__Base
 {
 }
 
 
-internal partial class APM_RequirementsU3D_RH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsU3D_RH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsU3D_RH";
     public static bool RuleGroup() { return false; }
@@ -222,12 +218,12 @@ internal partial class APM_RequirementsU3D_RH_Base : ISpecification<PdfDictionar
 /// <summary>
 /// RequirementsU3D_Penalty 
 /// </summary>
-internal partial class APM_RequirementsU3D_Penalty : APM_RequirementsU3D_Penalty_Base
+internal partial class APM_RequirementsU3D_Penalty : APM_RequirementsU3D_Penalty__Base
 {
 }
 
 
-internal partial class APM_RequirementsU3D_Penalty_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsU3D_Penalty__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsU3D_Penalty";
     public static bool RuleGroup() { return false; }
@@ -238,13 +234,11 @@ internal partial class APM_RequirementsU3D_Penalty_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsU3D_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Penalty = val;
-        if (!((gte(@Penalty,0)&&lte(@Penalty,100)))) 
+        var Penalty = obj.Get("Penalty");
+        if (!((gte(Penalty,0)&&lte(Penalty,100)))) 
         {
             ctx.Fail<APM_RequirementsU3D_Penalty>($"Invalid value {val}, allowed are: [fn:Eval((@Penalty>=0) && (@Penalty<=100))]");
-        }
         }
         // no linked objects
         

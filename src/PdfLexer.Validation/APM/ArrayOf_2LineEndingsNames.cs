@@ -19,7 +19,7 @@ internal partial class APM_ArrayOf_2LineEndingsNames : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -37,13 +37,11 @@ internal partial class APM_ArrayOf_2LineEndingsNames_0 : ISpecification<PdfArray
         var val = ctx.GetRequired<PdfName, APM_ArrayOf_2LineEndingsNames_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Square" || val == "Circle" || val == "Diamond" || val == "OpenArrow" || val == "ClosedArrow" || val == "None" || val == "Butt" || val == "ROpenArrow" || val == "RClosedArrow" || val == "Slash")) 
         {
             ctx.Fail<APM_ArrayOf_2LineEndingsNames_0>($"Invalid value {val}, allowed are: [Square,Circle,Diamond,OpenArrow,ClosedArrow,None,Butt,ROpenArrow,RClosedArrow,Slash]");
-        }
         }
         // no linked objects
         
@@ -64,13 +62,11 @@ internal partial class APM_ArrayOf_2LineEndingsNames_1 : ISpecification<PdfArray
         var val = ctx.GetRequired<PdfName, APM_ArrayOf_2LineEndingsNames_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Square" || val == "Circle" || val == "Diamond" || val == "OpenArrow" || val == "ClosedArrow" || val == "None" || val == "Butt" || val == "ROpenArrow" || val == "RClosedArrow" || val == "Slash")) 
         {
             ctx.Fail<APM_ArrayOf_2LineEndingsNames_1>($"Invalid value {val}, allowed are: [Square,Circle,Diamond,OpenArrow,ClosedArrow,None,Butt,ROpenArrow,RClosedArrow,Slash]");
-        }
         }
         // no linked objects
         

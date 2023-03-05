@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CertSeedValue : APM_CertSeedValue_Base
+internal partial class APM_CertSeedValue : APM_CertSeedValue__Base
 {
 }
 
-internal partial class APM_CertSeedValue_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CertSeedValue";
@@ -116,12 +116,12 @@ internal partial class APM_CertSeedValue_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CertSeedValue_Type Table 238
 /// </summary>
-internal partial class APM_CertSeedValue_Type : APM_CertSeedValue_Type_Base
+internal partial class APM_CertSeedValue_Type : APM_CertSeedValue_Type__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_Type";
     public static bool RuleGroup() { return false; }
@@ -132,13 +132,11 @@ internal partial class APM_CertSeedValue_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_CertSeedValue_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SVCert")) 
         {
             ctx.Fail<APM_CertSeedValue_Type>($"Invalid value {val}, allowed are: [SVCert]");
-        }
         }
         // no linked objects
         
@@ -150,12 +148,12 @@ internal partial class APM_CertSeedValue_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// CertSeedValue_Ff 
 /// </summary>
-internal partial class APM_CertSeedValue_Ff : APM_CertSeedValue_Ff_Base
+internal partial class APM_CertSeedValue_Ff : APM_CertSeedValue_Ff__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_Ff_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_Ff__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_Ff";
     public static bool RuleGroup() { return false; }
@@ -165,7 +163,11 @@ internal partial class APM_CertSeedValue_Ff_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_CertSeedValue_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_CertSeedValue_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(8,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -177,12 +179,12 @@ internal partial class APM_CertSeedValue_Ff_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CertSeedValue_Subject 
 /// </summary>
-internal partial class APM_CertSeedValue_Subject : APM_CertSeedValue_Subject_Base
+internal partial class APM_CertSeedValue_Subject : APM_CertSeedValue_Subject__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_Subject_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_Subject__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_Subject";
     public static bool RuleGroup() { return false; }
@@ -204,12 +206,12 @@ internal partial class APM_CertSeedValue_Subject_Base : ISpecification<PdfDictio
 /// <summary>
 /// CertSeedValue_SignaturePolicyOID 
 /// </summary>
-internal partial class APM_CertSeedValue_SignaturePolicyOID : APM_CertSeedValue_SignaturePolicyOID_Base
+internal partial class APM_CertSeedValue_SignaturePolicyOID : APM_CertSeedValue_SignaturePolicyOID__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_SignaturePolicyOID_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_SignaturePolicyOID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_SignaturePolicyOID";
     public static bool RuleGroup() { return false; }
@@ -231,12 +233,12 @@ internal partial class APM_CertSeedValue_SignaturePolicyOID_Base : ISpecificatio
 /// <summary>
 /// CertSeedValue_SignaturePolicyHashValue 
 /// </summary>
-internal partial class APM_CertSeedValue_SignaturePolicyHashValue : APM_CertSeedValue_SignaturePolicyHashValue_Base
+internal partial class APM_CertSeedValue_SignaturePolicyHashValue : APM_CertSeedValue_SignaturePolicyHashValue__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_SignaturePolicyHashValue_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_SignaturePolicyHashValue__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_SignaturePolicyHashValue";
     public static bool RuleGroup() { return false; }
@@ -258,12 +260,12 @@ internal partial class APM_CertSeedValue_SignaturePolicyHashValue_Base : ISpecif
 /// <summary>
 /// CertSeedValue_SignaturePolicyHashAlgorithm Table 260
 /// </summary>
-internal partial class APM_CertSeedValue_SignaturePolicyHashAlgorithm : APM_CertSeedValue_SignaturePolicyHashAlgorithm_Base
+internal partial class APM_CertSeedValue_SignaturePolicyHashAlgorithm : APM_CertSeedValue_SignaturePolicyHashAlgorithm__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_SignaturePolicyHashAlgorithm_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_SignaturePolicyHashAlgorithm__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_SignaturePolicyHashAlgorithm";
     public static bool RuleGroup() { return false; }
@@ -274,13 +276,11 @@ internal partial class APM_CertSeedValue_SignaturePolicyHashAlgorithm_Base : ISp
         var val = ctx.GetOptional<PdfName, APM_CertSeedValue_SignaturePolicyHashAlgorithm>(obj, "SignaturePolicyHashAlgorithm", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "adbe.pkcs7.detached" || (ctx.Version <= 2.0m && val == "adbe.pkcs7.sha1") || val == "adbe.x509.rsa_sha1" || val == "ETSI.CAdES.detached" || val == "ETSI.RFC3161")) 
         {
             ctx.Fail<APM_CertSeedValue_SignaturePolicyHashAlgorithm>($"Invalid value {val}, allowed are: [adbe.pkcs7.detached,fn:Deprecated(2.0,adbe.pkcs7.sha1),adbe.x509.rsa_sha1,ETSI.CAdES.detached,ETSI.RFC3161]");
-        }
         }
         // no linked objects
         
@@ -292,12 +292,12 @@ internal partial class APM_CertSeedValue_SignaturePolicyHashAlgorithm_Base : ISp
 /// <summary>
 /// CertSeedValue_SignaturePolicyCommitmentType 
 /// </summary>
-internal partial class APM_CertSeedValue_SignaturePolicyCommitmentType : APM_CertSeedValue_SignaturePolicyCommitmentType_Base
+internal partial class APM_CertSeedValue_SignaturePolicyCommitmentType : APM_CertSeedValue_SignaturePolicyCommitmentType__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_SignaturePolicyCommitmentType_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_SignaturePolicyCommitmentType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_SignaturePolicyCommitmentType";
     public static bool RuleGroup() { return false; }
@@ -319,12 +319,12 @@ internal partial class APM_CertSeedValue_SignaturePolicyCommitmentType_Base : IS
 /// <summary>
 /// CertSeedValue_SubjectDN 
 /// </summary>
-internal partial class APM_CertSeedValue_SubjectDN : APM_CertSeedValue_SubjectDN_Base
+internal partial class APM_CertSeedValue_SubjectDN : APM_CertSeedValue_SubjectDN__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_SubjectDN_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_SubjectDN__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_SubjectDN";
     public static bool RuleGroup() { return false; }
@@ -346,12 +346,12 @@ internal partial class APM_CertSeedValue_SubjectDN_Base : ISpecification<PdfDict
 /// <summary>
 /// CertSeedValue_KeyUsage RFC 5280
 /// </summary>
-internal partial class APM_CertSeedValue_KeyUsage : APM_CertSeedValue_KeyUsage_Base
+internal partial class APM_CertSeedValue_KeyUsage : APM_CertSeedValue_KeyUsage__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_KeyUsage_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_KeyUsage__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_KeyUsage";
     public static bool RuleGroup() { return false; }
@@ -373,12 +373,12 @@ internal partial class APM_CertSeedValue_KeyUsage_Base : ISpecification<PdfDicti
 /// <summary>
 /// CertSeedValue_Issuer 
 /// </summary>
-internal partial class APM_CertSeedValue_Issuer : APM_CertSeedValue_Issuer_Base
+internal partial class APM_CertSeedValue_Issuer : APM_CertSeedValue_Issuer__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_Issuer_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_Issuer__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_Issuer";
     public static bool RuleGroup() { return false; }
@@ -400,12 +400,12 @@ internal partial class APM_CertSeedValue_Issuer_Base : ISpecification<PdfDiction
 /// <summary>
 /// CertSeedValue_OID 
 /// </summary>
-internal partial class APM_CertSeedValue_OID : APM_CertSeedValue_OID_Base
+internal partial class APM_CertSeedValue_OID : APM_CertSeedValue_OID__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_OID_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_OID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_OID";
     public static bool RuleGroup() { return false; }
@@ -427,12 +427,12 @@ internal partial class APM_CertSeedValue_OID_Base : ISpecification<PdfDictionary
 /// <summary>
 /// CertSeedValue_URL 
 /// </summary>
-internal partial class APM_CertSeedValue_URL : APM_CertSeedValue_URL_Base
+internal partial class APM_CertSeedValue_URL : APM_CertSeedValue_URL__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_URL_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_URL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_URL";
     public static bool RuleGroup() { return false; }
@@ -454,12 +454,12 @@ internal partial class APM_CertSeedValue_URL_Base : ISpecification<PdfDictionary
 /// <summary>
 /// CertSeedValue_URLType 
 /// </summary>
-internal partial class APM_CertSeedValue_URLType : APM_CertSeedValue_URLType_Base
+internal partial class APM_CertSeedValue_URLType : APM_CertSeedValue_URLType__Base
 {
 }
 
 
-internal partial class APM_CertSeedValue_URLType_Base : ISpecification<PdfDictionary>
+internal partial class APM_CertSeedValue_URLType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CertSeedValue_URLType";
     public static bool RuleGroup() { return false; }
@@ -470,14 +470,7 @@ internal partial class APM_CertSeedValue_URLType_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_CertSeedValue_URLType>(obj, "URLType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
-        
-        
-        if (!(val == "Browser" || val == "*")) 
-        {
-            ctx.Fail<APM_CertSeedValue_URLType>($"Invalid value {val}, allowed are: [Browser,*]");
-        }
-        }
+        // no value restictions
         // no linked objects
         
     }

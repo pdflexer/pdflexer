@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaPlayParametersBE : APM_MediaPlayParametersBE_Base
+internal partial class APM_MediaPlayParametersBE : APM_MediaPlayParametersBE__Base
 {
 }
 
-internal partial class APM_MediaPlayParametersBE_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParametersBE__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaPlayParametersBE";
@@ -103,12 +103,12 @@ internal partial class APM_MediaPlayParametersBE_Base : ISpecification<PdfDictio
 /// <summary>
 /// MediaPlayParametersBE_V Table 291 - percentage volume
 /// </summary>
-internal partial class APM_MediaPlayParametersBE_V : APM_MediaPlayParametersBE_V_Base
+internal partial class APM_MediaPlayParametersBE_V : APM_MediaPlayParametersBE_V__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParametersBE_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParametersBE_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParametersBE_V";
     public static bool RuleGroup() { return false; }
@@ -119,13 +119,11 @@ internal partial class APM_MediaPlayParametersBE_V_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfIntNumber, APM_MediaPlayParametersBE_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @V = val;
-        if (!((gte(@V,0)&&lte(@V,100)))) 
+        var V = obj.Get("V");
+        if (!((gte(V,0)&&lte(V,100)))) 
         {
             ctx.Fail<APM_MediaPlayParametersBE_V>($"Invalid value {val}, allowed are: [fn:Eval((@V>=0) && (@V<=100))]");
-        }
         }
         // no linked objects
         
@@ -137,12 +135,12 @@ internal partial class APM_MediaPlayParametersBE_V_Base : ISpecification<PdfDict
 /// <summary>
 /// MediaPlayParametersBE_C 
 /// </summary>
-internal partial class APM_MediaPlayParametersBE_C : APM_MediaPlayParametersBE_C_Base
+internal partial class APM_MediaPlayParametersBE_C : APM_MediaPlayParametersBE_C__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParametersBE_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParametersBE_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParametersBE_C";
     public static bool RuleGroup() { return false; }
@@ -164,12 +162,12 @@ internal partial class APM_MediaPlayParametersBE_C_Base : ISpecification<PdfDict
 /// <summary>
 /// MediaPlayParametersBE_F 
 /// </summary>
-internal partial class APM_MediaPlayParametersBE_F : APM_MediaPlayParametersBE_F_Base
+internal partial class APM_MediaPlayParametersBE_F : APM_MediaPlayParametersBE_F__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParametersBE_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParametersBE_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParametersBE_F";
     public static bool RuleGroup() { return false; }
@@ -180,13 +178,11 @@ internal partial class APM_MediaPlayParametersBE_F_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfIntNumber, APM_MediaPlayParametersBE_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2 || val == 3 || val == 4 || val == 5)) 
         {
             ctx.Fail<APM_MediaPlayParametersBE_F>($"Invalid value {val}, allowed are: [0,1,2,3,4,5]");
-        }
         }
         // no linked objects
         
@@ -198,12 +194,12 @@ internal partial class APM_MediaPlayParametersBE_F_Base : ISpecification<PdfDict
 /// <summary>
 /// MediaPlayParametersBE_D 
 /// </summary>
-internal partial class APM_MediaPlayParametersBE_D : APM_MediaPlayParametersBE_D_Base
+internal partial class APM_MediaPlayParametersBE_D : APM_MediaPlayParametersBE_D__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParametersBE_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParametersBE_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParametersBE_D";
     public static bool RuleGroup() { return false; }
@@ -225,12 +221,12 @@ internal partial class APM_MediaPlayParametersBE_D_Base : ISpecification<PdfDict
 /// <summary>
 /// MediaPlayParametersBE_A 
 /// </summary>
-internal partial class APM_MediaPlayParametersBE_A : APM_MediaPlayParametersBE_A_Base
+internal partial class APM_MediaPlayParametersBE_A : APM_MediaPlayParametersBE_A__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParametersBE_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParametersBE_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParametersBE_A";
     public static bool RuleGroup() { return false; }
@@ -252,12 +248,12 @@ internal partial class APM_MediaPlayParametersBE_A_Base : ISpecification<PdfDict
 /// <summary>
 /// MediaPlayParametersBE_RC repeat count (zero means forever)
 /// </summary>
-internal partial class APM_MediaPlayParametersBE_RC : APM_MediaPlayParametersBE_RC_Base
+internal partial class APM_MediaPlayParametersBE_RC : APM_MediaPlayParametersBE_RC__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParametersBE_RC_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParametersBE_RC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParametersBE_RC";
     public static bool RuleGroup() { return false; }
@@ -268,13 +264,11 @@ internal partial class APM_MediaPlayParametersBE_RC_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfNumber, APM_MediaPlayParametersBE_RC>(obj, "RC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @RC = val;
-        if (!(gte(@RC,0.0m))) 
+        var RC = obj.Get("RC");
+        if (!(gte(RC,0.0m))) 
         {
             ctx.Fail<APM_MediaPlayParametersBE_RC>($"Invalid value {val}, allowed are: [fn:Eval(@RC>=0.0)]");
-        }
         }
         // no linked objects
         

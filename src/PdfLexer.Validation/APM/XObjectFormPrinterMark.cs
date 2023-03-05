@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_XObjectFormPrinterMark : APM_XObjectFormPrinterMark_Base
+internal partial class APM_XObjectFormPrinterMark : APM_XObjectFormPrinterMark__Base
 {
 }
 
-internal partial class APM_XObjectFormPrinterMark_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "XObjectFormPrinterMark";
@@ -141,12 +141,12 @@ internal partial class APM_XObjectFormPrinterMark_Base : ISpecification<PdfDicti
 /// <summary>
 /// XObjectFormPrinterMark_Type Table 5, Table 93 and Table 399
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Type : APM_XObjectFormPrinterMark_Type_Base
+internal partial class APM_XObjectFormPrinterMark_Type : APM_XObjectFormPrinterMark_Type__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Type";
     public static bool RuleGroup() { return false; }
@@ -157,13 +157,11 @@ internal partial class APM_XObjectFormPrinterMark_Type_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_XObjectFormPrinterMark_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "XObject")) 
         {
             ctx.Fail<APM_XObjectFormPrinterMark_Type>($"Invalid value {val}, allowed are: [XObject]");
-        }
         }
         // no linked objects
         
@@ -175,12 +173,12 @@ internal partial class APM_XObjectFormPrinterMark_Type_Base : ISpecification<Pdf
 /// <summary>
 /// XObjectFormPrinterMark_Subtype 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Subtype : APM_XObjectFormPrinterMark_Subtype_Base
+internal partial class APM_XObjectFormPrinterMark_Subtype : APM_XObjectFormPrinterMark_Subtype__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Subtype";
     public static bool RuleGroup() { return false; }
@@ -191,13 +189,11 @@ internal partial class APM_XObjectFormPrinterMark_Subtype_Base : ISpecification<
         var val = ctx.GetRequired<PdfName, APM_XObjectFormPrinterMark_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Form")) 
         {
             ctx.Fail<APM_XObjectFormPrinterMark_Subtype>($"Invalid value {val}, allowed are: [Form]");
-        }
         }
         // no linked objects
         
@@ -209,12 +205,12 @@ internal partial class APM_XObjectFormPrinterMark_Subtype_Base : ISpecification<
 /// <summary>
 /// XObjectFormPrinterMark_FormType 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_FormType : APM_XObjectFormPrinterMark_FormType_Base
+internal partial class APM_XObjectFormPrinterMark_FormType : APM_XObjectFormPrinterMark_FormType__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_FormType_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_FormType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_FormType";
     public static bool RuleGroup() { return false; }
@@ -225,13 +221,11 @@ internal partial class APM_XObjectFormPrinterMark_FormType_Base : ISpecification
         var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_FormType>(obj, "FormType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1)) 
         {
             ctx.Fail<APM_XObjectFormPrinterMark_FormType>($"Invalid value {val}, allowed are: [1]");
-        }
         }
         // no linked objects
         
@@ -243,12 +237,12 @@ internal partial class APM_XObjectFormPrinterMark_FormType_Base : ISpecification
 /// <summary>
 /// XObjectFormPrinterMark_BBox 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_BBox : APM_XObjectFormPrinterMark_BBox_Base
+internal partial class APM_XObjectFormPrinterMark_BBox : APM_XObjectFormPrinterMark_BBox__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_BBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_BBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_BBox";
     public static bool RuleGroup() { return false; }
@@ -270,12 +264,12 @@ internal partial class APM_XObjectFormPrinterMark_BBox_Base : ISpecification<Pdf
 /// <summary>
 /// XObjectFormPrinterMark_Matrix 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Matrix : APM_XObjectFormPrinterMark_Matrix_Base
+internal partial class APM_XObjectFormPrinterMark_Matrix : APM_XObjectFormPrinterMark_Matrix__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Matrix_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Matrix__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Matrix";
     public static bool RuleGroup() { return false; }
@@ -297,12 +291,12 @@ internal partial class APM_XObjectFormPrinterMark_Matrix_Base : ISpecification<P
 /// <summary>
 /// XObjectFormPrinterMark_Resources 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Resources : APM_XObjectFormPrinterMark_Resources_Base
+internal partial class APM_XObjectFormPrinterMark_Resources : APM_XObjectFormPrinterMark_Resources__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Resources_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Resources__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Resources";
     public static bool RuleGroup() { return false; }
@@ -324,12 +318,12 @@ internal partial class APM_XObjectFormPrinterMark_Resources_Base : ISpecificatio
 /// <summary>
 /// XObjectFormPrinterMark_Group 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Group : APM_XObjectFormPrinterMark_Group_Base
+internal partial class APM_XObjectFormPrinterMark_Group : APM_XObjectFormPrinterMark_Group__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Group_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Group__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Group";
     public static bool RuleGroup() { return false; }
@@ -351,12 +345,12 @@ internal partial class APM_XObjectFormPrinterMark_Group_Base : ISpecification<Pd
 /// <summary>
 /// XObjectFormPrinterMark_Ref 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Ref : APM_XObjectFormPrinterMark_Ref_Base
+internal partial class APM_XObjectFormPrinterMark_Ref : APM_XObjectFormPrinterMark_Ref__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Ref_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Ref__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Ref";
     public static bool RuleGroup() { return false; }
@@ -378,12 +372,12 @@ internal partial class APM_XObjectFormPrinterMark_Ref_Base : ISpecification<PdfD
 /// <summary>
 /// XObjectFormPrinterMark_Metadata 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Metadata : APM_XObjectFormPrinterMark_Metadata_Base
+internal partial class APM_XObjectFormPrinterMark_Metadata : APM_XObjectFormPrinterMark_Metadata__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Metadata_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Metadata__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Metadata";
     public static bool RuleGroup() { return false; }
@@ -405,12 +399,12 @@ internal partial class APM_XObjectFormPrinterMark_Metadata_Base : ISpecification
 /// <summary>
 /// XObjectFormPrinterMark_PieceInfo 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_PieceInfo : APM_XObjectFormPrinterMark_PieceInfo_Base
+internal partial class APM_XObjectFormPrinterMark_PieceInfo : APM_XObjectFormPrinterMark_PieceInfo__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_PieceInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_PieceInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_PieceInfo";
     public static bool RuleGroup() { return false; }
@@ -432,12 +426,12 @@ internal partial class APM_XObjectFormPrinterMark_PieceInfo_Base : ISpecificatio
 /// <summary>
 /// XObjectFormPrinterMark_LastModified 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_LastModified : APM_XObjectFormPrinterMark_LastModified_Base
+internal partial class APM_XObjectFormPrinterMark_LastModified : APM_XObjectFormPrinterMark_LastModified__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_LastModified_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_LastModified__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_LastModified";
     public static bool RuleGroup() { return false; }
@@ -445,15 +439,12 @@ internal partial class APM_XObjectFormPrinterMark_LastModified_Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfString? val;
-        {
-            
-            if (obj.ContainsKey("PieceInfo")) {
-                val = ctx.GetRequired<PdfString, APM_XObjectFormPrinterMark_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfString, APM_XObjectFormPrinterMark_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfString, APM_XObjectFormPrinterMark_LastModified>(obj, "LastModified", IndirectRequirement.Either);
+        if ((obj.ContainsKey(val)) && val == null) {
+            ctx.Fail<APM_XObjectFormPrinterMark_LastModified>("LastModified is required when 'fn:IsRequired(fn:IsPresent(PieceInfo))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -467,12 +458,12 @@ internal partial class APM_XObjectFormPrinterMark_LastModified_Base : ISpecifica
 /// <summary>
 /// XObjectFormPrinterMark_StructParent Table 359
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_StructParent : APM_XObjectFormPrinterMark_StructParent_Base
+internal partial class APM_XObjectFormPrinterMark_StructParent : APM_XObjectFormPrinterMark_StructParent__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_StructParent";
     public static bool RuleGroup() { return false; }
@@ -494,12 +485,12 @@ internal partial class APM_XObjectFormPrinterMark_StructParent_Base : ISpecifica
 /// <summary>
 /// XObjectFormPrinterMark_StructParents Table 359
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_StructParents : APM_XObjectFormPrinterMark_StructParents_Base
+internal partial class APM_XObjectFormPrinterMark_StructParents : APM_XObjectFormPrinterMark_StructParents__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_StructParents_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_StructParents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_StructParents";
     public static bool RuleGroup() { return false; }
@@ -521,12 +512,12 @@ internal partial class APM_XObjectFormPrinterMark_StructParents_Base : ISpecific
 /// <summary>
 /// XObjectFormPrinterMark_OPI 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_OPI : APM_XObjectFormPrinterMark_OPI_Base
+internal partial class APM_XObjectFormPrinterMark_OPI : APM_XObjectFormPrinterMark_OPI__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_OPI_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_OPI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_OPI";
     public static bool RuleGroup() { return false; }
@@ -557,12 +548,12 @@ internal partial class APM_XObjectFormPrinterMark_OPI_Base : ISpecification<PdfD
 /// <summary>
 /// XObjectFormPrinterMark_OC 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_OC : APM_XObjectFormPrinterMark_OC_Base
+internal partial class APM_XObjectFormPrinterMark_OC : APM_XObjectFormPrinterMark_OC__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_OC";
     public static bool RuleGroup() { return false; }
@@ -593,12 +584,12 @@ internal partial class APM_XObjectFormPrinterMark_OC_Base : ISpecification<PdfDi
 /// <summary>
 /// XObjectFormPrinterMark_Name 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Name : APM_XObjectFormPrinterMark_Name_Base
+internal partial class APM_XObjectFormPrinterMark_Name : APM_XObjectFormPrinterMark_Name__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Name";
     public static bool RuleGroup() { return false; }
@@ -620,12 +611,12 @@ internal partial class APM_XObjectFormPrinterMark_Name_Base : ISpecification<Pdf
 /// <summary>
 /// XObjectFormPrinterMark_AF 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_AF : APM_XObjectFormPrinterMark_AF_Base
+internal partial class APM_XObjectFormPrinterMark_AF : APM_XObjectFormPrinterMark_AF__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_AF";
     public static bool RuleGroup() { return false; }
@@ -668,12 +659,12 @@ internal partial class APM_XObjectFormPrinterMark_AF_Base : ISpecification<PdfDi
 /// <summary>
 /// XObjectFormPrinterMark_Measure 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Measure : APM_XObjectFormPrinterMark_Measure_Base
+internal partial class APM_XObjectFormPrinterMark_Measure : APM_XObjectFormPrinterMark_Measure__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Measure_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Measure__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Measure";
     public static bool RuleGroup() { return false; }
@@ -704,12 +695,12 @@ internal partial class APM_XObjectFormPrinterMark_Measure_Base : ISpecification<
 /// <summary>
 /// XObjectFormPrinterMark_PtData 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_PtData : APM_XObjectFormPrinterMark_PtData_Base
+internal partial class APM_XObjectFormPrinterMark_PtData : APM_XObjectFormPrinterMark_PtData__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_PtData_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_PtData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_PtData";
     public static bool RuleGroup() { return false; }
@@ -731,12 +722,12 @@ internal partial class APM_XObjectFormPrinterMark_PtData_Base : ISpecification<P
 /// <summary>
 /// XObjectFormPrinterMark_Length 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Length : APM_XObjectFormPrinterMark_Length_Base
+internal partial class APM_XObjectFormPrinterMark_Length : APM_XObjectFormPrinterMark_Length__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Length";
     public static bool RuleGroup() { return false; }
@@ -758,12 +749,12 @@ internal partial class APM_XObjectFormPrinterMark_Length_Base : ISpecification<P
 /// <summary>
 /// XObjectFormPrinterMark_Filter 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Filter : APM_XObjectFormPrinterMark_Filter_Base
+internal partial class APM_XObjectFormPrinterMark_Filter : APM_XObjectFormPrinterMark_Filter__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Filter";
     public static bool RuleGroup() { return false; }
@@ -779,7 +770,12 @@ internal partial class APM_XObjectFormPrinterMark_Filter_Base : ISpecification<P
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectFormPrinterMark_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -789,13 +785,11 @@ internal partial class APM_XObjectFormPrinterMark_Filter_Base : ISpecification<P
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_XObjectFormPrinterMark_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -813,12 +807,12 @@ internal partial class APM_XObjectFormPrinterMark_Filter_Base : ISpecification<P
 /// <summary>
 /// XObjectFormPrinterMark_DecodeParms 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_DecodeParms : APM_XObjectFormPrinterMark_DecodeParms_Base
+internal partial class APM_XObjectFormPrinterMark_DecodeParms : APM_XObjectFormPrinterMark_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -834,7 +828,12 @@ internal partial class APM_XObjectFormPrinterMark_DecodeParms_Base : ISpecificat
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectFormPrinterMark_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -851,6 +850,9 @@ internal partial class APM_XObjectFormPrinterMark_DecodeParms_Base : ISpecificat
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_XObjectFormPrinterMark_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -870,12 +872,12 @@ internal partial class APM_XObjectFormPrinterMark_DecodeParms_Base : ISpecificat
 /// <summary>
 /// XObjectFormPrinterMark_F 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_F : APM_XObjectFormPrinterMark_F_Base
+internal partial class APM_XObjectFormPrinterMark_F : APM_XObjectFormPrinterMark_F__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_F";
     public static bool RuleGroup() { return false; }
@@ -918,12 +920,12 @@ internal partial class APM_XObjectFormPrinterMark_F_Base : ISpecification<PdfDic
 /// <summary>
 /// XObjectFormPrinterMark_FFilter 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_FFilter : APM_XObjectFormPrinterMark_FFilter_Base
+internal partial class APM_XObjectFormPrinterMark_FFilter : APM_XObjectFormPrinterMark_FFilter__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_FFilter";
     public static bool RuleGroup() { return false; }
@@ -939,7 +941,12 @@ internal partial class APM_XObjectFormPrinterMark_FFilter_Base : ISpecification<
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectFormPrinterMark_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -949,13 +956,11 @@ internal partial class APM_XObjectFormPrinterMark_FFilter_Base : ISpecification<
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_XObjectFormPrinterMark_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -973,12 +978,12 @@ internal partial class APM_XObjectFormPrinterMark_FFilter_Base : ISpecification<
 /// <summary>
 /// XObjectFormPrinterMark_FDecodeParms 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_FDecodeParms : APM_XObjectFormPrinterMark_FDecodeParms_Base
+internal partial class APM_XObjectFormPrinterMark_FDecodeParms : APM_XObjectFormPrinterMark_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -994,7 +999,12 @@ internal partial class APM_XObjectFormPrinterMark_FDecodeParms_Base : ISpecifica
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectFormPrinterMark_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -1011,6 +1021,9 @@ internal partial class APM_XObjectFormPrinterMark_FDecodeParms_Base : ISpecifica
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_XObjectFormPrinterMark_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -1030,12 +1043,12 @@ internal partial class APM_XObjectFormPrinterMark_FDecodeParms_Base : ISpecifica
 /// <summary>
 /// XObjectFormPrinterMark_DL 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_DL : APM_XObjectFormPrinterMark_DL_Base
+internal partial class APM_XObjectFormPrinterMark_DL : APM_XObjectFormPrinterMark_DL__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_DL";
     public static bool RuleGroup() { return false; }
@@ -1045,7 +1058,11 @@ internal partial class APM_XObjectFormPrinterMark_DL_Base : ISpecification<PdfDi
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
+        {
+            ctx.Fail<APM_XObjectFormPrinterMark_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -1057,12 +1074,12 @@ internal partial class APM_XObjectFormPrinterMark_DL_Base : ISpecification<PdfDi
 /// <summary>
 /// XObjectFormPrinterMark_MarkStyle from Table 399 printer mark form dictionary
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_MarkStyle : APM_XObjectFormPrinterMark_MarkStyle_Base
+internal partial class APM_XObjectFormPrinterMark_MarkStyle : APM_XObjectFormPrinterMark_MarkStyle__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_MarkStyle_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_MarkStyle__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_MarkStyle";
     public static bool RuleGroup() { return false; }
@@ -1084,12 +1101,12 @@ internal partial class APM_XObjectFormPrinterMark_MarkStyle_Base : ISpecificatio
 /// <summary>
 /// XObjectFormPrinterMark_Colorants 
 /// </summary>
-internal partial class APM_XObjectFormPrinterMark_Colorants : APM_XObjectFormPrinterMark_Colorants_Base
+internal partial class APM_XObjectFormPrinterMark_Colorants : APM_XObjectFormPrinterMark_Colorants__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPrinterMark_Colorants_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPrinterMark_Colorants__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPrinterMark_Colorants";
     public static bool RuleGroup() { return false; }

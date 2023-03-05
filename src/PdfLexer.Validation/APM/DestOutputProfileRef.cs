@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DestOutputProfileRef : APM_DestOutputProfileRef_Base
+internal partial class APM_DestOutputProfileRef : APM_DestOutputProfileRef__Base
 {
 }
 
-internal partial class APM_DestOutputProfileRef_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestOutputProfileRef__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DestOutputProfileRef";
@@ -53,12 +53,12 @@ internal partial class APM_DestOutputProfileRef_Base : ISpecification<PdfDiction
 /// <summary>
 /// DestOutputProfileRef_CheckSum Table 402
 /// </summary>
-internal partial class APM_DestOutputProfileRef_CheckSum : APM_DestOutputProfileRef_CheckSum_Base
+internal partial class APM_DestOutputProfileRef_CheckSum : APM_DestOutputProfileRef_CheckSum__Base
 {
 }
 
 
-internal partial class APM_DestOutputProfileRef_CheckSum_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestOutputProfileRef_CheckSum__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DestOutputProfileRef_CheckSum";
     public static bool RuleGroup() { return false; }
@@ -80,12 +80,12 @@ internal partial class APM_DestOutputProfileRef_CheckSum_Base : ISpecification<P
 /// <summary>
 /// DestOutputProfileRef_ColorantTable 
 /// </summary>
-internal partial class APM_DestOutputProfileRef_ColorantTable : APM_DestOutputProfileRef_ColorantTable_Base
+internal partial class APM_DestOutputProfileRef_ColorantTable : APM_DestOutputProfileRef_ColorantTable__Base
 {
 }
 
 
-internal partial class APM_DestOutputProfileRef_ColorantTable_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestOutputProfileRef_ColorantTable__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DestOutputProfileRef_ColorantTable";
     public static bool RuleGroup() { return false; }
@@ -107,12 +107,12 @@ internal partial class APM_DestOutputProfileRef_ColorantTable_Base : ISpecificat
 /// <summary>
 /// DestOutputProfileRef_ICCVersion 
 /// </summary>
-internal partial class APM_DestOutputProfileRef_ICCVersion : APM_DestOutputProfileRef_ICCVersion_Base
+internal partial class APM_DestOutputProfileRef_ICCVersion : APM_DestOutputProfileRef_ICCVersion__Base
 {
 }
 
 
-internal partial class APM_DestOutputProfileRef_ICCVersion_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestOutputProfileRef_ICCVersion__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DestOutputProfileRef_ICCVersion";
     public static bool RuleGroup() { return false; }
@@ -134,12 +134,12 @@ internal partial class APM_DestOutputProfileRef_ICCVersion_Base : ISpecification
 /// <summary>
 /// DestOutputProfileRef_ProfileCS 
 /// </summary>
-internal partial class APM_DestOutputProfileRef_ProfileCS : APM_DestOutputProfileRef_ProfileCS_Base
+internal partial class APM_DestOutputProfileRef_ProfileCS : APM_DestOutputProfileRef_ProfileCS__Base
 {
 }
 
 
-internal partial class APM_DestOutputProfileRef_ProfileCS_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestOutputProfileRef_ProfileCS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DestOutputProfileRef_ProfileCS";
     public static bool RuleGroup() { return false; }
@@ -161,12 +161,12 @@ internal partial class APM_DestOutputProfileRef_ProfileCS_Base : ISpecification<
 /// <summary>
 /// DestOutputProfileRef_ProfileName 
 /// </summary>
-internal partial class APM_DestOutputProfileRef_ProfileName : APM_DestOutputProfileRef_ProfileName_Base
+internal partial class APM_DestOutputProfileRef_ProfileName : APM_DestOutputProfileRef_ProfileName__Base
 {
 }
 
 
-internal partial class APM_DestOutputProfileRef_ProfileName_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestOutputProfileRef_ProfileName__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DestOutputProfileRef_ProfileName";
     public static bool RuleGroup() { return false; }
@@ -188,12 +188,12 @@ internal partial class APM_DestOutputProfileRef_ProfileName_Base : ISpecificatio
 /// <summary>
 /// DestOutputProfileRef_URLs 
 /// </summary>
-internal partial class APM_DestOutputProfileRef_URLs : APM_DestOutputProfileRef_URLs_Base
+internal partial class APM_DestOutputProfileRef_URLs : APM_DestOutputProfileRef_URLs__Base
 {
 }
 
 
-internal partial class APM_DestOutputProfileRef_URLs_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestOutputProfileRef_URLs__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DestOutputProfileRef_URLs";
     public static bool RuleGroup() { return false; }
@@ -203,7 +203,11 @@ internal partial class APM_DestOutputProfileRef_URLs_Base : ISpecification<PdfDi
     {
         var val = ctx.GetOptional<PdfArray, APM_DestOutputProfileRef_URLs>(obj, "URLs", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var URLs = obj.Get("URLs");
+        if (!(gt(((URLs as PdfArray)?.Count),0))) 
+        {
+            ctx.Fail<APM_DestOutputProfileRef_URLs>($"Value failed special case check: fn:Eval(fn:ArrayLength(URLs)>0)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfURLs, PdfArray>(stack, val, obj);
         

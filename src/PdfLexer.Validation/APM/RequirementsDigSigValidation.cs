@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsDigSigValidation : APM_RequirementsDigSigValidation_Base
+internal partial class APM_RequirementsDigSigValidation : APM_RequirementsDigSigValidation__Base
 {
 }
 
-internal partial class APM_RequirementsDigSigValidation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsDigSigValidation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsDigSigValidation";
@@ -59,12 +59,12 @@ internal partial class APM_RequirementsDigSigValidation_Base : ISpecification<Pd
 /// <summary>
 /// RequirementsDigSigValidation_Type Table 273 and Table 274 and Table 275
 /// </summary>
-internal partial class APM_RequirementsDigSigValidation_Type : APM_RequirementsDigSigValidation_Type_Base
+internal partial class APM_RequirementsDigSigValidation_Type : APM_RequirementsDigSigValidation_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsDigSigValidation_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsDigSigValidation_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsDigSigValidation_Type";
     public static bool RuleGroup() { return false; }
@@ -75,13 +75,11 @@ internal partial class APM_RequirementsDigSigValidation_Type_Base : ISpecificati
         var val = ctx.GetOptional<PdfName, APM_RequirementsDigSigValidation_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Requirement")) 
         {
             ctx.Fail<APM_RequirementsDigSigValidation_Type>($"Invalid value {val}, allowed are: [Requirement]");
-        }
         }
         // no linked objects
         
@@ -93,12 +91,12 @@ internal partial class APM_RequirementsDigSigValidation_Type_Base : ISpecificati
 /// <summary>
 /// RequirementsDigSigValidation_S 
 /// </summary>
-internal partial class APM_RequirementsDigSigValidation_S : APM_RequirementsDigSigValidation_S_Base
+internal partial class APM_RequirementsDigSigValidation_S : APM_RequirementsDigSigValidation_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsDigSigValidation_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsDigSigValidation_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsDigSigValidation_S";
     public static bool RuleGroup() { return false; }
@@ -109,13 +107,11 @@ internal partial class APM_RequirementsDigSigValidation_S_Base : ISpecification<
         var val = ctx.GetRequired<PdfName, APM_RequirementsDigSigValidation_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DigSigValidation")) 
         {
             ctx.Fail<APM_RequirementsDigSigValidation_S>($"Invalid value {val}, allowed are: [DigSigValidation]");
-        }
         }
         // no linked objects
         
@@ -127,12 +123,12 @@ internal partial class APM_RequirementsDigSigValidation_S_Base : ISpecification<
 /// <summary>
 /// RequirementsDigSigValidation_V 
 /// </summary>
-internal partial class APM_RequirementsDigSigValidation_V : APM_RequirementsDigSigValidation_V_Base
+internal partial class APM_RequirementsDigSigValidation_V : APM_RequirementsDigSigValidation_V__Base
 {
 }
 
 
-internal partial class APM_RequirementsDigSigValidation_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsDigSigValidation_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsDigSigValidation_V";
     public static bool RuleGroup() { return false; }
@@ -175,12 +171,12 @@ internal partial class APM_RequirementsDigSigValidation_V_Base : ISpecification<
 /// <summary>
 /// RequirementsDigSigValidation_RH 
 /// </summary>
-internal partial class APM_RequirementsDigSigValidation_RH : APM_RequirementsDigSigValidation_RH_Base
+internal partial class APM_RequirementsDigSigValidation_RH : APM_RequirementsDigSigValidation_RH__Base
 {
 }
 
 
-internal partial class APM_RequirementsDigSigValidation_RH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsDigSigValidation_RH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsDigSigValidation_RH";
     public static bool RuleGroup() { return false; }
@@ -223,12 +219,12 @@ internal partial class APM_RequirementsDigSigValidation_RH_Base : ISpecification
 /// <summary>
 /// RequirementsDigSigValidation_Penalty 
 /// </summary>
-internal partial class APM_RequirementsDigSigValidation_Penalty : APM_RequirementsDigSigValidation_Penalty_Base
+internal partial class APM_RequirementsDigSigValidation_Penalty : APM_RequirementsDigSigValidation_Penalty__Base
 {
 }
 
 
-internal partial class APM_RequirementsDigSigValidation_Penalty_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsDigSigValidation_Penalty__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsDigSigValidation_Penalty";
     public static bool RuleGroup() { return false; }
@@ -239,13 +235,11 @@ internal partial class APM_RequirementsDigSigValidation_Penalty_Base : ISpecific
         var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsDigSigValidation_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Penalty = val;
-        if (!((gte(@Penalty,0)&&lte(@Penalty,100)))) 
+        var Penalty = obj.Get("Penalty");
+        if (!((gte(Penalty,0)&&lte(Penalty,100)))) 
         {
             ctx.Fail<APM_RequirementsDigSigValidation_Penalty>($"Invalid value {val}, allowed are: [fn:Eval((@Penalty>=0) && (@Penalty<=100))]");
-        }
         }
         // no linked objects
         
@@ -257,12 +251,12 @@ internal partial class APM_RequirementsDigSigValidation_Penalty_Base : ISpecific
 /// <summary>
 /// RequirementsDigSigValidation_DigSig 
 /// </summary>
-internal partial class APM_RequirementsDigSigValidation_DigSig : APM_RequirementsDigSigValidation_DigSig_Base
+internal partial class APM_RequirementsDigSigValidation_DigSig : APM_RequirementsDigSigValidation_DigSig__Base
 {
 }
 
 
-internal partial class APM_RequirementsDigSigValidation_DigSig_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsDigSigValidation_DigSig__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsDigSigValidation_DigSig";
     public static bool RuleGroup() { return false; }

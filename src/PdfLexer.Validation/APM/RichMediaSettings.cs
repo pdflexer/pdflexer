@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaSettings : APM_RichMediaSettings_Base
+internal partial class APM_RichMediaSettings : APM_RichMediaSettings__Base
 {
 }
 
-internal partial class APM_RichMediaSettings_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaSettings__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaSettings";
@@ -47,12 +47,12 @@ internal partial class APM_RichMediaSettings_Base : ISpecification<PdfDictionary
 /// <summary>
 /// RichMediaSettings_Type Table 334
 /// </summary>
-internal partial class APM_RichMediaSettings_Type : APM_RichMediaSettings_Type_Base
+internal partial class APM_RichMediaSettings_Type : APM_RichMediaSettings_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaSettings_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaSettings_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaSettings_Type";
     public static bool RuleGroup() { return false; }
@@ -63,13 +63,11 @@ internal partial class APM_RichMediaSettings_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_RichMediaSettings_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaSettings")) 
         {
             ctx.Fail<APM_RichMediaSettings_Type>($"Invalid value {val}, allowed are: [RichMediaSettings]");
-        }
         }
         // no linked objects
         
@@ -81,12 +79,12 @@ internal partial class APM_RichMediaSettings_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// RichMediaSettings_Activation 
 /// </summary>
-internal partial class APM_RichMediaSettings_Activation : APM_RichMediaSettings_Activation_Base
+internal partial class APM_RichMediaSettings_Activation : APM_RichMediaSettings_Activation__Base
 {
 }
 
 
-internal partial class APM_RichMediaSettings_Activation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaSettings_Activation__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaSettings_Activation";
     public static bool RuleGroup() { return false; }
@@ -108,12 +106,12 @@ internal partial class APM_RichMediaSettings_Activation_Base : ISpecification<Pd
 /// <summary>
 /// RichMediaSettings_Deactivation 
 /// </summary>
-internal partial class APM_RichMediaSettings_Deactivation : APM_RichMediaSettings_Deactivation_Base
+internal partial class APM_RichMediaSettings_Deactivation : APM_RichMediaSettings_Deactivation__Base
 {
 }
 
 
-internal partial class APM_RichMediaSettings_Deactivation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaSettings_Deactivation__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaSettings_Deactivation";
     public static bool RuleGroup() { return false; }

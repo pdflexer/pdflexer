@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_XObjectFormPS : APM_XObjectFormPS_Base
+internal partial class APM_XObjectFormPS : APM_XObjectFormPS__Base
 {
 }
 
-internal partial class APM_XObjectFormPS_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "XObjectFormPS";
@@ -72,12 +72,12 @@ internal partial class APM_XObjectFormPS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XObjectFormPS_Type Table 5 and
 /// </summary>
-internal partial class APM_XObjectFormPS_Type : APM_XObjectFormPS_Type_Base
+internal partial class APM_XObjectFormPS_Type : APM_XObjectFormPS_Type__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPS_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPS_Type";
     public static bool RuleGroup() { return false; }
@@ -88,13 +88,11 @@ internal partial class APM_XObjectFormPS_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_XObjectFormPS_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "XObject")) 
         {
             ctx.Fail<APM_XObjectFormPS_Type>($"Invalid value {val}, allowed are: [XObject]");
-        }
         }
         // no linked objects
         
@@ -106,12 +104,12 @@ internal partial class APM_XObjectFormPS_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// XObjectFormPS_Subtype 
 /// </summary>
-internal partial class APM_XObjectFormPS_Subtype : APM_XObjectFormPS_Subtype_Base
+internal partial class APM_XObjectFormPS_Subtype : APM_XObjectFormPS_Subtype__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPS_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPS_Subtype";
     public static bool RuleGroup() { return false; }
@@ -122,13 +120,11 @@ internal partial class APM_XObjectFormPS_Subtype_Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfName, APM_XObjectFormPS_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PS")) 
         {
             ctx.Fail<APM_XObjectFormPS_Subtype>($"Invalid value {val}, allowed are: [PS]");
-        }
         }
         // no linked objects
         
@@ -140,12 +136,12 @@ internal partial class APM_XObjectFormPS_Subtype_Base : ISpecification<PdfDictio
 /// <summary>
 /// XObjectFormPS_Level1 
 /// </summary>
-internal partial class APM_XObjectFormPS_Level1 : APM_XObjectFormPS_Level1_Base
+internal partial class APM_XObjectFormPS_Level1 : APM_XObjectFormPS_Level1__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPS_Level1_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS_Level1__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPS_Level1";
     public static bool RuleGroup() { return false; }
@@ -167,12 +163,12 @@ internal partial class APM_XObjectFormPS_Level1_Base : ISpecification<PdfDiction
 /// <summary>
 /// XObjectFormPS_Length 
 /// </summary>
-internal partial class APM_XObjectFormPS_Length : APM_XObjectFormPS_Length_Base
+internal partial class APM_XObjectFormPS_Length : APM_XObjectFormPS_Length__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPS_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPS_Length";
     public static bool RuleGroup() { return false; }
@@ -194,12 +190,12 @@ internal partial class APM_XObjectFormPS_Length_Base : ISpecification<PdfDiction
 /// <summary>
 /// XObjectFormPS_Filter 
 /// </summary>
-internal partial class APM_XObjectFormPS_Filter : APM_XObjectFormPS_Filter_Base
+internal partial class APM_XObjectFormPS_Filter : APM_XObjectFormPS_Filter__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPS_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPS_Filter";
     public static bool RuleGroup() { return false; }
@@ -215,7 +211,12 @@ internal partial class APM_XObjectFormPS_Filter_Base : ISpecification<PdfDiction
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectFormPS_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -225,13 +226,11 @@ internal partial class APM_XObjectFormPS_Filter_Base : ISpecification<PdfDiction
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || ctx.Version >= 1.2m && val == "FlateDecode" || val == "RunLengthDecode")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version < 1.2m || (ctx.Version >= 1.2m && val == "FlateDecode")) || val == "RunLengthDecode")) 
                     {
                         ctx.Fail<APM_XObjectFormPS_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,fn:SinceVersion(1.2,FlateDecode),RunLengthDecode]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -249,12 +248,12 @@ internal partial class APM_XObjectFormPS_Filter_Base : ISpecification<PdfDiction
 /// <summary>
 /// XObjectFormPS_DecodeParms 
 /// </summary>
-internal partial class APM_XObjectFormPS_DecodeParms : APM_XObjectFormPS_DecodeParms_Base
+internal partial class APM_XObjectFormPS_DecodeParms : APM_XObjectFormPS_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPS_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPS_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -270,7 +269,12 @@ internal partial class APM_XObjectFormPS_DecodeParms_Base : ISpecification<PdfDi
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectFormPS_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -284,6 +288,12 @@ internal partial class APM_XObjectFormPS_DecodeParms_Base : ISpecification<PdfDi
                     if (APM_FilterLZWDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterLZWDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FilterFlateDecode.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_XObjectFormPS_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,fn:SinceVersion(1.2,FilterFlateDecode),fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -303,12 +313,12 @@ internal partial class APM_XObjectFormPS_DecodeParms_Base : ISpecification<PdfDi
 /// <summary>
 /// XObjectFormPS_F 
 /// </summary>
-internal partial class APM_XObjectFormPS_F : APM_XObjectFormPS_F_Base
+internal partial class APM_XObjectFormPS_F : APM_XObjectFormPS_F__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPS_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPS_F";
     public static bool RuleGroup() { return false; }
@@ -351,12 +361,12 @@ internal partial class APM_XObjectFormPS_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XObjectFormPS_FFilter 
 /// </summary>
-internal partial class APM_XObjectFormPS_FFilter : APM_XObjectFormPS_FFilter_Base
+internal partial class APM_XObjectFormPS_FFilter : APM_XObjectFormPS_FFilter__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPS_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPS_FFilter";
     public static bool RuleGroup() { return false; }
@@ -372,7 +382,12 @@ internal partial class APM_XObjectFormPS_FFilter_Base : ISpecification<PdfDictio
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectFormPS_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -382,13 +397,11 @@ internal partial class APM_XObjectFormPS_FFilter_Base : ISpecification<PdfDictio
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode")) 
                     {
                         ctx.Fail<APM_XObjectFormPS_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -406,12 +419,12 @@ internal partial class APM_XObjectFormPS_FFilter_Base : ISpecification<PdfDictio
 /// <summary>
 /// XObjectFormPS_FDecodeParms 
 /// </summary>
-internal partial class APM_XObjectFormPS_FDecodeParms : APM_XObjectFormPS_FDecodeParms_Base
+internal partial class APM_XObjectFormPS_FDecodeParms : APM_XObjectFormPS_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_XObjectFormPS_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectFormPS_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectFormPS_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -427,7 +440,12 @@ internal partial class APM_XObjectFormPS_FDecodeParms_Base : ISpecification<PdfD
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectFormPS_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -444,6 +462,9 @@ internal partial class APM_XObjectFormPS_FDecodeParms_Base : ISpecification<PdfD
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_XObjectFormPS_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");

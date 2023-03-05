@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionSubmitForm : APM_ActionSubmitForm_Base
+internal partial class APM_ActionSubmitForm : APM_ActionSubmitForm__Base
 {
 }
 
-internal partial class APM_ActionSubmitForm_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSubmitForm__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionSubmitForm";
@@ -132,12 +132,12 @@ internal partial class APM_ActionSubmitForm_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionSubmitForm_S Table 196 and Table 239
 /// </summary>
-internal partial class APM_ActionSubmitForm_S : APM_ActionSubmitForm_S_Base
+internal partial class APM_ActionSubmitForm_S : APM_ActionSubmitForm_S__Base
 {
 }
 
 
-internal partial class APM_ActionSubmitForm_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSubmitForm_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSubmitForm_S";
     public static bool RuleGroup() { return false; }
@@ -148,13 +148,11 @@ internal partial class APM_ActionSubmitForm_S_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfName, APM_ActionSubmitForm_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SubmitForm")) 
         {
             ctx.Fail<APM_ActionSubmitForm_S>($"Invalid value {val}, allowed are: [SubmitForm]");
-        }
         }
         // no linked objects
         
@@ -166,12 +164,12 @@ internal partial class APM_ActionSubmitForm_S_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ActionSubmitForm_F 
 /// </summary>
-internal partial class APM_ActionSubmitForm_F : APM_ActionSubmitForm_F_Base
+internal partial class APM_ActionSubmitForm_F : APM_ActionSubmitForm_F__Base
 {
 }
 
 
-internal partial class APM_ActionSubmitForm_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSubmitForm_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSubmitForm_F";
     public static bool RuleGroup() { return false; }
@@ -214,12 +212,12 @@ internal partial class APM_ActionSubmitForm_F_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ActionSubmitForm_Fields 
 /// </summary>
-internal partial class APM_ActionSubmitForm_Fields : APM_ActionSubmitForm_Fields_Base
+internal partial class APM_ActionSubmitForm_Fields : APM_ActionSubmitForm_Fields__Base
 {
 }
 
 
-internal partial class APM_ActionSubmitForm_Fields_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSubmitForm_Fields__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSubmitForm_Fields";
     public static bool RuleGroup() { return false; }
@@ -241,12 +239,12 @@ internal partial class APM_ActionSubmitForm_Fields_Base : ISpecification<PdfDict
 /// <summary>
 /// ActionSubmitForm_Flags Table 240, https://github.com/pdf-association/pdf-issues/issues/122
 /// </summary>
-internal partial class APM_ActionSubmitForm_Flags : APM_ActionSubmitForm_Flags_Base
+internal partial class APM_ActionSubmitForm_Flags : APM_ActionSubmitForm_Flags__Base
 {
 }
 
 
-internal partial class APM_ActionSubmitForm_Flags_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSubmitForm_Flags__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSubmitForm_Flags";
     public static bool RuleGroup() { return false; }
@@ -256,7 +254,11 @@ internal partial class APM_ActionSubmitForm_Flags_Base : ISpecification<PdfDicti
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_ActionSubmitForm_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!((BitClear(obj)&&BitsClear(obj)))) 
+        {
+            ctx.Fail<APM_ActionSubmitForm_Flags>($"Value failed special case check: fn:Eval(fn:BitClear(13) && fn:BitsClear(15,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -268,12 +270,12 @@ internal partial class APM_ActionSubmitForm_Flags_Base : ISpecification<PdfDicti
 /// <summary>
 /// ActionSubmitForm_CharSet see https://github.com/pdf-association/pdf-issues/issues/122
 /// </summary>
-internal partial class APM_ActionSubmitForm_CharSet : APM_ActionSubmitForm_CharSet_Base
+internal partial class APM_ActionSubmitForm_CharSet : APM_ActionSubmitForm_CharSet__Base
 {
 }
 
 
-internal partial class APM_ActionSubmitForm_CharSet_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSubmitForm_CharSet__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSubmitForm_CharSet";
     public static bool RuleGroup() { return false; }

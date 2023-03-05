@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FileSpecEF : APM_FileSpecEF_Base
+internal partial class APM_FileSpecEF : APM_FileSpecEF__Base
 {
 }
 
-internal partial class APM_FileSpecEF_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecEF__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FileSpecEF";
@@ -119,12 +119,12 @@ internal partial class APM_FileSpecEF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileSpecEF_F Table 43, EF cell
 /// </summary>
-internal partial class APM_FileSpecEF_F : APM_FileSpecEF_F_Base
+internal partial class APM_FileSpecEF_F : APM_FileSpecEF_F__Base
 {
 }
 
 
-internal partial class APM_FileSpecEF_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecEF_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecEF_F";
     public static bool RuleGroup() { return false; }
@@ -146,12 +146,12 @@ internal partial class APM_FileSpecEF_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileSpecEF_UF 
 /// </summary>
-internal partial class APM_FileSpecEF_UF : APM_FileSpecEF_UF_Base
+internal partial class APM_FileSpecEF_UF : APM_FileSpecEF_UF__Base
 {
 }
 
 
-internal partial class APM_FileSpecEF_UF_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecEF_UF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecEF_UF";
     public static bool RuleGroup() { return false; }

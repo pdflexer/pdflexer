@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Data : APM_Data_Base
+internal partial class APM_Data : APM_Data__Base
 {
 }
 
-internal partial class APM_Data_Base : ISpecification<PdfDictionary>
+internal partial class APM_Data__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Data";
@@ -37,12 +37,12 @@ internal partial class APM_Data_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Data_LastModified Table 351
 /// </summary>
-internal partial class APM_Data_LastModified : APM_Data_LastModified_Base
+internal partial class APM_Data_LastModified : APM_Data_LastModified__Base
 {
 }
 
 
-internal partial class APM_Data_LastModified_Base : ISpecification<PdfDictionary>
+internal partial class APM_Data_LastModified__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Data_LastModified";
     public static bool RuleGroup() { return false; }
@@ -64,12 +64,12 @@ internal partial class APM_Data_LastModified_Base : ISpecification<PdfDictionary
 /// <summary>
 /// Data_Private anything
 /// </summary>
-internal partial class APM_Data_Private : APM_Data_Private_Base
+internal partial class APM_Data_Private : APM_Data_Private__Base
 {
 }
 
 
-internal partial class APM_Data_Private_Base : ISpecification<PdfDictionary>
+internal partial class APM_Data_Private__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Data_Private";
     public static bool RuleGroup() { return false; }
@@ -150,12 +150,12 @@ internal partial class APM_Data_Private_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Data_* see https://github.com/pdf-association/pdf-issues/issues/69
 /// </summary>
-internal partial class APM_Data_CatchAll : APM_Data_CatchAll_Base
+internal partial class APM_Data_CatchAll : APM_Data_CatchAll__Base
 {
 }
 
 
-internal partial class APM_Data_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_Data_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Data_*";
     public static bool RuleGroup() { return false; }

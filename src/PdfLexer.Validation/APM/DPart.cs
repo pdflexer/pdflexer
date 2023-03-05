@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DPart : APM_DPart_Base
+internal partial class APM_DPart : APM_DPart__Base
 {
 }
 
-internal partial class APM_DPart_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPart__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DPart";
@@ -61,12 +61,12 @@ internal partial class APM_DPart_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPart_Type Table 409
 /// </summary>
-internal partial class APM_DPart_Type : APM_DPart_Type_Base
+internal partial class APM_DPart_Type : APM_DPart_Type__Base
 {
 }
 
 
-internal partial class APM_DPart_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPart_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPart_Type";
     public static bool RuleGroup() { return false; }
@@ -77,13 +77,11 @@ internal partial class APM_DPart_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_DPart_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DPart")) 
         {
             ctx.Fail<APM_DPart_Type>($"Invalid value {val}, allowed are: [DPart]");
-        }
         }
         // no linked objects
         
@@ -95,12 +93,12 @@ internal partial class APM_DPart_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPart_Parent 
 /// </summary>
-internal partial class APM_DPart_Parent : APM_DPart_Parent_Base
+internal partial class APM_DPart_Parent : APM_DPart_Parent__Base
 {
 }
 
 
-internal partial class APM_DPart_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPart_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPart_Parent";
     public static bool RuleGroup() { return false; }
@@ -131,12 +129,12 @@ internal partial class APM_DPart_Parent_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPart_DParts 
 /// </summary>
-internal partial class APM_DPart_DParts : APM_DPart_DParts_Base
+internal partial class APM_DPart_DParts : APM_DPart_DParts__Base
 {
 }
 
 
-internal partial class APM_DPart_DParts_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPart_DParts__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPart_DParts";
     public static bool RuleGroup() { return false; }
@@ -144,17 +142,18 @@ internal partial class APM_DPart_DParts_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if (!obj.ContainsKey("Start")) {
-                val = ctx.GetRequired<PdfArray, APM_DPart_DParts>(obj, "DParts", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_DPart_DParts>(obj, "DParts", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_DPart_DParts>(obj, "DParts", IndirectRequirement.Either);
+        if ((!obj.ContainsKey("Start")) && val == null) {
+            ctx.Fail<APM_DPart_DParts>("DParts is required when 'fn:IsRequired(fn:Not(fn:IsPresent(Start)))"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
+        var DParts = obj.Get("DParts");
+        if (!(gt(((DParts as PdfArray)?.Count),0))) 
+        {
+            ctx.Fail<APM_DPart_DParts>($"Value failed special case check: fn:Eval(fn:ArrayLength(DParts)>0)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfDPartArrays, PdfArray>(stack, val, obj);
         
@@ -166,12 +165,12 @@ internal partial class APM_DPart_DParts_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPart_Start 
 /// </summary>
-internal partial class APM_DPart_Start : APM_DPart_Start_Base
+internal partial class APM_DPart_Start : APM_DPart_Start__Base
 {
 }
 
 
-internal partial class APM_DPart_Start_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPart_Start__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPart_Start";
     public static bool RuleGroup() { return false; }
@@ -179,15 +178,12 @@ internal partial class APM_DPart_Start_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (!obj.ContainsKey("DParts")) {
-                val = ctx.GetRequired<PdfDictionary, APM_DPart_Start>(obj, "Start", IndirectRequirement.MustBeIndirect);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_DPart_Start>(obj, "Start", IndirectRequirement.MustBeIndirect);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_DPart_Start>(obj, "Start", IndirectRequirement.MustBeIndirect);
+        if ((!obj.ContainsKey(val)) && val == null) {
+            ctx.Fail<APM_DPart_Start>("Start is required when 'fn:IsRequired(fn:Not(fn:IsPresent(DParts)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -201,12 +197,12 @@ internal partial class APM_DPart_Start_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPart_End 
 /// </summary>
-internal partial class APM_DPart_End : APM_DPart_End_Base
+internal partial class APM_DPart_End : APM_DPart_End__Base
 {
 }
 
 
-internal partial class APM_DPart_End_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPart_End__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPart_End";
     public static bool RuleGroup() { return false; }
@@ -228,12 +224,12 @@ internal partial class APM_DPart_End_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPart_DPM 
 /// </summary>
-internal partial class APM_DPart_DPM : APM_DPart_DPM_Base
+internal partial class APM_DPart_DPM : APM_DPart_DPM__Base
 {
 }
 
 
-internal partial class APM_DPart_DPM_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPart_DPM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPart_DPM";
     public static bool RuleGroup() { return false; }
@@ -255,12 +251,12 @@ internal partial class APM_DPart_DPM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPart_AF 
 /// </summary>
-internal partial class APM_DPart_AF : APM_DPart_AF_Base
+internal partial class APM_DPart_AF : APM_DPart_AF__Base
 {
 }
 
 
-internal partial class APM_DPart_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPart_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPart_AF";
     public static bool RuleGroup() { return false; }
@@ -282,12 +278,12 @@ internal partial class APM_DPart_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPart_Metadata 
 /// </summary>
-internal partial class APM_DPart_Metadata : APM_DPart_Metadata_Base
+internal partial class APM_DPart_Metadata : APM_DPart_Metadata__Base
 {
 }
 
 
-internal partial class APM_DPart_Metadata_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPart_Metadata__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPart_Metadata";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Viewport : APM_Viewport_Base
+internal partial class APM_Viewport : APM_Viewport__Base
 {
 }
 
-internal partial class APM_Viewport_Base : ISpecification<PdfDictionary>
+internal partial class APM_Viewport__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Viewport";
@@ -98,12 +98,12 @@ internal partial class APM_Viewport_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Viewport_Type Table 265
 /// </summary>
-internal partial class APM_Viewport_Type : APM_Viewport_Type_Base
+internal partial class APM_Viewport_Type : APM_Viewport_Type__Base
 {
 }
 
 
-internal partial class APM_Viewport_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Viewport_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Viewport_Type";
     public static bool RuleGroup() { return false; }
@@ -114,13 +114,11 @@ internal partial class APM_Viewport_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Viewport_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Viewport")) 
         {
             ctx.Fail<APM_Viewport_Type>($"Invalid value {val}, allowed are: [Viewport]");
-        }
         }
         // no linked objects
         
@@ -132,12 +130,12 @@ internal partial class APM_Viewport_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Viewport_BBox 
 /// </summary>
-internal partial class APM_Viewport_BBox : APM_Viewport_BBox_Base
+internal partial class APM_Viewport_BBox : APM_Viewport_BBox__Base
 {
 }
 
 
-internal partial class APM_Viewport_BBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_Viewport_BBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Viewport_BBox";
     public static bool RuleGroup() { return false; }
@@ -159,12 +157,12 @@ internal partial class APM_Viewport_BBox_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Viewport_Name 
 /// </summary>
-internal partial class APM_Viewport_Name : APM_Viewport_Name_Base
+internal partial class APM_Viewport_Name : APM_Viewport_Name__Base
 {
 }
 
 
-internal partial class APM_Viewport_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_Viewport_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Viewport_Name";
     public static bool RuleGroup() { return false; }
@@ -186,12 +184,12 @@ internal partial class APM_Viewport_Name_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Viewport_Measure 
 /// </summary>
-internal partial class APM_Viewport_Measure : APM_Viewport_Measure_Base
+internal partial class APM_Viewport_Measure : APM_Viewport_Measure__Base
 {
 }
 
 
-internal partial class APM_Viewport_Measure_Base : ISpecification<PdfDictionary>
+internal partial class APM_Viewport_Measure__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Viewport_Measure";
     public static bool RuleGroup() { return false; }
@@ -206,6 +204,9 @@ internal partial class APM_Viewport_Measure_Base : ISpecification<PdfDictionary>
         if (APM_MeasureRL.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_MeasureRL, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_MeasureGEO.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_MeasureGEO, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_Viewport_Measure>("Measure did not match any allowable types: '[MeasureRL,fn:SinceVersion(2.0,MeasureGEO)]'");
@@ -219,12 +220,12 @@ internal partial class APM_Viewport_Measure_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Viewport_PtData 
 /// </summary>
-internal partial class APM_Viewport_PtData : APM_Viewport_PtData_Base
+internal partial class APM_Viewport_PtData : APM_Viewport_PtData__Base
 {
 }
 
 
-internal partial class APM_Viewport_PtData_Base : ISpecification<PdfDictionary>
+internal partial class APM_Viewport_PtData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Viewport_PtData";
     public static bool RuleGroup() { return false; }

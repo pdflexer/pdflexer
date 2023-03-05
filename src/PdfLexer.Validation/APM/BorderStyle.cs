@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_BorderStyle : APM_BorderStyle_Base
+internal partial class APM_BorderStyle : APM_BorderStyle__Base
 {
 }
 
-internal partial class APM_BorderStyle_Base : ISpecification<PdfDictionary>
+internal partial class APM_BorderStyle__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "BorderStyle";
@@ -137,12 +137,12 @@ internal partial class APM_BorderStyle_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BorderStyle_Type Table 168
 /// </summary>
-internal partial class APM_BorderStyle_Type : APM_BorderStyle_Type_Base
+internal partial class APM_BorderStyle_Type : APM_BorderStyle_Type__Base
 {
 }
 
 
-internal partial class APM_BorderStyle_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_BorderStyle_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BorderStyle_Type";
     public static bool RuleGroup() { return false; }
@@ -153,13 +153,11 @@ internal partial class APM_BorderStyle_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_BorderStyle_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Border")) 
         {
             ctx.Fail<APM_BorderStyle_Type>($"Invalid value {val}, allowed are: [Border]");
-        }
         }
         // no linked objects
         
@@ -171,12 +169,12 @@ internal partial class APM_BorderStyle_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BorderStyle_W 
 /// </summary>
-internal partial class APM_BorderStyle_W : APM_BorderStyle_W_Base
+internal partial class APM_BorderStyle_W : APM_BorderStyle_W__Base
 {
 }
 
 
-internal partial class APM_BorderStyle_W_Base : ISpecification<PdfDictionary>
+internal partial class APM_BorderStyle_W__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BorderStyle_W";
     public static bool RuleGroup() { return false; }
@@ -187,13 +185,11 @@ internal partial class APM_BorderStyle_W_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_BorderStyle_W>(obj, "W", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @W = val;
-        if (!(gte(@W,0.0m))) 
+        var W = obj.Get("W");
+        if (!(gte(W,0.0m))) 
         {
             ctx.Fail<APM_BorderStyle_W>($"Invalid value {val}, allowed are: [fn:Eval(@W>=0.0)]");
-        }
         }
         // no linked objects
         
@@ -205,12 +201,12 @@ internal partial class APM_BorderStyle_W_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BorderStyle_S 
 /// </summary>
-internal partial class APM_BorderStyle_S : APM_BorderStyle_S_Base
+internal partial class APM_BorderStyle_S : APM_BorderStyle_S__Base
 {
 }
 
 
-internal partial class APM_BorderStyle_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_BorderStyle_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BorderStyle_S";
     public static bool RuleGroup() { return false; }
@@ -221,13 +217,11 @@ internal partial class APM_BorderStyle_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_BorderStyle_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "S" || val == "B" || val == "D" || val == "I" || val == "U")) 
         {
             ctx.Fail<APM_BorderStyle_S>($"Invalid value {val}, allowed are: [S,B,D,I,U]");
-        }
         }
         // no linked objects
         
@@ -239,12 +233,12 @@ internal partial class APM_BorderStyle_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BorderStyle_D 
 /// </summary>
-internal partial class APM_BorderStyle_D : APM_BorderStyle_D_Base
+internal partial class APM_BorderStyle_D : APM_BorderStyle_D__Base
 {
 }
 
 
-internal partial class APM_BorderStyle_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_BorderStyle_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BorderStyle_D";
     public static bool RuleGroup() { return false; }
@@ -254,7 +248,7 @@ internal partial class APM_BorderStyle_D_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_BorderStyle_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOfDashPatterns, PdfArray>(stack, val, obj);
         

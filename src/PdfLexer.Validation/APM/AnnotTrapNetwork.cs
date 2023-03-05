@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotTrapNetwork : APM_AnnotTrapNetwork_Base
+internal partial class APM_AnnotTrapNetwork : APM_AnnotTrapNetwork__Base
 {
 }
 
-internal partial class APM_AnnotTrapNetwork_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotTrapNetwork";
@@ -136,12 +136,12 @@ internal partial class APM_AnnotTrapNetwork_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotTrapNetwork_Type Clause 12.5.6.21 and Table 403. NOT markup annot. 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_Type : APM_AnnotTrapNetwork_Type_Base
+internal partial class APM_AnnotTrapNetwork_Type : APM_AnnotTrapNetwork_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_Type";
     public static bool RuleGroup() { return false; }
@@ -152,13 +152,11 @@ internal partial class APM_AnnotTrapNetwork_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_AnnotTrapNetwork_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotTrapNetwork_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -170,12 +168,12 @@ internal partial class APM_AnnotTrapNetwork_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotTrapNetwork_Subtype Clause 14.11.6
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_Subtype : APM_AnnotTrapNetwork_Subtype_Base
+internal partial class APM_AnnotTrapNetwork_Subtype : APM_AnnotTrapNetwork_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_Subtype";
     public static bool RuleGroup() { return false; }
@@ -186,13 +184,11 @@ internal partial class APM_AnnotTrapNetwork_Subtype_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfName, APM_AnnotTrapNetwork_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "TrapNet")) 
         {
             ctx.Fail<APM_AnnotTrapNetwork_Subtype>($"Invalid value {val}, allowed are: [TrapNet]");
-        }
         }
         // no linked objects
         
@@ -204,12 +200,12 @@ internal partial class APM_AnnotTrapNetwork_Subtype_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotTrapNetwork_Rect 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_Rect : APM_AnnotTrapNetwork_Rect_Base
+internal partial class APM_AnnotTrapNetwork_Rect : APM_AnnotTrapNetwork_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_Rect";
     public static bool RuleGroup() { return false; }
@@ -231,12 +227,12 @@ internal partial class APM_AnnotTrapNetwork_Rect_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotTrapNetwork_Contents 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_Contents : APM_AnnotTrapNetwork_Contents_Base
+internal partial class APM_AnnotTrapNetwork_Contents : APM_AnnotTrapNetwork_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_Contents";
     public static bool RuleGroup() { return false; }
@@ -258,12 +254,12 @@ internal partial class APM_AnnotTrapNetwork_Contents_Base : ISpecification<PdfDi
 /// <summary>
 /// AnnotTrapNetwork_P 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_P : APM_AnnotTrapNetwork_P_Base
+internal partial class APM_AnnotTrapNetwork_P : APM_AnnotTrapNetwork_P__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_P";
     public static bool RuleGroup() { return false; }
@@ -285,12 +281,12 @@ internal partial class APM_AnnotTrapNetwork_P_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotTrapNetwork_NM 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_NM : APM_AnnotTrapNetwork_NM_Base
+internal partial class APM_AnnotTrapNetwork_NM : APM_AnnotTrapNetwork_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_NM";
     public static bool RuleGroup() { return false; }
@@ -312,12 +308,12 @@ internal partial class APM_AnnotTrapNetwork_NM_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotTrapNetwork_M 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_M : APM_AnnotTrapNetwork_M_Base
+internal partial class APM_AnnotTrapNetwork_M : APM_AnnotTrapNetwork_M__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_M";
     public static bool RuleGroup() { return false; }
@@ -344,12 +340,12 @@ internal partial class APM_AnnotTrapNetwork_M_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotTrapNetwork_F Table 167
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_F : APM_AnnotTrapNetwork_F_Base
+internal partial class APM_AnnotTrapNetwork_F : APM_AnnotTrapNetwork_F__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_F";
     public static bool RuleGroup() { return false; }
@@ -359,7 +355,11 @@ internal partial class APM_AnnotTrapNetwork_F_Base : ISpecification<PdfDictionar
     {
         var val = ctx.GetRequired<PdfIntNumber, APM_AnnotTrapNetwork_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj)&&BitSet(obj)&&BitsClear(obj)&&BitSet(obj)&&BitsClear(obj))) 
+        {
+            ctx.Fail<APM_AnnotTrapNetwork_F>($"Value failed special case check: fn:Eval(fn:BitsClear(1,2) && fn:BitSet(3) && fn:BitsClear(4,6) && fn:BitSet(7) && fn:BitsClear(8,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -371,12 +371,12 @@ internal partial class APM_AnnotTrapNetwork_F_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotTrapNetwork_AP 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_AP : APM_AnnotTrapNetwork_AP_Base
+internal partial class APM_AnnotTrapNetwork_AP : APM_AnnotTrapNetwork_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_AP";
     public static bool RuleGroup() { return false; }
@@ -398,12 +398,12 @@ internal partial class APM_AnnotTrapNetwork_AP_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotTrapNetwork_AS 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_AS : APM_AnnotTrapNetwork_AS_Base
+internal partial class APM_AnnotTrapNetwork_AS : APM_AnnotTrapNetwork_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_AS";
     public static bool RuleGroup() { return false; }
@@ -425,12 +425,12 @@ internal partial class APM_AnnotTrapNetwork_AS_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotTrapNetwork_Border 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_Border : APM_AnnotTrapNetwork_Border_Base
+internal partial class APM_AnnotTrapNetwork_Border : APM_AnnotTrapNetwork_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_Border";
     public static bool RuleGroup() { return false; }
@@ -452,12 +452,12 @@ internal partial class APM_AnnotTrapNetwork_Border_Base : ISpecification<PdfDict
 /// <summary>
 /// AnnotTrapNetwork_C 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_C : APM_AnnotTrapNetwork_C_Base
+internal partial class APM_AnnotTrapNetwork_C : APM_AnnotTrapNetwork_C__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_C";
     public static bool RuleGroup() { return false; }
@@ -479,12 +479,12 @@ internal partial class APM_AnnotTrapNetwork_C_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotTrapNetwork_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_StructParent : APM_AnnotTrapNetwork_StructParent_Base
+internal partial class APM_AnnotTrapNetwork_StructParent : APM_AnnotTrapNetwork_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_StructParent";
     public static bool RuleGroup() { return false; }
@@ -506,12 +506,12 @@ internal partial class APM_AnnotTrapNetwork_StructParent_Base : ISpecification<P
 /// <summary>
 /// AnnotTrapNetwork_OC 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_OC : APM_AnnotTrapNetwork_OC_Base
+internal partial class APM_AnnotTrapNetwork_OC : APM_AnnotTrapNetwork_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_OC";
     public static bool RuleGroup() { return false; }
@@ -542,12 +542,12 @@ internal partial class APM_AnnotTrapNetwork_OC_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotTrapNetwork_AF 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_AF : APM_AnnotTrapNetwork_AF_Base
+internal partial class APM_AnnotTrapNetwork_AF : APM_AnnotTrapNetwork_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_AF";
     public static bool RuleGroup() { return false; }
@@ -590,12 +590,12 @@ internal partial class APM_AnnotTrapNetwork_AF_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotTrapNetwork_ca 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_ca : APM_AnnotTrapNetwork_ca_Base
+internal partial class APM_AnnotTrapNetwork_ca : APM_AnnotTrapNetwork_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_ca";
     public static bool RuleGroup() { return false; }
@@ -606,13 +606,11 @@ internal partial class APM_AnnotTrapNetwork_ca_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfNumber, APM_AnnotTrapNetwork_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotTrapNetwork_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -624,12 +622,12 @@ internal partial class APM_AnnotTrapNetwork_ca_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotTrapNetwork_CA 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_CA : APM_AnnotTrapNetwork_CA_Base
+internal partial class APM_AnnotTrapNetwork_CA : APM_AnnotTrapNetwork_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_CA";
     public static bool RuleGroup() { return false; }
@@ -640,13 +638,11 @@ internal partial class APM_AnnotTrapNetwork_CA_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfNumber, APM_AnnotTrapNetwork_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotTrapNetwork_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -658,12 +654,12 @@ internal partial class APM_AnnotTrapNetwork_CA_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotTrapNetwork_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_BM : APM_AnnotTrapNetwork_BM_Base
+internal partial class APM_AnnotTrapNetwork_BM : APM_AnnotTrapNetwork_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_BM";
     public static bool RuleGroup() { return false; }
@@ -674,13 +670,11 @@ internal partial class APM_AnnotTrapNetwork_BM_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_AnnotTrapNetwork_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotTrapNetwork_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -692,12 +686,12 @@ internal partial class APM_AnnotTrapNetwork_BM_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotTrapNetwork_Lang 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_Lang : APM_AnnotTrapNetwork_Lang_Base
+internal partial class APM_AnnotTrapNetwork_Lang : APM_AnnotTrapNetwork_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_Lang";
     public static bool RuleGroup() { return false; }
@@ -719,12 +713,12 @@ internal partial class APM_AnnotTrapNetwork_Lang_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotTrapNetwork_LastModified 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_LastModified : APM_AnnotTrapNetwork_LastModified_Base
+internal partial class APM_AnnotTrapNetwork_LastModified : APM_AnnotTrapNetwork_LastModified__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_LastModified_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_LastModified__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_LastModified";
     public static bool RuleGroup() { return false; }
@@ -732,15 +726,12 @@ internal partial class APM_AnnotTrapNetwork_LastModified_Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfString? val;
-        {
-            
-            if ((!obj.ContainsKey("Version")&&!obj.ContainsKey("AnnotStates"))) {
-                val = ctx.GetRequired<PdfString, APM_AnnotTrapNetwork_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_LastModified>(obj, "LastModified", IndirectRequirement.Either);
+        if (((!obj.ContainsKey("Version")&&!obj.ContainsKey("AnnotStates"))) && val == null) {
+            ctx.Fail<APM_AnnotTrapNetwork_LastModified>("LastModified is required when 'fn:IsRequired(fn:Not(fn:IsPresent(Version)) && fn:Not(fn:IsPresent(AnnotStates)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -754,12 +745,12 @@ internal partial class APM_AnnotTrapNetwork_LastModified_Base : ISpecification<P
 /// <summary>
 /// AnnotTrapNetwork_Version 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_Version : APM_AnnotTrapNetwork_Version_Base
+internal partial class APM_AnnotTrapNetwork_Version : APM_AnnotTrapNetwork_Version__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_Version_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_Version__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_Version";
     public static bool RuleGroup() { return false; }
@@ -767,15 +758,12 @@ internal partial class APM_AnnotTrapNetwork_Version_Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if ((obj.ContainsKey("AnnotStates")&&!obj.ContainsKey("LastModified"))) {
-                val = ctx.GetRequired<PdfArray, APM_AnnotTrapNetwork_Version>(obj, "Version", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_Version>(obj, "Version", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_Version>(obj, "Version", IndirectRequirement.Either);
+        if (((obj.ContainsKey("AnnotStates")&&!obj.ContainsKey(val))) && val == null) {
+            ctx.Fail<APM_AnnotTrapNetwork_Version>("Version is required when 'fn:IsRequired(fn:IsPresent(AnnotStates) && fn:Not(fn:IsPresent(LastModified)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -789,12 +777,12 @@ internal partial class APM_AnnotTrapNetwork_Version_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotTrapNetwork_AnnotStates 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_AnnotStates : APM_AnnotTrapNetwork_AnnotStates_Base
+internal partial class APM_AnnotTrapNetwork_AnnotStates : APM_AnnotTrapNetwork_AnnotStates__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_AnnotStates_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_AnnotStates__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_AnnotStates";
     public static bool RuleGroup() { return false; }
@@ -802,15 +790,12 @@ internal partial class APM_AnnotTrapNetwork_AnnotStates_Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if ((obj.ContainsKey("Version")&&!obj.ContainsKey("LastModified"))) {
-                val = ctx.GetRequired<PdfArray, APM_AnnotTrapNetwork_AnnotStates>(obj, "AnnotStates", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_AnnotStates>(obj, "AnnotStates", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_AnnotStates>(obj, "AnnotStates", IndirectRequirement.Either);
+        if (((obj.ContainsKey(val)&&!obj.ContainsKey("LastModified"))) && val == null) {
+            ctx.Fail<APM_AnnotTrapNetwork_AnnotStates>("AnnotStates is required when 'fn:IsRequired(fn:IsPresent(Version) && fn:Not(fn:IsPresent(LastModified)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -824,12 +809,12 @@ internal partial class APM_AnnotTrapNetwork_AnnotStates_Base : ISpecification<Pd
 /// <summary>
 /// AnnotTrapNetwork_FontFauxing 
 /// </summary>
-internal partial class APM_AnnotTrapNetwork_FontFauxing : APM_AnnotTrapNetwork_FontFauxing_Base
+internal partial class APM_AnnotTrapNetwork_FontFauxing : APM_AnnotTrapNetwork_FontFauxing__Base
 {
 }
 
 
-internal partial class APM_AnnotTrapNetwork_FontFauxing_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotTrapNetwork_FontFauxing__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotTrapNetwork_FontFauxing";
     public static bool RuleGroup() { return false; }

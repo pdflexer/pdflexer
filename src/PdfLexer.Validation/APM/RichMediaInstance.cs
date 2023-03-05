@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaInstance : APM_RichMediaInstance_Base
+internal partial class APM_RichMediaInstance : APM_RichMediaInstance__Base
 {
 }
 
-internal partial class APM_RichMediaInstance_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaInstance__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaInstance";
@@ -49,12 +49,12 @@ internal partial class APM_RichMediaInstance_Base : ISpecification<PdfDictionary
 /// <summary>
 /// RichMediaInstance_Type Table 343
 /// </summary>
-internal partial class APM_RichMediaInstance_Type : APM_RichMediaInstance_Type_Base
+internal partial class APM_RichMediaInstance_Type : APM_RichMediaInstance_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaInstance_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaInstance_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaInstance_Type";
     public static bool RuleGroup() { return false; }
@@ -65,13 +65,11 @@ internal partial class APM_RichMediaInstance_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_RichMediaInstance_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaInstance")) 
         {
             ctx.Fail<APM_RichMediaInstance_Type>($"Invalid value {val}, allowed are: [RichMediaInstance]");
-        }
         }
         // no linked objects
         
@@ -83,12 +81,12 @@ internal partial class APM_RichMediaInstance_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// RichMediaInstance_Subtype 
 /// </summary>
-internal partial class APM_RichMediaInstance_Subtype : APM_RichMediaInstance_Subtype_Base
+internal partial class APM_RichMediaInstance_Subtype : APM_RichMediaInstance_Subtype__Base
 {
 }
 
 
-internal partial class APM_RichMediaInstance_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaInstance_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaInstance_Subtype";
     public static bool RuleGroup() { return false; }
@@ -99,13 +97,11 @@ internal partial class APM_RichMediaInstance_Subtype_Base : ISpecification<PdfDi
         var val = ctx.GetRequired<PdfName, APM_RichMediaInstance_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3D" || val == "Sound" || val == "Video" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "Flash")))) 
         {
             ctx.Fail<APM_RichMediaInstance_Subtype>($"Invalid value {val}, allowed are: [3D,Sound,Video,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,Flash))]");
-        }
         }
         // no linked objects
         
@@ -117,12 +113,12 @@ internal partial class APM_RichMediaInstance_Subtype_Base : ISpecification<PdfDi
 /// <summary>
 /// RichMediaInstance_Asset 
 /// </summary>
-internal partial class APM_RichMediaInstance_Asset : APM_RichMediaInstance_Asset_Base
+internal partial class APM_RichMediaInstance_Asset : APM_RichMediaInstance_Asset__Base
 {
 }
 
 
-internal partial class APM_RichMediaInstance_Asset_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaInstance_Asset__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaInstance_Asset";
     public static bool RuleGroup() { return false; }
@@ -144,12 +140,12 @@ internal partial class APM_RichMediaInstance_Asset_Base : ISpecification<PdfDict
 /// <summary>
 /// RichMediaInstance_Params Adobe Extension Level 3, Table 9.51b
 /// </summary>
-internal partial class APM_RichMediaInstance_Params : APM_RichMediaInstance_Params_Base
+internal partial class APM_RichMediaInstance_Params : APM_RichMediaInstance_Params__Base
 {
 }
 
 
-internal partial class APM_RichMediaInstance_Params_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaInstance_Params__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaInstance_Params";
     public static bool RuleGroup() { return false; }
@@ -159,7 +155,11 @@ internal partial class APM_RichMediaInstance_Params_Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfDictionary, APM_RichMediaInstance_Params>(obj, "Params", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Subtype = obj.Get("Subtype");
+        if (!(eq(Subtype,"Flash"))) 
+        {
+            ctx.Fail<APM_RichMediaInstance_Params>($"Value failed special case check: fn:Eval(@Subtype==Flash)");
+        }
         // no value restrictions
         ctx.Run<APM_RichMediaParams, PdfDictionary>(stack, val, obj);
         
@@ -171,12 +171,12 @@ internal partial class APM_RichMediaInstance_Params_Base : ISpecification<PdfDic
 /// <summary>
 /// RichMediaInstance_Scene ISO/TS 32007
 /// </summary>
-internal partial class APM_RichMediaInstance_Scene : APM_RichMediaInstance_Scene_Base
+internal partial class APM_RichMediaInstance_Scene : APM_RichMediaInstance_Scene__Base
 {
 }
 
 
-internal partial class APM_RichMediaInstance_Scene_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaInstance_Scene__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaInstance_Scene";
     public static bool RuleGroup() { return false; }
@@ -187,13 +187,11 @@ internal partial class APM_RichMediaInstance_Scene_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaInstance_Scene>(obj, "Scene", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Scene = val;
-        if (!(gte(@Scene,0))) 
+        var Scene = obj.Get("Scene");
+        if (!(gte(Scene,0))) 
         {
             ctx.Fail<APM_RichMediaInstance_Scene>($"Invalid value {val}, allowed are: [fn:Eval(@Scene>=0)]");
-        }
         }
         // no linked objects
         

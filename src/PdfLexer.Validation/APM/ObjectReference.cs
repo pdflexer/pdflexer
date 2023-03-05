@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ObjectReference : APM_ObjectReference_Base
+internal partial class APM_ObjectReference : APM_ObjectReference__Base
 {
 }
 
-internal partial class APM_ObjectReference_Base : ISpecification<PdfDictionary>
+internal partial class APM_ObjectReference__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ObjectReference";
@@ -126,12 +126,12 @@ internal partial class APM_ObjectReference_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ObjectReference_Type Table 358
 /// </summary>
-internal partial class APM_ObjectReference_Type : APM_ObjectReference_Type_Base
+internal partial class APM_ObjectReference_Type : APM_ObjectReference_Type__Base
 {
 }
 
 
-internal partial class APM_ObjectReference_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ObjectReference_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ObjectReference_Type";
     public static bool RuleGroup() { return false; }
@@ -142,13 +142,11 @@ internal partial class APM_ObjectReference_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetRequired<PdfName, APM_ObjectReference_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "OBJR")) 
         {
             ctx.Fail<APM_ObjectReference_Type>($"Invalid value {val}, allowed are: [OBJR]");
-        }
         }
         // no linked objects
         
@@ -160,12 +158,12 @@ internal partial class APM_ObjectReference_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// ObjectReference_Pg 
 /// </summary>
-internal partial class APM_ObjectReference_Pg : APM_ObjectReference_Pg_Base
+internal partial class APM_ObjectReference_Pg : APM_ObjectReference_Pg__Base
 {
 }
 
 
-internal partial class APM_ObjectReference_Pg_Base : ISpecification<PdfDictionary>
+internal partial class APM_ObjectReference_Pg__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ObjectReference_Pg";
     public static bool RuleGroup() { return false; }
@@ -187,12 +185,12 @@ internal partial class APM_ObjectReference_Pg_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ObjectReference_Obj 
 /// </summary>
-internal partial class APM_ObjectReference_Obj : APM_ObjectReference_Obj_Base
+internal partial class APM_ObjectReference_Obj : APM_ObjectReference_Obj__Base
 {
 }
 
 
-internal partial class APM_ObjectReference_Obj_Base : ISpecification<PdfDictionary>
+internal partial class APM_ObjectReference_Obj__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ObjectReference_Obj";
     public static bool RuleGroup() { return false; }

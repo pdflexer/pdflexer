@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ExDataProjection : APM_ExDataProjection_Base
+internal partial class APM_ExDataProjection : APM_ExDataProjection__Base
 {
 }
 
-internal partial class APM_ExDataProjection_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExDataProjection__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ExDataProjection";
@@ -47,12 +47,12 @@ internal partial class APM_ExDataProjection_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ExDataProjection_Type Table 332
 /// </summary>
-internal partial class APM_ExDataProjection_Type : APM_ExDataProjection_Type_Base
+internal partial class APM_ExDataProjection_Type : APM_ExDataProjection_Type__Base
 {
 }
 
 
-internal partial class APM_ExDataProjection_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExDataProjection_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExDataProjection_Type";
     public static bool RuleGroup() { return false; }
@@ -63,13 +63,11 @@ internal partial class APM_ExDataProjection_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfName, APM_ExDataProjection_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ExData")) 
         {
             ctx.Fail<APM_ExDataProjection_Type>($"Invalid value {val}, allowed are: [ExData]");
-        }
         }
         // no linked objects
         
@@ -81,12 +79,12 @@ internal partial class APM_ExDataProjection_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// ExDataProjection_Subtype 
 /// </summary>
-internal partial class APM_ExDataProjection_Subtype : APM_ExDataProjection_Subtype_Base
+internal partial class APM_ExDataProjection_Subtype : APM_ExDataProjection_Subtype__Base
 {
 }
 
 
-internal partial class APM_ExDataProjection_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExDataProjection_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExDataProjection_Subtype";
     public static bool RuleGroup() { return false; }
@@ -97,13 +95,11 @@ internal partial class APM_ExDataProjection_Subtype_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfName, APM_ExDataProjection_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DM")) 
         {
             ctx.Fail<APM_ExDataProjection_Subtype>($"Invalid value {val}, allowed are: [3DM]");
-        }
         }
         // no linked objects
         
@@ -115,12 +111,12 @@ internal partial class APM_ExDataProjection_Subtype_Base : ISpecification<PdfDic
 /// <summary>
 /// ExDataProjection_M3DREF 
 /// </summary>
-internal partial class APM_ExDataProjection_M3DREF : APM_ExDataProjection_M3DREF_Base
+internal partial class APM_ExDataProjection_M3DREF : APM_ExDataProjection_M3DREF__Base
 {
 }
 
 
-internal partial class APM_ExDataProjection_M3DREF_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExDataProjection_M3DREF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExDataProjection_M3DREF";
     public static bool RuleGroup() { return false; }

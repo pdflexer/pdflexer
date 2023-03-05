@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaParams : APM_RichMediaParams_Base
+internal partial class APM_RichMediaParams : APM_RichMediaParams__Base
 {
 }
 
-internal partial class APM_RichMediaParams_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaParams__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaParams";
@@ -50,12 +50,12 @@ internal partial class APM_RichMediaParams_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RichMediaParams_Type Adobe Extension Level 3, Table 9.51c
 /// </summary>
-internal partial class APM_RichMediaParams_Type : APM_RichMediaParams_Type_Base
+internal partial class APM_RichMediaParams_Type : APM_RichMediaParams_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaParams_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaParams_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaParams_Type";
     public static bool RuleGroup() { return false; }
@@ -66,13 +66,11 @@ internal partial class APM_RichMediaParams_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_RichMediaParams_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaParams")) 
         {
             ctx.Fail<APM_RichMediaParams_Type>($"Invalid value {val}, allowed are: [RichMediaParams]");
-        }
         }
         // no linked objects
         
@@ -84,12 +82,12 @@ internal partial class APM_RichMediaParams_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// RichMediaParams_FlashVars 
 /// </summary>
-internal partial class APM_RichMediaParams_FlashVars : APM_RichMediaParams_FlashVars_Base
+internal partial class APM_RichMediaParams_FlashVars : APM_RichMediaParams_FlashVars__Base
 {
 }
 
 
-internal partial class APM_RichMediaParams_FlashVars_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaParams_FlashVars__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaParams_FlashVars";
     public static bool RuleGroup() { return false; }
@@ -132,12 +130,12 @@ internal partial class APM_RichMediaParams_FlashVars_Base : ISpecification<PdfDi
 /// <summary>
 /// RichMediaParams_Binding 
 /// </summary>
-internal partial class APM_RichMediaParams_Binding : APM_RichMediaParams_Binding_Base
+internal partial class APM_RichMediaParams_Binding : APM_RichMediaParams_Binding__Base
 {
 }
 
 
-internal partial class APM_RichMediaParams_Binding_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaParams_Binding__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaParams_Binding";
     public static bool RuleGroup() { return false; }
@@ -148,13 +146,11 @@ internal partial class APM_RichMediaParams_Binding_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfName, APM_RichMediaParams_Binding>(obj, "Binding", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "None" || val == "Foreground" || val == "Background" || val == "Material")) 
         {
             ctx.Fail<APM_RichMediaParams_Binding>($"Invalid value {val}, allowed are: [None,Foreground,Background,Material]");
-        }
         }
         // no linked objects
         
@@ -166,12 +162,12 @@ internal partial class APM_RichMediaParams_Binding_Base : ISpecification<PdfDict
 /// <summary>
 /// RichMediaParams_BindingMaterial 
 /// </summary>
-internal partial class APM_RichMediaParams_BindingMaterial : APM_RichMediaParams_BindingMaterial_Base
+internal partial class APM_RichMediaParams_BindingMaterial : APM_RichMediaParams_BindingMaterial__Base
 {
 }
 
 
-internal partial class APM_RichMediaParams_BindingMaterial_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaParams_BindingMaterial__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaParams_BindingMaterial";
     public static bool RuleGroup() { return false; }
@@ -179,15 +175,12 @@ internal partial class APM_RichMediaParams_BindingMaterial_Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfString? val;
-        {
-            var Binding = obj.Get("Binding");
-            if (eq(Binding,"Material")) {
-                val = ctx.GetRequired<PdfString, APM_RichMediaParams_BindingMaterial>(obj, "BindingMaterial", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfString, APM_RichMediaParams_BindingMaterial>(obj, "BindingMaterial", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Binding = obj.Get("Binding");
+        var val = ctx.GetOptional<PdfString, APM_RichMediaParams_BindingMaterial>(obj, "BindingMaterial", IndirectRequirement.Either);
+        if ((eq(Binding,"Material")) && val == null) {
+            ctx.Fail<APM_RichMediaParams_BindingMaterial>("BindingMaterial is required when 'fn:IsRequired(@Binding==Material)"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -201,12 +194,12 @@ internal partial class APM_RichMediaParams_BindingMaterial_Base : ISpecification
 /// <summary>
 /// RichMediaParams_CuePoints 
 /// </summary>
-internal partial class APM_RichMediaParams_CuePoints : APM_RichMediaParams_CuePoints_Base
+internal partial class APM_RichMediaParams_CuePoints : APM_RichMediaParams_CuePoints__Base
 {
 }
 
 
-internal partial class APM_RichMediaParams_CuePoints_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaParams_CuePoints__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaParams_CuePoints";
     public static bool RuleGroup() { return false; }
@@ -228,12 +221,12 @@ internal partial class APM_RichMediaParams_CuePoints_Base : ISpecification<PdfDi
 /// <summary>
 /// RichMediaParams_Seetings 
 /// </summary>
-internal partial class APM_RichMediaParams_Seetings : APM_RichMediaParams_Seetings_Base
+internal partial class APM_RichMediaParams_Seetings : APM_RichMediaParams_Seetings__Base
 {
 }
 
 
-internal partial class APM_RichMediaParams_Seetings_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaParams_Seetings__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaParams_Seetings";
     public static bool RuleGroup() { return false; }

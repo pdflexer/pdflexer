@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FilterCrypt : APM_FilterCrypt_Base
+internal partial class APM_FilterCrypt : APM_FilterCrypt__Base
 {
 }
 
-internal partial class APM_FilterCrypt_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCrypt__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FilterCrypt";
@@ -105,12 +105,12 @@ internal partial class APM_FilterCrypt_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FilterCrypt_Type Table 14
 /// </summary>
-internal partial class APM_FilterCrypt_Type : APM_FilterCrypt_Type_Base
+internal partial class APM_FilterCrypt_Type : APM_FilterCrypt_Type__Base
 {
 }
 
 
-internal partial class APM_FilterCrypt_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCrypt_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCrypt_Type";
     public static bool RuleGroup() { return false; }
@@ -121,13 +121,11 @@ internal partial class APM_FilterCrypt_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_FilterCrypt_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CryptFilterDecodeParms")) 
         {
             ctx.Fail<APM_FilterCrypt_Type>($"Invalid value {val}, allowed are: [CryptFilterDecodeParms]");
-        }
         }
         // no linked objects
         
@@ -139,12 +137,12 @@ internal partial class APM_FilterCrypt_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FilterCrypt_Name 
 /// </summary>
-internal partial class APM_FilterCrypt_Name : APM_FilterCrypt_Name_Base
+internal partial class APM_FilterCrypt_Name : APM_FilterCrypt_Name__Base
 {
 }
 
 
-internal partial class APM_FilterCrypt_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCrypt_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCrypt_Name";
     public static bool RuleGroup() { return false; }
@@ -154,7 +152,7 @@ internal partial class APM_FilterCrypt_Name_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_FilterCrypt_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // TODO special case: fn:InKeyMap(trailer::Encrypt::CF)
         // no value restrictions
         // no linked objects
         

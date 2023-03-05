@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FontDescriptorType3 : APM_FontDescriptorType3_Base
+internal partial class APM_FontDescriptorType3 : APM_FontDescriptorType3__Base
 {
 }
 
-internal partial class APM_FontDescriptorType3_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FontDescriptorType3";
@@ -171,12 +171,12 @@ internal partial class APM_FontDescriptorType3_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FontDescriptorType3_Type Table 120
 /// </summary>
-internal partial class APM_FontDescriptorType3_Type : APM_FontDescriptorType3_Type_Base
+internal partial class APM_FontDescriptorType3_Type : APM_FontDescriptorType3_Type__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_Type";
     public static bool RuleGroup() { return false; }
@@ -187,13 +187,11 @@ internal partial class APM_FontDescriptorType3_Type_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfName, APM_FontDescriptorType3_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "FontDescriptor")) 
         {
             ctx.Fail<APM_FontDescriptorType3_Type>($"Invalid value {val}, allowed are: [FontDescriptor]");
-        }
         }
         // no linked objects
         
@@ -205,12 +203,12 @@ internal partial class APM_FontDescriptorType3_Type_Base : ISpecification<PdfDic
 /// <summary>
 /// FontDescriptorType3_FontName 
 /// </summary>
-internal partial class APM_FontDescriptorType3_FontName : APM_FontDescriptorType3_FontName_Base
+internal partial class APM_FontDescriptorType3_FontName : APM_FontDescriptorType3_FontName__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_FontName_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_FontName__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_FontName";
     public static bool RuleGroup() { return false; }
@@ -220,7 +218,12 @@ internal partial class APM_FontDescriptorType3_FontName_Base : ISpecification<Pd
     {
         var val = ctx.GetOptional<PdfName, APM_FontDescriptorType3_FontName>(obj, "FontName", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var FontName = obj.Get("FontName");
+        var parentName = parent?.Get("Name");
+        if (!(eq(FontName,parentName))) 
+        {
+            ctx.Fail<APM_FontDescriptorType3_FontName>($"Value failed special case check: fn:Eval(@FontName==parent::@Name)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -232,12 +235,12 @@ internal partial class APM_FontDescriptorType3_FontName_Base : ISpecification<Pd
 /// <summary>
 /// FontDescriptorType3_FontFamily 
 /// </summary>
-internal partial class APM_FontDescriptorType3_FontFamily : APM_FontDescriptorType3_FontFamily_Base
+internal partial class APM_FontDescriptorType3_FontFamily : APM_FontDescriptorType3_FontFamily__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_FontFamily_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_FontFamily__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_FontFamily";
     public static bool RuleGroup() { return false; }
@@ -259,12 +262,12 @@ internal partial class APM_FontDescriptorType3_FontFamily_Base : ISpecification<
 /// <summary>
 /// FontDescriptorType3_FontStretch 
 /// </summary>
-internal partial class APM_FontDescriptorType3_FontStretch : APM_FontDescriptorType3_FontStretch_Base
+internal partial class APM_FontDescriptorType3_FontStretch : APM_FontDescriptorType3_FontStretch__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_FontStretch_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_FontStretch__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_FontStretch";
     public static bool RuleGroup() { return false; }
@@ -275,13 +278,11 @@ internal partial class APM_FontDescriptorType3_FontStretch_Base : ISpecification
         var val = ctx.GetOptional<PdfName, APM_FontDescriptorType3_FontStretch>(obj, "FontStretch", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "UltraCondensed" || val == "ExtraCondensed" || val == "Condensed" || val == "SemiCondensed" || val == "Normal" || val == "SemiExpanded" || val == "Expanded" || val == "ExtraExpanded" || val == "UltraExpanded")) 
         {
             ctx.Fail<APM_FontDescriptorType3_FontStretch>($"Invalid value {val}, allowed are: [UltraCondensed,ExtraCondensed,Condensed,SemiCondensed,Normal,SemiExpanded,Expanded,ExtraExpanded,UltraExpanded]");
-        }
         }
         // no linked objects
         
@@ -293,12 +294,12 @@ internal partial class APM_FontDescriptorType3_FontStretch_Base : ISpecification
 /// <summary>
 /// FontDescriptorType3_FontWeight 
 /// </summary>
-internal partial class APM_FontDescriptorType3_FontWeight : APM_FontDescriptorType3_FontWeight_Base
+internal partial class APM_FontDescriptorType3_FontWeight : APM_FontDescriptorType3_FontWeight__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_FontWeight_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_FontWeight__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_FontWeight";
     public static bool RuleGroup() { return false; }
@@ -309,13 +310,11 @@ internal partial class APM_FontDescriptorType3_FontWeight_Base : ISpecification<
         var val = ctx.GetOptional<PdfIntNumber, APM_FontDescriptorType3_FontWeight>(obj, "FontWeight", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 100 || val == 200 || val == 300 || val == 400 || val == 500 || val == 600 || val == 700 || val == 800 || val == 900)) 
         {
             ctx.Fail<APM_FontDescriptorType3_FontWeight>($"Invalid value {val}, allowed are: [100,200,300,400,500,600,700,800,900]");
-        }
         }
         // no linked objects
         
@@ -327,12 +326,12 @@ internal partial class APM_FontDescriptorType3_FontWeight_Base : ISpecification<
 /// <summary>
 /// FontDescriptorType3_Flags Table 121
 /// </summary>
-internal partial class APM_FontDescriptorType3_Flags : APM_FontDescriptorType3_Flags_Base
+internal partial class APM_FontDescriptorType3_Flags : APM_FontDescriptorType3_Flags__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_Flags_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_Flags__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_Flags";
     public static bool RuleGroup() { return false; }
@@ -342,7 +341,11 @@ internal partial class APM_FontDescriptorType3_Flags_Base : ISpecification<PdfDi
     {
         var val = ctx.GetRequired<PdfIntNumber, APM_FontDescriptorType3_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitClear(obj)&&BitsClear(obj)&&BitsClear(obj))) 
+        {
+            ctx.Fail<APM_FontDescriptorType3_Flags>($"Value failed special case check: fn:Eval(fn:BitClear(5) && fn:BitsClear(8,16) && fn:BitsClear(20,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -354,12 +357,12 @@ internal partial class APM_FontDescriptorType3_Flags_Base : ISpecification<PdfDi
 /// <summary>
 /// FontDescriptorType3_FontBBox 
 /// </summary>
-internal partial class APM_FontDescriptorType3_FontBBox : APM_FontDescriptorType3_FontBBox_Base
+internal partial class APM_FontDescriptorType3_FontBBox : APM_FontDescriptorType3_FontBBox__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_FontBBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_FontBBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_FontBBox";
     public static bool RuleGroup() { return false; }
@@ -381,12 +384,12 @@ internal partial class APM_FontDescriptorType3_FontBBox_Base : ISpecification<Pd
 /// <summary>
 /// FontDescriptorType3_ItalicAngle 
 /// </summary>
-internal partial class APM_FontDescriptorType3_ItalicAngle : APM_FontDescriptorType3_ItalicAngle_Base
+internal partial class APM_FontDescriptorType3_ItalicAngle : APM_FontDescriptorType3_ItalicAngle__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_ItalicAngle_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_ItalicAngle__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_ItalicAngle";
     public static bool RuleGroup() { return false; }
@@ -408,12 +411,12 @@ internal partial class APM_FontDescriptorType3_ItalicAngle_Base : ISpecification
 /// <summary>
 /// FontDescriptorType3_Ascent 
 /// </summary>
-internal partial class APM_FontDescriptorType3_Ascent : APM_FontDescriptorType3_Ascent_Base
+internal partial class APM_FontDescriptorType3_Ascent : APM_FontDescriptorType3_Ascent__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_Ascent_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_Ascent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_Ascent";
     public static bool RuleGroup() { return false; }
@@ -435,12 +438,12 @@ internal partial class APM_FontDescriptorType3_Ascent_Base : ISpecification<PdfD
 /// <summary>
 /// FontDescriptorType3_Descent https://github.com/pdf-association/pdf-issues/issues/190
 /// </summary>
-internal partial class APM_FontDescriptorType3_Descent : APM_FontDescriptorType3_Descent_Base
+internal partial class APM_FontDescriptorType3_Descent : APM_FontDescriptorType3_Descent__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_Descent_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_Descent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_Descent";
     public static bool RuleGroup() { return false; }
@@ -451,13 +454,11 @@ internal partial class APM_FontDescriptorType3_Descent_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfNumber, APM_FontDescriptorType3_Descent>(obj, "Descent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Descent = val;
-        if (!(lte(@Descent,0))) 
+        var Descent = obj.Get("Descent");
+        if (!(lte(Descent,0))) 
         {
             ctx.Fail<APM_FontDescriptorType3_Descent>($"Invalid value {val}, allowed are: [fn:Eval(@Descent<=0)]");
-        }
         }
         // no linked objects
         
@@ -469,12 +470,12 @@ internal partial class APM_FontDescriptorType3_Descent_Base : ISpecification<Pdf
 /// <summary>
 /// FontDescriptorType3_Leading 
 /// </summary>
-internal partial class APM_FontDescriptorType3_Leading : APM_FontDescriptorType3_Leading_Base
+internal partial class APM_FontDescriptorType3_Leading : APM_FontDescriptorType3_Leading__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_Leading_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_Leading__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_Leading";
     public static bool RuleGroup() { return false; }
@@ -496,12 +497,12 @@ internal partial class APM_FontDescriptorType3_Leading_Base : ISpecification<Pdf
 /// <summary>
 /// FontDescriptorType3_CapHeight 
 /// </summary>
-internal partial class APM_FontDescriptorType3_CapHeight : APM_FontDescriptorType3_CapHeight_Base
+internal partial class APM_FontDescriptorType3_CapHeight : APM_FontDescriptorType3_CapHeight__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_CapHeight_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_CapHeight__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_CapHeight";
     public static bool RuleGroup() { return false; }
@@ -509,15 +510,12 @@ internal partial class APM_FontDescriptorType3_CapHeight_Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfNumber? val;
-        {
-            
-            if (FontHasLatinChars(obj)) {
-                val = ctx.GetRequired<PdfNumber, APM_FontDescriptorType3_CapHeight>(obj, "CapHeight", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfNumber, APM_FontDescriptorType3_CapHeight>(obj, "CapHeight", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfNumber, APM_FontDescriptorType3_CapHeight>(obj, "CapHeight", IndirectRequirement.Either);
+        if ((FontHasLatinChars(obj)) && val == null) {
+            ctx.Fail<APM_FontDescriptorType3_CapHeight>("CapHeight is required when 'fn:IsRequired(fn:FontHasLatinChars())"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -531,12 +529,12 @@ internal partial class APM_FontDescriptorType3_CapHeight_Base : ISpecification<P
 /// <summary>
 /// FontDescriptorType3_XHeight 
 /// </summary>
-internal partial class APM_FontDescriptorType3_XHeight : APM_FontDescriptorType3_XHeight_Base
+internal partial class APM_FontDescriptorType3_XHeight : APM_FontDescriptorType3_XHeight__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_XHeight_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_XHeight__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_XHeight";
     public static bool RuleGroup() { return false; }
@@ -558,12 +556,12 @@ internal partial class APM_FontDescriptorType3_XHeight_Base : ISpecification<Pdf
 /// <summary>
 /// FontDescriptorType3_StemV 
 /// </summary>
-internal partial class APM_FontDescriptorType3_StemV : APM_FontDescriptorType3_StemV_Base
+internal partial class APM_FontDescriptorType3_StemV : APM_FontDescriptorType3_StemV__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_StemV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_StemV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_StemV";
     public static bool RuleGroup() { return false; }
@@ -585,12 +583,12 @@ internal partial class APM_FontDescriptorType3_StemV_Base : ISpecification<PdfDi
 /// <summary>
 /// FontDescriptorType3_StemH 
 /// </summary>
-internal partial class APM_FontDescriptorType3_StemH : APM_FontDescriptorType3_StemH_Base
+internal partial class APM_FontDescriptorType3_StemH : APM_FontDescriptorType3_StemH__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_StemH_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_StemH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_StemH";
     public static bool RuleGroup() { return false; }
@@ -612,12 +610,12 @@ internal partial class APM_FontDescriptorType3_StemH_Base : ISpecification<PdfDi
 /// <summary>
 /// FontDescriptorType3_AvgWidth 
 /// </summary>
-internal partial class APM_FontDescriptorType3_AvgWidth : APM_FontDescriptorType3_AvgWidth_Base
+internal partial class APM_FontDescriptorType3_AvgWidth : APM_FontDescriptorType3_AvgWidth__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_AvgWidth_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_AvgWidth__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_AvgWidth";
     public static bool RuleGroup() { return false; }
@@ -639,12 +637,12 @@ internal partial class APM_FontDescriptorType3_AvgWidth_Base : ISpecification<Pd
 /// <summary>
 /// FontDescriptorType3_MaxWidth 
 /// </summary>
-internal partial class APM_FontDescriptorType3_MaxWidth : APM_FontDescriptorType3_MaxWidth_Base
+internal partial class APM_FontDescriptorType3_MaxWidth : APM_FontDescriptorType3_MaxWidth__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_MaxWidth_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_MaxWidth__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_MaxWidth";
     public static bool RuleGroup() { return false; }
@@ -666,12 +664,12 @@ internal partial class APM_FontDescriptorType3_MaxWidth_Base : ISpecification<Pd
 /// <summary>
 /// FontDescriptorType3_MissingWidth 
 /// </summary>
-internal partial class APM_FontDescriptorType3_MissingWidth : APM_FontDescriptorType3_MissingWidth_Base
+internal partial class APM_FontDescriptorType3_MissingWidth : APM_FontDescriptorType3_MissingWidth__Base
 {
 }
 
 
-internal partial class APM_FontDescriptorType3_MissingWidth_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontDescriptorType3_MissingWidth__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontDescriptorType3_MissingWidth";
     public static bool RuleGroup() { return false; }

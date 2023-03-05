@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CollectionField : APM_CollectionField_Base
+internal partial class APM_CollectionField : APM_CollectionField__Base
 {
 }
 
-internal partial class APM_CollectionField_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionField__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CollectionField";
@@ -89,12 +89,12 @@ internal partial class APM_CollectionField_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CollectionField_Type Table 155
 /// </summary>
-internal partial class APM_CollectionField_Type : APM_CollectionField_Type_Base
+internal partial class APM_CollectionField_Type : APM_CollectionField_Type__Base
 {
 }
 
 
-internal partial class APM_CollectionField_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionField_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionField_Type";
     public static bool RuleGroup() { return false; }
@@ -105,13 +105,11 @@ internal partial class APM_CollectionField_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_CollectionField_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CollectionField")) 
         {
             ctx.Fail<APM_CollectionField_Type>($"Invalid value {val}, allowed are: [CollectionField]");
-        }
         }
         // no linked objects
         
@@ -123,12 +121,12 @@ internal partial class APM_CollectionField_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// CollectionField_Subtype 
 /// </summary>
-internal partial class APM_CollectionField_Subtype : APM_CollectionField_Subtype_Base
+internal partial class APM_CollectionField_Subtype : APM_CollectionField_Subtype__Base
 {
 }
 
 
-internal partial class APM_CollectionField_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionField_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionField_Subtype";
     public static bool RuleGroup() { return false; }
@@ -139,13 +137,11 @@ internal partial class APM_CollectionField_Subtype_Base : ISpecification<PdfDict
         var val = ctx.GetRequired<PdfName, APM_CollectionField_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(val == "S" || val == "D" || val == "N" || val == "F" || val == "Desc" || val == "ModDate" || val == "CreationDate" || val == "Size" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "CompressedSize")) || ctx.Version >= 2.0m && val == "CompressedSize")) 
+        if (!(val == "S" || val == "D" || val == "N" || val == "F" || val == "Desc" || val == "ModDate" || val == "CreationDate" || val == "Size" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "CompressedSize")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "CompressedSize")))) 
         {
             ctx.Fail<APM_CollectionField_Subtype>($"Invalid value {val}, allowed are: [S,D,N,F,Desc,ModDate,CreationDate,Size,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,CompressedSize)),fn:SinceVersion(2.0,CompressedSize)]");
-        }
         }
         // no linked objects
         
@@ -157,12 +153,12 @@ internal partial class APM_CollectionField_Subtype_Base : ISpecification<PdfDict
 /// <summary>
 /// CollectionField_N 
 /// </summary>
-internal partial class APM_CollectionField_N : APM_CollectionField_N_Base
+internal partial class APM_CollectionField_N : APM_CollectionField_N__Base
 {
 }
 
 
-internal partial class APM_CollectionField_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionField_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionField_N";
     public static bool RuleGroup() { return false; }
@@ -184,12 +180,12 @@ internal partial class APM_CollectionField_N_Base : ISpecification<PdfDictionary
 /// <summary>
 /// CollectionField_O 
 /// </summary>
-internal partial class APM_CollectionField_O : APM_CollectionField_O_Base
+internal partial class APM_CollectionField_O : APM_CollectionField_O__Base
 {
 }
 
 
-internal partial class APM_CollectionField_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionField_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionField_O";
     public static bool RuleGroup() { return false; }
@@ -211,12 +207,12 @@ internal partial class APM_CollectionField_O_Base : ISpecification<PdfDictionary
 /// <summary>
 /// CollectionField_V 
 /// </summary>
-internal partial class APM_CollectionField_V : APM_CollectionField_V_Base
+internal partial class APM_CollectionField_V : APM_CollectionField_V__Base
 {
 }
 
 
-internal partial class APM_CollectionField_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionField_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionField_V";
     public static bool RuleGroup() { return false; }
@@ -238,12 +234,12 @@ internal partial class APM_CollectionField_V_Base : ISpecification<PdfDictionary
 /// <summary>
 /// CollectionField_E 
 /// </summary>
-internal partial class APM_CollectionField_E : APM_CollectionField_E_Base
+internal partial class APM_CollectionField_E : APM_CollectionField_E__Base
 {
 }
 
 
-internal partial class APM_CollectionField_E_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionField_E__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionField_E";
     public static bool RuleGroup() { return false; }

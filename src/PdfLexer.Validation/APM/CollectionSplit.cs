@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CollectionSplit : APM_CollectionSplit_Base
+internal partial class APM_CollectionSplit : APM_CollectionSplit__Base
 {
 }
 
-internal partial class APM_CollectionSplit_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSplit__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CollectionSplit";
@@ -56,12 +56,12 @@ internal partial class APM_CollectionSplit_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CollectionSplit_Type Table 158
 /// </summary>
-internal partial class APM_CollectionSplit_Type : APM_CollectionSplit_Type_Base
+internal partial class APM_CollectionSplit_Type : APM_CollectionSplit_Type__Base
 {
 }
 
 
-internal partial class APM_CollectionSplit_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSplit_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSplit_Type";
     public static bool RuleGroup() { return false; }
@@ -72,13 +72,11 @@ internal partial class APM_CollectionSplit_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_CollectionSplit_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CollectionSplit")) 
         {
             ctx.Fail<APM_CollectionSplit_Type>($"Invalid value {val}, allowed are: [CollectionSplit]");
-        }
         }
         // no linked objects
         
@@ -90,12 +88,12 @@ internal partial class APM_CollectionSplit_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// CollectionSplit_Direction 
 /// </summary>
-internal partial class APM_CollectionSplit_Direction : APM_CollectionSplit_Direction_Base
+internal partial class APM_CollectionSplit_Direction : APM_CollectionSplit_Direction__Base
 {
 }
 
 
-internal partial class APM_CollectionSplit_Direction_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSplit_Direction__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSplit_Direction";
     public static bool RuleGroup() { return false; }
@@ -106,13 +104,11 @@ internal partial class APM_CollectionSplit_Direction_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfName, APM_CollectionSplit_Direction>(obj, "Direction", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "H" || val == "V" || val == "N")) 
         {
             ctx.Fail<APM_CollectionSplit_Direction>($"Invalid value {val}, allowed are: [H,V,N]");
-        }
         }
         // no linked objects
         
@@ -124,12 +120,12 @@ internal partial class APM_CollectionSplit_Direction_Base : ISpecification<PdfDi
 /// <summary>
 /// CollectionSplit_Position 
 /// </summary>
-internal partial class APM_CollectionSplit_Position : APM_CollectionSplit_Position_Base
+internal partial class APM_CollectionSplit_Position : APM_CollectionSplit_Position__Base
 {
 }
 
 
-internal partial class APM_CollectionSplit_Position_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSplit_Position__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSplit_Position";
     public static bool RuleGroup() { return false; }
@@ -139,14 +135,12 @@ internal partial class APM_CollectionSplit_Position_Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfNumber, APM_CollectionSplit_Position>(obj, "Position", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:Ignore, not pertinent to validation
         
-        IPdfObject @Position = val;
-        if (!((gte(@Position,0)&&lte(@Position,100)))) 
+        var Position = obj.Get("Position");
+        if (!((gte(Position,0)&&lte(Position,100)))) 
         {
             ctx.Fail<APM_CollectionSplit_Position>($"Invalid value {val}, allowed are: [fn:Eval((@Position>=0) && (@Position<=100))]");
-        }
         }
         // no linked objects
         

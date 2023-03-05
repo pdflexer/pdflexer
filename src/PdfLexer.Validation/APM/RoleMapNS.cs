@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RoleMapNS : APM_RoleMapNS_Base
+internal partial class APM_RoleMapNS : APM_RoleMapNS__Base
 {
 }
 
-internal partial class APM_RoleMapNS_Base : ISpecification<PdfDictionary>
+internal partial class APM_RoleMapNS__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RoleMapNS";
@@ -35,12 +35,12 @@ internal partial class APM_RoleMapNS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RoleMapNS_* Table 356
 /// </summary>
-internal partial class APM_RoleMapNS_CatchAll : APM_RoleMapNS_CatchAll_Base
+internal partial class APM_RoleMapNS_CatchAll : APM_RoleMapNS_CatchAll__Base
 {
 }
 
 
-internal partial class APM_RoleMapNS_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_RoleMapNS_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RoleMapNS_*";
     public static bool RuleGroup() { return false; }

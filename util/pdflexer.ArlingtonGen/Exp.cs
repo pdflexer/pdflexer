@@ -3,8 +3,12 @@ using System.Text;
 
 namespace pdflexer.ArlingtonGen;
 
-internal class Exp
+internal class Exp : INode
 {
+    public Exp(string text)
+    {
+        Children = Tokenize(text);
+    }
     internal static List<INode> Tokenize(string text)
     {
         var parts = new List<INode>();
@@ -26,6 +30,9 @@ internal class Exp
                 i += m.Value.Length;
                 continue;
             }
+            if (n.StartsWith("* ")) { parts.Add(new EOp("*")); i += 2; continue; }
+            if (n.StartsWith("+")) { parts.Add(new EOp("+")); i += 1; continue; }
+            if (n.StartsWith("- ")) { parts.Add(new EOp("-")); i += 2; continue; }
             if (n.StartsWith("<=")) { parts.Add(new EOp(n.Substring(0, 2))); i += 2; continue; }
             if (n.StartsWith(">=")) { parts.Add(new EOp(n.Substring(0, 2))); i += 2; continue; }
             if (n.StartsWith("<")) { parts.Add(new EOp(n.Substring(0, 1))); i += 1; continue; }
@@ -68,6 +75,10 @@ internal class Exp
                 var cc = text[i];
                 if (terms.Contains(cc))
                 {
+                    // if (cc == '*' && i > 0 && text[i-1] == ':')
+                    // {
+                    //     continue;
+                    // }
                     parts.Add(new EValue(text.Substring(vs, i - vs)));
                     matched = true;
                     break;
@@ -82,8 +93,40 @@ internal class Exp
         return parts;
     }
 
+    public void Write(StringBuilder sb)
+    {
+        foreach (var c in Children)
+        {
+            c.Write(sb);
+        }
+    }
+
     private static List<char> terms = new List<char>
     {
-        ' ', '(', '<', '>', '!', '='
+        ' ', '(', '<', '>', '!', '=', // '+', '*'
     };
+
+    public List<INode> Children { get; }
+
+
+    public IEnumerable<string> GetRequiredValues()
+    {
+        foreach (var part in Children)
+        {
+            foreach (var dep in part.GetRequiredValues())
+            {
+                if (!VariableContext.Vars.ContainsKey(dep))
+                {
+                    yield return dep;
+                }
+            }
+        }
+    }
+
+    public string GetText()
+    {
+        var sb = new StringBuilder();
+        Write(sb);
+        return sb.ToString();
+    }
 }

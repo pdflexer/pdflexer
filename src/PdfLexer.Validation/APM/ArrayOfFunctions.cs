@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfFunctions : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -43,7 +43,7 @@ internal partial class APM_ArrayOfFunctions_x : ISpecification<PdfArray>
             if (utval == null) { return; }
             switch (utval.Type) 
             {
-                // funcs: fn:SinceVersion(1.3,dictionary)
+                // TODO funcs: fn:SinceVersion(1.3,dictionary)
                 case PdfObjectType.StreamObj:
                     {
                         var val =  (PdfStream)utval;
@@ -53,6 +53,9 @@ internal partial class APM_ArrayOfFunctions_x : ISpecification<PdfArray>
                         if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                         {
                             ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
+                        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                        {
+                            ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                         }else 
                         {
                             ctx.Fail<APM_ArrayOfFunctions_x>("x did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");

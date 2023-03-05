@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotMovie : APM_AnnotMovie_Base
+internal partial class APM_AnnotMovie : APM_AnnotMovie__Base
 {
 }
 
-internal partial class APM_AnnotMovie_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotMovie";
@@ -145,12 +145,12 @@ internal partial class APM_AnnotMovie_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_Type Table 166 and Table 189 (NOT markup annot)
 /// </summary>
-internal partial class APM_AnnotMovie_Type : APM_AnnotMovie_Type_Base
+internal partial class APM_AnnotMovie_Type : APM_AnnotMovie_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_Type";
     public static bool RuleGroup() { return false; }
@@ -161,13 +161,11 @@ internal partial class APM_AnnotMovie_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotMovie_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotMovie_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -179,12 +177,12 @@ internal partial class APM_AnnotMovie_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_Subtype 
 /// </summary>
-internal partial class APM_AnnotMovie_Subtype : APM_AnnotMovie_Subtype_Base
+internal partial class APM_AnnotMovie_Subtype : APM_AnnotMovie_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_Subtype";
     public static bool RuleGroup() { return false; }
@@ -195,13 +193,11 @@ internal partial class APM_AnnotMovie_Subtype_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfName, APM_AnnotMovie_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Movie")) 
         {
             ctx.Fail<APM_AnnotMovie_Subtype>($"Invalid value {val}, allowed are: [Movie]");
-        }
         }
         // no linked objects
         
@@ -213,12 +209,12 @@ internal partial class APM_AnnotMovie_Subtype_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotMovie_Rect 
 /// </summary>
-internal partial class APM_AnnotMovie_Rect : APM_AnnotMovie_Rect_Base
+internal partial class APM_AnnotMovie_Rect : APM_AnnotMovie_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_Rect";
     public static bool RuleGroup() { return false; }
@@ -240,12 +236,12 @@ internal partial class APM_AnnotMovie_Rect_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_Contents 
 /// </summary>
-internal partial class APM_AnnotMovie_Contents : APM_AnnotMovie_Contents_Base
+internal partial class APM_AnnotMovie_Contents : APM_AnnotMovie_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_Contents";
     public static bool RuleGroup() { return false; }
@@ -267,12 +263,12 @@ internal partial class APM_AnnotMovie_Contents_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotMovie_P 
 /// </summary>
-internal partial class APM_AnnotMovie_P : APM_AnnotMovie_P_Base
+internal partial class APM_AnnotMovie_P : APM_AnnotMovie_P__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_P";
     public static bool RuleGroup() { return false; }
@@ -294,12 +290,12 @@ internal partial class APM_AnnotMovie_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_NM 
 /// </summary>
-internal partial class APM_AnnotMovie_NM : APM_AnnotMovie_NM_Base
+internal partial class APM_AnnotMovie_NM : APM_AnnotMovie_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_NM";
     public static bool RuleGroup() { return false; }
@@ -321,12 +317,12 @@ internal partial class APM_AnnotMovie_NM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_M 
 /// </summary>
-internal partial class APM_AnnotMovie_M : APM_AnnotMovie_M_Base
+internal partial class APM_AnnotMovie_M : APM_AnnotMovie_M__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_M";
     public static bool RuleGroup() { return false; }
@@ -353,12 +349,12 @@ internal partial class APM_AnnotMovie_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_F Table 167
 /// </summary>
-internal partial class APM_AnnotMovie_F : APM_AnnotMovie_F_Base
+internal partial class APM_AnnotMovie_F : APM_AnnotMovie_F__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_F";
     public static bool RuleGroup() { return false; }
@@ -368,7 +364,11 @@ internal partial class APM_AnnotMovie_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotMovie_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(ctx.Version < 1.3m && BitsClear(obj)&&ctx.Version < 1.4m && BitsClear(obj)&&ctx.Version < 1.5m && BitsClear(obj)&&ctx.Version < 1.6m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj))))) 
+        {
+            ctx.Fail<APM_AnnotMovie_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.3,fn:BitsClear(4,32)) && fn:BeforeVersion(1.4,fn:BitsClear(8,32)) && fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -380,12 +380,12 @@ internal partial class APM_AnnotMovie_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_AP 
 /// </summary>
-internal partial class APM_AnnotMovie_AP : APM_AnnotMovie_AP_Base
+internal partial class APM_AnnotMovie_AP : APM_AnnotMovie_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_AP";
     public static bool RuleGroup() { return false; }
@@ -393,15 +393,12 @@ internal partial class APM_AnnotMovie_AP_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Rect = obj.Get("Rect");
-            if (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotMovie_AP>(obj, "AP", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotMovie_AP>(obj, "AP", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Rect = obj.Get("Rect");
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotMovie_AP>(obj, "AP", IndirectRequirement.Either);
+        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+            ctx.Fail<APM_AnnotMovie_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -415,12 +412,12 @@ internal partial class APM_AnnotMovie_AP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_AS 
 /// </summary>
-internal partial class APM_AnnotMovie_AS : APM_AnnotMovie_AS_Base
+internal partial class APM_AnnotMovie_AS : APM_AnnotMovie_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_AS";
     public static bool RuleGroup() { return false; }
@@ -428,17 +425,14 @@ internal partial class APM_AnnotMovie_AS_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotMovie_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotMovie_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotMovie_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotMovie_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -452,12 +446,12 @@ internal partial class APM_AnnotMovie_AS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_Border 
 /// </summary>
-internal partial class APM_AnnotMovie_Border : APM_AnnotMovie_Border_Base
+internal partial class APM_AnnotMovie_Border : APM_AnnotMovie_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_Border";
     public static bool RuleGroup() { return false; }
@@ -479,12 +473,12 @@ internal partial class APM_AnnotMovie_Border_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotMovie_C 
 /// </summary>
-internal partial class APM_AnnotMovie_C : APM_AnnotMovie_C_Base
+internal partial class APM_AnnotMovie_C : APM_AnnotMovie_C__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_C";
     public static bool RuleGroup() { return false; }
@@ -506,12 +500,12 @@ internal partial class APM_AnnotMovie_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotMovie_StructParent : APM_AnnotMovie_StructParent_Base
+internal partial class APM_AnnotMovie_StructParent : APM_AnnotMovie_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_StructParent";
     public static bool RuleGroup() { return false; }
@@ -533,12 +527,12 @@ internal partial class APM_AnnotMovie_StructParent_Base : ISpecification<PdfDict
 /// <summary>
 /// AnnotMovie_OC 
 /// </summary>
-internal partial class APM_AnnotMovie_OC : APM_AnnotMovie_OC_Base
+internal partial class APM_AnnotMovie_OC : APM_AnnotMovie_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_OC";
     public static bool RuleGroup() { return false; }
@@ -569,12 +563,12 @@ internal partial class APM_AnnotMovie_OC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_AF 
 /// </summary>
-internal partial class APM_AnnotMovie_AF : APM_AnnotMovie_AF_Base
+internal partial class APM_AnnotMovie_AF : APM_AnnotMovie_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_AF";
     public static bool RuleGroup() { return false; }
@@ -617,12 +611,12 @@ internal partial class APM_AnnotMovie_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_ca 
 /// </summary>
-internal partial class APM_AnnotMovie_ca : APM_AnnotMovie_ca_Base
+internal partial class APM_AnnotMovie_ca : APM_AnnotMovie_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_ca";
     public static bool RuleGroup() { return false; }
@@ -633,13 +627,11 @@ internal partial class APM_AnnotMovie_ca_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotMovie_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotMovie_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -651,12 +643,12 @@ internal partial class APM_AnnotMovie_ca_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_CA 
 /// </summary>
-internal partial class APM_AnnotMovie_CA : APM_AnnotMovie_CA_Base
+internal partial class APM_AnnotMovie_CA : APM_AnnotMovie_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_CA";
     public static bool RuleGroup() { return false; }
@@ -667,13 +659,11 @@ internal partial class APM_AnnotMovie_CA_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotMovie_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotMovie_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -685,12 +675,12 @@ internal partial class APM_AnnotMovie_CA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotMovie_BM : APM_AnnotMovie_BM_Base
+internal partial class APM_AnnotMovie_BM : APM_AnnotMovie_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_BM";
     public static bool RuleGroup() { return false; }
@@ -701,13 +691,11 @@ internal partial class APM_AnnotMovie_BM_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotMovie_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotMovie_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -719,12 +707,12 @@ internal partial class APM_AnnotMovie_BM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_Lang 
 /// </summary>
-internal partial class APM_AnnotMovie_Lang : APM_AnnotMovie_Lang_Base
+internal partial class APM_AnnotMovie_Lang : APM_AnnotMovie_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_Lang";
     public static bool RuleGroup() { return false; }
@@ -746,12 +734,12 @@ internal partial class APM_AnnotMovie_Lang_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_T 
 /// </summary>
-internal partial class APM_AnnotMovie_T : APM_AnnotMovie_T_Base
+internal partial class APM_AnnotMovie_T : APM_AnnotMovie_T__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_T";
     public static bool RuleGroup() { return false; }
@@ -773,12 +761,12 @@ internal partial class APM_AnnotMovie_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_Movie 
 /// </summary>
-internal partial class APM_AnnotMovie_Movie : APM_AnnotMovie_Movie_Base
+internal partial class APM_AnnotMovie_Movie : APM_AnnotMovie_Movie__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_Movie_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_Movie__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_Movie";
     public static bool RuleGroup() { return false; }
@@ -800,12 +788,12 @@ internal partial class APM_AnnotMovie_Movie_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotMovie_A 
 /// </summary>
-internal partial class APM_AnnotMovie_A : APM_AnnotMovie_A_Base
+internal partial class APM_AnnotMovie_A : APM_AnnotMovie_A__Base
 {
 }
 
 
-internal partial class APM_AnnotMovie_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotMovie_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotMovie_A";
     public static bool RuleGroup() { return false; }

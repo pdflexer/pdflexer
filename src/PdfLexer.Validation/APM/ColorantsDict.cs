@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ColorantsDict : APM_ColorantsDict_Base
+internal partial class APM_ColorantsDict : APM_ColorantsDict__Base
 {
 }
 
-internal partial class APM_ColorantsDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_ColorantsDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ColorantsDict";
@@ -35,12 +35,12 @@ internal partial class APM_ColorantsDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ColorantsDict_* Table 70, Colorants cell
 /// </summary>
-internal partial class APM_ColorantsDict_CatchAll : APM_ColorantsDict_CatchAll_Base
+internal partial class APM_ColorantsDict_CatchAll : APM_ColorantsDict_CatchAll__Base
 {
 }
 
 
-internal partial class APM_ColorantsDict_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_ColorantsDict_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ColorantsDict_*";
     public static bool RuleGroup() { return false; }

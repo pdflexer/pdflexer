@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfOCGState : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -57,13 +57,11 @@ internal partial class APM_ArrayOfOCGState_x : ISpecification<PdfArray>
                         var val =  (PdfName)utval;
                         // no indirect obj reqs
                         // no special cases
-                        {
                         
                         
                         if (!(val == "ON" || val == "OFF" || val == "Toggle")) 
                         {
                             ctx.Fail<APM_ArrayOfOCGState_x>($"Invalid value {val}, allowed are: [ON,OFF,Toggle]");
-                        }
                         }
                         // no linked objects
                         return;

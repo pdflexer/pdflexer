@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DocInfo : APM_DocInfo_Base
+internal partial class APM_DocInfo : APM_DocInfo__Base
 {
 }
 
-internal partial class APM_DocInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DocInfo";
@@ -45,12 +45,12 @@ internal partial class APM_DocInfo_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocInfo_Title Table 349
 /// </summary>
-internal partial class APM_DocInfo_Title : APM_DocInfo_Title_Base
+internal partial class APM_DocInfo_Title : APM_DocInfo_Title__Base
 {
 }
 
 
-internal partial class APM_DocInfo_Title_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_Title__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_Title";
     public static bool RuleGroup() { return false; }
@@ -72,12 +72,12 @@ internal partial class APM_DocInfo_Title_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocInfo_Author 
 /// </summary>
-internal partial class APM_DocInfo_Author : APM_DocInfo_Author_Base
+internal partial class APM_DocInfo_Author : APM_DocInfo_Author__Base
 {
 }
 
 
-internal partial class APM_DocInfo_Author_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_Author__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_Author";
     public static bool RuleGroup() { return false; }
@@ -99,12 +99,12 @@ internal partial class APM_DocInfo_Author_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocInfo_Subject 
 /// </summary>
-internal partial class APM_DocInfo_Subject : APM_DocInfo_Subject_Base
+internal partial class APM_DocInfo_Subject : APM_DocInfo_Subject__Base
 {
 }
 
 
-internal partial class APM_DocInfo_Subject_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_Subject__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_Subject";
     public static bool RuleGroup() { return false; }
@@ -126,12 +126,12 @@ internal partial class APM_DocInfo_Subject_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocInfo_Keywords 
 /// </summary>
-internal partial class APM_DocInfo_Keywords : APM_DocInfo_Keywords_Base
+internal partial class APM_DocInfo_Keywords : APM_DocInfo_Keywords__Base
 {
 }
 
 
-internal partial class APM_DocInfo_Keywords_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_Keywords__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_Keywords";
     public static bool RuleGroup() { return false; }
@@ -153,12 +153,12 @@ internal partial class APM_DocInfo_Keywords_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocInfo_Creator 
 /// </summary>
-internal partial class APM_DocInfo_Creator : APM_DocInfo_Creator_Base
+internal partial class APM_DocInfo_Creator : APM_DocInfo_Creator__Base
 {
 }
 
 
-internal partial class APM_DocInfo_Creator_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_Creator__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_Creator";
     public static bool RuleGroup() { return false; }
@@ -180,12 +180,12 @@ internal partial class APM_DocInfo_Creator_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocInfo_Producer 
 /// </summary>
-internal partial class APM_DocInfo_Producer : APM_DocInfo_Producer_Base
+internal partial class APM_DocInfo_Producer : APM_DocInfo_Producer__Base
 {
 }
 
 
-internal partial class APM_DocInfo_Producer_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_Producer__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_Producer";
     public static bool RuleGroup() { return false; }
@@ -207,12 +207,12 @@ internal partial class APM_DocInfo_Producer_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocInfo_CreationDate 
 /// </summary>
-internal partial class APM_DocInfo_CreationDate : APM_DocInfo_CreationDate_Base
+internal partial class APM_DocInfo_CreationDate : APM_DocInfo_CreationDate__Base
 {
 }
 
 
-internal partial class APM_DocInfo_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -234,12 +234,12 @@ internal partial class APM_DocInfo_CreationDate_Base : ISpecification<PdfDiction
 /// <summary>
 /// DocInfo_ModDate 
 /// </summary>
-internal partial class APM_DocInfo_ModDate : APM_DocInfo_ModDate_Base
+internal partial class APM_DocInfo_ModDate : APM_DocInfo_ModDate__Base
 {
 }
 
 
-internal partial class APM_DocInfo_ModDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_ModDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_ModDate";
     public static bool RuleGroup() { return false; }
@@ -261,12 +261,12 @@ internal partial class APM_DocInfo_ModDate_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocInfo_Trapped 
 /// </summary>
-internal partial class APM_DocInfo_Trapped : APM_DocInfo_Trapped_Base
+internal partial class APM_DocInfo_Trapped : APM_DocInfo_Trapped__Base
 {
 }
 
 
-internal partial class APM_DocInfo_Trapped_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_Trapped__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_Trapped";
     public static bool RuleGroup() { return false; }
@@ -277,13 +277,11 @@ internal partial class APM_DocInfo_Trapped_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_DocInfo_Trapped>(obj, "Trapped", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "True" || val == "False" || val == "Unknown")) 
         {
             ctx.Fail<APM_DocInfo_Trapped>($"Invalid value {val}, allowed are: [True,False,Unknown]");
-        }
         }
         // no linked objects
         
@@ -295,12 +293,12 @@ internal partial class APM_DocInfo_Trapped_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocInfo_GTS_PDFXVersion 
 /// </summary>
-internal partial class APM_DocInfo_GTS_PDFXVersion : APM_DocInfo_GTS_PDFXVersion_Base
+internal partial class APM_DocInfo_GTS_PDFXVersion : APM_DocInfo_GTS_PDFXVersion__Base
 {
 }
 
 
-internal partial class APM_DocInfo_GTS_PDFXVersion_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_GTS_PDFXVersion__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_GTS_PDFXVersion";
     public static bool RuleGroup() { return false; }
@@ -322,12 +320,12 @@ internal partial class APM_DocInfo_GTS_PDFXVersion_Base : ISpecification<PdfDict
 /// <summary>
 /// DocInfo_* Annex E, 2nd class names
 /// </summary>
-internal partial class APM_DocInfo_CatchAll : APM_DocInfo_CatchAll_Base
+internal partial class APM_DocInfo_CatchAll : APM_DocInfo_CatchAll__Base
 {
 }
 
 
-internal partial class APM_DocInfo_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocInfo_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocInfo_*";
     public static bool RuleGroup() { return false; }

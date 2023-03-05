@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DAnimationStyle : APM_3DAnimationStyle_Base
+internal partial class APM_3DAnimationStyle : APM_3DAnimationStyle__Base
 {
 }
 
-internal partial class APM_3DAnimationStyle_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DAnimationStyle__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DAnimationStyle";
@@ -87,12 +87,12 @@ internal partial class APM_3DAnimationStyle_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DAnimationStyle_Type Table 312
 /// </summary>
-internal partial class APM_3DAnimationStyle_Type : APM_3DAnimationStyle_Type_Base
+internal partial class APM_3DAnimationStyle_Type : APM_3DAnimationStyle_Type__Base
 {
 }
 
 
-internal partial class APM_3DAnimationStyle_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DAnimationStyle_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DAnimationStyle_Type";
     public static bool RuleGroup() { return false; }
@@ -103,13 +103,11 @@ internal partial class APM_3DAnimationStyle_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_3DAnimationStyle_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DAnimationStyle")) 
         {
             ctx.Fail<APM_3DAnimationStyle_Type>($"Invalid value {val}, allowed are: [3DAnimationStyle]");
-        }
         }
         // no linked objects
         
@@ -121,12 +119,12 @@ internal partial class APM_3DAnimationStyle_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// 3DAnimationStyle_Subtype Table 313
 /// </summary>
-internal partial class APM_3DAnimationStyle_Subtype : APM_3DAnimationStyle_Subtype_Base
+internal partial class APM_3DAnimationStyle_Subtype : APM_3DAnimationStyle_Subtype__Base
 {
 }
 
 
-internal partial class APM_3DAnimationStyle_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DAnimationStyle_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DAnimationStyle_Subtype";
     public static bool RuleGroup() { return false; }
@@ -137,13 +135,11 @@ internal partial class APM_3DAnimationStyle_Subtype_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_3DAnimationStyle_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "None" || val == "Linear" || val == "Oscillating")) 
         {
             ctx.Fail<APM_3DAnimationStyle_Subtype>($"Invalid value {val}, allowed are: [None,Linear,Oscillating]");
-        }
         }
         // no linked objects
         
@@ -155,12 +151,12 @@ internal partial class APM_3DAnimationStyle_Subtype_Base : ISpecification<PdfDic
 /// <summary>
 /// 3DAnimationStyle_PC 
 /// </summary>
-internal partial class APM_3DAnimationStyle_PC : APM_3DAnimationStyle_PC_Base
+internal partial class APM_3DAnimationStyle_PC : APM_3DAnimationStyle_PC__Base
 {
 }
 
 
-internal partial class APM_3DAnimationStyle_PC_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DAnimationStyle_PC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DAnimationStyle_PC";
     public static bool RuleGroup() { return false; }
@@ -170,7 +166,7 @@ internal partial class APM_3DAnimationStyle_PC_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_3DAnimationStyle_PC>(obj, "PC", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -182,12 +178,12 @@ internal partial class APM_3DAnimationStyle_PC_Base : ISpecification<PdfDictiona
 /// <summary>
 /// 3DAnimationStyle_TM 
 /// </summary>
-internal partial class APM_3DAnimationStyle_TM : APM_3DAnimationStyle_TM_Base
+internal partial class APM_3DAnimationStyle_TM : APM_3DAnimationStyle_TM__Base
 {
 }
 
 
-internal partial class APM_3DAnimationStyle_TM_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DAnimationStyle_TM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DAnimationStyle_TM";
     public static bool RuleGroup() { return false; }
@@ -197,14 +193,12 @@ internal partial class APM_3DAnimationStyle_TM_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfNumber, APM_3DAnimationStyle_TM>(obj, "TM", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:Ignore, not pertinent to validation
         
-        IPdfObject @TM = val;
-        if (!(gt(@TM,0))) 
+        var TM = obj.Get("TM");
+        if (!(gt(TM,0))) 
         {
             ctx.Fail<APM_3DAnimationStyle_TM>($"Invalid value {val}, allowed are: [fn:Eval(@TM>0)]");
-        }
         }
         // no linked objects
         

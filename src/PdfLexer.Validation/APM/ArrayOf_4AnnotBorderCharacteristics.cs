@@ -21,7 +21,7 @@ internal partial class APM_ArrayOf_4AnnotBorderCharacteristics : ISpecification<
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -39,13 +39,11 @@ internal partial class APM_ArrayOf_4AnnotBorderCharacteristics_0 : ISpecificatio
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_4AnnotBorderCharacteristics_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
-        if (!(gte(v,0))) 
+        if (!(gte(v,v))) 
         {
             ctx.Fail<APM_ArrayOf_4AnnotBorderCharacteristics_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>=0)]");
-        }
         }
         // no linked objects
         
@@ -66,13 +64,11 @@ internal partial class APM_ArrayOf_4AnnotBorderCharacteristics_1 : ISpecificatio
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_4AnnotBorderCharacteristics_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!(gte(v,0))) 
         {
             ctx.Fail<APM_ArrayOf_4AnnotBorderCharacteristics_1>($"Invalid value {val}, allowed are: [fn:Eval(@1>=0)]");
-        }
         }
         // no linked objects
         
@@ -93,13 +89,11 @@ internal partial class APM_ArrayOf_4AnnotBorderCharacteristics_2 : ISpecificatio
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_4AnnotBorderCharacteristics_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!(gte(v,0))) 
         {
             ctx.Fail<APM_ArrayOf_4AnnotBorderCharacteristics_2>($"Invalid value {val}, allowed are: [fn:Eval(@2>=0)]");
-        }
         }
         // no linked objects
         

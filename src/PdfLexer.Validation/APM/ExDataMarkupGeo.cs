@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ExDataMarkupGeo : APM_ExDataMarkupGeo_Base
+internal partial class APM_ExDataMarkupGeo : APM_ExDataMarkupGeo__Base
 {
 }
 
-internal partial class APM_ExDataMarkupGeo_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExDataMarkupGeo__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ExDataMarkupGeo";
@@ -46,12 +46,12 @@ internal partial class APM_ExDataMarkupGeo_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ExDataMarkupGeo_Type Table 173, ExData cell
 /// </summary>
-internal partial class APM_ExDataMarkupGeo_Type : APM_ExDataMarkupGeo_Type_Base
+internal partial class APM_ExDataMarkupGeo_Type : APM_ExDataMarkupGeo_Type__Base
 {
 }
 
 
-internal partial class APM_ExDataMarkupGeo_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExDataMarkupGeo_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExDataMarkupGeo_Type";
     public static bool RuleGroup() { return false; }
@@ -62,13 +62,11 @@ internal partial class APM_ExDataMarkupGeo_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetRequired<PdfName, APM_ExDataMarkupGeo_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ExData")) 
         {
             ctx.Fail<APM_ExDataMarkupGeo_Type>($"Invalid value {val}, allowed are: [ExData]");
-        }
         }
         // no linked objects
         
@@ -80,12 +78,12 @@ internal partial class APM_ExDataMarkupGeo_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// ExDataMarkupGeo_Subtype 
 /// </summary>
-internal partial class APM_ExDataMarkupGeo_Subtype : APM_ExDataMarkupGeo_Subtype_Base
+internal partial class APM_ExDataMarkupGeo_Subtype : APM_ExDataMarkupGeo_Subtype__Base
 {
 }
 
 
-internal partial class APM_ExDataMarkupGeo_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExDataMarkupGeo_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExDataMarkupGeo_Subtype";
     public static bool RuleGroup() { return false; }
@@ -96,13 +94,11 @@ internal partial class APM_ExDataMarkupGeo_Subtype_Base : ISpecification<PdfDict
         var val = ctx.GetRequired<PdfName, APM_ExDataMarkupGeo_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MarkupGeo")) 
         {
             ctx.Fail<APM_ExDataMarkupGeo_Subtype>($"Invalid value {val}, allowed are: [MarkupGeo]");
-        }
         }
         // no linked objects
         

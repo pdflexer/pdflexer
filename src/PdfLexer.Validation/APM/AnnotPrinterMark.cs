@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotPrinterMark : APM_AnnotPrinterMark_Base
+internal partial class APM_AnnotPrinterMark : APM_AnnotPrinterMark__Base
 {
 }
 
-internal partial class APM_AnnotPrinterMark_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotPrinterMark";
@@ -133,12 +133,12 @@ internal partial class APM_AnnotPrinterMark_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPrinterMark_Type Table 166 and Table 398 (NOT markup annot)
 /// </summary>
-internal partial class APM_AnnotPrinterMark_Type : APM_AnnotPrinterMark_Type_Base
+internal partial class APM_AnnotPrinterMark_Type : APM_AnnotPrinterMark_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_Type";
     public static bool RuleGroup() { return false; }
@@ -149,13 +149,11 @@ internal partial class APM_AnnotPrinterMark_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_AnnotPrinterMark_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotPrinterMark_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -167,12 +165,12 @@ internal partial class APM_AnnotPrinterMark_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotPrinterMark_Subtype 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_Subtype : APM_AnnotPrinterMark_Subtype_Base
+internal partial class APM_AnnotPrinterMark_Subtype : APM_AnnotPrinterMark_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_Subtype";
     public static bool RuleGroup() { return false; }
@@ -183,13 +181,11 @@ internal partial class APM_AnnotPrinterMark_Subtype_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfName, APM_AnnotPrinterMark_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PrinterMark")) 
         {
             ctx.Fail<APM_AnnotPrinterMark_Subtype>($"Invalid value {val}, allowed are: [PrinterMark]");
-        }
         }
         // no linked objects
         
@@ -201,12 +197,12 @@ internal partial class APM_AnnotPrinterMark_Subtype_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotPrinterMark_Rect 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_Rect : APM_AnnotPrinterMark_Rect_Base
+internal partial class APM_AnnotPrinterMark_Rect : APM_AnnotPrinterMark_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_Rect";
     public static bool RuleGroup() { return false; }
@@ -228,12 +224,12 @@ internal partial class APM_AnnotPrinterMark_Rect_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotPrinterMark_Contents 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_Contents : APM_AnnotPrinterMark_Contents_Base
+internal partial class APM_AnnotPrinterMark_Contents : APM_AnnotPrinterMark_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_Contents";
     public static bool RuleGroup() { return false; }
@@ -255,12 +251,12 @@ internal partial class APM_AnnotPrinterMark_Contents_Base : ISpecification<PdfDi
 /// <summary>
 /// AnnotPrinterMark_P 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_P : APM_AnnotPrinterMark_P_Base
+internal partial class APM_AnnotPrinterMark_P : APM_AnnotPrinterMark_P__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_P";
     public static bool RuleGroup() { return false; }
@@ -282,12 +278,12 @@ internal partial class APM_AnnotPrinterMark_P_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPrinterMark_NM 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_NM : APM_AnnotPrinterMark_NM_Base
+internal partial class APM_AnnotPrinterMark_NM : APM_AnnotPrinterMark_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_NM";
     public static bool RuleGroup() { return false; }
@@ -309,12 +305,12 @@ internal partial class APM_AnnotPrinterMark_NM_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPrinterMark_M 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_M : APM_AnnotPrinterMark_M_Base
+internal partial class APM_AnnotPrinterMark_M : APM_AnnotPrinterMark_M__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_M";
     public static bool RuleGroup() { return false; }
@@ -341,12 +337,12 @@ internal partial class APM_AnnotPrinterMark_M_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPrinterMark_F Table 167
 /// </summary>
-internal partial class APM_AnnotPrinterMark_F : APM_AnnotPrinterMark_F_Base
+internal partial class APM_AnnotPrinterMark_F : APM_AnnotPrinterMark_F__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_F";
     public static bool RuleGroup() { return false; }
@@ -356,7 +352,11 @@ internal partial class APM_AnnotPrinterMark_F_Base : ISpecification<PdfDictionar
     {
         var val = ctx.GetRequired<PdfIntNumber, APM_AnnotPrinterMark_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(ctx.Version < 1.5m && BitsClear(obj)&&ctx.Version < 1.6m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj))))) 
+        {
+            ctx.Fail<APM_AnnotPrinterMark_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -368,12 +368,12 @@ internal partial class APM_AnnotPrinterMark_F_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPrinterMark_AP 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_AP : APM_AnnotPrinterMark_AP_Base
+internal partial class APM_AnnotPrinterMark_AP : APM_AnnotPrinterMark_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_AP";
     public static bool RuleGroup() { return false; }
@@ -381,15 +381,12 @@ internal partial class APM_AnnotPrinterMark_AP_Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Rect = obj.Get("Rect");
-            if (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotPrinterMark_AP>(obj, "AP", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotPrinterMark_AP>(obj, "AP", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Rect = obj.Get("Rect");
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotPrinterMark_AP>(obj, "AP", IndirectRequirement.Either);
+        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+            ctx.Fail<APM_AnnotPrinterMark_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -403,12 +400,12 @@ internal partial class APM_AnnotPrinterMark_AP_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPrinterMark_AS 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_AS : APM_AnnotPrinterMark_AS_Base
+internal partial class APM_AnnotPrinterMark_AS : APM_AnnotPrinterMark_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_AS";
     public static bool RuleGroup() { return false; }
@@ -416,17 +413,14 @@ internal partial class APM_AnnotPrinterMark_AS_Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotPrinterMark_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotPrinterMark_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotPrinterMark_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotPrinterMark_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -440,12 +434,12 @@ internal partial class APM_AnnotPrinterMark_AS_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPrinterMark_Border 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_Border : APM_AnnotPrinterMark_Border_Base
+internal partial class APM_AnnotPrinterMark_Border : APM_AnnotPrinterMark_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_Border";
     public static bool RuleGroup() { return false; }
@@ -467,12 +461,12 @@ internal partial class APM_AnnotPrinterMark_Border_Base : ISpecification<PdfDict
 /// <summary>
 /// AnnotPrinterMark_C 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_C : APM_AnnotPrinterMark_C_Base
+internal partial class APM_AnnotPrinterMark_C : APM_AnnotPrinterMark_C__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_C";
     public static bool RuleGroup() { return false; }
@@ -494,12 +488,12 @@ internal partial class APM_AnnotPrinterMark_C_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPrinterMark_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotPrinterMark_StructParent : APM_AnnotPrinterMark_StructParent_Base
+internal partial class APM_AnnotPrinterMark_StructParent : APM_AnnotPrinterMark_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_StructParent";
     public static bool RuleGroup() { return false; }
@@ -521,12 +515,12 @@ internal partial class APM_AnnotPrinterMark_StructParent_Base : ISpecification<P
 /// <summary>
 /// AnnotPrinterMark_OC 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_OC : APM_AnnotPrinterMark_OC_Base
+internal partial class APM_AnnotPrinterMark_OC : APM_AnnotPrinterMark_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_OC";
     public static bool RuleGroup() { return false; }
@@ -557,12 +551,12 @@ internal partial class APM_AnnotPrinterMark_OC_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPrinterMark_AF 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_AF : APM_AnnotPrinterMark_AF_Base
+internal partial class APM_AnnotPrinterMark_AF : APM_AnnotPrinterMark_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_AF";
     public static bool RuleGroup() { return false; }
@@ -605,12 +599,12 @@ internal partial class APM_AnnotPrinterMark_AF_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPrinterMark_ca 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_ca : APM_AnnotPrinterMark_ca_Base
+internal partial class APM_AnnotPrinterMark_ca : APM_AnnotPrinterMark_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_ca";
     public static bool RuleGroup() { return false; }
@@ -621,13 +615,11 @@ internal partial class APM_AnnotPrinterMark_ca_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfNumber, APM_AnnotPrinterMark_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotPrinterMark_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -639,12 +631,12 @@ internal partial class APM_AnnotPrinterMark_ca_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPrinterMark_CA 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_CA : APM_AnnotPrinterMark_CA_Base
+internal partial class APM_AnnotPrinterMark_CA : APM_AnnotPrinterMark_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_CA";
     public static bool RuleGroup() { return false; }
@@ -655,13 +647,11 @@ internal partial class APM_AnnotPrinterMark_CA_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfNumber, APM_AnnotPrinterMark_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotPrinterMark_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -673,12 +663,12 @@ internal partial class APM_AnnotPrinterMark_CA_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPrinterMark_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotPrinterMark_BM : APM_AnnotPrinterMark_BM_Base
+internal partial class APM_AnnotPrinterMark_BM : APM_AnnotPrinterMark_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_BM";
     public static bool RuleGroup() { return false; }
@@ -689,13 +679,11 @@ internal partial class APM_AnnotPrinterMark_BM_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_AnnotPrinterMark_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotPrinterMark_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -707,12 +695,12 @@ internal partial class APM_AnnotPrinterMark_BM_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPrinterMark_Lang 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_Lang : APM_AnnotPrinterMark_Lang_Base
+internal partial class APM_AnnotPrinterMark_Lang : APM_AnnotPrinterMark_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_Lang";
     public static bool RuleGroup() { return false; }
@@ -734,12 +722,12 @@ internal partial class APM_AnnotPrinterMark_Lang_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotPrinterMark_MN 
 /// </summary>
-internal partial class APM_AnnotPrinterMark_MN : APM_AnnotPrinterMark_MN_Base
+internal partial class APM_AnnotPrinterMark_MN : APM_AnnotPrinterMark_MN__Base
 {
 }
 
 
-internal partial class APM_AnnotPrinterMark_MN_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPrinterMark_MN__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPrinterMark_MN";
     public static bool RuleGroup() { return false; }
@@ -750,14 +738,7 @@ internal partial class APM_AnnotPrinterMark_MN_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_AnnotPrinterMark_MN>(obj, "MN", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
-        
-        
-        if (!(val == "ColorBar" || val == "RegistrationTarget" || val == "*")) 
-        {
-            ctx.Fail<APM_AnnotPrinterMark_MN>($"Invalid value {val}, allowed are: [ColorBar,RegistrationTarget,*]");
-        }
-        }
+        // no value restictions
         // no linked objects
         
     }

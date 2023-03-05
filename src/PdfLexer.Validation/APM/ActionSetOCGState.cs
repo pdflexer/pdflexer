@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionSetOCGState : APM_ActionSetOCGState_Base
+internal partial class APM_ActionSetOCGState : APM_ActionSetOCGState__Base
 {
 }
 
-internal partial class APM_ActionSetOCGState_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetOCGState__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionSetOCGState";
@@ -108,12 +108,12 @@ internal partial class APM_ActionSetOCGState_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ActionSetOCGState_Type Table 196 and Table 217
 /// </summary>
-internal partial class APM_ActionSetOCGState_Type : APM_ActionSetOCGState_Type_Base
+internal partial class APM_ActionSetOCGState_Type : APM_ActionSetOCGState_Type__Base
 {
 }
 
 
-internal partial class APM_ActionSetOCGState_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetOCGState_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSetOCGState_Type";
     public static bool RuleGroup() { return false; }
@@ -124,13 +124,11 @@ internal partial class APM_ActionSetOCGState_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_ActionSetOCGState_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionSetOCGState_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -142,12 +140,12 @@ internal partial class APM_ActionSetOCGState_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// ActionSetOCGState_S 
 /// </summary>
-internal partial class APM_ActionSetOCGState_S : APM_ActionSetOCGState_S_Base
+internal partial class APM_ActionSetOCGState_S : APM_ActionSetOCGState_S__Base
 {
 }
 
 
-internal partial class APM_ActionSetOCGState_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetOCGState_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSetOCGState_S";
     public static bool RuleGroup() { return false; }
@@ -158,13 +156,11 @@ internal partial class APM_ActionSetOCGState_S_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_ActionSetOCGState_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SetOCGState")) 
         {
             ctx.Fail<APM_ActionSetOCGState_S>($"Invalid value {val}, allowed are: [SetOCGState]");
-        }
         }
         // no linked objects
         
@@ -176,12 +172,12 @@ internal partial class APM_ActionSetOCGState_S_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ActionSetOCGState_Next 
 /// </summary>
-internal partial class APM_ActionSetOCGState_Next : APM_ActionSetOCGState_Next_Base
+internal partial class APM_ActionSetOCGState_Next : APM_ActionSetOCGState_Next__Base
 {
 }
 
 
-internal partial class APM_ActionSetOCGState_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetOCGState_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSetOCGState_Next";
     public static bool RuleGroup() { return false; }
@@ -256,6 +252,18 @@ internal partial class APM_ActionSetOCGState_Next_Base : ISpecification<PdfDicti
                     } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ActionSetOCGState_Next>("Next did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -275,12 +283,12 @@ internal partial class APM_ActionSetOCGState_Next_Base : ISpecification<PdfDicti
 /// <summary>
 /// ActionSetOCGState_State 
 /// </summary>
-internal partial class APM_ActionSetOCGState_State : APM_ActionSetOCGState_State_Base
+internal partial class APM_ActionSetOCGState_State : APM_ActionSetOCGState_State__Base
 {
 }
 
 
-internal partial class APM_ActionSetOCGState_State_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetOCGState_State__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSetOCGState_State";
     public static bool RuleGroup() { return false; }
@@ -302,12 +310,12 @@ internal partial class APM_ActionSetOCGState_State_Base : ISpecification<PdfDict
 /// <summary>
 /// ActionSetOCGState_PreserveRB 
 /// </summary>
-internal partial class APM_ActionSetOCGState_PreserveRB : APM_ActionSetOCGState_PreserveRB_Base
+internal partial class APM_ActionSetOCGState_PreserveRB : APM_ActionSetOCGState_PreserveRB__Base
 {
 }
 
 
-internal partial class APM_ActionSetOCGState_PreserveRB_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetOCGState_PreserveRB__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSetOCGState_PreserveRB";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SignatureReferenceIdentity : APM_SignatureReferenceIdentity_Base
+internal partial class APM_SignatureReferenceIdentity : APM_SignatureReferenceIdentity__Base
 {
 }
 
-internal partial class APM_SignatureReferenceIdentity_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceIdentity__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SignatureReferenceIdentity";
@@ -67,12 +67,12 @@ internal partial class APM_SignatureReferenceIdentity_Base : ISpecification<PdfD
 /// <summary>
 /// SignatureReferenceIdentity_Type Table 256. ISO 32000 does not mention Identity, but PDF 1.7 from Adobe (2006) does
 /// </summary>
-internal partial class APM_SignatureReferenceIdentity_Type : APM_SignatureReferenceIdentity_Type_Base
+internal partial class APM_SignatureReferenceIdentity_Type : APM_SignatureReferenceIdentity_Type__Base
 {
 }
 
 
-internal partial class APM_SignatureReferenceIdentity_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceIdentity_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureReferenceIdentity_Type";
     public static bool RuleGroup() { return false; }
@@ -83,13 +83,11 @@ internal partial class APM_SignatureReferenceIdentity_Type_Base : ISpecification
         var val = ctx.GetOptional<PdfName, APM_SignatureReferenceIdentity_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SigRef")) 
         {
             ctx.Fail<APM_SignatureReferenceIdentity_Type>($"Invalid value {val}, allowed are: [SigRef]");
-        }
         }
         // no linked objects
         
@@ -101,12 +99,12 @@ internal partial class APM_SignatureReferenceIdentity_Type_Base : ISpecification
 /// <summary>
 /// SignatureReferenceIdentity_TransformMethod 
 /// </summary>
-internal partial class APM_SignatureReferenceIdentity_TransformMethod : APM_SignatureReferenceIdentity_TransformMethod_Base
+internal partial class APM_SignatureReferenceIdentity_TransformMethod : APM_SignatureReferenceIdentity_TransformMethod__Base
 {
 }
 
 
-internal partial class APM_SignatureReferenceIdentity_TransformMethod_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceIdentity_TransformMethod__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureReferenceIdentity_TransformMethod";
     public static bool RuleGroup() { return false; }
@@ -117,13 +115,11 @@ internal partial class APM_SignatureReferenceIdentity_TransformMethod_Base : ISp
         var val = ctx.GetRequired<PdfName, APM_SignatureReferenceIdentity_TransformMethod>(obj, "TransformMethod", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Identity")) 
         {
             ctx.Fail<APM_SignatureReferenceIdentity_TransformMethod>($"Invalid value {val}, allowed are: [Identity]");
-        }
         }
         // no linked objects
         
@@ -135,12 +131,12 @@ internal partial class APM_SignatureReferenceIdentity_TransformMethod_Base : ISp
 /// <summary>
 /// SignatureReferenceIdentity_Data various
 /// </summary>
-internal partial class APM_SignatureReferenceIdentity_Data : APM_SignatureReferenceIdentity_Data_Base
+internal partial class APM_SignatureReferenceIdentity_Data : APM_SignatureReferenceIdentity_Data__Base
 {
 }
 
 
-internal partial class APM_SignatureReferenceIdentity_Data_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceIdentity_Data__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureReferenceIdentity_Data";
     public static bool RuleGroup() { return false; }
@@ -228,12 +224,12 @@ internal partial class APM_SignatureReferenceIdentity_Data_Base : ISpecification
 /// <summary>
 /// SignatureReferenceIdentity_DigestMethod see https://github.com/pdf-association/pdf-issues/issues/117
 /// </summary>
-internal partial class APM_SignatureReferenceIdentity_DigestMethod : APM_SignatureReferenceIdentity_DigestMethod_Base
+internal partial class APM_SignatureReferenceIdentity_DigestMethod : APM_SignatureReferenceIdentity_DigestMethod__Base
 {
 }
 
 
-internal partial class APM_SignatureReferenceIdentity_DigestMethod_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceIdentity_DigestMethod__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureReferenceIdentity_DigestMethod";
     public static bool RuleGroup() { return false; }
@@ -244,13 +240,11 @@ internal partial class APM_SignatureReferenceIdentity_DigestMethod_Base : ISpeci
         var val = ctx.GetOptional<PdfName, APM_SignatureReferenceIdentity_DigestMethod>(obj, "DigestMethod", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!((ctx.Version <= 2.0m && val == "MD5") || (ctx.Version <= 2.0m && val == "SHA1") || ctx.Version >= 2.0m && val == "SHA256" || ctx.Version >= 2.0m && val == "SHA384" || ctx.Version >= 2.0m && val == "SHA512" || ctx.Version >= 2.0m && val == "RIPEMD160" || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-256") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-384") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-512") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHAKE256"))) 
+        if (!((ctx.Version <= 2.0m && val == "MD5") || (ctx.Version <= 2.0m && val == "SHA1") || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "SHA256")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "SHA384")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "SHA512")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "RIPEMD160")) || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-256") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-384") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-512") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHAKE256"))) 
         {
             ctx.Fail<APM_SignatureReferenceIdentity_DigestMethod>($"Invalid value {val}, allowed are: [fn:Deprecated(2.0,MD5),fn:Deprecated(2.0,SHA1),fn:SinceVersion(2.0,SHA256),fn:SinceVersion(2.0,SHA384),fn:SinceVersion(2.0,SHA512),fn:SinceVersion(2.0,RIPEMD160),fn:Extension(ISO_TS_32001,SHA3-256),fn:Extension(ISO_TS_32001,SHA3-384),fn:Extension(ISO_TS_32001,SHA3-512),fn:Extension(ISO_TS_32001,SHAKE256)]");
-        }
         }
         // no linked objects
         

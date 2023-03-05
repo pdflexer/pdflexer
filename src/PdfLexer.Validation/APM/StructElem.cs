@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_StructElem : APM_StructElem_Base
+internal partial class APM_StructElem : APM_StructElem__Base
 {
 }
 
-internal partial class APM_StructElem_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "StructElem";
@@ -142,12 +142,12 @@ internal partial class APM_StructElem_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_Type Table 355
 /// </summary>
-internal partial class APM_StructElem_Type : APM_StructElem_Type_Base
+internal partial class APM_StructElem_Type : APM_StructElem_Type__Base
 {
 }
 
 
-internal partial class APM_StructElem_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_Type";
     public static bool RuleGroup() { return false; }
@@ -158,13 +158,11 @@ internal partial class APM_StructElem_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_StructElem_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "StructElem")) 
         {
             ctx.Fail<APM_StructElem_Type>($"Invalid value {val}, allowed are: [StructElem]");
-        }
         }
         // no linked objects
         
@@ -176,12 +174,12 @@ internal partial class APM_StructElem_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_S 
 /// </summary>
-internal partial class APM_StructElem_S : APM_StructElem_S_Base
+internal partial class APM_StructElem_S : APM_StructElem_S__Base
 {
 }
 
 
-internal partial class APM_StructElem_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_S";
     public static bool RuleGroup() { return false; }
@@ -203,12 +201,12 @@ internal partial class APM_StructElem_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_P 
 /// </summary>
-internal partial class APM_StructElem_P : APM_StructElem_P_Base
+internal partial class APM_StructElem_P : APM_StructElem_P__Base
 {
 }
 
 
-internal partial class APM_StructElem_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_P";
     public static bool RuleGroup() { return false; }
@@ -239,12 +237,12 @@ internal partial class APM_StructElem_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_ID 
 /// </summary>
-internal partial class APM_StructElem_ID : APM_StructElem_ID_Base
+internal partial class APM_StructElem_ID : APM_StructElem_ID__Base
 {
 }
 
 
-internal partial class APM_StructElem_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_ID";
     public static bool RuleGroup() { return false; }
@@ -266,12 +264,12 @@ internal partial class APM_StructElem_ID_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_Ref 
 /// </summary>
-internal partial class APM_StructElem_Ref : APM_StructElem_Ref_Base
+internal partial class APM_StructElem_Ref : APM_StructElem_Ref__Base
 {
 }
 
 
-internal partial class APM_StructElem_Ref_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_Ref__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_Ref";
     public static bool RuleGroup() { return false; }
@@ -293,12 +291,12 @@ internal partial class APM_StructElem_Ref_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_Pg 
 /// </summary>
-internal partial class APM_StructElem_Pg : APM_StructElem_Pg_Base
+internal partial class APM_StructElem_Pg : APM_StructElem_Pg__Base
 {
 }
 
 
-internal partial class APM_StructElem_Pg_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_Pg__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_Pg";
     public static bool RuleGroup() { return false; }
@@ -320,12 +318,12 @@ internal partial class APM_StructElem_Pg_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_K 
 /// </summary>
-internal partial class APM_StructElem_K : APM_StructElem_K_Base
+internal partial class APM_StructElem_K : APM_StructElem_K__Base
 {
 }
 
 
-internal partial class APM_StructElem_K_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_K__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_K";
     public static bool RuleGroup() { return false; }
@@ -389,12 +387,12 @@ internal partial class APM_StructElem_K_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_A 
 /// </summary>
-internal partial class APM_StructElem_A : APM_StructElem_A_Base
+internal partial class APM_StructElem_A : APM_StructElem_A__Base
 {
 }
 
 
-internal partial class APM_StructElem_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_A";
     public static bool RuleGroup() { return false; }
@@ -446,12 +444,12 @@ internal partial class APM_StructElem_A_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_C 
 /// </summary>
-internal partial class APM_StructElem_C : APM_StructElem_C_Base
+internal partial class APM_StructElem_C : APM_StructElem_C__Base
 {
 }
 
 
-internal partial class APM_StructElem_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_C";
     public static bool RuleGroup() { return false; }
@@ -494,12 +492,12 @@ internal partial class APM_StructElem_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_R see https://github.com/pdf-association/pdf-issues/issues/93
 /// </summary>
-internal partial class APM_StructElem_R : APM_StructElem_R_Base
+internal partial class APM_StructElem_R : APM_StructElem_R__Base
 {
 }
 
 
-internal partial class APM_StructElem_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_R";
     public static bool RuleGroup() { return false; }
@@ -510,13 +508,11 @@ internal partial class APM_StructElem_R_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_StructElem_R>(obj, "R", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @R = val;
-        if (!(gte(@R,0))) 
+        var R = obj.Get("R");
+        if (!(gte(R,0))) 
         {
             ctx.Fail<APM_StructElem_R>($"Invalid value {val}, allowed are: [fn:Eval(@R>=0)]");
-        }
         }
         // no linked objects
         
@@ -528,12 +524,12 @@ internal partial class APM_StructElem_R_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_T 
 /// </summary>
-internal partial class APM_StructElem_T : APM_StructElem_T_Base
+internal partial class APM_StructElem_T : APM_StructElem_T__Base
 {
 }
 
 
-internal partial class APM_StructElem_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_T";
     public static bool RuleGroup() { return false; }
@@ -555,12 +551,12 @@ internal partial class APM_StructElem_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_Lang 
 /// </summary>
-internal partial class APM_StructElem_Lang : APM_StructElem_Lang_Base
+internal partial class APM_StructElem_Lang : APM_StructElem_Lang__Base
 {
 }
 
 
-internal partial class APM_StructElem_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_Lang";
     public static bool RuleGroup() { return false; }
@@ -582,12 +578,12 @@ internal partial class APM_StructElem_Lang_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_Alt 
 /// </summary>
-internal partial class APM_StructElem_Alt : APM_StructElem_Alt_Base
+internal partial class APM_StructElem_Alt : APM_StructElem_Alt__Base
 {
 }
 
 
-internal partial class APM_StructElem_Alt_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_Alt__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_Alt";
     public static bool RuleGroup() { return false; }
@@ -609,12 +605,12 @@ internal partial class APM_StructElem_Alt_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_E 
 /// </summary>
-internal partial class APM_StructElem_E : APM_StructElem_E_Base
+internal partial class APM_StructElem_E : APM_StructElem_E__Base
 {
 }
 
 
-internal partial class APM_StructElem_E_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_E__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_E";
     public static bool RuleGroup() { return false; }
@@ -636,12 +632,12 @@ internal partial class APM_StructElem_E_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_ActualText 
 /// </summary>
-internal partial class APM_StructElem_ActualText : APM_StructElem_ActualText_Base
+internal partial class APM_StructElem_ActualText : APM_StructElem_ActualText__Base
 {
 }
 
 
-internal partial class APM_StructElem_ActualText_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_ActualText__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_ActualText";
     public static bool RuleGroup() { return false; }
@@ -663,12 +659,12 @@ internal partial class APM_StructElem_ActualText_Base : ISpecification<PdfDictio
 /// <summary>
 /// StructElem_AF 
 /// </summary>
-internal partial class APM_StructElem_AF : APM_StructElem_AF_Base
+internal partial class APM_StructElem_AF : APM_StructElem_AF__Base
 {
 }
 
 
-internal partial class APM_StructElem_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_AF";
     public static bool RuleGroup() { return false; }
@@ -711,12 +707,12 @@ internal partial class APM_StructElem_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_NS 
 /// </summary>
-internal partial class APM_StructElem_NS : APM_StructElem_NS_Base
+internal partial class APM_StructElem_NS : APM_StructElem_NS__Base
 {
 }
 
 
-internal partial class APM_StructElem_NS_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_NS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_NS";
     public static bool RuleGroup() { return false; }
@@ -738,12 +734,12 @@ internal partial class APM_StructElem_NS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructElem_PhoneticAlphabet 
 /// </summary>
-internal partial class APM_StructElem_PhoneticAlphabet : APM_StructElem_PhoneticAlphabet_Base
+internal partial class APM_StructElem_PhoneticAlphabet : APM_StructElem_PhoneticAlphabet__Base
 {
 }
 
 
-internal partial class APM_StructElem_PhoneticAlphabet_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_PhoneticAlphabet__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_PhoneticAlphabet";
     public static bool RuleGroup() { return false; }
@@ -765,12 +761,12 @@ internal partial class APM_StructElem_PhoneticAlphabet_Base : ISpecification<Pdf
 /// <summary>
 /// StructElem_Phoneme 
 /// </summary>
-internal partial class APM_StructElem_Phoneme : APM_StructElem_Phoneme_Base
+internal partial class APM_StructElem_Phoneme : APM_StructElem_Phoneme__Base
 {
 }
 
 
-internal partial class APM_StructElem_Phoneme_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructElem_Phoneme__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructElem_Phoneme";
     public static bool RuleGroup() { return false; }

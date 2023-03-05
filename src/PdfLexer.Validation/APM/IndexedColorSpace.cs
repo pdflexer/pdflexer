@@ -21,7 +21,7 @@ internal partial class APM_IndexedColorSpace : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -39,13 +39,11 @@ internal partial class APM_IndexedColorSpace_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_IndexedColorSpace_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Indexed")) 
         {
             ctx.Fail<APM_IndexedColorSpace_0>($"Invalid value {val}, allowed are: [Indexed]");
-        }
         }
         // no linked objects
         
@@ -67,19 +65,17 @@ internal partial class APM_IndexedColorSpace_1 : ISpecification<PdfArray>
         if (utval == null) { ctx.Fail<APM_IndexedColorSpace_1>("1 is required"); return; }
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.1,array)
+            // TODO funcs: fn:SinceVersion(1.1,array)
             case PdfObjectType.NameObj:
                 {
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                     {
                         ctx.Fail<APM_IndexedColorSpace_1>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -106,13 +102,11 @@ internal partial class APM_IndexedColorSpace_2 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfIntNumber, APM_IndexedColorSpace_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!((gte(v,0)&&lte(v,255)))) 
         {
             ctx.Fail<APM_IndexedColorSpace_2>($"Invalid value {val}, allowed are: [fn:Eval((@2>=0) && (@2<=255))]");
-        }
         }
         // no linked objects
         

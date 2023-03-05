@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentUser : APM_OptContentUser_Base
+internal partial class APM_OptContentUser : APM_OptContentUser__Base
 {
 }
 
-internal partial class APM_OptContentUser_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUser__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentUser";
@@ -105,12 +105,12 @@ internal partial class APM_OptContentUser_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OptContentUser_Type Table 100, User cell
 /// </summary>
-internal partial class APM_OptContentUser_Type : APM_OptContentUser_Type_Base
+internal partial class APM_OptContentUser_Type : APM_OptContentUser_Type__Base
 {
 }
 
 
-internal partial class APM_OptContentUser_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUser_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUser_Type";
     public static bool RuleGroup() { return false; }
@@ -121,13 +121,11 @@ internal partial class APM_OptContentUser_Type_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_OptContentUser_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Ind" || val == "Ttl" || val == "Org")) 
         {
             ctx.Fail<APM_OptContentUser_Type>($"Invalid value {val}, allowed are: [Ind,Ttl,Org]");
-        }
         }
         // no linked objects
         
@@ -139,12 +137,12 @@ internal partial class APM_OptContentUser_Type_Base : ISpecification<PdfDictiona
 /// <summary>
 /// OptContentUser_Name 
 /// </summary>
-internal partial class APM_OptContentUser_Name : APM_OptContentUser_Name_Base
+internal partial class APM_OptContentUser_Name : APM_OptContentUser_Name__Base
 {
 }
 
 
-internal partial class APM_OptContentUser_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUser_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUser_Name";
     public static bool RuleGroup() { return false; }

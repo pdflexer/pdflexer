@@ -20,7 +20,7 @@ internal partial class APM_VisibilityExpressionArray : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -38,13 +38,11 @@ internal partial class APM_VisibilityExpressionArray_0 : ISpecification<PdfArray
         var val = ctx.GetRequired<PdfName, APM_VisibilityExpressionArray_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "And" || val == "Not" || val == "Or")) 
         {
             ctx.Fail<APM_VisibilityExpressionArray_0>($"Invalid value {val}, allowed are: [And,Not,Or]");
-        }
         }
         // no linked objects
         

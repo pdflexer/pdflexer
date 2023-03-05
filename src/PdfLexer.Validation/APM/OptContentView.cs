@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentView : APM_OptContentView_Base
+internal partial class APM_OptContentView : APM_OptContentView__Base
 {
 }
 
-internal partial class APM_OptContentView_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentView__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentView";
@@ -98,12 +98,12 @@ internal partial class APM_OptContentView_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OptContentView_ViewState Table 100, View cell
 /// </summary>
-internal partial class APM_OptContentView_ViewState : APM_OptContentView_ViewState_Base
+internal partial class APM_OptContentView_ViewState : APM_OptContentView_ViewState__Base
 {
 }
 
 
-internal partial class APM_OptContentView_ViewState_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentView_ViewState__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentView_ViewState";
     public static bool RuleGroup() { return false; }
@@ -114,13 +114,11 @@ internal partial class APM_OptContentView_ViewState_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_OptContentView_ViewState>(obj, "ViewState", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ON" || val == "OFF")) 
         {
             ctx.Fail<APM_OptContentView_ViewState>($"Invalid value {val}, allowed are: [ON,OFF]");
-        }
         }
         // no linked objects
         

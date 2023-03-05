@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaCriteria : APM_MediaCriteria_Base
+internal partial class APM_MediaCriteria : APM_MediaCriteria__Base
 {
 }
 
-internal partial class APM_MediaCriteria_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaCriteria";
@@ -114,12 +114,12 @@ internal partial class APM_MediaCriteria_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_Type Table 279
 /// </summary>
-internal partial class APM_MediaCriteria_Type : APM_MediaCriteria_Type_Base
+internal partial class APM_MediaCriteria_Type : APM_MediaCriteria_Type__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_Type";
     public static bool RuleGroup() { return false; }
@@ -130,13 +130,11 @@ internal partial class APM_MediaCriteria_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_MediaCriteria_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaCriteria")) 
         {
             ctx.Fail<APM_MediaCriteria_Type>($"Invalid value {val}, allowed are: [MediaCriteria]");
-        }
         }
         // no linked objects
         
@@ -148,12 +146,12 @@ internal partial class APM_MediaCriteria_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// MediaCriteria_A hear audio description, equivalent to SMIL's systemAudioDesc attribute
 /// </summary>
-internal partial class APM_MediaCriteria_A : APM_MediaCriteria_A_Base
+internal partial class APM_MediaCriteria_A : APM_MediaCriteria_A__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_A";
     public static bool RuleGroup() { return false; }
@@ -175,12 +173,12 @@ internal partial class APM_MediaCriteria_A_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_C see text captions, equivalent to SMIL's systemCaptions attribute
 /// </summary>
-internal partial class APM_MediaCriteria_C : APM_MediaCriteria_C_Base
+internal partial class APM_MediaCriteria_C : APM_MediaCriteria_C__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_C";
     public static bool RuleGroup() { return false; }
@@ -202,12 +200,12 @@ internal partial class APM_MediaCriteria_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_O hear audio overdubs
 /// </summary>
-internal partial class APM_MediaCriteria_O : APM_MediaCriteria_O_Base
+internal partial class APM_MediaCriteria_O : APM_MediaCriteria_O__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_O";
     public static bool RuleGroup() { return false; }
@@ -229,12 +227,12 @@ internal partial class APM_MediaCriteria_O_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_S see subtitles
 /// </summary>
-internal partial class APM_MediaCriteria_S : APM_MediaCriteria_S_Base
+internal partial class APM_MediaCriteria_S : APM_MediaCriteria_S__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_S";
     public static bool RuleGroup() { return false; }
@@ -256,12 +254,12 @@ internal partial class APM_MediaCriteria_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_R bits per second, equivalent to SMIL's systemBitrate attribute
 /// </summary>
-internal partial class APM_MediaCriteria_R : APM_MediaCriteria_R_Base
+internal partial class APM_MediaCriteria_R : APM_MediaCriteria_R__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_R";
     public static bool RuleGroup() { return false; }
@@ -271,7 +269,11 @@ internal partial class APM_MediaCriteria_R_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_MediaCriteria_R>(obj, "R", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var R = obj.Get("R");
+        if (!(gt(R,0))) 
+        {
+            ctx.Fail<APM_MediaCriteria_R>($"Value failed special case check: fn:Eval(@R>0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -283,12 +285,12 @@ internal partial class APM_MediaCriteria_R_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_D Equivalent to SMIL's systemScreenDepth attribute
 /// </summary>
-internal partial class APM_MediaCriteria_D : APM_MediaCriteria_D_Base
+internal partial class APM_MediaCriteria_D : APM_MediaCriteria_D__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_D";
     public static bool RuleGroup() { return false; }
@@ -310,12 +312,12 @@ internal partial class APM_MediaCriteria_D_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_Z Equivalent to SMIL's systemScreenSize attribute
 /// </summary>
-internal partial class APM_MediaCriteria_Z : APM_MediaCriteria_Z_Base
+internal partial class APM_MediaCriteria_Z : APM_MediaCriteria_Z__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_Z_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_Z__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_Z";
     public static bool RuleGroup() { return false; }
@@ -337,12 +339,12 @@ internal partial class APM_MediaCriteria_Z_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_V 
 /// </summary>
-internal partial class APM_MediaCriteria_V : APM_MediaCriteria_V_Base
+internal partial class APM_MediaCriteria_V : APM_MediaCriteria_V__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_V";
     public static bool RuleGroup() { return false; }
@@ -364,12 +366,12 @@ internal partial class APM_MediaCriteria_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_P 
 /// </summary>
-internal partial class APM_MediaCriteria_P : APM_MediaCriteria_P_Base
+internal partial class APM_MediaCriteria_P : APM_MediaCriteria_P__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_P";
     public static bool RuleGroup() { return false; }
@@ -391,12 +393,12 @@ internal partial class APM_MediaCriteria_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaCriteria_L Equivalent to SMIL's systemLanguage attribute
 /// </summary>
-internal partial class APM_MediaCriteria_L : APM_MediaCriteria_L_Base
+internal partial class APM_MediaCriteria_L : APM_MediaCriteria_L__Base
 {
 }
 
 
-internal partial class APM_MediaCriteria_L_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaCriteria_L__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaCriteria_L";
     public static bool RuleGroup() { return false; }

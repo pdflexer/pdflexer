@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaAnimation : APM_RichMediaAnimation_Base
+internal partial class APM_RichMediaAnimation : APM_RichMediaAnimation__Base
 {
 }
 
-internal partial class APM_RichMediaAnimation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaAnimation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaAnimation";
@@ -49,12 +49,12 @@ internal partial class APM_RichMediaAnimation_Base : ISpecification<PdfDictionar
 /// <summary>
 /// RichMediaAnimation_Type Table 337
 /// </summary>
-internal partial class APM_RichMediaAnimation_Type : APM_RichMediaAnimation_Type_Base
+internal partial class APM_RichMediaAnimation_Type : APM_RichMediaAnimation_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaAnimation_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaAnimation_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaAnimation_Type";
     public static bool RuleGroup() { return false; }
@@ -65,13 +65,11 @@ internal partial class APM_RichMediaAnimation_Type_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfName, APM_RichMediaAnimation_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaAnimation")) 
         {
             ctx.Fail<APM_RichMediaAnimation_Type>($"Invalid value {val}, allowed are: [RichMediaAnimation]");
-        }
         }
         // no linked objects
         
@@ -83,12 +81,12 @@ internal partial class APM_RichMediaAnimation_Type_Base : ISpecification<PdfDict
 /// <summary>
 /// RichMediaAnimation_Subtype Table 313
 /// </summary>
-internal partial class APM_RichMediaAnimation_Subtype : APM_RichMediaAnimation_Subtype_Base
+internal partial class APM_RichMediaAnimation_Subtype : APM_RichMediaAnimation_Subtype__Base
 {
 }
 
 
-internal partial class APM_RichMediaAnimation_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaAnimation_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaAnimation_Subtype";
     public static bool RuleGroup() { return false; }
@@ -99,13 +97,11 @@ internal partial class APM_RichMediaAnimation_Subtype_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_RichMediaAnimation_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "None" || val == "Linear" || val == "Oscillating")) 
         {
             ctx.Fail<APM_RichMediaAnimation_Subtype>($"Invalid value {val}, allowed are: [None,Linear,Oscillating]");
-        }
         }
         // no linked objects
         
@@ -117,12 +113,12 @@ internal partial class APM_RichMediaAnimation_Subtype_Base : ISpecification<PdfD
 /// <summary>
 /// RichMediaAnimation_PlayCount 
 /// </summary>
-internal partial class APM_RichMediaAnimation_PlayCount : APM_RichMediaAnimation_PlayCount_Base
+internal partial class APM_RichMediaAnimation_PlayCount : APM_RichMediaAnimation_PlayCount__Base
 {
 }
 
 
-internal partial class APM_RichMediaAnimation_PlayCount_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaAnimation_PlayCount__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaAnimation_PlayCount";
     public static bool RuleGroup() { return false; }
@@ -132,7 +128,7 @@ internal partial class APM_RichMediaAnimation_PlayCount_Base : ISpecification<Pd
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaAnimation_PlayCount>(obj, "PlayCount", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -144,12 +140,12 @@ internal partial class APM_RichMediaAnimation_PlayCount_Base : ISpecification<Pd
 /// <summary>
 /// RichMediaAnimation_Speed 
 /// </summary>
-internal partial class APM_RichMediaAnimation_Speed : APM_RichMediaAnimation_Speed_Base
+internal partial class APM_RichMediaAnimation_Speed : APM_RichMediaAnimation_Speed__Base
 {
 }
 
 
-internal partial class APM_RichMediaAnimation_Speed_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaAnimation_Speed__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaAnimation_Speed";
     public static bool RuleGroup() { return false; }
@@ -159,14 +155,12 @@ internal partial class APM_RichMediaAnimation_Speed_Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfNumber, APM_RichMediaAnimation_Speed>(obj, "Speed", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:Ignore, not pertinent to validation
         
-        IPdfObject @Speed = val;
-        if (!(gt(@Speed,0))) 
+        var Speed = obj.Get("Speed");
+        if (!(gt(Speed,0))) 
         {
             ctx.Fail<APM_RichMediaAnimation_Speed>($"Invalid value {val}, allowed are: [fn:Eval(@Speed>0)]");
-        }
         }
         // no linked objects
         
@@ -178,12 +172,12 @@ internal partial class APM_RichMediaAnimation_Speed_Base : ISpecification<PdfDic
 /// <summary>
 /// RichMediaAnimation_AO ISO/TS 32007
 /// </summary>
-internal partial class APM_RichMediaAnimation_AO : APM_RichMediaAnimation_AO_Base
+internal partial class APM_RichMediaAnimation_AO : APM_RichMediaAnimation_AO__Base
 {
 }
 
 
-internal partial class APM_RichMediaAnimation_AO_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaAnimation_AO__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaAnimation_AO";
     public static bool RuleGroup() { return false; }
@@ -193,7 +187,11 @@ internal partial class APM_RichMediaAnimation_AO_Base : ISpecification<PdfDictio
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaAnimation_AO>(obj, "AO", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var AO = obj.Get("AO");
+        if (!(gte(AO,0))) 
+        {
+            ctx.Fail<APM_RichMediaAnimation_AO>($"Value failed special case check: fn:Eval(@AO>=0)");
+        }
         // no value restrictions
         // no linked objects
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentPageElement : APM_OptContentPageElement_Base
+internal partial class APM_OptContentPageElement : APM_OptContentPageElement__Base
 {
 }
 
-internal partial class APM_OptContentPageElement_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentPageElement__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentPageElement";
@@ -98,12 +98,12 @@ internal partial class APM_OptContentPageElement_Base : ISpecification<PdfDictio
 /// <summary>
 /// OptContentPageElement_Subtype Table 100, PageElement cell
 /// </summary>
-internal partial class APM_OptContentPageElement_Subtype : APM_OptContentPageElement_Subtype_Base
+internal partial class APM_OptContentPageElement_Subtype : APM_OptContentPageElement_Subtype__Base
 {
 }
 
 
-internal partial class APM_OptContentPageElement_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentPageElement_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentPageElement_Subtype";
     public static bool RuleGroup() { return false; }
@@ -114,13 +114,11 @@ internal partial class APM_OptContentPageElement_Subtype_Base : ISpecification<P
         var val = ctx.GetOptional<PdfName, APM_OptContentPageElement_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "HF" || val == "FG" || val == "BG" || val == "L")) 
         {
             ctx.Fail<APM_OptContentPageElement_Subtype>($"Invalid value {val}, allowed are: [HF,FG,BG,L]");
-        }
         }
         // no linked objects
         

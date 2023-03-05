@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfNonNegativeIntegersGeneral : ISpecification<Pd
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -41,7 +41,11 @@ internal partial class APM_ArrayOfNonNegativeIntegersGeneral_x : ISpecification<
         {
             var val = ctx.GetOptional<PdfIntNumber, APM_ArrayOfNonNegativeIntegersGeneral_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
-            // TODO special case
+            
+            if (!(gte(val,0))) 
+            {
+                ctx.Fail<APM_ArrayOfNonNegativeIntegersGeneral_x>($"Value failed special case check: fn:Eval(@*>=0)");
+            }
             // no value restrictions
             // no linked objects
             

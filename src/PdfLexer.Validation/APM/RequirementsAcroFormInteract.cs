@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsAcroFormInteract : APM_RequirementsAcroFormInteract_Base
+internal partial class APM_RequirementsAcroFormInteract : APM_RequirementsAcroFormInteract__Base
 {
 }
 
-internal partial class APM_RequirementsAcroFormInteract_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsAcroFormInteract__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsAcroFormInteract";
@@ -58,12 +58,12 @@ internal partial class APM_RequirementsAcroFormInteract_Base : ISpecification<Pd
 /// <summary>
 /// RequirementsAcroFormInteract_Type Table 273 and Table 275
 /// </summary>
-internal partial class APM_RequirementsAcroFormInteract_Type : APM_RequirementsAcroFormInteract_Type_Base
+internal partial class APM_RequirementsAcroFormInteract_Type : APM_RequirementsAcroFormInteract_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsAcroFormInteract_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsAcroFormInteract_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsAcroFormInteract_Type";
     public static bool RuleGroup() { return false; }
@@ -74,13 +74,11 @@ internal partial class APM_RequirementsAcroFormInteract_Type_Base : ISpecificati
         var val = ctx.GetOptional<PdfName, APM_RequirementsAcroFormInteract_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Requirement")) 
         {
             ctx.Fail<APM_RequirementsAcroFormInteract_Type>($"Invalid value {val}, allowed are: [Requirement]");
-        }
         }
         // no linked objects
         
@@ -92,12 +90,12 @@ internal partial class APM_RequirementsAcroFormInteract_Type_Base : ISpecificati
 /// <summary>
 /// RequirementsAcroFormInteract_S 
 /// </summary>
-internal partial class APM_RequirementsAcroFormInteract_S : APM_RequirementsAcroFormInteract_S_Base
+internal partial class APM_RequirementsAcroFormInteract_S : APM_RequirementsAcroFormInteract_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsAcroFormInteract_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsAcroFormInteract_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsAcroFormInteract_S";
     public static bool RuleGroup() { return false; }
@@ -108,13 +106,11 @@ internal partial class APM_RequirementsAcroFormInteract_S_Base : ISpecification<
         var val = ctx.GetRequired<PdfName, APM_RequirementsAcroFormInteract_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "AcroFormInteract")) 
         {
             ctx.Fail<APM_RequirementsAcroFormInteract_S>($"Invalid value {val}, allowed are: [AcroFormInteract]");
-        }
         }
         // no linked objects
         
@@ -126,12 +122,12 @@ internal partial class APM_RequirementsAcroFormInteract_S_Base : ISpecification<
 /// <summary>
 /// RequirementsAcroFormInteract_V 
 /// </summary>
-internal partial class APM_RequirementsAcroFormInteract_V : APM_RequirementsAcroFormInteract_V_Base
+internal partial class APM_RequirementsAcroFormInteract_V : APM_RequirementsAcroFormInteract_V__Base
 {
 }
 
 
-internal partial class APM_RequirementsAcroFormInteract_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsAcroFormInteract_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsAcroFormInteract_V";
     public static bool RuleGroup() { return false; }
@@ -174,12 +170,12 @@ internal partial class APM_RequirementsAcroFormInteract_V_Base : ISpecification<
 /// <summary>
 /// RequirementsAcroFormInteract_RH 
 /// </summary>
-internal partial class APM_RequirementsAcroFormInteract_RH : APM_RequirementsAcroFormInteract_RH_Base
+internal partial class APM_RequirementsAcroFormInteract_RH : APM_RequirementsAcroFormInteract_RH__Base
 {
 }
 
 
-internal partial class APM_RequirementsAcroFormInteract_RH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsAcroFormInteract_RH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsAcroFormInteract_RH";
     public static bool RuleGroup() { return false; }
@@ -222,12 +218,12 @@ internal partial class APM_RequirementsAcroFormInteract_RH_Base : ISpecification
 /// <summary>
 /// RequirementsAcroFormInteract_Penalty 
 /// </summary>
-internal partial class APM_RequirementsAcroFormInteract_Penalty : APM_RequirementsAcroFormInteract_Penalty_Base
+internal partial class APM_RequirementsAcroFormInteract_Penalty : APM_RequirementsAcroFormInteract_Penalty__Base
 {
 }
 
 
-internal partial class APM_RequirementsAcroFormInteract_Penalty_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsAcroFormInteract_Penalty__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsAcroFormInteract_Penalty";
     public static bool RuleGroup() { return false; }
@@ -238,13 +234,11 @@ internal partial class APM_RequirementsAcroFormInteract_Penalty_Base : ISpecific
         var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsAcroFormInteract_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Penalty = val;
-        if (!((gte(@Penalty,0)&&lte(@Penalty,100)))) 
+        var Penalty = obj.Get("Penalty");
+        if (!((gte(Penalty,0)&&lte(Penalty,100)))) 
         {
             ctx.Fail<APM_RequirementsAcroFormInteract_Penalty>($"Invalid value {val}, allowed are: [fn:Eval((@Penalty>=0) && (@Penalty<=100))]");
-        }
         }
         // no linked objects
         

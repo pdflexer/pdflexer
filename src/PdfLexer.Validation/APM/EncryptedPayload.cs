@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_EncryptedPayload : APM_EncryptedPayload_Base
+internal partial class APM_EncryptedPayload : APM_EncryptedPayload__Base
 {
 }
 
-internal partial class APM_EncryptedPayload_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptedPayload__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "EncryptedPayload";
@@ -56,12 +56,12 @@ internal partial class APM_EncryptedPayload_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// EncryptedPayload_Type Table 28
 /// </summary>
-internal partial class APM_EncryptedPayload_Type : APM_EncryptedPayload_Type_Base
+internal partial class APM_EncryptedPayload_Type : APM_EncryptedPayload_Type__Base
 {
 }
 
 
-internal partial class APM_EncryptedPayload_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptedPayload_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptedPayload_Type";
     public static bool RuleGroup() { return false; }
@@ -72,13 +72,11 @@ internal partial class APM_EncryptedPayload_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_EncryptedPayload_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "EncryptedPayload")) 
         {
             ctx.Fail<APM_EncryptedPayload_Type>($"Invalid value {val}, allowed are: [EncryptedPayload]");
-        }
         }
         // no linked objects
         
@@ -90,12 +88,12 @@ internal partial class APM_EncryptedPayload_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// EncryptedPayload_Subtype 
 /// </summary>
-internal partial class APM_EncryptedPayload_Subtype : APM_EncryptedPayload_Subtype_Base
+internal partial class APM_EncryptedPayload_Subtype : APM_EncryptedPayload_Subtype__Base
 {
 }
 
 
-internal partial class APM_EncryptedPayload_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptedPayload_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptedPayload_Subtype";
     public static bool RuleGroup() { return false; }
@@ -117,12 +115,12 @@ internal partial class APM_EncryptedPayload_Subtype_Base : ISpecification<PdfDic
 /// <summary>
 /// EncryptedPayload_Version 
 /// </summary>
-internal partial class APM_EncryptedPayload_Version : APM_EncryptedPayload_Version_Base
+internal partial class APM_EncryptedPayload_Version : APM_EncryptedPayload_Version__Base
 {
 }
 
 
-internal partial class APM_EncryptedPayload_Version_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptedPayload_Version__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptedPayload_Version";
     public static bool RuleGroup() { return false; }

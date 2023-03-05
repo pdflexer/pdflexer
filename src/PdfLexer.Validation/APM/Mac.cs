@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Mac : APM_Mac_Base
+internal partial class APM_Mac : APM_Mac__Base
 {
 }
 
-internal partial class APM_Mac_Base : ISpecification<PdfDictionary>
+internal partial class APM_Mac__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Mac";
@@ -110,12 +110,12 @@ internal partial class APM_Mac_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Mac_Subtype Table 47 in ISO 32000-1:2008
 /// </summary>
-internal partial class APM_Mac_Subtype : APM_Mac_Subtype_Base
+internal partial class APM_Mac_Subtype : APM_Mac_Subtype__Base
 {
 }
 
 
-internal partial class APM_Mac_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_Mac_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Mac_Subtype";
     public static bool RuleGroup() { return false; }
@@ -137,12 +137,12 @@ internal partial class APM_Mac_Subtype_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Mac_Creator 
 /// </summary>
-internal partial class APM_Mac_Creator : APM_Mac_Creator_Base
+internal partial class APM_Mac_Creator : APM_Mac_Creator__Base
 {
 }
 
 
-internal partial class APM_Mac_Creator_Base : ISpecification<PdfDictionary>
+internal partial class APM_Mac_Creator__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Mac_Creator";
     public static bool RuleGroup() { return false; }
@@ -164,12 +164,12 @@ internal partial class APM_Mac_Creator_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Mac_ResFork 
 /// </summary>
-internal partial class APM_Mac_ResFork : APM_Mac_ResFork_Base
+internal partial class APM_Mac_ResFork : APM_Mac_ResFork__Base
 {
 }
 
 
-internal partial class APM_Mac_ResFork_Base : ISpecification<PdfDictionary>
+internal partial class APM_Mac_ResFork__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Mac_ResFork";
     public static bool RuleGroup() { return false; }

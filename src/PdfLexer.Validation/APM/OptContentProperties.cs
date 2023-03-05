@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentProperties : APM_OptContentProperties_Base
+internal partial class APM_OptContentProperties : APM_OptContentProperties__Base
 {
 }
 
-internal partial class APM_OptContentProperties_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentProperties__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentProperties";
@@ -100,12 +100,12 @@ internal partial class APM_OptContentProperties_Base : ISpecification<PdfDiction
 /// <summary>
 /// OptContentProperties_OCGs Table 98
 /// </summary>
-internal partial class APM_OptContentProperties_OCGs : APM_OptContentProperties_OCGs_Base
+internal partial class APM_OptContentProperties_OCGs : APM_OptContentProperties_OCGs__Base
 {
 }
 
 
-internal partial class APM_OptContentProperties_OCGs_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentProperties_OCGs__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentProperties_OCGs";
     public static bool RuleGroup() { return false; }
@@ -127,12 +127,12 @@ internal partial class APM_OptContentProperties_OCGs_Base : ISpecification<PdfDi
 /// <summary>
 /// OptContentProperties_D 
 /// </summary>
-internal partial class APM_OptContentProperties_D : APM_OptContentProperties_D_Base
+internal partial class APM_OptContentProperties_D : APM_OptContentProperties_D__Base
 {
 }
 
 
-internal partial class APM_OptContentProperties_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentProperties_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentProperties_D";
     public static bool RuleGroup() { return false; }
@@ -154,12 +154,12 @@ internal partial class APM_OptContentProperties_D_Base : ISpecification<PdfDicti
 /// <summary>
 /// OptContentProperties_Configs 
 /// </summary>
-internal partial class APM_OptContentProperties_Configs : APM_OptContentProperties_Configs_Base
+internal partial class APM_OptContentProperties_Configs : APM_OptContentProperties_Configs__Base
 {
 }
 
 
-internal partial class APM_OptContentProperties_Configs_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentProperties_Configs__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentProperties_Configs";
     public static bool RuleGroup() { return false; }

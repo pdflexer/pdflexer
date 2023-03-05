@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaPlayParameters : APM_MediaPlayParameters_Base
+internal partial class APM_MediaPlayParameters : APM_MediaPlayParameters__Base
 {
 }
 
-internal partial class APM_MediaPlayParameters_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParameters__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaPlayParameters";
@@ -107,12 +107,12 @@ internal partial class APM_MediaPlayParameters_Base : ISpecification<PdfDictiona
 /// <summary>
 /// MediaPlayParameters_Type Table 290
 /// </summary>
-internal partial class APM_MediaPlayParameters_Type : APM_MediaPlayParameters_Type_Base
+internal partial class APM_MediaPlayParameters_Type : APM_MediaPlayParameters_Type__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParameters_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParameters_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParameters_Type";
     public static bool RuleGroup() { return false; }
@@ -123,13 +123,11 @@ internal partial class APM_MediaPlayParameters_Type_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_MediaPlayParameters_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaPlayParams")) 
         {
             ctx.Fail<APM_MediaPlayParameters_Type>($"Invalid value {val}, allowed are: [MediaPlayParams]");
-        }
         }
         // no linked objects
         
@@ -141,12 +139,12 @@ internal partial class APM_MediaPlayParameters_Type_Base : ISpecification<PdfDic
 /// <summary>
 /// MediaPlayParameters_PL 
 /// </summary>
-internal partial class APM_MediaPlayParameters_PL : APM_MediaPlayParameters_PL_Base
+internal partial class APM_MediaPlayParameters_PL : APM_MediaPlayParameters_PL__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParameters_PL_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParameters_PL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParameters_PL";
     public static bool RuleGroup() { return false; }
@@ -168,12 +166,12 @@ internal partial class APM_MediaPlayParameters_PL_Base : ISpecification<PdfDicti
 /// <summary>
 /// MediaPlayParameters_MH 
 /// </summary>
-internal partial class APM_MediaPlayParameters_MH : APM_MediaPlayParameters_MH_Base
+internal partial class APM_MediaPlayParameters_MH : APM_MediaPlayParameters_MH__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParameters_MH_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParameters_MH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParameters_MH";
     public static bool RuleGroup() { return false; }
@@ -195,12 +193,12 @@ internal partial class APM_MediaPlayParameters_MH_Base : ISpecification<PdfDicti
 /// <summary>
 /// MediaPlayParameters_BE 
 /// </summary>
-internal partial class APM_MediaPlayParameters_BE : APM_MediaPlayParameters_BE_Base
+internal partial class APM_MediaPlayParameters_BE : APM_MediaPlayParameters_BE__Base
 {
 }
 
 
-internal partial class APM_MediaPlayParameters_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayParameters_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayParameters_BE";
     public static bool RuleGroup() { return false; }

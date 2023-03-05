@@ -2,6 +2,18 @@
 
 internal static partial class MathUtil
 {
+    public static decimal mult(int val, int? val2)
+    {
+        if (val2 == null) return 0;
+        return val * val2.Value;
+    }
+    public static bool eq(int? val, int? val2)
+    {
+        if (val == null && val2 == null) { return true; }
+        if (val == null || val2 == null) { return false; }
+        return val.Value == val2.Value;
+    }
+
     public static IPdfObject? Get(this IPdfObject? obj, string name)
     {
         if (obj == null) return null;
@@ -144,6 +156,57 @@ internal static partial class MathUtil
         return true;
     }
 
+    public static bool IsHexString(IPdfObject? obj)
+    {
+        return false;
+    }
+
+    public static bool BitsClear(IPdfObject? obj)
+    {
+        return false;
+    }
+
+    public static bool BitClear(IPdfObject? obj)
+    {
+        return false;
+    }
+
+    public static bool BitSet(IPdfObject? obj)
+    {
+        return false;
+    }
+
+    public static bool BitsSet(IPdfObject? obj)
+    {
+        return false;
+    }
+
+    public static int? StringLength(IPdfObject? obj)
+    {
+        return 0;
+    }
+
+    public static bool IsFieldName(IPdfObject? obj)
+    {
+        return false;
+    }
+
+    public static bool MustBeDirect(IPdfObject? obj)
+    {
+        return false;
+    }
+
+    public static bool AlwaysUnencrypted(IPdfObject? obj)
+    {
+        return false;
+    }
+
+    public static bool ArraySortAscending(IPdfObject? obj)
+    {
+        return false;
+    }
+
+
     public static bool FontHasLatinChars(IPdfObject? obj)
     {
         throw new NotImplementedException("FontHasLatinChars");
@@ -250,5 +313,10 @@ internal static partial class MathUtil
     {
         if (v == null) return null;
         return mod(obj, v.Value);
+    }
+    public static int? mod(int? v1, int? v2)
+    {
+        if (v1 == null || v2 == null) return null;
+        return v1.Value % v2.Value;
     }
 }

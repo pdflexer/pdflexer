@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_WebCaptureInfo : APM_WebCaptureInfo_Base
+internal partial class APM_WebCaptureInfo : APM_WebCaptureInfo__Base
 {
 }
 
-internal partial class APM_WebCaptureInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureInfo__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "WebCaptureInfo";
@@ -109,12 +109,12 @@ internal partial class APM_WebCaptureInfo_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// WebCaptureInfo_V Table 386
 /// </summary>
-internal partial class APM_WebCaptureInfo_V : APM_WebCaptureInfo_V_Base
+internal partial class APM_WebCaptureInfo_V : APM_WebCaptureInfo_V__Base
 {
 }
 
 
-internal partial class APM_WebCaptureInfo_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureInfo_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureInfo_V";
     public static bool RuleGroup() { return false; }
@@ -125,13 +125,11 @@ internal partial class APM_WebCaptureInfo_V_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfNumber, APM_WebCaptureInfo_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1)) 
         {
             ctx.Fail<APM_WebCaptureInfo_V>($"Invalid value {val}, allowed are: [1]");
-        }
         }
         // no linked objects
         
@@ -143,12 +141,12 @@ internal partial class APM_WebCaptureInfo_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// WebCaptureInfo_C 
 /// </summary>
-internal partial class APM_WebCaptureInfo_C : APM_WebCaptureInfo_C_Base
+internal partial class APM_WebCaptureInfo_C : APM_WebCaptureInfo_C__Base
 {
 }
 
 
-internal partial class APM_WebCaptureInfo_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureInfo_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureInfo_C";
     public static bool RuleGroup() { return false; }

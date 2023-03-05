@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RenditionSelector : APM_RenditionSelector_Base
+internal partial class APM_RenditionSelector : APM_RenditionSelector__Base
 {
 }
 
-internal partial class APM_RenditionSelector_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionSelector__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RenditionSelector";
@@ -109,12 +109,12 @@ internal partial class APM_RenditionSelector_Base : ISpecification<PdfDictionary
 /// <summary>
 /// RenditionSelector_Type Table 277 and Table 283
 /// </summary>
-internal partial class APM_RenditionSelector_Type : APM_RenditionSelector_Type_Base
+internal partial class APM_RenditionSelector_Type : APM_RenditionSelector_Type__Base
 {
 }
 
 
-internal partial class APM_RenditionSelector_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionSelector_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionSelector_Type";
     public static bool RuleGroup() { return false; }
@@ -125,13 +125,11 @@ internal partial class APM_RenditionSelector_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_RenditionSelector_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Rendition")) 
         {
             ctx.Fail<APM_RenditionSelector_Type>($"Invalid value {val}, allowed are: [Rendition]");
-        }
         }
         // no linked objects
         
@@ -143,12 +141,12 @@ internal partial class APM_RenditionSelector_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// RenditionSelector_S 
 /// </summary>
-internal partial class APM_RenditionSelector_S : APM_RenditionSelector_S_Base
+internal partial class APM_RenditionSelector_S : APM_RenditionSelector_S__Base
 {
 }
 
 
-internal partial class APM_RenditionSelector_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionSelector_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionSelector_S";
     public static bool RuleGroup() { return false; }
@@ -159,13 +157,11 @@ internal partial class APM_RenditionSelector_S_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_RenditionSelector_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SR")) 
         {
             ctx.Fail<APM_RenditionSelector_S>($"Invalid value {val}, allowed are: [SR]");
-        }
         }
         // no linked objects
         
@@ -177,12 +173,12 @@ internal partial class APM_RenditionSelector_S_Base : ISpecification<PdfDictiona
 /// <summary>
 /// RenditionSelector_N https://github.com/pdf-association/pdf-issues/issues/214
 /// </summary>
-internal partial class APM_RenditionSelector_N : APM_RenditionSelector_N_Base
+internal partial class APM_RenditionSelector_N : APM_RenditionSelector_N__Base
 {
 }
 
 
-internal partial class APM_RenditionSelector_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionSelector_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionSelector_N";
     public static bool RuleGroup() { return false; }
@@ -204,12 +200,12 @@ internal partial class APM_RenditionSelector_N_Base : ISpecification<PdfDictiona
 /// <summary>
 /// RenditionSelector_MH 
 /// </summary>
-internal partial class APM_RenditionSelector_MH : APM_RenditionSelector_MH_Base
+internal partial class APM_RenditionSelector_MH : APM_RenditionSelector_MH__Base
 {
 }
 
 
-internal partial class APM_RenditionSelector_MH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionSelector_MH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionSelector_MH";
     public static bool RuleGroup() { return false; }
@@ -231,12 +227,12 @@ internal partial class APM_RenditionSelector_MH_Base : ISpecification<PdfDiction
 /// <summary>
 /// RenditionSelector_BE 
 /// </summary>
-internal partial class APM_RenditionSelector_BE : APM_RenditionSelector_BE_Base
+internal partial class APM_RenditionSelector_BE : APM_RenditionSelector_BE__Base
 {
 }
 
 
-internal partial class APM_RenditionSelector_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionSelector_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionSelector_BE";
     public static bool RuleGroup() { return false; }
@@ -258,12 +254,12 @@ internal partial class APM_RenditionSelector_BE_Base : ISpecification<PdfDiction
 /// <summary>
 /// RenditionSelector_R 
 /// </summary>
-internal partial class APM_RenditionSelector_R : APM_RenditionSelector_R_Base
+internal partial class APM_RenditionSelector_R : APM_RenditionSelector_R__Base
 {
 }
 
 
-internal partial class APM_RenditionSelector_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionSelector_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionSelector_R";
     public static bool RuleGroup() { return false; }

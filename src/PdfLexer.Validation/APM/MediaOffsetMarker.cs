@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaOffsetMarker : APM_MediaOffsetMarker_Base
+internal partial class APM_MediaOffsetMarker : APM_MediaOffsetMarker__Base
 {
 }
 
-internal partial class APM_MediaOffsetMarker_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaOffsetMarker__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaOffsetMarker";
@@ -106,12 +106,12 @@ internal partial class APM_MediaOffsetMarker_Base : ISpecification<PdfDictionary
 /// <summary>
 /// MediaOffsetMarker_Type Table 296 and Table 299
 /// </summary>
-internal partial class APM_MediaOffsetMarker_Type : APM_MediaOffsetMarker_Type_Base
+internal partial class APM_MediaOffsetMarker_Type : APM_MediaOffsetMarker_Type__Base
 {
 }
 
 
-internal partial class APM_MediaOffsetMarker_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaOffsetMarker_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaOffsetMarker_Type";
     public static bool RuleGroup() { return false; }
@@ -122,13 +122,11 @@ internal partial class APM_MediaOffsetMarker_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_MediaOffsetMarker_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaOffset")) 
         {
             ctx.Fail<APM_MediaOffsetMarker_Type>($"Invalid value {val}, allowed are: [MediaOffset]");
-        }
         }
         // no linked objects
         
@@ -140,12 +138,12 @@ internal partial class APM_MediaOffsetMarker_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// MediaOffsetMarker_S 
 /// </summary>
-internal partial class APM_MediaOffsetMarker_S : APM_MediaOffsetMarker_S_Base
+internal partial class APM_MediaOffsetMarker_S : APM_MediaOffsetMarker_S__Base
 {
 }
 
 
-internal partial class APM_MediaOffsetMarker_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaOffsetMarker_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaOffsetMarker_S";
     public static bool RuleGroup() { return false; }
@@ -156,13 +154,11 @@ internal partial class APM_MediaOffsetMarker_S_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_MediaOffsetMarker_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "M")) 
         {
             ctx.Fail<APM_MediaOffsetMarker_S>($"Invalid value {val}, allowed are: [M]");
-        }
         }
         // no linked objects
         
@@ -174,12 +170,12 @@ internal partial class APM_MediaOffsetMarker_S_Base : ISpecification<PdfDictiona
 /// <summary>
 /// MediaOffsetMarker_M 
 /// </summary>
-internal partial class APM_MediaOffsetMarker_M : APM_MediaOffsetMarker_M_Base
+internal partial class APM_MediaOffsetMarker_M : APM_MediaOffsetMarker_M__Base
 {
 }
 
 
-internal partial class APM_MediaOffsetMarker_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaOffsetMarker_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaOffsetMarker_M";
     public static bool RuleGroup() { return false; }

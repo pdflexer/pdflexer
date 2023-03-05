@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaClipSectionMHBE : APM_MediaClipSectionMHBE_Base
+internal partial class APM_MediaClipSectionMHBE : APM_MediaClipSectionMHBE__Base
 {
 }
 
-internal partial class APM_MediaClipSectionMHBE_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSectionMHBE__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaClipSectionMHBE";
@@ -99,12 +99,12 @@ internal partial class APM_MediaClipSectionMHBE_Base : ISpecification<PdfDiction
 /// <summary>
 /// MediaClipSectionMHBE_B Table 289
 /// </summary>
-internal partial class APM_MediaClipSectionMHBE_B : APM_MediaClipSectionMHBE_B_Base
+internal partial class APM_MediaClipSectionMHBE_B : APM_MediaClipSectionMHBE_B__Base
 {
 }
 
 
-internal partial class APM_MediaClipSectionMHBE_B_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSectionMHBE_B__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipSectionMHBE_B";
     public static bool RuleGroup() { return false; }
@@ -138,12 +138,12 @@ internal partial class APM_MediaClipSectionMHBE_B_Base : ISpecification<PdfDicti
 /// <summary>
 /// MediaClipSectionMHBE_E 
 /// </summary>
-internal partial class APM_MediaClipSectionMHBE_E : APM_MediaClipSectionMHBE_E_Base
+internal partial class APM_MediaClipSectionMHBE_E : APM_MediaClipSectionMHBE_E__Base
 {
 }
 
 
-internal partial class APM_MediaClipSectionMHBE_E_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSectionMHBE_E__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipSectionMHBE_E";
     public static bool RuleGroup() { return false; }

@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using DotNext.Collections.Generic;
+using System.Text;
 
 namespace pdflexer.ArlingtonGen.Expressions;
 
@@ -26,7 +27,13 @@ internal class EOp : INode
 
     public void Write(StringBuilder sw)
     {
-        sw.Append(Text);
+        if (Text == "*" && VariableContext.Vars.TryGetValue("*", out var nm))
+        {
+            sw.Append(nm);
+        } else
+        {
+            sw.Append(Text);
+        }
     }
 
     public IEnumerable<string> GetRequiredValues() { yield break; }

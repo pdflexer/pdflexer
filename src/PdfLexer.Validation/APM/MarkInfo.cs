@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MarkInfo : APM_MarkInfo_Base
+internal partial class APM_MarkInfo : APM_MarkInfo__Base
 {
 }
 
-internal partial class APM_MarkInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkInfo__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MarkInfo";
@@ -110,12 +110,12 @@ internal partial class APM_MarkInfo_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MarkInfo_Marked Table 353
 /// </summary>
-internal partial class APM_MarkInfo_Marked : APM_MarkInfo_Marked_Base
+internal partial class APM_MarkInfo_Marked : APM_MarkInfo_Marked__Base
 {
 }
 
 
-internal partial class APM_MarkInfo_Marked_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkInfo_Marked__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MarkInfo_Marked";
     public static bool RuleGroup() { return false; }
@@ -137,12 +137,12 @@ internal partial class APM_MarkInfo_Marked_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MarkInfo_UserProperties 
 /// </summary>
-internal partial class APM_MarkInfo_UserProperties : APM_MarkInfo_UserProperties_Base
+internal partial class APM_MarkInfo_UserProperties : APM_MarkInfo_UserProperties__Base
 {
 }
 
 
-internal partial class APM_MarkInfo_UserProperties_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkInfo_UserProperties__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MarkInfo_UserProperties";
     public static bool RuleGroup() { return false; }
@@ -164,12 +164,12 @@ internal partial class APM_MarkInfo_UserProperties_Base : ISpecification<PdfDict
 /// <summary>
 /// MarkInfo_Suspects 
 /// </summary>
-internal partial class APM_MarkInfo_Suspects : APM_MarkInfo_Suspects_Base
+internal partial class APM_MarkInfo_Suspects : APM_MarkInfo_Suspects__Base
 {
 }
 
 
-internal partial class APM_MarkInfo_Suspects_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkInfo_Suspects__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MarkInfo_Suspects";
     public static bool RuleGroup() { return false; }

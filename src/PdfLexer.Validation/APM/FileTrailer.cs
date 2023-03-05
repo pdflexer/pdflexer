@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FileTrailer : APM_FileTrailer_Base
+internal partial class APM_FileTrailer : APM_FileTrailer__Base
 {
 }
 
-internal partial class APM_FileTrailer_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileTrailer__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FileTrailer";
@@ -155,12 +155,12 @@ internal partial class APM_FileTrailer_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileTrailer_Size Table 15 and Table 19
 /// </summary>
-internal partial class APM_FileTrailer_Size : APM_FileTrailer_Size_Base
+internal partial class APM_FileTrailer_Size : APM_FileTrailer_Size__Base
 {
 }
 
 
-internal partial class APM_FileTrailer_Size_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileTrailer_Size__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileTrailer_Size";
     public static bool RuleGroup() { return false; }
@@ -171,13 +171,11 @@ internal partial class APM_FileTrailer_Size_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfIntNumber, APM_FileTrailer_Size>(obj, "Size", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Size = val;
-        if (!(gt(@Size,0))) 
+        var Size = obj.Get("Size");
+        if (!(gt(Size,0))) 
         {
             ctx.Fail<APM_FileTrailer_Size>($"Invalid value {val}, allowed are: [fn:Eval(@Size>0)]");
-        }
         }
         // no linked objects
         
@@ -189,12 +187,12 @@ internal partial class APM_FileTrailer_Size_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileTrailer_Prev 
 /// </summary>
-internal partial class APM_FileTrailer_Prev : APM_FileTrailer_Prev_Base
+internal partial class APM_FileTrailer_Prev : APM_FileTrailer_Prev__Base
 {
 }
 
 
-internal partial class APM_FileTrailer_Prev_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileTrailer_Prev__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileTrailer_Prev";
     public static bool RuleGroup() { return false; }
@@ -205,13 +203,11 @@ internal partial class APM_FileTrailer_Prev_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_FileTrailer_Prev>(obj, "Prev", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Prev = val;
-        if (!((gte(@Prev,0)&&lte(@Prev,ctx.FileSize)))) 
+        var Prev = obj.Get("Prev");
+        if (!((gte(Prev,0)&&lte(Prev,ctx.FileSize)))) 
         {
             ctx.Fail<APM_FileTrailer_Prev>($"Invalid value {val}, allowed are: [fn:Eval((@Prev>=0) && (@Prev<=fn:FileSize()))]");
-        }
         }
         // no linked objects
         
@@ -223,12 +219,12 @@ internal partial class APM_FileTrailer_Prev_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileTrailer_Root 
 /// </summary>
-internal partial class APM_FileTrailer_Root : APM_FileTrailer_Root_Base
+internal partial class APM_FileTrailer_Root : APM_FileTrailer_Root__Base
 {
 }
 
 
-internal partial class APM_FileTrailer_Root_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileTrailer_Root__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileTrailer_Root";
     public static bool RuleGroup() { return false; }
@@ -250,12 +246,12 @@ internal partial class APM_FileTrailer_Root_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileTrailer_Encrypt 
 /// </summary>
-internal partial class APM_FileTrailer_Encrypt : APM_FileTrailer_Encrypt_Base
+internal partial class APM_FileTrailer_Encrypt : APM_FileTrailer_Encrypt__Base
 {
 }
 
 
-internal partial class APM_FileTrailer_Encrypt_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileTrailer_Encrypt__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileTrailer_Encrypt";
     public static bool RuleGroup() { return false; }
@@ -286,12 +282,12 @@ internal partial class APM_FileTrailer_Encrypt_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FileTrailer_Info https://github.com/pdf-association/pdf-issues/issues/106
 /// </summary>
-internal partial class APM_FileTrailer_Info : APM_FileTrailer_Info_Base
+internal partial class APM_FileTrailer_Info : APM_FileTrailer_Info__Base
 {
 }
 
 
-internal partial class APM_FileTrailer_Info_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileTrailer_Info__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileTrailer_Info";
     public static bool RuleGroup() { return false; }
@@ -313,12 +309,12 @@ internal partial class APM_FileTrailer_Info_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileTrailer_ID 
 /// </summary>
-internal partial class APM_FileTrailer_ID : APM_FileTrailer_ID_Base
+internal partial class APM_FileTrailer_ID : APM_FileTrailer_ID__Base
 {
 }
 
 
-internal partial class APM_FileTrailer_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileTrailer_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileTrailer_ID";
     public static bool RuleGroup() { return false; }
@@ -326,17 +322,19 @@ internal partial class APM_FileTrailer_ID_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if ((ctx.Version >= 2.0m||obj.ContainsKey("Encrypt"))) {
-                val = ctx.GetRequired<PdfArray, APM_FileTrailer_ID>(obj, "ID", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_FileTrailer_ID>(obj, "ID", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_FileTrailer_ID>(obj, "ID", IndirectRequirement.Either);
+        if (((ctx.Version >= 2.0m||obj.ContainsKey("Encrypt"))) && val == null) {
+            ctx.Fail<APM_FileTrailer_ID>("ID is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:IsPresent(Encrypt))"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
+        var ID0 = obj.Get("ID")?.Get("0");
+        var ID1 = obj.Get("ID")?.Get("1");
+        if (!((MustBeDirect(ID0)&&MustBeDirect(ID1)))) 
+        {
+            ctx.Fail<APM_FileTrailer_ID>($"Value failed special case check: fn:Eval(fn:MustBeDirect(ID::0) && fn:MustBeDirect(ID::1))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOf_2UnencryptedStringsByte, PdfArray>(stack, val, obj);
         
@@ -348,12 +346,12 @@ internal partial class APM_FileTrailer_ID_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileTrailer_XRefStm 
 /// </summary>
-internal partial class APM_FileTrailer_XRefStm : APM_FileTrailer_XRefStm_Base
+internal partial class APM_FileTrailer_XRefStm : APM_FileTrailer_XRefStm__Base
 {
 }
 
 
-internal partial class APM_FileTrailer_XRefStm_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileTrailer_XRefStm__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileTrailer_XRefStm";
     public static bool RuleGroup() { return false; }
@@ -364,13 +362,11 @@ internal partial class APM_FileTrailer_XRefStm_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfIntNumber, APM_FileTrailer_XRefStm>(obj, "XRefStm", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @XRefStm = val;
-        if (!((gte(@XRefStm,0)&&lte(@XRefStm,ctx.FileSize)))) 
+        var XRefStm = obj.Get("XRefStm");
+        if (!((gte(XRefStm,0)&&lte(XRefStm,ctx.FileSize)))) 
         {
             ctx.Fail<APM_FileTrailer_XRefStm>($"Invalid value {val}, allowed are: [fn:Eval((@XRefStm>=0) && (@XRefStm<=fn:FileSize()))]");
-        }
         }
         // no linked objects
         
@@ -382,12 +378,12 @@ internal partial class APM_FileTrailer_XRefStm_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FileTrailer_AuthCode ISO/TS 32004 integrity protection
 /// </summary>
-internal partial class APM_FileTrailer_AuthCode : APM_FileTrailer_AuthCode_Base
+internal partial class APM_FileTrailer_AuthCode : APM_FileTrailer_AuthCode__Base
 {
 }
 
 
-internal partial class APM_FileTrailer_AuthCode_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileTrailer_AuthCode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileTrailer_AuthCode";
     public static bool RuleGroup() { return false; }
@@ -397,7 +393,11 @@ internal partial class APM_FileTrailer_AuthCode_Base : ISpecification<PdfDiction
     {
         var val = ctx.GetOptional<PdfDictionary, APM_FileTrailer_AuthCode>(obj, "AuthCode", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
-        // TODO special case
+        var EncryptV = obj.Get("Encrypt")?.Get("V");
+        if (!(gte(EncryptV,5))) 
+        {
+            ctx.Fail<APM_FileTrailer_AuthCode>($"Value failed special case check: fn:Eval(Encrypt::@V>=5)");
+        }
         // no value restrictions
         ctx.Run<APM_AuthCode, PdfDictionary>(stack, val, obj);
         

@@ -20,7 +20,7 @@ internal partial class APM_ArrayOf3PDUNames : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -38,13 +38,11 @@ internal partial class APM_ArrayOf3PDUNames_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_ArrayOf3PDUNames_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "M" || val == "KM" || val == "FT" || val == "USFT" || val == "MI" || val == "NM" || val == "SQM" || val == "HA" || val == "SQKM" || val == "SQFT" || val == "A" || val == "SQMI" || val == "DEG" || val == "GRD")) 
         {
             ctx.Fail<APM_ArrayOf3PDUNames_0>($"Invalid value {val}, allowed are: [M,KM,FT,USFT,MI,NM,SQM,HA,SQKM,SQFT,A,SQMI,DEG,GRD]");
-        }
         }
         // no linked objects
         
@@ -65,13 +63,11 @@ internal partial class APM_ArrayOf3PDUNames_1 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_ArrayOf3PDUNames_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "M" || val == "KM" || val == "FT" || val == "USFT" || val == "MI" || val == "NM" || val == "SQM" || val == "HA" || val == "SQKM" || val == "SQFT" || val == "A" || val == "SQMI" || val == "DEG" || val == "GRD")) 
         {
             ctx.Fail<APM_ArrayOf3PDUNames_1>($"Invalid value {val}, allowed are: [M,KM,FT,USFT,MI,NM,SQM,HA,SQKM,SQFT,A,SQMI,DEG,GRD]");
-        }
         }
         // no linked objects
         
@@ -92,13 +88,11 @@ internal partial class APM_ArrayOf3PDUNames_2 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_ArrayOf3PDUNames_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "M" || val == "KM" || val == "FT" || val == "USFT" || val == "MI" || val == "NM" || val == "SQM" || val == "HA" || val == "SQKM" || val == "SQFT" || val == "A" || val == "SQMI" || val == "DEG" || val == "GRD")) 
         {
             ctx.Fail<APM_ArrayOf3PDUNames_2>($"Invalid value {val}, allowed are: [M,KM,FT,USFT,MI,NM,SQM,HA,SQKM,SQFT,A,SQMI,DEG,GRD]");
-        }
         }
         // no linked objects
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsHandler : APM_RequirementsHandler_Base
+internal partial class APM_RequirementsHandler : APM_RequirementsHandler__Base
 {
 }
 
-internal partial class APM_RequirementsHandler_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsHandler__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsHandler";
@@ -86,12 +86,12 @@ internal partial class APM_RequirementsHandler_Base : ISpecification<PdfDictiona
 /// <summary>
 /// RequirementsHandler_Type Table 276
 /// </summary>
-internal partial class APM_RequirementsHandler_Type : APM_RequirementsHandler_Type_Base
+internal partial class APM_RequirementsHandler_Type : APM_RequirementsHandler_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsHandler_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsHandler_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsHandler_Type";
     public static bool RuleGroup() { return false; }
@@ -102,13 +102,11 @@ internal partial class APM_RequirementsHandler_Type_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_RequirementsHandler_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ReqHandler")) 
         {
             ctx.Fail<APM_RequirementsHandler_Type>($"Invalid value {val}, allowed are: [ReqHandler]");
-        }
         }
         // no linked objects
         
@@ -120,12 +118,12 @@ internal partial class APM_RequirementsHandler_Type_Base : ISpecification<PdfDic
 /// <summary>
 /// RequirementsHandler_S 
 /// </summary>
-internal partial class APM_RequirementsHandler_S : APM_RequirementsHandler_S_Base
+internal partial class APM_RequirementsHandler_S : APM_RequirementsHandler_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsHandler_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsHandler_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsHandler_S";
     public static bool RuleGroup() { return false; }
@@ -136,13 +134,11 @@ internal partial class APM_RequirementsHandler_S_Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfName, APM_RequirementsHandler_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "JS" || val == "NoOp")) 
         {
             ctx.Fail<APM_RequirementsHandler_S>($"Invalid value {val}, allowed are: [JS,NoOp]");
-        }
         }
         // no linked objects
         
@@ -154,12 +150,12 @@ internal partial class APM_RequirementsHandler_S_Base : ISpecification<PdfDictio
 /// <summary>
 /// RequirementsHandler_Script 
 /// </summary>
-internal partial class APM_RequirementsHandler_Script : APM_RequirementsHandler_Script_Base
+internal partial class APM_RequirementsHandler_Script : APM_RequirementsHandler_Script__Base
 {
 }
 
 
-internal partial class APM_RequirementsHandler_Script_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsHandler_Script__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsHandler_Script";
     public static bool RuleGroup() { return false; }

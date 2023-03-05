@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_GraphicsStateParameterMap : APM_GraphicsStateParameterMap_Base
+internal partial class APM_GraphicsStateParameterMap : APM_GraphicsStateParameterMap__Base
 {
 }
 
-internal partial class APM_GraphicsStateParameterMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameterMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "GraphicsStateParameterMap";
@@ -35,12 +35,12 @@ internal partial class APM_GraphicsStateParameterMap_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameterMap_* Table 34
 /// </summary>
-internal partial class APM_GraphicsStateParameterMap_CatchAll : APM_GraphicsStateParameterMap_CatchAll_Base
+internal partial class APM_GraphicsStateParameterMap_CatchAll : APM_GraphicsStateParameterMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameterMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameterMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameterMap_*";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentGroup : APM_OptContentGroup_Base
+internal partial class APM_OptContentGroup : APM_OptContentGroup__Base
 {
 }
 
-internal partial class APM_OptContentGroup_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentGroup__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentGroup";
@@ -107,12 +107,12 @@ internal partial class APM_OptContentGroup_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OptContentGroup_Type Table 96
 /// </summary>
-internal partial class APM_OptContentGroup_Type : APM_OptContentGroup_Type_Base
+internal partial class APM_OptContentGroup_Type : APM_OptContentGroup_Type__Base
 {
 }
 
 
-internal partial class APM_OptContentGroup_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentGroup_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentGroup_Type";
     public static bool RuleGroup() { return false; }
@@ -123,13 +123,11 @@ internal partial class APM_OptContentGroup_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetRequired<PdfName, APM_OptContentGroup_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "OCG")) 
         {
             ctx.Fail<APM_OptContentGroup_Type>($"Invalid value {val}, allowed are: [OCG]");
-        }
         }
         // no linked objects
         
@@ -141,12 +139,12 @@ internal partial class APM_OptContentGroup_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// OptContentGroup_Name 
 /// </summary>
-internal partial class APM_OptContentGroup_Name : APM_OptContentGroup_Name_Base
+internal partial class APM_OptContentGroup_Name : APM_OptContentGroup_Name__Base
 {
 }
 
 
-internal partial class APM_OptContentGroup_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentGroup_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentGroup_Name";
     public static bool RuleGroup() { return false; }
@@ -168,12 +166,12 @@ internal partial class APM_OptContentGroup_Name_Base : ISpecification<PdfDiction
 /// <summary>
 /// OptContentGroup_Intent 
 /// </summary>
-internal partial class APM_OptContentGroup_Intent : APM_OptContentGroup_Intent_Base
+internal partial class APM_OptContentGroup_Intent : APM_OptContentGroup_Intent__Base
 {
 }
 
 
-internal partial class APM_OptContentGroup_Intent_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentGroup_Intent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentGroup_Intent";
     public static bool RuleGroup() { return false; }
@@ -216,12 +214,12 @@ internal partial class APM_OptContentGroup_Intent_Base : ISpecification<PdfDicti
 /// <summary>
 /// OptContentGroup_Usage 
 /// </summary>
-internal partial class APM_OptContentGroup_Usage : APM_OptContentGroup_Usage_Base
+internal partial class APM_OptContentGroup_Usage : APM_OptContentGroup_Usage__Base
 {
 }
 
 
-internal partial class APM_OptContentGroup_Usage_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentGroup_Usage__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentGroup_Usage";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_WebCapturePageSet : APM_WebCapturePageSet_Base
+internal partial class APM_WebCapturePageSet : APM_WebCapturePageSet__Base
 {
 }
 
-internal partial class APM_WebCapturePageSet_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "WebCapturePageSet";
@@ -132,12 +132,12 @@ internal partial class APM_WebCapturePageSet_Base : ISpecification<PdfDictionary
 /// <summary>
 /// WebCapturePageSet_Type Table 388 and Table 389
 /// </summary>
-internal partial class APM_WebCapturePageSet_Type : APM_WebCapturePageSet_Type_Base
+internal partial class APM_WebCapturePageSet_Type : APM_WebCapturePageSet_Type__Base
 {
 }
 
 
-internal partial class APM_WebCapturePageSet_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCapturePageSet_Type";
     public static bool RuleGroup() { return false; }
@@ -148,13 +148,11 @@ internal partial class APM_WebCapturePageSet_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_WebCapturePageSet_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SpiderContentSet")) 
         {
             ctx.Fail<APM_WebCapturePageSet_Type>($"Invalid value {val}, allowed are: [SpiderContentSet]");
-        }
         }
         // no linked objects
         
@@ -166,12 +164,12 @@ internal partial class APM_WebCapturePageSet_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// WebCapturePageSet_S 
 /// </summary>
-internal partial class APM_WebCapturePageSet_S : APM_WebCapturePageSet_S_Base
+internal partial class APM_WebCapturePageSet_S : APM_WebCapturePageSet_S__Base
 {
 }
 
 
-internal partial class APM_WebCapturePageSet_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCapturePageSet_S";
     public static bool RuleGroup() { return false; }
@@ -182,13 +180,11 @@ internal partial class APM_WebCapturePageSet_S_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_WebCapturePageSet_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SPS")) 
         {
             ctx.Fail<APM_WebCapturePageSet_S>($"Invalid value {val}, allowed are: [SPS]");
-        }
         }
         // no linked objects
         
@@ -200,12 +196,12 @@ internal partial class APM_WebCapturePageSet_S_Base : ISpecification<PdfDictiona
 /// <summary>
 /// WebCapturePageSet_ID 
 /// </summary>
-internal partial class APM_WebCapturePageSet_ID : APM_WebCapturePageSet_ID_Base
+internal partial class APM_WebCapturePageSet_ID : APM_WebCapturePageSet_ID__Base
 {
 }
 
 
-internal partial class APM_WebCapturePageSet_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCapturePageSet_ID";
     public static bool RuleGroup() { return false; }
@@ -227,12 +223,12 @@ internal partial class APM_WebCapturePageSet_ID_Base : ISpecification<PdfDiction
 /// <summary>
 /// WebCapturePageSet_O 
 /// </summary>
-internal partial class APM_WebCapturePageSet_O : APM_WebCapturePageSet_O_Base
+internal partial class APM_WebCapturePageSet_O : APM_WebCapturePageSet_O__Base
 {
 }
 
 
-internal partial class APM_WebCapturePageSet_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCapturePageSet_O";
     public static bool RuleGroup() { return false; }
@@ -254,12 +250,12 @@ internal partial class APM_WebCapturePageSet_O_Base : ISpecification<PdfDictiona
 /// <summary>
 /// WebCapturePageSet_SI 
 /// </summary>
-internal partial class APM_WebCapturePageSet_SI : APM_WebCapturePageSet_SI_Base
+internal partial class APM_WebCapturePageSet_SI : APM_WebCapturePageSet_SI__Base
 {
 }
 
 
-internal partial class APM_WebCapturePageSet_SI_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet_SI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCapturePageSet_SI";
     public static bool RuleGroup() { return false; }
@@ -302,12 +298,12 @@ internal partial class APM_WebCapturePageSet_SI_Base : ISpecification<PdfDiction
 /// <summary>
 /// WebCapturePageSet_CT shall conform to the content type specification described in Internet RFC 2045
 /// </summary>
-internal partial class APM_WebCapturePageSet_CT : APM_WebCapturePageSet_CT_Base
+internal partial class APM_WebCapturePageSet_CT : APM_WebCapturePageSet_CT__Base
 {
 }
 
 
-internal partial class APM_WebCapturePageSet_CT_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet_CT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCapturePageSet_CT";
     public static bool RuleGroup() { return false; }
@@ -329,12 +325,12 @@ internal partial class APM_WebCapturePageSet_CT_Base : ISpecification<PdfDiction
 /// <summary>
 /// WebCapturePageSet_TS 
 /// </summary>
-internal partial class APM_WebCapturePageSet_TS : APM_WebCapturePageSet_TS_Base
+internal partial class APM_WebCapturePageSet_TS : APM_WebCapturePageSet_TS__Base
 {
 }
 
 
-internal partial class APM_WebCapturePageSet_TS_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet_TS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCapturePageSet_TS";
     public static bool RuleGroup() { return false; }
@@ -356,12 +352,12 @@ internal partial class APM_WebCapturePageSet_TS_Base : ISpecification<PdfDiction
 /// <summary>
 /// WebCapturePageSet_T 
 /// </summary>
-internal partial class APM_WebCapturePageSet_T : APM_WebCapturePageSet_T_Base
+internal partial class APM_WebCapturePageSet_T : APM_WebCapturePageSet_T__Base
 {
 }
 
 
-internal partial class APM_WebCapturePageSet_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCapturePageSet_T";
     public static bool RuleGroup() { return false; }
@@ -383,12 +379,12 @@ internal partial class APM_WebCapturePageSet_T_Base : ISpecification<PdfDictiona
 /// <summary>
 /// WebCapturePageSet_TID 
 /// </summary>
-internal partial class APM_WebCapturePageSet_TID : APM_WebCapturePageSet_TID_Base
+internal partial class APM_WebCapturePageSet_TID : APM_WebCapturePageSet_TID__Base
 {
 }
 
 
-internal partial class APM_WebCapturePageSet_TID_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCapturePageSet_TID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCapturePageSet_TID";
     public static bool RuleGroup() { return false; }

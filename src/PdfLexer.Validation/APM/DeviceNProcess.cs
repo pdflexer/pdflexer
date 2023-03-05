@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DeviceNProcess : APM_DeviceNProcess_Base
+internal partial class APM_DeviceNProcess : APM_DeviceNProcess__Base
 {
 }
 
-internal partial class APM_DeviceNProcess_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNProcess__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DeviceNProcess";
@@ -89,12 +89,12 @@ internal partial class APM_DeviceNProcess_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DeviceNProcess_ColorSpace Table 71 - except Lab
 /// </summary>
-internal partial class APM_DeviceNProcess_ColorSpace : APM_DeviceNProcess_ColorSpace_Base
+internal partial class APM_DeviceNProcess_ColorSpace : APM_DeviceNProcess_ColorSpace__Base
 {
 }
 
 
-internal partial class APM_DeviceNProcess_ColorSpace_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNProcess_ColorSpace__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DeviceNProcess_ColorSpace";
     public static bool RuleGroup() { return false; }
@@ -132,13 +132,11 @@ internal partial class APM_DeviceNProcess_ColorSpace_Base : ISpecification<PdfDi
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                     {
                         ctx.Fail<APM_DeviceNProcess_ColorSpace>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -156,12 +154,12 @@ internal partial class APM_DeviceNProcess_ColorSpace_Base : ISpecification<PdfDi
 /// <summary>
 /// DeviceNProcess_Components 
 /// </summary>
-internal partial class APM_DeviceNProcess_Components : APM_DeviceNProcess_Components_Base
+internal partial class APM_DeviceNProcess_Components : APM_DeviceNProcess_Components__Base
 {
 }
 
 
-internal partial class APM_DeviceNProcess_Components_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNProcess_Components__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DeviceNProcess_Components";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Encoding : APM_Encoding_Base
+internal partial class APM_Encoding : APM_Encoding__Base
 {
 }
 
-internal partial class APM_Encoding_Base : ISpecification<PdfDictionary>
+internal partial class APM_Encoding__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Encoding";
@@ -156,12 +156,12 @@ internal partial class APM_Encoding_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Encoding_Type Table 112
 /// </summary>
-internal partial class APM_Encoding_Type : APM_Encoding_Type_Base
+internal partial class APM_Encoding_Type : APM_Encoding_Type__Base
 {
 }
 
 
-internal partial class APM_Encoding_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Encoding_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Encoding_Type";
     public static bool RuleGroup() { return false; }
@@ -172,13 +172,11 @@ internal partial class APM_Encoding_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Encoding_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Encoding")) 
         {
             ctx.Fail<APM_Encoding_Type>($"Invalid value {val}, allowed are: [Encoding]");
-        }
         }
         // no linked objects
         
@@ -190,12 +188,12 @@ internal partial class APM_Encoding_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Encoding_BaseEncoding 
 /// </summary>
-internal partial class APM_Encoding_BaseEncoding : APM_Encoding_BaseEncoding_Base
+internal partial class APM_Encoding_BaseEncoding : APM_Encoding_BaseEncoding__Base
 {
 }
 
 
-internal partial class APM_Encoding_BaseEncoding_Base : ISpecification<PdfDictionary>
+internal partial class APM_Encoding_BaseEncoding__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Encoding_BaseEncoding";
     public static bool RuleGroup() { return false; }
@@ -206,13 +204,11 @@ internal partial class APM_Encoding_BaseEncoding_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_Encoding_BaseEncoding>(obj, "BaseEncoding", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MacRomanEncoding" || val == "MacExpertEncoding" || val == "WinAnsiEncoding")) 
         {
             ctx.Fail<APM_Encoding_BaseEncoding>($"Invalid value {val}, allowed are: [MacRomanEncoding,MacExpertEncoding,WinAnsiEncoding]");
-        }
         }
         // no linked objects
         
@@ -224,12 +220,12 @@ internal partial class APM_Encoding_BaseEncoding_Base : ISpecification<PdfDictio
 /// <summary>
 /// Encoding_Differences 
 /// </summary>
-internal partial class APM_Encoding_Differences : APM_Encoding_Differences_Base
+internal partial class APM_Encoding_Differences : APM_Encoding_Differences__Base
 {
 }
 
 
-internal partial class APM_Encoding_Differences_Base : ISpecification<PdfDictionary>
+internal partial class APM_Encoding_Differences__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Encoding_Differences";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Catalog : APM_Catalog_Base
+internal partial class APM_Catalog : APM_Catalog__Base
 {
 }
 
-internal partial class APM_Catalog_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Catalog";
@@ -185,12 +185,12 @@ internal partial class APM_Catalog_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Type Table 29
 /// </summary>
-internal partial class APM_Catalog_Type : APM_Catalog_Type_Base
+internal partial class APM_Catalog_Type : APM_Catalog_Type__Base
 {
 }
 
 
-internal partial class APM_Catalog_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Type";
     public static bool RuleGroup() { return false; }
@@ -201,13 +201,11 @@ internal partial class APM_Catalog_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_Catalog_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Catalog")) 
         {
             ctx.Fail<APM_Catalog_Type>($"Invalid value {val}, allowed are: [Catalog]");
-        }
         }
         // no linked objects
         
@@ -219,12 +217,12 @@ internal partial class APM_Catalog_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Version 
 /// </summary>
-internal partial class APM_Catalog_Version : APM_Catalog_Version_Base
+internal partial class APM_Catalog_Version : APM_Catalog_Version__Base
 {
 }
 
 
-internal partial class APM_Catalog_Version_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Version__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Version";
     public static bool RuleGroup() { return false; }
@@ -235,13 +233,11 @@ internal partial class APM_Catalog_Version_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Catalog_Version>(obj, "Version", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "1.0" || val == "1.1" || val == "1.2" || val == "1.3" || val == "1.4" || val == "1.5" || val == "1.6" || val == "1.7" || val == "2.0")) 
         {
             ctx.Fail<APM_Catalog_Version>($"Invalid value {val}, allowed are: [1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,2.0]");
-        }
         }
         // no linked objects
         
@@ -253,12 +249,12 @@ internal partial class APM_Catalog_Version_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Extensions 
 /// </summary>
-internal partial class APM_Catalog_Extensions : APM_Catalog_Extensions_Base
+internal partial class APM_Catalog_Extensions : APM_Catalog_Extensions__Base
 {
 }
 
 
-internal partial class APM_Catalog_Extensions_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Extensions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Extensions";
     public static bool RuleGroup() { return false; }
@@ -280,12 +276,12 @@ internal partial class APM_Catalog_Extensions_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Catalog_Pages 
 /// </summary>
-internal partial class APM_Catalog_Pages : APM_Catalog_Pages_Base
+internal partial class APM_Catalog_Pages : APM_Catalog_Pages__Base
 {
 }
 
 
-internal partial class APM_Catalog_Pages_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Pages__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Pages";
     public static bool RuleGroup() { return false; }
@@ -307,12 +303,12 @@ internal partial class APM_Catalog_Pages_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_PageLabels 
 /// </summary>
-internal partial class APM_Catalog_PageLabels : APM_Catalog_PageLabels_Base
+internal partial class APM_Catalog_PageLabels : APM_Catalog_PageLabels__Base
 {
 }
 
 
-internal partial class APM_Catalog_PageLabels_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_PageLabels__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_PageLabels";
     public static bool RuleGroup() { return false; }
@@ -334,12 +330,12 @@ internal partial class APM_Catalog_PageLabels_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Catalog_Names 
 /// </summary>
-internal partial class APM_Catalog_Names : APM_Catalog_Names_Base
+internal partial class APM_Catalog_Names : APM_Catalog_Names__Base
 {
 }
 
 
-internal partial class APM_Catalog_Names_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Names__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Names";
     public static bool RuleGroup() { return false; }
@@ -361,12 +357,12 @@ internal partial class APM_Catalog_Names_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Dests https://github.com/pdf-association/pdf-issues/issues/106
 /// </summary>
-internal partial class APM_Catalog_Dests : APM_Catalog_Dests_Base
+internal partial class APM_Catalog_Dests : APM_Catalog_Dests__Base
 {
 }
 
 
-internal partial class APM_Catalog_Dests_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Dests__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Dests";
     public static bool RuleGroup() { return false; }
@@ -388,12 +384,12 @@ internal partial class APM_Catalog_Dests_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_ViewerPreferences 
 /// </summary>
-internal partial class APM_Catalog_ViewerPreferences : APM_Catalog_ViewerPreferences_Base
+internal partial class APM_Catalog_ViewerPreferences : APM_Catalog_ViewerPreferences__Base
 {
 }
 
 
-internal partial class APM_Catalog_ViewerPreferences_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_ViewerPreferences__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_ViewerPreferences";
     public static bool RuleGroup() { return false; }
@@ -415,12 +411,12 @@ internal partial class APM_Catalog_ViewerPreferences_Base : ISpecification<PdfDi
 /// <summary>
 /// Catalog_PageLayout 
 /// </summary>
-internal partial class APM_Catalog_PageLayout : APM_Catalog_PageLayout_Base
+internal partial class APM_Catalog_PageLayout : APM_Catalog_PageLayout__Base
 {
 }
 
 
-internal partial class APM_Catalog_PageLayout_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_PageLayout__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_PageLayout";
     public static bool RuleGroup() { return false; }
@@ -431,13 +427,11 @@ internal partial class APM_Catalog_PageLayout_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_Catalog_PageLayout>(obj, "PageLayout", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SinglePage" || val == "OneColumn" || val == "TwoColumnLeft" || val == "TwoColumnRight" || val == "TwoPageLeft" || val == "TwoPageRight")) 
         {
             ctx.Fail<APM_Catalog_PageLayout>($"Invalid value {val}, allowed are: [SinglePage,OneColumn,TwoColumnLeft,TwoColumnRight,TwoPageLeft,TwoPageRight]");
-        }
         }
         // no linked objects
         
@@ -449,12 +443,12 @@ internal partial class APM_Catalog_PageLayout_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Catalog_PageMode 
 /// </summary>
-internal partial class APM_Catalog_PageMode : APM_Catalog_PageMode_Base
+internal partial class APM_Catalog_PageMode : APM_Catalog_PageMode__Base
 {
 }
 
 
-internal partial class APM_Catalog_PageMode_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_PageMode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_PageMode";
     public static bool RuleGroup() { return false; }
@@ -465,13 +459,11 @@ internal partial class APM_Catalog_PageMode_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Catalog_PageMode>(obj, "PageMode", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "UseNone" || val == "UseOutlines" || val == "UseThumbs" || val == "FullScreen" || val == "UseOC" || val == "UseAttachments")) 
         {
             ctx.Fail<APM_Catalog_PageMode>($"Invalid value {val}, allowed are: [UseNone,UseOutlines,UseThumbs,FullScreen,UseOC,UseAttachments]");
-        }
         }
         // no linked objects
         
@@ -483,12 +475,12 @@ internal partial class APM_Catalog_PageMode_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Outlines https://github.com/pdf-association/pdf-issues/issues/106
 /// </summary>
-internal partial class APM_Catalog_Outlines : APM_Catalog_Outlines_Base
+internal partial class APM_Catalog_Outlines : APM_Catalog_Outlines__Base
 {
 }
 
 
-internal partial class APM_Catalog_Outlines_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Outlines__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Outlines";
     public static bool RuleGroup() { return false; }
@@ -510,12 +502,12 @@ internal partial class APM_Catalog_Outlines_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Threads https://github.com/pdf-association/pdf-issues/issues/106
 /// </summary>
-internal partial class APM_Catalog_Threads : APM_Catalog_Threads_Base
+internal partial class APM_Catalog_Threads : APM_Catalog_Threads__Base
 {
 }
 
 
-internal partial class APM_Catalog_Threads_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Threads__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Threads";
     public static bool RuleGroup() { return false; }
@@ -537,12 +529,12 @@ internal partial class APM_Catalog_Threads_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_OpenAction 
 /// </summary>
-internal partial class APM_Catalog_OpenAction : APM_Catalog_OpenAction_Base
+internal partial class APM_Catalog_OpenAction : APM_Catalog_OpenAction__Base
 {
 }
 
 
-internal partial class APM_Catalog_OpenAction_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_OpenAction__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_OpenAction";
     public static bool RuleGroup() { return false; }
@@ -599,6 +591,57 @@ internal partial class APM_Catalog_OpenAction_Base : ISpecification<PdfDictionar
                     } else if (APM_ActionURI.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionURI, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionNOP.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionNOP, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionSetState.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionSetState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionSound.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionSound, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionMovie.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionMovie, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionHide.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionHide, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionNamed.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionNamed, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionSubmitForm.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionSubmitForm, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionResetForm.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionResetForm, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionImportData.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionImportData, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionSetOCGState.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionSetOCGState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionRendition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRendition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionTransition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionTransition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ActionECMAScript.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_Catalog_OpenAction>("OpenAction did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,fn:IsPDFVersion(1.2,ActionNOP),fn:IsPDFVersion(1.2,ActionSetState),ActionThread,ActionURI,fn:SinceVersion(1.2,ActionSound),fn:SinceVersion(1.2,ActionMovie),fn:SinceVersion(1.2,ActionHide),fn:SinceVersion(1.2,ActionNamed),fn:SinceVersion(1.2,ActionSubmitForm),fn:SinceVersion(1.2,ActionResetForm),fn:SinceVersion(1.2,ActionImportData),fn:SinceVersion(1.5,ActionSetOCGState),fn:SinceVersion(1.5,ActionRendition),fn:SinceVersion(1.5,ActionTransition),fn:SinceVersion(1.6,ActionGoTo3DView),fn:SinceVersion(1.3,ActionECMAScript),fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -618,12 +661,12 @@ internal partial class APM_Catalog_OpenAction_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Catalog_AA 
 /// </summary>
-internal partial class APM_Catalog_AA : APM_Catalog_AA_Base
+internal partial class APM_Catalog_AA : APM_Catalog_AA__Base
 {
 }
 
 
-internal partial class APM_Catalog_AA_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_AA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_AA";
     public static bool RuleGroup() { return false; }
@@ -645,12 +688,12 @@ internal partial class APM_Catalog_AA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_URI 
 /// </summary>
-internal partial class APM_Catalog_URI : APM_Catalog_URI_Base
+internal partial class APM_Catalog_URI : APM_Catalog_URI__Base
 {
 }
 
 
-internal partial class APM_Catalog_URI_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_URI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_URI";
     public static bool RuleGroup() { return false; }
@@ -672,12 +715,12 @@ internal partial class APM_Catalog_URI_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_AcroForm 
 /// </summary>
-internal partial class APM_Catalog_AcroForm : APM_Catalog_AcroForm_Base
+internal partial class APM_Catalog_AcroForm : APM_Catalog_AcroForm__Base
 {
 }
 
 
-internal partial class APM_Catalog_AcroForm_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_AcroForm__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_AcroForm";
     public static bool RuleGroup() { return false; }
@@ -699,12 +742,12 @@ internal partial class APM_Catalog_AcroForm_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Metadata 
 /// </summary>
-internal partial class APM_Catalog_Metadata : APM_Catalog_Metadata_Base
+internal partial class APM_Catalog_Metadata : APM_Catalog_Metadata__Base
 {
 }
 
 
-internal partial class APM_Catalog_Metadata_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Metadata__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Metadata";
     public static bool RuleGroup() { return false; }
@@ -726,12 +769,12 @@ internal partial class APM_Catalog_Metadata_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_StructTreeRoot 
 /// </summary>
-internal partial class APM_Catalog_StructTreeRoot : APM_Catalog_StructTreeRoot_Base
+internal partial class APM_Catalog_StructTreeRoot : APM_Catalog_StructTreeRoot__Base
 {
 }
 
 
-internal partial class APM_Catalog_StructTreeRoot_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_StructTreeRoot__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_StructTreeRoot";
     public static bool RuleGroup() { return false; }
@@ -753,12 +796,12 @@ internal partial class APM_Catalog_StructTreeRoot_Base : ISpecification<PdfDicti
 /// <summary>
 /// Catalog_MarkInfo 
 /// </summary>
-internal partial class APM_Catalog_MarkInfo : APM_Catalog_MarkInfo_Base
+internal partial class APM_Catalog_MarkInfo : APM_Catalog_MarkInfo__Base
 {
 }
 
 
-internal partial class APM_Catalog_MarkInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_MarkInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_MarkInfo";
     public static bool RuleGroup() { return false; }
@@ -780,12 +823,12 @@ internal partial class APM_Catalog_MarkInfo_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Lang 
 /// </summary>
-internal partial class APM_Catalog_Lang : APM_Catalog_Lang_Base
+internal partial class APM_Catalog_Lang : APM_Catalog_Lang__Base
 {
 }
 
 
-internal partial class APM_Catalog_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Lang";
     public static bool RuleGroup() { return false; }
@@ -807,12 +850,12 @@ internal partial class APM_Catalog_Lang_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_SpiderInfo 
 /// </summary>
-internal partial class APM_Catalog_SpiderInfo : APM_Catalog_SpiderInfo_Base
+internal partial class APM_Catalog_SpiderInfo : APM_Catalog_SpiderInfo__Base
 {
 }
 
 
-internal partial class APM_Catalog_SpiderInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_SpiderInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_SpiderInfo";
     public static bool RuleGroup() { return false; }
@@ -834,12 +877,12 @@ internal partial class APM_Catalog_SpiderInfo_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Catalog_OutputIntents 
 /// </summary>
-internal partial class APM_Catalog_OutputIntents : APM_Catalog_OutputIntents_Base
+internal partial class APM_Catalog_OutputIntents : APM_Catalog_OutputIntents__Base
 {
 }
 
 
-internal partial class APM_Catalog_OutputIntents_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_OutputIntents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_OutputIntents";
     public static bool RuleGroup() { return false; }
@@ -861,12 +904,12 @@ internal partial class APM_Catalog_OutputIntents_Base : ISpecification<PdfDictio
 /// <summary>
 /// Catalog_PieceInfo 
 /// </summary>
-internal partial class APM_Catalog_PieceInfo : APM_Catalog_PieceInfo_Base
+internal partial class APM_Catalog_PieceInfo : APM_Catalog_PieceInfo__Base
 {
 }
 
 
-internal partial class APM_Catalog_PieceInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_PieceInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_PieceInfo";
     public static bool RuleGroup() { return false; }
@@ -888,12 +931,12 @@ internal partial class APM_Catalog_PieceInfo_Base : ISpecification<PdfDictionary
 /// <summary>
 /// Catalog_OCProperties 
 /// </summary>
-internal partial class APM_Catalog_OCProperties : APM_Catalog_OCProperties_Base
+internal partial class APM_Catalog_OCProperties : APM_Catalog_OCProperties__Base
 {
 }
 
 
-internal partial class APM_Catalog_OCProperties_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_OCProperties__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_OCProperties";
     public static bool RuleGroup() { return false; }
@@ -915,12 +958,12 @@ internal partial class APM_Catalog_OCProperties_Base : ISpecification<PdfDiction
 /// <summary>
 /// Catalog_Perms 
 /// </summary>
-internal partial class APM_Catalog_Perms : APM_Catalog_Perms_Base
+internal partial class APM_Catalog_Perms : APM_Catalog_Perms__Base
 {
 }
 
 
-internal partial class APM_Catalog_Perms_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Perms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Perms";
     public static bool RuleGroup() { return false; }
@@ -942,12 +985,12 @@ internal partial class APM_Catalog_Perms_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Legal 
 /// </summary>
-internal partial class APM_Catalog_Legal : APM_Catalog_Legal_Base
+internal partial class APM_Catalog_Legal : APM_Catalog_Legal__Base
 {
 }
 
 
-internal partial class APM_Catalog_Legal_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Legal__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Legal";
     public static bool RuleGroup() { return false; }
@@ -969,12 +1012,12 @@ internal partial class APM_Catalog_Legal_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_Requirements 
 /// </summary>
-internal partial class APM_Catalog_Requirements : APM_Catalog_Requirements_Base
+internal partial class APM_Catalog_Requirements : APM_Catalog_Requirements__Base
 {
 }
 
 
-internal partial class APM_Catalog_Requirements_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Requirements__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Requirements";
     public static bool RuleGroup() { return false; }
@@ -996,12 +1039,12 @@ internal partial class APM_Catalog_Requirements_Base : ISpecification<PdfDiction
 /// <summary>
 /// Catalog_Collection 
 /// </summary>
-internal partial class APM_Catalog_Collection : APM_Catalog_Collection_Base
+internal partial class APM_Catalog_Collection : APM_Catalog_Collection__Base
 {
 }
 
 
-internal partial class APM_Catalog_Collection_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_Collection__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_Collection";
     public static bool RuleGroup() { return false; }
@@ -1023,12 +1066,12 @@ internal partial class APM_Catalog_Collection_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Catalog_NeedsRendering 
 /// </summary>
-internal partial class APM_Catalog_NeedsRendering : APM_Catalog_NeedsRendering_Base
+internal partial class APM_Catalog_NeedsRendering : APM_Catalog_NeedsRendering__Base
 {
 }
 
 
-internal partial class APM_Catalog_NeedsRendering_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_NeedsRendering__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_NeedsRendering";
     public static bool RuleGroup() { return false; }
@@ -1050,12 +1093,12 @@ internal partial class APM_Catalog_NeedsRendering_Base : ISpecification<PdfDicti
 /// <summary>
 /// Catalog_DSS 
 /// </summary>
-internal partial class APM_Catalog_DSS : APM_Catalog_DSS_Base
+internal partial class APM_Catalog_DSS : APM_Catalog_DSS__Base
 {
 }
 
 
-internal partial class APM_Catalog_DSS_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_DSS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_DSS";
     public static bool RuleGroup() { return false; }
@@ -1077,12 +1120,12 @@ internal partial class APM_Catalog_DSS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_AF 
 /// </summary>
-internal partial class APM_Catalog_AF : APM_Catalog_AF_Base
+internal partial class APM_Catalog_AF : APM_Catalog_AF__Base
 {
 }
 
 
-internal partial class APM_Catalog_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_AF";
     public static bool RuleGroup() { return false; }
@@ -1092,7 +1135,11 @@ internal partial class APM_Catalog_AF_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_Catalog_AF>(obj, "AF", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var AF = obj.Get("AF");
+        if (!(gte(((AF as PdfArray)?.Count),1))) 
+        {
+            ctx.Fail<APM_Catalog_AF>($"Value failed special case check: fn:Eval(fn:ArrayLength(AF)>=1)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfFileSpecifications, PdfArray>(stack, val, obj);
         
@@ -1104,12 +1151,12 @@ internal partial class APM_Catalog_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Catalog_DPartRoot 
 /// </summary>
-internal partial class APM_Catalog_DPartRoot : APM_Catalog_DPartRoot_Base
+internal partial class APM_Catalog_DPartRoot : APM_Catalog_DPartRoot__Base
 {
 }
 
 
-internal partial class APM_Catalog_DPartRoot_Base : ISpecification<PdfDictionary>
+internal partial class APM_Catalog_DPartRoot__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Catalog_DPartRoot";
     public static bool RuleGroup() { return false; }

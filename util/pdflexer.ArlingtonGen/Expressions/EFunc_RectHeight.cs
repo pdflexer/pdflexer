@@ -20,10 +20,12 @@ internal class EFunc_RectHeight : EFunBase, INode
 
     IEnumerable<string> INode.GetRequiredValues()
     {
-        var val = (Inputs[0].Children[0] as EValue)?.Text;
-        if (val != null)
+        var prev = VariableContext.InEval;
+        VariableContext.InEval = true;
+        foreach (var item in Inputs.Cast<INode>().SelectMany(x=> x.GetRequiredValues()))
         {
-            yield return val;
+            yield return item;
         }
+        VariableContext.InEval = prev;
     }
 }

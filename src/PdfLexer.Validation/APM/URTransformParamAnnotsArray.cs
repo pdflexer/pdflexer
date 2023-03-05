@@ -18,7 +18,7 @@ internal partial class APM_URTransformParamAnnotsArray : ISpecification<PdfArray
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -42,13 +42,11 @@ internal partial class APM_URTransformParamAnnotsArray_x : ISpecification<PdfArr
             var val = ctx.GetOptional<PdfName, APM_URTransformParamAnnotsArray_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
-            {
             
             
             if (!(val == "Create" || val == "Delete" || val == "Modify" || val == "Copy" || val == "Import" || val == "Export" || val == "Online" || val == "SummaryView")) 
             {
                 ctx.Fail<APM_URTransformParamAnnotsArray_x>($"Invalid value {val}, allowed are: [Create,Delete,Modify,Copy,Import,Export,Online,SummaryView]");
-            }
             }
             // no linked objects
             

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaConfiguration : APM_RichMediaConfiguration_Base
+internal partial class APM_RichMediaConfiguration : APM_RichMediaConfiguration__Base
 {
 }
 
-internal partial class APM_RichMediaConfiguration_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaConfiguration__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaConfiguration";
@@ -48,12 +48,12 @@ internal partial class APM_RichMediaConfiguration_Base : ISpecification<PdfDicti
 /// <summary>
 /// RichMediaConfiguration_Type Table 342
 /// </summary>
-internal partial class APM_RichMediaConfiguration_Type : APM_RichMediaConfiguration_Type_Base
+internal partial class APM_RichMediaConfiguration_Type : APM_RichMediaConfiguration_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaConfiguration_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaConfiguration_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaConfiguration_Type";
     public static bool RuleGroup() { return false; }
@@ -64,13 +64,11 @@ internal partial class APM_RichMediaConfiguration_Type_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_RichMediaConfiguration_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaConfiguration")) 
         {
             ctx.Fail<APM_RichMediaConfiguration_Type>($"Invalid value {val}, allowed are: [RichMediaConfiguration]");
-        }
         }
         // no linked objects
         
@@ -82,12 +80,12 @@ internal partial class APM_RichMediaConfiguration_Type_Base : ISpecification<Pdf
 /// <summary>
 /// RichMediaConfiguration_Subtype 
 /// </summary>
-internal partial class APM_RichMediaConfiguration_Subtype : APM_RichMediaConfiguration_Subtype_Base
+internal partial class APM_RichMediaConfiguration_Subtype : APM_RichMediaConfiguration_Subtype__Base
 {
 }
 
 
-internal partial class APM_RichMediaConfiguration_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaConfiguration_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaConfiguration_Subtype";
     public static bool RuleGroup() { return false; }
@@ -98,13 +96,11 @@ internal partial class APM_RichMediaConfiguration_Subtype_Base : ISpecification<
         var val = ctx.GetOptional<PdfName, APM_RichMediaConfiguration_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3D" || val == "Sound" || val == "Video")) 
         {
             ctx.Fail<APM_RichMediaConfiguration_Subtype>($"Invalid value {val}, allowed are: [3D,Sound,Video]");
-        }
         }
         // no linked objects
         
@@ -116,12 +112,12 @@ internal partial class APM_RichMediaConfiguration_Subtype_Base : ISpecification<
 /// <summary>
 /// RichMediaConfiguration_Name 
 /// </summary>
-internal partial class APM_RichMediaConfiguration_Name : APM_RichMediaConfiguration_Name_Base
+internal partial class APM_RichMediaConfiguration_Name : APM_RichMediaConfiguration_Name__Base
 {
 }
 
 
-internal partial class APM_RichMediaConfiguration_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaConfiguration_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaConfiguration_Name";
     public static bool RuleGroup() { return false; }
@@ -143,12 +139,12 @@ internal partial class APM_RichMediaConfiguration_Name_Base : ISpecification<Pdf
 /// <summary>
 /// RichMediaConfiguration_Instances 
 /// </summary>
-internal partial class APM_RichMediaConfiguration_Instances : APM_RichMediaConfiguration_Instances_Base
+internal partial class APM_RichMediaConfiguration_Instances : APM_RichMediaConfiguration_Instances__Base
 {
 }
 
 
-internal partial class APM_RichMediaConfiguration_Instances_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaConfiguration_Instances__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaConfiguration_Instances";
     public static bool RuleGroup() { return false; }

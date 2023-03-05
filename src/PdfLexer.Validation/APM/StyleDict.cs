@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_StyleDict : APM_StyleDict_Base
+internal partial class APM_StyleDict : APM_StyleDict__Base
 {
 }
 
-internal partial class APM_StyleDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_StyleDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "StyleDict";
@@ -128,12 +128,12 @@ internal partial class APM_StyleDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StyleDict_Panose Clause 9.8.3.2
 /// </summary>
-internal partial class APM_StyleDict_Panose : APM_StyleDict_Panose_Base
+internal partial class APM_StyleDict_Panose : APM_StyleDict_Panose__Base
 {
 }
 
 
-internal partial class APM_StyleDict_Panose_Base : ISpecification<PdfDictionary>
+internal partial class APM_StyleDict_Panose__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StyleDict_Panose";
     public static bool RuleGroup() { return false; }
@@ -143,7 +143,11 @@ internal partial class APM_StyleDict_Panose_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfString, APM_StyleDict_Panose>(obj, "Panose", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(eq(StringLength(obj),12))) 
+        {
+            ctx.Fail<APM_StyleDict_Panose>($"Value failed special case check: fn:Eval(fn:StringLength(Panose)==12)");
+        }
         // no value restrictions
         // no linked objects
         

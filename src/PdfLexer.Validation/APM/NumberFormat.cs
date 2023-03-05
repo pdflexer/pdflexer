@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_NumberFormat : APM_NumberFormat_Base
+internal partial class APM_NumberFormat : APM_NumberFormat__Base
 {
 }
 
-internal partial class APM_NumberFormat_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "NumberFormat";
@@ -104,12 +104,12 @@ internal partial class APM_NumberFormat_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_Type Table 268
 /// </summary>
-internal partial class APM_NumberFormat_Type : APM_NumberFormat_Type_Base
+internal partial class APM_NumberFormat_Type : APM_NumberFormat_Type__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_Type";
     public static bool RuleGroup() { return false; }
@@ -120,13 +120,11 @@ internal partial class APM_NumberFormat_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_NumberFormat_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "NumberFormat")) 
         {
             ctx.Fail<APM_NumberFormat_Type>($"Invalid value {val}, allowed are: [NumberFormat]");
-        }
         }
         // no linked objects
         
@@ -138,12 +136,12 @@ internal partial class APM_NumberFormat_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// NumberFormat_U 
 /// </summary>
-internal partial class APM_NumberFormat_U : APM_NumberFormat_U_Base
+internal partial class APM_NumberFormat_U : APM_NumberFormat_U__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_U_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_U__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_U";
     public static bool RuleGroup() { return false; }
@@ -165,12 +163,12 @@ internal partial class APM_NumberFormat_U_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_C 
 /// </summary>
-internal partial class APM_NumberFormat_C : APM_NumberFormat_C_Base
+internal partial class APM_NumberFormat_C : APM_NumberFormat_C__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_C";
     public static bool RuleGroup() { return false; }
@@ -192,12 +190,12 @@ internal partial class APM_NumberFormat_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_F 
 /// </summary>
-internal partial class APM_NumberFormat_F : APM_NumberFormat_F_Base
+internal partial class APM_NumberFormat_F : APM_NumberFormat_F__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_F";
     public static bool RuleGroup() { return false; }
@@ -207,14 +205,12 @@ internal partial class APM_NumberFormat_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_NumberFormat_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "D" || val == "F" || val == "R" || val == "T")) 
         {
             ctx.Fail<APM_NumberFormat_F>($"Invalid value {val}, allowed are: [D,F,R,T]");
-        }
         }
         // no linked objects
         
@@ -226,12 +222,12 @@ internal partial class APM_NumberFormat_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_D 
 /// </summary>
-internal partial class APM_NumberFormat_D : APM_NumberFormat_D_Base
+internal partial class APM_NumberFormat_D : APM_NumberFormat_D__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_D";
     public static bool RuleGroup() { return false; }
@@ -241,14 +237,12 @@ internal partial class APM_NumberFormat_D_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_NumberFormat_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
-        IPdfObject @D = val;
-        if (!(gt(@D,0))) 
+        var D = obj.Get("D");
+        if (!(gt(D,0))) 
         {
             ctx.Fail<APM_NumberFormat_D>($"Invalid value {val}, allowed are: [fn:Eval(@D>0)]");
-        }
         }
         // no linked objects
         
@@ -260,12 +254,12 @@ internal partial class APM_NumberFormat_D_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_FD 
 /// </summary>
-internal partial class APM_NumberFormat_FD : APM_NumberFormat_FD_Base
+internal partial class APM_NumberFormat_FD : APM_NumberFormat_FD__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_FD_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_FD__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_FD";
     public static bool RuleGroup() { return false; }
@@ -275,7 +269,7 @@ internal partial class APM_NumberFormat_FD_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfBoolean, APM_NumberFormat_FD>(obj, "FD", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -287,12 +281,12 @@ internal partial class APM_NumberFormat_FD_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_RT 
 /// </summary>
-internal partial class APM_NumberFormat_RT : APM_NumberFormat_RT_Base
+internal partial class APM_NumberFormat_RT : APM_NumberFormat_RT__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_RT_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_RT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_RT";
     public static bool RuleGroup() { return false; }
@@ -314,12 +308,12 @@ internal partial class APM_NumberFormat_RT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_RD 
 /// </summary>
-internal partial class APM_NumberFormat_RD : APM_NumberFormat_RD_Base
+internal partial class APM_NumberFormat_RD : APM_NumberFormat_RD__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_RD_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_RD__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_RD";
     public static bool RuleGroup() { return false; }
@@ -341,12 +335,12 @@ internal partial class APM_NumberFormat_RD_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_PS 
 /// </summary>
-internal partial class APM_NumberFormat_PS : APM_NumberFormat_PS_Base
+internal partial class APM_NumberFormat_PS : APM_NumberFormat_PS__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_PS_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_PS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_PS";
     public static bool RuleGroup() { return false; }
@@ -368,12 +362,12 @@ internal partial class APM_NumberFormat_PS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_SS 
 /// </summary>
-internal partial class APM_NumberFormat_SS : APM_NumberFormat_SS_Base
+internal partial class APM_NumberFormat_SS : APM_NumberFormat_SS__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_SS_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_SS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_SS";
     public static bool RuleGroup() { return false; }
@@ -395,12 +389,12 @@ internal partial class APM_NumberFormat_SS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NumberFormat_O 
 /// </summary>
-internal partial class APM_NumberFormat_O : APM_NumberFormat_O_Base
+internal partial class APM_NumberFormat_O : APM_NumberFormat_O__Base
 {
 }
 
 
-internal partial class APM_NumberFormat_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_NumberFormat_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NumberFormat_O";
     public static bool RuleGroup() { return false; }
@@ -411,13 +405,11 @@ internal partial class APM_NumberFormat_O_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_NumberFormat_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "S" || val == "P")) 
         {
             ctx.Fail<APM_NumberFormat_O>($"Invalid value {val}, allowed are: [S,P]");
-        }
         }
         // no linked objects
         

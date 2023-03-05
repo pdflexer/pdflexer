@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ICCProfileStream : APM_ICCProfileStream_Base
+internal partial class APM_ICCProfileStream : APM_ICCProfileStream__Base
 {
 }
 
-internal partial class APM_ICCProfileStream_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ICCProfileStream";
@@ -129,12 +129,12 @@ internal partial class APM_ICCProfileStream_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ICCProfileStream_N Table 5 and Table 65
 /// </summary>
-internal partial class APM_ICCProfileStream_N : APM_ICCProfileStream_N_Base
+internal partial class APM_ICCProfileStream_N : APM_ICCProfileStream_N__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_N";
     public static bool RuleGroup() { return false; }
@@ -145,13 +145,11 @@ internal partial class APM_ICCProfileStream_N_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfIntNumber, APM_ICCProfileStream_N>(obj, "N", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 3 || val == 4)) 
         {
             ctx.Fail<APM_ICCProfileStream_N>($"Invalid value {val}, allowed are: [1,3,4]");
-        }
         }
         // no linked objects
         
@@ -163,12 +161,12 @@ internal partial class APM_ICCProfileStream_N_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ICCProfileStream_Alternate 
 /// </summary>
-internal partial class APM_ICCProfileStream_Alternate : APM_ICCProfileStream_Alternate_Base
+internal partial class APM_ICCProfileStream_Alternate : APM_ICCProfileStream_Alternate__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_Alternate_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_Alternate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_Alternate";
     public static bool RuleGroup() { return false; }
@@ -215,13 +213,11 @@ internal partial class APM_ICCProfileStream_Alternate_Base : ISpecification<PdfD
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceGray" || val == "DeviceRGB" || val == "DeviceCMYK")) 
                     {
                         ctx.Fail<APM_ICCProfileStream_Alternate>($"Invalid value {val}, allowed are: [DeviceGray,DeviceRGB,DeviceCMYK]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -239,12 +235,12 @@ internal partial class APM_ICCProfileStream_Alternate_Base : ISpecification<PdfD
 /// <summary>
 /// ICCProfileStream_Range 
 /// </summary>
-internal partial class APM_ICCProfileStream_Range : APM_ICCProfileStream_Range_Base
+internal partial class APM_ICCProfileStream_Range : APM_ICCProfileStream_Range__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_Range_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_Range__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_Range";
     public static bool RuleGroup() { return false; }
@@ -254,7 +250,12 @@ internal partial class APM_ICCProfileStream_Range_Base : ISpecification<PdfDicti
     {
         var val = ctx.GetOptional<PdfArray, APM_ICCProfileStream_Range>(obj, "Range", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Range = obj.Get("Range");
+        var N = obj.Get("N");
+        if (!(eq(((Range as PdfArray)?.Count),mult(2,N)))) 
+        {
+            ctx.Fail<APM_ICCProfileStream_Range>($"Value failed special case check: fn:Eval(fn:ArrayLength(Range)==(2 * @N))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -266,12 +267,12 @@ internal partial class APM_ICCProfileStream_Range_Base : ISpecification<PdfDicti
 /// <summary>
 /// ICCProfileStream_Metadata 
 /// </summary>
-internal partial class APM_ICCProfileStream_Metadata : APM_ICCProfileStream_Metadata_Base
+internal partial class APM_ICCProfileStream_Metadata : APM_ICCProfileStream_Metadata__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_Metadata_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_Metadata__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_Metadata";
     public static bool RuleGroup() { return false; }
@@ -293,12 +294,12 @@ internal partial class APM_ICCProfileStream_Metadata_Base : ISpecification<PdfDi
 /// <summary>
 /// ICCProfileStream_Length 
 /// </summary>
-internal partial class APM_ICCProfileStream_Length : APM_ICCProfileStream_Length_Base
+internal partial class APM_ICCProfileStream_Length : APM_ICCProfileStream_Length__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_Length";
     public static bool RuleGroup() { return false; }
@@ -320,12 +321,12 @@ internal partial class APM_ICCProfileStream_Length_Base : ISpecification<PdfDict
 /// <summary>
 /// ICCProfileStream_Filter 
 /// </summary>
-internal partial class APM_ICCProfileStream_Filter : APM_ICCProfileStream_Filter_Base
+internal partial class APM_ICCProfileStream_Filter : APM_ICCProfileStream_Filter__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_Filter";
     public static bool RuleGroup() { return false; }
@@ -341,7 +342,12 @@ internal partial class APM_ICCProfileStream_Filter_Base : ISpecification<PdfDict
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_ICCProfileStream_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -351,13 +357,11 @@ internal partial class APM_ICCProfileStream_Filter_Base : ISpecification<PdfDict
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_ICCProfileStream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -375,12 +379,12 @@ internal partial class APM_ICCProfileStream_Filter_Base : ISpecification<PdfDict
 /// <summary>
 /// ICCProfileStream_DecodeParms 
 /// </summary>
-internal partial class APM_ICCProfileStream_DecodeParms : APM_ICCProfileStream_DecodeParms_Base
+internal partial class APM_ICCProfileStream_DecodeParms : APM_ICCProfileStream_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -396,7 +400,12 @@ internal partial class APM_ICCProfileStream_DecodeParms_Base : ISpecification<Pd
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_ICCProfileStream_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -413,6 +422,9 @@ internal partial class APM_ICCProfileStream_DecodeParms_Base : ISpecification<Pd
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ICCProfileStream_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -432,12 +444,12 @@ internal partial class APM_ICCProfileStream_DecodeParms_Base : ISpecification<Pd
 /// <summary>
 /// ICCProfileStream_DestOutputProfile 
 /// </summary>
-internal partial class APM_ICCProfileStream_DestOutputProfile : APM_ICCProfileStream_DestOutputProfile_Base
+internal partial class APM_ICCProfileStream_DestOutputProfile : APM_ICCProfileStream_DestOutputProfile__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_DestOutputProfile_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_DestOutputProfile__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_DestOutputProfile";
     public static bool RuleGroup() { return false; }
@@ -470,6 +482,9 @@ internal partial class APM_ICCProfileStream_DestOutputProfile_Base : ISpecificat
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ICCProfileStream_DestOutputProfile>("DestOutputProfile did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -489,12 +504,12 @@ internal partial class APM_ICCProfileStream_DestOutputProfile_Base : ISpecificat
 /// <summary>
 /// ICCProfileStream_F 
 /// </summary>
-internal partial class APM_ICCProfileStream_F : APM_ICCProfileStream_F_Base
+internal partial class APM_ICCProfileStream_F : APM_ICCProfileStream_F__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_F";
     public static bool RuleGroup() { return false; }
@@ -537,12 +552,12 @@ internal partial class APM_ICCProfileStream_F_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ICCProfileStream_FFilter 
 /// </summary>
-internal partial class APM_ICCProfileStream_FFilter : APM_ICCProfileStream_FFilter_Base
+internal partial class APM_ICCProfileStream_FFilter : APM_ICCProfileStream_FFilter__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_FFilter";
     public static bool RuleGroup() { return false; }
@@ -558,7 +573,12 @@ internal partial class APM_ICCProfileStream_FFilter_Base : ISpecification<PdfDic
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_ICCProfileStream_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -568,13 +588,11 @@ internal partial class APM_ICCProfileStream_FFilter_Base : ISpecification<PdfDic
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_ICCProfileStream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -592,12 +610,12 @@ internal partial class APM_ICCProfileStream_FFilter_Base : ISpecification<PdfDic
 /// <summary>
 /// ICCProfileStream_FDecodeParms 
 /// </summary>
-internal partial class APM_ICCProfileStream_FDecodeParms : APM_ICCProfileStream_FDecodeParms_Base
+internal partial class APM_ICCProfileStream_FDecodeParms : APM_ICCProfileStream_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -613,7 +631,12 @@ internal partial class APM_ICCProfileStream_FDecodeParms_Base : ISpecification<P
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_ICCProfileStream_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -630,6 +653,9 @@ internal partial class APM_ICCProfileStream_FDecodeParms_Base : ISpecification<P
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ICCProfileStream_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -649,12 +675,12 @@ internal partial class APM_ICCProfileStream_FDecodeParms_Base : ISpecification<P
 /// <summary>
 /// ICCProfileStream_DL 
 /// </summary>
-internal partial class APM_ICCProfileStream_DL : APM_ICCProfileStream_DL_Base
+internal partial class APM_ICCProfileStream_DL : APM_ICCProfileStream_DL__Base
 {
 }
 
 
-internal partial class APM_ICCProfileStream_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_ICCProfileStream_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ICCProfileStream_DL";
     public static bool RuleGroup() { return false; }
@@ -664,7 +690,11 @@ internal partial class APM_ICCProfileStream_DL_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_ICCProfileStream_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
+        {
+            ctx.Fail<APM_ICCProfileStream_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         // no value restrictions
         // no linked objects
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AppearanceTrapNet : APM_AppearanceTrapNet_Base
+internal partial class APM_AppearanceTrapNet : APM_AppearanceTrapNet__Base
 {
 }
 
-internal partial class APM_AppearanceTrapNet_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceTrapNet__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AppearanceTrapNet";
@@ -110,12 +110,12 @@ internal partial class APM_AppearanceTrapNet_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AppearanceTrapNet_N Table 170
 /// </summary>
-internal partial class APM_AppearanceTrapNet_N : APM_AppearanceTrapNet_N_Base
+internal partial class APM_AppearanceTrapNet_N : APM_AppearanceTrapNet_N__Base
 {
 }
 
 
-internal partial class APM_AppearanceTrapNet_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceTrapNet_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceTrapNet_N";
     public static bool RuleGroup() { return false; }
@@ -158,12 +158,12 @@ internal partial class APM_AppearanceTrapNet_N_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AppearanceTrapNet_R 
 /// </summary>
-internal partial class APM_AppearanceTrapNet_R : APM_AppearanceTrapNet_R_Base
+internal partial class APM_AppearanceTrapNet_R : APM_AppearanceTrapNet_R__Base
 {
 }
 
 
-internal partial class APM_AppearanceTrapNet_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceTrapNet_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceTrapNet_R";
     public static bool RuleGroup() { return false; }
@@ -206,12 +206,12 @@ internal partial class APM_AppearanceTrapNet_R_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AppearanceTrapNet_D 
 /// </summary>
-internal partial class APM_AppearanceTrapNet_D : APM_AppearanceTrapNet_D_Base
+internal partial class APM_AppearanceTrapNet_D : APM_AppearanceTrapNet_D__Base
 {
 }
 
 
-internal partial class APM_AppearanceTrapNet_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceTrapNet_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceTrapNet_D";
     public static bool RuleGroup() { return false; }

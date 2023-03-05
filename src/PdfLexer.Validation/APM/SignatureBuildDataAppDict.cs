@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SignatureBuildDataAppDict : APM_SignatureBuildDataAppDict_Base
+internal partial class APM_SignatureBuildDataAppDict : APM_SignatureBuildDataAppDict__Base
 {
 }
 
-internal partial class APM_SignatureBuildDataAppDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SignatureBuildDataAppDict";
@@ -106,12 +106,12 @@ internal partial class APM_SignatureBuildDataAppDict_Base : ISpecification<PdfDi
 /// <summary>
 /// SignatureBuildDataAppDict_Name Adobe "Digital Signature Build Dictionary Specification" Table 2 and Table 3
 /// </summary>
-internal partial class APM_SignatureBuildDataAppDict_Name : APM_SignatureBuildDataAppDict_Name_Base
+internal partial class APM_SignatureBuildDataAppDict_Name : APM_SignatureBuildDataAppDict_Name__Base
 {
 }
 
 
-internal partial class APM_SignatureBuildDataAppDict_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureBuildDataAppDict_Name";
     public static bool RuleGroup() { return false; }
@@ -133,12 +133,12 @@ internal partial class APM_SignatureBuildDataAppDict_Name_Base : ISpecification<
 /// <summary>
 /// SignatureBuildDataAppDict_Date 
 /// </summary>
-internal partial class APM_SignatureBuildDataAppDict_Date : APM_SignatureBuildDataAppDict_Date_Base
+internal partial class APM_SignatureBuildDataAppDict_Date : APM_SignatureBuildDataAppDict_Date__Base
 {
 }
 
 
-internal partial class APM_SignatureBuildDataAppDict_Date_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict_Date__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureBuildDataAppDict_Date";
     public static bool RuleGroup() { return false; }
@@ -160,12 +160,12 @@ internal partial class APM_SignatureBuildDataAppDict_Date_Base : ISpecification<
 /// <summary>
 /// SignatureBuildDataAppDict_R 
 /// </summary>
-internal partial class APM_SignatureBuildDataAppDict_R : APM_SignatureBuildDataAppDict_R_Base
+internal partial class APM_SignatureBuildDataAppDict_R : APM_SignatureBuildDataAppDict_R__Base
 {
 }
 
 
-internal partial class APM_SignatureBuildDataAppDict_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureBuildDataAppDict_R";
     public static bool RuleGroup() { return false; }
@@ -187,12 +187,12 @@ internal partial class APM_SignatureBuildDataAppDict_R_Base : ISpecification<Pdf
 /// <summary>
 /// SignatureBuildDataAppDict_PreRelease 
 /// </summary>
-internal partial class APM_SignatureBuildDataAppDict_PreRelease : APM_SignatureBuildDataAppDict_PreRelease_Base
+internal partial class APM_SignatureBuildDataAppDict_PreRelease : APM_SignatureBuildDataAppDict_PreRelease__Base
 {
 }
 
 
-internal partial class APM_SignatureBuildDataAppDict_PreRelease_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict_PreRelease__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureBuildDataAppDict_PreRelease";
     public static bool RuleGroup() { return false; }
@@ -214,12 +214,12 @@ internal partial class APM_SignatureBuildDataAppDict_PreRelease_Base : ISpecific
 /// <summary>
 /// SignatureBuildDataAppDict_OS 
 /// </summary>
-internal partial class APM_SignatureBuildDataAppDict_OS : APM_SignatureBuildDataAppDict_OS_Base
+internal partial class APM_SignatureBuildDataAppDict_OS : APM_SignatureBuildDataAppDict_OS__Base
 {
 }
 
 
-internal partial class APM_SignatureBuildDataAppDict_OS_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict_OS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureBuildDataAppDict_OS";
     public static bool RuleGroup() { return false; }
@@ -241,12 +241,12 @@ internal partial class APM_SignatureBuildDataAppDict_OS_Base : ISpecification<Pd
 /// <summary>
 /// SignatureBuildDataAppDict_NonEFontNoWarn 
 /// </summary>
-internal partial class APM_SignatureBuildDataAppDict_NonEFontNoWarn : APM_SignatureBuildDataAppDict_NonEFontNoWarn_Base
+internal partial class APM_SignatureBuildDataAppDict_NonEFontNoWarn : APM_SignatureBuildDataAppDict_NonEFontNoWarn__Base
 {
 }
 
 
-internal partial class APM_SignatureBuildDataAppDict_NonEFontNoWarn_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict_NonEFontNoWarn__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureBuildDataAppDict_NonEFontNoWarn";
     public static bool RuleGroup() { return false; }
@@ -268,12 +268,12 @@ internal partial class APM_SignatureBuildDataAppDict_NonEFontNoWarn_Base : ISpec
 /// <summary>
 /// SignatureBuildDataAppDict_TrustedMode 
 /// </summary>
-internal partial class APM_SignatureBuildDataAppDict_TrustedMode : APM_SignatureBuildDataAppDict_TrustedMode_Base
+internal partial class APM_SignatureBuildDataAppDict_TrustedMode : APM_SignatureBuildDataAppDict_TrustedMode__Base
 {
 }
 
 
-internal partial class APM_SignatureBuildDataAppDict_TrustedMode_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict_TrustedMode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureBuildDataAppDict_TrustedMode";
     public static bool RuleGroup() { return false; }
@@ -295,12 +295,12 @@ internal partial class APM_SignatureBuildDataAppDict_TrustedMode_Base : ISpecifi
 /// <summary>
 /// SignatureBuildDataAppDict_V 
 /// </summary>
-internal partial class APM_SignatureBuildDataAppDict_V : APM_SignatureBuildDataAppDict_V_Base
+internal partial class APM_SignatureBuildDataAppDict_V : APM_SignatureBuildDataAppDict_V__Base
 {
 }
 
 
-internal partial class APM_SignatureBuildDataAppDict_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureBuildDataAppDict_V";
     public static bool RuleGroup() { return false; }
@@ -322,12 +322,12 @@ internal partial class APM_SignatureBuildDataAppDict_V_Base : ISpecification<Pdf
 /// <summary>
 /// SignatureBuildDataAppDict_REx 
 /// </summary>
-internal partial class APM_SignatureBuildDataAppDict_REx : APM_SignatureBuildDataAppDict_REx_Base
+internal partial class APM_SignatureBuildDataAppDict_REx : APM_SignatureBuildDataAppDict_REx__Base
 {
 }
 
 
-internal partial class APM_SignatureBuildDataAppDict_REx_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureBuildDataAppDict_REx__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureBuildDataAppDict_REx";
     public static bool RuleGroup() { return false; }

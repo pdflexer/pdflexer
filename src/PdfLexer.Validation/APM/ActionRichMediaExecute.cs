@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionRichMediaExecute : APM_ActionRichMediaExecute_Base
+internal partial class APM_ActionRichMediaExecute : APM_ActionRichMediaExecute__Base
 {
 }
 
-internal partial class APM_ActionRichMediaExecute_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRichMediaExecute__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionRichMediaExecute";
@@ -50,12 +50,12 @@ internal partial class APM_ActionRichMediaExecute_Base : ISpecification<PdfDicti
 /// <summary>
 /// ActionRichMediaExecute_Type Table 196 and Table 222
 /// </summary>
-internal partial class APM_ActionRichMediaExecute_Type : APM_ActionRichMediaExecute_Type_Base
+internal partial class APM_ActionRichMediaExecute_Type : APM_ActionRichMediaExecute_Type__Base
 {
 }
 
 
-internal partial class APM_ActionRichMediaExecute_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRichMediaExecute_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRichMediaExecute_Type";
     public static bool RuleGroup() { return false; }
@@ -66,13 +66,11 @@ internal partial class APM_ActionRichMediaExecute_Type_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_ActionRichMediaExecute_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionRichMediaExecute_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -84,12 +82,12 @@ internal partial class APM_ActionRichMediaExecute_Type_Base : ISpecification<Pdf
 /// <summary>
 /// ActionRichMediaExecute_S 
 /// </summary>
-internal partial class APM_ActionRichMediaExecute_S : APM_ActionRichMediaExecute_S_Base
+internal partial class APM_ActionRichMediaExecute_S : APM_ActionRichMediaExecute_S__Base
 {
 }
 
 
-internal partial class APM_ActionRichMediaExecute_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRichMediaExecute_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRichMediaExecute_S";
     public static bool RuleGroup() { return false; }
@@ -100,13 +98,11 @@ internal partial class APM_ActionRichMediaExecute_S_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfName, APM_ActionRichMediaExecute_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaExecute")) 
         {
             ctx.Fail<APM_ActionRichMediaExecute_S>($"Invalid value {val}, allowed are: [RichMediaExecute]");
-        }
         }
         // no linked objects
         
@@ -118,12 +114,12 @@ internal partial class APM_ActionRichMediaExecute_S_Base : ISpecification<PdfDic
 /// <summary>
 /// ActionRichMediaExecute_Next 
 /// </summary>
-internal partial class APM_ActionRichMediaExecute_Next : APM_ActionRichMediaExecute_Next_Base
+internal partial class APM_ActionRichMediaExecute_Next : APM_ActionRichMediaExecute_Next__Base
 {
 }
 
 
-internal partial class APM_ActionRichMediaExecute_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRichMediaExecute_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRichMediaExecute_Next";
     public static bool RuleGroup() { return false; }
@@ -207,6 +203,9 @@ internal partial class APM_ActionRichMediaExecute_Next_Base : ISpecification<Pdf
                     } else if (APM_ActionRichMediaExecute.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ActionRichMediaExecute_Next>("Next did not match any allowable types: '[ActionGoTo,ActionGoToR,ActionGoToE,fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,ActionGoTo3DView,ActionECMAScript,ActionRichMediaExecute]'");
@@ -226,12 +225,12 @@ internal partial class APM_ActionRichMediaExecute_Next_Base : ISpecification<Pdf
 /// <summary>
 /// ActionRichMediaExecute_TA 
 /// </summary>
-internal partial class APM_ActionRichMediaExecute_TA : APM_ActionRichMediaExecute_TA_Base
+internal partial class APM_ActionRichMediaExecute_TA : APM_ActionRichMediaExecute_TA__Base
 {
 }
 
 
-internal partial class APM_ActionRichMediaExecute_TA_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRichMediaExecute_TA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRichMediaExecute_TA";
     public static bool RuleGroup() { return false; }
@@ -253,12 +252,12 @@ internal partial class APM_ActionRichMediaExecute_TA_Base : ISpecification<PdfDi
 /// <summary>
 /// ActionRichMediaExecute_TI 
 /// </summary>
-internal partial class APM_ActionRichMediaExecute_TI : APM_ActionRichMediaExecute_TI_Base
+internal partial class APM_ActionRichMediaExecute_TI : APM_ActionRichMediaExecute_TI__Base
 {
 }
 
 
-internal partial class APM_ActionRichMediaExecute_TI_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRichMediaExecute_TI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRichMediaExecute_TI";
     public static bool RuleGroup() { return false; }
@@ -280,12 +279,12 @@ internal partial class APM_ActionRichMediaExecute_TI_Base : ISpecification<PdfDi
 /// <summary>
 /// ActionRichMediaExecute_CMD 
 /// </summary>
-internal partial class APM_ActionRichMediaExecute_CMD : APM_ActionRichMediaExecute_CMD_Base
+internal partial class APM_ActionRichMediaExecute_CMD : APM_ActionRichMediaExecute_CMD__Base
 {
 }
 
 
-internal partial class APM_ActionRichMediaExecute_CMD_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRichMediaExecute_CMD__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRichMediaExecute_CMD";
     public static bool RuleGroup() { return false; }

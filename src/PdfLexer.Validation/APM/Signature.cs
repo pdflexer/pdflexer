@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Signature : APM_Signature_Base
+internal partial class APM_Signature : APM_Signature__Base
 {
 }
 
-internal partial class APM_Signature_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Signature";
@@ -141,12 +141,12 @@ internal partial class APM_Signature_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Signature_Type Table 255
 /// </summary>
-internal partial class APM_Signature_Type : APM_Signature_Type_Base
+internal partial class APM_Signature_Type : APM_Signature_Type__Base
 {
 }
 
 
-internal partial class APM_Signature_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Type";
     public static bool RuleGroup() { return false; }
@@ -157,13 +157,11 @@ internal partial class APM_Signature_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Signature_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Sig")) 
         {
             ctx.Fail<APM_Signature_Type>($"Invalid value {val}, allowed are: [Sig]");
-        }
         }
         // no linked objects
         
@@ -175,12 +173,12 @@ internal partial class APM_Signature_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Signature_Filter 
 /// </summary>
-internal partial class APM_Signature_Filter : APM_Signature_Filter_Base
+internal partial class APM_Signature_Filter : APM_Signature_Filter__Base
 {
 }
 
 
-internal partial class APM_Signature_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Filter";
     public static bool RuleGroup() { return false; }
@@ -191,13 +189,11 @@ internal partial class APM_Signature_Filter_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_Signature_Filter>(obj, "Filter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Adobe.PPKLite" || val == "Entrust.PPKEF" || val == "CICI.SignIt" || val == "VeriSign.PPKVS")) 
         {
             ctx.Fail<APM_Signature_Filter>($"Invalid value {val}, allowed are: [Adobe.PPKLite,Entrust.PPKEF,CICI.SignIt,VeriSign.PPKVS]");
-        }
         }
         // no linked objects
         
@@ -209,12 +205,12 @@ internal partial class APM_Signature_Filter_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Signature_SubFilter Table 260 and https://github.com/pdf-association/pdf-issues/issues/219
 /// </summary>
-internal partial class APM_Signature_SubFilter : APM_Signature_SubFilter_Base
+internal partial class APM_Signature_SubFilter : APM_Signature_SubFilter__Base
 {
 }
 
 
-internal partial class APM_Signature_SubFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_SubFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_SubFilter";
     public static bool RuleGroup() { return false; }
@@ -225,13 +221,11 @@ internal partial class APM_Signature_SubFilter_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_Signature_SubFilter>(obj, "SubFilter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(ctx.Version >= 1.3m && val == "adbe.pkcs7.detached" || (ctx.Version <= 2.0m && ctx.Version >= 1.4m && val == "adbe.pkcs7.sha1") || ctx.Version >= 1.3m && val == "adbe.x509.rsa_sha1" || ctx.Version >= 2.0m && val == "ETSI.CAdES.detached" || ctx.Version >= 2.0m && val == "ETSI.RFC3161")) 
+        if (!((ctx.Version < 1.3m || (ctx.Version >= 1.3m && val == "adbe.pkcs7.detached")) || (ctx.Version <= 2.0m && (ctx.Version < 1.4m || (ctx.Version >= 1.4m && val == "adbe.pkcs7.sha1"))) || (ctx.Version < 1.3m || (ctx.Version >= 1.3m && val == "adbe.x509.rsa_sha1")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "ETSI.CAdES.detached")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "ETSI.RFC3161")))) 
         {
             ctx.Fail<APM_Signature_SubFilter>($"Invalid value {val}, allowed are: [fn:SinceVersion(1.3,adbe.pkcs7.detached),fn:Deprecated(2.0,fn:SinceVersion(1.4,adbe.pkcs7.sha1)),fn:SinceVersion(1.3,adbe.x509.rsa_sha1),fn:SinceVersion(2.0,ETSI.CAdES.detached),fn:SinceVersion(2.0,ETSI.RFC3161)]");
-        }
         }
         // no linked objects
         
@@ -243,12 +237,12 @@ internal partial class APM_Signature_SubFilter_Base : ISpecification<PdfDictiona
 /// <summary>
 /// Signature_Contents 
 /// </summary>
-internal partial class APM_Signature_Contents : APM_Signature_Contents_Base
+internal partial class APM_Signature_Contents : APM_Signature_Contents__Base
 {
 }
 
 
-internal partial class APM_Signature_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Contents";
     public static bool RuleGroup() { return false; }
@@ -258,7 +252,11 @@ internal partial class APM_Signature_Contents_Base : ISpecification<PdfDictionar
     {
         var val = ctx.GetRequired<PdfString, APM_Signature_Contents>(obj, "Contents", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!((AlwaysUnencrypted(obj)&&IsHexString(obj)))) 
+        {
+            ctx.Fail<APM_Signature_Contents>($"Value failed special case check: fn:Eval(fn:AlwaysUnencrypted() && fn:IsHexString())");
+        }
         // no value restrictions
         // no linked objects
         
@@ -270,12 +268,12 @@ internal partial class APM_Signature_Contents_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Signature_Cert Table 260
 /// </summary>
-internal partial class APM_Signature_Cert : APM_Signature_Cert_Base
+internal partial class APM_Signature_Cert : APM_Signature_Cert__Base
 {
 }
 
 
-internal partial class APM_Signature_Cert_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Cert__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Cert";
     public static bool RuleGroup() { return false; }
@@ -284,21 +282,21 @@ internal partial class APM_Signature_Cert_Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var (utval, wasIR) = ctx.GetOptional<APM_Signature_Cert>(obj, "Cert", IndirectRequirement.Either);
-        {
-            var SubFilter = obj.Get("SubFilter");
-            if ((eq(SubFilter,"adbe.x509.rsa_sha1")) && utval == null) {
-                ctx.Fail<APM_Signature_Cert>("Cert is required"); return;
-            } else if (utval == null) {
-                return;
-            }
+        
+        var SubFilter = obj.Get("SubFilter");
+        if ((eq(SubFilter,"adbe.x509.rsa_sha1")) && utval == null) {
+            ctx.Fail<APM_Signature_Cert>("Cert is required"); return;
+        } else if (utval == null) {
+            return;
         }
+        
         switch (utval.Type) 
         {
             case PdfObjectType.ArrayObj:
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    // special case is an fn:Ignore, not pertinent to validation
                     // no value restrictions
                     ctx.Run<APM_ArrayOfStringsByte, PdfArray>(stack, val, obj);
                     return;
@@ -307,7 +305,7 @@ internal partial class APM_Signature_Cert_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    // special case is an fn:Ignore, not pertinent to validation
                     // no value restrictions
                     // no linked objects
                     return;
@@ -325,12 +323,12 @@ internal partial class APM_Signature_Cert_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Signature_ByteRange 
 /// </summary>
-internal partial class APM_Signature_ByteRange : APM_Signature_ByteRange_Base
+internal partial class APM_Signature_ByteRange : APM_Signature_ByteRange__Base
 {
 }
 
 
-internal partial class APM_Signature_ByteRange_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_ByteRange__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_ByteRange";
     public static bool RuleGroup() { return false; }
@@ -352,12 +350,12 @@ internal partial class APM_Signature_ByteRange_Base : ISpecification<PdfDictiona
 /// <summary>
 /// Signature_Reference 
 /// </summary>
-internal partial class APM_Signature_Reference : APM_Signature_Reference_Base
+internal partial class APM_Signature_Reference : APM_Signature_Reference__Base
 {
 }
 
 
-internal partial class APM_Signature_Reference_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Reference__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Reference";
     public static bool RuleGroup() { return false; }
@@ -367,7 +365,7 @@ internal partial class APM_Signature_Reference_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfArray, APM_Signature_Reference>(obj, "Reference", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOfSignatureReferences, PdfArray>(stack, val, obj);
         
@@ -379,12 +377,12 @@ internal partial class APM_Signature_Reference_Base : ISpecification<PdfDictiona
 /// <summary>
 /// Signature_Changes 
 /// </summary>
-internal partial class APM_Signature_Changes : APM_Signature_Changes_Base
+internal partial class APM_Signature_Changes : APM_Signature_Changes__Base
 {
 }
 
 
-internal partial class APM_Signature_Changes_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Changes__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Changes";
     public static bool RuleGroup() { return false; }
@@ -394,7 +392,7 @@ internal partial class APM_Signature_Changes_Base : ISpecification<PdfDictionary
     {
         var val = ctx.GetOptional<PdfArray, APM_Signature_Changes>(obj, "Changes", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOf_3Integers, PdfArray>(stack, val, obj);
         
@@ -406,12 +404,12 @@ internal partial class APM_Signature_Changes_Base : ISpecification<PdfDictionary
 /// <summary>
 /// Signature_Name 
 /// </summary>
-internal partial class APM_Signature_Name : APM_Signature_Name_Base
+internal partial class APM_Signature_Name : APM_Signature_Name__Base
 {
 }
 
 
-internal partial class APM_Signature_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Name";
     public static bool RuleGroup() { return false; }
@@ -421,7 +419,7 @@ internal partial class APM_Signature_Name_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfString, APM_Signature_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -433,12 +431,12 @@ internal partial class APM_Signature_Name_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Signature_M 
 /// </summary>
-internal partial class APM_Signature_M : APM_Signature_M_Base
+internal partial class APM_Signature_M : APM_Signature_M__Base
 {
 }
 
 
-internal partial class APM_Signature_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_M";
     public static bool RuleGroup() { return false; }
@@ -460,12 +458,12 @@ internal partial class APM_Signature_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Signature_Location 
 /// </summary>
-internal partial class APM_Signature_Location : APM_Signature_Location_Base
+internal partial class APM_Signature_Location : APM_Signature_Location__Base
 {
 }
 
 
-internal partial class APM_Signature_Location_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Location__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Location";
     public static bool RuleGroup() { return false; }
@@ -487,12 +485,12 @@ internal partial class APM_Signature_Location_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Signature_Reason 
 /// </summary>
-internal partial class APM_Signature_Reason : APM_Signature_Reason_Base
+internal partial class APM_Signature_Reason : APM_Signature_Reason__Base
 {
 }
 
 
-internal partial class APM_Signature_Reason_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Reason__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Reason";
     public static bool RuleGroup() { return false; }
@@ -514,12 +512,12 @@ internal partial class APM_Signature_Reason_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Signature_ContactInfo 
 /// </summary>
-internal partial class APM_Signature_ContactInfo : APM_Signature_ContactInfo_Base
+internal partial class APM_Signature_ContactInfo : APM_Signature_ContactInfo__Base
 {
 }
 
 
-internal partial class APM_Signature_ContactInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_ContactInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_ContactInfo";
     public static bool RuleGroup() { return false; }
@@ -541,12 +539,12 @@ internal partial class APM_Signature_ContactInfo_Base : ISpecification<PdfDictio
 /// <summary>
 /// Signature_R 
 /// </summary>
-internal partial class APM_Signature_R : APM_Signature_R_Base
+internal partial class APM_Signature_R : APM_Signature_R__Base
 {
 }
 
 
-internal partial class APM_Signature_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_R";
     public static bool RuleGroup() { return false; }
@@ -556,7 +554,7 @@ internal partial class APM_Signature_R_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_Signature_R>(obj, "R", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -568,12 +566,12 @@ internal partial class APM_Signature_R_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Signature_V 
 /// </summary>
-internal partial class APM_Signature_V : APM_Signature_V_Base
+internal partial class APM_Signature_V : APM_Signature_V__Base
 {
 }
 
 
-internal partial class APM_Signature_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_V";
     public static bool RuleGroup() { return false; }
@@ -595,12 +593,12 @@ internal partial class APM_Signature_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Signature_Prop_Build 
 /// </summary>
-internal partial class APM_Signature_Prop_Build : APM_Signature_Prop_Build_Base
+internal partial class APM_Signature_Prop_Build : APM_Signature_Prop_Build__Base
 {
 }
 
 
-internal partial class APM_Signature_Prop_Build_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Prop_Build__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Prop_Build";
     public static bool RuleGroup() { return false; }
@@ -622,12 +620,12 @@ internal partial class APM_Signature_Prop_Build_Base : ISpecification<PdfDiction
 /// <summary>
 /// Signature_Prop_AuthTime 
 /// </summary>
-internal partial class APM_Signature_Prop_AuthTime : APM_Signature_Prop_AuthTime_Base
+internal partial class APM_Signature_Prop_AuthTime : APM_Signature_Prop_AuthTime__Base
 {
 }
 
 
-internal partial class APM_Signature_Prop_AuthTime_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Prop_AuthTime__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Prop_AuthTime";
     public static bool RuleGroup() { return false; }
@@ -637,14 +635,12 @@ internal partial class APM_Signature_Prop_AuthTime_Base : ISpecification<PdfDict
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_Signature_Prop_AuthTime>(obj, "Prop_AuthTime", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:Ignore, not pertinent to validation
         
-        IPdfObject @Prop_AuthTime = val;
-        if (!(gte(@Prop_AuthTime,0))) 
+        var PropAuthTime = obj.Get("Prop_AuthTime");
+        if (!(gte(PropAuthTime,0))) 
         {
             ctx.Fail<APM_Signature_Prop_AuthTime>($"Invalid value {val}, allowed are: [fn:Eval(@Prop_AuthTime>=0)]");
-        }
         }
         // no linked objects
         
@@ -656,12 +652,12 @@ internal partial class APM_Signature_Prop_AuthTime_Base : ISpecification<PdfDict
 /// <summary>
 /// Signature_Prop_AuthType 
 /// </summary>
-internal partial class APM_Signature_Prop_AuthType : APM_Signature_Prop_AuthType_Base
+internal partial class APM_Signature_Prop_AuthType : APM_Signature_Prop_AuthType__Base
 {
 }
 
 
-internal partial class APM_Signature_Prop_AuthType_Base : ISpecification<PdfDictionary>
+internal partial class APM_Signature_Prop_AuthType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Signature_Prop_AuthType";
     public static bool RuleGroup() { return false; }

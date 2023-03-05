@@ -19,7 +19,7 @@ internal partial class APM_ArrayOfDuration : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -43,13 +43,11 @@ internal partial class APM_ArrayOfDuration_0 : ISpecification<PdfArray>
                     var val =  (PdfIntNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     IPdfObject v = val;
                     
-                    if (!(gt(v,0))) 
+                    if (!(gt(v,v))) 
                     {
                         ctx.Fail<APM_ArrayOfDuration_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>0)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -85,13 +83,11 @@ internal partial class APM_ArrayOfDuration_1 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfDuration_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!(gt(v,0))) 
         {
             ctx.Fail<APM_ArrayOfDuration_1>($"Invalid value {val}, allowed are: [fn:Eval(@1>0)]");
-        }
         }
         // no linked objects
         

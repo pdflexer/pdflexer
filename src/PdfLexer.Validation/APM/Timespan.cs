@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Timespan : APM_Timespan_Base
+internal partial class APM_Timespan : APM_Timespan__Base
 {
 }
 
-internal partial class APM_Timespan_Base : ISpecification<PdfDictionary>
+internal partial class APM_Timespan__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Timespan";
@@ -106,12 +106,12 @@ internal partial class APM_Timespan_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Timespan_Type Table 300
 /// </summary>
-internal partial class APM_Timespan_Type : APM_Timespan_Type_Base
+internal partial class APM_Timespan_Type : APM_Timespan_Type__Base
 {
 }
 
 
-internal partial class APM_Timespan_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Timespan_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Timespan_Type";
     public static bool RuleGroup() { return false; }
@@ -122,13 +122,11 @@ internal partial class APM_Timespan_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Timespan_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Timespan")) 
         {
             ctx.Fail<APM_Timespan_Type>($"Invalid value {val}, allowed are: [Timespan]");
-        }
         }
         // no linked objects
         
@@ -140,12 +138,12 @@ internal partial class APM_Timespan_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Timespan_S 
 /// </summary>
-internal partial class APM_Timespan_S : APM_Timespan_S_Base
+internal partial class APM_Timespan_S : APM_Timespan_S__Base
 {
 }
 
 
-internal partial class APM_Timespan_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_Timespan_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Timespan_S";
     public static bool RuleGroup() { return false; }
@@ -156,13 +154,11 @@ internal partial class APM_Timespan_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_Timespan_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "S")) 
         {
             ctx.Fail<APM_Timespan_S>($"Invalid value {val}, allowed are: [S]");
-        }
         }
         // no linked objects
         
@@ -174,12 +170,12 @@ internal partial class APM_Timespan_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Timespan_V 
 /// </summary>
-internal partial class APM_Timespan_V : APM_Timespan_V_Base
+internal partial class APM_Timespan_V : APM_Timespan_V__Base
 {
 }
 
 
-internal partial class APM_Timespan_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_Timespan_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Timespan_V";
     public static bool RuleGroup() { return false; }

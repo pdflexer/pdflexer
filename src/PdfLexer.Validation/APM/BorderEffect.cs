@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_BorderEffect : APM_BorderEffect_Base
+internal partial class APM_BorderEffect : APM_BorderEffect__Base
 {
 }
 
-internal partial class APM_BorderEffect_Base : ISpecification<PdfDictionary>
+internal partial class APM_BorderEffect__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "BorderEffect";
@@ -99,12 +99,12 @@ internal partial class APM_BorderEffect_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BorderEffect_S Table 169
 /// </summary>
-internal partial class APM_BorderEffect_S : APM_BorderEffect_S_Base
+internal partial class APM_BorderEffect_S : APM_BorderEffect_S__Base
 {
 }
 
 
-internal partial class APM_BorderEffect_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_BorderEffect_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BorderEffect_S";
     public static bool RuleGroup() { return false; }
@@ -115,13 +115,11 @@ internal partial class APM_BorderEffect_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_BorderEffect_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "C" || val == "S")) 
         {
             ctx.Fail<APM_BorderEffect_S>($"Invalid value {val}, allowed are: [C,S]");
-        }
         }
         // no linked objects
         
@@ -133,12 +131,12 @@ internal partial class APM_BorderEffect_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BorderEffect_I 
 /// </summary>
-internal partial class APM_BorderEffect_I : APM_BorderEffect_I_Base
+internal partial class APM_BorderEffect_I : APM_BorderEffect_I__Base
 {
 }
 
 
-internal partial class APM_BorderEffect_I_Base : ISpecification<PdfDictionary>
+internal partial class APM_BorderEffect_I__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BorderEffect_I";
     public static bool RuleGroup() { return false; }
@@ -148,14 +146,12 @@ internal partial class APM_BorderEffect_I_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfNumber, APM_BorderEffect_I>(obj, "I", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:Ignore, not pertinent to validation
         
-        IPdfObject @I = val;
-        if (!((gte(@I,0.0m)&&lte(@I,2.0m)))) 
+        var I = obj.Get("I");
+        if (!((gte(I,0.0m)&&lte(I,2.0m)))) 
         {
             ctx.Fail<APM_BorderEffect_I>($"Invalid value {val}, allowed are: [fn:Eval((@I>=0.0) && (@I<=2.0))]");
-        }
         }
         // no linked objects
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OutlineItem : APM_OutlineItem_Base
+internal partial class APM_OutlineItem : APM_OutlineItem__Base
 {
 }
 
-internal partial class APM_OutlineItem_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OutlineItem";
@@ -159,12 +159,12 @@ internal partial class APM_OutlineItem_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutlineItem_Title Table 151
 /// </summary>
-internal partial class APM_OutlineItem_Title : APM_OutlineItem_Title_Base
+internal partial class APM_OutlineItem_Title : APM_OutlineItem_Title__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_Title_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_Title__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_Title";
     public static bool RuleGroup() { return false; }
@@ -186,12 +186,12 @@ internal partial class APM_OutlineItem_Title_Base : ISpecification<PdfDictionary
 /// <summary>
 /// OutlineItem_Parent 
 /// </summary>
-internal partial class APM_OutlineItem_Parent : APM_OutlineItem_Parent_Base
+internal partial class APM_OutlineItem_Parent : APM_OutlineItem_Parent__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_Parent";
     public static bool RuleGroup() { return false; }
@@ -222,12 +222,12 @@ internal partial class APM_OutlineItem_Parent_Base : ISpecification<PdfDictionar
 /// <summary>
 /// OutlineItem_Prev 
 /// </summary>
-internal partial class APM_OutlineItem_Prev : APM_OutlineItem_Prev_Base
+internal partial class APM_OutlineItem_Prev : APM_OutlineItem_Prev__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_Prev_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_Prev__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_Prev";
     public static bool RuleGroup() { return false; }
@@ -249,12 +249,12 @@ internal partial class APM_OutlineItem_Prev_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutlineItem_Next 
 /// </summary>
-internal partial class APM_OutlineItem_Next : APM_OutlineItem_Next_Base
+internal partial class APM_OutlineItem_Next : APM_OutlineItem_Next__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_Next";
     public static bool RuleGroup() { return false; }
@@ -276,12 +276,12 @@ internal partial class APM_OutlineItem_Next_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutlineItem_First 
 /// </summary>
-internal partial class APM_OutlineItem_First : APM_OutlineItem_First_Base
+internal partial class APM_OutlineItem_First : APM_OutlineItem_First__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_First_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_First__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_First";
     public static bool RuleGroup() { return false; }
@@ -303,12 +303,12 @@ internal partial class APM_OutlineItem_First_Base : ISpecification<PdfDictionary
 /// <summary>
 /// OutlineItem_Last 
 /// </summary>
-internal partial class APM_OutlineItem_Last : APM_OutlineItem_Last_Base
+internal partial class APM_OutlineItem_Last : APM_OutlineItem_Last__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_Last_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_Last__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_Last";
     public static bool RuleGroup() { return false; }
@@ -330,12 +330,12 @@ internal partial class APM_OutlineItem_Last_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutlineItem_Count 
 /// </summary>
-internal partial class APM_OutlineItem_Count : APM_OutlineItem_Count_Base
+internal partial class APM_OutlineItem_Count : APM_OutlineItem_Count__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_Count_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_Count__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_Count";
     public static bool RuleGroup() { return false; }
@@ -357,12 +357,12 @@ internal partial class APM_OutlineItem_Count_Base : ISpecification<PdfDictionary
 /// <summary>
 /// OutlineItem_Dest 
 /// </summary>
-internal partial class APM_OutlineItem_Dest : APM_OutlineItem_Dest_Base
+internal partial class APM_OutlineItem_Dest : APM_OutlineItem_Dest__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_Dest_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_Dest__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_Dest";
     public static bool RuleGroup() { return false; }
@@ -378,7 +378,11 @@ internal partial class APM_OutlineItem_Dest_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    
+                    if (obj.ContainsKey("A")) 
+                    {
+                        ctx.Fail<APM_OutlineItem_Dest>($"Value failed special case check: fn:Not(fn:IsPresent(A))");
+                    }
                     // no value restrictions
                     if (APM_DestXYZArray.MatchesType(ctx, val)) 
                     {
@@ -402,7 +406,11 @@ internal partial class APM_OutlineItem_Dest_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    
+                    if (obj.ContainsKey("A")) 
+                    {
+                        ctx.Fail<APM_OutlineItem_Dest>($"Value failed special case check: fn:Not(fn:IsPresent(A))");
+                    }
                     // no value restrictions
                     // no linked objects
                     return;
@@ -411,7 +419,11 @@ internal partial class APM_OutlineItem_Dest_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    
+                    if (obj.ContainsKey("A")) 
+                    {
+                        ctx.Fail<APM_OutlineItem_Dest>($"Value failed special case check: fn:Not(fn:IsPresent(A))");
+                    }
                     // no value restrictions
                     // no linked objects
                     return;
@@ -429,12 +441,12 @@ internal partial class APM_OutlineItem_Dest_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutlineItem_A 
 /// </summary>
-internal partial class APM_OutlineItem_A : APM_OutlineItem_A_Base
+internal partial class APM_OutlineItem_A : APM_OutlineItem_A__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_A";
     public static bool RuleGroup() { return false; }
@@ -444,7 +456,11 @@ internal partial class APM_OutlineItem_A_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfDictionary, APM_OutlineItem_A>(obj, "A", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (obj.ContainsKey("Dest")) 
+        {
+            ctx.Fail<APM_OutlineItem_A>($"Value failed special case check: fn:Not(fn:IsPresent(Dest))");
+        }
         // no value restrictions
         if (APM_ActionGoTo.MatchesType(ctx, val)) 
         {
@@ -461,6 +477,57 @@ internal partial class APM_OutlineItem_A_Base : ISpecification<PdfDictionary>
         } else if (APM_ActionURI.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionURI, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version == 1.2m && APM_ActionNOP.MatchesType(ctx, val))) 
+        {
+            ctx.Run<APM_ActionNOP, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version == 1.2m && APM_ActionSetState.MatchesType(ctx, val))) 
+        {
+            ctx.Run<APM_ActionSetState, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionSound.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionSound, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionMovie.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionMovie, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionHide.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionHide, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionNamed.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionNamed, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionSubmitForm.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionSubmitForm, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionResetForm.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionResetForm, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_ActionImportData.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionImportData, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionSetOCGState.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionSetOCGState, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionRendition.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRendition, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionTransition.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionTransition, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ActionECMAScript.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_OutlineItem_A>("A did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,fn:IsPDFVersion(1.2,ActionNOP),fn:IsPDFVersion(1.2,ActionSetState),ActionThread,ActionURI,fn:SinceVersion(1.2,ActionSound),fn:SinceVersion(1.2,ActionMovie),fn:SinceVersion(1.2,ActionHide),fn:SinceVersion(1.2,ActionNamed),fn:SinceVersion(1.2,ActionSubmitForm),fn:SinceVersion(1.2,ActionResetForm),fn:SinceVersion(1.2,ActionImportData),fn:SinceVersion(1.5,ActionSetOCGState),fn:SinceVersion(1.5,ActionRendition),fn:SinceVersion(1.5,ActionTransition),fn:SinceVersion(1.6,ActionGoTo3DView),fn:SinceVersion(1.3,ActionECMAScript),fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -474,12 +541,12 @@ internal partial class APM_OutlineItem_A_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutlineItem_SE 
 /// </summary>
-internal partial class APM_OutlineItem_SE : APM_OutlineItem_SE_Base
+internal partial class APM_OutlineItem_SE : APM_OutlineItem_SE__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_SE_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_SE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_SE";
     public static bool RuleGroup() { return false; }
@@ -501,12 +568,12 @@ internal partial class APM_OutlineItem_SE_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutlineItem_C 
 /// </summary>
-internal partial class APM_OutlineItem_C : APM_OutlineItem_C_Base
+internal partial class APM_OutlineItem_C : APM_OutlineItem_C__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_C";
     public static bool RuleGroup() { return false; }
@@ -528,12 +595,12 @@ internal partial class APM_OutlineItem_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutlineItem_F Table 152
 /// </summary>
-internal partial class APM_OutlineItem_F : APM_OutlineItem_F_Base
+internal partial class APM_OutlineItem_F : APM_OutlineItem_F__Base
 {
 }
 
 
-internal partial class APM_OutlineItem_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutlineItem_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutlineItem_F";
     public static bool RuleGroup() { return false; }
@@ -543,7 +610,11 @@ internal partial class APM_OutlineItem_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_OutlineItem_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_OutlineItem_F>($"Value failed special case check: fn:Eval(fn:BitsClear(3,32))");
+        }
         // no value restrictions
         // no linked objects
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_URI : APM_URI_Base
+internal partial class APM_URI : APM_URI__Base
 {
 }
 
-internal partial class APM_URI_Base : ISpecification<PdfDictionary>
+internal partial class APM_URI__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "URI";
@@ -138,12 +138,12 @@ internal partial class APM_URI_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// URI_Base Table 211
 /// </summary>
-internal partial class APM_URI_Base : APM_URI_Base_Base
+internal partial class APM_URI_Base : APM_URI_Base__Base
 {
 }
 
 
-internal partial class APM_URI_Base_Base : ISpecification<PdfDictionary>
+internal partial class APM_URI_Base__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URI_Base";
     public static bool RuleGroup() { return false; }

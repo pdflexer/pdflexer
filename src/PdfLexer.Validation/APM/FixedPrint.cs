@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FixedPrint : APM_FixedPrint_Base
+internal partial class APM_FixedPrint : APM_FixedPrint__Base
 {
 }
 
-internal partial class APM_FixedPrint_Base : ISpecification<PdfDictionary>
+internal partial class APM_FixedPrint__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FixedPrint";
@@ -97,12 +97,12 @@ internal partial class APM_FixedPrint_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FixedPrint_Type Table 194
 /// </summary>
-internal partial class APM_FixedPrint_Type : APM_FixedPrint_Type_Base
+internal partial class APM_FixedPrint_Type : APM_FixedPrint_Type__Base
 {
 }
 
 
-internal partial class APM_FixedPrint_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_FixedPrint_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FixedPrint_Type";
     public static bool RuleGroup() { return false; }
@@ -113,13 +113,11 @@ internal partial class APM_FixedPrint_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_FixedPrint_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "FixedPrint")) 
         {
             ctx.Fail<APM_FixedPrint_Type>($"Invalid value {val}, allowed are: [FixedPrint]");
-        }
         }
         // no linked objects
         
@@ -131,12 +129,12 @@ internal partial class APM_FixedPrint_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FixedPrint_Matrix 
 /// </summary>
-internal partial class APM_FixedPrint_Matrix : APM_FixedPrint_Matrix_Base
+internal partial class APM_FixedPrint_Matrix : APM_FixedPrint_Matrix__Base
 {
 }
 
 
-internal partial class APM_FixedPrint_Matrix_Base : ISpecification<PdfDictionary>
+internal partial class APM_FixedPrint_Matrix__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FixedPrint_Matrix";
     public static bool RuleGroup() { return false; }
@@ -158,12 +156,12 @@ internal partial class APM_FixedPrint_Matrix_Base : ISpecification<PdfDictionary
 /// <summary>
 /// FixedPrint_H 
 /// </summary>
-internal partial class APM_FixedPrint_H : APM_FixedPrint_H_Base
+internal partial class APM_FixedPrint_H : APM_FixedPrint_H__Base
 {
 }
 
 
-internal partial class APM_FixedPrint_H_Base : ISpecification<PdfDictionary>
+internal partial class APM_FixedPrint_H__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FixedPrint_H";
     public static bool RuleGroup() { return false; }
@@ -185,12 +183,12 @@ internal partial class APM_FixedPrint_H_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FixedPrint_V 
 /// </summary>
-internal partial class APM_FixedPrint_V : APM_FixedPrint_V_Base
+internal partial class APM_FixedPrint_V : APM_FixedPrint_V__Base
 {
 }
 
 
-internal partial class APM_FixedPrint_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_FixedPrint_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FixedPrint_V";
     public static bool RuleGroup() { return false; }

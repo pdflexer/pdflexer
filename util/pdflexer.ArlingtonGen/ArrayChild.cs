@@ -50,7 +50,8 @@ internal partial class APM_{{Root.Name}}_{{Key}} : ISpecification<PdfArray>
     {
         if (Row.Key == "*")
         {
-
+            VariableContext.Vars["*"] = "val";
+            VariableContext.Vars["@*"] = "val";
             return $$"""
 for (var i = 0; i<obj.Count; i+=1) 
 {
@@ -63,6 +64,8 @@ void CheckSingle(int n)
 """;
         }
         var n = int.Parse(Row.Key.TrimEnd('*'));
+        VariableContext.Vars[Row.Key] = "val";
+        VariableContext.Vars["@" + Row.Key] = "val";
         var t = All.Count;
 
         return $$"""
@@ -79,45 +82,7 @@ void CheckSingle(int n)
 
     private string GetSingle()
     {
+        VariableContext.Vars["@"+Row.Key] = "val";
         return IsComplexType(Row) ? GetSingleComplexType(Key) : GetSingleSimpleType(Key);
     }
-
-
-//     private string MultiCaseStatement(string type)
-//     {
-//         if (type.StartsWith("fn:")) { return "// TODO: " + type; }
-//         var sc = new SpecialCase(Row);
-//         var pv = new PossibleValues(this);
-//         return $$"""
-// case PdfObjectType.{{typemap[type]}}:
-//     {
-// {{Ident(8, $"var val =  ({typeDomMap[type]})utval;")}}
-// {{Ident(8, IRCheckMulti(type))}}
-// {{Ident(8, GetLink(type))}}
-// {{Ident(8, sc.GetSpecialCase(type))}}
-// {{Ident(8, pv.GetPossibleValueCheck(type))}}
-//         return;
-//     }
-// """;
-//     }
-// 
-//     private string IRCheckMulti(string type)
-//     {
-//         var ir = new IndirectRef(Row);
-// 
-//         if (ir.TryGetSimple(type, out var val))
-//         {
-//             return val ?
-//                 $$"""if (!wasIR) { ctx.Fail<APM_{{Root.Name}}_{{Key}}>("{{Row.Key}} is required to be indirect when a {{type}}"); return; }""" : "// no indirect obj reqs";
-//         }
-//         else
-//         {
-//             return $$"""
-// if ({{ir.GetComplex(type)}} && !wasIR) {
-//     ctx.Fail<APM_{{Root.Name}}_{{Key}}>("{{Row.Key}} is required to be indirect when a {{type}}");
-//     return;
-// }
-// """;
-//         }
-//    }
 }

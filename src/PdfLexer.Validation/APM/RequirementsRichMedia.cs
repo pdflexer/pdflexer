@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsRichMedia : APM_RequirementsRichMedia_Base
+internal partial class APM_RequirementsRichMedia : APM_RequirementsRichMedia__Base
 {
 }
 
-internal partial class APM_RequirementsRichMedia_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsRichMedia__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsRichMedia";
@@ -58,12 +58,12 @@ internal partial class APM_RequirementsRichMedia_Base : ISpecification<PdfDictio
 /// <summary>
 /// RequirementsRichMedia_Type Table 273 and Table 275
 /// </summary>
-internal partial class APM_RequirementsRichMedia_Type : APM_RequirementsRichMedia_Type_Base
+internal partial class APM_RequirementsRichMedia_Type : APM_RequirementsRichMedia_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsRichMedia_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsRichMedia_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsRichMedia_Type";
     public static bool RuleGroup() { return false; }
@@ -74,13 +74,11 @@ internal partial class APM_RequirementsRichMedia_Type_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_RequirementsRichMedia_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Requirement")) 
         {
             ctx.Fail<APM_RequirementsRichMedia_Type>($"Invalid value {val}, allowed are: [Requirement]");
-        }
         }
         // no linked objects
         
@@ -92,12 +90,12 @@ internal partial class APM_RequirementsRichMedia_Type_Base : ISpecification<PdfD
 /// <summary>
 /// RequirementsRichMedia_S 
 /// </summary>
-internal partial class APM_RequirementsRichMedia_S : APM_RequirementsRichMedia_S_Base
+internal partial class APM_RequirementsRichMedia_S : APM_RequirementsRichMedia_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsRichMedia_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsRichMedia_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsRichMedia_S";
     public static bool RuleGroup() { return false; }
@@ -108,13 +106,11 @@ internal partial class APM_RequirementsRichMedia_S_Base : ISpecification<PdfDict
         var val = ctx.GetRequired<PdfName, APM_RequirementsRichMedia_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMedia")) 
         {
             ctx.Fail<APM_RequirementsRichMedia_S>($"Invalid value {val}, allowed are: [RichMedia]");
-        }
         }
         // no linked objects
         
@@ -126,12 +122,12 @@ internal partial class APM_RequirementsRichMedia_S_Base : ISpecification<PdfDict
 /// <summary>
 /// RequirementsRichMedia_V 
 /// </summary>
-internal partial class APM_RequirementsRichMedia_V : APM_RequirementsRichMedia_V_Base
+internal partial class APM_RequirementsRichMedia_V : APM_RequirementsRichMedia_V__Base
 {
 }
 
 
-internal partial class APM_RequirementsRichMedia_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsRichMedia_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsRichMedia_V";
     public static bool RuleGroup() { return false; }
@@ -174,12 +170,12 @@ internal partial class APM_RequirementsRichMedia_V_Base : ISpecification<PdfDict
 /// <summary>
 /// RequirementsRichMedia_RH 
 /// </summary>
-internal partial class APM_RequirementsRichMedia_RH : APM_RequirementsRichMedia_RH_Base
+internal partial class APM_RequirementsRichMedia_RH : APM_RequirementsRichMedia_RH__Base
 {
 }
 
 
-internal partial class APM_RequirementsRichMedia_RH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsRichMedia_RH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsRichMedia_RH";
     public static bool RuleGroup() { return false; }
@@ -222,12 +218,12 @@ internal partial class APM_RequirementsRichMedia_RH_Base : ISpecification<PdfDic
 /// <summary>
 /// RequirementsRichMedia_Penalty 
 /// </summary>
-internal partial class APM_RequirementsRichMedia_Penalty : APM_RequirementsRichMedia_Penalty_Base
+internal partial class APM_RequirementsRichMedia_Penalty : APM_RequirementsRichMedia_Penalty__Base
 {
 }
 
 
-internal partial class APM_RequirementsRichMedia_Penalty_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsRichMedia_Penalty__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsRichMedia_Penalty";
     public static bool RuleGroup() { return false; }
@@ -238,13 +234,11 @@ internal partial class APM_RequirementsRichMedia_Penalty_Base : ISpecification<P
         var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsRichMedia_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Penalty = val;
-        if (!((gte(@Penalty,0)&&lte(@Penalty,100)))) 
+        var Penalty = obj.Get("Penalty");
+        if (!((gte(Penalty,0)&&lte(Penalty,100)))) 
         {
             ctx.Fail<APM_RequirementsRichMedia_Penalty>($"Invalid value {val}, allowed are: [fn:Eval((@Penalty>=0) && (@Penalty<=100))]");
-        }
         }
         // no linked objects
         

@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfRichMediaConfiguration : ISpecification<PdfArr
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 

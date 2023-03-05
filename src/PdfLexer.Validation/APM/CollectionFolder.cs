@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CollectionFolder : APM_CollectionFolder_Base
+internal partial class APM_CollectionFolder : APM_CollectionFolder__Base
 {
 }
 
-internal partial class APM_CollectionFolder_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CollectionFolder";
@@ -56,12 +56,12 @@ internal partial class APM_CollectionFolder_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CollectionFolder_Type Table 159
 /// </summary>
-internal partial class APM_CollectionFolder_Type : APM_CollectionFolder_Type_Base
+internal partial class APM_CollectionFolder_Type : APM_CollectionFolder_Type__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_Type";
     public static bool RuleGroup() { return false; }
@@ -72,13 +72,11 @@ internal partial class APM_CollectionFolder_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_CollectionFolder_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Folder")) 
         {
             ctx.Fail<APM_CollectionFolder_Type>($"Invalid value {val}, allowed are: [Folder]");
-        }
         }
         // no linked objects
         
@@ -90,12 +88,12 @@ internal partial class APM_CollectionFolder_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// CollectionFolder_ID 
 /// </summary>
-internal partial class APM_CollectionFolder_ID : APM_CollectionFolder_ID_Base
+internal partial class APM_CollectionFolder_ID : APM_CollectionFolder_ID__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_ID";
     public static bool RuleGroup() { return false; }
@@ -117,12 +115,12 @@ internal partial class APM_CollectionFolder_ID_Base : ISpecification<PdfDictiona
 /// <summary>
 /// CollectionFolder_Name 
 /// </summary>
-internal partial class APM_CollectionFolder_Name : APM_CollectionFolder_Name_Base
+internal partial class APM_CollectionFolder_Name : APM_CollectionFolder_Name__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_Name";
     public static bool RuleGroup() { return false; }
@@ -144,12 +142,12 @@ internal partial class APM_CollectionFolder_Name_Base : ISpecification<PdfDictio
 /// <summary>
 /// CollectionFolder_Parent 
 /// </summary>
-internal partial class APM_CollectionFolder_Parent : APM_CollectionFolder_Parent_Base
+internal partial class APM_CollectionFolder_Parent : APM_CollectionFolder_Parent__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_Parent";
     public static bool RuleGroup() { return false; }
@@ -171,12 +169,12 @@ internal partial class APM_CollectionFolder_Parent_Base : ISpecification<PdfDict
 /// <summary>
 /// CollectionFolder_Child 
 /// </summary>
-internal partial class APM_CollectionFolder_Child : APM_CollectionFolder_Child_Base
+internal partial class APM_CollectionFolder_Child : APM_CollectionFolder_Child__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_Child_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_Child__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_Child";
     public static bool RuleGroup() { return false; }
@@ -198,12 +196,12 @@ internal partial class APM_CollectionFolder_Child_Base : ISpecification<PdfDicti
 /// <summary>
 /// CollectionFolder_Next 
 /// </summary>
-internal partial class APM_CollectionFolder_Next : APM_CollectionFolder_Next_Base
+internal partial class APM_CollectionFolder_Next : APM_CollectionFolder_Next__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_Next";
     public static bool RuleGroup() { return false; }
@@ -225,12 +223,12 @@ internal partial class APM_CollectionFolder_Next_Base : ISpecification<PdfDictio
 /// <summary>
 /// CollectionFolder_CI 
 /// </summary>
-internal partial class APM_CollectionFolder_CI : APM_CollectionFolder_CI_Base
+internal partial class APM_CollectionFolder_CI : APM_CollectionFolder_CI__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_CI_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_CI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_CI";
     public static bool RuleGroup() { return false; }
@@ -252,12 +250,12 @@ internal partial class APM_CollectionFolder_CI_Base : ISpecification<PdfDictiona
 /// <summary>
 /// CollectionFolder_Desc 
 /// </summary>
-internal partial class APM_CollectionFolder_Desc : APM_CollectionFolder_Desc_Base
+internal partial class APM_CollectionFolder_Desc : APM_CollectionFolder_Desc__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_Desc_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_Desc__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_Desc";
     public static bool RuleGroup() { return false; }
@@ -279,12 +277,12 @@ internal partial class APM_CollectionFolder_Desc_Base : ISpecification<PdfDictio
 /// <summary>
 /// CollectionFolder_CreationDate 
 /// </summary>
-internal partial class APM_CollectionFolder_CreationDate : APM_CollectionFolder_CreationDate_Base
+internal partial class APM_CollectionFolder_CreationDate : APM_CollectionFolder_CreationDate__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -306,12 +304,12 @@ internal partial class APM_CollectionFolder_CreationDate_Base : ISpecification<P
 /// <summary>
 /// CollectionFolder_ModDate 
 /// </summary>
-internal partial class APM_CollectionFolder_ModDate : APM_CollectionFolder_ModDate_Base
+internal partial class APM_CollectionFolder_ModDate : APM_CollectionFolder_ModDate__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_ModDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_ModDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_ModDate";
     public static bool RuleGroup() { return false; }
@@ -333,12 +331,12 @@ internal partial class APM_CollectionFolder_ModDate_Base : ISpecification<PdfDic
 /// <summary>
 /// CollectionFolder_Thumb 
 /// </summary>
-internal partial class APM_CollectionFolder_Thumb : APM_CollectionFolder_Thumb_Base
+internal partial class APM_CollectionFolder_Thumb : APM_CollectionFolder_Thumb__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_Thumb_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_Thumb__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_Thumb";
     public static bool RuleGroup() { return false; }
@@ -360,12 +358,12 @@ internal partial class APM_CollectionFolder_Thumb_Base : ISpecification<PdfDicti
 /// <summary>
 /// CollectionFolder_Free only used by root folder
 /// </summary>
-internal partial class APM_CollectionFolder_Free : APM_CollectionFolder_Free_Base
+internal partial class APM_CollectionFolder_Free : APM_CollectionFolder_Free__Base
 {
 }
 
 
-internal partial class APM_CollectionFolder_Free_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionFolder_Free__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionFolder_Free";
     public static bool RuleGroup() { return false; }

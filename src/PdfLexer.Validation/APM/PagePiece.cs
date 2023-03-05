@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_PagePiece : APM_PagePiece_Base
+internal partial class APM_PagePiece : APM_PagePiece__Base
 {
 }
 
-internal partial class APM_PagePiece_Base : ISpecification<PdfDictionary>
+internal partial class APM_PagePiece__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "PagePiece";
@@ -35,12 +35,12 @@ internal partial class APM_PagePiece_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PagePiece_* Table 350 and Clause 14.5 and https://github.com/pdf-association/pdf-issues/issues/69
 /// </summary>
-internal partial class APM_PagePiece_CatchAll : APM_PagePiece_CatchAll_Base
+internal partial class APM_PagePiece_CatchAll : APM_PagePiece_CatchAll__Base
 {
 }
 
 
-internal partial class APM_PagePiece_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_PagePiece_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PagePiece_*";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotPolyLine : APM_AnnotPolyLine_Base
+internal partial class APM_AnnotPolyLine : APM_AnnotPolyLine__Base
 {
 }
 
-internal partial class APM_AnnotPolyLine_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotPolyLine";
@@ -138,12 +138,12 @@ internal partial class APM_AnnotPolyLine_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_Type Table 166 and Table 172 and Table 181 (markup annot)
 /// </summary>
-internal partial class APM_AnnotPolyLine_Type : APM_AnnotPolyLine_Type_Base
+internal partial class APM_AnnotPolyLine_Type : APM_AnnotPolyLine_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Type";
     public static bool RuleGroup() { return false; }
@@ -154,13 +154,11 @@ internal partial class APM_AnnotPolyLine_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_AnnotPolyLine_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotPolyLine_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -172,12 +170,12 @@ internal partial class APM_AnnotPolyLine_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPolyLine_Subtype 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Subtype : APM_AnnotPolyLine_Subtype_Base
+internal partial class APM_AnnotPolyLine_Subtype : APM_AnnotPolyLine_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Subtype";
     public static bool RuleGroup() { return false; }
@@ -188,13 +186,11 @@ internal partial class APM_AnnotPolyLine_Subtype_Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfName, APM_AnnotPolyLine_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PolyLine")) 
         {
             ctx.Fail<APM_AnnotPolyLine_Subtype>($"Invalid value {val}, allowed are: [PolyLine]");
-        }
         }
         // no linked objects
         
@@ -206,12 +202,12 @@ internal partial class APM_AnnotPolyLine_Subtype_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotPolyLine_Rect 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Rect : APM_AnnotPolyLine_Rect_Base
+internal partial class APM_AnnotPolyLine_Rect : APM_AnnotPolyLine_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Rect";
     public static bool RuleGroup() { return false; }
@@ -233,12 +229,12 @@ internal partial class APM_AnnotPolyLine_Rect_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPolyLine_Contents 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Contents : APM_AnnotPolyLine_Contents_Base
+internal partial class APM_AnnotPolyLine_Contents : APM_AnnotPolyLine_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Contents";
     public static bool RuleGroup() { return false; }
@@ -260,12 +256,12 @@ internal partial class APM_AnnotPolyLine_Contents_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotPolyLine_P 
 /// </summary>
-internal partial class APM_AnnotPolyLine_P : APM_AnnotPolyLine_P_Base
+internal partial class APM_AnnotPolyLine_P : APM_AnnotPolyLine_P__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_P";
     public static bool RuleGroup() { return false; }
@@ -287,12 +283,12 @@ internal partial class APM_AnnotPolyLine_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_NM 
 /// </summary>
-internal partial class APM_AnnotPolyLine_NM : APM_AnnotPolyLine_NM_Base
+internal partial class APM_AnnotPolyLine_NM : APM_AnnotPolyLine_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_NM";
     public static bool RuleGroup() { return false; }
@@ -314,12 +310,12 @@ internal partial class APM_AnnotPolyLine_NM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_M 
 /// </summary>
-internal partial class APM_AnnotPolyLine_M : APM_AnnotPolyLine_M_Base
+internal partial class APM_AnnotPolyLine_M : APM_AnnotPolyLine_M__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_M";
     public static bool RuleGroup() { return false; }
@@ -346,12 +342,12 @@ internal partial class APM_AnnotPolyLine_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_F Table 167
 /// </summary>
-internal partial class APM_AnnotPolyLine_F : APM_AnnotPolyLine_F_Base
+internal partial class APM_AnnotPolyLine_F : APM_AnnotPolyLine_F__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_F";
     public static bool RuleGroup() { return false; }
@@ -361,7 +357,11 @@ internal partial class APM_AnnotPolyLine_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotPolyLine_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!((ctx.Version < 1.7m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj)))))) 
+        {
+            ctx.Fail<APM_AnnotPolyLine_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.7,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -373,12 +373,12 @@ internal partial class APM_AnnotPolyLine_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_AP 
 /// </summary>
-internal partial class APM_AnnotPolyLine_AP : APM_AnnotPolyLine_AP_Base
+internal partial class APM_AnnotPolyLine_AP : APM_AnnotPolyLine_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_AP";
     public static bool RuleGroup() { return false; }
@@ -386,15 +386,12 @@ internal partial class APM_AnnotPolyLine_AP_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Rect = obj.Get("Rect");
-            if (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotPolyLine_AP>(obj, "AP", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotPolyLine_AP>(obj, "AP", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Rect = obj.Get("Rect");
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotPolyLine_AP>(obj, "AP", IndirectRequirement.Either);
+        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+            ctx.Fail<APM_AnnotPolyLine_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -408,12 +405,12 @@ internal partial class APM_AnnotPolyLine_AP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_AS 
 /// </summary>
-internal partial class APM_AnnotPolyLine_AS : APM_AnnotPolyLine_AS_Base
+internal partial class APM_AnnotPolyLine_AS : APM_AnnotPolyLine_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_AS";
     public static bool RuleGroup() { return false; }
@@ -421,17 +418,14 @@ internal partial class APM_AnnotPolyLine_AS_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotPolyLine_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotPolyLine_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotPolyLine_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotPolyLine_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -445,12 +439,12 @@ internal partial class APM_AnnotPolyLine_AS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_Border 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Border : APM_AnnotPolyLine_Border_Base
+internal partial class APM_AnnotPolyLine_Border : APM_AnnotPolyLine_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Border";
     public static bool RuleGroup() { return false; }
@@ -460,7 +454,7 @@ internal partial class APM_AnnotPolyLine_Border_Base : ISpecification<PdfDiction
     {
         var val = ctx.GetOptional<PdfArray, APM_AnnotPolyLine_Border>(obj, "Border", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOf_4AnnotBorderCharacteristics, PdfArray>(stack, val, obj);
         
@@ -472,12 +466,12 @@ internal partial class APM_AnnotPolyLine_Border_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotPolyLine_C 
 /// </summary>
-internal partial class APM_AnnotPolyLine_C : APM_AnnotPolyLine_C_Base
+internal partial class APM_AnnotPolyLine_C : APM_AnnotPolyLine_C__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_C";
     public static bool RuleGroup() { return false; }
@@ -499,12 +493,12 @@ internal partial class APM_AnnotPolyLine_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotPolyLine_StructParent : APM_AnnotPolyLine_StructParent_Base
+internal partial class APM_AnnotPolyLine_StructParent : APM_AnnotPolyLine_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_StructParent";
     public static bool RuleGroup() { return false; }
@@ -526,12 +520,12 @@ internal partial class APM_AnnotPolyLine_StructParent_Base : ISpecification<PdfD
 /// <summary>
 /// AnnotPolyLine_OC 
 /// </summary>
-internal partial class APM_AnnotPolyLine_OC : APM_AnnotPolyLine_OC_Base
+internal partial class APM_AnnotPolyLine_OC : APM_AnnotPolyLine_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_OC";
     public static bool RuleGroup() { return false; }
@@ -562,12 +556,12 @@ internal partial class APM_AnnotPolyLine_OC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_AF 
 /// </summary>
-internal partial class APM_AnnotPolyLine_AF : APM_AnnotPolyLine_AF_Base
+internal partial class APM_AnnotPolyLine_AF : APM_AnnotPolyLine_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_AF";
     public static bool RuleGroup() { return false; }
@@ -610,12 +604,12 @@ internal partial class APM_AnnotPolyLine_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_ca 
 /// </summary>
-internal partial class APM_AnnotPolyLine_ca : APM_AnnotPolyLine_ca_Base
+internal partial class APM_AnnotPolyLine_ca : APM_AnnotPolyLine_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_ca";
     public static bool RuleGroup() { return false; }
@@ -626,13 +620,11 @@ internal partial class APM_AnnotPolyLine_ca_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotPolyLine_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotPolyLine_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -644,12 +636,12 @@ internal partial class APM_AnnotPolyLine_ca_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_CA 
 /// </summary>
-internal partial class APM_AnnotPolyLine_CA : APM_AnnotPolyLine_CA_Base
+internal partial class APM_AnnotPolyLine_CA : APM_AnnotPolyLine_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_CA";
     public static bool RuleGroup() { return false; }
@@ -660,13 +652,11 @@ internal partial class APM_AnnotPolyLine_CA_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotPolyLine_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotPolyLine_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -678,12 +668,12 @@ internal partial class APM_AnnotPolyLine_CA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotPolyLine_BM : APM_AnnotPolyLine_BM_Base
+internal partial class APM_AnnotPolyLine_BM : APM_AnnotPolyLine_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_BM";
     public static bool RuleGroup() { return false; }
@@ -694,13 +684,11 @@ internal partial class APM_AnnotPolyLine_BM_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotPolyLine_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotPolyLine_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -712,12 +700,12 @@ internal partial class APM_AnnotPolyLine_BM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_Lang 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Lang : APM_AnnotPolyLine_Lang_Base
+internal partial class APM_AnnotPolyLine_Lang : APM_AnnotPolyLine_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Lang";
     public static bool RuleGroup() { return false; }
@@ -739,12 +727,12 @@ internal partial class APM_AnnotPolyLine_Lang_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPolyLine_T 
 /// </summary>
-internal partial class APM_AnnotPolyLine_T : APM_AnnotPolyLine_T_Base
+internal partial class APM_AnnotPolyLine_T : APM_AnnotPolyLine_T__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_T";
     public static bool RuleGroup() { return false; }
@@ -766,12 +754,12 @@ internal partial class APM_AnnotPolyLine_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_Popup 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Popup : APM_AnnotPolyLine_Popup_Base
+internal partial class APM_AnnotPolyLine_Popup : APM_AnnotPolyLine_Popup__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Popup_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Popup__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Popup";
     public static bool RuleGroup() { return false; }
@@ -793,12 +781,12 @@ internal partial class APM_AnnotPolyLine_Popup_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPolyLine_RC 
 /// </summary>
-internal partial class APM_AnnotPolyLine_RC : APM_AnnotPolyLine_RC_Base
+internal partial class APM_AnnotPolyLine_RC : APM_AnnotPolyLine_RC__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_RC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_RC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_RC";
     public static bool RuleGroup() { return false; }
@@ -841,12 +829,12 @@ internal partial class APM_AnnotPolyLine_RC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_CreationDate 
 /// </summary>
-internal partial class APM_AnnotPolyLine_CreationDate : APM_AnnotPolyLine_CreationDate_Base
+internal partial class APM_AnnotPolyLine_CreationDate : APM_AnnotPolyLine_CreationDate__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -868,12 +856,12 @@ internal partial class APM_AnnotPolyLine_CreationDate_Base : ISpecification<PdfD
 /// <summary>
 /// AnnotPolyLine_IRT 
 /// </summary>
-internal partial class APM_AnnotPolyLine_IRT : APM_AnnotPolyLine_IRT_Base
+internal partial class APM_AnnotPolyLine_IRT : APM_AnnotPolyLine_IRT__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_IRT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_IRT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_IRT";
     public static bool RuleGroup() { return false; }
@@ -881,15 +869,12 @@ internal partial class APM_AnnotPolyLine_IRT_Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (obj.ContainsKey("RT")) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotPolyLine_IRT>(obj, "IRT", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotPolyLine_IRT>(obj, "IRT", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotPolyLine_IRT>(obj, "IRT", IndirectRequirement.Either);
+        if ((obj.ContainsKey("RT")) && val == null) {
+            ctx.Fail<APM_AnnotPolyLine_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -956,6 +941,21 @@ internal partial class APM_AnnotPolyLine_IRT_Base : ISpecification<PdfDictionary
         } else if (APM_AnnotPrinterMark.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_AnnotPrinterMark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotWatermark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_Annot3D, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.7m || (ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotPolyLine_IRT>("IRT did not match any allowable types: '[AnnotText,AnnotLink,AnnotFreeText,AnnotLine,AnnotSquare,AnnotCircle,AnnotPolygon,AnnotHighlight,AnnotUnderline,AnnotSquiggly,AnnotStrikeOut,AnnotCaret,AnnotStamp,AnnotInk,AnnotPopup,AnnotFileAttachment,AnnotSound,AnnotMovie,AnnotScreen,AnnotWidget,AnnotPrinterMark,fn:SinceVersion(1.6,AnnotWatermark),fn:SinceVersion(1.6,Annot3D),fn:SinceVersion(1.7,AnnotRedact),fn:SinceVersion(2.0,AnnotProjection),fn:SinceVersion(2.0,AnnotRichMedia)]'");
@@ -969,12 +969,12 @@ internal partial class APM_AnnotPolyLine_IRT_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotPolyLine_Subj 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Subj : APM_AnnotPolyLine_Subj_Base
+internal partial class APM_AnnotPolyLine_Subj : APM_AnnotPolyLine_Subj__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Subj_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Subj__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Subj";
     public static bool RuleGroup() { return false; }
@@ -996,12 +996,12 @@ internal partial class APM_AnnotPolyLine_Subj_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPolyLine_RT 
 /// </summary>
-internal partial class APM_AnnotPolyLine_RT : APM_AnnotPolyLine_RT_Base
+internal partial class APM_AnnotPolyLine_RT : APM_AnnotPolyLine_RT__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_RT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_RT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_RT";
     public static bool RuleGroup() { return false; }
@@ -1011,14 +1011,12 @@ internal partial class APM_AnnotPolyLine_RT_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_AnnotPolyLine_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "R" || val == "Group")) 
         {
             ctx.Fail<APM_AnnotPolyLine_RT>($"Invalid value {val}, allowed are: [R,Group]");
-        }
         }
         // no linked objects
         
@@ -1030,12 +1028,12 @@ internal partial class APM_AnnotPolyLine_RT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_Vertices 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Vertices : APM_AnnotPolyLine_Vertices_Base
+internal partial class APM_AnnotPolyLine_Vertices : APM_AnnotPolyLine_Vertices__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Vertices_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Vertices__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Vertices";
     public static bool RuleGroup() { return false; }
@@ -1043,17 +1041,14 @@ internal partial class APM_AnnotPolyLine_Vertices_Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if (!obj.ContainsKey("Path")) {
-                val = ctx.GetRequired<PdfArray, APM_AnnotPolyLine_Vertices>(obj, "Vertices", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_AnnotPolyLine_Vertices>(obj, "Vertices", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_AnnotPolyLine_Vertices>(obj, "Vertices", IndirectRequirement.Either);
+        if ((!obj.ContainsKey("Path")) && val == null) {
+            ctx.Fail<APM_AnnotPolyLine_Vertices>("Vertices is required when 'fn:IsRequired(fn:Not(fn:IsPresent(Path)))"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -1065,12 +1060,12 @@ internal partial class APM_AnnotPolyLine_Vertices_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotPolyLine_LE 
 /// </summary>
-internal partial class APM_AnnotPolyLine_LE : APM_AnnotPolyLine_LE_Base
+internal partial class APM_AnnotPolyLine_LE : APM_AnnotPolyLine_LE__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_LE_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_LE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_LE";
     public static bool RuleGroup() { return false; }
@@ -1080,7 +1075,7 @@ internal partial class APM_AnnotPolyLine_LE_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_AnnotPolyLine_LE>(obj, "LE", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOf_2LineEndingsNames, PdfArray>(stack, val, obj);
         
@@ -1092,12 +1087,12 @@ internal partial class APM_AnnotPolyLine_LE_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_BS 
 /// </summary>
-internal partial class APM_AnnotPolyLine_BS : APM_AnnotPolyLine_BS_Base
+internal partial class APM_AnnotPolyLine_BS : APM_AnnotPolyLine_BS__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_BS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_BS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_BS";
     public static bool RuleGroup() { return false; }
@@ -1119,12 +1114,12 @@ internal partial class APM_AnnotPolyLine_BS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_IC 
 /// </summary>
-internal partial class APM_AnnotPolyLine_IC : APM_AnnotPolyLine_IC_Base
+internal partial class APM_AnnotPolyLine_IC : APM_AnnotPolyLine_IC__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_IC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_IC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_IC";
     public static bool RuleGroup() { return false; }
@@ -1146,12 +1141,12 @@ internal partial class APM_AnnotPolyLine_IC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_BE 
 /// </summary>
-internal partial class APM_AnnotPolyLine_BE : APM_AnnotPolyLine_BE_Base
+internal partial class APM_AnnotPolyLine_BE : APM_AnnotPolyLine_BE__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_BE";
     public static bool RuleGroup() { return false; }
@@ -1161,7 +1156,7 @@ internal partial class APM_AnnotPolyLine_BE_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotPolyLine_BE>(obj, "BE", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_BorderEffect, PdfDictionary>(stack, val, obj);
         
@@ -1173,12 +1168,12 @@ internal partial class APM_AnnotPolyLine_BE_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_IT 
 /// </summary>
-internal partial class APM_AnnotPolyLine_IT : APM_AnnotPolyLine_IT_Base
+internal partial class APM_AnnotPolyLine_IT : APM_AnnotPolyLine_IT__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_IT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_IT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_IT";
     public static bool RuleGroup() { return false; }
@@ -1189,13 +1184,11 @@ internal partial class APM_AnnotPolyLine_IT_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotPolyLine_IT>(obj, "IT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(val == "PolygonCloud" || ctx.Version >= 1.7m && val == "PolyLineDimension" || ctx.Version >= 1.7m && val == "PolygonDimension")) 
+        if (!(val == "PolygonCloud" || (ctx.Version < 1.7m || (ctx.Version >= 1.7m && val == "PolyLineDimension")) || (ctx.Version < 1.7m || (ctx.Version >= 1.7m && val == "PolygonDimension")))) 
         {
             ctx.Fail<APM_AnnotPolyLine_IT>($"Invalid value {val}, allowed are: [PolygonCloud,fn:SinceVersion(1.7,PolyLineDimension),fn:SinceVersion(1.7,PolygonDimension)]");
-        }
         }
         // no linked objects
         
@@ -1207,12 +1200,12 @@ internal partial class APM_AnnotPolyLine_IT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolyLine_Measure 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Measure : APM_AnnotPolyLine_Measure_Base
+internal partial class APM_AnnotPolyLine_Measure : APM_AnnotPolyLine_Measure__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Measure_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Measure__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Measure";
     public static bool RuleGroup() { return false; }
@@ -1227,6 +1220,9 @@ internal partial class APM_AnnotPolyLine_Measure_Base : ISpecification<PdfDictio
         if (APM_MeasureRL.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_MeasureRL, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_MeasureGEO.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_MeasureGEO, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotPolyLine_Measure>("Measure did not match any allowable types: '[MeasureRL,fn:SinceVersion(2.0,MeasureGEO)]'");
@@ -1240,12 +1236,12 @@ internal partial class APM_AnnotPolyLine_Measure_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotPolyLine_Path 
 /// </summary>
-internal partial class APM_AnnotPolyLine_Path : APM_AnnotPolyLine_Path_Base
+internal partial class APM_AnnotPolyLine_Path : APM_AnnotPolyLine_Path__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_Path_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_Path__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_Path";
     public static bool RuleGroup() { return false; }
@@ -1255,7 +1251,11 @@ internal partial class APM_AnnotPolyLine_Path_Base : ISpecification<PdfDictionar
     {
         var val = ctx.GetOptional<PdfArray, APM_AnnotPolyLine_Path>(obj, "Path", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (obj.ContainsKey("Vertices")) 
+        {
+            ctx.Fail<APM_AnnotPolyLine_Path>($"Value failed special case check: fn:Not(fn:IsPresent(Vertices))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfArraysPaths, PdfArray>(stack, val, obj);
         
@@ -1267,12 +1267,12 @@ internal partial class APM_AnnotPolyLine_Path_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPolyLine_ExData 2D markup annots only 
 /// </summary>
-internal partial class APM_AnnotPolyLine_ExData : APM_AnnotPolyLine_ExData_Base
+internal partial class APM_AnnotPolyLine_ExData : APM_AnnotPolyLine_ExData__Base
 {
 }
 
 
-internal partial class APM_AnnotPolyLine_ExData_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolyLine_ExData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolyLine_ExData";
     public static bool RuleGroup() { return false; }
@@ -1287,6 +1287,15 @@ internal partial class APM_AnnotPolyLine_ExData_Base : ISpecification<PdfDiction
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataProjection, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotPolyLine_ExData>("ExData did not match any allowable types: '[ExData3DMarkup,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,ExDataMarkupGeo)),fn:SinceVersion(2.0,ExDataMarkupGeo),fn:SinceVersion(2.0,ExDataProjection)]'");

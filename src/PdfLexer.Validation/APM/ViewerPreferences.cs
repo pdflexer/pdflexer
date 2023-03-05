@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ViewerPreferences : APM_ViewerPreferences_Base
+internal partial class APM_ViewerPreferences : APM_ViewerPreferences__Base
 {
 }
 
-internal partial class APM_ViewerPreferences_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ViewerPreferences";
@@ -145,12 +145,12 @@ internal partial class APM_ViewerPreferences_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ViewerPreferences_HideToolbar Table 147
 /// </summary>
-internal partial class APM_ViewerPreferences_HideToolbar : APM_ViewerPreferences_HideToolbar_Base
+internal partial class APM_ViewerPreferences_HideToolbar : APM_ViewerPreferences_HideToolbar__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_HideToolbar_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_HideToolbar__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_HideToolbar";
     public static bool RuleGroup() { return false; }
@@ -172,12 +172,12 @@ internal partial class APM_ViewerPreferences_HideToolbar_Base : ISpecification<P
 /// <summary>
 /// ViewerPreferences_HideMenubar 
 /// </summary>
-internal partial class APM_ViewerPreferences_HideMenubar : APM_ViewerPreferences_HideMenubar_Base
+internal partial class APM_ViewerPreferences_HideMenubar : APM_ViewerPreferences_HideMenubar__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_HideMenubar_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_HideMenubar__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_HideMenubar";
     public static bool RuleGroup() { return false; }
@@ -199,12 +199,12 @@ internal partial class APM_ViewerPreferences_HideMenubar_Base : ISpecification<P
 /// <summary>
 /// ViewerPreferences_HideWindowUI 
 /// </summary>
-internal partial class APM_ViewerPreferences_HideWindowUI : APM_ViewerPreferences_HideWindowUI_Base
+internal partial class APM_ViewerPreferences_HideWindowUI : APM_ViewerPreferences_HideWindowUI__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_HideWindowUI_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_HideWindowUI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_HideWindowUI";
     public static bool RuleGroup() { return false; }
@@ -226,12 +226,12 @@ internal partial class APM_ViewerPreferences_HideWindowUI_Base : ISpecification<
 /// <summary>
 /// ViewerPreferences_FitWindow 
 /// </summary>
-internal partial class APM_ViewerPreferences_FitWindow : APM_ViewerPreferences_FitWindow_Base
+internal partial class APM_ViewerPreferences_FitWindow : APM_ViewerPreferences_FitWindow__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_FitWindow_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_FitWindow__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_FitWindow";
     public static bool RuleGroup() { return false; }
@@ -253,12 +253,12 @@ internal partial class APM_ViewerPreferences_FitWindow_Base : ISpecification<Pdf
 /// <summary>
 /// ViewerPreferences_CenterWindow 
 /// </summary>
-internal partial class APM_ViewerPreferences_CenterWindow : APM_ViewerPreferences_CenterWindow_Base
+internal partial class APM_ViewerPreferences_CenterWindow : APM_ViewerPreferences_CenterWindow__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_CenterWindow_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_CenterWindow__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_CenterWindow";
     public static bool RuleGroup() { return false; }
@@ -280,12 +280,12 @@ internal partial class APM_ViewerPreferences_CenterWindow_Base : ISpecification<
 /// <summary>
 /// ViewerPreferences_DisplayDocTitle 
 /// </summary>
-internal partial class APM_ViewerPreferences_DisplayDocTitle : APM_ViewerPreferences_DisplayDocTitle_Base
+internal partial class APM_ViewerPreferences_DisplayDocTitle : APM_ViewerPreferences_DisplayDocTitle__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_DisplayDocTitle_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_DisplayDocTitle__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_DisplayDocTitle";
     public static bool RuleGroup() { return false; }
@@ -307,12 +307,12 @@ internal partial class APM_ViewerPreferences_DisplayDocTitle_Base : ISpecificati
 /// <summary>
 /// ViewerPreferences_NonFullScreenPageMode 
 /// </summary>
-internal partial class APM_ViewerPreferences_NonFullScreenPageMode : APM_ViewerPreferences_NonFullScreenPageMode_Base
+internal partial class APM_ViewerPreferences_NonFullScreenPageMode : APM_ViewerPreferences_NonFullScreenPageMode__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_NonFullScreenPageMode_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_NonFullScreenPageMode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_NonFullScreenPageMode";
     public static bool RuleGroup() { return false; }
@@ -322,14 +322,12 @@ internal partial class APM_ViewerPreferences_NonFullScreenPageMode_Base : ISpeci
     {
         var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_NonFullScreenPageMode>(obj, "NonFullScreenPageMode", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "UseNone" || val == "UseOutlines" || val == "UseThumbs" || val == "UseOC")) 
         {
             ctx.Fail<APM_ViewerPreferences_NonFullScreenPageMode>($"Invalid value {val}, allowed are: [UseNone,UseOutlines,UseThumbs,UseOC]");
-        }
         }
         // no linked objects
         
@@ -341,12 +339,12 @@ internal partial class APM_ViewerPreferences_NonFullScreenPageMode_Base : ISpeci
 /// <summary>
 /// ViewerPreferences_Direction 
 /// </summary>
-internal partial class APM_ViewerPreferences_Direction : APM_ViewerPreferences_Direction_Base
+internal partial class APM_ViewerPreferences_Direction : APM_ViewerPreferences_Direction__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_Direction_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_Direction__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_Direction";
     public static bool RuleGroup() { return false; }
@@ -357,13 +355,11 @@ internal partial class APM_ViewerPreferences_Direction_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_Direction>(obj, "Direction", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "L2R" || val == "R2L")) 
         {
             ctx.Fail<APM_ViewerPreferences_Direction>($"Invalid value {val}, allowed are: [L2R,R2L]");
-        }
         }
         // no linked objects
         
@@ -375,12 +371,12 @@ internal partial class APM_ViewerPreferences_Direction_Base : ISpecification<Pdf
 /// <summary>
 /// ViewerPreferences_ViewArea 
 /// </summary>
-internal partial class APM_ViewerPreferences_ViewArea : APM_ViewerPreferences_ViewArea_Base
+internal partial class APM_ViewerPreferences_ViewArea : APM_ViewerPreferences_ViewArea__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_ViewArea_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_ViewArea__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_ViewArea";
     public static bool RuleGroup() { return false; }
@@ -391,13 +387,11 @@ internal partial class APM_ViewerPreferences_ViewArea_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_ViewArea>(obj, "ViewArea", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaBox" || val == "CropBox" || val == "BleedBox" || val == "TrimBox" || val == "ArtBox")) 
         {
             ctx.Fail<APM_ViewerPreferences_ViewArea>($"Invalid value {val}, allowed are: [MediaBox,CropBox,BleedBox,TrimBox,ArtBox]");
-        }
         }
         // no linked objects
         
@@ -409,12 +403,12 @@ internal partial class APM_ViewerPreferences_ViewArea_Base : ISpecification<PdfD
 /// <summary>
 /// ViewerPreferences_ViewClip 
 /// </summary>
-internal partial class APM_ViewerPreferences_ViewClip : APM_ViewerPreferences_ViewClip_Base
+internal partial class APM_ViewerPreferences_ViewClip : APM_ViewerPreferences_ViewClip__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_ViewClip_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_ViewClip__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_ViewClip";
     public static bool RuleGroup() { return false; }
@@ -425,13 +419,11 @@ internal partial class APM_ViewerPreferences_ViewClip_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_ViewClip>(obj, "ViewClip", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaBox" || val == "CropBox" || val == "BleedBox" || val == "TrimBox" || val == "ArtBox")) 
         {
             ctx.Fail<APM_ViewerPreferences_ViewClip>($"Invalid value {val}, allowed are: [MediaBox,CropBox,BleedBox,TrimBox,ArtBox]");
-        }
         }
         // no linked objects
         
@@ -443,12 +435,12 @@ internal partial class APM_ViewerPreferences_ViewClip_Base : ISpecification<PdfD
 /// <summary>
 /// ViewerPreferences_PrintArea 
 /// </summary>
-internal partial class APM_ViewerPreferences_PrintArea : APM_ViewerPreferences_PrintArea_Base
+internal partial class APM_ViewerPreferences_PrintArea : APM_ViewerPreferences_PrintArea__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_PrintArea_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_PrintArea__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_PrintArea";
     public static bool RuleGroup() { return false; }
@@ -459,13 +451,11 @@ internal partial class APM_ViewerPreferences_PrintArea_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_PrintArea>(obj, "PrintArea", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaBox" || val == "CropBox" || val == "BleedBox" || val == "TrimBox" || val == "ArtBox")) 
         {
             ctx.Fail<APM_ViewerPreferences_PrintArea>($"Invalid value {val}, allowed are: [MediaBox,CropBox,BleedBox,TrimBox,ArtBox]");
-        }
         }
         // no linked objects
         
@@ -477,12 +467,12 @@ internal partial class APM_ViewerPreferences_PrintArea_Base : ISpecification<Pdf
 /// <summary>
 /// ViewerPreferences_PrintClip 
 /// </summary>
-internal partial class APM_ViewerPreferences_PrintClip : APM_ViewerPreferences_PrintClip_Base
+internal partial class APM_ViewerPreferences_PrintClip : APM_ViewerPreferences_PrintClip__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_PrintClip_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_PrintClip__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_PrintClip";
     public static bool RuleGroup() { return false; }
@@ -493,13 +483,11 @@ internal partial class APM_ViewerPreferences_PrintClip_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_PrintClip>(obj, "PrintClip", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaBox" || val == "CropBox" || val == "BleedBox" || val == "TrimBox" || val == "ArtBox")) 
         {
             ctx.Fail<APM_ViewerPreferences_PrintClip>($"Invalid value {val}, allowed are: [MediaBox,CropBox,BleedBox,TrimBox,ArtBox]");
-        }
         }
         // no linked objects
         
@@ -511,12 +499,12 @@ internal partial class APM_ViewerPreferences_PrintClip_Base : ISpecification<Pdf
 /// <summary>
 /// ViewerPreferences_PrintScaling 
 /// </summary>
-internal partial class APM_ViewerPreferences_PrintScaling : APM_ViewerPreferences_PrintScaling_Base
+internal partial class APM_ViewerPreferences_PrintScaling : APM_ViewerPreferences_PrintScaling__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_PrintScaling_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_PrintScaling__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_PrintScaling";
     public static bool RuleGroup() { return false; }
@@ -527,14 +515,7 @@ internal partial class APM_ViewerPreferences_PrintScaling_Base : ISpecification<
         var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_PrintScaling>(obj, "PrintScaling", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
-        
-        
-        if (!(val == "None" || val == "AppDefault" || val == "*")) 
-        {
-            ctx.Fail<APM_ViewerPreferences_PrintScaling>($"Invalid value {val}, allowed are: [None,AppDefault,*]");
-        }
-        }
+        // no value restictions
         // no linked objects
         
     }
@@ -545,12 +526,12 @@ internal partial class APM_ViewerPreferences_PrintScaling_Base : ISpecification<
 /// <summary>
 /// ViewerPreferences_Duplex 
 /// </summary>
-internal partial class APM_ViewerPreferences_Duplex : APM_ViewerPreferences_Duplex_Base
+internal partial class APM_ViewerPreferences_Duplex : APM_ViewerPreferences_Duplex__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_Duplex_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_Duplex__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_Duplex";
     public static bool RuleGroup() { return false; }
@@ -561,13 +542,11 @@ internal partial class APM_ViewerPreferences_Duplex_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_Duplex>(obj, "Duplex", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Simplex" || val == "DuplexFlipShortEdge" || val == "DuplexFlipLongEdge")) 
         {
             ctx.Fail<APM_ViewerPreferences_Duplex>($"Invalid value {val}, allowed are: [Simplex,DuplexFlipShortEdge,DuplexFlipLongEdge]");
-        }
         }
         // no linked objects
         
@@ -579,12 +558,12 @@ internal partial class APM_ViewerPreferences_Duplex_Base : ISpecification<PdfDic
 /// <summary>
 /// ViewerPreferences_PickTrayByPDFSize 
 /// </summary>
-internal partial class APM_ViewerPreferences_PickTrayByPDFSize : APM_ViewerPreferences_PickTrayByPDFSize_Base
+internal partial class APM_ViewerPreferences_PickTrayByPDFSize : APM_ViewerPreferences_PickTrayByPDFSize__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_PickTrayByPDFSize_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_PickTrayByPDFSize__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_PickTrayByPDFSize";
     public static bool RuleGroup() { return false; }
@@ -606,12 +585,12 @@ internal partial class APM_ViewerPreferences_PickTrayByPDFSize_Base : ISpecifica
 /// <summary>
 /// ViewerPreferences_PrintPageRange 
 /// </summary>
-internal partial class APM_ViewerPreferences_PrintPageRange : APM_ViewerPreferences_PrintPageRange_Base
+internal partial class APM_ViewerPreferences_PrintPageRange : APM_ViewerPreferences_PrintPageRange__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_PrintPageRange_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_PrintPageRange__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_PrintPageRange";
     public static bool RuleGroup() { return false; }
@@ -633,12 +612,12 @@ internal partial class APM_ViewerPreferences_PrintPageRange_Base : ISpecificatio
 /// <summary>
 /// ViewerPreferences_NumCopies 
 /// </summary>
-internal partial class APM_ViewerPreferences_NumCopies : APM_ViewerPreferences_NumCopies_Base
+internal partial class APM_ViewerPreferences_NumCopies : APM_ViewerPreferences_NumCopies__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_NumCopies_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_NumCopies__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_NumCopies";
     public static bool RuleGroup() { return false; }
@@ -649,13 +628,11 @@ internal partial class APM_ViewerPreferences_NumCopies_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfIntNumber, APM_ViewerPreferences_NumCopies>(obj, "NumCopies", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @NumCopies = val;
-        if (!(gt(@NumCopies,0))) 
+        var NumCopies = obj.Get("NumCopies");
+        if (!(gt(NumCopies,0))) 
         {
             ctx.Fail<APM_ViewerPreferences_NumCopies>($"Invalid value {val}, allowed are: [fn:Eval(@NumCopies>0)]");
-        }
         }
         // no linked objects
         
@@ -667,12 +644,12 @@ internal partial class APM_ViewerPreferences_NumCopies_Base : ISpecification<Pdf
 /// <summary>
 /// ViewerPreferences_Enforce 
 /// </summary>
-internal partial class APM_ViewerPreferences_Enforce : APM_ViewerPreferences_Enforce_Base
+internal partial class APM_ViewerPreferences_Enforce : APM_ViewerPreferences_Enforce__Base
 {
 }
 
 
-internal partial class APM_ViewerPreferences_Enforce_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewerPreferences_Enforce__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewerPreferences_Enforce";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaClipData : APM_MediaClipData_Base
+internal partial class APM_MediaClipData : APM_MediaClipData__Base
 {
 }
 
-internal partial class APM_MediaClipData_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaClipData";
@@ -113,12 +113,12 @@ internal partial class APM_MediaClipData_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaClipData_Type Table 284 and Table 285
 /// </summary>
-internal partial class APM_MediaClipData_Type : APM_MediaClipData_Type_Base
+internal partial class APM_MediaClipData_Type : APM_MediaClipData_Type__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_Type";
     public static bool RuleGroup() { return false; }
@@ -129,13 +129,11 @@ internal partial class APM_MediaClipData_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_MediaClipData_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaClip")) 
         {
             ctx.Fail<APM_MediaClipData_Type>($"Invalid value {val}, allowed are: [MediaClip]");
-        }
         }
         // no linked objects
         
@@ -147,12 +145,12 @@ internal partial class APM_MediaClipData_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// MediaClipData_S 
 /// </summary>
-internal partial class APM_MediaClipData_S : APM_MediaClipData_S_Base
+internal partial class APM_MediaClipData_S : APM_MediaClipData_S__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_S";
     public static bool RuleGroup() { return false; }
@@ -163,13 +161,11 @@ internal partial class APM_MediaClipData_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_MediaClipData_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MCD")) 
         {
             ctx.Fail<APM_MediaClipData_S>($"Invalid value {val}, allowed are: [MCD]");
-        }
         }
         // no linked objects
         
@@ -181,12 +177,12 @@ internal partial class APM_MediaClipData_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaClipData_N 
 /// </summary>
-internal partial class APM_MediaClipData_N : APM_MediaClipData_N_Base
+internal partial class APM_MediaClipData_N : APM_MediaClipData_N__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_N";
     public static bool RuleGroup() { return false; }
@@ -208,12 +204,12 @@ internal partial class APM_MediaClipData_N_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaClipData_D 
 /// </summary>
-internal partial class APM_MediaClipData_D : APM_MediaClipData_D_Base
+internal partial class APM_MediaClipData_D : APM_MediaClipData_D__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_D";
     public static bool RuleGroup() { return false; }
@@ -265,12 +261,12 @@ internal partial class APM_MediaClipData_D_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaClipData_CT should conform to the content type specification described in RFC 2045
 /// </summary>
-internal partial class APM_MediaClipData_CT : APM_MediaClipData_CT_Base
+internal partial class APM_MediaClipData_CT : APM_MediaClipData_CT__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_CT_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_CT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_CT";
     public static bool RuleGroup() { return false; }
@@ -292,12 +288,12 @@ internal partial class APM_MediaClipData_CT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaClipData_P 
 /// </summary>
-internal partial class APM_MediaClipData_P : APM_MediaClipData_P_Base
+internal partial class APM_MediaClipData_P : APM_MediaClipData_P__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_P";
     public static bool RuleGroup() { return false; }
@@ -319,12 +315,12 @@ internal partial class APM_MediaClipData_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaClipData_Alt 
 /// </summary>
-internal partial class APM_MediaClipData_Alt : APM_MediaClipData_Alt_Base
+internal partial class APM_MediaClipData_Alt : APM_MediaClipData_Alt__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_Alt_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_Alt__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_Alt";
     public static bool RuleGroup() { return false; }
@@ -346,12 +342,12 @@ internal partial class APM_MediaClipData_Alt_Base : ISpecification<PdfDictionary
 /// <summary>
 /// MediaClipData_PL 
 /// </summary>
-internal partial class APM_MediaClipData_PL : APM_MediaClipData_PL_Base
+internal partial class APM_MediaClipData_PL : APM_MediaClipData_PL__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_PL_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_PL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_PL";
     public static bool RuleGroup() { return false; }
@@ -373,12 +369,12 @@ internal partial class APM_MediaClipData_PL_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaClipData_MH 
 /// </summary>
-internal partial class APM_MediaClipData_MH : APM_MediaClipData_MH_Base
+internal partial class APM_MediaClipData_MH : APM_MediaClipData_MH__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_MH_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_MH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_MH";
     public static bool RuleGroup() { return false; }
@@ -400,12 +396,12 @@ internal partial class APM_MediaClipData_MH_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaClipData_BE 
 /// </summary>
-internal partial class APM_MediaClipData_BE : APM_MediaClipData_BE_Base
+internal partial class APM_MediaClipData_BE : APM_MediaClipData_BE__Base
 {
 }
 
 
-internal partial class APM_MediaClipData_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipData_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipData_BE";
     public static bool RuleGroup() { return false; }

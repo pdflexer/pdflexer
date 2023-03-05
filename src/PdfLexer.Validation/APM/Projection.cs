@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Projection : APM_Projection_Base
+internal partial class APM_Projection : APM_Projection__Base
 {
 }
 
-internal partial class APM_Projection_Base : ISpecification<PdfDictionary>
+internal partial class APM_Projection__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Projection";
@@ -95,12 +95,12 @@ internal partial class APM_Projection_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Projection_Subtype Table 316
 /// </summary>
-internal partial class APM_Projection_Subtype : APM_Projection_Subtype_Base
+internal partial class APM_Projection_Subtype : APM_Projection_Subtype__Base
 {
 }
 
 
-internal partial class APM_Projection_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_Projection_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Projection_Subtype";
     public static bool RuleGroup() { return false; }
@@ -111,13 +111,11 @@ internal partial class APM_Projection_Subtype_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfName, APM_Projection_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "O" || val == "P")) 
         {
             ctx.Fail<APM_Projection_Subtype>($"Invalid value {val}, allowed are: [O,P]");
-        }
         }
         // no linked objects
         
@@ -129,12 +127,12 @@ internal partial class APM_Projection_Subtype_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Projection_CS 
 /// </summary>
-internal partial class APM_Projection_CS : APM_Projection_CS_Base
+internal partial class APM_Projection_CS : APM_Projection_CS__Base
 {
 }
 
 
-internal partial class APM_Projection_CS_Base : ISpecification<PdfDictionary>
+internal partial class APM_Projection_CS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Projection_CS";
     public static bool RuleGroup() { return false; }
@@ -145,13 +143,11 @@ internal partial class APM_Projection_CS_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Projection_CS>(obj, "CS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "XNF" || val == "ANF")) 
         {
             ctx.Fail<APM_Projection_CS>($"Invalid value {val}, allowed are: [XNF,ANF]");
-        }
         }
         // no linked objects
         
@@ -163,12 +159,12 @@ internal partial class APM_Projection_CS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Projection_F 
 /// </summary>
-internal partial class APM_Projection_F : APM_Projection_F_Base
+internal partial class APM_Projection_F : APM_Projection_F__Base
 {
 }
 
 
-internal partial class APM_Projection_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_Projection_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Projection_F";
     public static bool RuleGroup() { return false; }
@@ -178,7 +174,7 @@ internal partial class APM_Projection_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfNumber, APM_Projection_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -190,12 +186,12 @@ internal partial class APM_Projection_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Projection_N 
 /// </summary>
-internal partial class APM_Projection_N : APM_Projection_N_Base
+internal partial class APM_Projection_N : APM_Projection_N__Base
 {
 }
 
 
-internal partial class APM_Projection_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_Projection_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Projection_N";
     public static bool RuleGroup() { return false; }
@@ -203,25 +199,19 @@ internal partial class APM_Projection_N_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfNumber? val;
-        {
-            var Subtype = obj.Get("Subtype");
-            if (eq(Subtype,"P")) {
-                val = ctx.GetRequired<PdfNumber, APM_Projection_N>(obj, "N", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfNumber, APM_Projection_N>(obj, "N", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Subtype = obj.Get("Subtype");
+        var val = ctx.GetOptional<PdfNumber, APM_Projection_N>(obj, "N", IndirectRequirement.Either);
+        if ((eq(Subtype,"P")) && val == null) {
+            ctx.Fail<APM_Projection_N>("N is required when 'fn:IsRequired(@Subtype==P)"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
-        var Subtype2 = obj.Get("Subtype");
-        IPdfObject @N = val;
-        if (!(((eq(Subtype2,"P")&&gt(@N,0))||(eq(Subtype2,"O")&&gte(@N,0))))) 
+        var N = obj.Get("N");
+        if (!(((eq(Subtype,"P")&&gt(N,0))||(eq(Subtype,"O")&&gte(N,0))))) 
         {
             ctx.Fail<APM_Projection_N>($"Invalid value {val}, allowed are: [fn:Eval(((@Subtype==P) && (@N>0)) || ((@Subtype==O) && (@N>=0)))]");
-        }
         }
         // no linked objects
         
@@ -233,12 +223,12 @@ internal partial class APM_Projection_N_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Projection_FOV 
 /// </summary>
-internal partial class APM_Projection_FOV : APM_Projection_FOV_Base
+internal partial class APM_Projection_FOV : APM_Projection_FOV__Base
 {
 }
 
 
-internal partial class APM_Projection_FOV_Base : ISpecification<PdfDictionary>
+internal partial class APM_Projection_FOV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Projection_FOV";
     public static bool RuleGroup() { return false; }
@@ -248,14 +238,12 @@ internal partial class APM_Projection_FOV_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfNumber, APM_Projection_FOV>(obj, "FOV", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:Ignore, not pertinent to validation
         
-        IPdfObject @FOV = val;
-        if (!((gte(@FOV,0)&&lte(@FOV,180)))) 
+        var FOV = obj.Get("FOV");
+        if (!((gte(FOV,0)&&lte(FOV,180)))) 
         {
             ctx.Fail<APM_Projection_FOV>($"Invalid value {val}, allowed are: [fn:Eval((@FOV>=0) && (@FOV<=180))]");
-        }
         }
         // no linked objects
         
@@ -267,12 +255,12 @@ internal partial class APM_Projection_FOV_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Projection_PS 
 /// </summary>
-internal partial class APM_Projection_PS : APM_Projection_PS_Base
+internal partial class APM_Projection_PS : APM_Projection_PS__Base
 {
 }
 
 
-internal partial class APM_Projection_PS_Base : ISpecification<PdfDictionary>
+internal partial class APM_Projection_PS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Projection_PS";
     public static bool RuleGroup() { return false; }
@@ -288,7 +276,7 @@ internal partial class APM_Projection_PS_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    // special case is an fn:IsMeaningful, not pertinent to validation
                     // no value restrictions
                     // no linked objects
                     return;
@@ -297,14 +285,12 @@ internal partial class APM_Projection_PS_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
-                    // TODO special case
-                    {
+                    // special case is an fn:IsMeaningful, not pertinent to validation
                     
-                    IPdfObject @PS = val;
-                    if (!(gt(@PS,0))) 
+                    var PS = obj.Get("PS");
+                    if (!(gt(PS,0))) 
                     {
                         ctx.Fail<APM_Projection_PS>($"Invalid value {val}, allowed are: [fn:Eval(@PS>0)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -322,12 +308,12 @@ internal partial class APM_Projection_PS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Projection_OS 
 /// </summary>
-internal partial class APM_Projection_OS : APM_Projection_OS_Base
+internal partial class APM_Projection_OS : APM_Projection_OS__Base
 {
 }
 
 
-internal partial class APM_Projection_OS_Base : ISpecification<PdfDictionary>
+internal partial class APM_Projection_OS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Projection_OS";
     public static bool RuleGroup() { return false; }
@@ -337,14 +323,12 @@ internal partial class APM_Projection_OS_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfNumber, APM_Projection_OS>(obj, "OS", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
-        IPdfObject @OS = val;
-        if (!(gt(@OS,0))) 
+        var OS = obj.Get("OS");
+        if (!(gt(OS,0))) 
         {
             ctx.Fail<APM_Projection_OS>($"Invalid value {val}, allowed are: [fn:Eval(@OS>0)]");
-        }
         }
         // no linked objects
         
@@ -356,12 +340,12 @@ internal partial class APM_Projection_OS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Projection_OB 
 /// </summary>
-internal partial class APM_Projection_OB : APM_Projection_OB_Base
+internal partial class APM_Projection_OB : APM_Projection_OB__Base
 {
 }
 
 
-internal partial class APM_Projection_OB_Base : ISpecification<PdfDictionary>
+internal partial class APM_Projection_OB__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Projection_OB";
     public static bool RuleGroup() { return false; }
@@ -371,14 +355,12 @@ internal partial class APM_Projection_OB_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_Projection_OB>(obj, "OB", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "W" || val == "H" || val == "Min" || val == "Max" || val == "Absolute")) 
         {
             ctx.Fail<APM_Projection_OB>($"Invalid value {val}, allowed are: [W,H,Min,Max,Absolute]");
-        }
         }
         // no linked objects
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DReference : APM_3DReference_Base
+internal partial class APM_3DReference : APM_3DReference__Base
 {
 }
 
-internal partial class APM_3DReference_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DReference__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DReference";
@@ -95,12 +95,12 @@ internal partial class APM_3DReference_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DReference_Type Table 314
 /// </summary>
-internal partial class APM_3DReference_Type : APM_3DReference_Type_Base
+internal partial class APM_3DReference_Type : APM_3DReference_Type__Base
 {
 }
 
 
-internal partial class APM_3DReference_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DReference_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DReference_Type";
     public static bool RuleGroup() { return false; }
@@ -111,13 +111,11 @@ internal partial class APM_3DReference_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DReference_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DRef")) 
         {
             ctx.Fail<APM_3DReference_Type>($"Invalid value {val}, allowed are: [3DRef]");
-        }
         }
         // no linked objects
         
@@ -129,12 +127,12 @@ internal partial class APM_3DReference_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DReference_3DD 
 /// </summary>
-internal partial class APM_3DReference_3DD : APM_3DReference_3DD_Base
+internal partial class APM_3DReference_3DD : APM_3DReference_3DD__Base
 {
 }
 
 
-internal partial class APM_3DReference_3DD_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DReference_3DD__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DReference_3DD";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Transition : APM_Transition_Base
+internal partial class APM_Transition : APM_Transition__Base
 {
 }
 
-internal partial class APM_Transition_Base : ISpecification<PdfDictionary>
+internal partial class APM_Transition__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Transition";
@@ -151,12 +151,12 @@ internal partial class APM_Transition_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Transition_Type Table 164
 /// </summary>
-internal partial class APM_Transition_Type : APM_Transition_Type_Base
+internal partial class APM_Transition_Type : APM_Transition_Type__Base
 {
 }
 
 
-internal partial class APM_Transition_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Transition_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Transition_Type";
     public static bool RuleGroup() { return false; }
@@ -167,13 +167,11 @@ internal partial class APM_Transition_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Transition_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Trans")) 
         {
             ctx.Fail<APM_Transition_Type>($"Invalid value {val}, allowed are: [Trans]");
-        }
         }
         // no linked objects
         
@@ -185,12 +183,12 @@ internal partial class APM_Transition_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Transition_S 
 /// </summary>
-internal partial class APM_Transition_S : APM_Transition_S_Base
+internal partial class APM_Transition_S : APM_Transition_S__Base
 {
 }
 
 
-internal partial class APM_Transition_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_Transition_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Transition_S";
     public static bool RuleGroup() { return false; }
@@ -201,13 +199,11 @@ internal partial class APM_Transition_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Transition_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Split" || val == "Blinds" || val == "Box" || val == "Wipe" || val == "Dissolve" || val == "Glitter" || val == "R" || val == "Fly" || val == "Push" || val == "Cover" || val == "Uncover" || val == "Fade")) 
         {
             ctx.Fail<APM_Transition_S>($"Invalid value {val}, allowed are: [Split,Blinds,Box,Wipe,Dissolve,Glitter,R,Fly,Push,Cover,Uncover,Fade]");
-        }
         }
         // no linked objects
         
@@ -219,12 +215,12 @@ internal partial class APM_Transition_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Transition_D 
 /// </summary>
-internal partial class APM_Transition_D : APM_Transition_D_Base
+internal partial class APM_Transition_D : APM_Transition_D__Base
 {
 }
 
 
-internal partial class APM_Transition_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_Transition_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Transition_D";
     public static bool RuleGroup() { return false; }
@@ -235,13 +231,11 @@ internal partial class APM_Transition_D_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_Transition_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @D = val;
-        if (!(gte(@D,0))) 
+        var D = obj.Get("D");
+        if (!(gte(D,0))) 
         {
             ctx.Fail<APM_Transition_D>($"Invalid value {val}, allowed are: [fn:Eval(@D>=0)]");
-        }
         }
         // no linked objects
         
@@ -253,12 +247,12 @@ internal partial class APM_Transition_D_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Transition_Dm 
 /// </summary>
-internal partial class APM_Transition_Dm : APM_Transition_Dm_Base
+internal partial class APM_Transition_Dm : APM_Transition_Dm__Base
 {
 }
 
 
-internal partial class APM_Transition_Dm_Base : ISpecification<PdfDictionary>
+internal partial class APM_Transition_Dm__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Transition_Dm";
     public static bool RuleGroup() { return false; }
@@ -268,14 +262,12 @@ internal partial class APM_Transition_Dm_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_Transition_Dm>(obj, "Dm", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "H" || val == "V")) 
         {
             ctx.Fail<APM_Transition_Dm>($"Invalid value {val}, allowed are: [H,V]");
-        }
         }
         // no linked objects
         
@@ -287,12 +279,12 @@ internal partial class APM_Transition_Dm_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Transition_M 
 /// </summary>
-internal partial class APM_Transition_M : APM_Transition_M_Base
+internal partial class APM_Transition_M : APM_Transition_M__Base
 {
 }
 
 
-internal partial class APM_Transition_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_Transition_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Transition_M";
     public static bool RuleGroup() { return false; }
@@ -302,14 +294,12 @@ internal partial class APM_Transition_M_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_Transition_M>(obj, "M", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "I" || val == "O")) 
         {
             ctx.Fail<APM_Transition_M>($"Invalid value {val}, allowed are: [I,O]");
-        }
         }
         // no linked objects
         
@@ -321,12 +311,12 @@ internal partial class APM_Transition_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Transition_Di 
 /// </summary>
-internal partial class APM_Transition_Di : APM_Transition_Di_Base
+internal partial class APM_Transition_Di : APM_Transition_Di__Base
 {
 }
 
 
-internal partial class APM_Transition_Di_Base : ISpecification<PdfDictionary>
+internal partial class APM_Transition_Di__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Transition_Di";
     public static bool RuleGroup() { return false; }
@@ -342,14 +332,17 @@ internal partial class APM_Transition_Di_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfIntNumber)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var Di = obj.Get("Di");
+                    var S = obj.Get("S");
+                    if (!((((eq(Di,90)||eq(Di,180))&&eq(S,"Wipe"))||(eq(Di,315)&&eq(S,"Glitter"))))) 
                     {
+                        ctx.Fail<APM_Transition_Di>($"Value failed special case check: fn:Eval((((@Di==90) || (@Di==180)) && (@S==Wipe)) || ((@Di==315) && (@S==Glitter)))");
+                    }
                     
                     
                     if (!(val == 0 || val == 90 || val == 180 || val == 270 || val == 315)) 
                     {
                         ctx.Fail<APM_Transition_Di>($"Invalid value {val}, allowed are: [0,90,180,270,315]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -358,14 +351,18 @@ internal partial class APM_Transition_Di_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var Di = obj.Get("Di");
+                    var S = obj.Get("S");
+                    var SS = obj.Get("SS");
+                    if (!(eq(Di,"None")&&eq(S,"Fly")&&(ctx.Version < 1.5m || (ctx.Version >= 1.5m && !eq(SS,1.0m))))) 
                     {
+                        ctx.Fail<APM_Transition_Di>($"Value failed special case check: fn:Eval(((@Di==None) && (@S==Fly) && fn:SinceVersion(1.5,(@SS!=1.0))))");
+                    }
                     
                     
                     if (!(val == "None")) 
                     {
                         ctx.Fail<APM_Transition_Di>($"Invalid value {val}, allowed are: [None]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -383,12 +380,12 @@ internal partial class APM_Transition_Di_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Transition_SS 
 /// </summary>
-internal partial class APM_Transition_SS : APM_Transition_SS_Base
+internal partial class APM_Transition_SS : APM_Transition_SS__Base
 {
 }
 
 
-internal partial class APM_Transition_SS_Base : ISpecification<PdfDictionary>
+internal partial class APM_Transition_SS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Transition_SS";
     public static bool RuleGroup() { return false; }
@@ -398,7 +395,7 @@ internal partial class APM_Transition_SS_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfNumber, APM_Transition_SS>(obj, "SS", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -410,12 +407,12 @@ internal partial class APM_Transition_SS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Transition_B 
 /// </summary>
-internal partial class APM_Transition_B : APM_Transition_B_Base
+internal partial class APM_Transition_B : APM_Transition_B__Base
 {
 }
 
 
-internal partial class APM_Transition_B_Base : ISpecification<PdfDictionary>
+internal partial class APM_Transition_B__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Transition_B";
     public static bool RuleGroup() { return false; }
@@ -425,7 +422,7 @@ internal partial class APM_Transition_B_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfBoolean, APM_Transition_B>(obj, "B", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         // no linked objects
         

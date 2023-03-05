@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaDeactivation : APM_RichMediaDeactivation_Base
+internal partial class APM_RichMediaDeactivation : APM_RichMediaDeactivation__Base
 {
 }
 
-internal partial class APM_RichMediaDeactivation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaDeactivation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaDeactivation";
@@ -46,12 +46,12 @@ internal partial class APM_RichMediaDeactivation_Base : ISpecification<PdfDictio
 /// <summary>
 /// RichMediaDeactivation_Type Table 336
 /// </summary>
-internal partial class APM_RichMediaDeactivation_Type : APM_RichMediaDeactivation_Type_Base
+internal partial class APM_RichMediaDeactivation_Type : APM_RichMediaDeactivation_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaDeactivation_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaDeactivation_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaDeactivation_Type";
     public static bool RuleGroup() { return false; }
@@ -62,13 +62,11 @@ internal partial class APM_RichMediaDeactivation_Type_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_RichMediaDeactivation_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaDeactivation")) 
         {
             ctx.Fail<APM_RichMediaDeactivation_Type>($"Invalid value {val}, allowed are: [RichMediaDeactivation]");
-        }
         }
         // no linked objects
         
@@ -80,12 +78,12 @@ internal partial class APM_RichMediaDeactivation_Type_Base : ISpecification<PdfD
 /// <summary>
 /// RichMediaDeactivation_Condition 
 /// </summary>
-internal partial class APM_RichMediaDeactivation_Condition : APM_RichMediaDeactivation_Condition_Base
+internal partial class APM_RichMediaDeactivation_Condition : APM_RichMediaDeactivation_Condition__Base
 {
 }
 
 
-internal partial class APM_RichMediaDeactivation_Condition_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaDeactivation_Condition__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaDeactivation_Condition";
     public static bool RuleGroup() { return false; }
@@ -96,13 +94,11 @@ internal partial class APM_RichMediaDeactivation_Condition_Base : ISpecification
         var val = ctx.GetOptional<PdfName, APM_RichMediaDeactivation_Condition>(obj, "Condition", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "XD" || val == "PC" || val == "PI")) 
         {
             ctx.Fail<APM_RichMediaDeactivation_Condition>($"Invalid value {val}, allowed are: [XD,PC,PI]");
-        }
         }
         // no linked objects
         

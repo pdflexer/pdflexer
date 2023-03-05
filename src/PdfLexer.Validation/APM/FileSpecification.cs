@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FileSpecification : APM_FileSpecification_Base
+internal partial class APM_FileSpecification : APM_FileSpecification__Base
 {
 }
 
-internal partial class APM_FileSpecification_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FileSpecification";
@@ -159,12 +159,12 @@ internal partial class APM_FileSpecification_Base : ISpecification<PdfDictionary
 /// <summary>
 /// FileSpecification_Type Table 43
 /// </summary>
-internal partial class APM_FileSpecification_Type : APM_FileSpecification_Type_Base
+internal partial class APM_FileSpecification_Type : APM_FileSpecification_Type__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_Type";
     public static bool RuleGroup() { return false; }
@@ -172,24 +172,19 @@ internal partial class APM_FileSpecification_Type_Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            
-            if (obj.ContainsKey("EF")||obj.ContainsKey("EP")||obj.ContainsKey("RF")) {
-                val = ctx.GetRequired<PdfName, APM_FileSpecification_Type>(obj, "Type", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_FileSpecification_Type>(obj, "Type", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfName, APM_FileSpecification_Type>(obj, "Type", IndirectRequirement.Either);
+        if ((obj.ContainsKey("EF")||obj.ContainsKey("EP")||obj.ContainsKey("RF")) && val == null) {
+            ctx.Fail<APM_FileSpecification_Type>("Type is required when 'fn:IsRequired(fn:IsPresent(EF) || fn:IsPresent(EP) || fn:IsPresent(RF))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
-        {
         
         
         if (!(val == "Filespec")) 
         {
             ctx.Fail<APM_FileSpecification_Type>($"Invalid value {val}, allowed are: [Filespec]");
-        }
         }
         // no linked objects
         
@@ -201,12 +196,12 @@ internal partial class APM_FileSpecification_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// FileSpecification_FS 
 /// </summary>
-internal partial class APM_FileSpecification_FS : APM_FileSpecification_FS_Base
+internal partial class APM_FileSpecification_FS : APM_FileSpecification_FS__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_FS_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_FS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_FS";
     public static bool RuleGroup() { return false; }
@@ -217,14 +212,7 @@ internal partial class APM_FileSpecification_FS_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_FileSpecification_FS>(obj, "FS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
-        
-        
-        if (!(val == "URL" || val == "*")) 
-        {
-            ctx.Fail<APM_FileSpecification_FS>($"Invalid value {val}, allowed are: [URL,*]");
-        }
-        }
+        // no value restictions
         // no linked objects
         
     }
@@ -235,12 +223,12 @@ internal partial class APM_FileSpecification_FS_Base : ISpecification<PdfDiction
 /// <summary>
 /// FileSpecification_F 
 /// </summary>
-internal partial class APM_FileSpecification_F : APM_FileSpecification_F_Base
+internal partial class APM_FileSpecification_F : APM_FileSpecification_F__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_F";
     public static bool RuleGroup() { return false; }
@@ -248,15 +236,12 @@ internal partial class APM_FileSpecification_F_Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfString? val;
-        {
-            
-            if (!obj.ContainsKey("DOS")&&!obj.ContainsKey("Mac")&&!obj.ContainsKey("Unix")) {
-                val = ctx.GetRequired<PdfString, APM_FileSpecification_F>(obj, "F", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfString, APM_FileSpecification_F>(obj, "F", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfString, APM_FileSpecification_F>(obj, "F", IndirectRequirement.Either);
+        if ((!obj.ContainsKey("DOS")&&!obj.ContainsKey("Mac")&&!obj.ContainsKey("Unix")) && val == null) {
+            ctx.Fail<APM_FileSpecification_F>("F is required when 'fn:IsRequired(fn:Not(fn:IsPresent(DOS)) && fn:Not(fn:IsPresent(Mac)) && fn:Not(fn:IsPresent(Unix)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -270,12 +255,12 @@ internal partial class APM_FileSpecification_F_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FileSpecification_UF 
 /// </summary>
-internal partial class APM_FileSpecification_UF : APM_FileSpecification_UF_Base
+internal partial class APM_FileSpecification_UF : APM_FileSpecification_UF__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_UF_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_UF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_UF";
     public static bool RuleGroup() { return false; }
@@ -297,12 +282,12 @@ internal partial class APM_FileSpecification_UF_Base : ISpecification<PdfDiction
 /// <summary>
 /// FileSpecification_DOS 
 /// </summary>
-internal partial class APM_FileSpecification_DOS : APM_FileSpecification_DOS_Base
+internal partial class APM_FileSpecification_DOS : APM_FileSpecification_DOS__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_DOS_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_DOS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_DOS";
     public static bool RuleGroup() { return false; }
@@ -324,12 +309,12 @@ internal partial class APM_FileSpecification_DOS_Base : ISpecification<PdfDictio
 /// <summary>
 /// FileSpecification_Mac 
 /// </summary>
-internal partial class APM_FileSpecification_Mac : APM_FileSpecification_Mac_Base
+internal partial class APM_FileSpecification_Mac : APM_FileSpecification_Mac__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_Mac_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_Mac__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_Mac";
     public static bool RuleGroup() { return false; }
@@ -351,12 +336,12 @@ internal partial class APM_FileSpecification_Mac_Base : ISpecification<PdfDictio
 /// <summary>
 /// FileSpecification_Unix 
 /// </summary>
-internal partial class APM_FileSpecification_Unix : APM_FileSpecification_Unix_Base
+internal partial class APM_FileSpecification_Unix : APM_FileSpecification_Unix__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_Unix_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_Unix__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_Unix";
     public static bool RuleGroup() { return false; }
@@ -378,12 +363,12 @@ internal partial class APM_FileSpecification_Unix_Base : ISpecification<PdfDicti
 /// <summary>
 /// FileSpecification_ID 
 /// </summary>
-internal partial class APM_FileSpecification_ID : APM_FileSpecification_ID_Base
+internal partial class APM_FileSpecification_ID : APM_FileSpecification_ID__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_ID";
     public static bool RuleGroup() { return false; }
@@ -405,12 +390,12 @@ internal partial class APM_FileSpecification_ID_Base : ISpecification<PdfDiction
 /// <summary>
 /// FileSpecification_V 
 /// </summary>
-internal partial class APM_FileSpecification_V : APM_FileSpecification_V_Base
+internal partial class APM_FileSpecification_V : APM_FileSpecification_V__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_V";
     public static bool RuleGroup() { return false; }
@@ -432,12 +417,12 @@ internal partial class APM_FileSpecification_V_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FileSpecification_EF 
 /// </summary>
-internal partial class APM_FileSpecification_EF : APM_FileSpecification_EF_Base
+internal partial class APM_FileSpecification_EF : APM_FileSpecification_EF__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_EF_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_EF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_EF";
     public static bool RuleGroup() { return false; }
@@ -445,15 +430,12 @@ internal partial class APM_FileSpecification_EF_Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (obj.ContainsKey("RF")) {
-                val = ctx.GetRequired<PdfDictionary, APM_FileSpecification_EF>(obj, "EF", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_FileSpecification_EF>(obj, "EF", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_FileSpecification_EF>(obj, "EF", IndirectRequirement.Either);
+        if ((obj.ContainsKey("RF")) && val == null) {
+            ctx.Fail<APM_FileSpecification_EF>("EF is required when 'fn:IsRequired(fn:IsPresent(RF))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -467,12 +449,12 @@ internal partial class APM_FileSpecification_EF_Base : ISpecification<PdfDiction
 /// <summary>
 /// FileSpecification_RF 
 /// </summary>
-internal partial class APM_FileSpecification_RF : APM_FileSpecification_RF_Base
+internal partial class APM_FileSpecification_RF : APM_FileSpecification_RF__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_RF_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_RF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_RF";
     public static bool RuleGroup() { return false; }
@@ -494,12 +476,12 @@ internal partial class APM_FileSpecification_RF_Base : ISpecification<PdfDiction
 /// <summary>
 /// FileSpecification_Desc 
 /// </summary>
-internal partial class APM_FileSpecification_Desc : APM_FileSpecification_Desc_Base
+internal partial class APM_FileSpecification_Desc : APM_FileSpecification_Desc__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_Desc_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_Desc__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_Desc";
     public static bool RuleGroup() { return false; }
@@ -521,12 +503,12 @@ internal partial class APM_FileSpecification_Desc_Base : ISpecification<PdfDicti
 /// <summary>
 /// FileSpecification_CI 
 /// </summary>
-internal partial class APM_FileSpecification_CI : APM_FileSpecification_CI_Base
+internal partial class APM_FileSpecification_CI : APM_FileSpecification_CI__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_CI_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_CI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_CI";
     public static bool RuleGroup() { return false; }
@@ -548,12 +530,12 @@ internal partial class APM_FileSpecification_CI_Base : ISpecification<PdfDiction
 /// <summary>
 /// FileSpecification_Thumb 
 /// </summary>
-internal partial class APM_FileSpecification_Thumb : APM_FileSpecification_Thumb_Base
+internal partial class APM_FileSpecification_Thumb : APM_FileSpecification_Thumb__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_Thumb_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_Thumb__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_Thumb";
     public static bool RuleGroup() { return false; }
@@ -575,12 +557,12 @@ internal partial class APM_FileSpecification_Thumb_Base : ISpecification<PdfDict
 /// <summary>
 /// FileSpecification_AFRelationship 
 /// </summary>
-internal partial class APM_FileSpecification_AFRelationship : APM_FileSpecification_AFRelationship_Base
+internal partial class APM_FileSpecification_AFRelationship : APM_FileSpecification_AFRelationship__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_AFRelationship_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_AFRelationship__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_AFRelationship";
     public static bool RuleGroup() { return false; }
@@ -591,13 +573,11 @@ internal partial class APM_FileSpecification_AFRelationship_Base : ISpecificatio
         var val = ctx.GetOptional<PdfName, APM_FileSpecification_AFRelationship>(obj, "AFRelationship", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Source" || val == "Data" || val == "Alternative" || val == "Supplement" || val == "EncryptedPayload" || val == "FormData" || val == "Schema" || val == "Unspecified")) 
         {
             ctx.Fail<APM_FileSpecification_AFRelationship>($"Invalid value {val}, allowed are: [Source,Data,Alternative,Supplement,EncryptedPayload,FormData,Schema,Unspecified]");
-        }
         }
         // no linked objects
         
@@ -609,12 +589,12 @@ internal partial class APM_FileSpecification_AFRelationship_Base : ISpecificatio
 /// <summary>
 /// FileSpecification_EP 
 /// </summary>
-internal partial class APM_FileSpecification_EP : APM_FileSpecification_EP_Base
+internal partial class APM_FileSpecification_EP : APM_FileSpecification_EP__Base
 {
 }
 
 
-internal partial class APM_FileSpecification_EP_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecification_EP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecification_EP";
     public static bool RuleGroup() { return false; }

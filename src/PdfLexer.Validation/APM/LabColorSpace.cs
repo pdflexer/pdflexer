@@ -19,7 +19,7 @@ internal partial class APM_LabColorSpace : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -37,13 +37,11 @@ internal partial class APM_LabColorSpace_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_LabColorSpace_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Lab")) 
         {
             ctx.Fail<APM_LabColorSpace_0>($"Invalid value {val}, allowed are: [Lab]");
-        }
         }
         // no linked objects
         

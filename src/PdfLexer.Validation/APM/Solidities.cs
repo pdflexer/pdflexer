@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Solidities : APM_Solidities_Base
+internal partial class APM_Solidities : APM_Solidities__Base
 {
 }
 
-internal partial class APM_Solidities_Base : ISpecification<PdfDictionary>
+internal partial class APM_Solidities__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Solidities";
@@ -36,12 +36,12 @@ internal partial class APM_Solidities_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Solidities_Default Table 72
 /// </summary>
-internal partial class APM_Solidities_Default : APM_Solidities_Default_Base
+internal partial class APM_Solidities_Default : APM_Solidities_Default__Base
 {
 }
 
 
-internal partial class APM_Solidities_Default_Base : ISpecification<PdfDictionary>
+internal partial class APM_Solidities_Default__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Solidities_Default";
     public static bool RuleGroup() { return false; }
@@ -52,13 +52,11 @@ internal partial class APM_Solidities_Default_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfNumber, APM_Solidities_Default>(obj, "Default", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Default = val;
-        if (!((gte(@Default,0)&&lte(@Default,1)))) 
+        var Default = obj.Get("Default");
+        if (!((gte(Default,0)&&lte(Default,1)))) 
         {
             ctx.Fail<APM_Solidities_Default>($"Invalid value {val}, allowed are: [fn:Eval((@Default>=0) && (@Default<=1))]");
-        }
         }
         // no linked objects
         
@@ -70,12 +68,12 @@ internal partial class APM_Solidities_Default_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Solidities_* 
 /// </summary>
-internal partial class APM_Solidities_CatchAll : APM_Solidities_CatchAll_Base
+internal partial class APM_Solidities_CatchAll : APM_Solidities_CatchAll__Base
 {
 }
 
 
-internal partial class APM_Solidities_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_Solidities_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Solidities_*";
     public static bool RuleGroup() { return false; }
@@ -92,13 +90,11 @@ internal partial class APM_Solidities_CatchAll_Base : ISpecification<PdfDictiona
             IPdfObject? val = ctx.GetOptional<PdfNumber, APM_Solidities_CatchAll>(obj, key, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
-            {
             
             
             if (!((gte(val,0)&&lte(val,1)))) 
             {
                 ctx.Fail<APM_Solidities_CatchAll>($"Invalid value {val}, allowed are: [fn:Eval((@*>=0) && (@*<=1))]");
-            }
             }
             // no linked objects
             

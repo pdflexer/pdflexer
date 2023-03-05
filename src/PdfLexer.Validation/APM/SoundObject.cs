@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SoundObject : APM_SoundObject_Base
+internal partial class APM_SoundObject : APM_SoundObject__Base
 {
 }
 
-internal partial class APM_SoundObject_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SoundObject";
@@ -147,12 +147,12 @@ internal partial class APM_SoundObject_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoundObject_Type Table 5 and Table 305
 /// </summary>
-internal partial class APM_SoundObject_Type : APM_SoundObject_Type_Base
+internal partial class APM_SoundObject_Type : APM_SoundObject_Type__Base
 {
 }
 
 
-internal partial class APM_SoundObject_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_Type";
     public static bool RuleGroup() { return false; }
@@ -163,13 +163,11 @@ internal partial class APM_SoundObject_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_SoundObject_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Sound")) 
         {
             ctx.Fail<APM_SoundObject_Type>($"Invalid value {val}, allowed are: [Sound]");
-        }
         }
         // no linked objects
         
@@ -181,12 +179,12 @@ internal partial class APM_SoundObject_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoundObject_R sampling per second
 /// </summary>
-internal partial class APM_SoundObject_R : APM_SoundObject_R_Base
+internal partial class APM_SoundObject_R : APM_SoundObject_R__Base
 {
 }
 
 
-internal partial class APM_SoundObject_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_R";
     public static bool RuleGroup() { return false; }
@@ -197,13 +195,11 @@ internal partial class APM_SoundObject_R_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfNumber, APM_SoundObject_R>(obj, "R", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @R = val;
-        if (!(gt(@R,0))) 
+        var R = obj.Get("R");
+        if (!(gt(R,0))) 
         {
             ctx.Fail<APM_SoundObject_R>($"Invalid value {val}, allowed are: [fn:Eval(@R>0)]");
-        }
         }
         // no linked objects
         
@@ -215,12 +211,12 @@ internal partial class APM_SoundObject_R_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoundObject_C number of sound channels
 /// </summary>
-internal partial class APM_SoundObject_C : APM_SoundObject_C_Base
+internal partial class APM_SoundObject_C : APM_SoundObject_C__Base
 {
 }
 
 
-internal partial class APM_SoundObject_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_C";
     public static bool RuleGroup() { return false; }
@@ -231,13 +227,11 @@ internal partial class APM_SoundObject_C_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_SoundObject_C>(obj, "C", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @C = val;
-        if (!(gt(@C,0))) 
+        var C = obj.Get("C");
+        if (!(gt(C,0))) 
         {
             ctx.Fail<APM_SoundObject_C>($"Invalid value {val}, allowed are: [fn:Eval(@C>0)]");
-        }
         }
         // no linked objects
         
@@ -249,12 +243,12 @@ internal partial class APM_SoundObject_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoundObject_B bits per sample value per channel
 /// </summary>
-internal partial class APM_SoundObject_B : APM_SoundObject_B_Base
+internal partial class APM_SoundObject_B : APM_SoundObject_B__Base
 {
 }
 
 
-internal partial class APM_SoundObject_B_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_B__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_B";
     public static bool RuleGroup() { return false; }
@@ -265,13 +259,11 @@ internal partial class APM_SoundObject_B_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_SoundObject_B>(obj, "B", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @B = val;
-        if (!(gt(@B,0))) 
+        var B = obj.Get("B");
+        if (!(gt(B,0))) 
         {
             ctx.Fail<APM_SoundObject_B>($"Invalid value {val}, allowed are: [fn:Eval(@B>0)]");
-        }
         }
         // no linked objects
         
@@ -283,12 +275,12 @@ internal partial class APM_SoundObject_B_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoundObject_E 
 /// </summary>
-internal partial class APM_SoundObject_E : APM_SoundObject_E_Base
+internal partial class APM_SoundObject_E : APM_SoundObject_E__Base
 {
 }
 
 
-internal partial class APM_SoundObject_E_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_E__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_E";
     public static bool RuleGroup() { return false; }
@@ -299,13 +291,11 @@ internal partial class APM_SoundObject_E_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_SoundObject_E>(obj, "E", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Raw" || val == "Signed" || val == "muLaw" || val == "ALaw")) 
         {
             ctx.Fail<APM_SoundObject_E>($"Invalid value {val}, allowed are: [Raw,Signed,muLaw,ALaw]");
-        }
         }
         // no linked objects
         
@@ -317,12 +307,12 @@ internal partial class APM_SoundObject_E_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoundObject_CO 
 /// </summary>
-internal partial class APM_SoundObject_CO : APM_SoundObject_CO_Base
+internal partial class APM_SoundObject_CO : APM_SoundObject_CO__Base
 {
 }
 
 
-internal partial class APM_SoundObject_CO_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_CO__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_CO";
     public static bool RuleGroup() { return false; }
@@ -344,12 +334,12 @@ internal partial class APM_SoundObject_CO_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoundObject_CP various
 /// </summary>
-internal partial class APM_SoundObject_CP : APM_SoundObject_CP_Base
+internal partial class APM_SoundObject_CP : APM_SoundObject_CP__Base
 {
 }
 
 
-internal partial class APM_SoundObject_CP_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_CP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_CP";
     public static bool RuleGroup() { return false; }
@@ -401,12 +391,12 @@ internal partial class APM_SoundObject_CP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoundObject_Length 
 /// </summary>
-internal partial class APM_SoundObject_Length : APM_SoundObject_Length_Base
+internal partial class APM_SoundObject_Length : APM_SoundObject_Length__Base
 {
 }
 
 
-internal partial class APM_SoundObject_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_Length";
     public static bool RuleGroup() { return false; }
@@ -428,12 +418,12 @@ internal partial class APM_SoundObject_Length_Base : ISpecification<PdfDictionar
 /// <summary>
 /// SoundObject_Filter 
 /// </summary>
-internal partial class APM_SoundObject_Filter : APM_SoundObject_Filter_Base
+internal partial class APM_SoundObject_Filter : APM_SoundObject_Filter__Base
 {
 }
 
 
-internal partial class APM_SoundObject_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_Filter";
     public static bool RuleGroup() { return false; }
@@ -449,7 +439,12 @@ internal partial class APM_SoundObject_Filter_Base : ISpecification<PdfDictionar
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_SoundObject_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -459,13 +454,11 @@ internal partial class APM_SoundObject_Filter_Base : ISpecification<PdfDictionar
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_SoundObject_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -483,12 +476,12 @@ internal partial class APM_SoundObject_Filter_Base : ISpecification<PdfDictionar
 /// <summary>
 /// SoundObject_DecodeParms 
 /// </summary>
-internal partial class APM_SoundObject_DecodeParms : APM_SoundObject_DecodeParms_Base
+internal partial class APM_SoundObject_DecodeParms : APM_SoundObject_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_SoundObject_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -504,7 +497,12 @@ internal partial class APM_SoundObject_DecodeParms_Base : ISpecification<PdfDict
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_SoundObject_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -521,6 +519,9 @@ internal partial class APM_SoundObject_DecodeParms_Base : ISpecification<PdfDict
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_SoundObject_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -540,12 +541,12 @@ internal partial class APM_SoundObject_DecodeParms_Base : ISpecification<PdfDict
 /// <summary>
 /// SoundObject_F 
 /// </summary>
-internal partial class APM_SoundObject_F : APM_SoundObject_F_Base
+internal partial class APM_SoundObject_F : APM_SoundObject_F__Base
 {
 }
 
 
-internal partial class APM_SoundObject_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_F";
     public static bool RuleGroup() { return false; }
@@ -588,12 +589,12 @@ internal partial class APM_SoundObject_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoundObject_FFilter 
 /// </summary>
-internal partial class APM_SoundObject_FFilter : APM_SoundObject_FFilter_Base
+internal partial class APM_SoundObject_FFilter : APM_SoundObject_FFilter__Base
 {
 }
 
 
-internal partial class APM_SoundObject_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_FFilter";
     public static bool RuleGroup() { return false; }
@@ -609,7 +610,12 @@ internal partial class APM_SoundObject_FFilter_Base : ISpecification<PdfDictiona
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_SoundObject_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -619,13 +625,11 @@ internal partial class APM_SoundObject_FFilter_Base : ISpecification<PdfDictiona
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_SoundObject_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -643,12 +647,12 @@ internal partial class APM_SoundObject_FFilter_Base : ISpecification<PdfDictiona
 /// <summary>
 /// SoundObject_FDecodeParms 
 /// </summary>
-internal partial class APM_SoundObject_FDecodeParms : APM_SoundObject_FDecodeParms_Base
+internal partial class APM_SoundObject_FDecodeParms : APM_SoundObject_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_SoundObject_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -664,7 +668,12 @@ internal partial class APM_SoundObject_FDecodeParms_Base : ISpecification<PdfDic
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_SoundObject_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -681,6 +690,9 @@ internal partial class APM_SoundObject_FDecodeParms_Base : ISpecification<PdfDic
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_SoundObject_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -700,12 +712,12 @@ internal partial class APM_SoundObject_FDecodeParms_Base : ISpecification<PdfDic
 /// <summary>
 /// SoundObject_DL 
 /// </summary>
-internal partial class APM_SoundObject_DL : APM_SoundObject_DL_Base
+internal partial class APM_SoundObject_DL : APM_SoundObject_DL__Base
 {
 }
 
 
-internal partial class APM_SoundObject_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoundObject_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoundObject_DL";
     public static bool RuleGroup() { return false; }
@@ -716,13 +728,11 @@ internal partial class APM_SoundObject_DL_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_SoundObject_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @DL = val;
-        if (!(gte(@DL,0))) 
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
         {
             ctx.Fail<APM_SoundObject_DL>($"Invalid value {val}, allowed are: [fn:Eval(@DL>=0)]");
-        }
         }
         // no linked objects
         

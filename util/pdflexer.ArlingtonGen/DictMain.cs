@@ -17,11 +17,11 @@ internal class DictMain
         var code = $$"""
 using System.Linq;
 
-internal partial class APM_{{Name}} : APM_{{Name}}_Base
+internal partial class APM_{{Name}} : APM_{{Name}}__Base
 {
 }
 
-internal partial class APM_{{Name}}_Base : ISpecification<PdfDictionary>
+internal partial class APM_{{Name}}__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "{{Name}}";

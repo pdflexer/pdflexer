@@ -19,7 +19,7 @@ internal partial class APM_ArrayOfAttributeRevisions : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -91,13 +91,11 @@ internal partial class APM_ArrayOfAttributeRevisions_1x : ISpecification<PdfArra
             var val = ctx.GetOptional<PdfIntNumber, APM_ArrayOfAttributeRevisions_1x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
-            {
             IPdfObject v = val;
             
             if (!(gte(v,0))) 
             {
                 ctx.Fail<APM_ArrayOfAttributeRevisions_1x>($"Invalid value {val}, allowed are: [fn:Eval(@1*>=0)]");
-            }
             }
             // no linked objects
             

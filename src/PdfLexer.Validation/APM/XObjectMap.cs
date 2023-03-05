@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_XObjectMap : APM_XObjectMap_Base
+internal partial class APM_XObjectMap : APM_XObjectMap__Base
 {
 }
 
-internal partial class APM_XObjectMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "XObjectMap";
@@ -35,12 +35,12 @@ internal partial class APM_XObjectMap_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XObjectMap_* Table 34
 /// </summary>
-internal partial class APM_XObjectMap_CatchAll : APM_XObjectMap_CatchAll_Base
+internal partial class APM_XObjectMap_CatchAll : APM_XObjectMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_XObjectMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectMap_*";
     public static bool RuleGroup() { return false; }
@@ -64,6 +64,12 @@ internal partial class APM_XObjectMap_CatchAll_Base : ISpecification<PdfDictiona
             } else if (APM_XObjectImage.MatchesType(ctx, val.Dictionary)) 
             {
                 ctx.Run<APM_XObjectImage, PdfDictionary>(stack, val.Dictionary, obj);
+            } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_XObjectFormPS.MatchesType(ctx, val.Dictionary)))) 
+            {
+                ctx.Run<APM_XObjectFormPS, PdfDictionary>(stack, val.Dictionary, obj);
+            } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_XObjectFormPSpassthrough.MatchesType(ctx, val.Dictionary)))) 
+            {
+                ctx.Run<APM_XObjectFormPSpassthrough, PdfDictionary>(stack, val.Dictionary, obj);
             }else 
             {
                 ctx.Fail<APM_XObjectMap_CatchAll>("key did not match any allowable types: '[XObjectFormType1,XObjectImage,fn:SinceVersion(1.1,XObjectFormPS),fn:SinceVersion(1.1,XObjectFormPSpassthrough)]'");

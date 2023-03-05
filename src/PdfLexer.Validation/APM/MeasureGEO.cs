@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MeasureGEO : APM_MeasureGEO_Base
+internal partial class APM_MeasureGEO : APM_MeasureGEO__Base
 {
 }
 
-internal partial class APM_MeasureGEO_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MeasureGEO";
@@ -62,12 +62,12 @@ internal partial class APM_MeasureGEO_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureGEO_Type Table 266 and Table 269
 /// </summary>
-internal partial class APM_MeasureGEO_Type : APM_MeasureGEO_Type_Base
+internal partial class APM_MeasureGEO_Type : APM_MeasureGEO_Type__Base
 {
 }
 
 
-internal partial class APM_MeasureGEO_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureGEO_Type";
     public static bool RuleGroup() { return false; }
@@ -78,13 +78,11 @@ internal partial class APM_MeasureGEO_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_MeasureGEO_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Measure")) 
         {
             ctx.Fail<APM_MeasureGEO_Type>($"Invalid value {val}, allowed are: [Measure]");
-        }
         }
         // no linked objects
         
@@ -96,12 +94,12 @@ internal partial class APM_MeasureGEO_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureGEO_Subtype 
 /// </summary>
-internal partial class APM_MeasureGEO_Subtype : APM_MeasureGEO_Subtype_Base
+internal partial class APM_MeasureGEO_Subtype : APM_MeasureGEO_Subtype__Base
 {
 }
 
 
-internal partial class APM_MeasureGEO_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureGEO_Subtype";
     public static bool RuleGroup() { return false; }
@@ -112,13 +110,11 @@ internal partial class APM_MeasureGEO_Subtype_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_MeasureGEO_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "GEO")) 
         {
             ctx.Fail<APM_MeasureGEO_Subtype>($"Invalid value {val}, allowed are: [GEO]");
-        }
         }
         // no linked objects
         
@@ -130,12 +126,12 @@ internal partial class APM_MeasureGEO_Subtype_Base : ISpecification<PdfDictionar
 /// <summary>
 /// MeasureGEO_Bounds 
 /// </summary>
-internal partial class APM_MeasureGEO_Bounds : APM_MeasureGEO_Bounds_Base
+internal partial class APM_MeasureGEO_Bounds : APM_MeasureGEO_Bounds__Base
 {
 }
 
 
-internal partial class APM_MeasureGEO_Bounds_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO_Bounds__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureGEO_Bounds";
     public static bool RuleGroup() { return false; }
@@ -157,12 +153,12 @@ internal partial class APM_MeasureGEO_Bounds_Base : ISpecification<PdfDictionary
 /// <summary>
 /// MeasureGEO_GCS 
 /// </summary>
-internal partial class APM_MeasureGEO_GCS : APM_MeasureGEO_GCS_Base
+internal partial class APM_MeasureGEO_GCS : APM_MeasureGEO_GCS__Base
 {
 }
 
 
-internal partial class APM_MeasureGEO_GCS_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO_GCS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureGEO_GCS";
     public static bool RuleGroup() { return false; }
@@ -193,12 +189,12 @@ internal partial class APM_MeasureGEO_GCS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureGEO_DCS 
 /// </summary>
-internal partial class APM_MeasureGEO_DCS : APM_MeasureGEO_DCS_Base
+internal partial class APM_MeasureGEO_DCS : APM_MeasureGEO_DCS__Base
 {
 }
 
 
-internal partial class APM_MeasureGEO_DCS_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO_DCS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureGEO_DCS";
     public static bool RuleGroup() { return false; }
@@ -229,12 +225,12 @@ internal partial class APM_MeasureGEO_DCS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureGEO_PDU Preferred Display Units
 /// </summary>
-internal partial class APM_MeasureGEO_PDU : APM_MeasureGEO_PDU_Base
+internal partial class APM_MeasureGEO_PDU : APM_MeasureGEO_PDU__Base
 {
 }
 
 
-internal partial class APM_MeasureGEO_PDU_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO_PDU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureGEO_PDU";
     public static bool RuleGroup() { return false; }
@@ -256,12 +252,12 @@ internal partial class APM_MeasureGEO_PDU_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureGEO_GPTS 
 /// </summary>
-internal partial class APM_MeasureGEO_GPTS : APM_MeasureGEO_GPTS_Base
+internal partial class APM_MeasureGEO_GPTS : APM_MeasureGEO_GPTS__Base
 {
 }
 
 
-internal partial class APM_MeasureGEO_GPTS_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO_GPTS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureGEO_GPTS";
     public static bool RuleGroup() { return false; }
@@ -283,12 +279,12 @@ internal partial class APM_MeasureGEO_GPTS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureGEO_LPTS 
 /// </summary>
-internal partial class APM_MeasureGEO_LPTS : APM_MeasureGEO_LPTS_Base
+internal partial class APM_MeasureGEO_LPTS : APM_MeasureGEO_LPTS__Base
 {
 }
 
 
-internal partial class APM_MeasureGEO_LPTS_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO_LPTS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureGEO_LPTS";
     public static bool RuleGroup() { return false; }
@@ -310,12 +306,12 @@ internal partial class APM_MeasureGEO_LPTS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureGEO_PCSM Projected Coordinate System Matrix
 /// </summary>
-internal partial class APM_MeasureGEO_PCSM : APM_MeasureGEO_PCSM_Base
+internal partial class APM_MeasureGEO_PCSM : APM_MeasureGEO_PCSM__Base
 {
 }
 
 
-internal partial class APM_MeasureGEO_PCSM_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureGEO_PCSM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureGEO_PCSM";
     public static bool RuleGroup() { return false; }

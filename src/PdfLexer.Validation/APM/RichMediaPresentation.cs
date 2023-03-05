@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaPresentation : APM_RichMediaPresentation_Base
+internal partial class APM_RichMediaPresentation : APM_RichMediaPresentation__Base
 {
 }
 
-internal partial class APM_RichMediaPresentation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPresentation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaPresentation";
@@ -51,12 +51,12 @@ internal partial class APM_RichMediaPresentation_Base : ISpecification<PdfDictio
 /// <summary>
 /// RichMediaPresentation_Type Table 338
 /// </summary>
-internal partial class APM_RichMediaPresentation_Type : APM_RichMediaPresentation_Type_Base
+internal partial class APM_RichMediaPresentation_Type : APM_RichMediaPresentation_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaPresentation_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPresentation_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPresentation_Type";
     public static bool RuleGroup() { return false; }
@@ -67,13 +67,11 @@ internal partial class APM_RichMediaPresentation_Type_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_RichMediaPresentation_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaPresentation")) 
         {
             ctx.Fail<APM_RichMediaPresentation_Type>($"Invalid value {val}, allowed are: [RichMediaPresentation]");
-        }
         }
         // no linked objects
         
@@ -85,12 +83,12 @@ internal partial class APM_RichMediaPresentation_Type_Base : ISpecification<PdfD
 /// <summary>
 /// RichMediaPresentation_Style 
 /// </summary>
-internal partial class APM_RichMediaPresentation_Style : APM_RichMediaPresentation_Style_Base
+internal partial class APM_RichMediaPresentation_Style : APM_RichMediaPresentation_Style__Base
 {
 }
 
 
-internal partial class APM_RichMediaPresentation_Style_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPresentation_Style__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPresentation_Style";
     public static bool RuleGroup() { return false; }
@@ -101,13 +99,11 @@ internal partial class APM_RichMediaPresentation_Style_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_RichMediaPresentation_Style>(obj, "Style", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Embedded" || val == "Windowed")) 
         {
             ctx.Fail<APM_RichMediaPresentation_Style>($"Invalid value {val}, allowed are: [Embedded,Windowed]");
-        }
         }
         // no linked objects
         
@@ -119,12 +115,12 @@ internal partial class APM_RichMediaPresentation_Style_Base : ISpecification<Pdf
 /// <summary>
 /// RichMediaPresentation_Window 
 /// </summary>
-internal partial class APM_RichMediaPresentation_Window : APM_RichMediaPresentation_Window_Base
+internal partial class APM_RichMediaPresentation_Window : APM_RichMediaPresentation_Window__Base
 {
 }
 
 
-internal partial class APM_RichMediaPresentation_Window_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPresentation_Window__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPresentation_Window";
     public static bool RuleGroup() { return false; }
@@ -146,12 +142,12 @@ internal partial class APM_RichMediaPresentation_Window_Base : ISpecification<Pd
 /// <summary>
 /// RichMediaPresentation_Transparent 
 /// </summary>
-internal partial class APM_RichMediaPresentation_Transparent : APM_RichMediaPresentation_Transparent_Base
+internal partial class APM_RichMediaPresentation_Transparent : APM_RichMediaPresentation_Transparent__Base
 {
 }
 
 
-internal partial class APM_RichMediaPresentation_Transparent_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPresentation_Transparent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPresentation_Transparent";
     public static bool RuleGroup() { return false; }
@@ -173,12 +169,12 @@ internal partial class APM_RichMediaPresentation_Transparent_Base : ISpecificati
 /// <summary>
 /// RichMediaPresentation_NavigationPane 
 /// </summary>
-internal partial class APM_RichMediaPresentation_NavigationPane : APM_RichMediaPresentation_NavigationPane_Base
+internal partial class APM_RichMediaPresentation_NavigationPane : APM_RichMediaPresentation_NavigationPane__Base
 {
 }
 
 
-internal partial class APM_RichMediaPresentation_NavigationPane_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPresentation_NavigationPane__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPresentation_NavigationPane";
     public static bool RuleGroup() { return false; }
@@ -200,12 +196,12 @@ internal partial class APM_RichMediaPresentation_NavigationPane_Base : ISpecific
 /// <summary>
 /// RichMediaPresentation_Toolbar 
 /// </summary>
-internal partial class APM_RichMediaPresentation_Toolbar : APM_RichMediaPresentation_Toolbar_Base
+internal partial class APM_RichMediaPresentation_Toolbar : APM_RichMediaPresentation_Toolbar__Base
 {
 }
 
 
-internal partial class APM_RichMediaPresentation_Toolbar_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPresentation_Toolbar__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPresentation_Toolbar";
     public static bool RuleGroup() { return false; }
@@ -227,12 +223,12 @@ internal partial class APM_RichMediaPresentation_Toolbar_Base : ISpecification<P
 /// <summary>
 /// RichMediaPresentation_PassContextClick 
 /// </summary>
-internal partial class APM_RichMediaPresentation_PassContextClick : APM_RichMediaPresentation_PassContextClick_Base
+internal partial class APM_RichMediaPresentation_PassContextClick : APM_RichMediaPresentation_PassContextClick__Base
 {
 }
 
 
-internal partial class APM_RichMediaPresentation_PassContextClick_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPresentation_PassContextClick__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPresentation_PassContextClick";
     public static bool RuleGroup() { return false; }

@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfNamesGeneral : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 

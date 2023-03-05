@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SignatureReferenceFieldMDP : APM_SignatureReferenceFieldMDP_Base
+internal partial class APM_SignatureReferenceFieldMDP : APM_SignatureReferenceFieldMDP__Base
 {
 }
 
-internal partial class APM_SignatureReferenceFieldMDP_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceFieldMDP__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SignatureReferenceFieldMDP";
@@ -108,12 +108,12 @@ internal partial class APM_SignatureReferenceFieldMDP_Base : ISpecification<PdfD
 /// <summary>
 /// SignatureReferenceFieldMDP_Type Table 256
 /// </summary>
-internal partial class APM_SignatureReferenceFieldMDP_Type : APM_SignatureReferenceFieldMDP_Type_Base
+internal partial class APM_SignatureReferenceFieldMDP_Type : APM_SignatureReferenceFieldMDP_Type__Base
 {
 }
 
 
-internal partial class APM_SignatureReferenceFieldMDP_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceFieldMDP_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureReferenceFieldMDP_Type";
     public static bool RuleGroup() { return false; }
@@ -124,13 +124,11 @@ internal partial class APM_SignatureReferenceFieldMDP_Type_Base : ISpecification
         var val = ctx.GetOptional<PdfName, APM_SignatureReferenceFieldMDP_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SigRef")) 
         {
             ctx.Fail<APM_SignatureReferenceFieldMDP_Type>($"Invalid value {val}, allowed are: [SigRef]");
-        }
         }
         // no linked objects
         
@@ -142,12 +140,12 @@ internal partial class APM_SignatureReferenceFieldMDP_Type_Base : ISpecification
 /// <summary>
 /// SignatureReferenceFieldMDP_TransformMethod 
 /// </summary>
-internal partial class APM_SignatureReferenceFieldMDP_TransformMethod : APM_SignatureReferenceFieldMDP_TransformMethod_Base
+internal partial class APM_SignatureReferenceFieldMDP_TransformMethod : APM_SignatureReferenceFieldMDP_TransformMethod__Base
 {
 }
 
 
-internal partial class APM_SignatureReferenceFieldMDP_TransformMethod_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceFieldMDP_TransformMethod__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureReferenceFieldMDP_TransformMethod";
     public static bool RuleGroup() { return false; }
@@ -158,13 +156,11 @@ internal partial class APM_SignatureReferenceFieldMDP_TransformMethod_Base : ISp
         var val = ctx.GetRequired<PdfName, APM_SignatureReferenceFieldMDP_TransformMethod>(obj, "TransformMethod", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "FieldMDP")) 
         {
             ctx.Fail<APM_SignatureReferenceFieldMDP_TransformMethod>($"Invalid value {val}, allowed are: [FieldMDP]");
-        }
         }
         // no linked objects
         
@@ -176,12 +172,12 @@ internal partial class APM_SignatureReferenceFieldMDP_TransformMethod_Base : ISp
 /// <summary>
 /// SignatureReferenceFieldMDP_TransformParams 
 /// </summary>
-internal partial class APM_SignatureReferenceFieldMDP_TransformParams : APM_SignatureReferenceFieldMDP_TransformParams_Base
+internal partial class APM_SignatureReferenceFieldMDP_TransformParams : APM_SignatureReferenceFieldMDP_TransformParams__Base
 {
 }
 
 
-internal partial class APM_SignatureReferenceFieldMDP_TransformParams_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceFieldMDP_TransformParams__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureReferenceFieldMDP_TransformParams";
     public static bool RuleGroup() { return false; }
@@ -203,12 +199,12 @@ internal partial class APM_SignatureReferenceFieldMDP_TransformParams_Base : ISp
 /// <summary>
 /// SignatureReferenceFieldMDP_Data various
 /// </summary>
-internal partial class APM_SignatureReferenceFieldMDP_Data : APM_SignatureReferenceFieldMDP_Data_Base
+internal partial class APM_SignatureReferenceFieldMDP_Data : APM_SignatureReferenceFieldMDP_Data__Base
 {
 }
 
 
-internal partial class APM_SignatureReferenceFieldMDP_Data_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceFieldMDP_Data__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureReferenceFieldMDP_Data";
     public static bool RuleGroup() { return false; }
@@ -296,12 +292,12 @@ internal partial class APM_SignatureReferenceFieldMDP_Data_Base : ISpecification
 /// <summary>
 /// SignatureReferenceFieldMDP_DigestMethod see https://github.com/pdf-association/pdf-issues/issues/117
 /// </summary>
-internal partial class APM_SignatureReferenceFieldMDP_DigestMethod : APM_SignatureReferenceFieldMDP_DigestMethod_Base
+internal partial class APM_SignatureReferenceFieldMDP_DigestMethod : APM_SignatureReferenceFieldMDP_DigestMethod__Base
 {
 }
 
 
-internal partial class APM_SignatureReferenceFieldMDP_DigestMethod_Base : ISpecification<PdfDictionary>
+internal partial class APM_SignatureReferenceFieldMDP_DigestMethod__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SignatureReferenceFieldMDP_DigestMethod";
     public static bool RuleGroup() { return false; }
@@ -312,13 +308,11 @@ internal partial class APM_SignatureReferenceFieldMDP_DigestMethod_Base : ISpeci
         var val = ctx.GetOptional<PdfName, APM_SignatureReferenceFieldMDP_DigestMethod>(obj, "DigestMethod", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!((ctx.Version <= 2.0m && val == "MD5") || (ctx.Version <= 2.0m && val == "SHA1") || ctx.Version >= 2.0m && val == "SHA256" || ctx.Version >= 2.0m && val == "SHA384" || ctx.Version >= 2.0m && val == "SHA512" || ctx.Version >= 2.0m && val == "RIPEMD160" || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-256") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-384") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-512") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHAKE256"))) 
+        if (!((ctx.Version <= 2.0m && val == "MD5") || (ctx.Version <= 2.0m && val == "SHA1") || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "SHA256")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "SHA384")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "SHA512")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "RIPEMD160")) || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-256") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-384") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-512") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHAKE256"))) 
         {
             ctx.Fail<APM_SignatureReferenceFieldMDP_DigestMethod>($"Invalid value {val}, allowed are: [fn:Deprecated(2.0,MD5),fn:Deprecated(2.0,SHA1),fn:SinceVersion(2.0,SHA256),fn:SinceVersion(2.0,SHA384),fn:SinceVersion(2.0,SHA512),fn:SinceVersion(2.0,RIPEMD160),fn:Extension(ISO_TS_32001,SHA3-256),fn:Extension(ISO_TS_32001,SHA3-384),fn:Extension(ISO_TS_32001,SHA3-512),fn:Extension(ISO_TS_32001,SHAKE256)]");
-        }
         }
         // no linked objects
         

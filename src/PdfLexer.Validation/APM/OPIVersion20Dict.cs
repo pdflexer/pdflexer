@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OPIVersion20Dict : APM_OPIVersion20Dict_Base
+internal partial class APM_OPIVersion20Dict : APM_OPIVersion20Dict__Base
 {
 }
 
-internal partial class APM_OPIVersion20Dict_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OPIVersion20Dict";
@@ -134,12 +134,12 @@ internal partial class APM_OPIVersion20Dict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OPIVersion20Dict_Type Table 407
 /// </summary>
-internal partial class APM_OPIVersion20Dict_Type : APM_OPIVersion20Dict_Type_Base
+internal partial class APM_OPIVersion20Dict_Type : APM_OPIVersion20Dict_Type__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_Type";
     public static bool RuleGroup() { return false; }
@@ -150,13 +150,11 @@ internal partial class APM_OPIVersion20Dict_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_OPIVersion20Dict_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "OPI")) 
         {
             ctx.Fail<APM_OPIVersion20Dict_Type>($"Invalid value {val}, allowed are: [OPI]");
-        }
         }
         // no linked objects
         
@@ -168,12 +166,12 @@ internal partial class APM_OPIVersion20Dict_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// OPIVersion20Dict_Version 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_Version : APM_OPIVersion20Dict_Version_Base
+internal partial class APM_OPIVersion20Dict_Version : APM_OPIVersion20Dict_Version__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_Version_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_Version__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_Version";
     public static bool RuleGroup() { return false; }
@@ -184,13 +182,11 @@ internal partial class APM_OPIVersion20Dict_Version_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfNumber, APM_OPIVersion20Dict_Version>(obj, "Version", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 2.0m)) 
         {
             ctx.Fail<APM_OPIVersion20Dict_Version>($"Invalid value {val}, allowed are: [2.0]");
-        }
         }
         // no linked objects
         
@@ -202,12 +198,12 @@ internal partial class APM_OPIVersion20Dict_Version_Base : ISpecification<PdfDic
 /// <summary>
 /// OPIVersion20Dict_F 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_F : APM_OPIVersion20Dict_F_Base
+internal partial class APM_OPIVersion20Dict_F : APM_OPIVersion20Dict_F__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_F";
     public static bool RuleGroup() { return false; }
@@ -250,12 +246,12 @@ internal partial class APM_OPIVersion20Dict_F_Base : ISpecification<PdfDictionar
 /// <summary>
 /// OPIVersion20Dict_MainImage 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_MainImage : APM_OPIVersion20Dict_MainImage_Base
+internal partial class APM_OPIVersion20Dict_MainImage : APM_OPIVersion20Dict_MainImage__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_MainImage_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_MainImage__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_MainImage";
     public static bool RuleGroup() { return false; }
@@ -277,12 +273,12 @@ internal partial class APM_OPIVersion20Dict_MainImage_Base : ISpecification<PdfD
 /// <summary>
 /// OPIVersion20Dict_Tags 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_Tags : APM_OPIVersion20Dict_Tags_Base
+internal partial class APM_OPIVersion20Dict_Tags : APM_OPIVersion20Dict_Tags__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_Tags_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_Tags__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_Tags";
     public static bool RuleGroup() { return false; }
@@ -304,12 +300,12 @@ internal partial class APM_OPIVersion20Dict_Tags_Base : ISpecification<PdfDictio
 /// <summary>
 /// OPIVersion20Dict_Size 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_Size : APM_OPIVersion20Dict_Size_Base
+internal partial class APM_OPIVersion20Dict_Size : APM_OPIVersion20Dict_Size__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_Size_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_Size__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_Size";
     public static bool RuleGroup() { return false; }
@@ -317,17 +313,19 @@ internal partial class APM_OPIVersion20Dict_Size_Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if (obj.ContainsKey("CropRect")) {
-                val = ctx.GetRequired<PdfArray, APM_OPIVersion20Dict_Size>(obj, "Size", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_Size>(obj, "Size", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_Size>(obj, "Size", IndirectRequirement.Either);
+        if ((obj.ContainsKey("CropRect")) && val == null) {
+            ctx.Fail<APM_OPIVersion20Dict_Size>("Size is required when 'fn:IsRequired(fn:IsPresent(CropRect))"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
+        var Size0 = obj.Get("Size")?.Get("0");
+        var Size1 = obj.Get("Size")?.Get("1");
+        if (!((gt(Size0,0)&&gt(Size1,0)))) 
+        {
+            ctx.Fail<APM_OPIVersion20Dict_Size>($"Value failed special case check: fn:Eval((Size::@0>0) && (Size::@1>0))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOf_2Numbers, PdfArray>(stack, val, obj);
         
@@ -339,12 +337,12 @@ internal partial class APM_OPIVersion20Dict_Size_Base : ISpecification<PdfDictio
 /// <summary>
 /// OPIVersion20Dict_CropRect 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_CropRect : APM_OPIVersion20Dict_CropRect_Base
+internal partial class APM_OPIVersion20Dict_CropRect : APM_OPIVersion20Dict_CropRect__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_CropRect_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_CropRect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_CropRect";
     public static bool RuleGroup() { return false; }
@@ -352,15 +350,12 @@ internal partial class APM_OPIVersion20Dict_CropRect_Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if (obj.ContainsKey("Size")) {
-                val = ctx.GetRequired<PdfArray, APM_OPIVersion20Dict_CropRect>(obj, "CropRect", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_CropRect>(obj, "CropRect", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_CropRect>(obj, "CropRect", IndirectRequirement.Either);
+        if ((obj.ContainsKey(val)) && val == null) {
+            ctx.Fail<APM_OPIVersion20Dict_CropRect>("CropRect is required when 'fn:IsRequired(fn:IsPresent(Size))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -374,12 +369,12 @@ internal partial class APM_OPIVersion20Dict_CropRect_Base : ISpecification<PdfDi
 /// <summary>
 /// OPIVersion20Dict_Overprint 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_Overprint : APM_OPIVersion20Dict_Overprint_Base
+internal partial class APM_OPIVersion20Dict_Overprint : APM_OPIVersion20Dict_Overprint__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_Overprint_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_Overprint__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_Overprint";
     public static bool RuleGroup() { return false; }
@@ -401,12 +396,12 @@ internal partial class APM_OPIVersion20Dict_Overprint_Base : ISpecification<PdfD
 /// <summary>
 /// OPIVersion20Dict_Inks 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_Inks : APM_OPIVersion20Dict_Inks_Base
+internal partial class APM_OPIVersion20Dict_Inks : APM_OPIVersion20Dict_Inks__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_Inks_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_Inks__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_Inks";
     public static bool RuleGroup() { return false; }
@@ -432,13 +427,11 @@ internal partial class APM_OPIVersion20Dict_Inks_Base : ISpecification<PdfDictio
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "full_color" || val == "registration")) 
                     {
                         ctx.Fail<APM_OPIVersion20Dict_Inks>($"Invalid value {val}, allowed are: [full_color,registration]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -456,12 +449,12 @@ internal partial class APM_OPIVersion20Dict_Inks_Base : ISpecification<PdfDictio
 /// <summary>
 /// OPIVersion20Dict_IncludedImageDimensions 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_IncludedImageDimensions : APM_OPIVersion20Dict_IncludedImageDimensions_Base
+internal partial class APM_OPIVersion20Dict_IncludedImageDimensions : APM_OPIVersion20Dict_IncludedImageDimensions__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_IncludedImageDimensions_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_IncludedImageDimensions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_IncludedImageDimensions";
     public static bool RuleGroup() { return false; }
@@ -471,7 +464,12 @@ internal partial class APM_OPIVersion20Dict_IncludedImageDimensions_Base : ISpec
     {
         var val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_IncludedImageDimensions>(obj, "IncludedImageDimensions", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var IncludedImageDimensions0 = obj.Get("IncludedImageDimensions")?.Get("0");
+        var IncludedImageDimensions1 = obj.Get("IncludedImageDimensions")?.Get("1");
+        if (!((gt(IncludedImageDimensions0,0)&&gt(IncludedImageDimensions1,0)))) 
+        {
+            ctx.Fail<APM_OPIVersion20Dict_IncludedImageDimensions>($"Value failed special case check: fn:Eval((IncludedImageDimensions::@0>0) && (IncludedImageDimensions::@1>0))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOf_2Integers, PdfArray>(stack, val, obj);
         
@@ -483,12 +481,12 @@ internal partial class APM_OPIVersion20Dict_IncludedImageDimensions_Base : ISpec
 /// <summary>
 /// OPIVersion20Dict_IncludedImageQuality 
 /// </summary>
-internal partial class APM_OPIVersion20Dict_IncludedImageQuality : APM_OPIVersion20Dict_IncludedImageQuality_Base
+internal partial class APM_OPIVersion20Dict_IncludedImageQuality : APM_OPIVersion20Dict_IncludedImageQuality__Base
 {
 }
 
 
-internal partial class APM_OPIVersion20Dict_IncludedImageQuality_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion20Dict_IncludedImageQuality__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion20Dict_IncludedImageQuality";
     public static bool RuleGroup() { return false; }
@@ -499,13 +497,11 @@ internal partial class APM_OPIVersion20Dict_IncludedImageQuality_Base : ISpecifi
         var val = ctx.GetOptional<PdfNumber, APM_OPIVersion20Dict_IncludedImageQuality>(obj, "IncludedImageQuality", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 2 || val == 3)) 
         {
             ctx.Fail<APM_OPIVersion20Dict_IncludedImageQuality>($"Invalid value {val}, allowed are: [1,2,3]");
-        }
         }
         // no linked objects
         

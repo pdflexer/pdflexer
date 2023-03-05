@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MinimumBitDepth : APM_MinimumBitDepth_Base
+internal partial class APM_MinimumBitDepth : APM_MinimumBitDepth__Base
 {
 }
 
-internal partial class APM_MinimumBitDepth_Base : ISpecification<PdfDictionary>
+internal partial class APM_MinimumBitDepth__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MinimumBitDepth";
@@ -106,12 +106,12 @@ internal partial class APM_MinimumBitDepth_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MinimumBitDepth_Type Table 280
 /// </summary>
-internal partial class APM_MinimumBitDepth_Type : APM_MinimumBitDepth_Type_Base
+internal partial class APM_MinimumBitDepth_Type : APM_MinimumBitDepth_Type__Base
 {
 }
 
 
-internal partial class APM_MinimumBitDepth_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MinimumBitDepth_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MinimumBitDepth_Type";
     public static bool RuleGroup() { return false; }
@@ -122,13 +122,11 @@ internal partial class APM_MinimumBitDepth_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_MinimumBitDepth_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MinBitDepth")) 
         {
             ctx.Fail<APM_MinimumBitDepth_Type>($"Invalid value {val}, allowed are: [MinBitDepth]");
-        }
         }
         // no linked objects
         
@@ -140,12 +138,12 @@ internal partial class APM_MinimumBitDepth_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// MinimumBitDepth_V 
 /// </summary>
-internal partial class APM_MinimumBitDepth_V : APM_MinimumBitDepth_V_Base
+internal partial class APM_MinimumBitDepth_V : APM_MinimumBitDepth_V__Base
 {
 }
 
 
-internal partial class APM_MinimumBitDepth_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_MinimumBitDepth_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MinimumBitDepth_V";
     public static bool RuleGroup() { return false; }
@@ -155,7 +153,11 @@ internal partial class APM_MinimumBitDepth_V_Base : ISpecification<PdfDictionary
     {
         var val = ctx.GetRequired<PdfIntNumber, APM_MinimumBitDepth_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var V = obj.Get("V");
+        if (!(gt(V,0))) 
+        {
+            ctx.Fail<APM_MinimumBitDepth_V>($"Value failed special case check: fn:Eval(@V>0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -167,12 +169,12 @@ internal partial class APM_MinimumBitDepth_V_Base : ISpecification<PdfDictionary
 /// <summary>
 /// MinimumBitDepth_M Table 304
 /// </summary>
-internal partial class APM_MinimumBitDepth_M : APM_MinimumBitDepth_M_Base
+internal partial class APM_MinimumBitDepth_M : APM_MinimumBitDepth_M__Base
 {
 }
 
 
-internal partial class APM_MinimumBitDepth_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_MinimumBitDepth_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MinimumBitDepth_M";
     public static bool RuleGroup() { return false; }
@@ -183,13 +185,11 @@ internal partial class APM_MinimumBitDepth_M_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfIntNumber, APM_MinimumBitDepth_M>(obj, "M", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2 || val == 3 || val == 4 || val == 5 || val == 6)) 
         {
             ctx.Fail<APM_MinimumBitDepth_M>($"Invalid value {val}, allowed are: [0,1,2,3,4,5,6]");
-        }
         }
         // no linked objects
         

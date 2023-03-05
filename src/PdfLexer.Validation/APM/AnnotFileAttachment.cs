@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotFileAttachment : APM_AnnotFileAttachment_Base
+internal partial class APM_AnnotFileAttachment : APM_AnnotFileAttachment__Base
 {
 }
 
-internal partial class APM_AnnotFileAttachment_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotFileAttachment";
@@ -153,12 +153,12 @@ internal partial class APM_AnnotFileAttachment_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotFileAttachment_Type Table 166 and Table 172 and Table 187 (markup annot)
 /// </summary>
-internal partial class APM_AnnotFileAttachment_Type : APM_AnnotFileAttachment_Type_Base
+internal partial class APM_AnnotFileAttachment_Type : APM_AnnotFileAttachment_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_Type";
     public static bool RuleGroup() { return false; }
@@ -169,13 +169,11 @@ internal partial class APM_AnnotFileAttachment_Type_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotFileAttachment_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -187,12 +185,12 @@ internal partial class APM_AnnotFileAttachment_Type_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotFileAttachment_Subtype 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_Subtype : APM_AnnotFileAttachment_Subtype_Base
+internal partial class APM_AnnotFileAttachment_Subtype : APM_AnnotFileAttachment_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_Subtype";
     public static bool RuleGroup() { return false; }
@@ -203,13 +201,11 @@ internal partial class APM_AnnotFileAttachment_Subtype_Base : ISpecification<Pdf
         var val = ctx.GetRequired<PdfName, APM_AnnotFileAttachment_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "FileAttachment")) 
         {
             ctx.Fail<APM_AnnotFileAttachment_Subtype>($"Invalid value {val}, allowed are: [FileAttachment]");
-        }
         }
         // no linked objects
         
@@ -221,12 +217,12 @@ internal partial class APM_AnnotFileAttachment_Subtype_Base : ISpecification<Pdf
 /// <summary>
 /// AnnotFileAttachment_Rect 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_Rect : APM_AnnotFileAttachment_Rect_Base
+internal partial class APM_AnnotFileAttachment_Rect : APM_AnnotFileAttachment_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_Rect";
     public static bool RuleGroup() { return false; }
@@ -248,12 +244,12 @@ internal partial class APM_AnnotFileAttachment_Rect_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotFileAttachment_Contents 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_Contents : APM_AnnotFileAttachment_Contents_Base
+internal partial class APM_AnnotFileAttachment_Contents : APM_AnnotFileAttachment_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_Contents";
     public static bool RuleGroup() { return false; }
@@ -275,12 +271,12 @@ internal partial class APM_AnnotFileAttachment_Contents_Base : ISpecification<Pd
 /// <summary>
 /// AnnotFileAttachment_P 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_P : APM_AnnotFileAttachment_P_Base
+internal partial class APM_AnnotFileAttachment_P : APM_AnnotFileAttachment_P__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_P";
     public static bool RuleGroup() { return false; }
@@ -302,12 +298,12 @@ internal partial class APM_AnnotFileAttachment_P_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotFileAttachment_NM 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_NM : APM_AnnotFileAttachment_NM_Base
+internal partial class APM_AnnotFileAttachment_NM : APM_AnnotFileAttachment_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_NM";
     public static bool RuleGroup() { return false; }
@@ -329,12 +325,12 @@ internal partial class APM_AnnotFileAttachment_NM_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_M 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_M : APM_AnnotFileAttachment_M_Base
+internal partial class APM_AnnotFileAttachment_M : APM_AnnotFileAttachment_M__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_M";
     public static bool RuleGroup() { return false; }
@@ -361,12 +357,12 @@ internal partial class APM_AnnotFileAttachment_M_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotFileAttachment_F Table 167
 /// </summary>
-internal partial class APM_AnnotFileAttachment_F : APM_AnnotFileAttachment_F_Base
+internal partial class APM_AnnotFileAttachment_F : APM_AnnotFileAttachment_F__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_F";
     public static bool RuleGroup() { return false; }
@@ -376,7 +372,11 @@ internal partial class APM_AnnotFileAttachment_F_Base : ISpecification<PdfDictio
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotFileAttachment_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(ctx.Version < 1.4m && BitsClear(obj)&&ctx.Version < 1.5m && BitsClear(obj)&&ctx.Version < 1.6m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj))))) 
+        {
+            ctx.Fail<APM_AnnotFileAttachment_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.4,fn:BitsClear(8,32)) && fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -388,12 +388,12 @@ internal partial class APM_AnnotFileAttachment_F_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotFileAttachment_AP 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_AP : APM_AnnotFileAttachment_AP_Base
+internal partial class APM_AnnotFileAttachment_AP : APM_AnnotFileAttachment_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_AP";
     public static bool RuleGroup() { return false; }
@@ -401,15 +401,12 @@ internal partial class APM_AnnotFileAttachment_AP_Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Rect = obj.Get("Rect");
-            if (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotFileAttachment_AP>(obj, "AP", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_AP>(obj, "AP", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Rect = obj.Get("Rect");
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_AP>(obj, "AP", IndirectRequirement.Either);
+        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+            ctx.Fail<APM_AnnotFileAttachment_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -423,12 +420,12 @@ internal partial class APM_AnnotFileAttachment_AP_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_AS 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_AS : APM_AnnotFileAttachment_AS_Base
+internal partial class APM_AnnotFileAttachment_AS : APM_AnnotFileAttachment_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_AS";
     public static bool RuleGroup() { return false; }
@@ -436,17 +433,14 @@ internal partial class APM_AnnotFileAttachment_AS_Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotFileAttachment_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotFileAttachment_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -460,12 +454,12 @@ internal partial class APM_AnnotFileAttachment_AS_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_Border 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_Border : APM_AnnotFileAttachment_Border_Base
+internal partial class APM_AnnotFileAttachment_Border : APM_AnnotFileAttachment_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_Border";
     public static bool RuleGroup() { return false; }
@@ -487,12 +481,12 @@ internal partial class APM_AnnotFileAttachment_Border_Base : ISpecification<PdfD
 /// <summary>
 /// AnnotFileAttachment_C 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_C : APM_AnnotFileAttachment_C_Base
+internal partial class APM_AnnotFileAttachment_C : APM_AnnotFileAttachment_C__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_C";
     public static bool RuleGroup() { return false; }
@@ -514,12 +508,12 @@ internal partial class APM_AnnotFileAttachment_C_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotFileAttachment_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotFileAttachment_StructParent : APM_AnnotFileAttachment_StructParent_Base
+internal partial class APM_AnnotFileAttachment_StructParent : APM_AnnotFileAttachment_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_StructParent";
     public static bool RuleGroup() { return false; }
@@ -541,12 +535,12 @@ internal partial class APM_AnnotFileAttachment_StructParent_Base : ISpecificatio
 /// <summary>
 /// AnnotFileAttachment_OC 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_OC : APM_AnnotFileAttachment_OC_Base
+internal partial class APM_AnnotFileAttachment_OC : APM_AnnotFileAttachment_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_OC";
     public static bool RuleGroup() { return false; }
@@ -577,12 +571,12 @@ internal partial class APM_AnnotFileAttachment_OC_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_AF 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_AF : APM_AnnotFileAttachment_AF_Base
+internal partial class APM_AnnotFileAttachment_AF : APM_AnnotFileAttachment_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_AF";
     public static bool RuleGroup() { return false; }
@@ -625,12 +619,12 @@ internal partial class APM_AnnotFileAttachment_AF_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_ca 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_ca : APM_AnnotFileAttachment_ca_Base
+internal partial class APM_AnnotFileAttachment_ca : APM_AnnotFileAttachment_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_ca";
     public static bool RuleGroup() { return false; }
@@ -641,13 +635,11 @@ internal partial class APM_AnnotFileAttachment_ca_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfNumber, APM_AnnotFileAttachment_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotFileAttachment_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -659,12 +651,12 @@ internal partial class APM_AnnotFileAttachment_ca_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_CA 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_CA : APM_AnnotFileAttachment_CA_Base
+internal partial class APM_AnnotFileAttachment_CA : APM_AnnotFileAttachment_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_CA";
     public static bool RuleGroup() { return false; }
@@ -675,13 +667,11 @@ internal partial class APM_AnnotFileAttachment_CA_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfNumber, APM_AnnotFileAttachment_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotFileAttachment_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -693,12 +683,12 @@ internal partial class APM_AnnotFileAttachment_CA_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotFileAttachment_BM : APM_AnnotFileAttachment_BM_Base
+internal partial class APM_AnnotFileAttachment_BM : APM_AnnotFileAttachment_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_BM";
     public static bool RuleGroup() { return false; }
@@ -709,13 +699,11 @@ internal partial class APM_AnnotFileAttachment_BM_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotFileAttachment_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -727,12 +715,12 @@ internal partial class APM_AnnotFileAttachment_BM_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_Lang 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_Lang : APM_AnnotFileAttachment_Lang_Base
+internal partial class APM_AnnotFileAttachment_Lang : APM_AnnotFileAttachment_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_Lang";
     public static bool RuleGroup() { return false; }
@@ -754,12 +742,12 @@ internal partial class APM_AnnotFileAttachment_Lang_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotFileAttachment_T 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_T : APM_AnnotFileAttachment_T_Base
+internal partial class APM_AnnotFileAttachment_T : APM_AnnotFileAttachment_T__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_T";
     public static bool RuleGroup() { return false; }
@@ -781,12 +769,12 @@ internal partial class APM_AnnotFileAttachment_T_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotFileAttachment_Popup 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_Popup : APM_AnnotFileAttachment_Popup_Base
+internal partial class APM_AnnotFileAttachment_Popup : APM_AnnotFileAttachment_Popup__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_Popup_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_Popup__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_Popup";
     public static bool RuleGroup() { return false; }
@@ -808,12 +796,12 @@ internal partial class APM_AnnotFileAttachment_Popup_Base : ISpecification<PdfDi
 /// <summary>
 /// AnnotFileAttachment_RC 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_RC : APM_AnnotFileAttachment_RC_Base
+internal partial class APM_AnnotFileAttachment_RC : APM_AnnotFileAttachment_RC__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_RC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_RC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_RC";
     public static bool RuleGroup() { return false; }
@@ -856,12 +844,12 @@ internal partial class APM_AnnotFileAttachment_RC_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_CreationDate 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_CreationDate : APM_AnnotFileAttachment_CreationDate_Base
+internal partial class APM_AnnotFileAttachment_CreationDate : APM_AnnotFileAttachment_CreationDate__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -883,12 +871,12 @@ internal partial class APM_AnnotFileAttachment_CreationDate_Base : ISpecificatio
 /// <summary>
 /// AnnotFileAttachment_IRT 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_IRT : APM_AnnotFileAttachment_IRT_Base
+internal partial class APM_AnnotFileAttachment_IRT : APM_AnnotFileAttachment_IRT__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_IRT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_IRT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_IRT";
     public static bool RuleGroup() { return false; }
@@ -896,15 +884,12 @@ internal partial class APM_AnnotFileAttachment_IRT_Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (obj.ContainsKey("RT")) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotFileAttachment_IRT>(obj, "IRT", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_IRT>(obj, "IRT", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_IRT>(obj, "IRT", IndirectRequirement.Either);
+        if ((obj.ContainsKey("RT")) && val == null) {
+            ctx.Fail<APM_AnnotFileAttachment_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -971,6 +956,21 @@ internal partial class APM_AnnotFileAttachment_IRT_Base : ISpecification<PdfDict
         } else if (APM_AnnotPrinterMark.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_AnnotPrinterMark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotWatermark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_Annot3D, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.7m || (ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotFileAttachment_IRT>("IRT did not match any allowable types: '[AnnotText,AnnotLink,AnnotFreeText,AnnotLine,AnnotSquare,AnnotCircle,AnnotPolygon,AnnotHighlight,AnnotUnderline,AnnotSquiggly,AnnotStrikeOut,AnnotCaret,AnnotStamp,AnnotInk,AnnotPopup,AnnotFileAttachment,AnnotSound,AnnotMovie,AnnotScreen,AnnotWidget,AnnotPrinterMark,fn:SinceVersion(1.6,AnnotWatermark),fn:SinceVersion(1.6,Annot3D),fn:SinceVersion(1.7,AnnotRedact),fn:SinceVersion(2.0,AnnotProjection),fn:SinceVersion(2.0,AnnotRichMedia)]'");
@@ -984,12 +984,12 @@ internal partial class APM_AnnotFileAttachment_IRT_Base : ISpecification<PdfDict
 /// <summary>
 /// AnnotFileAttachment_Subj 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_Subj : APM_AnnotFileAttachment_Subj_Base
+internal partial class APM_AnnotFileAttachment_Subj : APM_AnnotFileAttachment_Subj__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_Subj_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_Subj__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_Subj";
     public static bool RuleGroup() { return false; }
@@ -1011,12 +1011,12 @@ internal partial class APM_AnnotFileAttachment_Subj_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotFileAttachment_RT 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_RT : APM_AnnotFileAttachment_RT_Base
+internal partial class APM_AnnotFileAttachment_RT : APM_AnnotFileAttachment_RT__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_RT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_RT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_RT";
     public static bool RuleGroup() { return false; }
@@ -1026,14 +1026,12 @@ internal partial class APM_AnnotFileAttachment_RT_Base : ISpecification<PdfDicti
     {
         var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "R" || val == "Group")) 
         {
             ctx.Fail<APM_AnnotFileAttachment_RT>($"Invalid value {val}, allowed are: [R,Group]");
-        }
         }
         // no linked objects
         
@@ -1045,12 +1043,12 @@ internal partial class APM_AnnotFileAttachment_RT_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_IT 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_IT : APM_AnnotFileAttachment_IT_Base
+internal partial class APM_AnnotFileAttachment_IT : APM_AnnotFileAttachment_IT__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_IT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_IT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_IT";
     public static bool RuleGroup() { return false; }
@@ -1072,12 +1070,12 @@ internal partial class APM_AnnotFileAttachment_IT_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_FS 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_FS : APM_AnnotFileAttachment_FS_Base
+internal partial class APM_AnnotFileAttachment_FS : APM_AnnotFileAttachment_FS__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_FS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_FS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_FS";
     public static bool RuleGroup() { return false; }
@@ -1120,12 +1118,12 @@ internal partial class APM_AnnotFileAttachment_FS_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotFileAttachment_Name 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_Name : APM_AnnotFileAttachment_Name_Base
+internal partial class APM_AnnotFileAttachment_Name : APM_AnnotFileAttachment_Name__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_Name";
     public static bool RuleGroup() { return false; }
@@ -1136,14 +1134,7 @@ internal partial class APM_AnnotFileAttachment_Name_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
-        
-        
-        if (!(val == "Graph" || val == "PushPin" || val == "Paperclip" || val == "Tag" || val == "*")) 
-        {
-            ctx.Fail<APM_AnnotFileAttachment_Name>($"Invalid value {val}, allowed are: [Graph,PushPin,Paperclip,Tag,*]");
-        }
-        }
+        // no value restictions
         // no linked objects
         
     }
@@ -1154,12 +1145,12 @@ internal partial class APM_AnnotFileAttachment_Name_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotFileAttachment_ExData 2D markup annots only 
 /// </summary>
-internal partial class APM_AnnotFileAttachment_ExData : APM_AnnotFileAttachment_ExData_Base
+internal partial class APM_AnnotFileAttachment_ExData : APM_AnnotFileAttachment_ExData__Base
 {
 }
 
 
-internal partial class APM_AnnotFileAttachment_ExData_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotFileAttachment_ExData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotFileAttachment_ExData";
     public static bool RuleGroup() { return false; }
@@ -1174,6 +1165,15 @@ internal partial class APM_AnnotFileAttachment_ExData_Base : ISpecification<PdfD
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataProjection, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotFileAttachment_ExData>("ExData did not match any allowable types: '[ExData3DMarkup,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,ExDataMarkupGeo)),fn:SinceVersion(2.0,ExDataMarkupGeo),fn:SinceVersion(2.0,ExDataProjection)]'");

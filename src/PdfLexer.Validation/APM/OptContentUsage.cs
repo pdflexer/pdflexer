@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentUsage : APM_OptContentUsage_Base
+internal partial class APM_OptContentUsage : APM_OptContentUsage__Base
 {
 }
 
-internal partial class APM_OptContentUsage_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUsage__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentUsage";
@@ -105,12 +105,12 @@ internal partial class APM_OptContentUsage_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OptContentUsage_CreatorInfo Table 100
 /// </summary>
-internal partial class APM_OptContentUsage_CreatorInfo : APM_OptContentUsage_CreatorInfo_Base
+internal partial class APM_OptContentUsage_CreatorInfo : APM_OptContentUsage_CreatorInfo__Base
 {
 }
 
 
-internal partial class APM_OptContentUsage_CreatorInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUsage_CreatorInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUsage_CreatorInfo";
     public static bool RuleGroup() { return false; }
@@ -132,12 +132,12 @@ internal partial class APM_OptContentUsage_CreatorInfo_Base : ISpecification<Pdf
 /// <summary>
 /// OptContentUsage_Language 
 /// </summary>
-internal partial class APM_OptContentUsage_Language : APM_OptContentUsage_Language_Base
+internal partial class APM_OptContentUsage_Language : APM_OptContentUsage_Language__Base
 {
 }
 
 
-internal partial class APM_OptContentUsage_Language_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUsage_Language__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUsage_Language";
     public static bool RuleGroup() { return false; }
@@ -159,12 +159,12 @@ internal partial class APM_OptContentUsage_Language_Base : ISpecification<PdfDic
 /// <summary>
 /// OptContentUsage_Export 
 /// </summary>
-internal partial class APM_OptContentUsage_Export : APM_OptContentUsage_Export_Base
+internal partial class APM_OptContentUsage_Export : APM_OptContentUsage_Export__Base
 {
 }
 
 
-internal partial class APM_OptContentUsage_Export_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUsage_Export__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUsage_Export";
     public static bool RuleGroup() { return false; }
@@ -186,12 +186,12 @@ internal partial class APM_OptContentUsage_Export_Base : ISpecification<PdfDicti
 /// <summary>
 /// OptContentUsage_Zoom 
 /// </summary>
-internal partial class APM_OptContentUsage_Zoom : APM_OptContentUsage_Zoom_Base
+internal partial class APM_OptContentUsage_Zoom : APM_OptContentUsage_Zoom__Base
 {
 }
 
 
-internal partial class APM_OptContentUsage_Zoom_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUsage_Zoom__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUsage_Zoom";
     public static bool RuleGroup() { return false; }
@@ -213,12 +213,12 @@ internal partial class APM_OptContentUsage_Zoom_Base : ISpecification<PdfDiction
 /// <summary>
 /// OptContentUsage_Print 
 /// </summary>
-internal partial class APM_OptContentUsage_Print : APM_OptContentUsage_Print_Base
+internal partial class APM_OptContentUsage_Print : APM_OptContentUsage_Print__Base
 {
 }
 
 
-internal partial class APM_OptContentUsage_Print_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUsage_Print__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUsage_Print";
     public static bool RuleGroup() { return false; }
@@ -240,12 +240,12 @@ internal partial class APM_OptContentUsage_Print_Base : ISpecification<PdfDictio
 /// <summary>
 /// OptContentUsage_View 
 /// </summary>
-internal partial class APM_OptContentUsage_View : APM_OptContentUsage_View_Base
+internal partial class APM_OptContentUsage_View : APM_OptContentUsage_View__Base
 {
 }
 
 
-internal partial class APM_OptContentUsage_View_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUsage_View__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUsage_View";
     public static bool RuleGroup() { return false; }
@@ -267,12 +267,12 @@ internal partial class APM_OptContentUsage_View_Base : ISpecification<PdfDiction
 /// <summary>
 /// OptContentUsage_User 
 /// </summary>
-internal partial class APM_OptContentUsage_User : APM_OptContentUsage_User_Base
+internal partial class APM_OptContentUsage_User : APM_OptContentUsage_User__Base
 {
 }
 
 
-internal partial class APM_OptContentUsage_User_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUsage_User__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUsage_User";
     public static bool RuleGroup() { return false; }
@@ -294,12 +294,12 @@ internal partial class APM_OptContentUsage_User_Base : ISpecification<PdfDiction
 /// <summary>
 /// OptContentUsage_PageElement 
 /// </summary>
-internal partial class APM_OptContentUsage_PageElement : APM_OptContentUsage_PageElement_Base
+internal partial class APM_OptContentUsage_PageElement : APM_OptContentUsage_PageElement__Base
 {
 }
 
 
-internal partial class APM_OptContentUsage_PageElement_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentUsage_PageElement__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentUsage_PageElement";
     public static bool RuleGroup() { return false; }

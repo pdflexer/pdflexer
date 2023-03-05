@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OPIVersion13 : APM_OPIVersion13_Base
+internal partial class APM_OPIVersion13 : APM_OPIVersion13__Base
 {
 }
 
-internal partial class APM_OPIVersion13_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OPIVersion13";
@@ -118,12 +118,12 @@ internal partial class APM_OPIVersion13_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OPIVersion13_1.3 Table 405
 /// </summary>
-internal partial class APM_OPIVersion13_1_3 : APM_OPIVersion13_1_3_Base
+internal partial class APM_OPIVersion13_1_3 : APM_OPIVersion13_1_3__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13_1_3_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13_1_3__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13_1.3";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AddActionScreenAnnotation : APM_AddActionScreenAnnotation_Base
+internal partial class APM_AddActionScreenAnnotation : APM_AddActionScreenAnnotation__Base
 {
 }
 
-internal partial class APM_AddActionScreenAnnotation_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionScreenAnnotation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AddActionScreenAnnotation";
@@ -105,12 +105,12 @@ internal partial class APM_AddActionScreenAnnotation_Base : ISpecification<PdfDi
 /// <summary>
 /// AddActionScreenAnnotation_E Table 197
 /// </summary>
-internal partial class APM_AddActionScreenAnnotation_E : APM_AddActionScreenAnnotation_E_Base
+internal partial class APM_AddActionScreenAnnotation_E : APM_AddActionScreenAnnotation_E__Base
 {
 }
 
 
-internal partial class APM_AddActionScreenAnnotation_E_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionScreenAnnotation_E__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionScreenAnnotation_E";
     public static bool RuleGroup() { return false; }
@@ -170,6 +170,18 @@ internal partial class APM_AddActionScreenAnnotation_E_Base : ISpecification<Pdf
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AddActionScreenAnnotation_E>("E did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -183,12 +195,12 @@ internal partial class APM_AddActionScreenAnnotation_E_Base : ISpecification<Pdf
 /// <summary>
 /// AddActionScreenAnnotation_X 
 /// </summary>
-internal partial class APM_AddActionScreenAnnotation_X : APM_AddActionScreenAnnotation_X_Base
+internal partial class APM_AddActionScreenAnnotation_X : APM_AddActionScreenAnnotation_X__Base
 {
 }
 
 
-internal partial class APM_AddActionScreenAnnotation_X_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionScreenAnnotation_X__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionScreenAnnotation_X";
     public static bool RuleGroup() { return false; }
@@ -248,6 +260,18 @@ internal partial class APM_AddActionScreenAnnotation_X_Base : ISpecification<Pdf
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AddActionScreenAnnotation_X>("X did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -261,12 +285,12 @@ internal partial class APM_AddActionScreenAnnotation_X_Base : ISpecification<Pdf
 /// <summary>
 /// AddActionScreenAnnotation_D 
 /// </summary>
-internal partial class APM_AddActionScreenAnnotation_D : APM_AddActionScreenAnnotation_D_Base
+internal partial class APM_AddActionScreenAnnotation_D : APM_AddActionScreenAnnotation_D__Base
 {
 }
 
 
-internal partial class APM_AddActionScreenAnnotation_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionScreenAnnotation_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionScreenAnnotation_D";
     public static bool RuleGroup() { return false; }
@@ -326,6 +350,18 @@ internal partial class APM_AddActionScreenAnnotation_D_Base : ISpecification<Pdf
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AddActionScreenAnnotation_D>("D did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -339,12 +375,12 @@ internal partial class APM_AddActionScreenAnnotation_D_Base : ISpecification<Pdf
 /// <summary>
 /// AddActionScreenAnnotation_U 
 /// </summary>
-internal partial class APM_AddActionScreenAnnotation_U : APM_AddActionScreenAnnotation_U_Base
+internal partial class APM_AddActionScreenAnnotation_U : APM_AddActionScreenAnnotation_U__Base
 {
 }
 
 
-internal partial class APM_AddActionScreenAnnotation_U_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionScreenAnnotation_U__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionScreenAnnotation_U";
     public static bool RuleGroup() { return false; }
@@ -404,6 +440,18 @@ internal partial class APM_AddActionScreenAnnotation_U_Base : ISpecification<Pdf
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AddActionScreenAnnotation_U>("U did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -417,12 +465,12 @@ internal partial class APM_AddActionScreenAnnotation_U_Base : ISpecification<Pdf
 /// <summary>
 /// AddActionScreenAnnotation_PO 
 /// </summary>
-internal partial class APM_AddActionScreenAnnotation_PO : APM_AddActionScreenAnnotation_PO_Base
+internal partial class APM_AddActionScreenAnnotation_PO : APM_AddActionScreenAnnotation_PO__Base
 {
 }
 
 
-internal partial class APM_AddActionScreenAnnotation_PO_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionScreenAnnotation_PO__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionScreenAnnotation_PO";
     public static bool RuleGroup() { return false; }
@@ -482,6 +530,18 @@ internal partial class APM_AddActionScreenAnnotation_PO_Base : ISpecification<Pd
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AddActionScreenAnnotation_PO>("PO did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -495,12 +555,12 @@ internal partial class APM_AddActionScreenAnnotation_PO_Base : ISpecification<Pd
 /// <summary>
 /// AddActionScreenAnnotation_PC 
 /// </summary>
-internal partial class APM_AddActionScreenAnnotation_PC : APM_AddActionScreenAnnotation_PC_Base
+internal partial class APM_AddActionScreenAnnotation_PC : APM_AddActionScreenAnnotation_PC__Base
 {
 }
 
 
-internal partial class APM_AddActionScreenAnnotation_PC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionScreenAnnotation_PC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionScreenAnnotation_PC";
     public static bool RuleGroup() { return false; }
@@ -560,6 +620,18 @@ internal partial class APM_AddActionScreenAnnotation_PC_Base : ISpecification<Pd
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AddActionScreenAnnotation_PC>("PC did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -573,12 +645,12 @@ internal partial class APM_AddActionScreenAnnotation_PC_Base : ISpecification<Pd
 /// <summary>
 /// AddActionScreenAnnotation_PV 
 /// </summary>
-internal partial class APM_AddActionScreenAnnotation_PV : APM_AddActionScreenAnnotation_PV_Base
+internal partial class APM_AddActionScreenAnnotation_PV : APM_AddActionScreenAnnotation_PV__Base
 {
 }
 
 
-internal partial class APM_AddActionScreenAnnotation_PV_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionScreenAnnotation_PV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionScreenAnnotation_PV";
     public static bool RuleGroup() { return false; }
@@ -638,6 +710,18 @@ internal partial class APM_AddActionScreenAnnotation_PV_Base : ISpecification<Pd
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AddActionScreenAnnotation_PV>("PV did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -651,12 +735,12 @@ internal partial class APM_AddActionScreenAnnotation_PV_Base : ISpecification<Pd
 /// <summary>
 /// AddActionScreenAnnotation_PI 
 /// </summary>
-internal partial class APM_AddActionScreenAnnotation_PI : APM_AddActionScreenAnnotation_PI_Base
+internal partial class APM_AddActionScreenAnnotation_PI : APM_AddActionScreenAnnotation_PI__Base
 {
 }
 
 
-internal partial class APM_AddActionScreenAnnotation_PI_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionScreenAnnotation_PI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionScreenAnnotation_PI";
     public static bool RuleGroup() { return false; }
@@ -716,6 +800,18 @@ internal partial class APM_AddActionScreenAnnotation_PI_Base : ISpecification<Pd
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AddActionScreenAnnotation_PI>("PI did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");

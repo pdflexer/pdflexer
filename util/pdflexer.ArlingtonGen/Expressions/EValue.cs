@@ -20,12 +20,18 @@ internal class EValue : INode
 
     public void Write(StringBuilder sw)
     {
-        VariableContext.Wrapper(sw, WriteInternal);
+        VariableContext.Wrapper(sw, this, WriteInternal);
     }
 
     private void WriteInternal(StringBuilder sw)
     {
-        if (VariableContext.Vars.TryGetValue(Text, out var value) || VariableContext.Vars.TryGetValue(Text.Substring(1), out value))
+
+        if (!VariableContext.InEval && Text[0] == '@' && Text.Substring(1) == VariableContext.VarName) 
+        {
+            sw.Append(sw.Append(VariableContext.VarSub));
+            return;
+        }
+        if (VariableContext.Vars.TryGetValue(Text, out var value))
         {
             sw.Append(value);
             return;
@@ -72,7 +78,18 @@ internal class EValue : INode
         }
         else if (Text[0] == '\'')
         {
-            sw.Append("new PdfString(" + Text + ")");
+            sw.Append("\"" + Text.Trim('\'') + "\"");
+        }
+        else if (Text == VariableContext.VarName)
+        {
+            sw.Append(VariableContext.VarSub);
+        }
+        else if (Text == "true")
+        {
+            sw.Append("PdfBoolean.True");
+        } else if (Text == "false")
+        {
+            sw.Append("PdfBoolean.False");
         }
         else
         {
@@ -82,14 +99,25 @@ internal class EValue : INode
 
     public IEnumerable<string> GetRequiredValues()
     {
-        if (Text[0] == '@' && !Text.Contains("*") && !int.TryParse(Text.Substring(1), out _))
+        if (decimal.TryParse(Text, out _))
         {
-            yield return Text;
+            yield break;
+        }
+        if (Text == "true" || Text == "false")
+        {
+            yield break;
         }
 
-        if (Text.Contains("::"))
+        if (!VariableContext.InEval)
+        {
+            if (Text[0] == '@' || Text.Contains("::"))
+            {
+                yield return Text;
+            }
+        } else
         {
             yield return Text;
         }
+        
     }
 }

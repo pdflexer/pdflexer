@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ViewParams : APM_ViewParams_Base
+internal partial class APM_ViewParams : APM_ViewParams__Base
 {
 }
 
-internal partial class APM_ViewParams_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewParams__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ViewParams";
@@ -40,12 +40,12 @@ internal partial class APM_ViewParams_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ViewParams_Instance Table 345
 /// </summary>
-internal partial class APM_ViewParams_Instance : APM_ViewParams_Instance_Base
+internal partial class APM_ViewParams_Instance : APM_ViewParams_Instance__Base
 {
 }
 
 
-internal partial class APM_ViewParams_Instance_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewParams_Instance__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewParams_Instance";
     public static bool RuleGroup() { return false; }
@@ -67,12 +67,12 @@ internal partial class APM_ViewParams_Instance_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ViewParams_Data 
 /// </summary>
-internal partial class APM_ViewParams_Data : APM_ViewParams_Data_Base
+internal partial class APM_ViewParams_Data : APM_ViewParams_Data__Base
 {
 }
 
 
-internal partial class APM_ViewParams_Data_Base : ISpecification<PdfDictionary>
+internal partial class APM_ViewParams_Data__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ViewParams_Data";
     public static bool RuleGroup() { return false; }

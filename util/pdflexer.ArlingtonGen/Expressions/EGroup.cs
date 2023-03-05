@@ -48,6 +48,10 @@ internal class EGroup : INode
             {
                 sw.Append("mod");
             }
+            else if (op.Text == "*")
+            {
+                sw.Append("mult");
+            }
             else
             {
                 sw.Append("(");
@@ -77,7 +81,4 @@ internal class EGroup : INode
         }
 
     }
-
-    public bool WritesRequired() => Children.Where(x => x is EOp).Where(x => { var op = (EOp)x; return op.IsComparator(); }).Any();
-
 }

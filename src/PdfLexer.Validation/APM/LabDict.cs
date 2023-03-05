@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_LabDict : APM_LabDict_Base
+internal partial class APM_LabDict : APM_LabDict__Base
 {
 }
 
-internal partial class APM_LabDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_LabDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "LabDict";
@@ -140,12 +140,12 @@ internal partial class APM_LabDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// LabDict_WhitePoint Table 64
 /// </summary>
-internal partial class APM_LabDict_WhitePoint : APM_LabDict_WhitePoint_Base
+internal partial class APM_LabDict_WhitePoint : APM_LabDict_WhitePoint__Base
 {
 }
 
 
-internal partial class APM_LabDict_WhitePoint_Base : ISpecification<PdfDictionary>
+internal partial class APM_LabDict_WhitePoint__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LabDict_WhitePoint";
     public static bool RuleGroup() { return false; }
@@ -167,12 +167,12 @@ internal partial class APM_LabDict_WhitePoint_Base : ISpecification<PdfDictionar
 /// <summary>
 /// LabDict_BlackPoint 
 /// </summary>
-internal partial class APM_LabDict_BlackPoint : APM_LabDict_BlackPoint_Base
+internal partial class APM_LabDict_BlackPoint : APM_LabDict_BlackPoint__Base
 {
 }
 
 
-internal partial class APM_LabDict_BlackPoint_Base : ISpecification<PdfDictionary>
+internal partial class APM_LabDict_BlackPoint__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LabDict_BlackPoint";
     public static bool RuleGroup() { return false; }
@@ -194,12 +194,12 @@ internal partial class APM_LabDict_BlackPoint_Base : ISpecification<PdfDictionar
 /// <summary>
 /// LabDict_Range 
 /// </summary>
-internal partial class APM_LabDict_Range : APM_LabDict_Range_Base
+internal partial class APM_LabDict_Range : APM_LabDict_Range__Base
 {
 }
 
 
-internal partial class APM_LabDict_Range_Base : ISpecification<PdfDictionary>
+internal partial class APM_LabDict_Range__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LabDict_Range";
     public static bool RuleGroup() { return false; }

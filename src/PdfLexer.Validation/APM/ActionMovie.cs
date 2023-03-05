@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionMovie : APM_ActionMovie_Base
+internal partial class APM_ActionMovie : APM_ActionMovie__Base
 {
 }
 
-internal partial class APM_ActionMovie_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionMovie__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionMovie";
@@ -129,12 +129,12 @@ internal partial class APM_ActionMovie_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionMovie_Type Table 196 and Table 213
 /// </summary>
-internal partial class APM_ActionMovie_Type : APM_ActionMovie_Type_Base
+internal partial class APM_ActionMovie_Type : APM_ActionMovie_Type__Base
 {
 }
 
 
-internal partial class APM_ActionMovie_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionMovie_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionMovie_Type";
     public static bool RuleGroup() { return false; }
@@ -145,13 +145,11 @@ internal partial class APM_ActionMovie_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_ActionMovie_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionMovie_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -163,12 +161,12 @@ internal partial class APM_ActionMovie_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionMovie_S 
 /// </summary>
-internal partial class APM_ActionMovie_S : APM_ActionMovie_S_Base
+internal partial class APM_ActionMovie_S : APM_ActionMovie_S__Base
 {
 }
 
 
-internal partial class APM_ActionMovie_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionMovie_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionMovie_S";
     public static bool RuleGroup() { return false; }
@@ -179,13 +177,11 @@ internal partial class APM_ActionMovie_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_ActionMovie_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Movie")) 
         {
             ctx.Fail<APM_ActionMovie_S>($"Invalid value {val}, allowed are: [Movie]");
-        }
         }
         // no linked objects
         
@@ -197,12 +193,12 @@ internal partial class APM_ActionMovie_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionMovie_Next 
 /// </summary>
-internal partial class APM_ActionMovie_Next : APM_ActionMovie_Next_Base
+internal partial class APM_ActionMovie_Next : APM_ActionMovie_Next__Base
 {
 }
 
 
-internal partial class APM_ActionMovie_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionMovie_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionMovie_Next";
     public static bool RuleGroup() { return false; }
@@ -265,6 +261,36 @@ internal partial class APM_ActionMovie_Next_Base : ISpecification<PdfDictionary>
                     } else if (APM_ActionImportData.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionImportData, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionNOP.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionNOP, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionSetState.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionSetState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionSetOCGState.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionSetOCGState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionRendition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRendition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionTransition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionTransition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ActionECMAScript.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ActionMovie_Next>("Next did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,fn:IsPDFVersion(1.2,ActionNOP),fn:IsPDFVersion(1.2,ActionSetState),ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,fn:SinceVersion(1.5,ActionSetOCGState),fn:SinceVersion(1.5,ActionRendition),fn:SinceVersion(1.5,ActionTransition),fn:SinceVersion(1.6,ActionGoTo3DView),fn:SinceVersion(1.3,ActionECMAScript),fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -284,12 +310,12 @@ internal partial class APM_ActionMovie_Next_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionMovie_Annotation 
 /// </summary>
-internal partial class APM_ActionMovie_Annotation : APM_ActionMovie_Annotation_Base
+internal partial class APM_ActionMovie_Annotation : APM_ActionMovie_Annotation__Base
 {
 }
 
 
-internal partial class APM_ActionMovie_Annotation_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionMovie_Annotation__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionMovie_Annotation";
     public static bool RuleGroup() { return false; }
@@ -311,12 +337,12 @@ internal partial class APM_ActionMovie_Annotation_Base : ISpecification<PdfDicti
 /// <summary>
 /// ActionMovie_T 
 /// </summary>
-internal partial class APM_ActionMovie_T : APM_ActionMovie_T_Base
+internal partial class APM_ActionMovie_T : APM_ActionMovie_T__Base
 {
 }
 
 
-internal partial class APM_ActionMovie_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionMovie_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionMovie_T";
     public static bool RuleGroup() { return false; }
@@ -338,12 +364,12 @@ internal partial class APM_ActionMovie_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionMovie_Operation 
 /// </summary>
-internal partial class APM_ActionMovie_Operation : APM_ActionMovie_Operation_Base
+internal partial class APM_ActionMovie_Operation : APM_ActionMovie_Operation__Base
 {
 }
 
 
-internal partial class APM_ActionMovie_Operation_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionMovie_Operation__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionMovie_Operation";
     public static bool RuleGroup() { return false; }
@@ -354,13 +380,11 @@ internal partial class APM_ActionMovie_Operation_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_ActionMovie_Operation>(obj, "Operation", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Play" || val == "Stop" || val == "Pause" || val == "Resume")) 
         {
             ctx.Fail<APM_ActionMovie_Operation>($"Invalid value {val}, allowed are: [Play,Stop,Pause,Resume]");
-        }
         }
         // no linked objects
         

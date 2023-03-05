@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaClipSection : APM_MediaClipSection_Base
+internal partial class APM_MediaClipSection : APM_MediaClipSection__Base
 {
 }
 
-internal partial class APM_MediaClipSection_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSection__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaClipSection";
@@ -110,12 +110,12 @@ internal partial class APM_MediaClipSection_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaClipSection_Type Table 284 and Table 288
 /// </summary>
-internal partial class APM_MediaClipSection_Type : APM_MediaClipSection_Type_Base
+internal partial class APM_MediaClipSection_Type : APM_MediaClipSection_Type__Base
 {
 }
 
 
-internal partial class APM_MediaClipSection_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSection_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipSection_Type";
     public static bool RuleGroup() { return false; }
@@ -126,13 +126,11 @@ internal partial class APM_MediaClipSection_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_MediaClipSection_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaClip")) 
         {
             ctx.Fail<APM_MediaClipSection_Type>($"Invalid value {val}, allowed are: [MediaClip]");
-        }
         }
         // no linked objects
         
@@ -144,12 +142,12 @@ internal partial class APM_MediaClipSection_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// MediaClipSection_S 
 /// </summary>
-internal partial class APM_MediaClipSection_S : APM_MediaClipSection_S_Base
+internal partial class APM_MediaClipSection_S : APM_MediaClipSection_S__Base
 {
 }
 
 
-internal partial class APM_MediaClipSection_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSection_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipSection_S";
     public static bool RuleGroup() { return false; }
@@ -160,13 +158,11 @@ internal partial class APM_MediaClipSection_S_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfName, APM_MediaClipSection_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MCS")) 
         {
             ctx.Fail<APM_MediaClipSection_S>($"Invalid value {val}, allowed are: [MCS]");
-        }
         }
         // no linked objects
         
@@ -178,12 +174,12 @@ internal partial class APM_MediaClipSection_S_Base : ISpecification<PdfDictionar
 /// <summary>
 /// MediaClipSection_N 
 /// </summary>
-internal partial class APM_MediaClipSection_N : APM_MediaClipSection_N_Base
+internal partial class APM_MediaClipSection_N : APM_MediaClipSection_N__Base
 {
 }
 
 
-internal partial class APM_MediaClipSection_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSection_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipSection_N";
     public static bool RuleGroup() { return false; }
@@ -205,12 +201,12 @@ internal partial class APM_MediaClipSection_N_Base : ISpecification<PdfDictionar
 /// <summary>
 /// MediaClipSection_D 
 /// </summary>
-internal partial class APM_MediaClipSection_D : APM_MediaClipSection_D_Base
+internal partial class APM_MediaClipSection_D : APM_MediaClipSection_D__Base
 {
 }
 
 
-internal partial class APM_MediaClipSection_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSection_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipSection_D";
     public static bool RuleGroup() { return false; }
@@ -241,12 +237,12 @@ internal partial class APM_MediaClipSection_D_Base : ISpecification<PdfDictionar
 /// <summary>
 /// MediaClipSection_Alt 
 /// </summary>
-internal partial class APM_MediaClipSection_Alt : APM_MediaClipSection_Alt_Base
+internal partial class APM_MediaClipSection_Alt : APM_MediaClipSection_Alt__Base
 {
 }
 
 
-internal partial class APM_MediaClipSection_Alt_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSection_Alt__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipSection_Alt";
     public static bool RuleGroup() { return false; }
@@ -268,12 +264,12 @@ internal partial class APM_MediaClipSection_Alt_Base : ISpecification<PdfDiction
 /// <summary>
 /// MediaClipSection_MH 
 /// </summary>
-internal partial class APM_MediaClipSection_MH : APM_MediaClipSection_MH_Base
+internal partial class APM_MediaClipSection_MH : APM_MediaClipSection_MH__Base
 {
 }
 
 
-internal partial class APM_MediaClipSection_MH_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSection_MH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipSection_MH";
     public static bool RuleGroup() { return false; }
@@ -295,12 +291,12 @@ internal partial class APM_MediaClipSection_MH_Base : ISpecification<PdfDictiona
 /// <summary>
 /// MediaClipSection_BE 
 /// </summary>
-internal partial class APM_MediaClipSection_BE : APM_MediaClipSection_BE_Base
+internal partial class APM_MediaClipSection_BE : APM_MediaClipSection_BE__Base
 {
 }
 
 
-internal partial class APM_MediaClipSection_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipSection_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipSection_BE";
     public static bool RuleGroup() { return false; }

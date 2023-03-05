@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfDigestMethod : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -42,13 +42,11 @@ internal partial class APM_ArrayOfDigestMethod_x : ISpecification<PdfArray>
             var val = ctx.GetOptional<PdfName, APM_ArrayOfDigestMethod_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
-            {
             
             
             if (!((ctx.Version <= 2.0m && val == "SHA1") || val == "SHA256" || val == "SHA384" || val == "SHA512" || val == "RIPEMD160" || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-256") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-384") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-512") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHAKE256"))) 
             {
                 ctx.Fail<APM_ArrayOfDigestMethod_x>($"Invalid value {val}, allowed are: [fn:Deprecated(2.0,SHA1),SHA256,SHA384,SHA512,RIPEMD160,fn:Extension(ISO_TS_32001,SHA3-256),fn:Extension(ISO_TS_32001,SHA3-384),fn:Extension(ISO_TS_32001,SHA3-512),fn:Extension(ISO_TS_32001,SHAKE256)]");
-            }
             }
             // no linked objects
             

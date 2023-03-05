@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Outline : APM_Outline_Base
+internal partial class APM_Outline : APM_Outline__Base
 {
 }
 
-internal partial class APM_Outline_Base : ISpecification<PdfDictionary>
+internal partial class APM_Outline__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Outline";
@@ -157,12 +157,12 @@ internal partial class APM_Outline_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Outline_Type Table 150
 /// </summary>
-internal partial class APM_Outline_Type : APM_Outline_Type_Base
+internal partial class APM_Outline_Type : APM_Outline_Type__Base
 {
 }
 
 
-internal partial class APM_Outline_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Outline_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Outline_Type";
     public static bool RuleGroup() { return false; }
@@ -173,13 +173,11 @@ internal partial class APM_Outline_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Outline_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Outlines")) 
         {
             ctx.Fail<APM_Outline_Type>($"Invalid value {val}, allowed are: [Outlines]");
-        }
         }
         // no linked objects
         
@@ -191,12 +189,12 @@ internal partial class APM_Outline_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Outline_First 
 /// </summary>
-internal partial class APM_Outline_First : APM_Outline_First_Base
+internal partial class APM_Outline_First : APM_Outline_First__Base
 {
 }
 
 
-internal partial class APM_Outline_First_Base : ISpecification<PdfDictionary>
+internal partial class APM_Outline_First__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Outline_First";
     public static bool RuleGroup() { return false; }
@@ -218,12 +216,12 @@ internal partial class APM_Outline_First_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Outline_Last 
 /// </summary>
-internal partial class APM_Outline_Last : APM_Outline_Last_Base
+internal partial class APM_Outline_Last : APM_Outline_Last__Base
 {
 }
 
 
-internal partial class APM_Outline_Last_Base : ISpecification<PdfDictionary>
+internal partial class APM_Outline_Last__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Outline_Last";
     public static bool RuleGroup() { return false; }
@@ -245,12 +243,12 @@ internal partial class APM_Outline_Last_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Outline_Count 
 /// </summary>
-internal partial class APM_Outline_Count : APM_Outline_Count_Base
+internal partial class APM_Outline_Count : APM_Outline_Count__Base
 {
 }
 
 
-internal partial class APM_Outline_Count_Base : ISpecification<PdfDictionary>
+internal partial class APM_Outline_Count__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Outline_Count";
     public static bool RuleGroup() { return false; }
@@ -261,13 +259,11 @@ internal partial class APM_Outline_Count_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_Outline_Count>(obj, "Count", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Count = val;
-        if (!(gte(@Count,0))) 
+        var Count = obj.Get("Count");
+        if (!(gte(Count,0))) 
         {
             ctx.Fail<APM_Outline_Count>($"Invalid value {val}, allowed are: [fn:Eval(@Count>=0)]");
-        }
         }
         // no linked objects
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CalRGBDict : APM_CalRGBDict_Base
+internal partial class APM_CalRGBDict : APM_CalRGBDict__Base
 {
 }
 
-internal partial class APM_CalRGBDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_CalRGBDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CalRGBDict";
@@ -141,12 +141,12 @@ internal partial class APM_CalRGBDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CalRGBDict_WhitePoint Table 63
 /// </summary>
-internal partial class APM_CalRGBDict_WhitePoint : APM_CalRGBDict_WhitePoint_Base
+internal partial class APM_CalRGBDict_WhitePoint : APM_CalRGBDict_WhitePoint__Base
 {
 }
 
 
-internal partial class APM_CalRGBDict_WhitePoint_Base : ISpecification<PdfDictionary>
+internal partial class APM_CalRGBDict_WhitePoint__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CalRGBDict_WhitePoint";
     public static bool RuleGroup() { return false; }
@@ -168,12 +168,12 @@ internal partial class APM_CalRGBDict_WhitePoint_Base : ISpecification<PdfDictio
 /// <summary>
 /// CalRGBDict_BlackPoint 
 /// </summary>
-internal partial class APM_CalRGBDict_BlackPoint : APM_CalRGBDict_BlackPoint_Base
+internal partial class APM_CalRGBDict_BlackPoint : APM_CalRGBDict_BlackPoint__Base
 {
 }
 
 
-internal partial class APM_CalRGBDict_BlackPoint_Base : ISpecification<PdfDictionary>
+internal partial class APM_CalRGBDict_BlackPoint__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CalRGBDict_BlackPoint";
     public static bool RuleGroup() { return false; }
@@ -195,12 +195,12 @@ internal partial class APM_CalRGBDict_BlackPoint_Base : ISpecification<PdfDictio
 /// <summary>
 /// CalRGBDict_Gamma 
 /// </summary>
-internal partial class APM_CalRGBDict_Gamma : APM_CalRGBDict_Gamma_Base
+internal partial class APM_CalRGBDict_Gamma : APM_CalRGBDict_Gamma__Base
 {
 }
 
 
-internal partial class APM_CalRGBDict_Gamma_Base : ISpecification<PdfDictionary>
+internal partial class APM_CalRGBDict_Gamma__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CalRGBDict_Gamma";
     public static bool RuleGroup() { return false; }
@@ -222,12 +222,12 @@ internal partial class APM_CalRGBDict_Gamma_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CalRGBDict_Matrix 
 /// </summary>
-internal partial class APM_CalRGBDict_Matrix : APM_CalRGBDict_Matrix_Base
+internal partial class APM_CalRGBDict_Matrix : APM_CalRGBDict_Matrix__Base
 {
 }
 
 
-internal partial class APM_CalRGBDict_Matrix_Base : ISpecification<PdfDictionary>
+internal partial class APM_CalRGBDict_Matrix__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CalRGBDict_Matrix";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_PaperMetaData : APM_PaperMetaData_Base
+internal partial class APM_PaperMetaData : APM_PaperMetaData__Base
 {
 }
 
-internal partial class APM_PaperMetaData_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "PaperMetaData";
@@ -56,12 +56,12 @@ internal partial class APM_PaperMetaData_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PaperMetaData_Type Adobe Extension Level 3, Table 8.39b
 /// </summary>
-internal partial class APM_PaperMetaData_Type : APM_PaperMetaData_Type_Base
+internal partial class APM_PaperMetaData_Type : APM_PaperMetaData_Type__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_Type";
     public static bool RuleGroup() { return false; }
@@ -72,13 +72,11 @@ internal partial class APM_PaperMetaData_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfName, APM_PaperMetaData_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PaperMetaData")) 
         {
             ctx.Fail<APM_PaperMetaData_Type>($"Invalid value {val}, allowed are: [PaperMetaData]");
-        }
         }
         // no linked objects
         
@@ -90,12 +88,12 @@ internal partial class APM_PaperMetaData_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// PaperMetaData_Version 
 /// </summary>
-internal partial class APM_PaperMetaData_Version : APM_PaperMetaData_Version_Base
+internal partial class APM_PaperMetaData_Version : APM_PaperMetaData_Version__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_Version_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_Version__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_Version";
     public static bool RuleGroup() { return false; }
@@ -106,13 +104,11 @@ internal partial class APM_PaperMetaData_Version_Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfNumber, APM_PaperMetaData_Version>(obj, "Version", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1)) 
         {
             ctx.Fail<APM_PaperMetaData_Version>($"Invalid value {val}, allowed are: [1]");
-        }
         }
         // no linked objects
         
@@ -124,12 +120,12 @@ internal partial class APM_PaperMetaData_Version_Base : ISpecification<PdfDictio
 /// <summary>
 /// PaperMetaData_Resolution 
 /// </summary>
-internal partial class APM_PaperMetaData_Resolution : APM_PaperMetaData_Resolution_Base
+internal partial class APM_PaperMetaData_Resolution : APM_PaperMetaData_Resolution__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_Resolution_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_Resolution__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_Resolution";
     public static bool RuleGroup() { return false; }
@@ -139,7 +135,11 @@ internal partial class APM_PaperMetaData_Resolution_Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfNumber, APM_PaperMetaData_Resolution>(obj, "Resolution", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Resolution = obj.Get("Resolution");
+        if (!(gt(Resolution,0))) 
+        {
+            ctx.Fail<APM_PaperMetaData_Resolution>($"Value failed special case check: fn:Eval(@Resolution>0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -151,12 +151,12 @@ internal partial class APM_PaperMetaData_Resolution_Base : ISpecification<PdfDic
 /// <summary>
 /// PaperMetaData_Caption 
 /// </summary>
-internal partial class APM_PaperMetaData_Caption : APM_PaperMetaData_Caption_Base
+internal partial class APM_PaperMetaData_Caption : APM_PaperMetaData_Caption__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_Caption_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_Caption__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_Caption";
     public static bool RuleGroup() { return false; }
@@ -178,12 +178,12 @@ internal partial class APM_PaperMetaData_Caption_Base : ISpecification<PdfDictio
 /// <summary>
 /// PaperMetaData_Symbology 
 /// </summary>
-internal partial class APM_PaperMetaData_Symbology : APM_PaperMetaData_Symbology_Base
+internal partial class APM_PaperMetaData_Symbology : APM_PaperMetaData_Symbology__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_Symbology_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_Symbology__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_Symbology";
     public static bool RuleGroup() { return false; }
@@ -194,13 +194,11 @@ internal partial class APM_PaperMetaData_Symbology_Base : ISpecification<PdfDict
         var val = ctx.GetRequired<PdfName, APM_PaperMetaData_Symbology>(obj, "Symbology", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PDF417" || val == "QRCode" || val == "DataMatrix")) 
         {
             ctx.Fail<APM_PaperMetaData_Symbology>($"Invalid value {val}, allowed are: [PDF417,QRCode,DataMatrix]");
-        }
         }
         // no linked objects
         
@@ -212,12 +210,12 @@ internal partial class APM_PaperMetaData_Symbology_Base : ISpecification<PdfDict
 /// <summary>
 /// PaperMetaData_Width 
 /// </summary>
-internal partial class APM_PaperMetaData_Width : APM_PaperMetaData_Width_Base
+internal partial class APM_PaperMetaData_Width : APM_PaperMetaData_Width__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_Width_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_Width__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_Width";
     public static bool RuleGroup() { return false; }
@@ -227,7 +225,11 @@ internal partial class APM_PaperMetaData_Width_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetRequired<PdfNumber, APM_PaperMetaData_Width>(obj, "Width", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Width = obj.Get("Width");
+        if (!(gt(Width,0))) 
+        {
+            ctx.Fail<APM_PaperMetaData_Width>($"Value failed special case check: fn:Eval(@Width>0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -239,12 +241,12 @@ internal partial class APM_PaperMetaData_Width_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PaperMetaData_Height 
 /// </summary>
-internal partial class APM_PaperMetaData_Height : APM_PaperMetaData_Height_Base
+internal partial class APM_PaperMetaData_Height : APM_PaperMetaData_Height__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_Height_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_Height__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_Height";
     public static bool RuleGroup() { return false; }
@@ -254,7 +256,11 @@ internal partial class APM_PaperMetaData_Height_Base : ISpecification<PdfDiction
     {
         var val = ctx.GetRequired<PdfNumber, APM_PaperMetaData_Height>(obj, "Height", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Height = obj.Get("Height");
+        if (!(gt(Height,0))) 
+        {
+            ctx.Fail<APM_PaperMetaData_Height>($"Value failed special case check: fn:Eval(@Height>0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -266,12 +272,12 @@ internal partial class APM_PaperMetaData_Height_Base : ISpecification<PdfDiction
 /// <summary>
 /// PaperMetaData_XSymWidth 
 /// </summary>
-internal partial class APM_PaperMetaData_XSymWidth : APM_PaperMetaData_XSymWidth_Base
+internal partial class APM_PaperMetaData_XSymWidth : APM_PaperMetaData_XSymWidth__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_XSymWidth_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_XSymWidth__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_XSymWidth";
     public static bool RuleGroup() { return false; }
@@ -281,7 +287,11 @@ internal partial class APM_PaperMetaData_XSymWidth_Base : ISpecification<PdfDict
     {
         var val = ctx.GetRequired<PdfIntNumber, APM_PaperMetaData_XSymWidth>(obj, "XSymWidth", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var XSymWidth = obj.Get("XSymWidth");
+        if (!(gt(XSymWidth,0))) 
+        {
+            ctx.Fail<APM_PaperMetaData_XSymWidth>($"Value failed special case check: fn:Eval(@XSymWidth>0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -293,12 +303,12 @@ internal partial class APM_PaperMetaData_XSymWidth_Base : ISpecification<PdfDict
 /// <summary>
 /// PaperMetaData_YSymHeight 
 /// </summary>
-internal partial class APM_PaperMetaData_YSymHeight : APM_PaperMetaData_YSymHeight_Base
+internal partial class APM_PaperMetaData_YSymHeight : APM_PaperMetaData_YSymHeight__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_YSymHeight_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_YSymHeight__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_YSymHeight";
     public static bool RuleGroup() { return false; }
@@ -308,7 +318,11 @@ internal partial class APM_PaperMetaData_YSymHeight_Base : ISpecification<PdfDic
     {
         var val = ctx.GetRequired<PdfIntNumber, APM_PaperMetaData_YSymHeight>(obj, "YSymHeight", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var YSymHeight = obj.Get("YSymHeight");
+        if (!(gt(YSymHeight,0))) 
+        {
+            ctx.Fail<APM_PaperMetaData_YSymHeight>($"Value failed special case check: fn:Eval(@YSymHeight>0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -320,12 +334,12 @@ internal partial class APM_PaperMetaData_YSymHeight_Base : ISpecification<PdfDic
 /// <summary>
 /// PaperMetaData_ECC 
 /// </summary>
-internal partial class APM_PaperMetaData_ECC : APM_PaperMetaData_ECC_Base
+internal partial class APM_PaperMetaData_ECC : APM_PaperMetaData_ECC__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_ECC_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_ECC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_ECC";
     public static bool RuleGroup() { return false; }
@@ -333,25 +347,19 @@ internal partial class APM_PaperMetaData_ECC_Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfIntNumber? val;
-        {
-            var Symbology = obj.Get("Symbology");
-            if ((eq(Symbology,"PDF417")||eq(Symbology,"QRCode"))) {
-                val = ctx.GetRequired<PdfIntNumber, APM_PaperMetaData_ECC>(obj, "ECC", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfIntNumber, APM_PaperMetaData_ECC>(obj, "ECC", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Symbology = obj.Get("Symbology");
+        var val = ctx.GetOptional<PdfIntNumber, APM_PaperMetaData_ECC>(obj, "ECC", IndirectRequirement.Either);
+        if (((eq(Symbology,"PDF417")||eq(Symbology,"QRCode"))) && val == null) {
+            ctx.Fail<APM_PaperMetaData_ECC>("ECC is required when 'fn:IsRequired((@Symbology==PDF417) || (@Symbology==QRCode))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
-        {
         
-        IPdfObject @ECC = val;
-        var Symbology2 = obj.Get("Symbology");
-        if (!((gte(@ECC,0)&&((eq(Symbology2,"PDF417")&&lte(@ECC,8))||(eq(Symbology2,"QRCode")&&lte(@ECC,3)))))) 
+        var ECC = obj.Get("ECC");
+        if (!((gte(ECC,0)&&((eq(Symbology,"PDF417")&&lte(ECC,8))||(eq(Symbology,"QRCode")&&lte(ECC,3)))))) 
         {
             ctx.Fail<APM_PaperMetaData_ECC>($"Invalid value {val}, allowed are: [fn:Eval((@ECC>=0) && (((@Symbology==PDF417) && (@ECC<=8)) || ((@Symbology==QRCode) && (@ECC<=3))))]");
-        }
         }
         // no linked objects
         
@@ -363,12 +371,12 @@ internal partial class APM_PaperMetaData_ECC_Base : ISpecification<PdfDictionary
 /// <summary>
 /// PaperMetaData_nCodeWordRow 
 /// </summary>
-internal partial class APM_PaperMetaData_nCodeWordRow : APM_PaperMetaData_nCodeWordRow_Base
+internal partial class APM_PaperMetaData_nCodeWordRow : APM_PaperMetaData_nCodeWordRow__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_nCodeWordRow_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_nCodeWordRow__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_nCodeWordRow";
     public static bool RuleGroup() { return false; }
@@ -378,7 +386,7 @@ internal partial class APM_PaperMetaData_nCodeWordRow_Base : ISpecification<PdfD
     {
         var val = ctx.GetOptional<PdfNumber, APM_PaperMetaData_nCodeWordRow>(obj, "nCodeWordRow", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -390,12 +398,12 @@ internal partial class APM_PaperMetaData_nCodeWordRow_Base : ISpecification<PdfD
 /// <summary>
 /// PaperMetaData_nCodeWordCol 
 /// </summary>
-internal partial class APM_PaperMetaData_nCodeWordCol : APM_PaperMetaData_nCodeWordCol_Base
+internal partial class APM_PaperMetaData_nCodeWordCol : APM_PaperMetaData_nCodeWordCol__Base
 {
 }
 
 
-internal partial class APM_PaperMetaData_nCodeWordCol_Base : ISpecification<PdfDictionary>
+internal partial class APM_PaperMetaData_nCodeWordCol__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PaperMetaData_nCodeWordCol";
     public static bool RuleGroup() { return false; }
@@ -405,7 +413,7 @@ internal partial class APM_PaperMetaData_nCodeWordCol_Base : ISpecification<PdfD
     {
         var val = ctx.GetOptional<PdfNumber, APM_PaperMetaData_nCodeWordCol>(obj, "nCodeWordCol", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         // no linked objects
         

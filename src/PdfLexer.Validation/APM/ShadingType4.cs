@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ShadingType4 : APM_ShadingType4_Base
+internal partial class APM_ShadingType4 : APM_ShadingType4__Base
 {
 }
 
-internal partial class APM_ShadingType4_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ShadingType4";
@@ -134,12 +134,12 @@ internal partial class APM_ShadingType4_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ShadingType4_BitsPerCoordinate Table 5 and Table 77 and Table 81
 /// </summary>
-internal partial class APM_ShadingType4_BitsPerCoordinate : APM_ShadingType4_BitsPerCoordinate_Base
+internal partial class APM_ShadingType4_BitsPerCoordinate : APM_ShadingType4_BitsPerCoordinate__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_BitsPerCoordinate_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_BitsPerCoordinate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_BitsPerCoordinate";
     public static bool RuleGroup() { return false; }
@@ -150,13 +150,11 @@ internal partial class APM_ShadingType4_BitsPerCoordinate_Base : ISpecification<
         var val = ctx.GetRequired<PdfIntNumber, APM_ShadingType4_BitsPerCoordinate>(obj, "BitsPerCoordinate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 2 || val == 4 || val == 8 || val == 12 || val == 16 || val == 24 || val == 32)) 
         {
             ctx.Fail<APM_ShadingType4_BitsPerCoordinate>($"Invalid value {val}, allowed are: [1,2,4,8,12,16,24,32]");
-        }
         }
         // no linked objects
         
@@ -168,12 +166,12 @@ internal partial class APM_ShadingType4_BitsPerCoordinate_Base : ISpecification<
 /// <summary>
 /// ShadingType4_BitsPerComponent 
 /// </summary>
-internal partial class APM_ShadingType4_BitsPerComponent : APM_ShadingType4_BitsPerComponent_Base
+internal partial class APM_ShadingType4_BitsPerComponent : APM_ShadingType4_BitsPerComponent__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_BitsPerComponent_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_BitsPerComponent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_BitsPerComponent";
     public static bool RuleGroup() { return false; }
@@ -184,13 +182,11 @@ internal partial class APM_ShadingType4_BitsPerComponent_Base : ISpecification<P
         var val = ctx.GetRequired<PdfIntNumber, APM_ShadingType4_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 2 || val == 4 || val == 8 || val == 12 || val == 16)) 
         {
             ctx.Fail<APM_ShadingType4_BitsPerComponent>($"Invalid value {val}, allowed are: [1,2,4,8,12,16]");
-        }
         }
         // no linked objects
         
@@ -202,12 +198,12 @@ internal partial class APM_ShadingType4_BitsPerComponent_Base : ISpecification<P
 /// <summary>
 /// ShadingType4_BitsPerFlag 
 /// </summary>
-internal partial class APM_ShadingType4_BitsPerFlag : APM_ShadingType4_BitsPerFlag_Base
+internal partial class APM_ShadingType4_BitsPerFlag : APM_ShadingType4_BitsPerFlag__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_BitsPerFlag_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_BitsPerFlag__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_BitsPerFlag";
     public static bool RuleGroup() { return false; }
@@ -218,13 +214,11 @@ internal partial class APM_ShadingType4_BitsPerFlag_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfIntNumber, APM_ShadingType4_BitsPerFlag>(obj, "BitsPerFlag", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 2 || val == 4 || val == 8)) 
         {
             ctx.Fail<APM_ShadingType4_BitsPerFlag>($"Invalid value {val}, allowed are: [2,4,8]");
-        }
         }
         // no linked objects
         
@@ -236,12 +230,12 @@ internal partial class APM_ShadingType4_BitsPerFlag_Base : ISpecification<PdfDic
 /// <summary>
 /// ShadingType4_Decode 
 /// </summary>
-internal partial class APM_ShadingType4_Decode : APM_ShadingType4_Decode_Base
+internal partial class APM_ShadingType4_Decode : APM_ShadingType4_Decode__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_Decode_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_Decode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_Decode";
     public static bool RuleGroup() { return false; }
@@ -263,12 +257,12 @@ internal partial class APM_ShadingType4_Decode_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ShadingType4_Function 
 /// </summary>
-internal partial class APM_ShadingType4_Function : APM_ShadingType4_Function_Base
+internal partial class APM_ShadingType4_Function : APM_ShadingType4_Function__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_Function_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_Function__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_Function";
     public static bool RuleGroup() { return false; }
@@ -338,12 +332,12 @@ internal partial class APM_ShadingType4_Function_Base : ISpecification<PdfDictio
 /// <summary>
 /// ShadingType4_ShadingType 
 /// </summary>
-internal partial class APM_ShadingType4_ShadingType : APM_ShadingType4_ShadingType_Base
+internal partial class APM_ShadingType4_ShadingType : APM_ShadingType4_ShadingType__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_ShadingType_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_ShadingType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_ShadingType";
     public static bool RuleGroup() { return false; }
@@ -354,13 +348,11 @@ internal partial class APM_ShadingType4_ShadingType_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfIntNumber, APM_ShadingType4_ShadingType>(obj, "ShadingType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 4)) 
         {
             ctx.Fail<APM_ShadingType4_ShadingType>($"Invalid value {val}, allowed are: [4]");
-        }
         }
         // no linked objects
         
@@ -372,12 +364,12 @@ internal partial class APM_ShadingType4_ShadingType_Base : ISpecification<PdfDic
 /// <summary>
 /// ShadingType4_ColorSpace except pattern
 /// </summary>
-internal partial class APM_ShadingType4_ColorSpace : APM_ShadingType4_ColorSpace_Base
+internal partial class APM_ShadingType4_ColorSpace : APM_ShadingType4_ColorSpace__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_ColorSpace_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_ColorSpace__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_ColorSpace";
     public static bool RuleGroup() { return false; }
@@ -427,13 +419,11 @@ internal partial class APM_ShadingType4_ColorSpace_Base : ISpecification<PdfDict
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                     {
                         ctx.Fail<APM_ShadingType4_ColorSpace>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -451,12 +441,12 @@ internal partial class APM_ShadingType4_ColorSpace_Base : ISpecification<PdfDict
 /// <summary>
 /// ShadingType4_Background 
 /// </summary>
-internal partial class APM_ShadingType4_Background : APM_ShadingType4_Background_Base
+internal partial class APM_ShadingType4_Background : APM_ShadingType4_Background__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_Background_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_Background__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_Background";
     public static bool RuleGroup() { return false; }
@@ -478,12 +468,12 @@ internal partial class APM_ShadingType4_Background_Base : ISpecification<PdfDict
 /// <summary>
 /// ShadingType4_BBox 
 /// </summary>
-internal partial class APM_ShadingType4_BBox : APM_ShadingType4_BBox_Base
+internal partial class APM_ShadingType4_BBox : APM_ShadingType4_BBox__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_BBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_BBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_BBox";
     public static bool RuleGroup() { return false; }
@@ -505,12 +495,12 @@ internal partial class APM_ShadingType4_BBox_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ShadingType4_AntiAlias 
 /// </summary>
-internal partial class APM_ShadingType4_AntiAlias : APM_ShadingType4_AntiAlias_Base
+internal partial class APM_ShadingType4_AntiAlias : APM_ShadingType4_AntiAlias__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_AntiAlias_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_AntiAlias__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_AntiAlias";
     public static bool RuleGroup() { return false; }
@@ -532,12 +522,12 @@ internal partial class APM_ShadingType4_AntiAlias_Base : ISpecification<PdfDicti
 /// <summary>
 /// ShadingType4_Length 
 /// </summary>
-internal partial class APM_ShadingType4_Length : APM_ShadingType4_Length_Base
+internal partial class APM_ShadingType4_Length : APM_ShadingType4_Length__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_Length";
     public static bool RuleGroup() { return false; }
@@ -559,12 +549,12 @@ internal partial class APM_ShadingType4_Length_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ShadingType4_Filter 
 /// </summary>
-internal partial class APM_ShadingType4_Filter : APM_ShadingType4_Filter_Base
+internal partial class APM_ShadingType4_Filter : APM_ShadingType4_Filter__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_Filter";
     public static bool RuleGroup() { return false; }
@@ -580,7 +570,12 @@ internal partial class APM_ShadingType4_Filter_Base : ISpecification<PdfDictiona
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_ShadingType4_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -590,13 +585,11 @@ internal partial class APM_ShadingType4_Filter_Base : ISpecification<PdfDictiona
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_ShadingType4_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -614,12 +607,12 @@ internal partial class APM_ShadingType4_Filter_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ShadingType4_DecodeParms 
 /// </summary>
-internal partial class APM_ShadingType4_DecodeParms : APM_ShadingType4_DecodeParms_Base
+internal partial class APM_ShadingType4_DecodeParms : APM_ShadingType4_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -635,7 +628,12 @@ internal partial class APM_ShadingType4_DecodeParms_Base : ISpecification<PdfDic
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_ShadingType4_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -652,6 +650,9 @@ internal partial class APM_ShadingType4_DecodeParms_Base : ISpecification<PdfDic
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ShadingType4_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -671,12 +672,12 @@ internal partial class APM_ShadingType4_DecodeParms_Base : ISpecification<PdfDic
 /// <summary>
 /// ShadingType4_F 
 /// </summary>
-internal partial class APM_ShadingType4_F : APM_ShadingType4_F_Base
+internal partial class APM_ShadingType4_F : APM_ShadingType4_F__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_F";
     public static bool RuleGroup() { return false; }
@@ -719,12 +720,12 @@ internal partial class APM_ShadingType4_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ShadingType4_FFilter 
 /// </summary>
-internal partial class APM_ShadingType4_FFilter : APM_ShadingType4_FFilter_Base
+internal partial class APM_ShadingType4_FFilter : APM_ShadingType4_FFilter__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_FFilter";
     public static bool RuleGroup() { return false; }
@@ -740,7 +741,12 @@ internal partial class APM_ShadingType4_FFilter_Base : ISpecification<PdfDiction
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_ShadingType4_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -750,13 +756,11 @@ internal partial class APM_ShadingType4_FFilter_Base : ISpecification<PdfDiction
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_ShadingType4_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -774,12 +778,12 @@ internal partial class APM_ShadingType4_FFilter_Base : ISpecification<PdfDiction
 /// <summary>
 /// ShadingType4_FDecodeParms 
 /// </summary>
-internal partial class APM_ShadingType4_FDecodeParms : APM_ShadingType4_FDecodeParms_Base
+internal partial class APM_ShadingType4_FDecodeParms : APM_ShadingType4_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -795,7 +799,12 @@ internal partial class APM_ShadingType4_FDecodeParms_Base : ISpecification<PdfDi
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_ShadingType4_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -812,6 +821,9 @@ internal partial class APM_ShadingType4_FDecodeParms_Base : ISpecification<PdfDi
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ShadingType4_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -831,12 +843,12 @@ internal partial class APM_ShadingType4_FDecodeParms_Base : ISpecification<PdfDi
 /// <summary>
 /// ShadingType4_DL 
 /// </summary>
-internal partial class APM_ShadingType4_DL : APM_ShadingType4_DL_Base
+internal partial class APM_ShadingType4_DL : APM_ShadingType4_DL__Base
 {
 }
 
 
-internal partial class APM_ShadingType4_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType4_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType4_DL";
     public static bool RuleGroup() { return false; }
@@ -846,7 +858,11 @@ internal partial class APM_ShadingType4_DL_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_ShadingType4_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
+        {
+            ctx.Fail<APM_ShadingType4_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         // no value restrictions
         // no linked objects
         

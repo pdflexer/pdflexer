@@ -21,7 +21,7 @@ internal partial class APM_ArrayOf_4BorderStyleNames : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -45,13 +45,11 @@ internal partial class APM_ArrayOf_4BorderStyleNames_0 : ISpecification<PdfArray
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderStyleNames_0>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -93,13 +91,11 @@ internal partial class APM_ArrayOf_4BorderStyleNames_1 : ISpecification<PdfArray
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderStyleNames_1>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -141,13 +137,11 @@ internal partial class APM_ArrayOf_4BorderStyleNames_2 : ISpecification<PdfArray
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderStyleNames_2>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -189,13 +183,11 @@ internal partial class APM_ArrayOf_4BorderStyleNames_3 : ISpecification<PdfArray
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderStyleNames_3>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
-                    }
                     }
                     // no linked objects
                     return;

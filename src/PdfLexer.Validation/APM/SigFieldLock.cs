@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SigFieldLock : APM_SigFieldLock_Base
+internal partial class APM_SigFieldLock : APM_SigFieldLock__Base
 {
 }
 
-internal partial class APM_SigFieldLock_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldLock__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SigFieldLock";
@@ -107,12 +107,12 @@ internal partial class APM_SigFieldLock_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SigFieldLock_Type Table 236
 /// </summary>
-internal partial class APM_SigFieldLock_Type : APM_SigFieldLock_Type_Base
+internal partial class APM_SigFieldLock_Type : APM_SigFieldLock_Type__Base
 {
 }
 
 
-internal partial class APM_SigFieldLock_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldLock_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldLock_Type";
     public static bool RuleGroup() { return false; }
@@ -123,13 +123,11 @@ internal partial class APM_SigFieldLock_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_SigFieldLock_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SigFieldLock")) 
         {
             ctx.Fail<APM_SigFieldLock_Type>($"Invalid value {val}, allowed are: [SigFieldLock]");
-        }
         }
         // no linked objects
         
@@ -141,12 +139,12 @@ internal partial class APM_SigFieldLock_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// SigFieldLock_Action 
 /// </summary>
-internal partial class APM_SigFieldLock_Action : APM_SigFieldLock_Action_Base
+internal partial class APM_SigFieldLock_Action : APM_SigFieldLock_Action__Base
 {
 }
 
 
-internal partial class APM_SigFieldLock_Action_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldLock_Action__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldLock_Action";
     public static bool RuleGroup() { return false; }
@@ -157,13 +155,11 @@ internal partial class APM_SigFieldLock_Action_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_SigFieldLock_Action>(obj, "Action", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "All" || val == "Include" || val == "Exclude")) 
         {
             ctx.Fail<APM_SigFieldLock_Action>($"Invalid value {val}, allowed are: [All,Include,Exclude]");
-        }
         }
         // no linked objects
         
@@ -175,12 +171,12 @@ internal partial class APM_SigFieldLock_Action_Base : ISpecification<PdfDictiona
 /// <summary>
 /// SigFieldLock_Fields 
 /// </summary>
-internal partial class APM_SigFieldLock_Fields : APM_SigFieldLock_Fields_Base
+internal partial class APM_SigFieldLock_Fields : APM_SigFieldLock_Fields__Base
 {
 }
 
 
-internal partial class APM_SigFieldLock_Fields_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldLock_Fields__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldLock_Fields";
     public static bool RuleGroup() { return false; }
@@ -188,15 +184,12 @@ internal partial class APM_SigFieldLock_Fields_Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            var Action = obj.Get("Action");
-            if ((eq(Action,"Include")||eq(Action,"Exclude"))) {
-                val = ctx.GetRequired<PdfArray, APM_SigFieldLock_Fields>(obj, "Fields", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_SigFieldLock_Fields>(obj, "Fields", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Action = obj.Get("Action");
+        var val = ctx.GetOptional<PdfArray, APM_SigFieldLock_Fields>(obj, "Fields", IndirectRequirement.Either);
+        if (((eq(Action,"Include")||eq(Action,"Exclude"))) && val == null) {
+            ctx.Fail<APM_SigFieldLock_Fields>("Fields is required when 'fn:IsRequired((@Action==Include) || (@Action==Exclude))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -210,12 +203,12 @@ internal partial class APM_SigFieldLock_Fields_Base : ISpecification<PdfDictiona
 /// <summary>
 /// SigFieldLock_P 
 /// </summary>
-internal partial class APM_SigFieldLock_P : APM_SigFieldLock_P_Base
+internal partial class APM_SigFieldLock_P : APM_SigFieldLock_P__Base
 {
 }
 
 
-internal partial class APM_SigFieldLock_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldLock_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldLock_P";
     public static bool RuleGroup() { return false; }
@@ -226,13 +219,11 @@ internal partial class APM_SigFieldLock_P_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_SigFieldLock_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 2 || val == 3)) 
         {
             ctx.Fail<APM_SigFieldLock_P>($"Invalid value {val}, allowed are: [1,2,3]");
-        }
         }
         // no linked objects
         

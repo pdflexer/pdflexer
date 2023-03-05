@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_XObjectImageSoftMask : APM_XObjectImageSoftMask_Base
+internal partial class APM_XObjectImageSoftMask : APM_XObjectImageSoftMask__Base
 {
 }
 
-internal partial class APM_XObjectImageSoftMask_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "XObjectImageSoftMask";
@@ -133,12 +133,12 @@ internal partial class APM_XObjectImageSoftMask_Base : ISpecification<PdfDiction
 /// <summary>
 /// XObjectImageSoftMask_Type Table87 and Table 143 and Table 144
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Type : APM_XObjectImageSoftMask_Type_Base
+internal partial class APM_XObjectImageSoftMask_Type : APM_XObjectImageSoftMask_Type__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Type";
     public static bool RuleGroup() { return false; }
@@ -149,13 +149,11 @@ internal partial class APM_XObjectImageSoftMask_Type_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfName, APM_XObjectImageSoftMask_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "XObject")) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_Type>($"Invalid value {val}, allowed are: [XObject]");
-        }
         }
         // no linked objects
         
@@ -167,12 +165,12 @@ internal partial class APM_XObjectImageSoftMask_Type_Base : ISpecification<PdfDi
 /// <summary>
 /// XObjectImageSoftMask_Subtype 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Subtype : APM_XObjectImageSoftMask_Subtype_Base
+internal partial class APM_XObjectImageSoftMask_Subtype : APM_XObjectImageSoftMask_Subtype__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Subtype";
     public static bool RuleGroup() { return false; }
@@ -183,13 +181,11 @@ internal partial class APM_XObjectImageSoftMask_Subtype_Base : ISpecification<Pd
         var val = ctx.GetRequired<PdfName, APM_XObjectImageSoftMask_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Image")) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_Subtype>($"Invalid value {val}, allowed are: [Image]");
-        }
         }
         // no linked objects
         
@@ -201,12 +197,12 @@ internal partial class APM_XObjectImageSoftMask_Subtype_Base : ISpecification<Pd
 /// <summary>
 /// XObjectImageSoftMask_Width 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Width : APM_XObjectImageSoftMask_Width_Base
+internal partial class APM_XObjectImageSoftMask_Width : APM_XObjectImageSoftMask_Width__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Width_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Width__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Width";
     public static bool RuleGroup() { return false; }
@@ -216,7 +212,12 @@ internal partial class APM_XObjectImageSoftMask_Width_Base : ISpecification<PdfD
     {
         var val = ctx.GetRequired<PdfIntNumber, APM_XObjectImageSoftMask_Width>(obj, "Width", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Width = obj.Get("Width");
+        var parentWidth = parent?.Get("Width");
+        if (!((obj.ContainsKey("Matte") && !(eq(Width,parentWidth))))) 
+        {
+            ctx.Fail<APM_XObjectImageSoftMask_Width>($"Value failed special case check: fn:Eval(fn:IsPresent(Matte,(@Width==parent::@Width)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -228,12 +229,12 @@ internal partial class APM_XObjectImageSoftMask_Width_Base : ISpecification<PdfD
 /// <summary>
 /// XObjectImageSoftMask_Height 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Height : APM_XObjectImageSoftMask_Height_Base
+internal partial class APM_XObjectImageSoftMask_Height : APM_XObjectImageSoftMask_Height__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Height_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Height__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Height";
     public static bool RuleGroup() { return false; }
@@ -243,7 +244,12 @@ internal partial class APM_XObjectImageSoftMask_Height_Base : ISpecification<Pdf
     {
         var val = ctx.GetRequired<PdfIntNumber, APM_XObjectImageSoftMask_Height>(obj, "Height", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Height = obj.Get("Height");
+        var parentHeight = parent?.Get("Height");
+        if (!((obj.ContainsKey("Matte") && !(eq(Height,parentHeight))))) 
+        {
+            ctx.Fail<APM_XObjectImageSoftMask_Height>($"Value failed special case check: fn:Eval(fn:IsPresent(Matte,(@Height==parent::@Height)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -255,12 +261,12 @@ internal partial class APM_XObjectImageSoftMask_Height_Base : ISpecification<Pdf
 /// <summary>
 /// XObjectImageSoftMask_ColorSpace 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_ColorSpace : APM_XObjectImageSoftMask_ColorSpace_Base
+internal partial class APM_XObjectImageSoftMask_ColorSpace : APM_XObjectImageSoftMask_ColorSpace__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_ColorSpace_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_ColorSpace__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_ColorSpace";
     public static bool RuleGroup() { return false; }
@@ -271,13 +277,11 @@ internal partial class APM_XObjectImageSoftMask_ColorSpace_Base : ISpecification
         var val = ctx.GetRequired<PdfName, APM_XObjectImageSoftMask_ColorSpace>(obj, "ColorSpace", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DeviceGray")) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_ColorSpace>($"Invalid value {val}, allowed are: [DeviceGray]");
-        }
         }
         // no linked objects
         
@@ -289,12 +293,12 @@ internal partial class APM_XObjectImageSoftMask_ColorSpace_Base : ISpecification
 /// <summary>
 /// XObjectImageSoftMask_BitsPerComponent 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_BitsPerComponent : APM_XObjectImageSoftMask_BitsPerComponent_Base
+internal partial class APM_XObjectImageSoftMask_BitsPerComponent : APM_XObjectImageSoftMask_BitsPerComponent__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_BitsPerComponent_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_BitsPerComponent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_BitsPerComponent";
     public static bool RuleGroup() { return false; }
@@ -302,25 +306,21 @@ internal partial class APM_XObjectImageSoftMask_BitsPerComponent_Base : ISpecifi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfIntNumber? val;
-        {
-            var Filter = obj.Get("Filter");
-            var ImageMask = obj.Get("ImageMask");
-            if (!(Contains(Filter, "JPXDecode")||eq(ImageMask,"true"))) {
-                val = ctx.GetRequired<PdfIntNumber, APM_XObjectImageSoftMask_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageSoftMask_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Filter = obj.Get("Filter");
+        var ImageMask = obj.Get("ImageMask");
+        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageSoftMask_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
+        if ((!(Contains(Filter, "JPXDecode")||eq(ImageMask,PdfBoolean.True))) && val == null) {
+            ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>("BitsPerComponent is required when 'fn:IsRequired(fn:Not(fn:Contains(@Filter,JPXDecode) || (@ImageMask==true)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
-        {
         
-        var Filter2 = obj.Get("Filter");
-        if (!(val == 2 || val == 4 || ctx.Version >= 1.5m && val == 16)) 
+        
+        // TODO required value checks
+        if (!(val == 2 || val == 4 || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == 16)))) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>($"Invalid value {val}, allowed are: [fn:RequiredValue((fn:Contains(@Filter,CCITTFaxDecode) || fn:Contains(@Filter,JBIG2Decode)),1),2,4,fn:RequiredValue((fn:Contains(@Filter,RunLengthDecode) || fn:Contains(@Filter,DCTDecode)),8),fn:SinceVersion(1.5,16)]");
-        }
         }
         // no linked objects
         
@@ -332,12 +332,12 @@ internal partial class APM_XObjectImageSoftMask_BitsPerComponent_Base : ISpecifi
 /// <summary>
 /// XObjectImageSoftMask_Intent 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Intent : APM_XObjectImageSoftMask_Intent_Base
+internal partial class APM_XObjectImageSoftMask_Intent : APM_XObjectImageSoftMask_Intent__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Intent_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Intent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Intent";
     public static bool RuleGroup() { return false; }
@@ -347,7 +347,7 @@ internal partial class APM_XObjectImageSoftMask_Intent_Base : ISpecification<Pdf
     {
         var val = ctx.GetOptional<PdfName, APM_XObjectImageSoftMask_Intent>(obj, "Intent", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -359,12 +359,12 @@ internal partial class APM_XObjectImageSoftMask_Intent_Base : ISpecification<Pdf
 /// <summary>
 /// XObjectImageSoftMask_ImageMask Table 143
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_ImageMask : APM_XObjectImageSoftMask_ImageMask_Base
+internal partial class APM_XObjectImageSoftMask_ImageMask : APM_XObjectImageSoftMask_ImageMask__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_ImageMask_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_ImageMask__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_ImageMask";
     public static bool RuleGroup() { return false; }
@@ -374,7 +374,11 @@ internal partial class APM_XObjectImageSoftMask_ImageMask_Base : ISpecification<
     {
         var val = ctx.GetOptional<PdfBoolean, APM_XObjectImageSoftMask_ImageMask>(obj, "ImageMask", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var ImageMask = obj.Get("ImageMask");
+        if (!(eq(ImageMask,PdfBoolean.False))) 
+        {
+            ctx.Fail<APM_XObjectImageSoftMask_ImageMask>($"Value failed special case check: fn:Eval(@ImageMask==false)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -386,12 +390,12 @@ internal partial class APM_XObjectImageSoftMask_ImageMask_Base : ISpecification<
 /// <summary>
 /// XObjectImageSoftMask_Name 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Name : APM_XObjectImageSoftMask_Name_Base
+internal partial class APM_XObjectImageSoftMask_Name : APM_XObjectImageSoftMask_Name__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Name";
     public static bool RuleGroup() { return false; }
@@ -413,12 +417,12 @@ internal partial class APM_XObjectImageSoftMask_Name_Base : ISpecification<PdfDi
 /// <summary>
 /// XObjectImageSoftMask_Decode 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Decode : APM_XObjectImageSoftMask_Decode_Base
+internal partial class APM_XObjectImageSoftMask_Decode : APM_XObjectImageSoftMask_Decode__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Decode_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Decode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Decode";
     public static bool RuleGroup() { return false; }
@@ -440,12 +444,12 @@ internal partial class APM_XObjectImageSoftMask_Decode_Base : ISpecification<Pdf
 /// <summary>
 /// XObjectImageSoftMask_Interpolate 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Interpolate : APM_XObjectImageSoftMask_Interpolate_Base
+internal partial class APM_XObjectImageSoftMask_Interpolate : APM_XObjectImageSoftMask_Interpolate__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Interpolate_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Interpolate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Interpolate";
     public static bool RuleGroup() { return false; }
@@ -467,12 +471,12 @@ internal partial class APM_XObjectImageSoftMask_Interpolate_Base : ISpecificatio
 /// <summary>
 /// XObjectImageSoftMask_Matte Table 144
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Matte : APM_XObjectImageSoftMask_Matte_Base
+internal partial class APM_XObjectImageSoftMask_Matte : APM_XObjectImageSoftMask_Matte__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Matte_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Matte__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Matte";
     public static bool RuleGroup() { return false; }
@@ -482,7 +486,11 @@ internal partial class APM_XObjectImageSoftMask_Matte_Base : ISpecification<PdfD
     {
         var val = ctx.GetOptional<PdfArray, APM_XObjectImageSoftMask_Matte>(obj, "Matte", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Matte = obj.Get("Matte");
+        if (!(gt(((Matte as PdfArray)?.Count),0))) 
+        {
+            ctx.Fail<APM_XObjectImageSoftMask_Matte>($"Value failed special case check: fn:Eval(fn:ArrayLength(Matte)>0)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -494,12 +502,12 @@ internal partial class APM_XObjectImageSoftMask_Matte_Base : ISpecification<PdfD
 /// <summary>
 /// XObjectImageSoftMask_Metadata 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Metadata : APM_XObjectImageSoftMask_Metadata_Base
+internal partial class APM_XObjectImageSoftMask_Metadata : APM_XObjectImageSoftMask_Metadata__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Metadata_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Metadata__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Metadata";
     public static bool RuleGroup() { return false; }
@@ -521,12 +529,12 @@ internal partial class APM_XObjectImageSoftMask_Metadata_Base : ISpecification<P
 /// <summary>
 /// XObjectImageSoftMask_Length 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Length : APM_XObjectImageSoftMask_Length_Base
+internal partial class APM_XObjectImageSoftMask_Length : APM_XObjectImageSoftMask_Length__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Length";
     public static bool RuleGroup() { return false; }
@@ -548,12 +556,12 @@ internal partial class APM_XObjectImageSoftMask_Length_Base : ISpecification<Pdf
 /// <summary>
 /// XObjectImageSoftMask_Filter 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_Filter : APM_XObjectImageSoftMask_Filter_Base
+internal partial class APM_XObjectImageSoftMask_Filter : APM_XObjectImageSoftMask_Filter__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_Filter";
     public static bool RuleGroup() { return false; }
@@ -569,7 +577,12 @@ internal partial class APM_XObjectImageSoftMask_Filter_Base : ISpecification<Pdf
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectImageSoftMask_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -579,13 +592,11 @@ internal partial class APM_XObjectImageSoftMask_Filter_Base : ISpecification<Pdf
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || val == "JBIG2Decode" || val == "DCTDecode" || ctx.Version >= 1.5m && val == "JPXDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || val == "JBIG2Decode" || val == "DCTDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "JPXDecode")) || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_XObjectImageSoftMask_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,CCITTFaxDecode,JBIG2Decode,DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -603,12 +614,12 @@ internal partial class APM_XObjectImageSoftMask_Filter_Base : ISpecification<Pdf
 /// <summary>
 /// XObjectImageSoftMask_DecodeParms 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_DecodeParms : APM_XObjectImageSoftMask_DecodeParms_Base
+internal partial class APM_XObjectImageSoftMask_DecodeParms : APM_XObjectImageSoftMask_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -624,7 +635,12 @@ internal partial class APM_XObjectImageSoftMask_DecodeParms_Base : ISpecificatio
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectImageSoftMask_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -650,6 +666,9 @@ internal partial class APM_XObjectImageSoftMask_DecodeParms_Base : ISpecificatio
                     } else if (APM_FilterDCTDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterDCTDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_XObjectImageSoftMask_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,FilterCCITTFaxDecode,FilterJBIG2Decode,FilterDCTDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -669,12 +688,12 @@ internal partial class APM_XObjectImageSoftMask_DecodeParms_Base : ISpecificatio
 /// <summary>
 /// XObjectImageSoftMask_F 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_F : APM_XObjectImageSoftMask_F_Base
+internal partial class APM_XObjectImageSoftMask_F : APM_XObjectImageSoftMask_F__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_F";
     public static bool RuleGroup() { return false; }
@@ -717,12 +736,12 @@ internal partial class APM_XObjectImageSoftMask_F_Base : ISpecification<PdfDicti
 /// <summary>
 /// XObjectImageSoftMask_FFilter 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_FFilter : APM_XObjectImageSoftMask_FFilter_Base
+internal partial class APM_XObjectImageSoftMask_FFilter : APM_XObjectImageSoftMask_FFilter__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_FFilter";
     public static bool RuleGroup() { return false; }
@@ -738,7 +757,12 @@ internal partial class APM_XObjectImageSoftMask_FFilter_Base : ISpecification<Pd
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectImageSoftMask_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -748,13 +772,11 @@ internal partial class APM_XObjectImageSoftMask_FFilter_Base : ISpecification<Pd
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || val == "JBIG2Decode" || val == "DCTDecode" || ctx.Version >= 1.5m && val == "JPXDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || val == "JBIG2Decode" || val == "DCTDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "JPXDecode")) || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_XObjectImageSoftMask_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,CCITTFaxDecode,JBIG2Decode,DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -772,12 +794,12 @@ internal partial class APM_XObjectImageSoftMask_FFilter_Base : ISpecification<Pd
 /// <summary>
 /// XObjectImageSoftMask_FDecodeParms 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_FDecodeParms : APM_XObjectImageSoftMask_FDecodeParms_Base
+internal partial class APM_XObjectImageSoftMask_FDecodeParms : APM_XObjectImageSoftMask_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -793,7 +815,12 @@ internal partial class APM_XObjectImageSoftMask_FDecodeParms_Base : ISpecificati
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XObjectImageSoftMask_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -819,6 +846,9 @@ internal partial class APM_XObjectImageSoftMask_FDecodeParms_Base : ISpecificati
                     } else if (APM_FilterDCTDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterDCTDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_XObjectImageSoftMask_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,FilterCCITTFaxDecode,FilterJBIG2Decode,FilterDCTDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -838,12 +868,12 @@ internal partial class APM_XObjectImageSoftMask_FDecodeParms_Base : ISpecificati
 /// <summary>
 /// XObjectImageSoftMask_DL 
 /// </summary>
-internal partial class APM_XObjectImageSoftMask_DL : APM_XObjectImageSoftMask_DL_Base
+internal partial class APM_XObjectImageSoftMask_DL : APM_XObjectImageSoftMask_DL__Base
 {
 }
 
 
-internal partial class APM_XObjectImageSoftMask_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_XObjectImageSoftMask_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XObjectImageSoftMask_DL";
     public static bool RuleGroup() { return false; }
@@ -853,7 +883,11 @@ internal partial class APM_XObjectImageSoftMask_DL_Base : ISpecification<PdfDict
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageSoftMask_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
+        {
+            ctx.Fail<APM_XObjectImageSoftMask_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         // no value restrictions
         // no linked objects
         

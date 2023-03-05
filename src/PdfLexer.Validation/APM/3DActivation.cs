@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DActivation : APM_3DActivation_Base
+internal partial class APM_3DActivation : APM_3DActivation__Base
 {
 }
 
-internal partial class APM_3DActivation_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DActivation";
@@ -96,12 +96,12 @@ internal partial class APM_3DActivation_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DActivation_A Table 310
 /// </summary>
-internal partial class APM_3DActivation_A : APM_3DActivation_A_Base
+internal partial class APM_3DActivation_A : APM_3DActivation_A__Base
 {
 }
 
 
-internal partial class APM_3DActivation_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DActivation_A";
     public static bool RuleGroup() { return false; }
@@ -112,13 +112,11 @@ internal partial class APM_3DActivation_A_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DActivation_A>(obj, "A", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PO" || val == "PV" || val == "XA")) 
         {
             ctx.Fail<APM_3DActivation_A>($"Invalid value {val}, allowed are: [PO,PV,XA]");
-        }
         }
         // no linked objects
         
@@ -130,12 +128,12 @@ internal partial class APM_3DActivation_A_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DActivation_AIS 
 /// </summary>
-internal partial class APM_3DActivation_AIS : APM_3DActivation_AIS_Base
+internal partial class APM_3DActivation_AIS : APM_3DActivation_AIS__Base
 {
 }
 
 
-internal partial class APM_3DActivation_AIS_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation_AIS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DActivation_AIS";
     public static bool RuleGroup() { return false; }
@@ -146,13 +144,11 @@ internal partial class APM_3DActivation_AIS_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DActivation_AIS>(obj, "AIS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "I" || val == "L")) 
         {
             ctx.Fail<APM_3DActivation_AIS>($"Invalid value {val}, allowed are: [I,L]");
-        }
         }
         // no linked objects
         
@@ -164,12 +160,12 @@ internal partial class APM_3DActivation_AIS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DActivation_D 
 /// </summary>
-internal partial class APM_3DActivation_D : APM_3DActivation_D_Base
+internal partial class APM_3DActivation_D : APM_3DActivation_D__Base
 {
 }
 
 
-internal partial class APM_3DActivation_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DActivation_D";
     public static bool RuleGroup() { return false; }
@@ -180,13 +176,11 @@ internal partial class APM_3DActivation_D_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DActivation_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PC" || val == "PI" || val == "XD")) 
         {
             ctx.Fail<APM_3DActivation_D>($"Invalid value {val}, allowed are: [PC,PI,XD]");
-        }
         }
         // no linked objects
         
@@ -198,12 +192,12 @@ internal partial class APM_3DActivation_D_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DActivation_DIS 
 /// </summary>
-internal partial class APM_3DActivation_DIS : APM_3DActivation_DIS_Base
+internal partial class APM_3DActivation_DIS : APM_3DActivation_DIS__Base
 {
 }
 
 
-internal partial class APM_3DActivation_DIS_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation_DIS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DActivation_DIS";
     public static bool RuleGroup() { return false; }
@@ -214,13 +208,11 @@ internal partial class APM_3DActivation_DIS_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DActivation_DIS>(obj, "DIS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "U" || val == "I" || val == "L")) 
         {
             ctx.Fail<APM_3DActivation_DIS>($"Invalid value {val}, allowed are: [U,I,L]");
-        }
         }
         // no linked objects
         
@@ -232,12 +224,12 @@ internal partial class APM_3DActivation_DIS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DActivation_TB 
 /// </summary>
-internal partial class APM_3DActivation_TB : APM_3DActivation_TB_Base
+internal partial class APM_3DActivation_TB : APM_3DActivation_TB__Base
 {
 }
 
 
-internal partial class APM_3DActivation_TB_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation_TB__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DActivation_TB";
     public static bool RuleGroup() { return false; }
@@ -259,12 +251,12 @@ internal partial class APM_3DActivation_TB_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DActivation_NP 
 /// </summary>
-internal partial class APM_3DActivation_NP : APM_3DActivation_NP_Base
+internal partial class APM_3DActivation_NP : APM_3DActivation_NP__Base
 {
 }
 
 
-internal partial class APM_3DActivation_NP_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation_NP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DActivation_NP";
     public static bool RuleGroup() { return false; }
@@ -286,12 +278,12 @@ internal partial class APM_3DActivation_NP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DActivation_Style 
 /// </summary>
-internal partial class APM_3DActivation_Style : APM_3DActivation_Style_Base
+internal partial class APM_3DActivation_Style : APM_3DActivation_Style__Base
 {
 }
 
 
-internal partial class APM_3DActivation_Style_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation_Style__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DActivation_Style";
     public static bool RuleGroup() { return false; }
@@ -302,13 +294,11 @@ internal partial class APM_3DActivation_Style_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_3DActivation_Style>(obj, "Style", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Embedded" || val == "Windowed")) 
         {
             ctx.Fail<APM_3DActivation_Style>($"Invalid value {val}, allowed are: [Embedded,Windowed]");
-        }
         }
         // no linked objects
         
@@ -320,12 +310,12 @@ internal partial class APM_3DActivation_Style_Base : ISpecification<PdfDictionar
 /// <summary>
 /// 3DActivation_Window 
 /// </summary>
-internal partial class APM_3DActivation_Window : APM_3DActivation_Window_Base
+internal partial class APM_3DActivation_Window : APM_3DActivation_Window__Base
 {
 }
 
 
-internal partial class APM_3DActivation_Window_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation_Window__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DActivation_Window";
     public static bool RuleGroup() { return false; }
@@ -347,12 +337,12 @@ internal partial class APM_3DActivation_Window_Base : ISpecification<PdfDictiona
 /// <summary>
 /// 3DActivation_Transparent 
 /// </summary>
-internal partial class APM_3DActivation_Transparent : APM_3DActivation_Transparent_Base
+internal partial class APM_3DActivation_Transparent : APM_3DActivation_Transparent__Base
 {
 }
 
 
-internal partial class APM_3DActivation_Transparent_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DActivation_Transparent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DActivation_Transparent";
     public static bool RuleGroup() { return false; }

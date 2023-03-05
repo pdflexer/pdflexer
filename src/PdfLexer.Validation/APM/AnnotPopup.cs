@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotPopup : APM_AnnotPopup_Base
+internal partial class APM_AnnotPopup : APM_AnnotPopup__Base
 {
 }
 
-internal partial class APM_AnnotPopup_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotPopup";
@@ -144,12 +144,12 @@ internal partial class APM_AnnotPopup_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_Type Table 166 and Table 186 (NOT markup annot)
 /// </summary>
-internal partial class APM_AnnotPopup_Type : APM_AnnotPopup_Type_Base
+internal partial class APM_AnnotPopup_Type : APM_AnnotPopup_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_Type";
     public static bool RuleGroup() { return false; }
@@ -160,13 +160,11 @@ internal partial class APM_AnnotPopup_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotPopup_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotPopup_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -178,12 +176,12 @@ internal partial class APM_AnnotPopup_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_Subtype 
 /// </summary>
-internal partial class APM_AnnotPopup_Subtype : APM_AnnotPopup_Subtype_Base
+internal partial class APM_AnnotPopup_Subtype : APM_AnnotPopup_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_Subtype";
     public static bool RuleGroup() { return false; }
@@ -194,13 +192,11 @@ internal partial class APM_AnnotPopup_Subtype_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfName, APM_AnnotPopup_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Popup")) 
         {
             ctx.Fail<APM_AnnotPopup_Subtype>($"Invalid value {val}, allowed are: [Popup]");
-        }
         }
         // no linked objects
         
@@ -212,12 +208,12 @@ internal partial class APM_AnnotPopup_Subtype_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPopup_Rect 
 /// </summary>
-internal partial class APM_AnnotPopup_Rect : APM_AnnotPopup_Rect_Base
+internal partial class APM_AnnotPopup_Rect : APM_AnnotPopup_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_Rect";
     public static bool RuleGroup() { return false; }
@@ -239,12 +235,12 @@ internal partial class APM_AnnotPopup_Rect_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_Contents 
 /// </summary>
-internal partial class APM_AnnotPopup_Contents : APM_AnnotPopup_Contents_Base
+internal partial class APM_AnnotPopup_Contents : APM_AnnotPopup_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_Contents";
     public static bool RuleGroup() { return false; }
@@ -266,12 +262,12 @@ internal partial class APM_AnnotPopup_Contents_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPopup_P 
 /// </summary>
-internal partial class APM_AnnotPopup_P : APM_AnnotPopup_P_Base
+internal partial class APM_AnnotPopup_P : APM_AnnotPopup_P__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_P";
     public static bool RuleGroup() { return false; }
@@ -293,12 +289,12 @@ internal partial class APM_AnnotPopup_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_NM 
 /// </summary>
-internal partial class APM_AnnotPopup_NM : APM_AnnotPopup_NM_Base
+internal partial class APM_AnnotPopup_NM : APM_AnnotPopup_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_NM";
     public static bool RuleGroup() { return false; }
@@ -320,12 +316,12 @@ internal partial class APM_AnnotPopup_NM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_M 
 /// </summary>
-internal partial class APM_AnnotPopup_M : APM_AnnotPopup_M_Base
+internal partial class APM_AnnotPopup_M : APM_AnnotPopup_M__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_M";
     public static bool RuleGroup() { return false; }
@@ -352,12 +348,12 @@ internal partial class APM_AnnotPopup_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_F Table 167
 /// </summary>
-internal partial class APM_AnnotPopup_F : APM_AnnotPopup_F_Base
+internal partial class APM_AnnotPopup_F : APM_AnnotPopup_F__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_F";
     public static bool RuleGroup() { return false; }
@@ -367,7 +363,11 @@ internal partial class APM_AnnotPopup_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotPopup_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(ctx.Version < 1.4m && BitsClear(obj)&&ctx.Version < 1.5m && BitsClear(obj)&&ctx.Version < 1.6m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj))))) 
+        {
+            ctx.Fail<APM_AnnotPopup_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.4,fn:BitsClear(8,32)) && fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -379,12 +379,12 @@ internal partial class APM_AnnotPopup_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_AP 
 /// </summary>
-internal partial class APM_AnnotPopup_AP : APM_AnnotPopup_AP_Base
+internal partial class APM_AnnotPopup_AP : APM_AnnotPopup_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_AP";
     public static bool RuleGroup() { return false; }
@@ -406,12 +406,12 @@ internal partial class APM_AnnotPopup_AP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_AS 
 /// </summary>
-internal partial class APM_AnnotPopup_AS : APM_AnnotPopup_AS_Base
+internal partial class APM_AnnotPopup_AS : APM_AnnotPopup_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_AS";
     public static bool RuleGroup() { return false; }
@@ -419,17 +419,14 @@ internal partial class APM_AnnotPopup_AS_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotPopup_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotPopup_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotPopup_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotPopup_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -443,12 +440,12 @@ internal partial class APM_AnnotPopup_AS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_Border 
 /// </summary>
-internal partial class APM_AnnotPopup_Border : APM_AnnotPopup_Border_Base
+internal partial class APM_AnnotPopup_Border : APM_AnnotPopup_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_Border";
     public static bool RuleGroup() { return false; }
@@ -470,12 +467,12 @@ internal partial class APM_AnnotPopup_Border_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotPopup_C 
 /// </summary>
-internal partial class APM_AnnotPopup_C : APM_AnnotPopup_C_Base
+internal partial class APM_AnnotPopup_C : APM_AnnotPopup_C__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_C";
     public static bool RuleGroup() { return false; }
@@ -497,12 +494,12 @@ internal partial class APM_AnnotPopup_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotPopup_StructParent : APM_AnnotPopup_StructParent_Base
+internal partial class APM_AnnotPopup_StructParent : APM_AnnotPopup_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_StructParent";
     public static bool RuleGroup() { return false; }
@@ -524,12 +521,12 @@ internal partial class APM_AnnotPopup_StructParent_Base : ISpecification<PdfDict
 /// <summary>
 /// AnnotPopup_OC 
 /// </summary>
-internal partial class APM_AnnotPopup_OC : APM_AnnotPopup_OC_Base
+internal partial class APM_AnnotPopup_OC : APM_AnnotPopup_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_OC";
     public static bool RuleGroup() { return false; }
@@ -560,12 +557,12 @@ internal partial class APM_AnnotPopup_OC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_AF 
 /// </summary>
-internal partial class APM_AnnotPopup_AF : APM_AnnotPopup_AF_Base
+internal partial class APM_AnnotPopup_AF : APM_AnnotPopup_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_AF";
     public static bool RuleGroup() { return false; }
@@ -608,12 +605,12 @@ internal partial class APM_AnnotPopup_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_ca 
 /// </summary>
-internal partial class APM_AnnotPopup_ca : APM_AnnotPopup_ca_Base
+internal partial class APM_AnnotPopup_ca : APM_AnnotPopup_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_ca";
     public static bool RuleGroup() { return false; }
@@ -624,13 +621,11 @@ internal partial class APM_AnnotPopup_ca_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotPopup_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotPopup_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -642,12 +637,12 @@ internal partial class APM_AnnotPopup_ca_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_CA 
 /// </summary>
-internal partial class APM_AnnotPopup_CA : APM_AnnotPopup_CA_Base
+internal partial class APM_AnnotPopup_CA : APM_AnnotPopup_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_CA";
     public static bool RuleGroup() { return false; }
@@ -658,13 +653,11 @@ internal partial class APM_AnnotPopup_CA_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotPopup_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotPopup_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -676,12 +669,12 @@ internal partial class APM_AnnotPopup_CA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotPopup_BM : APM_AnnotPopup_BM_Base
+internal partial class APM_AnnotPopup_BM : APM_AnnotPopup_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_BM";
     public static bool RuleGroup() { return false; }
@@ -692,13 +685,11 @@ internal partial class APM_AnnotPopup_BM_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotPopup_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotPopup_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -710,12 +701,12 @@ internal partial class APM_AnnotPopup_BM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_Lang 
 /// </summary>
-internal partial class APM_AnnotPopup_Lang : APM_AnnotPopup_Lang_Base
+internal partial class APM_AnnotPopup_Lang : APM_AnnotPopup_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_Lang";
     public static bool RuleGroup() { return false; }
@@ -737,12 +728,12 @@ internal partial class APM_AnnotPopup_Lang_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPopup_Parent 
 /// </summary>
-internal partial class APM_AnnotPopup_Parent : APM_AnnotPopup_Parent_Base
+internal partial class APM_AnnotPopup_Parent : APM_AnnotPopup_Parent__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_Parent";
     public static bool RuleGroup() { return false; }
@@ -802,6 +793,36 @@ internal partial class APM_AnnotPopup_Parent_Base : ISpecification<PdfDictionary
         } else if (APM_AnnotWidget.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_AnnotWidget, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_AnnotPolygon.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotPolygon, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.4m || (ctx.Version >= 1.4m && APM_AnnotSquiggly.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotSquiggly, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_AnnotCaret.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotCaret, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_AnnotScreen.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotScreen, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.4m || (ctx.Version >= 1.4m && APM_AnnotPrinterMark.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotPrinterMark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotWatermark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_Annot3D, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.7m || (ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotPopup_Parent>("Parent did not match any allowable types: '[AnnotText,AnnotLink,AnnotFreeText,AnnotLine,AnnotSquare,AnnotCircle,fn:SinceVersion(1.5,AnnotPolygon),AnnotHighlight,AnnotUnderline,fn:SinceVersion(1.4,AnnotSquiggly),AnnotStrikeOut,fn:SinceVersion(1.5,AnnotCaret),AnnotStamp,AnnotInk,AnnotPopup,AnnotFileAttachment,AnnotSound,AnnotMovie,fn:SinceVersion(1.5,AnnotScreen),AnnotWidget,fn:SinceVersion(1.4,AnnotPrinterMark),fn:SinceVersion(1.6,AnnotWatermark),fn:SinceVersion(1.6,Annot3D),fn:SinceVersion(1.7,AnnotRedact),fn:SinceVersion(2.0,AnnotProjection),fn:SinceVersion(2.0,AnnotRichMedia)]'");
@@ -815,12 +836,12 @@ internal partial class APM_AnnotPopup_Parent_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotPopup_Open 
 /// </summary>
-internal partial class APM_AnnotPopup_Open : APM_AnnotPopup_Open_Base
+internal partial class APM_AnnotPopup_Open : APM_AnnotPopup_Open__Base
 {
 }
 
 
-internal partial class APM_AnnotPopup_Open_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPopup_Open__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPopup_Open";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_IconFit : APM_IconFit_Base
+internal partial class APM_IconFit : APM_IconFit__Base
 {
 }
 
-internal partial class APM_IconFit_Base : ISpecification<PdfDictionary>
+internal partial class APM_IconFit__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "IconFit";
@@ -121,12 +121,12 @@ internal partial class APM_IconFit_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// IconFit_SW Table 250
 /// </summary>
-internal partial class APM_IconFit_SW : APM_IconFit_SW_Base
+internal partial class APM_IconFit_SW : APM_IconFit_SW__Base
 {
 }
 
 
-internal partial class APM_IconFit_SW_Base : ISpecification<PdfDictionary>
+internal partial class APM_IconFit_SW__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "IconFit_SW";
     public static bool RuleGroup() { return false; }
@@ -137,13 +137,11 @@ internal partial class APM_IconFit_SW_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_IconFit_SW>(obj, "SW", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "A" || val == "B" || val == "S" || val == "N")) 
         {
             ctx.Fail<APM_IconFit_SW>($"Invalid value {val}, allowed are: [A,B,S,N]");
-        }
         }
         // no linked objects
         
@@ -155,12 +153,12 @@ internal partial class APM_IconFit_SW_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// IconFit_S 
 /// </summary>
-internal partial class APM_IconFit_S : APM_IconFit_S_Base
+internal partial class APM_IconFit_S : APM_IconFit_S__Base
 {
 }
 
 
-internal partial class APM_IconFit_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_IconFit_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "IconFit_S";
     public static bool RuleGroup() { return false; }
@@ -171,13 +169,11 @@ internal partial class APM_IconFit_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_IconFit_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "A" || val == "P")) 
         {
             ctx.Fail<APM_IconFit_S>($"Invalid value {val}, allowed are: [A,P]");
-        }
         }
         // no linked objects
         
@@ -189,12 +185,12 @@ internal partial class APM_IconFit_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// IconFit_A 
 /// </summary>
-internal partial class APM_IconFit_A : APM_IconFit_A_Base
+internal partial class APM_IconFit_A : APM_IconFit_A__Base
 {
 }
 
 
-internal partial class APM_IconFit_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_IconFit_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "IconFit_A";
     public static bool RuleGroup() { return false; }
@@ -204,7 +200,12 @@ internal partial class APM_IconFit_A_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_IconFit_A>(obj, "A", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var A0 = obj.Get("A")?.Get("0");
+        var A1 = obj.Get("A")?.Get("1");
+        if (!(gte(A0,0)&&lte(A0,1)&&gte(A1,0)&&lte(A1,1))) 
+        {
+            ctx.Fail<APM_IconFit_A>($"Value failed special case check: fn:Eval((A::@0>=0) && (A::@0<=1) && (A::@1>=0) && (A::@1<=1))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOf_2Numbers, PdfArray>(stack, val, obj);
         
@@ -216,12 +217,12 @@ internal partial class APM_IconFit_A_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// IconFit_FB 
 /// </summary>
-internal partial class APM_IconFit_FB : APM_IconFit_FB_Base
+internal partial class APM_IconFit_FB : APM_IconFit_FB__Base
 {
 }
 
 
-internal partial class APM_IconFit_FB_Base : ISpecification<PdfDictionary>
+internal partial class APM_IconFit_FB__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "IconFit_FB";
     public static bool RuleGroup() { return false; }

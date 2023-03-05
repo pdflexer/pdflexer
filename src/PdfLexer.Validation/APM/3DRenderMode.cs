@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DRenderMode : APM_3DRenderMode_Base
+internal partial class APM_3DRenderMode : APM_3DRenderMode__Base
 {
 }
 
-internal partial class APM_3DRenderMode_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DRenderMode__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DRenderMode";
@@ -89,12 +89,12 @@ internal partial class APM_3DRenderMode_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DRenderMode_Type Table 318
 /// </summary>
-internal partial class APM_3DRenderMode_Type : APM_3DRenderMode_Type_Base
+internal partial class APM_3DRenderMode_Type : APM_3DRenderMode_Type__Base
 {
 }
 
 
-internal partial class APM_3DRenderMode_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DRenderMode_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DRenderMode_Type";
     public static bool RuleGroup() { return false; }
@@ -105,13 +105,11 @@ internal partial class APM_3DRenderMode_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_3DRenderMode_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DRenderMode")) 
         {
             ctx.Fail<APM_3DRenderMode_Type>($"Invalid value {val}, allowed are: [3DRenderMode]");
-        }
         }
         // no linked objects
         
@@ -123,12 +121,12 @@ internal partial class APM_3DRenderMode_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// 3DRenderMode_Subtype 
 /// </summary>
-internal partial class APM_3DRenderMode_Subtype : APM_3DRenderMode_Subtype_Base
+internal partial class APM_3DRenderMode_Subtype : APM_3DRenderMode_Subtype__Base
 {
 }
 
 
-internal partial class APM_3DRenderMode_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DRenderMode_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DRenderMode_Subtype";
     public static bool RuleGroup() { return false; }
@@ -139,13 +137,11 @@ internal partial class APM_3DRenderMode_Subtype_Base : ISpecification<PdfDiction
         var val = ctx.GetRequired<PdfName, APM_3DRenderMode_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Solid" || val == "SolidWireframe" || val == "Transparent" || val == "TransparentWireframe" || val == "BoundingBox" || val == "TransparentBoundingBox" || val == "TransparentBoundingBoxOutline" || val == "Wireframe" || val == "ShadedWireframe" || val == "HiddenWireframe" || val == "Vertices" || val == "ShadedVertices" || val == "Illustration" || val == "SolidOutline" || val == "ShadedIllustration")) 
         {
             ctx.Fail<APM_3DRenderMode_Subtype>($"Invalid value {val}, allowed are: [Solid,SolidWireframe,Transparent,TransparentWireframe,BoundingBox,TransparentBoundingBox,TransparentBoundingBoxOutline,Wireframe,ShadedWireframe,HiddenWireframe,Vertices,ShadedVertices,Illustration,SolidOutline,ShadedIllustration]");
-        }
         }
         // no linked objects
         
@@ -157,12 +153,12 @@ internal partial class APM_3DRenderMode_Subtype_Base : ISpecification<PdfDiction
 /// <summary>
 /// 3DRenderMode_AC Table 319
 /// </summary>
-internal partial class APM_3DRenderMode_AC : APM_3DRenderMode_AC_Base
+internal partial class APM_3DRenderMode_AC : APM_3DRenderMode_AC__Base
 {
 }
 
 
-internal partial class APM_3DRenderMode_AC_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DRenderMode_AC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DRenderMode_AC";
     public static bool RuleGroup() { return false; }
@@ -172,7 +168,7 @@ internal partial class APM_3DRenderMode_AC_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_3DRenderMode_AC>(obj, "AC", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOf_4ColourSpaceEntries, PdfArray>(stack, val, obj);
         
@@ -184,12 +180,12 @@ internal partial class APM_3DRenderMode_AC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DRenderMode_FC 
 /// </summary>
-internal partial class APM_3DRenderMode_FC : APM_3DRenderMode_FC_Base
+internal partial class APM_3DRenderMode_FC : APM_3DRenderMode_FC__Base
 {
 }
 
 
-internal partial class APM_3DRenderMode_FC_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DRenderMode_FC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DRenderMode_FC";
     public static bool RuleGroup() { return false; }
@@ -215,13 +211,11 @@ internal partial class APM_3DRenderMode_FC_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "BG")) 
                     {
                         ctx.Fail<APM_3DRenderMode_FC>($"Invalid value {val}, allowed are: [BG]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -239,12 +233,12 @@ internal partial class APM_3DRenderMode_FC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DRenderMode_O Opacity
 /// </summary>
-internal partial class APM_3DRenderMode_O : APM_3DRenderMode_O_Base
+internal partial class APM_3DRenderMode_O : APM_3DRenderMode_O__Base
 {
 }
 
 
-internal partial class APM_3DRenderMode_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DRenderMode_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DRenderMode_O";
     public static bool RuleGroup() { return false; }
@@ -255,13 +249,11 @@ internal partial class APM_3DRenderMode_O_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_3DRenderMode_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @O = val;
-        if (!((gte(@O,0)&&lte(@O,1)))) 
+        var O = obj.Get("O");
+        if (!((gte(O,0)&&lte(O,1)))) 
         {
             ctx.Fail<APM_3DRenderMode_O>($"Invalid value {val}, allowed are: [fn:Eval((@O>=0) && (@O<=1))]");
-        }
         }
         // no linked objects
         
@@ -273,12 +265,12 @@ internal partial class APM_3DRenderMode_O_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DRenderMode_CV 
 /// </summary>
-internal partial class APM_3DRenderMode_CV : APM_3DRenderMode_CV_Base
+internal partial class APM_3DRenderMode_CV : APM_3DRenderMode_CV__Base
 {
 }
 
 
-internal partial class APM_3DRenderMode_CV_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DRenderMode_CV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DRenderMode_CV";
     public static bool RuleGroup() { return false; }

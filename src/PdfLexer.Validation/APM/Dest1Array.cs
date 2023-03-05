@@ -20,7 +20,7 @@ internal partial class APM_Dest1Array : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -53,13 +53,11 @@ internal partial class APM_Dest1Array_0 : ISpecification<PdfArray>
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     IPdfObject v = val;
                     
-                    if (!(gte(v,0))) 
+                    if (!(gte(v,v))) 
                     {
                         ctx.Fail<APM_Dest1Array_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>=0)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -86,13 +84,11 @@ internal partial class APM_Dest1Array_1 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_Dest1Array_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(val == "FitH" || val == "FitV" || ctx.Version >= 1.1m && val == "FitBH" || ctx.Version >= 1.1m && val == "FitBV")) 
+        if (!(val == "FitH" || val == "FitV" || (ctx.Version < 1.1m || (ctx.Version >= 1.1m && val == "FitBH")) || (ctx.Version < 1.1m || (ctx.Version >= 1.1m && val == "FitBV")))) 
         {
             ctx.Fail<APM_Dest1Array_1>($"Invalid value {val}, allowed are: [FitH,FitV,fn:SinceVersion(1.1,FitBH),fn:SinceVersion(1.1,FitBV)]");
-        }
         }
         // no linked objects
         

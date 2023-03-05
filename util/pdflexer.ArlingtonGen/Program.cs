@@ -5,7 +5,7 @@ using PdfLexer;
 Directory.CreateDirectory("C:\\source\\github\\pdflexer\\src\\pdflexer.Validation\\APM");
 
 var files = Directory.GetFiles($"C:\\source\\github\\arlington-pdf-model\\tsv\\latest", "*.tsv");
-// var files = new List<string> { $"C:\\source\\github\\arlington-pdf-model\\tsv\\latest\\" + "3DArray.tsv" };
+// var files = new List<string> { $"C:\\source\\github\\arlington-pdf-model\\tsv\\latest\\" + "3DActivation.tsv" };
 
 var children = new Dictionary<string, List<GenBase>>();
 
@@ -80,29 +80,32 @@ sw2.WriteLine("""
     {
     """);
 
-var ops = new Dictionary<string, string>
+var ops = new Dictionary<string, (string, string)>
 {
-    ["eq"] = "==",
-    ["gt"] = ">",
-    ["lt"] = "<",
-    ["gte"] = ">=",
-    ["lte"] = "<=",
+    ["eq"] = ("==", "bool"),
+    ["gt"] = (">", "bool"),
+    ["lt"] = ("<", "bool"),
+    ["gte"] = (">=", "bool"),
+    ["lte"] = ("<=", "bool"),
+    ["mult"] = ("*", "decimal"),
 };
 var txt = "";
 foreach (var op in ops)
 {
     var t = op.Key;
-    var o = op.Value;
+    var o = op.Value.Item1;
+    var rt = op.Value.Item2;
+    var dv = rt == "bool" ? "false" : "0m";
 
     txt += $$"""
-public static bool {{t}}(IPdfObject? obj, int val)
+public static {{rt}} {{t}}(IPdfObject? obj, int val)
 {
-    if (obj == null) { return false; }
+    if (obj == null) { return {{dv}}; }
     var n = obj as PdfIntNumber;
-    if (n == null) { return false; }
+    if (n == null) { return {{dv}}; }
     return {{t}}(n, val);
 }
-// public static bool {{t}}(PdfNumber obj, int val) 
+// public static {{rt}} {{t}}(PdfNumber obj, int val) 
 // {
 //     if (obj.NumberType == PdfNumberType.Integer) 
 //     {
@@ -110,51 +113,50 @@ public static bool {{t}}(IPdfObject? obj, int val)
 //     }
 //     return {{t}}(obj, (decimal)val);
 // }
-public static bool {{t}}(PdfIntNumber obj, int val) 
+public static {{rt}} {{t}}(PdfIntNumber obj, int val) 
 {
     return (int)obj {{o}} val;
 }
-public static bool {{t}}(IPdfObject? obj, IPdfObject? val)
+public static {{rt}} {{t}}(IPdfObject? obj, IPdfObject? val)
 {
-    if (obj == null || val == null) { return false; } // custom for arlington eval to fail
-    if (obj.Type != val.Type) { return false; }
+    if (obj == null || val == null) { return {{dv}}; } // custom for arlington eval to fail
+    if (obj.Type != val.Type) { return {{dv}}; }
     var n = obj as PdfNumber;
-    if (n == null) { return false; }
+    if (n == null) { return {{dv}}; }
     var n2 = val as PdfNumber;
-    if (n2 == null) { return false; }
+    if (n2 == null) { return {{dv}}; }
     return n {{o}} n2;
 }
 
-public static bool {{t}}(IPdfObject? obj, int? val)
+public static {{rt}} {{t}}(IPdfObject? obj, int? val)
 {
-    if (val == null) return false;
+    if (val == null) return {{dv}};
     return {{t}}(obj, val.Value);
 }
-public static bool {{t}}(int val, IPdfObject? obj) => {{t}}(obj, val);
-public static bool {{t}}(int val, int val2) => val == val2;
-public static bool {{t}}(int? val, int val2)
+public static {{rt}} {{t}}(int val, IPdfObject? obj) => {{t}}(obj, val);
+public static {{rt}} {{t}}(int val, int val2) => val {{o}} val2;
+public static {{rt}} {{t}}(int? val, int val2)
 {
-    if (val == null) { return false; }
+    if (val == null) { return {{dv}}; }
     return val.Value {{o}} val2;
 }
-
-public static bool {{t}}(IPdfObject? obj, decimal val)
+public static {{rt}} {{t}}(IPdfObject? obj, decimal val)
 {
-    if (obj == null) { return false; }
+    if (obj == null) { return {{dv}}; }
     var n = obj as PdfNumber;
-    if (n == null) { return false; }
+    if (n == null) { return {{dv}}; }
     return  (decimal)n {{o}} val;
 }
-public static bool {{t}}(IPdfObject? obj, decimal? val)
+public static {{rt}} {{t}}(IPdfObject? obj, decimal? val)
 {
-    if (val == null) return false;
+    if (val == null) return {{dv}};
     return {{t}}(obj, val.Value);
 }
-public static bool {{t}}(decimal val, IPdfObject? obj) => {{t}}(obj, val);
-public static bool {{t}}(decimal val, decimal val2) => val == val2;
-public static bool {{t}}(decimal? val, decimal val2)
+public static {{rt}} {{t}}(decimal val, IPdfObject? obj) => {{t}}(obj, val);
+public static {{rt}} {{t}}(decimal val, decimal val2) => val {{o}} val2;
+public static {{rt}} {{t}}(decimal? val, decimal val2)
 {
-    if (val == null) { return false; }
+    if (val == null) { return {{dv}}; }
     return val.Value {{o}} val2;
 }
 
@@ -163,7 +165,7 @@ public static bool {{t}}(decimal? val, decimal val2)
     if (t == "eq" || t == "ne")
     {
         txt += $$"""
-public static bool {{t}}(IPdfObject? obj, string? val)
+public static {{rt}} {{t}}(IPdfObject? obj, string? val)
 {
     if (obj == null || val == null) { return false; }
     var n = obj as PdfString;
@@ -177,3 +179,25 @@ public static bool {{t}}(IPdfObject? obj, string? val)
 
 sw2.WriteLine(GenBase.Ident(4, txt));
 sw2.WriteLine("}");
+
+{
+    // hack... TODO fix actual issue
+    var f = "C:\\source\\github\\pdflexer\\src\\pdflexer.Validation\\APM\\Solidities.cs";
+    var contents = File.ReadAllText(f);
+    contents = contents.Replace("var val = ctx.GetOptional<PdfNumber, APM_Solidities_CatchAll>", "IPdfObject? val = ctx.GetOptional<PdfNumber, APM_Solidities_CatchAll>");
+    File.WriteAllText(f, contents);
+
+    // 1+m(LastChar-FirstChar)
+    //1 + ((LastChar?.GetAs<PdfIntNumber>()?.Value ?? 0) - (FirstChar?.GetAs<PdfIntNumber>()?.Value ?? 0))
+}
+
+{
+    // hack... TODO fix actual issue
+    foreach (var c in new List<string> { "FontType1", "FontType3" })
+    {
+        var f = $"C:\\source\\github\\pdflexer\\src\\pdflexer.Validation\\APM\\{c}.cs";
+        var contents = File.ReadAllText(f);
+        contents = contents.Replace("1+m(LastChar-FirstChar)", "1 + ((LastChar?.GetAs<PdfIntNumber>()?.Value ?? 0) - (FirstChar?.GetAs<PdfIntNumber>()?.Value ?? 0))");
+        File.WriteAllText(f, contents);
+    }
+}

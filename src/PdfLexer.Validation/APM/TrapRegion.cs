@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_TrapRegion : APM_TrapRegion_Base
+internal partial class APM_TrapRegion : APM_TrapRegion__Base
 {
 }
 
-internal partial class APM_TrapRegion_Base : ISpecification<PdfDictionary>
+internal partial class APM_TrapRegion__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "TrapRegion";
@@ -109,12 +109,12 @@ internal partial class APM_TrapRegion_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// TrapRegion_TP Adobe TechNote 5620 Clause 5.34 - trapping parameters
 /// </summary>
-internal partial class APM_TrapRegion_TP : APM_TrapRegion_TP_Base
+internal partial class APM_TrapRegion_TP : APM_TrapRegion_TP__Base
 {
 }
 
 
-internal partial class APM_TrapRegion_TP_Base : ISpecification<PdfDictionary>
+internal partial class APM_TrapRegion_TP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "TrapRegion_TP";
     public static bool RuleGroup() { return false; }
@@ -136,12 +136,12 @@ internal partial class APM_TrapRegion_TP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// TrapRegion_TZ trap zone
 /// </summary>
-internal partial class APM_TrapRegion_TZ : APM_TrapRegion_TZ_Base
+internal partial class APM_TrapRegion_TZ : APM_TrapRegion_TZ__Base
 {
 }
 
 
-internal partial class APM_TrapRegion_TZ_Base : ISpecification<PdfDictionary>
+internal partial class APM_TrapRegion_TZ__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "TrapRegion_TZ";
     public static bool RuleGroup() { return false; }

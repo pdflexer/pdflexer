@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DeviceNMixingHints : APM_DeviceNMixingHints_Base
+internal partial class APM_DeviceNMixingHints : APM_DeviceNMixingHints__Base
 {
 }
 
-internal partial class APM_DeviceNMixingHints_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNMixingHints__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DeviceNMixingHints";
@@ -90,12 +90,12 @@ internal partial class APM_DeviceNMixingHints_Base : ISpecification<PdfDictionar
 /// <summary>
 /// DeviceNMixingHints_Solidities Table 72
 /// </summary>
-internal partial class APM_DeviceNMixingHints_Solidities : APM_DeviceNMixingHints_Solidities_Base
+internal partial class APM_DeviceNMixingHints_Solidities : APM_DeviceNMixingHints_Solidities__Base
 {
 }
 
 
-internal partial class APM_DeviceNMixingHints_Solidities_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNMixingHints_Solidities__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DeviceNMixingHints_Solidities";
     public static bool RuleGroup() { return false; }
@@ -117,12 +117,12 @@ internal partial class APM_DeviceNMixingHints_Solidities_Base : ISpecification<P
 /// <summary>
 /// DeviceNMixingHints_PrintingOrder 
 /// </summary>
-internal partial class APM_DeviceNMixingHints_PrintingOrder : APM_DeviceNMixingHints_PrintingOrder_Base
+internal partial class APM_DeviceNMixingHints_PrintingOrder : APM_DeviceNMixingHints_PrintingOrder__Base
 {
 }
 
 
-internal partial class APM_DeviceNMixingHints_PrintingOrder_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNMixingHints_PrintingOrder__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DeviceNMixingHints_PrintingOrder";
     public static bool RuleGroup() { return false; }
@@ -130,15 +130,12 @@ internal partial class APM_DeviceNMixingHints_PrintingOrder_Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if (obj.ContainsKey("Solidities")) {
-                val = ctx.GetRequired<PdfArray, APM_DeviceNMixingHints_PrintingOrder>(obj, "PrintingOrder", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_DeviceNMixingHints_PrintingOrder>(obj, "PrintingOrder", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_DeviceNMixingHints_PrintingOrder>(obj, "PrintingOrder", IndirectRequirement.Either);
+        if ((obj.ContainsKey(val)) && val == null) {
+            ctx.Fail<APM_DeviceNMixingHints_PrintingOrder>("PrintingOrder is required when 'fn:IsRequired(fn:IsPresent(Solidities))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -152,12 +149,12 @@ internal partial class APM_DeviceNMixingHints_PrintingOrder_Base : ISpecificatio
 /// <summary>
 /// DeviceNMixingHints_DotGain 
 /// </summary>
-internal partial class APM_DeviceNMixingHints_DotGain : APM_DeviceNMixingHints_DotGain_Base
+internal partial class APM_DeviceNMixingHints_DotGain : APM_DeviceNMixingHints_DotGain__Base
 {
 }
 
 
-internal partial class APM_DeviceNMixingHints_DotGain_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNMixingHints_DotGain__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DeviceNMixingHints_DotGain";
     public static bool RuleGroup() { return false; }

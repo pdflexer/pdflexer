@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MarkedContentReference : APM_MarkedContentReference_Base
+internal partial class APM_MarkedContentReference : APM_MarkedContentReference__Base
 {
 }
 
-internal partial class APM_MarkedContentReference_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkedContentReference__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MarkedContentReference";
@@ -128,12 +128,12 @@ internal partial class APM_MarkedContentReference_Base : ISpecification<PdfDicti
 /// <summary>
 /// MarkedContentReference_Type Table 357
 /// </summary>
-internal partial class APM_MarkedContentReference_Type : APM_MarkedContentReference_Type_Base
+internal partial class APM_MarkedContentReference_Type : APM_MarkedContentReference_Type__Base
 {
 }
 
 
-internal partial class APM_MarkedContentReference_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkedContentReference_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MarkedContentReference_Type";
     public static bool RuleGroup() { return false; }
@@ -144,13 +144,11 @@ internal partial class APM_MarkedContentReference_Type_Base : ISpecification<Pdf
         var val = ctx.GetRequired<PdfName, APM_MarkedContentReference_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MCR")) 
         {
             ctx.Fail<APM_MarkedContentReference_Type>($"Invalid value {val}, allowed are: [MCR]");
-        }
         }
         // no linked objects
         
@@ -162,12 +160,12 @@ internal partial class APM_MarkedContentReference_Type_Base : ISpecification<Pdf
 /// <summary>
 /// MarkedContentReference_Pg 
 /// </summary>
-internal partial class APM_MarkedContentReference_Pg : APM_MarkedContentReference_Pg_Base
+internal partial class APM_MarkedContentReference_Pg : APM_MarkedContentReference_Pg__Base
 {
 }
 
 
-internal partial class APM_MarkedContentReference_Pg_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkedContentReference_Pg__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MarkedContentReference_Pg";
     public static bool RuleGroup() { return false; }
@@ -189,12 +187,12 @@ internal partial class APM_MarkedContentReference_Pg_Base : ISpecification<PdfDi
 /// <summary>
 /// MarkedContentReference_Stm 
 /// </summary>
-internal partial class APM_MarkedContentReference_Stm : APM_MarkedContentReference_Stm_Base
+internal partial class APM_MarkedContentReference_Stm : APM_MarkedContentReference_Stm__Base
 {
 }
 
 
-internal partial class APM_MarkedContentReference_Stm_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkedContentReference_Stm__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MarkedContentReference_Stm";
     public static bool RuleGroup() { return false; }
@@ -216,12 +214,12 @@ internal partial class APM_MarkedContentReference_Stm_Base : ISpecification<PdfD
 /// <summary>
 /// MarkedContentReference_StmOwn 
 /// </summary>
-internal partial class APM_MarkedContentReference_StmOwn : APM_MarkedContentReference_StmOwn_Base
+internal partial class APM_MarkedContentReference_StmOwn : APM_MarkedContentReference_StmOwn__Base
 {
 }
 
 
-internal partial class APM_MarkedContentReference_StmOwn_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkedContentReference_StmOwn__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MarkedContentReference_StmOwn";
     public static bool RuleGroup() { return false; }
@@ -273,12 +271,12 @@ internal partial class APM_MarkedContentReference_StmOwn_Base : ISpecification<P
 /// <summary>
 /// MarkedContentReference_MCID 
 /// </summary>
-internal partial class APM_MarkedContentReference_MCID : APM_MarkedContentReference_MCID_Base
+internal partial class APM_MarkedContentReference_MCID : APM_MarkedContentReference_MCID__Base
 {
 }
 
 
-internal partial class APM_MarkedContentReference_MCID_Base : ISpecification<PdfDictionary>
+internal partial class APM_MarkedContentReference_MCID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MarkedContentReference_MCID";
     public static bool RuleGroup() { return false; }

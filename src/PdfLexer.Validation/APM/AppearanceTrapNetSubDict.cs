@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AppearanceTrapNetSubDict : APM_AppearanceTrapNetSubDict_Base
+internal partial class APM_AppearanceTrapNetSubDict : APM_AppearanceTrapNetSubDict__Base
 {
 }
 
-internal partial class APM_AppearanceTrapNetSubDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceTrapNetSubDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AppearanceTrapNetSubDict";
@@ -35,12 +35,12 @@ internal partial class APM_AppearanceTrapNetSubDict_Base : ISpecification<PdfDic
 /// <summary>
 /// AppearanceTrapNetSubDict_* Table 170 and Clause 12.5.5
 /// </summary>
-internal partial class APM_AppearanceTrapNetSubDict_CatchAll : APM_AppearanceTrapNetSubDict_CatchAll_Base
+internal partial class APM_AppearanceTrapNetSubDict_CatchAll : APM_AppearanceTrapNetSubDict_CatchAll__Base
 {
 }
 
 
-internal partial class APM_AppearanceTrapNetSubDict_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceTrapNetSubDict_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceTrapNetSubDict_*";
     public static bool RuleGroup() { return false; }

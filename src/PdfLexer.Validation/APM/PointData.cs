@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_PointData : APM_PointData_Base
+internal partial class APM_PointData : APM_PointData__Base
 {
 }
 
-internal partial class APM_PointData_Base : ISpecification<PdfDictionary>
+internal partial class APM_PointData__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "PointData";
@@ -48,12 +48,12 @@ internal partial class APM_PointData_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PointData_Type Table 272
 /// </summary>
-internal partial class APM_PointData_Type : APM_PointData_Type_Base
+internal partial class APM_PointData_Type : APM_PointData_Type__Base
 {
 }
 
 
-internal partial class APM_PointData_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_PointData_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PointData_Type";
     public static bool RuleGroup() { return false; }
@@ -64,13 +64,11 @@ internal partial class APM_PointData_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_PointData_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PtData")) 
         {
             ctx.Fail<APM_PointData_Type>($"Invalid value {val}, allowed are: [PtData]");
-        }
         }
         // no linked objects
         
@@ -82,12 +80,12 @@ internal partial class APM_PointData_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PointData_Subtype 
 /// </summary>
-internal partial class APM_PointData_Subtype : APM_PointData_Subtype_Base
+internal partial class APM_PointData_Subtype : APM_PointData_Subtype__Base
 {
 }
 
 
-internal partial class APM_PointData_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_PointData_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PointData_Subtype";
     public static bool RuleGroup() { return false; }
@@ -98,13 +96,11 @@ internal partial class APM_PointData_Subtype_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_PointData_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Cloud")) 
         {
             ctx.Fail<APM_PointData_Subtype>($"Invalid value {val}, allowed are: [Cloud]");
-        }
         }
         // no linked objects
         
@@ -116,12 +112,12 @@ internal partial class APM_PointData_Subtype_Base : ISpecification<PdfDictionary
 /// <summary>
 /// PointData_Names 
 /// </summary>
-internal partial class APM_PointData_Names : APM_PointData_Names_Base
+internal partial class APM_PointData_Names : APM_PointData_Names__Base
 {
 }
 
 
-internal partial class APM_PointData_Names_Base : ISpecification<PdfDictionary>
+internal partial class APM_PointData_Names__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PointData_Names";
     public static bool RuleGroup() { return false; }
@@ -143,12 +139,12 @@ internal partial class APM_PointData_Names_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PointData_XPTS 
 /// </summary>
-internal partial class APM_PointData_XPTS : APM_PointData_XPTS_Base
+internal partial class APM_PointData_XPTS : APM_PointData_XPTS__Base
 {
 }
 
 
-internal partial class APM_PointData_XPTS_Base : ISpecification<PdfDictionary>
+internal partial class APM_PointData_XPTS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PointData_XPTS";
     public static bool RuleGroup() { return false; }

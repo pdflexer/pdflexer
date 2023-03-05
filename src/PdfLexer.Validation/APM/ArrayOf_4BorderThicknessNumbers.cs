@@ -21,7 +21,7 @@ internal partial class APM_ArrayOf_4BorderThicknessNumbers : ISpecification<PdfA
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -54,13 +54,11 @@ internal partial class APM_ArrayOf_4BorderThicknessNumbers_0 : ISpecification<Pd
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     IPdfObject v = val;
                     
-                    if (!(gte(v,0))) 
+                    if (!(gte(v,v))) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderThicknessNumbers_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>=0)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -102,13 +100,11 @@ internal partial class APM_ArrayOf_4BorderThicknessNumbers_1 : ISpecification<Pd
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     IPdfObject v = val;
                     
                     if (!(gte(v,0))) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderThicknessNumbers_1>($"Invalid value {val}, allowed are: [fn:Eval(@1>=0)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -150,13 +146,11 @@ internal partial class APM_ArrayOf_4BorderThicknessNumbers_2 : ISpecification<Pd
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     IPdfObject v = val;
                     
                     if (!(gte(v,0))) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderThicknessNumbers_2>($"Invalid value {val}, allowed are: [fn:Eval(@2>=0)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -198,13 +192,11 @@ internal partial class APM_ArrayOf_4BorderThicknessNumbers_3 : ISpecification<Pd
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     IPdfObject v = val;
                     
                     if (!(gte(v,0))) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderThicknessNumbers_3>($"Invalid value {val}, allowed are: [fn:Eval(@3>=0)]");
-                    }
                     }
                     // no linked objects
                     return;

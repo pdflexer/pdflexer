@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_URLAlias : APM_URLAlias_Base
+internal partial class APM_URLAlias : APM_URLAlias__Base
 {
 }
 
-internal partial class APM_URLAlias_Base : ISpecification<PdfDictionary>
+internal partial class APM_URLAlias__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "URLAlias";
@@ -119,12 +119,12 @@ internal partial class APM_URLAlias_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// URLAlias_U Table 392
 /// </summary>
-internal partial class APM_URLAlias_U : APM_URLAlias_U_Base
+internal partial class APM_URLAlias_U : APM_URLAlias_U__Base
 {
 }
 
 
-internal partial class APM_URLAlias_U_Base : ISpecification<PdfDictionary>
+internal partial class APM_URLAlias_U__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URLAlias_U";
     public static bool RuleGroup() { return false; }
@@ -146,12 +146,12 @@ internal partial class APM_URLAlias_U_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// URLAlias_C 
 /// </summary>
-internal partial class APM_URLAlias_C : APM_URLAlias_C_Base
+internal partial class APM_URLAlias_C : APM_URLAlias_C__Base
 {
 }
 
 
-internal partial class APM_URLAlias_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_URLAlias_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URLAlias_C";
     public static bool RuleGroup() { return false; }
@@ -161,7 +161,11 @@ internal partial class APM_URLAlias_C_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_URLAlias_C>(obj, "C", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var C = obj.Get("C");
+        if (!(gte(((C as PdfArray)?.Count),1))) 
+        {
+            ctx.Fail<APM_URLAlias_C>($"Value failed special case check: fn:Eval(fn:ArrayLength(C)>=1)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfArraysURLStrings, PdfArray>(stack, val, obj);
         

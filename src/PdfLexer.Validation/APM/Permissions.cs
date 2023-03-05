@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Permissions : APM_Permissions_Base
+internal partial class APM_Permissions : APM_Permissions__Base
 {
 }
 
-internal partial class APM_Permissions_Base : ISpecification<PdfDictionary>
+internal partial class APM_Permissions__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Permissions";
@@ -99,12 +99,12 @@ internal partial class APM_Permissions_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Permissions_DocMDP Table 263 and https://github.com/pdf-association/pdf-issues/issues/218
 /// </summary>
-internal partial class APM_Permissions_DocMDP : APM_Permissions_DocMDP_Base
+internal partial class APM_Permissions_DocMDP : APM_Permissions_DocMDP__Base
 {
 }
 
 
-internal partial class APM_Permissions_DocMDP_Base : ISpecification<PdfDictionary>
+internal partial class APM_Permissions_DocMDP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Permissions_DocMDP";
     public static bool RuleGroup() { return false; }
@@ -114,7 +114,11 @@ internal partial class APM_Permissions_DocMDP_Base : ISpecification<PdfDictionar
     {
         var val = ctx.GetOptional<PdfDictionary, APM_Permissions_DocMDP>(obj, "DocMDP", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
-        // TODO special case
+        var DocMDPReference = obj.Get("DocMDP")?.Get("Reference");
+        if (!(gte(((DocMDPReference as PdfArray)?.Count),1))) 
+        {
+            ctx.Fail<APM_Permissions_DocMDP>($"Value failed special case check: fn:Eval(fn:ArrayLength(DocMDP::Reference)>=1)");
+        }
         // no value restrictions
         ctx.Run<APM_Signature, PdfDictionary>(stack, val, obj);
         
@@ -126,12 +130,12 @@ internal partial class APM_Permissions_DocMDP_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Permissions_UR3 
 /// </summary>
-internal partial class APM_Permissions_UR3 : APM_Permissions_UR3_Base
+internal partial class APM_Permissions_UR3 : APM_Permissions_UR3__Base
 {
 }
 
 
-internal partial class APM_Permissions_UR3_Base : ISpecification<PdfDictionary>
+internal partial class APM_Permissions_UR3__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Permissions_UR3";
     public static bool RuleGroup() { return false; }
@@ -141,7 +145,11 @@ internal partial class APM_Permissions_UR3_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfDictionary, APM_Permissions_UR3>(obj, "UR3", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var UR3Reference0TransformMethod = obj.Get("UR3")?.Get("Reference")?.Get("0")?.Get("TransformMethod");
+        if (!(eq(UR3Reference0TransformMethod,val))) 
+        {
+            ctx.Fail<APM_Permissions_UR3>($"Value failed special case check: fn:Eval(UR3::Reference::0::@TransformMethod==UR3)");
+        }
         // no value restrictions
         ctx.Run<APM_Signature, PdfDictionary>(stack, val, obj);
         

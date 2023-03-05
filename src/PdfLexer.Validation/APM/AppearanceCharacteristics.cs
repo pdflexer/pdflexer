@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AppearanceCharacteristics : APM_AppearanceCharacteristics_Base
+internal partial class APM_AppearanceCharacteristics : APM_AppearanceCharacteristics__Base
 {
 }
 
-internal partial class APM_AppearanceCharacteristics_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AppearanceCharacteristics";
@@ -138,12 +138,12 @@ internal partial class APM_AppearanceCharacteristics_Base : ISpecification<PdfDi
 /// <summary>
 /// AppearanceCharacteristics_R Table 192
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_R : APM_AppearanceCharacteristics_R_Base
+internal partial class APM_AppearanceCharacteristics_R : APM_AppearanceCharacteristics_R__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_R";
     public static bool RuleGroup() { return false; }
@@ -165,12 +165,12 @@ internal partial class APM_AppearanceCharacteristics_R_Base : ISpecification<Pdf
 /// <summary>
 /// AppearanceCharacteristics_BC 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_BC : APM_AppearanceCharacteristics_BC_Base
+internal partial class APM_AppearanceCharacteristics_BC : APM_AppearanceCharacteristics_BC__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_BC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_BC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_BC";
     public static bool RuleGroup() { return false; }
@@ -192,12 +192,12 @@ internal partial class APM_AppearanceCharacteristics_BC_Base : ISpecification<Pd
 /// <summary>
 /// AppearanceCharacteristics_BG 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_BG : APM_AppearanceCharacteristics_BG_Base
+internal partial class APM_AppearanceCharacteristics_BG : APM_AppearanceCharacteristics_BG__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_BG_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_BG__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_BG";
     public static bool RuleGroup() { return false; }
@@ -219,12 +219,12 @@ internal partial class APM_AppearanceCharacteristics_BG_Base : ISpecification<Pd
 /// <summary>
 /// AppearanceCharacteristics_CA 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_CA : APM_AppearanceCharacteristics_CA_Base
+internal partial class APM_AppearanceCharacteristics_CA : APM_AppearanceCharacteristics_CA__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_CA";
     public static bool RuleGroup() { return false; }
@@ -246,12 +246,12 @@ internal partial class APM_AppearanceCharacteristics_CA_Base : ISpecification<Pd
 /// <summary>
 /// AppearanceCharacteristics_RC 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_RC : APM_AppearanceCharacteristics_RC_Base
+internal partial class APM_AppearanceCharacteristics_RC : APM_AppearanceCharacteristics_RC__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_RC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_RC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_RC";
     public static bool RuleGroup() { return false; }
@@ -273,12 +273,12 @@ internal partial class APM_AppearanceCharacteristics_RC_Base : ISpecification<Pd
 /// <summary>
 /// AppearanceCharacteristics_AC 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_AC : APM_AppearanceCharacteristics_AC_Base
+internal partial class APM_AppearanceCharacteristics_AC : APM_AppearanceCharacteristics_AC__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_AC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_AC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_AC";
     public static bool RuleGroup() { return false; }
@@ -300,12 +300,12 @@ internal partial class APM_AppearanceCharacteristics_AC_Base : ISpecification<Pd
 /// <summary>
 /// AppearanceCharacteristics_I 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_I : APM_AppearanceCharacteristics_I_Base
+internal partial class APM_AppearanceCharacteristics_I : APM_AppearanceCharacteristics_I__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_I_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_I__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_I";
     public static bool RuleGroup() { return false; }
@@ -336,12 +336,12 @@ internal partial class APM_AppearanceCharacteristics_I_Base : ISpecification<Pdf
 /// <summary>
 /// AppearanceCharacteristics_RI 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_RI : APM_AppearanceCharacteristics_RI_Base
+internal partial class APM_AppearanceCharacteristics_RI : APM_AppearanceCharacteristics_RI__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_RI_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_RI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_RI";
     public static bool RuleGroup() { return false; }
@@ -372,12 +372,12 @@ internal partial class APM_AppearanceCharacteristics_RI_Base : ISpecification<Pd
 /// <summary>
 /// AppearanceCharacteristics_IX 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_IX : APM_AppearanceCharacteristics_IX_Base
+internal partial class APM_AppearanceCharacteristics_IX : APM_AppearanceCharacteristics_IX__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_IX_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_IX__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_IX";
     public static bool RuleGroup() { return false; }
@@ -408,12 +408,12 @@ internal partial class APM_AppearanceCharacteristics_IX_Base : ISpecification<Pd
 /// <summary>
 /// AppearanceCharacteristics_IF 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_IF : APM_AppearanceCharacteristics_IF_Base
+internal partial class APM_AppearanceCharacteristics_IF : APM_AppearanceCharacteristics_IF__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_IF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_IF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_IF";
     public static bool RuleGroup() { return false; }
@@ -435,12 +435,12 @@ internal partial class APM_AppearanceCharacteristics_IF_Base : ISpecification<Pd
 /// <summary>
 /// AppearanceCharacteristics_TP 
 /// </summary>
-internal partial class APM_AppearanceCharacteristics_TP : APM_AppearanceCharacteristics_TP_Base
+internal partial class APM_AppearanceCharacteristics_TP : APM_AppearanceCharacteristics_TP__Base
 {
 }
 
 
-internal partial class APM_AppearanceCharacteristics_TP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearanceCharacteristics_TP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearanceCharacteristics_TP";
     public static bool RuleGroup() { return false; }
@@ -451,13 +451,11 @@ internal partial class APM_AppearanceCharacteristics_TP_Base : ISpecification<Pd
         var val = ctx.GetOptional<PdfIntNumber, APM_AppearanceCharacteristics_TP>(obj, "TP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2 || val == 3 || val == 4 || val == 5 || val == 6)) 
         {
             ctx.Fail<APM_AppearanceCharacteristics_TP>($"Invalid value {val}, allowed are: [0,1,2,3,4,5,6]");
-        }
         }
         // no linked objects
         

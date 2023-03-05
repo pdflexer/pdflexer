@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentLanguage : APM_OptContentLanguage_Base
+internal partial class APM_OptContentLanguage : APM_OptContentLanguage__Base
 {
 }
 
-internal partial class APM_OptContentLanguage_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentLanguage__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentLanguage";
@@ -99,12 +99,12 @@ internal partial class APM_OptContentLanguage_Base : ISpecification<PdfDictionar
 /// <summary>
 /// OptContentLanguage_Lang Table 100, Language cell
 /// </summary>
-internal partial class APM_OptContentLanguage_Lang : APM_OptContentLanguage_Lang_Base
+internal partial class APM_OptContentLanguage_Lang : APM_OptContentLanguage_Lang__Base
 {
 }
 
 
-internal partial class APM_OptContentLanguage_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentLanguage_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentLanguage_Lang";
     public static bool RuleGroup() { return false; }
@@ -126,12 +126,12 @@ internal partial class APM_OptContentLanguage_Lang_Base : ISpecification<PdfDict
 /// <summary>
 /// OptContentLanguage_Preferred 
 /// </summary>
-internal partial class APM_OptContentLanguage_Preferred : APM_OptContentLanguage_Preferred_Base
+internal partial class APM_OptContentLanguage_Preferred : APM_OptContentLanguage_Preferred__Base
 {
 }
 
 
-internal partial class APM_OptContentLanguage_Preferred_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentLanguage_Preferred__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentLanguage_Preferred";
     public static bool RuleGroup() { return false; }
@@ -142,13 +142,11 @@ internal partial class APM_OptContentLanguage_Preferred_Base : ISpecification<Pd
         var val = ctx.GetOptional<PdfName, APM_OptContentLanguage_Preferred>(obj, "Preferred", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ON" || val == "OFF")) 
         {
             ctx.Fail<APM_OptContentLanguage_Preferred>($"Invalid value {val}, allowed are: [ON,OFF]");
-        }
         }
         // no linked objects
         

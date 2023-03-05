@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_InteractiveForm : APM_InteractiveForm_Base
+internal partial class APM_InteractiveForm : APM_InteractiveForm__Base
 {
 }
 
-internal partial class APM_InteractiveForm_Base : ISpecification<PdfDictionary>
+internal partial class APM_InteractiveForm__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "InteractiveForm";
@@ -135,12 +135,12 @@ internal partial class APM_InteractiveForm_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// InteractiveForm_Fields Table 224
 /// </summary>
-internal partial class APM_InteractiveForm_Fields : APM_InteractiveForm_Fields_Base
+internal partial class APM_InteractiveForm_Fields : APM_InteractiveForm_Fields__Base
 {
 }
 
 
-internal partial class APM_InteractiveForm_Fields_Base : ISpecification<PdfDictionary>
+internal partial class APM_InteractiveForm_Fields__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "InteractiveForm_Fields";
     public static bool RuleGroup() { return false; }
@@ -162,12 +162,12 @@ internal partial class APM_InteractiveForm_Fields_Base : ISpecification<PdfDicti
 /// <summary>
 /// InteractiveForm_NeedAppearances 
 /// </summary>
-internal partial class APM_InteractiveForm_NeedAppearances : APM_InteractiveForm_NeedAppearances_Base
+internal partial class APM_InteractiveForm_NeedAppearances : APM_InteractiveForm_NeedAppearances__Base
 {
 }
 
 
-internal partial class APM_InteractiveForm_NeedAppearances_Base : ISpecification<PdfDictionary>
+internal partial class APM_InteractiveForm_NeedAppearances__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "InteractiveForm_NeedAppearances";
     public static bool RuleGroup() { return false; }
@@ -189,12 +189,12 @@ internal partial class APM_InteractiveForm_NeedAppearances_Base : ISpecification
 /// <summary>
 /// InteractiveForm_SigFlags Table 225
 /// </summary>
-internal partial class APM_InteractiveForm_SigFlags : APM_InteractiveForm_SigFlags_Base
+internal partial class APM_InteractiveForm_SigFlags : APM_InteractiveForm_SigFlags__Base
 {
 }
 
 
-internal partial class APM_InteractiveForm_SigFlags_Base : ISpecification<PdfDictionary>
+internal partial class APM_InteractiveForm_SigFlags__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "InteractiveForm_SigFlags";
     public static bool RuleGroup() { return false; }
@@ -204,7 +204,11 @@ internal partial class APM_InteractiveForm_SigFlags_Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_InteractiveForm_SigFlags>(obj, "SigFlags", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_InteractiveForm_SigFlags>($"Value failed special case check: fn:Eval(fn:BitsClear(3,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -216,12 +220,12 @@ internal partial class APM_InteractiveForm_SigFlags_Base : ISpecification<PdfDic
 /// <summary>
 /// InteractiveForm_CO 
 /// </summary>
-internal partial class APM_InteractiveForm_CO : APM_InteractiveForm_CO_Base
+internal partial class APM_InteractiveForm_CO : APM_InteractiveForm_CO__Base
 {
 }
 
 
-internal partial class APM_InteractiveForm_CO_Base : ISpecification<PdfDictionary>
+internal partial class APM_InteractiveForm_CO__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "InteractiveForm_CO";
     public static bool RuleGroup() { return false; }
@@ -243,12 +247,12 @@ internal partial class APM_InteractiveForm_CO_Base : ISpecification<PdfDictionar
 /// <summary>
 /// InteractiveForm_DR 
 /// </summary>
-internal partial class APM_InteractiveForm_DR : APM_InteractiveForm_DR_Base
+internal partial class APM_InteractiveForm_DR : APM_InteractiveForm_DR__Base
 {
 }
 
 
-internal partial class APM_InteractiveForm_DR_Base : ISpecification<PdfDictionary>
+internal partial class APM_InteractiveForm_DR__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "InteractiveForm_DR";
     public static bool RuleGroup() { return false; }
@@ -270,12 +274,12 @@ internal partial class APM_InteractiveForm_DR_Base : ISpecification<PdfDictionar
 /// <summary>
 /// InteractiveForm_DA 
 /// </summary>
-internal partial class APM_InteractiveForm_DA : APM_InteractiveForm_DA_Base
+internal partial class APM_InteractiveForm_DA : APM_InteractiveForm_DA__Base
 {
 }
 
 
-internal partial class APM_InteractiveForm_DA_Base : ISpecification<PdfDictionary>
+internal partial class APM_InteractiveForm_DA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "InteractiveForm_DA";
     public static bool RuleGroup() { return false; }
@@ -297,12 +301,12 @@ internal partial class APM_InteractiveForm_DA_Base : ISpecification<PdfDictionar
 /// <summary>
 /// InteractiveForm_Q 
 /// </summary>
-internal partial class APM_InteractiveForm_Q : APM_InteractiveForm_Q_Base
+internal partial class APM_InteractiveForm_Q : APM_InteractiveForm_Q__Base
 {
 }
 
 
-internal partial class APM_InteractiveForm_Q_Base : ISpecification<PdfDictionary>
+internal partial class APM_InteractiveForm_Q__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "InteractiveForm_Q";
     public static bool RuleGroup() { return false; }
@@ -313,13 +317,11 @@ internal partial class APM_InteractiveForm_Q_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfIntNumber, APM_InteractiveForm_Q>(obj, "Q", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_InteractiveForm_Q>($"Invalid value {val}, allowed are: [0,1,2]");
-        }
         }
         // no linked objects
         
@@ -331,12 +333,12 @@ internal partial class APM_InteractiveForm_Q_Base : ISpecification<PdfDictionary
 /// <summary>
 /// InteractiveForm_XFA 
 /// </summary>
-internal partial class APM_InteractiveForm_XFA : APM_InteractiveForm_XFA_Base
+internal partial class APM_InteractiveForm_XFA : APM_InteractiveForm_XFA__Base
 {
 }
 
 
-internal partial class APM_InteractiveForm_XFA_Base : ISpecification<PdfDictionary>
+internal partial class APM_InteractiveForm_XFA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "InteractiveForm_XFA";
     public static bool RuleGroup() { return false; }
@@ -348,7 +350,7 @@ internal partial class APM_InteractiveForm_XFA_Base : ISpecification<PdfDictiona
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.6,array)
+            // TODO funcs: fn:SinceVersion(1.6,array)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;

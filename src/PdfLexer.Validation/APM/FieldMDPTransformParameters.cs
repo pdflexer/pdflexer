@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FieldMDPTransformParameters : APM_FieldMDPTransformParameters_Base
+internal partial class APM_FieldMDPTransformParameters : APM_FieldMDPTransformParameters__Base
 {
 }
 
-internal partial class APM_FieldMDPTransformParameters_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldMDPTransformParameters__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FieldMDPTransformParameters";
@@ -107,12 +107,12 @@ internal partial class APM_FieldMDPTransformParameters_Base : ISpecification<Pdf
 /// <summary>
 /// FieldMDPTransformParameters_Type Table 259
 /// </summary>
-internal partial class APM_FieldMDPTransformParameters_Type : APM_FieldMDPTransformParameters_Type_Base
+internal partial class APM_FieldMDPTransformParameters_Type : APM_FieldMDPTransformParameters_Type__Base
 {
 }
 
 
-internal partial class APM_FieldMDPTransformParameters_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldMDPTransformParameters_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldMDPTransformParameters_Type";
     public static bool RuleGroup() { return false; }
@@ -123,13 +123,11 @@ internal partial class APM_FieldMDPTransformParameters_Type_Base : ISpecificatio
         var val = ctx.GetOptional<PdfName, APM_FieldMDPTransformParameters_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "TransformParams")) 
         {
             ctx.Fail<APM_FieldMDPTransformParameters_Type>($"Invalid value {val}, allowed are: [TransformParams]");
-        }
         }
         // no linked objects
         
@@ -141,12 +139,12 @@ internal partial class APM_FieldMDPTransformParameters_Type_Base : ISpecificatio
 /// <summary>
 /// FieldMDPTransformParameters_Action 
 /// </summary>
-internal partial class APM_FieldMDPTransformParameters_Action : APM_FieldMDPTransformParameters_Action_Base
+internal partial class APM_FieldMDPTransformParameters_Action : APM_FieldMDPTransformParameters_Action__Base
 {
 }
 
 
-internal partial class APM_FieldMDPTransformParameters_Action_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldMDPTransformParameters_Action__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldMDPTransformParameters_Action";
     public static bool RuleGroup() { return false; }
@@ -157,13 +155,11 @@ internal partial class APM_FieldMDPTransformParameters_Action_Base : ISpecificat
         var val = ctx.GetOptional<PdfName, APM_FieldMDPTransformParameters_Action>(obj, "Action", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "All" || val == "Include" || val == "Exclude")) 
         {
             ctx.Fail<APM_FieldMDPTransformParameters_Action>($"Invalid value {val}, allowed are: [All,Include,Exclude]");
-        }
         }
         // no linked objects
         
@@ -175,12 +171,12 @@ internal partial class APM_FieldMDPTransformParameters_Action_Base : ISpecificat
 /// <summary>
 /// FieldMDPTransformParameters_Fields 
 /// </summary>
-internal partial class APM_FieldMDPTransformParameters_Fields : APM_FieldMDPTransformParameters_Fields_Base
+internal partial class APM_FieldMDPTransformParameters_Fields : APM_FieldMDPTransformParameters_Fields__Base
 {
 }
 
 
-internal partial class APM_FieldMDPTransformParameters_Fields_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldMDPTransformParameters_Fields__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldMDPTransformParameters_Fields";
     public static bool RuleGroup() { return false; }
@@ -188,15 +184,12 @@ internal partial class APM_FieldMDPTransformParameters_Fields_Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            var Action = obj.Get("Action");
-            if ((eq(Action,"Include")||eq(Action,"Exclude"))) {
-                val = ctx.GetRequired<PdfArray, APM_FieldMDPTransformParameters_Fields>(obj, "Fields", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_FieldMDPTransformParameters_Fields>(obj, "Fields", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Action = obj.Get("Action");
+        var val = ctx.GetOptional<PdfArray, APM_FieldMDPTransformParameters_Fields>(obj, "Fields", IndirectRequirement.Either);
+        if (((eq(Action,"Include")||eq(Action,"Exclude"))) && val == null) {
+            ctx.Fail<APM_FieldMDPTransformParameters_Fields>("Fields is required when 'fn:IsRequired((@Action==Include) || (@Action==Exclude))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -210,12 +203,12 @@ internal partial class APM_FieldMDPTransformParameters_Fields_Base : ISpecificat
 /// <summary>
 /// FieldMDPTransformParameters_V 
 /// </summary>
-internal partial class APM_FieldMDPTransformParameters_V : APM_FieldMDPTransformParameters_V_Base
+internal partial class APM_FieldMDPTransformParameters_V : APM_FieldMDPTransformParameters_V__Base
 {
 }
 
 
-internal partial class APM_FieldMDPTransformParameters_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldMDPTransformParameters_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldMDPTransformParameters_V";
     public static bool RuleGroup() { return false; }
@@ -226,13 +219,11 @@ internal partial class APM_FieldMDPTransformParameters_V_Base : ISpecification<P
         var val = ctx.GetRequired<PdfName, APM_FieldMDPTransformParameters_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "1.2")) 
         {
             ctx.Fail<APM_FieldMDPTransformParameters_V>($"Invalid value {val}, allowed are: [1.2]");
-        }
         }
         // no linked objects
         

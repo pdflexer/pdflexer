@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_TimeStampDict : APM_TimeStampDict_Base
+internal partial class APM_TimeStampDict : APM_TimeStampDict__Base
 {
 }
 
-internal partial class APM_TimeStampDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_TimeStampDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "TimeStampDict";
@@ -89,12 +89,12 @@ internal partial class APM_TimeStampDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// TimeStampDict_URL Table 237, TimeStamp cell
 /// </summary>
-internal partial class APM_TimeStampDict_URL : APM_TimeStampDict_URL_Base
+internal partial class APM_TimeStampDict_URL : APM_TimeStampDict_URL__Base
 {
 }
 
 
-internal partial class APM_TimeStampDict_URL_Base : ISpecification<PdfDictionary>
+internal partial class APM_TimeStampDict_URL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "TimeStampDict_URL";
     public static bool RuleGroup() { return false; }
@@ -116,12 +116,12 @@ internal partial class APM_TimeStampDict_URL_Base : ISpecification<PdfDictionary
 /// <summary>
 /// TimeStampDict_Ff 
 /// </summary>
-internal partial class APM_TimeStampDict_Ff : APM_TimeStampDict_Ff_Base
+internal partial class APM_TimeStampDict_Ff : APM_TimeStampDict_Ff__Base
 {
 }
 
 
-internal partial class APM_TimeStampDict_Ff_Base : ISpecification<PdfDictionary>
+internal partial class APM_TimeStampDict_Ff__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "TimeStampDict_Ff";
     public static bool RuleGroup() { return false; }
@@ -132,13 +132,11 @@ internal partial class APM_TimeStampDict_Ff_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfIntNumber, APM_TimeStampDict_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1)) 
         {
             ctx.Fail<APM_TimeStampDict_Ff>($"Invalid value {val}, allowed are: [0,1]");
-        }
         }
         // no linked objects
         

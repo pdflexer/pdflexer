@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DStream : APM_3DStream_Base
+internal partial class APM_3DStream : APM_3DStream__Base
 {
 }
 
-internal partial class APM_3DStream_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DStream";
@@ -108,12 +108,12 @@ internal partial class APM_3DStream_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_Type Table 5 and Table 311
 /// </summary>
-internal partial class APM_3DStream_Type : APM_3DStream_Type_Base
+internal partial class APM_3DStream_Type : APM_3DStream_Type__Base
 {
 }
 
 
-internal partial class APM_3DStream_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_Type";
     public static bool RuleGroup() { return false; }
@@ -124,13 +124,11 @@ internal partial class APM_3DStream_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DStream_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3D")) 
         {
             ctx.Fail<APM_3DStream_Type>($"Invalid value {val}, allowed are: [3D]");
-        }
         }
         // no linked objects
         
@@ -142,12 +140,12 @@ internal partial class APM_3DStream_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_Subtype 
 /// </summary>
-internal partial class APM_3DStream_Subtype : APM_3DStream_Subtype_Base
+internal partial class APM_3DStream_Subtype : APM_3DStream_Subtype__Base
 {
 }
 
 
-internal partial class APM_3DStream_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_Subtype";
     public static bool RuleGroup() { return false; }
@@ -158,13 +156,11 @@ internal partial class APM_3DStream_Subtype_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_3DStream_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(val == "U3D" || val == "PRC" || ctx.Version >= 2.0m && (ctx.Extensions.Contains("ISO_TS_24064") && val == "STEP"))) 
+        if (!(val == "U3D" || val == "PRC" || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && (ctx.Extensions.Contains("ISO_TS_24064") && val == "STEP"))))) 
         {
             ctx.Fail<APM_3DStream_Subtype>($"Invalid value {val}, allowed are: [U3D,PRC,fn:SinceVersion(2.0,fn:Extension(ISO_TS_24064,STEP))]");
-        }
         }
         // no linked objects
         
@@ -176,12 +172,12 @@ internal partial class APM_3DStream_Subtype_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_VA 
 /// </summary>
-internal partial class APM_3DStream_VA : APM_3DStream_VA_Base
+internal partial class APM_3DStream_VA : APM_3DStream_VA__Base
 {
 }
 
 
-internal partial class APM_3DStream_VA_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_VA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_VA";
     public static bool RuleGroup() { return false; }
@@ -203,12 +199,12 @@ internal partial class APM_3DStream_VA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_DV 
 /// </summary>
-internal partial class APM_3DStream_DV : APM_3DStream_DV_Base
+internal partial class APM_3DStream_DV : APM_3DStream_DV__Base
 {
 }
 
 
-internal partial class APM_3DStream_DV_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_DV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_DV";
     public static bool RuleGroup() { return false; }
@@ -234,14 +230,12 @@ internal partial class APM_3DStream_DV_Base : ISpecification<PdfDictionary>
                     var val =  (PdfIntNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
-                    IPdfObject @DV = val;
+                    var DV = obj.Get("DV");
                     var VA = obj.Get("VA");
-                    if (!((gte(@DV,0)&&lt(@DV,((VA as PdfArray)?.Count))))) 
+                    if (!((gte(DV,0)&&lt(DV,((VA as PdfArray)?.Count))))) 
                     {
                         ctx.Fail<APM_3DStream_DV>($"Invalid value {val}, allowed are: [fn:Eval((@DV>=0) && (@DV<fn:ArrayLength(VA)))]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -251,13 +245,11 @@ internal partial class APM_3DStream_DV_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "F" || val == "L")) 
                     {
                         ctx.Fail<APM_3DStream_DV>($"Invalid value {val}, allowed are: [F,L]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -284,12 +276,12 @@ internal partial class APM_3DStream_DV_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_Resources 
 /// </summary>
-internal partial class APM_3DStream_Resources : APM_3DStream_Resources_Base
+internal partial class APM_3DStream_Resources : APM_3DStream_Resources__Base
 {
 }
 
 
-internal partial class APM_3DStream_Resources_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_Resources__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_Resources";
     public static bool RuleGroup() { return false; }
@@ -311,12 +303,12 @@ internal partial class APM_3DStream_Resources_Base : ISpecification<PdfDictionar
 /// <summary>
 /// 3DStream_OnInstantiate 
 /// </summary>
-internal partial class APM_3DStream_OnInstantiate : APM_3DStream_OnInstantiate_Base
+internal partial class APM_3DStream_OnInstantiate : APM_3DStream_OnInstantiate__Base
 {
 }
 
 
-internal partial class APM_3DStream_OnInstantiate_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_OnInstantiate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_OnInstantiate";
     public static bool RuleGroup() { return false; }
@@ -338,12 +330,12 @@ internal partial class APM_3DStream_OnInstantiate_Base : ISpecification<PdfDicti
 /// <summary>
 /// 3DStream_AN 
 /// </summary>
-internal partial class APM_3DStream_AN : APM_3DStream_AN_Base
+internal partial class APM_3DStream_AN : APM_3DStream_AN__Base
 {
 }
 
 
-internal partial class APM_3DStream_AN_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_AN__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_AN";
     public static bool RuleGroup() { return false; }
@@ -365,12 +357,12 @@ internal partial class APM_3DStream_AN_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_ColorSpace 
 /// </summary>
-internal partial class APM_3DStream_ColorSpace : APM_3DStream_ColorSpace_Base
+internal partial class APM_3DStream_ColorSpace : APM_3DStream_ColorSpace__Base
 {
 }
 
 
-internal partial class APM_3DStream_ColorSpace_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_ColorSpace__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_ColorSpace";
     public static bool RuleGroup() { return false; }
@@ -405,13 +397,11 @@ internal partial class APM_3DStream_ColorSpace_Base : ISpecification<PdfDictiona
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceRGB")) 
                     {
                         ctx.Fail<APM_3DStream_ColorSpace>($"Invalid value {val}, allowed are: [DeviceRGB]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -429,12 +419,12 @@ internal partial class APM_3DStream_ColorSpace_Base : ISpecification<PdfDictiona
 /// <summary>
 /// 3DStream_Length 
 /// </summary>
-internal partial class APM_3DStream_Length : APM_3DStream_Length_Base
+internal partial class APM_3DStream_Length : APM_3DStream_Length__Base
 {
 }
 
 
-internal partial class APM_3DStream_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_Length";
     public static bool RuleGroup() { return false; }
@@ -456,12 +446,12 @@ internal partial class APM_3DStream_Length_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_Filter 
 /// </summary>
-internal partial class APM_3DStream_Filter : APM_3DStream_Filter_Base
+internal partial class APM_3DStream_Filter : APM_3DStream_Filter__Base
 {
 }
 
 
-internal partial class APM_3DStream_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_Filter";
     public static bool RuleGroup() { return false; }
@@ -477,7 +467,12 @@ internal partial class APM_3DStream_Filter_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_3DStream_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -487,13 +482,11 @@ internal partial class APM_3DStream_Filter_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "Crypt")) 
                     {
                         ctx.Fail<APM_3DStream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,Crypt]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -511,12 +504,12 @@ internal partial class APM_3DStream_Filter_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_DecodeParms 
 /// </summary>
-internal partial class APM_3DStream_DecodeParms : APM_3DStream_DecodeParms_Base
+internal partial class APM_3DStream_DecodeParms : APM_3DStream_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_3DStream_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -532,7 +525,12 @@ internal partial class APM_3DStream_DecodeParms_Base : ISpecification<PdfDiction
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_3DStream_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -571,12 +569,12 @@ internal partial class APM_3DStream_DecodeParms_Base : ISpecification<PdfDiction
 /// <summary>
 /// 3DStream_F 
 /// </summary>
-internal partial class APM_3DStream_F : APM_3DStream_F_Base
+internal partial class APM_3DStream_F : APM_3DStream_F__Base
 {
 }
 
 
-internal partial class APM_3DStream_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_F";
     public static bool RuleGroup() { return false; }
@@ -619,12 +617,12 @@ internal partial class APM_3DStream_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_FFilter 
 /// </summary>
-internal partial class APM_3DStream_FFilter : APM_3DStream_FFilter_Base
+internal partial class APM_3DStream_FFilter : APM_3DStream_FFilter__Base
 {
 }
 
 
-internal partial class APM_3DStream_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_FFilter";
     public static bool RuleGroup() { return false; }
@@ -640,7 +638,12 @@ internal partial class APM_3DStream_FFilter_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_3DStream_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -650,13 +653,11 @@ internal partial class APM_3DStream_FFilter_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "Crypt")) 
                     {
                         ctx.Fail<APM_3DStream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,Crypt]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -674,12 +675,12 @@ internal partial class APM_3DStream_FFilter_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DStream_FDecodeParms 
 /// </summary>
-internal partial class APM_3DStream_FDecodeParms : APM_3DStream_FDecodeParms_Base
+internal partial class APM_3DStream_FDecodeParms : APM_3DStream_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_3DStream_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -695,7 +696,12 @@ internal partial class APM_3DStream_FDecodeParms_Base : ISpecification<PdfDictio
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_3DStream_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -734,12 +740,12 @@ internal partial class APM_3DStream_FDecodeParms_Base : ISpecification<PdfDictio
 /// <summary>
 /// 3DStream_DL 
 /// </summary>
-internal partial class APM_3DStream_DL : APM_3DStream_DL_Base
+internal partial class APM_3DStream_DL : APM_3DStream_DL__Base
 {
 }
 
 
-internal partial class APM_3DStream_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DStream_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DStream_DL";
     public static bool RuleGroup() { return false; }
@@ -749,7 +755,11 @@ internal partial class APM_3DStream_DL_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_3DStream_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
+        {
+            ctx.Fail<APM_3DStream_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         // no value restrictions
         // no linked objects
         

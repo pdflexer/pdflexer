@@ -20,7 +20,7 @@ internal partial class APM_Dest1StructArray : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -52,7 +52,7 @@ internal partial class APM_Dest1StructArray_0 : ISpecification<PdfArray>
                 {
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    // TODO special case: fn:InKeyMap(trailer::Catalog::Dests)
                     // no value restrictions
                     // no linked objects
                     return;
@@ -61,7 +61,7 @@ internal partial class APM_Dest1StructArray_0 : ISpecification<PdfArray>
                 {
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    // TODO special case: fn:InNameTree(trailer::Catalog::Names::Dests)
                     // no value restrictions
                     // no linked objects
                     return;
@@ -88,13 +88,11 @@ internal partial class APM_Dest1StructArray_1 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_Dest1StructArray_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "FitH" || val == "FitV" || val == "FitBH" || val == "FitBV")) 
         {
             ctx.Fail<APM_Dest1StructArray_1>($"Invalid value {val}, allowed are: [FitH,FitV,FitBH,FitBV]");
-        }
         }
         // no linked objects
         

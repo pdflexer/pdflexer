@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionSetState : APM_ActionSetState_Base
+internal partial class APM_ActionSetState : APM_ActionSetState__Base
 {
 }
 
-internal partial class APM_ActionSetState_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetState__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionSetState";
@@ -48,12 +48,12 @@ internal partial class APM_ActionSetState_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionSetState_Type Table 196 and Adobe PDF 1.2
 /// </summary>
-internal partial class APM_ActionSetState_Type : APM_ActionSetState_Type_Base
+internal partial class APM_ActionSetState_Type : APM_ActionSetState_Type__Base
 {
 }
 
 
-internal partial class APM_ActionSetState_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetState_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSetState_Type";
     public static bool RuleGroup() { return false; }
@@ -64,13 +64,11 @@ internal partial class APM_ActionSetState_Type_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_ActionSetState_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionSetState_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -82,12 +80,12 @@ internal partial class APM_ActionSetState_Type_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ActionSetState_S only documented in Adobe PDF 1.2
 /// </summary>
-internal partial class APM_ActionSetState_S : APM_ActionSetState_S_Base
+internal partial class APM_ActionSetState_S : APM_ActionSetState_S__Base
 {
 }
 
 
-internal partial class APM_ActionSetState_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetState_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSetState_S";
     public static bool RuleGroup() { return false; }
@@ -98,13 +96,11 @@ internal partial class APM_ActionSetState_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_ActionSetState_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SetState")) 
         {
             ctx.Fail<APM_ActionSetState_S>($"Invalid value {val}, allowed are: [SetState]");
-        }
         }
         // no linked objects
         
@@ -116,12 +112,12 @@ internal partial class APM_ActionSetState_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionSetState_T only documented in Adobe PDF 1.2 so only a few annots
 /// </summary>
-internal partial class APM_ActionSetState_T : APM_ActionSetState_T_Base
+internal partial class APM_ActionSetState_T : APM_ActionSetState_T__Base
 {
 }
 
 
-internal partial class APM_ActionSetState_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetState_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSetState_T";
     public static bool RuleGroup() { return false; }
@@ -182,12 +178,12 @@ internal partial class APM_ActionSetState_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionSetState_AS only documented in Adobe PDF 1.2
 /// </summary>
-internal partial class APM_ActionSetState_AS : APM_ActionSetState_AS_Base
+internal partial class APM_ActionSetState_AS : APM_ActionSetState_AS__Base
 {
 }
 
 
-internal partial class APM_ActionSetState_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSetState_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSetState_AS";
     public static bool RuleGroup() { return false; }

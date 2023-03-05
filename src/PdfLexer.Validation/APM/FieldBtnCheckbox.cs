@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FieldBtnCheckbox : APM_FieldBtnCheckbox_Base
+internal partial class APM_FieldBtnCheckbox : APM_FieldBtnCheckbox__Base
 {
 }
 
-internal partial class APM_FieldBtnCheckbox_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FieldBtnCheckbox";
@@ -142,12 +142,12 @@ internal partial class APM_FieldBtnCheckbox_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnCheckbox_FT Table 226
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_FT : APM_FieldBtnCheckbox_FT_Base
+internal partial class APM_FieldBtnCheckbox_FT : APM_FieldBtnCheckbox_FT__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_FT_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_FT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_FT";
     public static bool RuleGroup() { return false; }
@@ -158,13 +158,11 @@ internal partial class APM_FieldBtnCheckbox_FT_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_FieldBtnCheckbox_FT>(obj, "FT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Btn")) 
         {
             ctx.Fail<APM_FieldBtnCheckbox_FT>($"Invalid value {val}, allowed are: [Btn]");
-        }
         }
         // no linked objects
         
@@ -176,12 +174,12 @@ internal partial class APM_FieldBtnCheckbox_FT_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FieldBtnCheckbox_Parent 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_Parent : APM_FieldBtnCheckbox_Parent_Base
+internal partial class APM_FieldBtnCheckbox_Parent : APM_FieldBtnCheckbox_Parent__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_Parent";
     public static bool RuleGroup() { return false; }
@@ -211,6 +209,9 @@ internal partial class APM_FieldBtnCheckbox_Parent_Base : ISpecification<PdfDict
         } else if (APM_Field.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_Field, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_FieldSig, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_FieldBtnCheckbox_Parent>("Parent did not match any allowable types: '[FieldTx,FieldBtnPush,FieldBtnCheckbox,FieldBtnRadio,FieldChoice,fn:SinceVersion(1.3,FieldSig),Field]'");
@@ -224,12 +225,12 @@ internal partial class APM_FieldBtnCheckbox_Parent_Base : ISpecification<PdfDict
 /// <summary>
 /// FieldBtnCheckbox_Kids 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_Kids : APM_FieldBtnCheckbox_Kids_Base
+internal partial class APM_FieldBtnCheckbox_Kids : APM_FieldBtnCheckbox_Kids__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_Kids_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_Kids__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_Kids";
     public static bool RuleGroup() { return false; }
@@ -251,12 +252,12 @@ internal partial class APM_FieldBtnCheckbox_Kids_Base : ISpecification<PdfDictio
 /// <summary>
 /// FieldBtnCheckbox_T 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_T : APM_FieldBtnCheckbox_T_Base
+internal partial class APM_FieldBtnCheckbox_T : APM_FieldBtnCheckbox_T__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_T";
     public static bool RuleGroup() { return false; }
@@ -278,12 +279,12 @@ internal partial class APM_FieldBtnCheckbox_T_Base : ISpecification<PdfDictionar
 /// <summary>
 /// FieldBtnCheckbox_TU 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_TU : APM_FieldBtnCheckbox_TU_Base
+internal partial class APM_FieldBtnCheckbox_TU : APM_FieldBtnCheckbox_TU__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_TU_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_TU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_TU";
     public static bool RuleGroup() { return false; }
@@ -305,12 +306,12 @@ internal partial class APM_FieldBtnCheckbox_TU_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FieldBtnCheckbox_TM 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_TM : APM_FieldBtnCheckbox_TM_Base
+internal partial class APM_FieldBtnCheckbox_TM : APM_FieldBtnCheckbox_TM__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_TM_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_TM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_TM";
     public static bool RuleGroup() { return false; }
@@ -332,12 +333,12 @@ internal partial class APM_FieldBtnCheckbox_TM_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FieldBtnCheckbox_Ff Table 227 and Table 229
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_Ff : APM_FieldBtnCheckbox_Ff_Base
+internal partial class APM_FieldBtnCheckbox_Ff : APM_FieldBtnCheckbox_Ff__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_Ff_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_Ff__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_Ff";
     public static bool RuleGroup() { return false; }
@@ -347,7 +348,11 @@ internal partial class APM_FieldBtnCheckbox_Ff_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldBtnCheckbox_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj)&&BitsClear(obj)&&BitsClear(obj))) 
+        {
+            ctx.Fail<APM_FieldBtnCheckbox_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(4,14) && fn:BitsClear(16,25) && fn:BitsClear(27,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -359,12 +364,12 @@ internal partial class APM_FieldBtnCheckbox_Ff_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FieldBtnCheckbox_AA 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_AA : APM_FieldBtnCheckbox_AA_Base
+internal partial class APM_FieldBtnCheckbox_AA : APM_FieldBtnCheckbox_AA__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_AA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_AA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_AA";
     public static bool RuleGroup() { return false; }
@@ -386,12 +391,12 @@ internal partial class APM_FieldBtnCheckbox_AA_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FieldBtnCheckbox_DA 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_DA : APM_FieldBtnCheckbox_DA_Base
+internal partial class APM_FieldBtnCheckbox_DA : APM_FieldBtnCheckbox_DA__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_DA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_DA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_DA";
     public static bool RuleGroup() { return false; }
@@ -413,12 +418,12 @@ internal partial class APM_FieldBtnCheckbox_DA_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FieldBtnCheckbox_Q 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_Q : APM_FieldBtnCheckbox_Q_Base
+internal partial class APM_FieldBtnCheckbox_Q : APM_FieldBtnCheckbox_Q__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_Q_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_Q__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_Q";
     public static bool RuleGroup() { return false; }
@@ -429,13 +434,11 @@ internal partial class APM_FieldBtnCheckbox_Q_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldBtnCheckbox_Q>(obj, "Q", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_FieldBtnCheckbox_Q>($"Invalid value {val}, allowed are: [0,1,2]");
-        }
         }
         // no linked objects
         
@@ -447,12 +450,12 @@ internal partial class APM_FieldBtnCheckbox_Q_Base : ISpecification<PdfDictionar
 /// <summary>
 /// FieldBtnCheckbox_DS 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_DS : APM_FieldBtnCheckbox_DS_Base
+internal partial class APM_FieldBtnCheckbox_DS : APM_FieldBtnCheckbox_DS__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_DS_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_DS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_DS";
     public static bool RuleGroup() { return false; }
@@ -474,12 +477,12 @@ internal partial class APM_FieldBtnCheckbox_DS_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FieldBtnCheckbox_RV 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_RV : APM_FieldBtnCheckbox_RV_Base
+internal partial class APM_FieldBtnCheckbox_RV : APM_FieldBtnCheckbox_RV__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_RV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_RV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_RV";
     public static bool RuleGroup() { return false; }
@@ -522,12 +525,12 @@ internal partial class APM_FieldBtnCheckbox_RV_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FieldBtnCheckbox_Opt Table 227 and Table 230
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_Opt : APM_FieldBtnCheckbox_Opt_Base
+internal partial class APM_FieldBtnCheckbox_Opt : APM_FieldBtnCheckbox_Opt__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_Opt_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_Opt__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_Opt";
     public static bool RuleGroup() { return false; }
@@ -549,12 +552,12 @@ internal partial class APM_FieldBtnCheckbox_Opt_Base : ISpecification<PdfDiction
 /// <summary>
 /// FieldBtnCheckbox_V 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_V : APM_FieldBtnCheckbox_V_Base
+internal partial class APM_FieldBtnCheckbox_V : APM_FieldBtnCheckbox_V__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_V";
     public static bool RuleGroup() { return false; }
@@ -576,12 +579,12 @@ internal partial class APM_FieldBtnCheckbox_V_Base : ISpecification<PdfDictionar
 /// <summary>
 /// FieldBtnCheckbox_DV 
 /// </summary>
-internal partial class APM_FieldBtnCheckbox_DV : APM_FieldBtnCheckbox_DV_Base
+internal partial class APM_FieldBtnCheckbox_DV : APM_FieldBtnCheckbox_DV__Base
 {
 }
 
 
-internal partial class APM_FieldBtnCheckbox_DV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnCheckbox_DV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnCheckbox_DV";
     public static bool RuleGroup() { return false; }

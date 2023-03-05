@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionNOP : APM_ActionNOP_Base
+internal partial class APM_ActionNOP : APM_ActionNOP__Base
 {
 }
 
-internal partial class APM_ActionNOP_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionNOP__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionNOP";
@@ -46,12 +46,12 @@ internal partial class APM_ActionNOP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionNOP_Type Table 196 and Adobe PDF 1.2
 /// </summary>
-internal partial class APM_ActionNOP_Type : APM_ActionNOP_Type_Base
+internal partial class APM_ActionNOP_Type : APM_ActionNOP_Type__Base
 {
 }
 
 
-internal partial class APM_ActionNOP_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionNOP_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionNOP_Type";
     public static bool RuleGroup() { return false; }
@@ -62,13 +62,11 @@ internal partial class APM_ActionNOP_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_ActionNOP_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionNOP_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -80,12 +78,12 @@ internal partial class APM_ActionNOP_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionNOP_S only documented in Adobe PDF 1.2
 /// </summary>
-internal partial class APM_ActionNOP_S : APM_ActionNOP_S_Base
+internal partial class APM_ActionNOP_S : APM_ActionNOP_S__Base
 {
 }
 
 
-internal partial class APM_ActionNOP_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionNOP_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionNOP_S";
     public static bool RuleGroup() { return false; }
@@ -96,13 +94,11 @@ internal partial class APM_ActionNOP_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_ActionNOP_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "NOP")) 
         {
             ctx.Fail<APM_ActionNOP_S>($"Invalid value {val}, allowed are: [NOP]");
-        }
         }
         // no linked objects
         

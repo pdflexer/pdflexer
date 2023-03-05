@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfNavigatorLayoutNames : ISpecification<PdfArray
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -42,13 +42,11 @@ internal partial class APM_ArrayOfNavigatorLayoutNames_x : ISpecification<PdfArr
             var val = ctx.GetOptional<PdfName, APM_ArrayOfNavigatorLayoutNames_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
-            {
             
             
             if (!(val == "D" || val == "T" || val == "H" || val == "FilmStrip" || val == "FreeForm" || val == "Linear" || val == "Tree")) 
             {
                 ctx.Fail<APM_ArrayOfNavigatorLayoutNames_x>($"Invalid value {val}, allowed are: [D,T,H,FilmStrip,FreeForm,Linear,Tree]");
-            }
             }
             // no linked objects
             

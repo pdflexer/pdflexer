@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaDuration : APM_MediaDuration_Base
+internal partial class APM_MediaDuration : APM_MediaDuration__Base
 {
 }
 
-internal partial class APM_MediaDuration_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaDuration__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaDuration";
@@ -106,12 +106,12 @@ internal partial class APM_MediaDuration_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaDuration_Type Table 292
 /// </summary>
-internal partial class APM_MediaDuration_Type : APM_MediaDuration_Type_Base
+internal partial class APM_MediaDuration_Type : APM_MediaDuration_Type__Base
 {
 }
 
 
-internal partial class APM_MediaDuration_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaDuration_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaDuration_Type";
     public static bool RuleGroup() { return false; }
@@ -122,13 +122,11 @@ internal partial class APM_MediaDuration_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_MediaDuration_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaDuration")) 
         {
             ctx.Fail<APM_MediaDuration_Type>($"Invalid value {val}, allowed are: [MediaDuration]");
-        }
         }
         // no linked objects
         
@@ -140,12 +138,12 @@ internal partial class APM_MediaDuration_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// MediaDuration_S 
 /// </summary>
-internal partial class APM_MediaDuration_S : APM_MediaDuration_S_Base
+internal partial class APM_MediaDuration_S : APM_MediaDuration_S__Base
 {
 }
 
 
-internal partial class APM_MediaDuration_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaDuration_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaDuration_S";
     public static bool RuleGroup() { return false; }
@@ -156,13 +154,11 @@ internal partial class APM_MediaDuration_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_MediaDuration_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "I" || val == "F" || val == "T")) 
         {
             ctx.Fail<APM_MediaDuration_S>($"Invalid value {val}, allowed are: [I,F,T]");
-        }
         }
         // no linked objects
         
@@ -174,12 +170,12 @@ internal partial class APM_MediaDuration_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaDuration_T 
 /// </summary>
-internal partial class APM_MediaDuration_T : APM_MediaDuration_T_Base
+internal partial class APM_MediaDuration_T : APM_MediaDuration_T__Base
 {
 }
 
 
-internal partial class APM_MediaDuration_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaDuration_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaDuration_T";
     public static bool RuleGroup() { return false; }
@@ -187,15 +183,12 @@ internal partial class APM_MediaDuration_T_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var S = obj.Get("S");
-            if (eq(S,"T")) {
-                val = ctx.GetRequired<PdfDictionary, APM_MediaDuration_T>(obj, "T", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_MediaDuration_T>(obj, "T", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var S = obj.Get("S");
+        var val = ctx.GetOptional<PdfDictionary, APM_MediaDuration_T>(obj, "T", IndirectRequirement.Either);
+        if ((eq(S,"T")) && val == null) {
+            ctx.Fail<APM_MediaDuration_T>("T is required when 'fn:IsRequired(@S==T)"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions

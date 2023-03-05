@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfNamesForProcSet : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -42,13 +42,11 @@ internal partial class APM_ArrayOfNamesForProcSet_x : ISpecification<PdfArray>
             var val = ctx.GetOptional<PdfName, APM_ArrayOfNamesForProcSet_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
-            {
             
             
             if (!(val == "PDF" || val == "Text" || val == "ImageB" || val == "ImageC" || val == "ImageI")) 
             {
                 ctx.Fail<APM_ArrayOfNamesForProcSet_x>($"Invalid value {val}, allowed are: [PDF,Text,ImageB,ImageC,ImageI]");
-            }
             }
             // no linked objects
             

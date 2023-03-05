@@ -49,13 +49,14 @@ internal class Required
         {
             c.Write(sb);
         }
-        return sb.ToString(); ;
+        return sb.ToString();
     }
 
     public List<string> GetComplexVars()
     {
         var parts = Exp.Tokenize(Row.Required);
-        return parts[0].GetRequiredValues().ToList();
+        var vals = parts[0].GetRequiredValues().ToList();
+        return vals;
     }
 
 }

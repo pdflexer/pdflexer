@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DestDict : APM_DestDict_Base
+internal partial class APM_DestDict : APM_DestDict__Base
 {
 }
 
-internal partial class APM_DestDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DestDict";
@@ -139,12 +139,12 @@ internal partial class APM_DestDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DestDict_D Clause 12.3.2.4
 /// </summary>
-internal partial class APM_DestDict_D : APM_DestDict_D_Base
+internal partial class APM_DestDict_D : APM_DestDict_D__Base
 {
 }
 
 
-internal partial class APM_DestDict_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestDict_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DestDict_D";
     public static bool RuleGroup() { return false; }
@@ -181,12 +181,12 @@ internal partial class APM_DestDict_D_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DestDict_SD 
 /// </summary>
-internal partial class APM_DestDict_SD : APM_DestDict_SD_Base
+internal partial class APM_DestDict_SD : APM_DestDict_SD__Base
 {
 }
 
 
-internal partial class APM_DestDict_SD_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestDict_SD__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DestDict_SD";
     public static bool RuleGroup() { return false; }

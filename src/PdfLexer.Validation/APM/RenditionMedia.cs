@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RenditionMedia : APM_RenditionMedia_Base
+internal partial class APM_RenditionMedia : APM_RenditionMedia__Base
 {
 }
 
-internal partial class APM_RenditionMedia_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMedia__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RenditionMedia";
@@ -111,12 +111,12 @@ internal partial class APM_RenditionMedia_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RenditionMedia_Type Table 277 and Table 282
 /// </summary>
-internal partial class APM_RenditionMedia_Type : APM_RenditionMedia_Type_Base
+internal partial class APM_RenditionMedia_Type : APM_RenditionMedia_Type__Base
 {
 }
 
 
-internal partial class APM_RenditionMedia_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMedia_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionMedia_Type";
     public static bool RuleGroup() { return false; }
@@ -127,13 +127,11 @@ internal partial class APM_RenditionMedia_Type_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_RenditionMedia_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Rendition")) 
         {
             ctx.Fail<APM_RenditionMedia_Type>($"Invalid value {val}, allowed are: [Rendition]");
-        }
         }
         // no linked objects
         
@@ -145,12 +143,12 @@ internal partial class APM_RenditionMedia_Type_Base : ISpecification<PdfDictiona
 /// <summary>
 /// RenditionMedia_S 
 /// </summary>
-internal partial class APM_RenditionMedia_S : APM_RenditionMedia_S_Base
+internal partial class APM_RenditionMedia_S : APM_RenditionMedia_S__Base
 {
 }
 
 
-internal partial class APM_RenditionMedia_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMedia_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionMedia_S";
     public static bool RuleGroup() { return false; }
@@ -161,13 +159,11 @@ internal partial class APM_RenditionMedia_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_RenditionMedia_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MR")) 
         {
             ctx.Fail<APM_RenditionMedia_S>($"Invalid value {val}, allowed are: [MR]");
-        }
         }
         // no linked objects
         
@@ -179,12 +175,12 @@ internal partial class APM_RenditionMedia_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RenditionMedia_N https://github.com/pdf-association/pdf-issues/issues/214
 /// </summary>
-internal partial class APM_RenditionMedia_N : APM_RenditionMedia_N_Base
+internal partial class APM_RenditionMedia_N : APM_RenditionMedia_N__Base
 {
 }
 
 
-internal partial class APM_RenditionMedia_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMedia_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionMedia_N";
     public static bool RuleGroup() { return false; }
@@ -206,12 +202,12 @@ internal partial class APM_RenditionMedia_N_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RenditionMedia_MH 
 /// </summary>
-internal partial class APM_RenditionMedia_MH : APM_RenditionMedia_MH_Base
+internal partial class APM_RenditionMedia_MH : APM_RenditionMedia_MH__Base
 {
 }
 
 
-internal partial class APM_RenditionMedia_MH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMedia_MH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionMedia_MH";
     public static bool RuleGroup() { return false; }
@@ -233,12 +229,12 @@ internal partial class APM_RenditionMedia_MH_Base : ISpecification<PdfDictionary
 /// <summary>
 /// RenditionMedia_BE 
 /// </summary>
-internal partial class APM_RenditionMedia_BE : APM_RenditionMedia_BE_Base
+internal partial class APM_RenditionMedia_BE : APM_RenditionMedia_BE__Base
 {
 }
 
 
-internal partial class APM_RenditionMedia_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMedia_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionMedia_BE";
     public static bool RuleGroup() { return false; }
@@ -260,12 +256,12 @@ internal partial class APM_RenditionMedia_BE_Base : ISpecification<PdfDictionary
 /// <summary>
 /// RenditionMedia_C 
 /// </summary>
-internal partial class APM_RenditionMedia_C : APM_RenditionMedia_C_Base
+internal partial class APM_RenditionMedia_C : APM_RenditionMedia_C__Base
 {
 }
 
 
-internal partial class APM_RenditionMedia_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMedia_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionMedia_C";
     public static bool RuleGroup() { return false; }
@@ -296,12 +292,12 @@ internal partial class APM_RenditionMedia_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RenditionMedia_P 
 /// </summary>
-internal partial class APM_RenditionMedia_P : APM_RenditionMedia_P_Base
+internal partial class APM_RenditionMedia_P : APM_RenditionMedia_P__Base
 {
 }
 
 
-internal partial class APM_RenditionMedia_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMedia_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionMedia_P";
     public static bool RuleGroup() { return false; }
@@ -309,15 +305,12 @@ internal partial class APM_RenditionMedia_P_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (!obj.ContainsKey("C")) {
-                val = ctx.GetRequired<PdfDictionary, APM_RenditionMedia_P>(obj, "P", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_RenditionMedia_P>(obj, "P", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_RenditionMedia_P>(obj, "P", IndirectRequirement.Either);
+        if ((!obj.ContainsKey(val)) && val == null) {
+            ctx.Fail<APM_RenditionMedia_P>("P is required when 'fn:IsRequired(fn:Not(fn:IsPresent(C)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -331,12 +324,12 @@ internal partial class APM_RenditionMedia_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RenditionMedia_SP 
 /// </summary>
-internal partial class APM_RenditionMedia_SP : APM_RenditionMedia_SP_Base
+internal partial class APM_RenditionMedia_SP : APM_RenditionMedia_SP__Base
 {
 }
 
 
-internal partial class APM_RenditionMedia_SP_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMedia_SP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionMedia_SP";
     public static bool RuleGroup() { return false; }

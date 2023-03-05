@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsCollectionEditing : APM_RequirementsCollectionEditing_Base
+internal partial class APM_RequirementsCollectionEditing : APM_RequirementsCollectionEditing__Base
 {
 }
 
-internal partial class APM_RequirementsCollectionEditing_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsCollectionEditing__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsCollectionEditing";
@@ -58,12 +58,12 @@ internal partial class APM_RequirementsCollectionEditing_Base : ISpecification<P
 /// <summary>
 /// RequirementsCollectionEditing_Type Table 273 and Table 275
 /// </summary>
-internal partial class APM_RequirementsCollectionEditing_Type : APM_RequirementsCollectionEditing_Type_Base
+internal partial class APM_RequirementsCollectionEditing_Type : APM_RequirementsCollectionEditing_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsCollectionEditing_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsCollectionEditing_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsCollectionEditing_Type";
     public static bool RuleGroup() { return false; }
@@ -74,13 +74,11 @@ internal partial class APM_RequirementsCollectionEditing_Type_Base : ISpecificat
         var val = ctx.GetOptional<PdfName, APM_RequirementsCollectionEditing_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Requirement")) 
         {
             ctx.Fail<APM_RequirementsCollectionEditing_Type>($"Invalid value {val}, allowed are: [Requirement]");
-        }
         }
         // no linked objects
         
@@ -92,12 +90,12 @@ internal partial class APM_RequirementsCollectionEditing_Type_Base : ISpecificat
 /// <summary>
 /// RequirementsCollectionEditing_S 
 /// </summary>
-internal partial class APM_RequirementsCollectionEditing_S : APM_RequirementsCollectionEditing_S_Base
+internal partial class APM_RequirementsCollectionEditing_S : APM_RequirementsCollectionEditing_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsCollectionEditing_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsCollectionEditing_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsCollectionEditing_S";
     public static bool RuleGroup() { return false; }
@@ -108,13 +106,11 @@ internal partial class APM_RequirementsCollectionEditing_S_Base : ISpecification
         var val = ctx.GetRequired<PdfName, APM_RequirementsCollectionEditing_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CollectionEditing")) 
         {
             ctx.Fail<APM_RequirementsCollectionEditing_S>($"Invalid value {val}, allowed are: [CollectionEditing]");
-        }
         }
         // no linked objects
         
@@ -126,12 +122,12 @@ internal partial class APM_RequirementsCollectionEditing_S_Base : ISpecification
 /// <summary>
 /// RequirementsCollectionEditing_V 
 /// </summary>
-internal partial class APM_RequirementsCollectionEditing_V : APM_RequirementsCollectionEditing_V_Base
+internal partial class APM_RequirementsCollectionEditing_V : APM_RequirementsCollectionEditing_V__Base
 {
 }
 
 
-internal partial class APM_RequirementsCollectionEditing_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsCollectionEditing_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsCollectionEditing_V";
     public static bool RuleGroup() { return false; }
@@ -174,12 +170,12 @@ internal partial class APM_RequirementsCollectionEditing_V_Base : ISpecification
 /// <summary>
 /// RequirementsCollectionEditing_RH 
 /// </summary>
-internal partial class APM_RequirementsCollectionEditing_RH : APM_RequirementsCollectionEditing_RH_Base
+internal partial class APM_RequirementsCollectionEditing_RH : APM_RequirementsCollectionEditing_RH__Base
 {
 }
 
 
-internal partial class APM_RequirementsCollectionEditing_RH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsCollectionEditing_RH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsCollectionEditing_RH";
     public static bool RuleGroup() { return false; }
@@ -222,12 +218,12 @@ internal partial class APM_RequirementsCollectionEditing_RH_Base : ISpecificatio
 /// <summary>
 /// RequirementsCollectionEditing_Penalty 
 /// </summary>
-internal partial class APM_RequirementsCollectionEditing_Penalty : APM_RequirementsCollectionEditing_Penalty_Base
+internal partial class APM_RequirementsCollectionEditing_Penalty : APM_RequirementsCollectionEditing_Penalty__Base
 {
 }
 
 
-internal partial class APM_RequirementsCollectionEditing_Penalty_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsCollectionEditing_Penalty__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsCollectionEditing_Penalty";
     public static bool RuleGroup() { return false; }
@@ -238,13 +234,11 @@ internal partial class APM_RequirementsCollectionEditing_Penalty_Base : ISpecifi
         var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsCollectionEditing_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Penalty = val;
-        if (!((gte(@Penalty,0)&&lte(@Penalty,100)))) 
+        var Penalty = obj.Get("Penalty");
+        if (!((gte(Penalty,0)&&lte(Penalty,100)))) 
         {
             ctx.Fail<APM_RequirementsCollectionEditing_Penalty>($"Invalid value {val}, allowed are: [fn:Eval((@Penalty>=0) && (@Penalty<=100))]");
-        }
         }
         // no linked objects
         

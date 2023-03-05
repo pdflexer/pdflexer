@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_StructTreeRoot : APM_StructTreeRoot_Base
+internal partial class APM_StructTreeRoot : APM_StructTreeRoot__Base
 {
 }
 
-internal partial class APM_StructTreeRoot_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "StructTreeRoot";
@@ -133,12 +133,12 @@ internal partial class APM_StructTreeRoot_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructTreeRoot_Type Table 354
 /// </summary>
-internal partial class APM_StructTreeRoot_Type : APM_StructTreeRoot_Type_Base
+internal partial class APM_StructTreeRoot_Type : APM_StructTreeRoot_Type__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_Type";
     public static bool RuleGroup() { return false; }
@@ -149,13 +149,11 @@ internal partial class APM_StructTreeRoot_Type_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_StructTreeRoot_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "StructTreeRoot")) 
         {
             ctx.Fail<APM_StructTreeRoot_Type>($"Invalid value {val}, allowed are: [StructTreeRoot]");
-        }
         }
         // no linked objects
         
@@ -167,12 +165,12 @@ internal partial class APM_StructTreeRoot_Type_Base : ISpecification<PdfDictiona
 /// <summary>
 /// StructTreeRoot_K 
 /// </summary>
-internal partial class APM_StructTreeRoot_K : APM_StructTreeRoot_K_Base
+internal partial class APM_StructTreeRoot_K : APM_StructTreeRoot_K__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_K_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_K__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_K";
     public static bool RuleGroup() { return false; }
@@ -215,12 +213,12 @@ internal partial class APM_StructTreeRoot_K_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// StructTreeRoot_IDTree 
 /// </summary>
-internal partial class APM_StructTreeRoot_IDTree : APM_StructTreeRoot_IDTree_Base
+internal partial class APM_StructTreeRoot_IDTree : APM_StructTreeRoot_IDTree__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_IDTree_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_IDTree__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_IDTree";
     public static bool RuleGroup() { return false; }
@@ -242,12 +240,12 @@ internal partial class APM_StructTreeRoot_IDTree_Base : ISpecification<PdfDictio
 /// <summary>
 /// StructTreeRoot_ParentTree 
 /// </summary>
-internal partial class APM_StructTreeRoot_ParentTree : APM_StructTreeRoot_ParentTree_Base
+internal partial class APM_StructTreeRoot_ParentTree : APM_StructTreeRoot_ParentTree__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_ParentTree_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_ParentTree__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_ParentTree";
     public static bool RuleGroup() { return false; }
@@ -269,12 +267,12 @@ internal partial class APM_StructTreeRoot_ParentTree_Base : ISpecification<PdfDi
 /// <summary>
 /// StructTreeRoot_ParentTreeNextKey 
 /// </summary>
-internal partial class APM_StructTreeRoot_ParentTreeNextKey : APM_StructTreeRoot_ParentTreeNextKey_Base
+internal partial class APM_StructTreeRoot_ParentTreeNextKey : APM_StructTreeRoot_ParentTreeNextKey__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_ParentTreeNextKey_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_ParentTreeNextKey__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_ParentTreeNextKey";
     public static bool RuleGroup() { return false; }
@@ -296,12 +294,12 @@ internal partial class APM_StructTreeRoot_ParentTreeNextKey_Base : ISpecificatio
 /// <summary>
 /// StructTreeRoot_RoleMap 
 /// </summary>
-internal partial class APM_StructTreeRoot_RoleMap : APM_StructTreeRoot_RoleMap_Base
+internal partial class APM_StructTreeRoot_RoleMap : APM_StructTreeRoot_RoleMap__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_RoleMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_RoleMap__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_RoleMap";
     public static bool RuleGroup() { return false; }
@@ -323,12 +321,12 @@ internal partial class APM_StructTreeRoot_RoleMap_Base : ISpecification<PdfDicti
 /// <summary>
 /// StructTreeRoot_ClassMap 
 /// </summary>
-internal partial class APM_StructTreeRoot_ClassMap : APM_StructTreeRoot_ClassMap_Base
+internal partial class APM_StructTreeRoot_ClassMap : APM_StructTreeRoot_ClassMap__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_ClassMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_ClassMap__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_ClassMap";
     public static bool RuleGroup() { return false; }
@@ -350,12 +348,12 @@ internal partial class APM_StructTreeRoot_ClassMap_Base : ISpecification<PdfDict
 /// <summary>
 /// StructTreeRoot_Namespaces 
 /// </summary>
-internal partial class APM_StructTreeRoot_Namespaces : APM_StructTreeRoot_Namespaces_Base
+internal partial class APM_StructTreeRoot_Namespaces : APM_StructTreeRoot_Namespaces__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_Namespaces_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_Namespaces__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_Namespaces";
     public static bool RuleGroup() { return false; }
@@ -377,12 +375,12 @@ internal partial class APM_StructTreeRoot_Namespaces_Base : ISpecification<PdfDi
 /// <summary>
 /// StructTreeRoot_PronunciationLexicon 
 /// </summary>
-internal partial class APM_StructTreeRoot_PronunciationLexicon : APM_StructTreeRoot_PronunciationLexicon_Base
+internal partial class APM_StructTreeRoot_PronunciationLexicon : APM_StructTreeRoot_PronunciationLexicon__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_PronunciationLexicon_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_PronunciationLexicon__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_PronunciationLexicon";
     public static bool RuleGroup() { return false; }
@@ -434,12 +432,12 @@ internal partial class APM_StructTreeRoot_PronunciationLexicon_Base : ISpecifica
 /// <summary>
 /// StructTreeRoot_AF 
 /// </summary>
-internal partial class APM_StructTreeRoot_AF : APM_StructTreeRoot_AF_Base
+internal partial class APM_StructTreeRoot_AF : APM_StructTreeRoot_AF__Base
 {
 }
 
 
-internal partial class APM_StructTreeRoot_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_StructTreeRoot_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "StructTreeRoot_AF";
     public static bool RuleGroup() { return false; }

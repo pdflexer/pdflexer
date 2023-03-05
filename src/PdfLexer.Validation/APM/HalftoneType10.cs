@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_HalftoneType10 : APM_HalftoneType10_Base
+internal partial class APM_HalftoneType10 : APM_HalftoneType10__Base
 {
 }
 
-internal partial class APM_HalftoneType10_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "HalftoneType10";
@@ -146,12 +146,12 @@ internal partial class APM_HalftoneType10_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// HalftoneType10_Type Table 5 and Table 130
 /// </summary>
-internal partial class APM_HalftoneType10_Type : APM_HalftoneType10_Type_Base
+internal partial class APM_HalftoneType10_Type : APM_HalftoneType10_Type__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_Type";
     public static bool RuleGroup() { return false; }
@@ -162,13 +162,11 @@ internal partial class APM_HalftoneType10_Type_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_HalftoneType10_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Halftone")) 
         {
             ctx.Fail<APM_HalftoneType10_Type>($"Invalid value {val}, allowed are: [Halftone]");
-        }
         }
         // no linked objects
         
@@ -180,12 +178,12 @@ internal partial class APM_HalftoneType10_Type_Base : ISpecification<PdfDictiona
 /// <summary>
 /// HalftoneType10_HalftoneType 
 /// </summary>
-internal partial class APM_HalftoneType10_HalftoneType : APM_HalftoneType10_HalftoneType_Base
+internal partial class APM_HalftoneType10_HalftoneType : APM_HalftoneType10_HalftoneType__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_HalftoneType_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_HalftoneType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_HalftoneType";
     public static bool RuleGroup() { return false; }
@@ -196,13 +194,11 @@ internal partial class APM_HalftoneType10_HalftoneType_Base : ISpecification<Pdf
         var val = ctx.GetRequired<PdfIntNumber, APM_HalftoneType10_HalftoneType>(obj, "HalftoneType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 10)) 
         {
             ctx.Fail<APM_HalftoneType10_HalftoneType>($"Invalid value {val}, allowed are: [10]");
-        }
         }
         // no linked objects
         
@@ -214,12 +210,12 @@ internal partial class APM_HalftoneType10_HalftoneType_Base : ISpecification<Pdf
 /// <summary>
 /// HalftoneType10_HalftoneName 
 /// </summary>
-internal partial class APM_HalftoneType10_HalftoneName : APM_HalftoneType10_HalftoneName_Base
+internal partial class APM_HalftoneType10_HalftoneName : APM_HalftoneType10_HalftoneName__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_HalftoneName_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_HalftoneName__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_HalftoneName";
     public static bool RuleGroup() { return false; }
@@ -241,12 +237,12 @@ internal partial class APM_HalftoneType10_HalftoneName_Base : ISpecification<Pdf
 /// <summary>
 /// HalftoneType10_Xsquare 
 /// </summary>
-internal partial class APM_HalftoneType10_Xsquare : APM_HalftoneType10_Xsquare_Base
+internal partial class APM_HalftoneType10_Xsquare : APM_HalftoneType10_Xsquare__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_Xsquare_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_Xsquare__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_Xsquare";
     public static bool RuleGroup() { return false; }
@@ -257,13 +253,11 @@ internal partial class APM_HalftoneType10_Xsquare_Base : ISpecification<PdfDicti
         var val = ctx.GetRequired<PdfIntNumber, APM_HalftoneType10_Xsquare>(obj, "Xsquare", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Xsquare = val;
-        if (!(gt(@Xsquare,0))) 
+        var Xsquare = obj.Get("Xsquare");
+        if (!(gt(Xsquare,0))) 
         {
             ctx.Fail<APM_HalftoneType10_Xsquare>($"Invalid value {val}, allowed are: [fn:Eval(@Xsquare>0)]");
-        }
         }
         // no linked objects
         
@@ -275,12 +269,12 @@ internal partial class APM_HalftoneType10_Xsquare_Base : ISpecification<PdfDicti
 /// <summary>
 /// HalftoneType10_Ysquare 
 /// </summary>
-internal partial class APM_HalftoneType10_Ysquare : APM_HalftoneType10_Ysquare_Base
+internal partial class APM_HalftoneType10_Ysquare : APM_HalftoneType10_Ysquare__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_Ysquare_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_Ysquare__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_Ysquare";
     public static bool RuleGroup() { return false; }
@@ -291,13 +285,11 @@ internal partial class APM_HalftoneType10_Ysquare_Base : ISpecification<PdfDicti
         var val = ctx.GetRequired<PdfIntNumber, APM_HalftoneType10_Ysquare>(obj, "Ysquare", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Ysquare = val;
-        if (!(gt(@Ysquare,0))) 
+        var Ysquare = obj.Get("Ysquare");
+        if (!(gt(Ysquare,0))) 
         {
             ctx.Fail<APM_HalftoneType10_Ysquare>($"Invalid value {val}, allowed are: [fn:Eval(@Ysquare>0)]");
-        }
         }
         // no linked objects
         
@@ -309,12 +301,12 @@ internal partial class APM_HalftoneType10_Ysquare_Base : ISpecification<PdfDicti
 /// <summary>
 /// HalftoneType10_TransferFunction 
 /// </summary>
-internal partial class APM_HalftoneType10_TransferFunction : APM_HalftoneType10_TransferFunction_Base
+internal partial class APM_HalftoneType10_TransferFunction : APM_HalftoneType10_TransferFunction__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_TransferFunction_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_TransferFunction__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_TransferFunction";
     public static bool RuleGroup() { return false; }
@@ -323,29 +315,27 @@ internal partial class APM_HalftoneType10_TransferFunction_Base : ISpecification
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var (utval, wasIR) = ctx.GetOptional<APM_HalftoneType10_TransferFunction>(obj, "TransferFunction", IndirectRequirement.Either);
-        {
-            var parentHalftoneType = parent?.Get("@HalftoneType");
-            if ((eq(parentHalftoneType,5)) && utval == null) {
-                ctx.Fail<APM_HalftoneType10_TransferFunction>("TransferFunction is required"); return;
-            } else if (utval == null) {
-                return;
-            }
+        
+        var parentHalftoneType = parent?.Get("HalftoneType");
+        if ((eq(parentHalftoneType,5)) && utval == null) {
+            ctx.Fail<APM_HalftoneType10_TransferFunction>("TransferFunction is required"); return;
+        } else if (utval == null) {
+            return;
         }
+        
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.3,dictionary)
+            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.NameObj:
                 {
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "Identity")) 
                     {
                         ctx.Fail<APM_HalftoneType10_TransferFunction>($"Invalid value {val}, allowed are: [Identity]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -359,6 +349,9 @@ internal partial class APM_HalftoneType10_TransferFunction_Base : ISpecification
                     if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                    {
+                        ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
                     {
                         ctx.Fail<APM_HalftoneType10_TransferFunction>("TransferFunction did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
@@ -378,12 +371,12 @@ internal partial class APM_HalftoneType10_TransferFunction_Base : ISpecification
 /// <summary>
 /// HalftoneType10_Length 
 /// </summary>
-internal partial class APM_HalftoneType10_Length : APM_HalftoneType10_Length_Base
+internal partial class APM_HalftoneType10_Length : APM_HalftoneType10_Length__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_Length";
     public static bool RuleGroup() { return false; }
@@ -405,12 +398,12 @@ internal partial class APM_HalftoneType10_Length_Base : ISpecification<PdfDictio
 /// <summary>
 /// HalftoneType10_Filter 
 /// </summary>
-internal partial class APM_HalftoneType10_Filter : APM_HalftoneType10_Filter_Base
+internal partial class APM_HalftoneType10_Filter : APM_HalftoneType10_Filter__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_Filter";
     public static bool RuleGroup() { return false; }
@@ -426,7 +419,12 @@ internal partial class APM_HalftoneType10_Filter_Base : ISpecification<PdfDictio
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_HalftoneType10_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -436,13 +434,11 @@ internal partial class APM_HalftoneType10_Filter_Base : ISpecification<PdfDictio
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_HalftoneType10_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -460,12 +456,12 @@ internal partial class APM_HalftoneType10_Filter_Base : ISpecification<PdfDictio
 /// <summary>
 /// HalftoneType10_DecodeParms 
 /// </summary>
-internal partial class APM_HalftoneType10_DecodeParms : APM_HalftoneType10_DecodeParms_Base
+internal partial class APM_HalftoneType10_DecodeParms : APM_HalftoneType10_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -481,7 +477,12 @@ internal partial class APM_HalftoneType10_DecodeParms_Base : ISpecification<PdfD
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_HalftoneType10_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -498,6 +499,9 @@ internal partial class APM_HalftoneType10_DecodeParms_Base : ISpecification<PdfD
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_HalftoneType10_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -517,12 +521,12 @@ internal partial class APM_HalftoneType10_DecodeParms_Base : ISpecification<PdfD
 /// <summary>
 /// HalftoneType10_F 
 /// </summary>
-internal partial class APM_HalftoneType10_F : APM_HalftoneType10_F_Base
+internal partial class APM_HalftoneType10_F : APM_HalftoneType10_F__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_F";
     public static bool RuleGroup() { return false; }
@@ -565,12 +569,12 @@ internal partial class APM_HalftoneType10_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// HalftoneType10_FFilter 
 /// </summary>
-internal partial class APM_HalftoneType10_FFilter : APM_HalftoneType10_FFilter_Base
+internal partial class APM_HalftoneType10_FFilter : APM_HalftoneType10_FFilter__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_FFilter";
     public static bool RuleGroup() { return false; }
@@ -586,7 +590,12 @@ internal partial class APM_HalftoneType10_FFilter_Base : ISpecification<PdfDicti
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_HalftoneType10_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -596,13 +605,11 @@ internal partial class APM_HalftoneType10_FFilter_Base : ISpecification<PdfDicti
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_HalftoneType10_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -620,12 +627,12 @@ internal partial class APM_HalftoneType10_FFilter_Base : ISpecification<PdfDicti
 /// <summary>
 /// HalftoneType10_FDecodeParms 
 /// </summary>
-internal partial class APM_HalftoneType10_FDecodeParms : APM_HalftoneType10_FDecodeParms_Base
+internal partial class APM_HalftoneType10_FDecodeParms : APM_HalftoneType10_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -641,7 +648,12 @@ internal partial class APM_HalftoneType10_FDecodeParms_Base : ISpecification<Pdf
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_HalftoneType10_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -658,6 +670,9 @@ internal partial class APM_HalftoneType10_FDecodeParms_Base : ISpecification<Pdf
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_HalftoneType10_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -677,12 +692,12 @@ internal partial class APM_HalftoneType10_FDecodeParms_Base : ISpecification<Pdf
 /// <summary>
 /// HalftoneType10_DL 
 /// </summary>
-internal partial class APM_HalftoneType10_DL : APM_HalftoneType10_DL_Base
+internal partial class APM_HalftoneType10_DL : APM_HalftoneType10_DL__Base
 {
 }
 
 
-internal partial class APM_HalftoneType10_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType10_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType10_DL";
     public static bool RuleGroup() { return false; }
@@ -692,7 +707,13 @@ internal partial class APM_HalftoneType10_DL_Base : ISpecification<PdfDictionary
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_HalftoneType10_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        var Xsquare = obj.Get("Xsquare");
+        var Ysquare = obj.Get("Ysquare");
+        if (!(eq(DL,(mult(Xsquare,Xsquare)+mult(Ysquare,Ysquare))))) 
+        {
+            ctx.Fail<APM_HalftoneType10_DL>($"Value failed special case check: fn:Eval(@DL==((@Xsquare * @Xsquare)+(@Ysquare * @Ysquare)))");
+        }
         // no value restrictions
         // no linked objects
         

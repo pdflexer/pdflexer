@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CollectionSchema : APM_CollectionSchema_Base
+internal partial class APM_CollectionSchema : APM_CollectionSchema__Base
 {
 }
 
-internal partial class APM_CollectionSchema_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSchema__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CollectionSchema";
@@ -42,12 +42,12 @@ internal partial class APM_CollectionSchema_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CollectionSchema_Type Table 154
 /// </summary>
-internal partial class APM_CollectionSchema_Type : APM_CollectionSchema_Type_Base
+internal partial class APM_CollectionSchema_Type : APM_CollectionSchema_Type__Base
 {
 }
 
 
-internal partial class APM_CollectionSchema_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSchema_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSchema_Type";
     public static bool RuleGroup() { return false; }
@@ -58,13 +58,11 @@ internal partial class APM_CollectionSchema_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_CollectionSchema_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CollectionSchema")) 
         {
             ctx.Fail<APM_CollectionSchema_Type>($"Invalid value {val}, allowed are: [CollectionSchema]");
-        }
         }
         // no linked objects
         
@@ -76,12 +74,12 @@ internal partial class APM_CollectionSchema_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// CollectionSchema_* 
 /// </summary>
-internal partial class APM_CollectionSchema_CatchAll : APM_CollectionSchema_CatchAll_Base
+internal partial class APM_CollectionSchema_CatchAll : APM_CollectionSchema_CatchAll__Base
 {
 }
 
 
-internal partial class APM_CollectionSchema_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSchema_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSchema_*";
     public static bool RuleGroup() { return false; }

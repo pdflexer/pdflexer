@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Field : APM_Field_Base
+internal partial class APM_Field : APM_Field__Base
 {
 }
 
-internal partial class APM_Field_Base : ISpecification<PdfDictionary>
+internal partial class APM_Field__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Field";
@@ -134,12 +134,12 @@ internal partial class APM_Field_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Field_Parent Table 226
 /// </summary>
-internal partial class APM_Field_Parent : APM_Field_Parent_Base
+internal partial class APM_Field_Parent : APM_Field_Parent__Base
 {
 }
 
 
-internal partial class APM_Field_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_Field_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Field_Parent";
     public static bool RuleGroup() { return false; }
@@ -169,6 +169,9 @@ internal partial class APM_Field_Parent_Base : ISpecification<PdfDictionary>
         } else if (APM_Field.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_Field, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_FieldSig, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_Field_Parent>("Parent did not match any allowable types: '[FieldTx,FieldBtnPush,FieldBtnCheckbox,FieldBtnRadio,FieldChoice,fn:SinceVersion(1.3,FieldSig),Field]'");
@@ -182,12 +185,12 @@ internal partial class APM_Field_Parent_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Field_Kids 
 /// </summary>
-internal partial class APM_Field_Kids : APM_Field_Kids_Base
+internal partial class APM_Field_Kids : APM_Field_Kids__Base
 {
 }
 
 
-internal partial class APM_Field_Kids_Base : ISpecification<PdfDictionary>
+internal partial class APM_Field_Kids__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Field_Kids";
     public static bool RuleGroup() { return false; }
@@ -209,12 +212,12 @@ internal partial class APM_Field_Kids_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Field_T 
 /// </summary>
-internal partial class APM_Field_T : APM_Field_T_Base
+internal partial class APM_Field_T : APM_Field_T__Base
 {
 }
 
 
-internal partial class APM_Field_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_Field_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Field_T";
     public static bool RuleGroup() { return false; }
@@ -236,12 +239,12 @@ internal partial class APM_Field_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Field_TU 
 /// </summary>
-internal partial class APM_Field_TU : APM_Field_TU_Base
+internal partial class APM_Field_TU : APM_Field_TU__Base
 {
 }
 
 
-internal partial class APM_Field_TU_Base : ISpecification<PdfDictionary>
+internal partial class APM_Field_TU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Field_TU";
     public static bool RuleGroup() { return false; }
@@ -263,12 +266,12 @@ internal partial class APM_Field_TU_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Field_TM 
 /// </summary>
-internal partial class APM_Field_TM : APM_Field_TM_Base
+internal partial class APM_Field_TM : APM_Field_TM__Base
 {
 }
 
 
-internal partial class APM_Field_TM_Base : ISpecification<PdfDictionary>
+internal partial class APM_Field_TM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Field_TM";
     public static bool RuleGroup() { return false; }
@@ -290,12 +293,12 @@ internal partial class APM_Field_TM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Field_Ff 
 /// </summary>
-internal partial class APM_Field_Ff : APM_Field_Ff_Base
+internal partial class APM_Field_Ff : APM_Field_Ff__Base
 {
 }
 
 
-internal partial class APM_Field_Ff_Base : ISpecification<PdfDictionary>
+internal partial class APM_Field_Ff__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Field_Ff";
     public static bool RuleGroup() { return false; }
@@ -305,7 +308,11 @@ internal partial class APM_Field_Ff_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_Field_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_Field_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(4,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -317,12 +324,12 @@ internal partial class APM_Field_Ff_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Field_AA 
 /// </summary>
-internal partial class APM_Field_AA : APM_Field_AA_Base
+internal partial class APM_Field_AA : APM_Field_AA__Base
 {
 }
 
 
-internal partial class APM_Field_AA_Base : ISpecification<PdfDictionary>
+internal partial class APM_Field_AA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Field_AA";
     public static bool RuleGroup() { return false; }

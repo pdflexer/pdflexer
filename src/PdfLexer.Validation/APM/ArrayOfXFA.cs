@@ -19,7 +19,7 @@ internal partial class APM_ArrayOfXFA : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 

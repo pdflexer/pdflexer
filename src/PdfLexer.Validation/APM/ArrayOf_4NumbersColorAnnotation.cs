@@ -21,7 +21,7 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation : ISpecification<PdfA
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -39,13 +39,11 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_0 : ISpecification<Pd
         var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
-        if (!((gte(v,0)&&lte(v,1)))) 
+        if (!((gte(v,v)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_4NumbersColorAnnotation_0>($"Invalid value {val}, allowed are: [fn:Eval((@0>=0) && (@0<=1))]");
-        }
         }
         // no linked objects
         
@@ -65,14 +63,16 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_1 : ISpecification<Pd
     {
         var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!((obj.Count > 1))) 
         {
+            ctx.Fail<APM_ArrayOf_4NumbersColorAnnotation_1>($"Value failed special case check: fn:Eval(fn:IsPresent(2))");
+        }
         IPdfObject v = val;
         
-        if (!((gte(v,0)&&lte(v,1)))) 
+        if (!((gte(v,0)&&lte(v,v)))) 
         {
             ctx.Fail<APM_ArrayOf_4NumbersColorAnnotation_1>($"Invalid value {val}, allowed are: [fn:Eval((@1>=0) && (@1<=1))]");
-        }
         }
         // no linked objects
         
@@ -93,13 +93,11 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_2 : ISpecification<Pd
         var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_4NumbersColorAnnotation_2>($"Invalid value {val}, allowed are: [fn:Eval((@2>=0) && (@2<=1))]");
-        }
         }
         // no linked objects
         
@@ -120,13 +118,11 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_3 : ISpecification<Pd
         var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_3>(obj, 3, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_4NumbersColorAnnotation_3>($"Invalid value {val}, allowed are: [fn:Eval((@3>=0) && (@3<=1))]");
-        }
         }
         // no linked objects
         

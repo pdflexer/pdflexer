@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DPM : APM_DPM_Base
+internal partial class APM_DPM : APM_DPM__Base
 {
 }
 
-internal partial class APM_DPM_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPM__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DPM";
@@ -37,12 +37,12 @@ internal partial class APM_DPM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPM_GTS_Managed Clause 14.12.4.2 and ISO 16612-3 PDF/VT
 /// </summary>
-internal partial class APM_DPM_GTS_Managed : APM_DPM_GTS_Managed_Base
+internal partial class APM_DPM_GTS_Managed : APM_DPM_GTS_Managed__Base
 {
 }
 
 
-internal partial class APM_DPM_GTS_Managed_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPM_GTS_Managed__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPM_GTS_Managed";
     public static bool RuleGroup() { return false; }
@@ -64,12 +64,12 @@ internal partial class APM_DPM_GTS_Managed_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPM_GTS_Suspect PDF/VT
 /// </summary>
-internal partial class APM_DPM_GTS_Suspect : APM_DPM_GTS_Suspect_Base
+internal partial class APM_DPM_GTS_Suspect : APM_DPM_GTS_Suspect__Base
 {
 }
 
 
-internal partial class APM_DPM_GTS_Suspect_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPM_GTS_Suspect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPM_GTS_Suspect";
     public static bool RuleGroup() { return false; }
@@ -91,12 +91,12 @@ internal partial class APM_DPM_GTS_Suspect_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPM_* https://github.com/pdf-association/pdf-issues/issues/86
 /// </summary>
-internal partial class APM_DPM_CatchAll : APM_DPM_CatchAll_Base
+internal partial class APM_DPM_CatchAll : APM_DPM_CatchAll__Base
 {
 }
 
 
-internal partial class APM_DPM_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPM_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPM_*";
     public static bool RuleGroup() { return false; }

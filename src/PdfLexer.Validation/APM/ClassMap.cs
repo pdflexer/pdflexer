@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ClassMap : APM_ClassMap_Base
+internal partial class APM_ClassMap : APM_ClassMap__Base
 {
 }
 
-internal partial class APM_ClassMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_ClassMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ClassMap";
@@ -35,12 +35,12 @@ internal partial class APM_ClassMap_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ClassMap_* Table 354, ClassMap cell and Clause 14.7.6.2
 /// </summary>
-internal partial class APM_ClassMap_CatchAll : APM_ClassMap_CatchAll_Base
+internal partial class APM_ClassMap_CatchAll : APM_ClassMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_ClassMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_ClassMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ClassMap_*";
     public static bool RuleGroup() { return false; }

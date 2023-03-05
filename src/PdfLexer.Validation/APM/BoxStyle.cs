@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_BoxStyle : APM_BoxStyle_Base
+internal partial class APM_BoxStyle : APM_BoxStyle__Base
 {
 }
 
-internal partial class APM_BoxStyle_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxStyle__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "BoxStyle";
@@ -111,12 +111,12 @@ internal partial class APM_BoxStyle_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BoxStyle_C Table 397
 /// </summary>
-internal partial class APM_BoxStyle_C : APM_BoxStyle_C_Base
+internal partial class APM_BoxStyle_C : APM_BoxStyle_C__Base
 {
 }
 
 
-internal partial class APM_BoxStyle_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxStyle_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BoxStyle_C";
     public static bool RuleGroup() { return false; }
@@ -138,12 +138,12 @@ internal partial class APM_BoxStyle_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BoxStyle_W line width
 /// </summary>
-internal partial class APM_BoxStyle_W : APM_BoxStyle_W_Base
+internal partial class APM_BoxStyle_W : APM_BoxStyle_W__Base
 {
 }
 
 
-internal partial class APM_BoxStyle_W_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxStyle_W__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BoxStyle_W";
     public static bool RuleGroup() { return false; }
@@ -165,12 +165,12 @@ internal partial class APM_BoxStyle_W_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BoxStyle_S style (solid or dashed)
 /// </summary>
-internal partial class APM_BoxStyle_S : APM_BoxStyle_S_Base
+internal partial class APM_BoxStyle_S : APM_BoxStyle_S__Base
 {
 }
 
 
-internal partial class APM_BoxStyle_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxStyle_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BoxStyle_S";
     public static bool RuleGroup() { return false; }
@@ -181,13 +181,11 @@ internal partial class APM_BoxStyle_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_BoxStyle_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "S" || val == "D")) 
         {
             ctx.Fail<APM_BoxStyle_S>($"Invalid value {val}, allowed are: [S,D]");
-        }
         }
         // no linked objects
         
@@ -199,12 +197,12 @@ internal partial class APM_BoxStyle_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BoxStyle_D dash pattern
 /// </summary>
-internal partial class APM_BoxStyle_D : APM_BoxStyle_D_Base
+internal partial class APM_BoxStyle_D : APM_BoxStyle_D__Base
 {
 }
 
 
-internal partial class APM_BoxStyle_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxStyle_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BoxStyle_D";
     public static bool RuleGroup() { return false; }

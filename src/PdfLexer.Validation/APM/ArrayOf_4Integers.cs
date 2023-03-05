@@ -21,7 +21,7 @@ internal partial class APM_ArrayOf_4Integers : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 

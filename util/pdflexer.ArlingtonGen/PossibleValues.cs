@@ -1,15 +1,6 @@
-﻿using DotNext;
-using pdflexer.ArlingtonGen.Expressions;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IO;
-using System.Linq;
+﻿using pdflexer.ArlingtonGen.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using static DotNext.Generic.BooleanConst;
 
 namespace pdflexer.ArlingtonGen;
 
@@ -63,25 +54,42 @@ internal class PossibleValues
         GetVals(value, vars);
         vars = vars.Distinct().ToList();
 
+        var values = SplitWithFns(value.TrimStart('[').TrimEnd(']'));
+        if (values.Any(x=> x.Trim() == "*"))
+        {
+            return "// no value restictions";
+        }
+
         var head = "";
 
         if (hasArrayVal.IsMatch(value))
         {
             var prev = VariableContext.VarSub;
             VariableContext.VarSub = "v";
+            VariableContext.Vars[Row.Key] = "v";
+            VariableContext.Vars["@" + Row.Key] = "v";
             head = "IPdfObject v = " + prev + ";";
-        } else if (value == "*")
-        {
-
         }
 
+        if (type == "string-text")
+        {
+            var prev = VariableContext.VarSub;
+            VariableContext.VarSub = VariableContext.VarSub + ".Value";
+        }
 
-        var defs = string.Join('\n', vars.Select(v => GetSetter(v, type)));
-        var values = SplitWithFns(value.TrimStart('[').TrimEnd(']'));
+        var defs = string.Join('\n', vars.Select(v => Gen.GetSetter(v, type, "val")));
+
         var sb = new StringBuilder();
+        var rv = values.Where(v => v.Contains("RequiredValue")).ToList();
+        if (rv.Any())
+        {
+            defs += "\n// TODO required value checks";
+        }
         var nr = values.Where(v => !v.Contains("RequiredValue")).ToList();
         for (var p = 0; p < nr.Count; p++)
         {
+            VariableContext.InEval = false;
+            VariableContext.Wrapper = VariableContext.ValWrapper;
             var parts = Exp.Tokenize(nr[p]);
             for (var i = 0; i < parts.Count; i++)
             {
@@ -98,61 +106,22 @@ internal class PossibleValues
             }
         }
 
-        
 
         var checks = sb.ToString();
         //var checks = string.Join(" || ", values.Select(x => Unwrap(x)));
-        if (type == "name" || type == "number" || type == "integer")
+        if (type == "name" || type == "number" || type == "integer" || type == "string-text")
         {
 
             return $$"""
-{
 {{head}}
 {{defs}}
 if (!({{checks}})) 
 {
     ctx.Fail<APM_{{Gen.RootName}}_{{Gen.Key}}>($"Invalid value {{{VarName}}}, allowed are: {{value}}");
 }
-}
 """;
         }
         return "// TODO value checks " + type;
-    }
-
-    private string GetSetter(string value, string type)
-    {
-        var typeDeclaration = type == "number" || type == "integer" ? "IPdfObject" : "var";
-        var nm = value[0] == '@' ? value.Substring(1) : value;
-        if (nm == Row.Key) 
-        {
-            if (badVar.IsMatch(value))
-            {
-                var nv = value.Replace("@", "x").Replace("*", "");
-                VariableContext.VarSub = nv;
-                return $"{typeDeclaration} {nv} = {VarName};";
-            }
-            else
-            {
-                VariableContext.VarSub = value;
-                return $"{typeDeclaration} {value} = {VarName};";
-            }
-        }
-        // return "";
-        if (int.TryParse(nm, out _))
-        {
-            return "";
-        }
-
-        var cleansed = Regex.Replace(value, @"[^A-Za-z0-9]+", "");
-        int? i = null;
-        if (VariableContext.Vars.ContainsValue(cleansed + i?.ToString()))
-        {
-            if (i == null) { i = 2; } else { i++; }
-        }
-        var clean = cleansed + i?.ToString();
-        VariableContext.Vars[value] = clean;
-
-        return $"var {clean} = obj.Get(\"{nm}\");";
     }
 
     public static List<string> SplitWithFns(string text)
@@ -183,7 +152,8 @@ if (!({{checks}}))
 
     private void GetVals(string value, List<string> results)
     {
-        foreach (var item in Exp.Tokenize(value.TrimStart('[').TrimEnd(']')))
+        
+        foreach (var item in SplitWithFns(value.TrimStart('[').TrimEnd(']')).Select(x=> new Exp(x)))
         {
             foreach (var nm in item.GetRequiredValues())
             {
@@ -191,110 +161,5 @@ if (!({{checks}}))
             }
         }
         return;
-        // var r = GenBase.FuncRegex.Match(value);
-        // if (!r.Success)
-        // {
-        //     return;
-        // }
-
-
-        var result = GenBase.ValueRegex.Matches(value); //r.Groups[2].Value);
-        foreach (var v in result)
-        {
-            var mm = (Match)v;
-            results.Add(mm.Value);
-        }
-
     }
-
-    private string Unwrap(string value)
-    {
-        value = GenBase.RepeatedVarRegex.Replace(value, VarName);
-        var r = GenBase.AnyFuncRegex.Matches(value);
-        if (r.Count == 0)
-        {
-            if (decimal.TryParse(value, out _))
-            {
-                return $"{VarName} == {value}";
-            }
-            return $"{VarName} == \"{value}\"";
-        }
-
-        foreach (var func in r)
-        {
-            var m = (Match)func;
-            var v = m.Groups[2].Value;
-            var i = m.Groups[2].Value.IndexOf(',');
-            var val = v;
-            if (i > -1)
-            {
-                v = m.Groups[2].Value.Substring(0, i);
-                val = m.Groups[2].Value.Substring(i + 1, m.Groups[2].Value.Length - i - 1);
-            }
-
-            switch (m.Groups[1].Value)
-            {
-                case "Deprecated":
-                    {
-                        value = value.Replace(m.Value, $"(ctx.Version < {v}m && ({Unwrap(val)}))");
-                        break;
-                    }
-                case "SinceVersion":
-                    {
-                        value = value.Replace(m.Value, $"(ctx.Version >= {v}m && ({Unwrap(val)}))");
-                        break;
-                    }
-                case "Extension":
-                    {
-                        if (i == -1)
-                        {
-                            value = value.Replace(m.Value, $"(ctx.Extensions.Contains(\"{v}\")");
-                        }
-                        else
-                        {
-                            value = value.Replace(m.Value, $"(ctx.Extensions.Contains(\"{v}\") && ({Unwrap(val)}))");
-                        }
-                        break;
-                    }
-                case "Eval":
-                    {
-                        foreach (var stmt in GenBase.ValueOpRegex.Matches(val).GroupBy(v => v.Value))
-                        {
-                            var mm = stmt.First();
-                            val = val.Replace(m.Value, $"(has{mm.Groups[1].Value} && (" + mm.Value + "))");
-                        }
-                        val = val.Replace(" mod ", " % ");
-                        // var result = GenBase.ValueRegex.Matches(val);
-                        // var vars = result.Select(m => m.Value).Distinct().ToList();
-                        // foreach (var m in vars)
-                        // {
-                        //     var nm = m.Substring(1);
-                        //     val = val.Replace(m, $"has{nm} && {m}");
-                        // }
-                        if (GenBase.AnyFuncRegex.IsMatch(val))
-                        {
-                            var matches = GenBase.AnyFuncRegex.Matches(val);
-                            var fns = matches.Select(v => v.Value).Distinct().ToList();
-                            foreach (var fn in fns)
-                            {
-                                val = val.Replace(fn, Unwrap(fn));
-                            }
-                        }
-                        value = value.Replace(m.Value, $"({val})");
-                        break;
-                    }
-                case "ArrayLength":
-                    value = value.Replace(m.Value, "0");
-                    break;
-                default:
-                    Console.WriteLine(value);
-                    return "false";
-            }
-        }
-
-
-
-        return value;
-    }
-
 }

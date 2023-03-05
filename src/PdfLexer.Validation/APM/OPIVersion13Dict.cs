@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OPIVersion13Dict : APM_OPIVersion13Dict_Base
+internal partial class APM_OPIVersion13Dict : APM_OPIVersion13Dict__Base
 {
 }
 
-internal partial class APM_OPIVersion13Dict_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OPIVersion13Dict";
@@ -141,12 +141,12 @@ internal partial class APM_OPIVersion13Dict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OPIVersion13Dict_Type Table 406
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Type : APM_OPIVersion13Dict_Type_Base
+internal partial class APM_OPIVersion13Dict_Type : APM_OPIVersion13Dict_Type__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Type";
     public static bool RuleGroup() { return false; }
@@ -157,13 +157,11 @@ internal partial class APM_OPIVersion13Dict_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_OPIVersion13Dict_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "OPI")) 
         {
             ctx.Fail<APM_OPIVersion13Dict_Type>($"Invalid value {val}, allowed are: [OPI]");
-        }
         }
         // no linked objects
         
@@ -175,12 +173,12 @@ internal partial class APM_OPIVersion13Dict_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// OPIVersion13Dict_Version 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Version : APM_OPIVersion13Dict_Version_Base
+internal partial class APM_OPIVersion13Dict_Version : APM_OPIVersion13Dict_Version__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Version_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Version__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Version";
     public static bool RuleGroup() { return false; }
@@ -191,13 +189,11 @@ internal partial class APM_OPIVersion13Dict_Version_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfNumber, APM_OPIVersion13Dict_Version>(obj, "Version", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1.3m)) 
         {
             ctx.Fail<APM_OPIVersion13Dict_Version>($"Invalid value {val}, allowed are: [1.3]");
-        }
         }
         // no linked objects
         
@@ -209,12 +205,12 @@ internal partial class APM_OPIVersion13Dict_Version_Base : ISpecification<PdfDic
 /// <summary>
 /// OPIVersion13Dict_F 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_F : APM_OPIVersion13Dict_F_Base
+internal partial class APM_OPIVersion13Dict_F : APM_OPIVersion13Dict_F__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_F";
     public static bool RuleGroup() { return false; }
@@ -257,12 +253,12 @@ internal partial class APM_OPIVersion13Dict_F_Base : ISpecification<PdfDictionar
 /// <summary>
 /// OPIVersion13Dict_ID 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_ID : APM_OPIVersion13Dict_ID_Base
+internal partial class APM_OPIVersion13Dict_ID : APM_OPIVersion13Dict_ID__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_ID";
     public static bool RuleGroup() { return false; }
@@ -284,12 +280,12 @@ internal partial class APM_OPIVersion13Dict_ID_Base : ISpecification<PdfDictiona
 /// <summary>
 /// OPIVersion13Dict_Comments 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Comments : APM_OPIVersion13Dict_Comments_Base
+internal partial class APM_OPIVersion13Dict_Comments : APM_OPIVersion13Dict_Comments__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Comments_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Comments__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Comments";
     public static bool RuleGroup() { return false; }
@@ -311,12 +307,12 @@ internal partial class APM_OPIVersion13Dict_Comments_Base : ISpecification<PdfDi
 /// <summary>
 /// OPIVersion13Dict_Size 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Size : APM_OPIVersion13Dict_Size_Base
+internal partial class APM_OPIVersion13Dict_Size : APM_OPIVersion13Dict_Size__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Size_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Size__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Size";
     public static bool RuleGroup() { return false; }
@@ -338,12 +334,12 @@ internal partial class APM_OPIVersion13Dict_Size_Base : ISpecification<PdfDictio
 /// <summary>
 /// OPIVersion13Dict_CropRect 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_CropRect : APM_OPIVersion13Dict_CropRect_Base
+internal partial class APM_OPIVersion13Dict_CropRect : APM_OPIVersion13Dict_CropRect__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_CropRect_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_CropRect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_CropRect";
     public static bool RuleGroup() { return false; }
@@ -365,12 +361,12 @@ internal partial class APM_OPIVersion13Dict_CropRect_Base : ISpecification<PdfDi
 /// <summary>
 /// OPIVersion13Dict_CropFixed 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_CropFixed : APM_OPIVersion13Dict_CropFixed_Base
+internal partial class APM_OPIVersion13Dict_CropFixed : APM_OPIVersion13Dict_CropFixed__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_CropFixed_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_CropFixed__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_CropFixed";
     public static bool RuleGroup() { return false; }
@@ -392,12 +388,12 @@ internal partial class APM_OPIVersion13Dict_CropFixed_Base : ISpecification<PdfD
 /// <summary>
 /// OPIVersion13Dict_Position 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Position : APM_OPIVersion13Dict_Position_Base
+internal partial class APM_OPIVersion13Dict_Position : APM_OPIVersion13Dict_Position__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Position_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Position__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Position";
     public static bool RuleGroup() { return false; }
@@ -419,12 +415,12 @@ internal partial class APM_OPIVersion13Dict_Position_Base : ISpecification<PdfDi
 /// <summary>
 /// OPIVersion13Dict_Resolution 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Resolution : APM_OPIVersion13Dict_Resolution_Base
+internal partial class APM_OPIVersion13Dict_Resolution : APM_OPIVersion13Dict_Resolution__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Resolution_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Resolution__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Resolution";
     public static bool RuleGroup() { return false; }
@@ -446,12 +442,12 @@ internal partial class APM_OPIVersion13Dict_Resolution_Base : ISpecification<Pdf
 /// <summary>
 /// OPIVersion13Dict_ColorType 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_ColorType : APM_OPIVersion13Dict_ColorType_Base
+internal partial class APM_OPIVersion13Dict_ColorType : APM_OPIVersion13Dict_ColorType__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_ColorType_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_ColorType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_ColorType";
     public static bool RuleGroup() { return false; }
@@ -473,12 +469,12 @@ internal partial class APM_OPIVersion13Dict_ColorType_Base : ISpecification<PdfD
 /// <summary>
 /// OPIVersion13Dict_Color 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Color : APM_OPIVersion13Dict_Color_Base
+internal partial class APM_OPIVersion13Dict_Color : APM_OPIVersion13Dict_Color__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Color_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Color__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Color";
     public static bool RuleGroup() { return false; }
@@ -500,12 +496,12 @@ internal partial class APM_OPIVersion13Dict_Color_Base : ISpecification<PdfDicti
 /// <summary>
 /// OPIVersion13Dict_Tint 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Tint : APM_OPIVersion13Dict_Tint_Base
+internal partial class APM_OPIVersion13Dict_Tint : APM_OPIVersion13Dict_Tint__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Tint_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Tint__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Tint";
     public static bool RuleGroup() { return false; }
@@ -527,12 +523,12 @@ internal partial class APM_OPIVersion13Dict_Tint_Base : ISpecification<PdfDictio
 /// <summary>
 /// OPIVersion13Dict_Overprint 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Overprint : APM_OPIVersion13Dict_Overprint_Base
+internal partial class APM_OPIVersion13Dict_Overprint : APM_OPIVersion13Dict_Overprint__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Overprint_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Overprint__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Overprint";
     public static bool RuleGroup() { return false; }
@@ -554,12 +550,12 @@ internal partial class APM_OPIVersion13Dict_Overprint_Base : ISpecification<PdfD
 /// <summary>
 /// OPIVersion13Dict_ImageType 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_ImageType : APM_OPIVersion13Dict_ImageType_Base
+internal partial class APM_OPIVersion13Dict_ImageType : APM_OPIVersion13Dict_ImageType__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_ImageType_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_ImageType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_ImageType";
     public static bool RuleGroup() { return false; }
@@ -581,12 +577,12 @@ internal partial class APM_OPIVersion13Dict_ImageType_Base : ISpecification<PdfD
 /// <summary>
 /// OPIVersion13Dict_GrayMap 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_GrayMap : APM_OPIVersion13Dict_GrayMap_Base
+internal partial class APM_OPIVersion13Dict_GrayMap : APM_OPIVersion13Dict_GrayMap__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_GrayMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_GrayMap__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_GrayMap";
     public static bool RuleGroup() { return false; }
@@ -596,7 +592,11 @@ internal partial class APM_OPIVersion13Dict_GrayMap_Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfArray, APM_OPIVersion13Dict_GrayMap>(obj, "GrayMap", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var GrayMap = obj.Get("GrayMap");
+        if (!(eq(mod(((GrayMap as PdfArray)?.Count),2),0))) 
+        {
+            ctx.Fail<APM_OPIVersion13Dict_GrayMap>($"Value failed special case check: fn:Eval((fn:ArrayLength(GrayMap) mod 2)==0)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfIntegersGeneral, PdfArray>(stack, val, obj);
         
@@ -608,12 +608,12 @@ internal partial class APM_OPIVersion13Dict_GrayMap_Base : ISpecification<PdfDic
 /// <summary>
 /// OPIVersion13Dict_Transparency 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Transparency : APM_OPIVersion13Dict_Transparency_Base
+internal partial class APM_OPIVersion13Dict_Transparency : APM_OPIVersion13Dict_Transparency__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Transparency_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Transparency__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Transparency";
     public static bool RuleGroup() { return false; }
@@ -635,12 +635,12 @@ internal partial class APM_OPIVersion13Dict_Transparency_Base : ISpecification<P
 /// <summary>
 /// OPIVersion13Dict_Tags 
 /// </summary>
-internal partial class APM_OPIVersion13Dict_Tags : APM_OPIVersion13Dict_Tags_Base
+internal partial class APM_OPIVersion13Dict_Tags : APM_OPIVersion13Dict_Tags__Base
 {
 }
 
 
-internal partial class APM_OPIVersion13Dict_Tags_Base : ISpecification<PdfDictionary>
+internal partial class APM_OPIVersion13Dict_Tags__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OPIVersion13Dict_Tags";
     public static bool RuleGroup() { return false; }

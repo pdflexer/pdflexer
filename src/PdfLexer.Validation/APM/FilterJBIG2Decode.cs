@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FilterJBIG2Decode : APM_FilterJBIG2Decode_Base
+internal partial class APM_FilterJBIG2Decode : APM_FilterJBIG2Decode__Base
 {
 }
 
-internal partial class APM_FilterJBIG2Decode_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterJBIG2Decode__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FilterJBIG2Decode";
@@ -108,12 +108,12 @@ internal partial class APM_FilterJBIG2Decode_Base : ISpecification<PdfDictionary
 /// <summary>
 /// FilterJBIG2Decode_JBIG2Globals Table 12
 /// </summary>
-internal partial class APM_FilterJBIG2Decode_JBIG2Globals : APM_FilterJBIG2Decode_JBIG2Globals_Base
+internal partial class APM_FilterJBIG2Decode_JBIG2Globals : APM_FilterJBIG2Decode_JBIG2Globals__Base
 {
 }
 
 
-internal partial class APM_FilterJBIG2Decode_JBIG2Globals_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterJBIG2Decode_JBIG2Globals__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterJBIG2Decode_JBIG2Globals";
     public static bool RuleGroup() { return false; }

@@ -39,6 +39,8 @@ internal class EFunction : INode
                 return new EFunc_Not(parts);
             case "RectHeight":
                 return new EFunc_RectHeight(parts);
+            case "IsRequired":
+                return new EFunc_IsRequired(parts);
             default:
                 return new EFunction(type, contents);
         }
@@ -171,19 +173,7 @@ internal class EFunc_Deprecated : EFunBase
     }
 }
 
-internal class EFunc_IsPresent : EFunBase
-{
-    public EFunc_IsPresent(List<EGroup> inputs) : base(inputs) { }
-    public override void Write(StringBuilder sb)
-    {
-        using (var es = new EvalScope())
-        {
-            sb.Append($"obj.ContainsKey(");
-            Inputs[0].Write(sb);
-            sb.Append($")");
-        }
-    }
-}
+
 
 internal class EFunc_RequiredValue : EFunBase
 {
@@ -201,7 +191,7 @@ internal class EFunc_RequiredValue : EFunBase
     }
 }
 
-internal class EFunc_Extension : EFunBase
+internal class EFunc_Extension : EFunBase, INode
 {
     public EFunc_Extension(List<EGroup> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
@@ -219,28 +209,59 @@ internal class EFunc_Extension : EFunBase
         }
         sb.Append(")");
     }
-}
 
-
-internal class EFunc_SinceVersion : EFunBase
-{
-    public EFunc_SinceVersion(List<EGroup> inputs) : base(inputs) { }
-    public override void Write(StringBuilder sb)
+    IEnumerable<string> INode.GetRequiredValues()
     {
-        using (var es = new EvalScope())
-        {
-            sb.Append("ctx.Version >= ");
-            Inputs[0].Write(sb);
-        }
         if (Inputs.Count > 1)
         {
-            sb.Append(" && ");
-            Inputs[1].Write(sb);
+            foreach (var item in ((INode)Inputs[1]).GetRequiredValues())
+            {
+                yield return item;
+            }
         }
     }
 }
 
-internal class EFunc_BeforeVersion : EFunBase
+
+internal class EFunc_SinceVersion : EFunBase, INode
+{
+    public EFunc_SinceVersion(List<EGroup> inputs) : base(inputs) { }
+    public override void Write(StringBuilder sb)
+    {
+        if (Inputs.Count == 1)
+        {
+            using var es = new EvalScope();
+            sb.Append("ctx.Version >= ");
+            Inputs[0].Write(sb);
+        } else
+        {
+            using (var es = new EvalScope())
+            {
+                sb.Append("(ctx.Version < ");
+                Inputs[0].Write(sb);
+                sb.Append(" || (ctx.Version >= ");
+                Inputs[0].Write(sb);
+            }
+            sb.Append(" && ");
+            Inputs[1].Write(sb);
+            sb.Append("))");
+        }
+
+    }
+
+    IEnumerable<string> INode.GetRequiredValues()
+    {
+        if (Inputs.Count > 1)
+        {
+            foreach (var item in ((INode)Inputs[1]).GetRequiredValues())
+            {
+                yield return item;
+            }
+        }
+    }
+}
+
+internal class EFunc_BeforeVersion : EFunBase, INode
 {
     public EFunc_BeforeVersion(List<EGroup> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
@@ -254,6 +275,17 @@ internal class EFunc_BeforeVersion : EFunBase
         {
             sb.Append(" && ");
             Inputs[1].Write(sb);
+        }
+    }
+
+    IEnumerable<string> INode.GetRequiredValues()
+    {
+        if (Inputs.Count > 1)
+        {
+            foreach (var item in ((INode)Inputs[1]).GetRequiredValues())
+            {
+                yield return item;
+            }
         }
     }
 }

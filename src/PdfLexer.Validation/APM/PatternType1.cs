@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_PatternType1 : APM_PatternType1_Base
+internal partial class APM_PatternType1 : APM_PatternType1__Base
 {
 }
 
-internal partial class APM_PatternType1_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "PatternType1";
@@ -150,12 +150,12 @@ internal partial class APM_PatternType1_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PatternType1_Type Table 5 and Table 74
 /// </summary>
-internal partial class APM_PatternType1_Type : APM_PatternType1_Type_Base
+internal partial class APM_PatternType1_Type : APM_PatternType1_Type__Base
 {
 }
 
 
-internal partial class APM_PatternType1_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_Type";
     public static bool RuleGroup() { return false; }
@@ -166,13 +166,11 @@ internal partial class APM_PatternType1_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_PatternType1_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Pattern")) 
         {
             ctx.Fail<APM_PatternType1_Type>($"Invalid value {val}, allowed are: [Pattern]");
-        }
         }
         // no linked objects
         
@@ -184,12 +182,12 @@ internal partial class APM_PatternType1_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// PatternType1_PatternType 
 /// </summary>
-internal partial class APM_PatternType1_PatternType : APM_PatternType1_PatternType_Base
+internal partial class APM_PatternType1_PatternType : APM_PatternType1_PatternType__Base
 {
 }
 
 
-internal partial class APM_PatternType1_PatternType_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_PatternType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_PatternType";
     public static bool RuleGroup() { return false; }
@@ -200,13 +198,11 @@ internal partial class APM_PatternType1_PatternType_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfIntNumber, APM_PatternType1_PatternType>(obj, "PatternType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1)) 
         {
             ctx.Fail<APM_PatternType1_PatternType>($"Invalid value {val}, allowed are: [1]");
-        }
         }
         // no linked objects
         
@@ -218,12 +214,12 @@ internal partial class APM_PatternType1_PatternType_Base : ISpecification<PdfDic
 /// <summary>
 /// PatternType1_PaintType 
 /// </summary>
-internal partial class APM_PatternType1_PaintType : APM_PatternType1_PaintType_Base
+internal partial class APM_PatternType1_PaintType : APM_PatternType1_PaintType__Base
 {
 }
 
 
-internal partial class APM_PatternType1_PaintType_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_PaintType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_PaintType";
     public static bool RuleGroup() { return false; }
@@ -234,13 +230,11 @@ internal partial class APM_PatternType1_PaintType_Base : ISpecification<PdfDicti
         var val = ctx.GetRequired<PdfIntNumber, APM_PatternType1_PaintType>(obj, "PaintType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 2)) 
         {
             ctx.Fail<APM_PatternType1_PaintType>($"Invalid value {val}, allowed are: [1,2]");
-        }
         }
         // no linked objects
         
@@ -252,12 +246,12 @@ internal partial class APM_PatternType1_PaintType_Base : ISpecification<PdfDicti
 /// <summary>
 /// PatternType1_TilingType 
 /// </summary>
-internal partial class APM_PatternType1_TilingType : APM_PatternType1_TilingType_Base
+internal partial class APM_PatternType1_TilingType : APM_PatternType1_TilingType__Base
 {
 }
 
 
-internal partial class APM_PatternType1_TilingType_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_TilingType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_TilingType";
     public static bool RuleGroup() { return false; }
@@ -268,13 +262,11 @@ internal partial class APM_PatternType1_TilingType_Base : ISpecification<PdfDict
         var val = ctx.GetRequired<PdfIntNumber, APM_PatternType1_TilingType>(obj, "TilingType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 2 || val == 3)) 
         {
             ctx.Fail<APM_PatternType1_TilingType>($"Invalid value {val}, allowed are: [1,2,3]");
-        }
         }
         // no linked objects
         
@@ -286,12 +278,12 @@ internal partial class APM_PatternType1_TilingType_Base : ISpecification<PdfDict
 /// <summary>
 /// PatternType1_BBox 
 /// </summary>
-internal partial class APM_PatternType1_BBox : APM_PatternType1_BBox_Base
+internal partial class APM_PatternType1_BBox : APM_PatternType1_BBox__Base
 {
 }
 
 
-internal partial class APM_PatternType1_BBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_BBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_BBox";
     public static bool RuleGroup() { return false; }
@@ -313,12 +305,12 @@ internal partial class APM_PatternType1_BBox_Base : ISpecification<PdfDictionary
 /// <summary>
 /// PatternType1_XStep 
 /// </summary>
-internal partial class APM_PatternType1_XStep : APM_PatternType1_XStep_Base
+internal partial class APM_PatternType1_XStep : APM_PatternType1_XStep__Base
 {
 }
 
 
-internal partial class APM_PatternType1_XStep_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_XStep__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_XStep";
     public static bool RuleGroup() { return false; }
@@ -340,12 +332,12 @@ internal partial class APM_PatternType1_XStep_Base : ISpecification<PdfDictionar
 /// <summary>
 /// PatternType1_YStep 
 /// </summary>
-internal partial class APM_PatternType1_YStep : APM_PatternType1_YStep_Base
+internal partial class APM_PatternType1_YStep : APM_PatternType1_YStep__Base
 {
 }
 
 
-internal partial class APM_PatternType1_YStep_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_YStep__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_YStep";
     public static bool RuleGroup() { return false; }
@@ -367,12 +359,12 @@ internal partial class APM_PatternType1_YStep_Base : ISpecification<PdfDictionar
 /// <summary>
 /// PatternType1_Resources 
 /// </summary>
-internal partial class APM_PatternType1_Resources : APM_PatternType1_Resources_Base
+internal partial class APM_PatternType1_Resources : APM_PatternType1_Resources__Base
 {
 }
 
 
-internal partial class APM_PatternType1_Resources_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_Resources__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_Resources";
     public static bool RuleGroup() { return false; }
@@ -394,12 +386,12 @@ internal partial class APM_PatternType1_Resources_Base : ISpecification<PdfDicti
 /// <summary>
 /// PatternType1_Matrix 
 /// </summary>
-internal partial class APM_PatternType1_Matrix : APM_PatternType1_Matrix_Base
+internal partial class APM_PatternType1_Matrix : APM_PatternType1_Matrix__Base
 {
 }
 
 
-internal partial class APM_PatternType1_Matrix_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_Matrix__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_Matrix";
     public static bool RuleGroup() { return false; }
@@ -421,12 +413,12 @@ internal partial class APM_PatternType1_Matrix_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PatternType1_Length 
 /// </summary>
-internal partial class APM_PatternType1_Length : APM_PatternType1_Length_Base
+internal partial class APM_PatternType1_Length : APM_PatternType1_Length__Base
 {
 }
 
 
-internal partial class APM_PatternType1_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_Length";
     public static bool RuleGroup() { return false; }
@@ -448,12 +440,12 @@ internal partial class APM_PatternType1_Length_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PatternType1_Filter 
 /// </summary>
-internal partial class APM_PatternType1_Filter : APM_PatternType1_Filter_Base
+internal partial class APM_PatternType1_Filter : APM_PatternType1_Filter__Base
 {
 }
 
 
-internal partial class APM_PatternType1_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_Filter";
     public static bool RuleGroup() { return false; }
@@ -469,7 +461,12 @@ internal partial class APM_PatternType1_Filter_Base : ISpecification<PdfDictiona
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_PatternType1_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -479,13 +476,11 @@ internal partial class APM_PatternType1_Filter_Base : ISpecification<PdfDictiona
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_PatternType1_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -503,12 +498,12 @@ internal partial class APM_PatternType1_Filter_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PatternType1_DecodeParms 
 /// </summary>
-internal partial class APM_PatternType1_DecodeParms : APM_PatternType1_DecodeParms_Base
+internal partial class APM_PatternType1_DecodeParms : APM_PatternType1_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_PatternType1_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -524,7 +519,12 @@ internal partial class APM_PatternType1_DecodeParms_Base : ISpecification<PdfDic
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_PatternType1_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -541,6 +541,9 @@ internal partial class APM_PatternType1_DecodeParms_Base : ISpecification<PdfDic
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_PatternType1_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -560,12 +563,12 @@ internal partial class APM_PatternType1_DecodeParms_Base : ISpecification<PdfDic
 /// <summary>
 /// PatternType1_F 
 /// </summary>
-internal partial class APM_PatternType1_F : APM_PatternType1_F_Base
+internal partial class APM_PatternType1_F : APM_PatternType1_F__Base
 {
 }
 
 
-internal partial class APM_PatternType1_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_F";
     public static bool RuleGroup() { return false; }
@@ -608,12 +611,12 @@ internal partial class APM_PatternType1_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PatternType1_FFilter 
 /// </summary>
-internal partial class APM_PatternType1_FFilter : APM_PatternType1_FFilter_Base
+internal partial class APM_PatternType1_FFilter : APM_PatternType1_FFilter__Base
 {
 }
 
 
-internal partial class APM_PatternType1_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_FFilter";
     public static bool RuleGroup() { return false; }
@@ -629,7 +632,12 @@ internal partial class APM_PatternType1_FFilter_Base : ISpecification<PdfDiction
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_PatternType1_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -639,13 +647,11 @@ internal partial class APM_PatternType1_FFilter_Base : ISpecification<PdfDiction
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_PatternType1_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -663,12 +669,12 @@ internal partial class APM_PatternType1_FFilter_Base : ISpecification<PdfDiction
 /// <summary>
 /// PatternType1_FDecodeParms 
 /// </summary>
-internal partial class APM_PatternType1_FDecodeParms : APM_PatternType1_FDecodeParms_Base
+internal partial class APM_PatternType1_FDecodeParms : APM_PatternType1_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_PatternType1_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -684,7 +690,12 @@ internal partial class APM_PatternType1_FDecodeParms_Base : ISpecification<PdfDi
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_PatternType1_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -701,6 +712,9 @@ internal partial class APM_PatternType1_FDecodeParms_Base : ISpecification<PdfDi
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_PatternType1_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -720,12 +734,12 @@ internal partial class APM_PatternType1_FDecodeParms_Base : ISpecification<PdfDi
 /// <summary>
 /// PatternType1_DL 
 /// </summary>
-internal partial class APM_PatternType1_DL : APM_PatternType1_DL_Base
+internal partial class APM_PatternType1_DL : APM_PatternType1_DL__Base
 {
 }
 
 
-internal partial class APM_PatternType1_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_DL";
     public static bool RuleGroup() { return false; }
@@ -735,7 +749,11 @@ internal partial class APM_PatternType1_DL_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_PatternType1_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
+        {
+            ctx.Fail<APM_PatternType1_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -747,12 +765,12 @@ internal partial class APM_PatternType1_DL_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PatternType1_XUID 
 /// </summary>
-internal partial class APM_PatternType1_XUID : APM_PatternType1_XUID_Base
+internal partial class APM_PatternType1_XUID : APM_PatternType1_XUID__Base
 {
 }
 
 
-internal partial class APM_PatternType1_XUID_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType1_XUID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType1_XUID";
     public static bool RuleGroup() { return false; }

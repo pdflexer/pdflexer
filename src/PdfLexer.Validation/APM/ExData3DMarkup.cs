@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ExData3DMarkup : APM_ExData3DMarkup_Base
+internal partial class APM_ExData3DMarkup : APM_ExData3DMarkup__Base
 {
 }
 
-internal partial class APM_ExData3DMarkup_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExData3DMarkup__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ExData3DMarkup";
@@ -88,12 +88,12 @@ internal partial class APM_ExData3DMarkup_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ExData3DMarkup_Type Table 324
 /// </summary>
-internal partial class APM_ExData3DMarkup_Type : APM_ExData3DMarkup_Type_Base
+internal partial class APM_ExData3DMarkup_Type : APM_ExData3DMarkup_Type__Base
 {
 }
 
 
-internal partial class APM_ExData3DMarkup_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExData3DMarkup_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExData3DMarkup_Type";
     public static bool RuleGroup() { return false; }
@@ -104,13 +104,11 @@ internal partial class APM_ExData3DMarkup_Type_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_ExData3DMarkup_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ExData")) 
         {
             ctx.Fail<APM_ExData3DMarkup_Type>($"Invalid value {val}, allowed are: [ExData]");
-        }
         }
         // no linked objects
         
@@ -122,12 +120,12 @@ internal partial class APM_ExData3DMarkup_Type_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ExData3DMarkup_Subtype 
 /// </summary>
-internal partial class APM_ExData3DMarkup_Subtype : APM_ExData3DMarkup_Subtype_Base
+internal partial class APM_ExData3DMarkup_Subtype : APM_ExData3DMarkup_Subtype__Base
 {
 }
 
 
-internal partial class APM_ExData3DMarkup_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExData3DMarkup_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExData3DMarkup_Subtype";
     public static bool RuleGroup() { return false; }
@@ -138,13 +136,11 @@ internal partial class APM_ExData3DMarkup_Subtype_Base : ISpecification<PdfDicti
         var val = ctx.GetRequired<PdfName, APM_ExData3DMarkup_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Markup3D")) 
         {
             ctx.Fail<APM_ExData3DMarkup_Subtype>($"Invalid value {val}, allowed are: [Markup3D]");
-        }
         }
         // no linked objects
         
@@ -156,12 +152,12 @@ internal partial class APM_ExData3DMarkup_Subtype_Base : ISpecification<PdfDicti
 /// <summary>
 /// ExData3DMarkup_3DA 
 /// </summary>
-internal partial class APM_ExData3DMarkup_3DA : APM_ExData3DMarkup_3DA_Base
+internal partial class APM_ExData3DMarkup_3DA : APM_ExData3DMarkup_3DA__Base
 {
 }
 
 
-internal partial class APM_ExData3DMarkup_3DA_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExData3DMarkup_3DA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExData3DMarkup_3DA";
     public static bool RuleGroup() { return false; }
@@ -204,12 +200,12 @@ internal partial class APM_ExData3DMarkup_3DA_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ExData3DMarkup_3DV 
 /// </summary>
-internal partial class APM_ExData3DMarkup_3DV : APM_ExData3DMarkup_3DV_Base
+internal partial class APM_ExData3DMarkup_3DV : APM_ExData3DMarkup_3DV__Base
 {
 }
 
 
-internal partial class APM_ExData3DMarkup_3DV_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExData3DMarkup_3DV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExData3DMarkup_3DV";
     public static bool RuleGroup() { return false; }
@@ -231,12 +227,12 @@ internal partial class APM_ExData3DMarkup_3DV_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ExData3DMarkup_MD5 
 /// </summary>
-internal partial class APM_ExData3DMarkup_MD5 : APM_ExData3DMarkup_MD5_Base
+internal partial class APM_ExData3DMarkup_MD5 : APM_ExData3DMarkup_MD5__Base
 {
 }
 
 
-internal partial class APM_ExData3DMarkup_MD5_Base : ISpecification<PdfDictionary>
+internal partial class APM_ExData3DMarkup_MD5__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ExData3DMarkup_MD5";
     public static bool RuleGroup() { return false; }

@@ -19,7 +19,7 @@ internal partial class APM_ArrayOfArraysPaths : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -36,7 +36,11 @@ internal partial class APM_ArrayOfArraysPaths_0 : ISpecification<PdfArray>
     {
         var val = ctx.GetRequired<PdfArray, APM_ArrayOfArraysPaths_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(eq(((val as PdfArray)?.Count),2))) 
+        {
+            ctx.Fail<APM_ArrayOfArraysPaths_0>($"Value failed special case check: fn:Eval(fn:ArrayLength(0)==2)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfPaths, PdfArray>(stack, val, obj);
         
@@ -62,7 +66,11 @@ internal partial class APM_ArrayOfArraysPaths_x : ISpecification<PdfArray>
         {
             var val = ctx.GetOptional<PdfArray, APM_ArrayOfArraysPaths_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
-            // TODO special case
+            
+            if (!((eq(((val as PdfArray)?.Count),2)||eq(((val as PdfArray)?.Count),6)))) 
+            {
+                ctx.Fail<APM_ArrayOfArraysPaths_x>($"Value failed special case check: fn:Eval((fn:ArrayLength(*)==2) || (fn:ArrayLength(*)==6))");
+            }
             // no value restrictions
             ctx.Run<APM_ArrayOfPaths, PdfArray>(stack, val, obj);
             

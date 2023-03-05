@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FontType0 : APM_FontType0_Base
+internal partial class APM_FontType0 : APM_FontType0__Base
 {
 }
 
-internal partial class APM_FontType0_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType0__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FontType0";
@@ -139,12 +139,12 @@ internal partial class APM_FontType0_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontType0_Type Table 119
 /// </summary>
-internal partial class APM_FontType0_Type : APM_FontType0_Type_Base
+internal partial class APM_FontType0_Type : APM_FontType0_Type__Base
 {
 }
 
 
-internal partial class APM_FontType0_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType0_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType0_Type";
     public static bool RuleGroup() { return false; }
@@ -155,13 +155,11 @@ internal partial class APM_FontType0_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_FontType0_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Font")) 
         {
             ctx.Fail<APM_FontType0_Type>($"Invalid value {val}, allowed are: [Font]");
-        }
         }
         // no linked objects
         
@@ -173,12 +171,12 @@ internal partial class APM_FontType0_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontType0_Subtype 
 /// </summary>
-internal partial class APM_FontType0_Subtype : APM_FontType0_Subtype_Base
+internal partial class APM_FontType0_Subtype : APM_FontType0_Subtype__Base
 {
 }
 
 
-internal partial class APM_FontType0_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType0_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType0_Subtype";
     public static bool RuleGroup() { return false; }
@@ -189,13 +187,11 @@ internal partial class APM_FontType0_Subtype_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_FontType0_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Type0")) 
         {
             ctx.Fail<APM_FontType0_Subtype>($"Invalid value {val}, allowed are: [Type0]");
-        }
         }
         // no linked objects
         
@@ -207,12 +203,12 @@ internal partial class APM_FontType0_Subtype_Base : ISpecification<PdfDictionary
 /// <summary>
 /// FontType0_BaseFont 
 /// </summary>
-internal partial class APM_FontType0_BaseFont : APM_FontType0_BaseFont_Base
+internal partial class APM_FontType0_BaseFont : APM_FontType0_BaseFont__Base
 {
 }
 
 
-internal partial class APM_FontType0_BaseFont_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType0_BaseFont__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType0_BaseFont";
     public static bool RuleGroup() { return false; }
@@ -234,12 +230,12 @@ internal partial class APM_FontType0_BaseFont_Base : ISpecification<PdfDictionar
 /// <summary>
 /// FontType0_Encoding Table 116
 /// </summary>
-internal partial class APM_FontType0_Encoding : APM_FontType0_Encoding_Base
+internal partial class APM_FontType0_Encoding : APM_FontType0_Encoding__Base
 {
 }
 
 
-internal partial class APM_FontType0_Encoding_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType0_Encoding__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType0_Encoding";
     public static bool RuleGroup() { return false; }
@@ -256,13 +252,11 @@ internal partial class APM_FontType0_Encoding_Base : ISpecification<PdfDictionar
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "GB-EUC-H" || val == "GB-EUC-V" || val == "GBpc-EUC-H" || val == "GBpc-EUC-V" || val == "GBK-EUC-H" || val == "GBK-EUC-V" || val == "GBKp-EUC-H" || val == "GBKp-EUC-V" || val == "GBK2K-H" || val == "GBK2K-V" || val == "UniGB-UCS2-H" || val == "UniGB-UCS2-V" || val == "UniGB-UTF16-H" || val == "UniGB-UTF16-V" || val == "B5pc-H" || val == "B5pc-V" || val == "HKscs-B5-H" || val == "HKscs-B5-V" || val == "ETen-B5-H" || val == "ETen-B5-V" || val == "ETenms-B5-H" || val == "ETenms-B5-V" || val == "CNS-EUC-H" || val == "CNS-EUC-V" || val == "UniCNS-UCS2-H" || val == "UniCNS-UCS2-V" || val == "UniCNS-UTF16-H" || val == "UniCNS-UTF16-V" || val == "83pv-RKSJ-H" || val == "90ms-RKSJ-H" || val == "90ms-RKSJ-V" || val == "90msp-RKSJ-H" || val == "90msp-RKSJ-V" || val == "90pv-RKSJ-H" || val == "Add-RKSJ-H" || val == "Add-RKSJ-V" || val == "EUC-H" || val == "EUC-V" || val == "Ext-RKSJ-H" || val == "Ext-RKSJ-V" || val == "H" || val == "V" || val == "UniJIS-UCS2-H" || val == "UniJIS-UCS2-V" || val == "UniJIS-UCS2-HW-H" || val == "UniJIS-UCS2-HW-V" || val == "UniJIS-UTF16-H" || val == "UniJIS-UTF16-V" || val == "KSC-EUC-H" || val == "KSC-EUC-V" || val == "KSCms-UHC-H" || val == "KSCms-UHC-V" || val == "KSCms-UHC-HW-H" || val == "KSCms-UHC-HW-V" || val == "KSCpc-EUC-H" || val == "UniKS-UCS2-H" || val == "UniKS-UCS2-V" || val == "UniKS-UTF16-H" || val == "UniKS-UTF16-V" || val == "Identity-H" || val == "Identity-V")) 
                     {
                         ctx.Fail<APM_FontType0_Encoding>($"Invalid value {val}, allowed are: [GB-EUC-H,GB-EUC-V,GBpc-EUC-H,GBpc-EUC-V,GBK-EUC-H,GBK-EUC-V,GBKp-EUC-H,GBKp-EUC-V,GBK2K-H,GBK2K-V,UniGB-UCS2-H,UniGB-UCS2-V,UniGB-UTF16-H,UniGB-UTF16-V,B5pc-H,B5pc-V,HKscs-B5-H,HKscs-B5-V,ETen-B5-H,ETen-B5-V,ETenms-B5-H,ETenms-B5-V,CNS-EUC-H,CNS-EUC-V,UniCNS-UCS2-H,UniCNS-UCS2-V,UniCNS-UTF16-H,UniCNS-UTF16-V,83pv-RKSJ-H,90ms-RKSJ-H,90ms-RKSJ-V,90msp-RKSJ-H,90msp-RKSJ-V,90pv-RKSJ-H,Add-RKSJ-H,Add-RKSJ-V,EUC-H,EUC-V,Ext-RKSJ-H,Ext-RKSJ-V,H,V,UniJIS-UCS2-H,UniJIS-UCS2-V,UniJIS-UCS2-HW-H,UniJIS-UCS2-HW-V,UniJIS-UTF16-H,UniJIS-UTF16-V,KSC-EUC-H,KSC-EUC-V,KSCms-UHC-H,KSCms-UHC-V,KSCms-UHC-HW-H,KSCms-UHC-HW-V,KSCpc-EUC-H,UniKS-UCS2-H,UniKS-UCS2-V,UniKS-UTF16-H,UniKS-UTF16-V,Identity-H,Identity-V]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -289,12 +283,12 @@ internal partial class APM_FontType0_Encoding_Base : ISpecification<PdfDictionar
 /// <summary>
 /// FontType0_DescendantFonts 
 /// </summary>
-internal partial class APM_FontType0_DescendantFonts : APM_FontType0_DescendantFonts_Base
+internal partial class APM_FontType0_DescendantFonts : APM_FontType0_DescendantFonts__Base
 {
 }
 
 
-internal partial class APM_FontType0_DescendantFonts_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType0_DescendantFonts__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType0_DescendantFonts";
     public static bool RuleGroup() { return false; }
@@ -316,12 +310,12 @@ internal partial class APM_FontType0_DescendantFonts_Base : ISpecification<PdfDi
 /// <summary>
 /// FontType0_ToUnicode 
 /// </summary>
-internal partial class APM_FontType0_ToUnicode : APM_FontType0_ToUnicode_Base
+internal partial class APM_FontType0_ToUnicode : APM_FontType0_ToUnicode__Base
 {
 }
 
 
-internal partial class APM_FontType0_ToUnicode_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType0_ToUnicode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType0_ToUnicode";
     public static bool RuleGroup() { return false; }

@@ -3,6 +3,7 @@ using DotNext;
 using pdflexer.ArlingtonGen.Expressions;
 using PdfLexer;
 using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
@@ -69,15 +70,16 @@ internal abstract class GenBase
         }
         else
         {
+            var setters = string.Join('\n', req.GetComplexVars().Where(x => !string.IsNullOrEmpty(x)).Distinct().Select(x => GetSetter(x, "array", "val")));
             return $$"""
-{
-    {{string.Join('\n', req.GetComplexVars().Distinct().Select(x => GetSetter(x, "array", "val")))}}
-    if (({{req.GetComplex()}}) && {{prop}} == null) {
-        ctx.Fail<APM_{{root}}_{{key}}>("{{key}} is required"); return;
-    } else if ({{prop}} == null) {
-        return;
-    }
+
+{{setters}}
+if (({{req.GetComplex()}}) && {{prop}} == null) {
+    ctx.Fail<APM_{{root}}_{{key}}>("{{key}} is required"); return;
+} else if ({{prop}} == null) {
+    return;
 }
+
 """;
         }
     }
@@ -144,6 +146,26 @@ internal abstract class GenBase
 """;
                 first = false;
             }
+            foreach (var t in PossibleValues.SplitWithFns(link.Trim('[').Trim(']')).Where(x => x.Contains(":")))
+            {
+                var objName = "";
+                var exp = Exp.Tokenize(t);
+                var sbe = new StringBuilder();
+                using var scope = new EvalScope((w, v, a) => {
+                    w.Append($"APM_");
+                    objName = v.Text;
+                    w.Append(v.Text);
+                    w.Append($".MatchesType(ctx, {val})");
+                });
+                exp.ForEach(x => x.Write(sbe));
+                txt += $$"""
+{{(first ? "if" : " else if")}} ({{sbe.ToString()}}) 
+{
+    ctx.Run<APM_{{objName}}, {{linkType}}>(stack, {{val}}, obj);
+}
+""";
+                first = false;
+            }
             txt += $$"""
 else 
 {
@@ -160,6 +182,7 @@ ctx.Run<APM_{{nm}}, {{linkType}}>(stack, {{val}}, obj);
 
     protected string GetSingleComplexType(string key)
     {
+        VariableContext.Vars[key] = "utval";
         var ir = new IndirectRef(Row).GetIndirectRefEnum();
         return $$"""
 var (utval, wasIR) = ctx.GetOptional<APM_{{RootName}}_{{Key}}>(obj, {{key}}, {{ir}});
@@ -189,9 +212,12 @@ switch ({{varName}}.Type)
 
         var type = GetLexerType();
 
+        VariableContext.Vars[key] = "val";
+
         var txt = "";
         if (req.IsSimple())
         {
+            
             txt += req.GetSimple() ? $"""var val = ctx.GetRequired<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});"""
                 : $"""
 var val = ctx.GetOptional<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});
@@ -201,15 +227,12 @@ var val = ctx.GetOptional<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});
         else
         {
             txt += $$"""
-{{type}}? val;
-{
-{{Ident(4, string.Join('\n', req.GetComplexVars().Distinct().Select(x=> GetSetter(x, "array", "val"))))}}
-    if ({{req.GetComplex()}}) {
-        val = ctx.GetRequired<{{type}}, APM_{{RootName}}_{{Key}}>(obj, {{key}}, {{ir}});
-    } else {
-        val = ctx.GetOptional<{{type}}, APM_{{RootName}}_{{Key}}>(obj, {{key}}, {{ir}});
-    }
-    if (val == null) { return; }
+{{string.Join('\n', req.GetComplexVars().Distinct().Select(x=> GetSetter(x, "array", "val")))}}
+var val = ctx.GetOptional<{{type}}, APM_{{RootName}}_{{Key}}>(obj, {{key}}, {{ir}});
+if (({{req.GetComplex()}}) && val == null) {
+    ctx.Fail<APM_{{RootName}}_{{Key}}>("{{Key}} is required when '{{Row.Required}}"); return;
+} else if (val == null) {
+    return;
 }
 
 """;
@@ -220,7 +243,7 @@ var val = ctx.GetOptional<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});
 
     protected string GetSingleSimpleTypeChecks(string key)
     {
-        var sc = new SpecialCase(Row);
+        var sc = new SpecialCase(this, Row);
         var pv = new PossibleValues(this);
         var txt = "";
         txt += sc.GetSpecialCase() + '\n';
@@ -236,10 +259,12 @@ var val = ctx.GetOptional<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});
         var txt = "";
         if (fns.Any())
         {
-            txt += "// funcs: " + string.Join(",", fns) + "\n";
+            txt += "// TODO funcs: " + string.Join(",", fns) + "\n";
         }
+        var orig = VariableContext.Vars.ToDictionary(x => x.Key, x => x.Value);
         foreach (var type in types.Where(x => !x.Contains("fn:")).GroupBy(x => typemap[x]))
         {
+            VariableContext.Vars = orig.ToDictionary(x => x.Key, x => x.Value);
             var vals = type.ToList();
             if (vals.Count == 1)
             {
@@ -257,7 +282,7 @@ var val = ctx.GetOptional<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});
     private string MultiCaseStatement(string type)
     {
         if (type.StartsWith("fn:")) { return "// TODO: " + type; }
-        var sc = new SpecialCase(Row);
+        var sc = new SpecialCase(this, Row);
         var pv = new PossibleValues(this);
         return $$"""
 case PdfObjectType.{{typemap[type]}}:
@@ -276,43 +301,37 @@ case PdfObjectType.{{typemap[type]}}:
 
     private static Regex badVar = new Regex("@[0-9\\*]+");
 
-    private string GetSetter(string value, string type, string name)
+    internal string GetSetter(string value, string type, string name)
     {
         var typeDeclaration = type == "number" || type == "integer" ? "IPdfObject" : "var";
         var nm = value[0] == '@' ? value.Substring(1) : value;
-        if (nm == Row.Key)
-        {
-            if (badVar.IsMatch(value))
-            {
-                var nv = value.Replace("@", "x").Replace("*", "");
-                VariableContext.VarSub = nv;
-                return $"{typeDeclaration} {nv} = {name};";
-            }
-            else
-            {
-                VariableContext.VarSub = value;
-                return $"{typeDeclaration} {value} = {name};";
-            }
-        }
-        // return "";
-        if (int.TryParse(nm, out _))
-        {
-            return "";
-        }
 
         var cleansed = Regex.Replace(value, @"[^A-Za-z0-9]+", "");
+        if (int.TryParse(cleansed, out _))
+        {
+            cleansed = "v" + cleansed;
+        }
         int? i = null;
-        if (VariableContext.Vars.ContainsValue(cleansed + i?.ToString()))
+        while (VariableContext.Vars.ContainsValue(cleansed + i?.ToString()))
         {
             if (i == null) { i = 2; } else { i++; }
         }
         var clean = cleansed + i?.ToString();
+        clean = clean.TrimStart('@');
         VariableContext.Vars[value] = clean;
+        if (value.StartsWith("@"))
+        {
+            VariableContext.Vars[value.Substring(1)] = clean;
+        }
+        
 
         if (nm.Contains("::"))
         {
             var segs = nm.Split("::").ToList();
-            if (segs.Last() == "*") { segs.RemoveAt(segs.Count - 1); }
+            if (segs.Last() == "" || segs.Last() == "*") 
+            { 
+                segs.RemoveAt(segs.Count - 1);
+            }
             var txt = $"var {clean} = ";
             bool trim = true;
             if (segs[0] == "parent" && segs[1] == "parent")
@@ -326,19 +345,29 @@ case PdfObjectType.{{typemap[type]}}:
                 txt += "parent";
                 segs.RemoveAt(0);
                 trim = false;
-            } else
+            }
+            else if (segs[0] == "*")
+            {
+                txt += "val";
+                segs.RemoveAt(0);
+                trim = true;
+            }
+            else
             {
                 txt += "obj";
             }
 
-            var props = string.Join("", segs.Select(x => $"?.Get(\"{x}\")"));
+            var props = string.Join("", segs.Select(x => $"?.Get(\"{x.TrimStart('@')}\")"));
             if (trim)
             {
                 props = props.TrimStart('?');
             }
             return txt += props + ";";
         }
-
+        if (int.TryParse(nm, out _))
+        {
+            return $"var {clean} = obj.Get({nm});";
+        }
         return $"var {clean} = obj.Get(\"{nm}\");";
     }
 

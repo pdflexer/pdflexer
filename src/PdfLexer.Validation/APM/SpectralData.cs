@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SpectralData : APM_SpectralData_Base
+internal partial class APM_SpectralData : APM_SpectralData__Base
 {
 }
 
-internal partial class APM_SpectralData_Base : ISpecification<PdfDictionary>
+internal partial class APM_SpectralData__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SpectralData";
@@ -35,12 +35,12 @@ internal partial class APM_SpectralData_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SpectralData_* Table 401, SpectralData cell
 /// </summary>
-internal partial class APM_SpectralData_CatchAll : APM_SpectralData_CatchAll_Base
+internal partial class APM_SpectralData_CatchAll : APM_SpectralData_CatchAll__Base
 {
 }
 
 
-internal partial class APM_SpectralData_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_SpectralData_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SpectralData_*";
     public static bool RuleGroup() { return false; }

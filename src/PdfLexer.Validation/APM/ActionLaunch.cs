@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionLaunch : APM_ActionLaunch_Base
+internal partial class APM_ActionLaunch : APM_ActionLaunch__Base
 {
 }
 
-internal partial class APM_ActionLaunch_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionLaunch__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionLaunch";
@@ -151,12 +151,12 @@ internal partial class APM_ActionLaunch_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionLaunch_Type Table 196 and Table 207
 /// </summary>
-internal partial class APM_ActionLaunch_Type : APM_ActionLaunch_Type_Base
+internal partial class APM_ActionLaunch_Type : APM_ActionLaunch_Type__Base
 {
 }
 
 
-internal partial class APM_ActionLaunch_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionLaunch_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionLaunch_Type";
     public static bool RuleGroup() { return false; }
@@ -167,13 +167,11 @@ internal partial class APM_ActionLaunch_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_ActionLaunch_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionLaunch_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -185,12 +183,12 @@ internal partial class APM_ActionLaunch_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ActionLaunch_S 
 /// </summary>
-internal partial class APM_ActionLaunch_S : APM_ActionLaunch_S_Base
+internal partial class APM_ActionLaunch_S : APM_ActionLaunch_S__Base
 {
 }
 
 
-internal partial class APM_ActionLaunch_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionLaunch_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionLaunch_S";
     public static bool RuleGroup() { return false; }
@@ -201,13 +199,11 @@ internal partial class APM_ActionLaunch_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_ActionLaunch_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Launch")) 
         {
             ctx.Fail<APM_ActionLaunch_S>($"Invalid value {val}, allowed are: [Launch]");
-        }
         }
         // no linked objects
         
@@ -219,12 +215,12 @@ internal partial class APM_ActionLaunch_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionLaunch_Next 
 /// </summary>
-internal partial class APM_ActionLaunch_Next : APM_ActionLaunch_Next_Base
+internal partial class APM_ActionLaunch_Next : APM_ActionLaunch_Next__Base
 {
 }
 
 
-internal partial class APM_ActionLaunch_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionLaunch_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionLaunch_Next";
     public static bool RuleGroup() { return false; }
@@ -287,6 +283,36 @@ internal partial class APM_ActionLaunch_Next_Base : ISpecification<PdfDictionary
                     } else if (APM_ActionImportData.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionImportData, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionNOP.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionNOP, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionSetState.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionSetState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionSetOCGState.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionSetOCGState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionRendition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRendition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionTransition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionTransition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ActionECMAScript.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ActionLaunch_Next>("Next did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,fn:IsPDFVersion(1.2,ActionNOP),fn:IsPDFVersion(1.2,ActionSetState),ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,fn:SinceVersion(1.5,ActionSetOCGState),fn:SinceVersion(1.5,ActionRendition),fn:SinceVersion(1.5,ActionTransition),fn:SinceVersion(1.6,ActionGoTo3DView),fn:SinceVersion(1.3,ActionECMAScript),fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -306,12 +332,12 @@ internal partial class APM_ActionLaunch_Next_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ActionLaunch_F 
 /// </summary>
-internal partial class APM_ActionLaunch_F : APM_ActionLaunch_F_Base
+internal partial class APM_ActionLaunch_F : APM_ActionLaunch_F__Base
 {
 }
 
 
-internal partial class APM_ActionLaunch_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionLaunch_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionLaunch_F";
     public static bool RuleGroup() { return false; }
@@ -320,14 +346,14 @@ internal partial class APM_ActionLaunch_F_Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var (utval, wasIR) = ctx.GetOptional<APM_ActionLaunch_F>(obj, "F", IndirectRequirement.Either);
-        {
-            
-            if ((!obj.ContainsKey("Win")||obj.ContainsKey("Mac")||obj.ContainsKey("Unix")) && utval == null) {
-                ctx.Fail<APM_ActionLaunch_F>("F is required"); return;
-            } else if (utval == null) {
-                return;
-            }
+        
+        
+        if ((!obj.ContainsKey("Win")||obj.ContainsKey("Mac")||obj.ContainsKey("Unix")) && utval == null) {
+            ctx.Fail<APM_ActionLaunch_F>("F is required"); return;
+        } else if (utval == null) {
+            return;
         }
+        
         switch (utval.Type) 
         {
             case PdfObjectType.DictionaryObj:
@@ -361,12 +387,12 @@ internal partial class APM_ActionLaunch_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionLaunch_Win 
 /// </summary>
-internal partial class APM_ActionLaunch_Win : APM_ActionLaunch_Win_Base
+internal partial class APM_ActionLaunch_Win : APM_ActionLaunch_Win__Base
 {
 }
 
 
-internal partial class APM_ActionLaunch_Win_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionLaunch_Win__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionLaunch_Win";
     public static bool RuleGroup() { return false; }
@@ -388,12 +414,12 @@ internal partial class APM_ActionLaunch_Win_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionLaunch_Mac 
 /// </summary>
-internal partial class APM_ActionLaunch_Mac : APM_ActionLaunch_Mac_Base
+internal partial class APM_ActionLaunch_Mac : APM_ActionLaunch_Mac__Base
 {
 }
 
 
-internal partial class APM_ActionLaunch_Mac_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionLaunch_Mac__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionLaunch_Mac";
     public static bool RuleGroup() { return false; }
@@ -415,12 +441,12 @@ internal partial class APM_ActionLaunch_Mac_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionLaunch_Unix 
 /// </summary>
-internal partial class APM_ActionLaunch_Unix : APM_ActionLaunch_Unix_Base
+internal partial class APM_ActionLaunch_Unix : APM_ActionLaunch_Unix__Base
 {
 }
 
 
-internal partial class APM_ActionLaunch_Unix_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionLaunch_Unix__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionLaunch_Unix";
     public static bool RuleGroup() { return false; }
@@ -442,12 +468,12 @@ internal partial class APM_ActionLaunch_Unix_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ActionLaunch_NewWindow 
 /// </summary>
-internal partial class APM_ActionLaunch_NewWindow : APM_ActionLaunch_NewWindow_Base
+internal partial class APM_ActionLaunch_NewWindow : APM_ActionLaunch_NewWindow__Base
 {
 }
 
 
-internal partial class APM_ActionLaunch_NewWindow_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionLaunch_NewWindow__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionLaunch_NewWindow";
     public static bool RuleGroup() { return false; }

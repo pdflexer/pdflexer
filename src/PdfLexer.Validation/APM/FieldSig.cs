@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FieldSig : APM_FieldSig_Base
+internal partial class APM_FieldSig : APM_FieldSig__Base
 {
 }
 
-internal partial class APM_FieldSig_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FieldSig";
@@ -133,12 +133,12 @@ internal partial class APM_FieldSig_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_FT Table 226, Table 228 and Table 235
 /// </summary>
-internal partial class APM_FieldSig_FT : APM_FieldSig_FT_Base
+internal partial class APM_FieldSig_FT : APM_FieldSig_FT__Base
 {
 }
 
 
-internal partial class APM_FieldSig_FT_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_FT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_FT";
     public static bool RuleGroup() { return false; }
@@ -149,13 +149,11 @@ internal partial class APM_FieldSig_FT_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_FieldSig_FT>(obj, "FT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Sig")) 
         {
             ctx.Fail<APM_FieldSig_FT>($"Invalid value {val}, allowed are: [Sig]");
-        }
         }
         // no linked objects
         
@@ -167,12 +165,12 @@ internal partial class APM_FieldSig_FT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_Parent 
 /// </summary>
-internal partial class APM_FieldSig_Parent : APM_FieldSig_Parent_Base
+internal partial class APM_FieldSig_Parent : APM_FieldSig_Parent__Base
 {
 }
 
 
-internal partial class APM_FieldSig_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_Parent";
     public static bool RuleGroup() { return false; }
@@ -218,12 +216,12 @@ internal partial class APM_FieldSig_Parent_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_Kids 
 /// </summary>
-internal partial class APM_FieldSig_Kids : APM_FieldSig_Kids_Base
+internal partial class APM_FieldSig_Kids : APM_FieldSig_Kids__Base
 {
 }
 
 
-internal partial class APM_FieldSig_Kids_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_Kids__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_Kids";
     public static bool RuleGroup() { return false; }
@@ -245,12 +243,12 @@ internal partial class APM_FieldSig_Kids_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_T 
 /// </summary>
-internal partial class APM_FieldSig_T : APM_FieldSig_T_Base
+internal partial class APM_FieldSig_T : APM_FieldSig_T__Base
 {
 }
 
 
-internal partial class APM_FieldSig_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_T";
     public static bool RuleGroup() { return false; }
@@ -272,12 +270,12 @@ internal partial class APM_FieldSig_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_TU 
 /// </summary>
-internal partial class APM_FieldSig_TU : APM_FieldSig_TU_Base
+internal partial class APM_FieldSig_TU : APM_FieldSig_TU__Base
 {
 }
 
 
-internal partial class APM_FieldSig_TU_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_TU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_TU";
     public static bool RuleGroup() { return false; }
@@ -299,12 +297,12 @@ internal partial class APM_FieldSig_TU_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_TM 
 /// </summary>
-internal partial class APM_FieldSig_TM : APM_FieldSig_TM_Base
+internal partial class APM_FieldSig_TM : APM_FieldSig_TM__Base
 {
 }
 
 
-internal partial class APM_FieldSig_TM_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_TM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_TM";
     public static bool RuleGroup() { return false; }
@@ -326,12 +324,12 @@ internal partial class APM_FieldSig_TM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_Ff 
 /// </summary>
-internal partial class APM_FieldSig_Ff : APM_FieldSig_Ff_Base
+internal partial class APM_FieldSig_Ff : APM_FieldSig_Ff__Base
 {
 }
 
 
-internal partial class APM_FieldSig_Ff_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_Ff__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_Ff";
     public static bool RuleGroup() { return false; }
@@ -341,7 +339,11 @@ internal partial class APM_FieldSig_Ff_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldSig_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_FieldSig_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(4,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -353,12 +355,12 @@ internal partial class APM_FieldSig_Ff_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_V 
 /// </summary>
-internal partial class APM_FieldSig_V : APM_FieldSig_V_Base
+internal partial class APM_FieldSig_V : APM_FieldSig_V__Base
 {
 }
 
 
-internal partial class APM_FieldSig_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_V";
     public static bool RuleGroup() { return false; }
@@ -389,12 +391,12 @@ internal partial class APM_FieldSig_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_DV 
 /// </summary>
-internal partial class APM_FieldSig_DV : APM_FieldSig_DV_Base
+internal partial class APM_FieldSig_DV : APM_FieldSig_DV__Base
 {
 }
 
 
-internal partial class APM_FieldSig_DV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_DV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_DV";
     public static bool RuleGroup() { return false; }
@@ -425,12 +427,12 @@ internal partial class APM_FieldSig_DV_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_AA 
 /// </summary>
-internal partial class APM_FieldSig_AA : APM_FieldSig_AA_Base
+internal partial class APM_FieldSig_AA : APM_FieldSig_AA__Base
 {
 }
 
 
-internal partial class APM_FieldSig_AA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_AA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_AA";
     public static bool RuleGroup() { return false; }
@@ -452,12 +454,12 @@ internal partial class APM_FieldSig_AA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_DA required if field contains variable text
 /// </summary>
-internal partial class APM_FieldSig_DA : APM_FieldSig_DA_Base
+internal partial class APM_FieldSig_DA : APM_FieldSig_DA__Base
 {
 }
 
 
-internal partial class APM_FieldSig_DA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_DA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_DA";
     public static bool RuleGroup() { return false; }
@@ -479,12 +481,12 @@ internal partial class APM_FieldSig_DA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_Q 
 /// </summary>
-internal partial class APM_FieldSig_Q : APM_FieldSig_Q_Base
+internal partial class APM_FieldSig_Q : APM_FieldSig_Q__Base
 {
 }
 
 
-internal partial class APM_FieldSig_Q_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_Q__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_Q";
     public static bool RuleGroup() { return false; }
@@ -495,13 +497,11 @@ internal partial class APM_FieldSig_Q_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldSig_Q>(obj, "Q", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_FieldSig_Q>($"Invalid value {val}, allowed are: [0,1,2]");
-        }
         }
         // no linked objects
         
@@ -513,12 +513,12 @@ internal partial class APM_FieldSig_Q_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_DS 
 /// </summary>
-internal partial class APM_FieldSig_DS : APM_FieldSig_DS_Base
+internal partial class APM_FieldSig_DS : APM_FieldSig_DS__Base
 {
 }
 
 
-internal partial class APM_FieldSig_DS_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_DS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_DS";
     public static bool RuleGroup() { return false; }
@@ -540,12 +540,12 @@ internal partial class APM_FieldSig_DS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_RV 
 /// </summary>
-internal partial class APM_FieldSig_RV : APM_FieldSig_RV_Base
+internal partial class APM_FieldSig_RV : APM_FieldSig_RV__Base
 {
 }
 
 
-internal partial class APM_FieldSig_RV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_RV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_RV";
     public static bool RuleGroup() { return false; }
@@ -588,12 +588,12 @@ internal partial class APM_FieldSig_RV_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_Lock 
 /// </summary>
-internal partial class APM_FieldSig_Lock : APM_FieldSig_Lock_Base
+internal partial class APM_FieldSig_Lock : APM_FieldSig_Lock__Base
 {
 }
 
 
-internal partial class APM_FieldSig_Lock_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_Lock__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_Lock";
     public static bool RuleGroup() { return false; }
@@ -615,12 +615,12 @@ internal partial class APM_FieldSig_Lock_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldSig_SV 
 /// </summary>
-internal partial class APM_FieldSig_SV : APM_FieldSig_SV_Base
+internal partial class APM_FieldSig_SV : APM_FieldSig_SV__Base
 {
 }
 
 
-internal partial class APM_FieldSig_SV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldSig_SV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldSig_SV";
     public static bool RuleGroup() { return false; }

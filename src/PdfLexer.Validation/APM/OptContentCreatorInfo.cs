@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentCreatorInfo : APM_OptContentCreatorInfo_Base
+internal partial class APM_OptContentCreatorInfo : APM_OptContentCreatorInfo__Base
 {
 }
 
-internal partial class APM_OptContentCreatorInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentCreatorInfo__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentCreatorInfo";
@@ -106,12 +106,12 @@ internal partial class APM_OptContentCreatorInfo_Base : ISpecification<PdfDictio
 /// <summary>
 /// OptContentCreatorInfo_Creator Table 100, CreatorInfo cell
 /// </summary>
-internal partial class APM_OptContentCreatorInfo_Creator : APM_OptContentCreatorInfo_Creator_Base
+internal partial class APM_OptContentCreatorInfo_Creator : APM_OptContentCreatorInfo_Creator__Base
 {
 }
 
 
-internal partial class APM_OptContentCreatorInfo_Creator_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentCreatorInfo_Creator__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentCreatorInfo_Creator";
     public static bool RuleGroup() { return false; }
@@ -133,12 +133,12 @@ internal partial class APM_OptContentCreatorInfo_Creator_Base : ISpecification<P
 /// <summary>
 /// OptContentCreatorInfo_Subtype 
 /// </summary>
-internal partial class APM_OptContentCreatorInfo_Subtype : APM_OptContentCreatorInfo_Subtype_Base
+internal partial class APM_OptContentCreatorInfo_Subtype : APM_OptContentCreatorInfo_Subtype__Base
 {
 }
 
 
-internal partial class APM_OptContentCreatorInfo_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentCreatorInfo_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentCreatorInfo_Subtype";
     public static bool RuleGroup() { return false; }
@@ -149,14 +149,7 @@ internal partial class APM_OptContentCreatorInfo_Subtype_Base : ISpecification<P
         var val = ctx.GetRequired<PdfName, APM_OptContentCreatorInfo_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
-        
-        
-        if (!(val == "Artwork" || val == "Technical" || val == "*")) 
-        {
-            ctx.Fail<APM_OptContentCreatorInfo_Subtype>($"Invalid value {val}, allowed are: [Artwork,Technical,*]");
-        }
-        }
+        // no value restictions
         // no linked objects
         
     }
@@ -167,12 +160,12 @@ internal partial class APM_OptContentCreatorInfo_Subtype_Base : ISpecification<P
 /// <summary>
 /// OptContentCreatorInfo_SubType 
 /// </summary>
-internal partial class APM_OptContentCreatorInfo_SubType : APM_OptContentCreatorInfo_SubType_Base
+internal partial class APM_OptContentCreatorInfo_SubType : APM_OptContentCreatorInfo_SubType__Base
 {
 }
 
 
-internal partial class APM_OptContentCreatorInfo_SubType_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentCreatorInfo_SubType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentCreatorInfo_SubType";
     public static bool RuleGroup() { return false; }
@@ -183,14 +176,7 @@ internal partial class APM_OptContentCreatorInfo_SubType_Base : ISpecification<P
         var val = ctx.GetRequired<PdfName, APM_OptContentCreatorInfo_SubType>(obj, "SubType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
-        
-        
-        if (!(val == "Artwork" || val == "Technical" || val == "*")) 
-        {
-            ctx.Fail<APM_OptContentCreatorInfo_SubType>($"Invalid value {val}, allowed are: [Artwork,Technical,*]");
-        }
-        }
+        // no value restictions
         // no linked objects
         
     }

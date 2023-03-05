@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfPages : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -41,7 +41,11 @@ internal partial class APM_ArrayOfPages_x : ISpecification<PdfArray>
         {
             var val = ctx.GetOptional<PdfDictionary, APM_ArrayOfPages_x>(obj, n, IndirectRequirement.MustBeIndirect);
             if (val == null) { return; }
-            // TODO special case
+            var SeparationInfo = val.Get("SeparationInfo");
+            if (!((SeparationInfo != null))) 
+            {
+                ctx.Fail<APM_ArrayOfPages_x>($"Value failed special case check: fn:Eval(fn:IsPresent(*::SeparationInfo))");
+            }
             // no value restrictions
             ctx.Run<APM_PageObject, PdfDictionary>(stack, val, obj);
             

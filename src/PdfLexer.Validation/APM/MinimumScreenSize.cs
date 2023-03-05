@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MinimumScreenSize : APM_MinimumScreenSize_Base
+internal partial class APM_MinimumScreenSize : APM_MinimumScreenSize__Base
 {
 }
 
-internal partial class APM_MinimumScreenSize_Base : ISpecification<PdfDictionary>
+internal partial class APM_MinimumScreenSize__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MinimumScreenSize";
@@ -106,12 +106,12 @@ internal partial class APM_MinimumScreenSize_Base : ISpecification<PdfDictionary
 /// <summary>
 /// MinimumScreenSize_Type Table 281
 /// </summary>
-internal partial class APM_MinimumScreenSize_Type : APM_MinimumScreenSize_Type_Base
+internal partial class APM_MinimumScreenSize_Type : APM_MinimumScreenSize_Type__Base
 {
 }
 
 
-internal partial class APM_MinimumScreenSize_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MinimumScreenSize_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MinimumScreenSize_Type";
     public static bool RuleGroup() { return false; }
@@ -122,13 +122,11 @@ internal partial class APM_MinimumScreenSize_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_MinimumScreenSize_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MinScreenSize")) 
         {
             ctx.Fail<APM_MinimumScreenSize_Type>($"Invalid value {val}, allowed are: [MinScreenSize]");
-        }
         }
         // no linked objects
         
@@ -140,12 +138,12 @@ internal partial class APM_MinimumScreenSize_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// MinimumScreenSize_V 2 non-negative integers of screen: width, height
 /// </summary>
-internal partial class APM_MinimumScreenSize_V : APM_MinimumScreenSize_V_Base
+internal partial class APM_MinimumScreenSize_V : APM_MinimumScreenSize_V__Base
 {
 }
 
 
-internal partial class APM_MinimumScreenSize_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_MinimumScreenSize_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MinimumScreenSize_V";
     public static bool RuleGroup() { return false; }
@@ -167,12 +165,12 @@ internal partial class APM_MinimumScreenSize_V_Base : ISpecification<PdfDictiona
 /// <summary>
 /// MinimumScreenSize_M Table 304
 /// </summary>
-internal partial class APM_MinimumScreenSize_M : APM_MinimumScreenSize_M_Base
+internal partial class APM_MinimumScreenSize_M : APM_MinimumScreenSize_M__Base
 {
 }
 
 
-internal partial class APM_MinimumScreenSize_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_MinimumScreenSize_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MinimumScreenSize_M";
     public static bool RuleGroup() { return false; }
@@ -183,13 +181,11 @@ internal partial class APM_MinimumScreenSize_M_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfIntNumber, APM_MinimumScreenSize_M>(obj, "M", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2 || val == 3 || val == 4 || val == 5 || val == 6)) 
         {
             ctx.Fail<APM_MinimumScreenSize_M>($"Invalid value {val}, allowed are: [0,1,2,3,4,5,6]");
-        }
         }
         // no linked objects
         

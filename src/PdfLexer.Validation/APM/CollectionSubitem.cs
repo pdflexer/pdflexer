@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CollectionSubitem : APM_CollectionSubitem_Base
+internal partial class APM_CollectionSubitem : APM_CollectionSubitem__Base
 {
 }
 
-internal partial class APM_CollectionSubitem_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSubitem__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CollectionSubitem";
@@ -86,12 +86,12 @@ internal partial class APM_CollectionSubitem_Base : ISpecification<PdfDictionary
 /// <summary>
 /// CollectionSubitem_Type Table 47
 /// </summary>
-internal partial class APM_CollectionSubitem_Type : APM_CollectionSubitem_Type_Base
+internal partial class APM_CollectionSubitem_Type : APM_CollectionSubitem_Type__Base
 {
 }
 
 
-internal partial class APM_CollectionSubitem_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSubitem_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSubitem_Type";
     public static bool RuleGroup() { return false; }
@@ -102,13 +102,11 @@ internal partial class APM_CollectionSubitem_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_CollectionSubitem_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CollectionSubitem")) 
         {
             ctx.Fail<APM_CollectionSubitem_Type>($"Invalid value {val}, allowed are: [CollectionSubitem]");
-        }
         }
         // no linked objects
         
@@ -120,12 +118,12 @@ internal partial class APM_CollectionSubitem_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// CollectionSubitem_D 
 /// </summary>
-internal partial class APM_CollectionSubitem_D : APM_CollectionSubitem_D_Base
+internal partial class APM_CollectionSubitem_D : APM_CollectionSubitem_D__Base
 {
 }
 
 
-internal partial class APM_CollectionSubitem_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSubitem_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSubitem_D";
     public static bool RuleGroup() { return false; }
@@ -161,12 +159,12 @@ internal partial class APM_CollectionSubitem_D_Base : ISpecification<PdfDictiona
 /// <summary>
 /// CollectionSubitem_P 
 /// </summary>
-internal partial class APM_CollectionSubitem_P : APM_CollectionSubitem_P_Base
+internal partial class APM_CollectionSubitem_P : APM_CollectionSubitem_P__Base
 {
 }
 
 
-internal partial class APM_CollectionSubitem_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSubitem_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSubitem_P";
     public static bool RuleGroup() { return false; }

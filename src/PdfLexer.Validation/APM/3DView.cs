@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DView : APM_3DView_Base
+internal partial class APM_3DView : APM_3DView__Base
 {
 }
 
-internal partial class APM_3DView_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DView";
@@ -109,12 +109,12 @@ internal partial class APM_3DView_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_Type Table 315
 /// </summary>
-internal partial class APM_3DView_Type : APM_3DView_Type_Base
+internal partial class APM_3DView_Type : APM_3DView_Type__Base
 {
 }
 
 
-internal partial class APM_3DView_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_Type";
     public static bool RuleGroup() { return false; }
@@ -125,13 +125,11 @@ internal partial class APM_3DView_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DView_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DView")) 
         {
             ctx.Fail<APM_3DView_Type>($"Invalid value {val}, allowed are: [3DView]");
-        }
         }
         // no linked objects
         
@@ -143,12 +141,12 @@ internal partial class APM_3DView_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_XN 
 /// </summary>
-internal partial class APM_3DView_XN : APM_3DView_XN_Base
+internal partial class APM_3DView_XN : APM_3DView_XN__Base
 {
 }
 
 
-internal partial class APM_3DView_XN_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_XN__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_XN";
     public static bool RuleGroup() { return false; }
@@ -170,12 +168,12 @@ internal partial class APM_3DView_XN_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_IN 
 /// </summary>
-internal partial class APM_3DView_IN : APM_3DView_IN_Base
+internal partial class APM_3DView_IN : APM_3DView_IN__Base
 {
 }
 
 
-internal partial class APM_3DView_IN_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_IN__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_IN";
     public static bool RuleGroup() { return false; }
@@ -197,12 +195,12 @@ internal partial class APM_3DView_IN_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_MS 
 /// </summary>
-internal partial class APM_3DView_MS : APM_3DView_MS_Base
+internal partial class APM_3DView_MS : APM_3DView_MS__Base
 {
 }
 
 
-internal partial class APM_3DView_MS_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_MS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_MS";
     public static bool RuleGroup() { return false; }
@@ -213,13 +211,11 @@ internal partial class APM_3DView_MS_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DView_MS>(obj, "MS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "M" || val == "U3D")) 
         {
             ctx.Fail<APM_3DView_MS>($"Invalid value {val}, allowed are: [M,U3D]");
-        }
         }
         // no linked objects
         
@@ -231,12 +227,12 @@ internal partial class APM_3DView_MS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_MA 
 /// </summary>
-internal partial class APM_3DView_MA : APM_3DView_MA_Base
+internal partial class APM_3DView_MA : APM_3DView_MA__Base
 {
 }
 
 
-internal partial class APM_3DView_MA_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_MA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_MA";
     public static bool RuleGroup() { return false; }
@@ -258,12 +254,12 @@ internal partial class APM_3DView_MA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_C2W 
 /// </summary>
-internal partial class APM_3DView_C2W : APM_3DView_C2W_Base
+internal partial class APM_3DView_C2W : APM_3DView_C2W__Base
 {
 }
 
 
-internal partial class APM_3DView_C2W_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_C2W__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_C2W";
     public static bool RuleGroup() { return false; }
@@ -271,15 +267,12 @@ internal partial class APM_3DView_C2W_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            var MS = obj.Get("MS");
-            if (eq(MS,"M")) {
-                val = ctx.GetRequired<PdfArray, APM_3DView_C2W>(obj, "C2W", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_3DView_C2W>(obj, "C2W", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var MS = obj.Get("MS");
+        var val = ctx.GetOptional<PdfArray, APM_3DView_C2W>(obj, "C2W", IndirectRequirement.Either);
+        if ((eq(MS,"M")) && val == null) {
+            ctx.Fail<APM_3DView_C2W>("C2W is required when 'fn:IsRequired(@MS==M)"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -293,12 +286,12 @@ internal partial class APM_3DView_C2W_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_U3DPath 
 /// </summary>
-internal partial class APM_3DView_U3DPath : APM_3DView_U3DPath_Base
+internal partial class APM_3DView_U3DPath : APM_3DView_U3DPath__Base
 {
 }
 
 
-internal partial class APM_3DView_U3DPath_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_U3DPath__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_U3DPath";
     public static bool RuleGroup() { return false; }
@@ -307,14 +300,14 @@ internal partial class APM_3DView_U3DPath_Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var (utval, wasIR) = ctx.GetOptional<APM_3DView_U3DPath>(obj, "U3DPath", IndirectRequirement.Either);
-        {
-            var MS = obj.Get("MS");
-            if ((eq(MS,"U3D")) && utval == null) {
-                ctx.Fail<APM_3DView_U3DPath>("U3DPath is required"); return;
-            } else if (utval == null) {
-                return;
-            }
+        
+        var MS = obj.Get("MS");
+        if ((eq(MS,"U3D")) && utval == null) {
+            ctx.Fail<APM_3DView_U3DPath>("U3DPath is required"); return;
+        } else if (utval == null) {
+            return;
         }
+        
         switch (utval.Type) 
         {
             case PdfObjectType.ArrayObj:
@@ -348,12 +341,12 @@ internal partial class APM_3DView_U3DPath_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_CO 
 /// </summary>
-internal partial class APM_3DView_CO : APM_3DView_CO_Base
+internal partial class APM_3DView_CO : APM_3DView_CO__Base
 {
 }
 
 
-internal partial class APM_3DView_CO_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_CO__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_CO";
     public static bool RuleGroup() { return false; }
@@ -375,12 +368,12 @@ internal partial class APM_3DView_CO_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_P 
 /// </summary>
-internal partial class APM_3DView_P : APM_3DView_P_Base
+internal partial class APM_3DView_P : APM_3DView_P__Base
 {
 }
 
 
-internal partial class APM_3DView_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_P";
     public static bool RuleGroup() { return false; }
@@ -402,12 +395,12 @@ internal partial class APM_3DView_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_O 
 /// </summary>
-internal partial class APM_3DView_O : APM_3DView_O_Base
+internal partial class APM_3DView_O : APM_3DView_O__Base
 {
 }
 
 
-internal partial class APM_3DView_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_O";
     public static bool RuleGroup() { return false; }
@@ -417,7 +410,7 @@ internal partial class APM_3DView_O_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfStream, APM_3DView_O>(obj, "O", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_XObjectFormType1, PdfDictionary>(stack, val.Dictionary, obj);
         
@@ -429,12 +422,12 @@ internal partial class APM_3DView_O_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_BG 
 /// </summary>
-internal partial class APM_3DView_BG : APM_3DView_BG_Base
+internal partial class APM_3DView_BG : APM_3DView_BG__Base
 {
 }
 
 
-internal partial class APM_3DView_BG_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_BG__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_BG";
     public static bool RuleGroup() { return false; }
@@ -456,12 +449,12 @@ internal partial class APM_3DView_BG_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_RM 
 /// </summary>
-internal partial class APM_3DView_RM : APM_3DView_RM_Base
+internal partial class APM_3DView_RM : APM_3DView_RM__Base
 {
 }
 
 
-internal partial class APM_3DView_RM_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_RM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_RM";
     public static bool RuleGroup() { return false; }
@@ -483,12 +476,12 @@ internal partial class APM_3DView_RM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_LS 
 /// </summary>
-internal partial class APM_3DView_LS : APM_3DView_LS_Base
+internal partial class APM_3DView_LS : APM_3DView_LS__Base
 {
 }
 
 
-internal partial class APM_3DView_LS_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_LS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_LS";
     public static bool RuleGroup() { return false; }
@@ -510,12 +503,12 @@ internal partial class APM_3DView_LS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_SA 
 /// </summary>
-internal partial class APM_3DView_SA : APM_3DView_SA_Base
+internal partial class APM_3DView_SA : APM_3DView_SA__Base
 {
 }
 
 
-internal partial class APM_3DView_SA_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_SA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_SA";
     public static bool RuleGroup() { return false; }
@@ -537,12 +530,12 @@ internal partial class APM_3DView_SA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_NA 
 /// </summary>
-internal partial class APM_3DView_NA : APM_3DView_NA_Base
+internal partial class APM_3DView_NA : APM_3DView_NA__Base
 {
 }
 
 
-internal partial class APM_3DView_NA_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_NA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_NA";
     public static bool RuleGroup() { return false; }
@@ -564,12 +557,12 @@ internal partial class APM_3DView_NA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DView_NR 
 /// </summary>
-internal partial class APM_3DView_NR : APM_3DView_NR_Base
+internal partial class APM_3DView_NR : APM_3DView_NR__Base
 {
 }
 
 
-internal partial class APM_3DView_NR_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DView_NR__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DView_NR";
     public static bool RuleGroup() { return false; }

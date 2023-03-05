@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Navigator : APM_Navigator_Base
+internal partial class APM_Navigator : APM_Navigator__Base
 {
 }
 
-internal partial class APM_Navigator_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Navigator";
@@ -68,12 +68,12 @@ internal partial class APM_Navigator_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Navigator_Type Table 160
 /// </summary>
-internal partial class APM_Navigator_Type : APM_Navigator_Type_Base
+internal partial class APM_Navigator_Type : APM_Navigator_Type__Base
 {
 }
 
 
-internal partial class APM_Navigator_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Type";
     public static bool RuleGroup() { return false; }
@@ -84,13 +84,11 @@ internal partial class APM_Navigator_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Navigator_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Navigator")) 
         {
             ctx.Fail<APM_Navigator_Type>($"Invalid value {val}, allowed are: [Navigator]");
-        }
         }
         // no linked objects
         
@@ -102,12 +100,12 @@ internal partial class APM_Navigator_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Navigator_Layout 
 /// </summary>
-internal partial class APM_Navigator_Layout : APM_Navigator_Layout_Base
+internal partial class APM_Navigator_Layout : APM_Navigator_Layout__Base
 {
 }
 
 
-internal partial class APM_Navigator_Layout_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Layout__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Layout";
     public static bool RuleGroup() { return false; }
@@ -133,14 +131,7 @@ internal partial class APM_Navigator_Layout_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
-                    
-                    
-                    if (!(val == "D" || val == "T" || val == "H" || val == "FilmStrip" || val == "FreeForm" || val == "Linear" || val == "Tree" || val == "*")) 
-                    {
-                        ctx.Fail<APM_Navigator_Layout>($"Invalid value {val}, allowed are: [D,T,H,FilmStrip,FreeForm,Linear,Tree,*]");
-                    }
-                    }
+                    // no value restictions
                     // no linked objects
                     return;
                 }
@@ -157,12 +148,12 @@ internal partial class APM_Navigator_Layout_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Navigator_SWF Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_SWF : APM_Navigator_SWF_Base
+internal partial class APM_Navigator_SWF : APM_Navigator_SWF__Base
 {
 }
 
 
-internal partial class APM_Navigator_SWF_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_SWF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_SWF";
     public static bool RuleGroup() { return false; }
@@ -184,12 +175,12 @@ internal partial class APM_Navigator_SWF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Navigator_Name Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_Name : APM_Navigator_Name_Base
+internal partial class APM_Navigator_Name : APM_Navigator_Name__Base
 {
 }
 
 
-internal partial class APM_Navigator_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Name";
     public static bool RuleGroup() { return false; }
@@ -211,12 +202,12 @@ internal partial class APM_Navigator_Name_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Navigator_Desc Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_Desc : APM_Navigator_Desc_Base
+internal partial class APM_Navigator_Desc : APM_Navigator_Desc__Base
 {
 }
 
 
-internal partial class APM_Navigator_Desc_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Desc__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Desc";
     public static bool RuleGroup() { return false; }
@@ -238,12 +229,12 @@ internal partial class APM_Navigator_Desc_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Navigator_Category Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_Category : APM_Navigator_Category_Base
+internal partial class APM_Navigator_Category : APM_Navigator_Category__Base
 {
 }
 
 
-internal partial class APM_Navigator_Category_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Category__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Category";
     public static bool RuleGroup() { return false; }
@@ -265,12 +256,12 @@ internal partial class APM_Navigator_Category_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Navigator_ID Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_ID : APM_Navigator_ID_Base
+internal partial class APM_Navigator_ID : APM_Navigator_ID__Base
 {
 }
 
 
-internal partial class APM_Navigator_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_ID";
     public static bool RuleGroup() { return false; }
@@ -292,12 +283,12 @@ internal partial class APM_Navigator_ID_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Navigator_Version Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_Version : APM_Navigator_Version_Base
+internal partial class APM_Navigator_Version : APM_Navigator_Version__Base
 {
 }
 
 
-internal partial class APM_Navigator_Version_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Version__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Version";
     public static bool RuleGroup() { return false; }
@@ -319,12 +310,12 @@ internal partial class APM_Navigator_Version_Base : ISpecification<PdfDictionary
 /// <summary>
 /// Navigator_APIVersion Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_APIVersion : APM_Navigator_APIVersion_Base
+internal partial class APM_Navigator_APIVersion : APM_Navigator_APIVersion__Base
 {
 }
 
 
-internal partial class APM_Navigator_APIVersion_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_APIVersion__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_APIVersion";
     public static bool RuleGroup() { return false; }
@@ -346,12 +337,12 @@ internal partial class APM_Navigator_APIVersion_Base : ISpecification<PdfDiction
 /// <summary>
 /// Navigator_LoadType Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_LoadType : APM_Navigator_LoadType_Base
+internal partial class APM_Navigator_LoadType : APM_Navigator_LoadType__Base
 {
 }
 
 
-internal partial class APM_Navigator_LoadType_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_LoadType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_LoadType";
     public static bool RuleGroup() { return false; }
@@ -362,13 +353,11 @@ internal partial class APM_Navigator_LoadType_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_Navigator_LoadType>(obj, "LoadType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Module" || val == "Default")) 
         {
             ctx.Fail<APM_Navigator_LoadType>($"Invalid value {val}, allowed are: [Module,Default]");
-        }
         }
         // no linked objects
         
@@ -380,12 +369,12 @@ internal partial class APM_Navigator_LoadType_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Navigator_Icon Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_Icon : APM_Navigator_Icon_Base
+internal partial class APM_Navigator_Icon : APM_Navigator_Icon__Base
 {
 }
 
 
-internal partial class APM_Navigator_Icon_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Icon__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Icon";
     public static bool RuleGroup() { return false; }
@@ -407,12 +396,12 @@ internal partial class APM_Navigator_Icon_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Navigator_Locale Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_Locale : APM_Navigator_Locale_Base
+internal partial class APM_Navigator_Locale : APM_Navigator_Locale__Base
 {
 }
 
 
-internal partial class APM_Navigator_Locale_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Locale__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Locale";
     public static bool RuleGroup() { return false; }
@@ -434,12 +423,12 @@ internal partial class APM_Navigator_Locale_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Navigator_Strings Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_Strings : APM_Navigator_Strings_Base
+internal partial class APM_Navigator_Strings : APM_Navigator_Strings__Base
 {
 }
 
 
-internal partial class APM_Navigator_Strings_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Strings__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Strings";
     public static bool RuleGroup() { return false; }
@@ -461,12 +450,12 @@ internal partial class APM_Navigator_Strings_Base : ISpecification<PdfDictionary
 /// <summary>
 /// Navigator_InitialFields Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_InitialFields : APM_Navigator_InitialFields_Base
+internal partial class APM_Navigator_InitialFields : APM_Navigator_InitialFields__Base
 {
 }
 
 
-internal partial class APM_Navigator_InitialFields_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_InitialFields__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_InitialFields";
     public static bool RuleGroup() { return false; }
@@ -488,12 +477,12 @@ internal partial class APM_Navigator_InitialFields_Base : ISpecification<PdfDict
 /// <summary>
 /// Navigator_Resources Adobe Extension Level 3 only
 /// </summary>
-internal partial class APM_Navigator_Resources : APM_Navigator_Resources_Base
+internal partial class APM_Navigator_Resources : APM_Navigator_Resources__Base
 {
 }
 
 
-internal partial class APM_Navigator_Resources_Base : ISpecification<PdfDictionary>
+internal partial class APM_Navigator_Resources__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Navigator_Resources";
     public static bool RuleGroup() { return false; }

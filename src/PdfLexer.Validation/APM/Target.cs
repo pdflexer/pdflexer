@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Target : APM_Target_Base
+internal partial class APM_Target : APM_Target__Base
 {
 }
 
-internal partial class APM_Target_Base : ISpecification<PdfDictionary>
+internal partial class APM_Target__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Target";
@@ -92,12 +92,12 @@ internal partial class APM_Target_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Target_R Table 205
 /// </summary>
-internal partial class APM_Target_R : APM_Target_R_Base
+internal partial class APM_Target_R : APM_Target_R__Base
 {
 }
 
 
-internal partial class APM_Target_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_Target_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Target_R";
     public static bool RuleGroup() { return false; }
@@ -108,13 +108,11 @@ internal partial class APM_Target_R_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_Target_R>(obj, "R", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "P" || val == "C")) 
         {
             ctx.Fail<APM_Target_R>($"Invalid value {val}, allowed are: [P,C]");
-        }
         }
         // no linked objects
         
@@ -126,12 +124,12 @@ internal partial class APM_Target_R_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Target_N 
 /// </summary>
-internal partial class APM_Target_N : APM_Target_N_Base
+internal partial class APM_Target_N : APM_Target_N__Base
 {
 }
 
 
-internal partial class APM_Target_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_Target_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Target_N";
     public static bool RuleGroup() { return false; }
@@ -139,18 +137,19 @@ internal partial class APM_Target_N_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfString? val;
-        {
-            var R = obj.Get("R");
-            var trailerCatalogNamesEmbeddedFiles = obj.Get("trailer")?.Get("Catalog")?.Get("Names")?.Get("EmbeddedFiles");
-            if ((eq(R,"C")&&InNameTree(trailerCatalogNamesEmbeddedFiles))) {
-                val = ctx.GetRequired<PdfString, APM_Target_N>(obj, "N", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfString, APM_Target_N>(obj, "N", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var R = obj.Get("R");
+        var trailerCatalogNamesEmbeddedFiles = obj.Get("trailer")?.Get("Catalog")?.Get("Names")?.Get("EmbeddedFiles");
+        var val = ctx.GetOptional<PdfString, APM_Target_N>(obj, "N", IndirectRequirement.Either);
+        if (((eq(R,"C")&&InNameTree(trailerCatalogNamesEmbeddedFiles))) && val == null) {
+            ctx.Fail<APM_Target_N>("N is required when 'fn:IsRequired((@R==C) && fn:InNameTree(trailer::Catalog::Names::EmbeddedFiles))"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
+        
+        if (!(!(eq(R,"C")&&InNameTree(trailerCatalogNamesEmbeddedFiles)))) 
+        {
+            ctx.Fail<APM_Target_N>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent((@R==C) && fn:InNameTree(trailer::Catalog::Names::EmbeddedFiles))))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -162,12 +161,12 @@ internal partial class APM_Target_N_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Target_P 
 /// </summary>
-internal partial class APM_Target_P : APM_Target_P_Base
+internal partial class APM_Target_P : APM_Target_P__Base
 {
 }
 
 
-internal partial class APM_Target_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_Target_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Target_P";
     public static bool RuleGroup() { return false; }
@@ -184,13 +183,11 @@ internal partial class APM_Target_P_Base : ISpecification<PdfDictionary>
                     var val =  (PdfIntNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
-                    IPdfObject @P = val;
-                    if (!((gte(@P,0)&&lt(@P,ctx.NumberOfPages)))) 
+                    var P = obj.Get("P");
+                    if (!((gte(P,0)&&lt(P,ctx.NumberOfPages)))) 
                     {
                         ctx.Fail<APM_Target_P>($"Invalid value {val}, allowed are: [fn:Eval((@P>=0) && (@P<fn:NumberOfPages()))]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -217,12 +214,12 @@ internal partial class APM_Target_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Target_A 
 /// </summary>
-internal partial class APM_Target_A : APM_Target_A_Base
+internal partial class APM_Target_A : APM_Target_A__Base
 {
 }
 
 
-internal partial class APM_Target_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_Target_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Target_A";
     public static bool RuleGroup() { return false; }
@@ -239,13 +236,12 @@ internal partial class APM_Target_A_Base : ISpecification<PdfDictionary>
                     var val =  (PdfIntNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
-                    IPdfObject @A = val;
-                    if (!((gte(@A,0)&&lt(@A,((obj.Get("P")?.GetAs<PdfDictionary>()?.Get("Annots") as PdfArray)?.Count))))) 
+                    var A = obj.Get("A");
+                    var P = obj.Get("P");
+                    if (!((gte(A,0)&&lt(A,(((P)?.GetAs<PdfDictionary>()?.Get("Annots") as PdfArray)?.Count))))) 
                     {
                         ctx.Fail<APM_Target_A>($"Invalid value {val}, allowed are: [fn:Eval((@A>=0) && (@A<fn:ArrayLength(fn:PageProperty(@P,Annots))))]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -255,7 +251,13 @@ internal partial class APM_Target_A_Base : ISpecification<PdfDictionary>
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
                     // no special cases
-                    // TODO value checks string-text
+                    
+                    var A = obj.Get("A");
+                    var P = obj.Get("P");
+                    if (!(eq(A,(P)?.GetAs<PdfDictionary>()?.Get("Annots::@NM")))) 
+                    {
+                        ctx.Fail<APM_Target_A>($"Invalid value {val}, allowed are: [fn:Eval(@A==fn:PageProperty(@P,Annots::@NM))]");
+                    }
                     // no linked objects
                     return;
                 }
@@ -272,12 +274,12 @@ internal partial class APM_Target_A_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Target_T 
 /// </summary>
-internal partial class APM_Target_T : APM_Target_T_Base
+internal partial class APM_Target_T : APM_Target_T__Base
 {
 }
 
 
-internal partial class APM_Target_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_Target_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Target_T";
     public static bool RuleGroup() { return false; }

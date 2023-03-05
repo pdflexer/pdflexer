@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DSS : APM_DSS_Base
+internal partial class APM_DSS : APM_DSS__Base
 {
 }
 
-internal partial class APM_DSS_Base : ISpecification<PdfDictionary>
+internal partial class APM_DSS__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DSS";
@@ -58,12 +58,12 @@ internal partial class APM_DSS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DSS_Type Table 261
 /// </summary>
-internal partial class APM_DSS_Type : APM_DSS_Type_Base
+internal partial class APM_DSS_Type : APM_DSS_Type__Base
 {
 }
 
 
-internal partial class APM_DSS_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_DSS_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DSS_Type";
     public static bool RuleGroup() { return false; }
@@ -74,13 +74,11 @@ internal partial class APM_DSS_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_DSS_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DSS")) 
         {
             ctx.Fail<APM_DSS_Type>($"Invalid value {val}, allowed are: [DSS]");
-        }
         }
         // no linked objects
         
@@ -92,12 +90,12 @@ internal partial class APM_DSS_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DSS_VRI 
 /// </summary>
-internal partial class APM_DSS_VRI : APM_DSS_VRI_Base
+internal partial class APM_DSS_VRI : APM_DSS_VRI__Base
 {
 }
 
 
-internal partial class APM_DSS_VRI_Base : ISpecification<PdfDictionary>
+internal partial class APM_DSS_VRI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DSS_VRI";
     public static bool RuleGroup() { return false; }
@@ -119,12 +117,12 @@ internal partial class APM_DSS_VRI_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DSS_Certs 
 /// </summary>
-internal partial class APM_DSS_Certs : APM_DSS_Certs_Base
+internal partial class APM_DSS_Certs : APM_DSS_Certs__Base
 {
 }
 
 
-internal partial class APM_DSS_Certs_Base : ISpecification<PdfDictionary>
+internal partial class APM_DSS_Certs__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DSS_Certs";
     public static bool RuleGroup() { return false; }
@@ -146,12 +144,12 @@ internal partial class APM_DSS_Certs_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DSS_OCSPs 
 /// </summary>
-internal partial class APM_DSS_OCSPs : APM_DSS_OCSPs_Base
+internal partial class APM_DSS_OCSPs : APM_DSS_OCSPs__Base
 {
 }
 
 
-internal partial class APM_DSS_OCSPs_Base : ISpecification<PdfDictionary>
+internal partial class APM_DSS_OCSPs__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DSS_OCSPs";
     public static bool RuleGroup() { return false; }
@@ -173,12 +171,12 @@ internal partial class APM_DSS_OCSPs_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DSS_CRLs 
 /// </summary>
-internal partial class APM_DSS_CRLs : APM_DSS_CRLs_Base
+internal partial class APM_DSS_CRLs : APM_DSS_CRLs__Base
 {
 }
 
 
-internal partial class APM_DSS_CRLs_Base : ISpecification<PdfDictionary>
+internal partial class APM_DSS_CRLs__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DSS_CRLs";
     public static bool RuleGroup() { return false; }

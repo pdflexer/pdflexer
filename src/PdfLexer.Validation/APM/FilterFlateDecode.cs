@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FilterFlateDecode : APM_FilterFlateDecode_Base
+internal partial class APM_FilterFlateDecode : APM_FilterFlateDecode__Base
 {
 }
 
-internal partial class APM_FilterFlateDecode_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterFlateDecode__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FilterFlateDecode";
@@ -131,12 +131,12 @@ internal partial class APM_FilterFlateDecode_Base : ISpecification<PdfDictionary
 /// <summary>
 /// FilterFlateDecode_Predictor Table 8 and Table 10
 /// </summary>
-internal partial class APM_FilterFlateDecode_Predictor : APM_FilterFlateDecode_Predictor_Base
+internal partial class APM_FilterFlateDecode_Predictor : APM_FilterFlateDecode_Predictor__Base
 {
 }
 
 
-internal partial class APM_FilterFlateDecode_Predictor_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterFlateDecode_Predictor__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterFlateDecode_Predictor";
     public static bool RuleGroup() { return false; }
@@ -147,13 +147,11 @@ internal partial class APM_FilterFlateDecode_Predictor_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfIntNumber, APM_FilterFlateDecode_Predictor>(obj, "Predictor", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 2 || val == 10 || val == 11 || val == 12 || val == 13 || val == 14 || val == 15)) 
         {
             ctx.Fail<APM_FilterFlateDecode_Predictor>($"Invalid value {val}, allowed are: [1,2,10,11,12,13,14,15]");
-        }
         }
         // no linked objects
         
@@ -165,12 +163,12 @@ internal partial class APM_FilterFlateDecode_Predictor_Base : ISpecification<Pdf
 /// <summary>
 /// FilterFlateDecode_Colors 
 /// </summary>
-internal partial class APM_FilterFlateDecode_Colors : APM_FilterFlateDecode_Colors_Base
+internal partial class APM_FilterFlateDecode_Colors : APM_FilterFlateDecode_Colors__Base
 {
 }
 
 
-internal partial class APM_FilterFlateDecode_Colors_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterFlateDecode_Colors__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterFlateDecode_Colors";
     public static bool RuleGroup() { return false; }
@@ -180,14 +178,12 @@ internal partial class APM_FilterFlateDecode_Colors_Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FilterFlateDecode_Colors>(obj, "Colors", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:Ignore, not pertinent to validation
         
-        IPdfObject @Colors = val;
-        if (!((gte(@Colors,1)&&ctx.Version < 1.3m && lte(@Colors,4)))) 
+        var Colors = obj.Get("Colors");
+        if (!((gte(Colors,1)&&ctx.Version < 1.3m && lte(Colors,4)))) 
         {
             ctx.Fail<APM_FilterFlateDecode_Colors>($"Invalid value {val}, allowed are: [fn:Eval((@Colors>=1) && fn:BeforeVersion(1.3,fn:Eval(@Colors<=4)))]");
-        }
         }
         // no linked objects
         
@@ -199,12 +195,12 @@ internal partial class APM_FilterFlateDecode_Colors_Base : ISpecification<PdfDic
 /// <summary>
 /// FilterFlateDecode_BitsPerComponent 
 /// </summary>
-internal partial class APM_FilterFlateDecode_BitsPerComponent : APM_FilterFlateDecode_BitsPerComponent_Base
+internal partial class APM_FilterFlateDecode_BitsPerComponent : APM_FilterFlateDecode_BitsPerComponent__Base
 {
 }
 
 
-internal partial class APM_FilterFlateDecode_BitsPerComponent_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterFlateDecode_BitsPerComponent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterFlateDecode_BitsPerComponent";
     public static bool RuleGroup() { return false; }
@@ -214,14 +210,12 @@ internal partial class APM_FilterFlateDecode_BitsPerComponent_Base : ISpecificat
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FilterFlateDecode_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:Ignore, not pertinent to validation
         
         
-        if (!(val == 1 || val == 2 || val == 4 || val == 8 || ctx.Version >= 1.5m && val == 16)) 
+        if (!(val == 1 || val == 2 || val == 4 || val == 8 || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == 16)))) 
         {
             ctx.Fail<APM_FilterFlateDecode_BitsPerComponent>($"Invalid value {val}, allowed are: [1,2,4,8,fn:SinceVersion(1.5,16)]");
-        }
         }
         // no linked objects
         
@@ -233,12 +227,12 @@ internal partial class APM_FilterFlateDecode_BitsPerComponent_Base : ISpecificat
 /// <summary>
 /// FilterFlateDecode_Columns 
 /// </summary>
-internal partial class APM_FilterFlateDecode_Columns : APM_FilterFlateDecode_Columns_Base
+internal partial class APM_FilterFlateDecode_Columns : APM_FilterFlateDecode_Columns__Base
 {
 }
 
 
-internal partial class APM_FilterFlateDecode_Columns_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterFlateDecode_Columns__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterFlateDecode_Columns";
     public static bool RuleGroup() { return false; }
@@ -248,7 +242,7 @@ internal partial class APM_FilterFlateDecode_Columns_Base : ISpecification<PdfDi
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FilterFlateDecode_Columns>(obj, "Columns", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         // no linked objects
         

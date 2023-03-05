@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SoftMaskAlpha : APM_SoftMaskAlpha_Base
+internal partial class APM_SoftMaskAlpha : APM_SoftMaskAlpha__Base
 {
 }
 
-internal partial class APM_SoftMaskAlpha_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskAlpha__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SoftMaskAlpha";
@@ -118,12 +118,12 @@ internal partial class APM_SoftMaskAlpha_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoftMaskAlpha_Type Table 142
 /// </summary>
-internal partial class APM_SoftMaskAlpha_Type : APM_SoftMaskAlpha_Type_Base
+internal partial class APM_SoftMaskAlpha_Type : APM_SoftMaskAlpha_Type__Base
 {
 }
 
 
-internal partial class APM_SoftMaskAlpha_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskAlpha_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskAlpha_Type";
     public static bool RuleGroup() { return false; }
@@ -134,13 +134,11 @@ internal partial class APM_SoftMaskAlpha_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_SoftMaskAlpha_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Mask")) 
         {
             ctx.Fail<APM_SoftMaskAlpha_Type>($"Invalid value {val}, allowed are: [Mask]");
-        }
         }
         // no linked objects
         
@@ -152,12 +150,12 @@ internal partial class APM_SoftMaskAlpha_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// SoftMaskAlpha_S 
 /// </summary>
-internal partial class APM_SoftMaskAlpha_S : APM_SoftMaskAlpha_S_Base
+internal partial class APM_SoftMaskAlpha_S : APM_SoftMaskAlpha_S__Base
 {
 }
 
 
-internal partial class APM_SoftMaskAlpha_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskAlpha_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskAlpha_S";
     public static bool RuleGroup() { return false; }
@@ -168,13 +166,11 @@ internal partial class APM_SoftMaskAlpha_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_SoftMaskAlpha_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Alpha")) 
         {
             ctx.Fail<APM_SoftMaskAlpha_S>($"Invalid value {val}, allowed are: [Alpha]");
-        }
         }
         // no linked objects
         
@@ -186,12 +182,12 @@ internal partial class APM_SoftMaskAlpha_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoftMaskAlpha_G 
 /// </summary>
-internal partial class APM_SoftMaskAlpha_G : APM_SoftMaskAlpha_G_Base
+internal partial class APM_SoftMaskAlpha_G : APM_SoftMaskAlpha_G__Base
 {
 }
 
 
-internal partial class APM_SoftMaskAlpha_G_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskAlpha_G__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskAlpha_G";
     public static bool RuleGroup() { return false; }
@@ -213,12 +209,12 @@ internal partial class APM_SoftMaskAlpha_G_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoftMaskAlpha_BC 
 /// </summary>
-internal partial class APM_SoftMaskAlpha_BC : APM_SoftMaskAlpha_BC_Base
+internal partial class APM_SoftMaskAlpha_BC : APM_SoftMaskAlpha_BC__Base
 {
 }
 
 
-internal partial class APM_SoftMaskAlpha_BC_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskAlpha_BC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskAlpha_BC";
     public static bool RuleGroup() { return false; }
@@ -228,7 +224,7 @@ internal partial class APM_SoftMaskAlpha_BC_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_SoftMaskAlpha_BC>(obj, "BC", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -240,12 +236,12 @@ internal partial class APM_SoftMaskAlpha_BC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SoftMaskAlpha_TR 
 /// </summary>
-internal partial class APM_SoftMaskAlpha_TR : APM_SoftMaskAlpha_TR_Base
+internal partial class APM_SoftMaskAlpha_TR : APM_SoftMaskAlpha_TR__Base
 {
 }
 
 
-internal partial class APM_SoftMaskAlpha_TR_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskAlpha_TR__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskAlpha_TR";
     public static bool RuleGroup() { return false; }
@@ -280,13 +276,11 @@ internal partial class APM_SoftMaskAlpha_TR_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "Identity")) 
                     {
                         ctx.Fail<APM_SoftMaskAlpha_TR>($"Invalid value {val}, allowed are: [Identity]");
-                    }
                     }
                     // no linked objects
                     return;

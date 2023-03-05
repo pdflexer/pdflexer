@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FDDict : APM_FDDict_Base
+internal partial class APM_FDDict : APM_FDDict__Base
 {
 }
 
-internal partial class APM_FDDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_FDDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FDDict";
@@ -35,12 +35,12 @@ internal partial class APM_FDDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FDDict_* Table 122 and Clause 9.8.3.3
 /// </summary>
-internal partial class APM_FDDict_CatchAll : APM_FDDict_CatchAll_Base
+internal partial class APM_FDDict_CatchAll : APM_FDDict_CatchAll__Base
 {
 }
 
 
-internal partial class APM_FDDict_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_FDDict_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FDDict_*";
     public static bool RuleGroup() { return false; }

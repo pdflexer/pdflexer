@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_VRIMap : APM_VRIMap_Base
+internal partial class APM_VRIMap : APM_VRIMap__Base
 {
 }
 
-internal partial class APM_VRIMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_VRIMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "VRIMap";
@@ -35,12 +35,12 @@ internal partial class APM_VRIMap_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// VRIMap_* Table 261, VRI cell
 /// </summary>
-internal partial class APM_VRIMap_CatchAll : APM_VRIMap_CatchAll_Base
+internal partial class APM_VRIMap_CatchAll : APM_VRIMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_VRIMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_VRIMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "VRIMap_*";
     public static bool RuleGroup() { return false; }

@@ -18,7 +18,7 @@ internal partial class APM_URTransformParamDocumentArray : ISpecification<PdfArr
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -42,13 +42,11 @@ internal partial class APM_URTransformParamDocumentArray_x : ISpecification<PdfA
             var val = ctx.GetOptional<PdfName, APM_URTransformParamDocumentArray_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
-            {
             
             
             if (!(val == "FullSave")) 
             {
                 ctx.Fail<APM_URTransformParamDocumentArray_x>($"Invalid value {val}, allowed are: [FullSave]");
-            }
             }
             // no linked objects
             

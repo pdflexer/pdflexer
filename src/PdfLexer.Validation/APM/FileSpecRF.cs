@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FileSpecRF : APM_FileSpecRF_Base
+internal partial class APM_FileSpecRF : APM_FileSpecRF__Base
 {
 }
 
-internal partial class APM_FileSpecRF_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecRF__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FileSpecRF";
@@ -119,12 +119,12 @@ internal partial class APM_FileSpecRF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileSpecRF_F Table 43, RF cell
 /// </summary>
-internal partial class APM_FileSpecRF_F : APM_FileSpecRF_F_Base
+internal partial class APM_FileSpecRF_F : APM_FileSpecRF_F__Base
 {
 }
 
 
-internal partial class APM_FileSpecRF_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecRF_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecRF_F";
     public static bool RuleGroup() { return false; }
@@ -134,7 +134,11 @@ internal partial class APM_FileSpecRF_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_FileSpecRF_F>(obj, "F", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
-        // TODO special case
+        var F = obj.Get("F");
+        if (!(eq(mod(((F as PdfArray)?.Count),2),0))) 
+        {
+            ctx.Fail<APM_FileSpecRF_F>($"Value failed special case check: fn:Eval((fn:ArrayLength(F) mod 2)==0)");
+        }
         // no value restrictions
         ctx.Run<APM_RelatedFilesArray, PdfArray>(stack, val, obj);
         
@@ -146,12 +150,12 @@ internal partial class APM_FileSpecRF_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FileSpecRF_UF 
 /// </summary>
-internal partial class APM_FileSpecRF_UF : APM_FileSpecRF_UF_Base
+internal partial class APM_FileSpecRF_UF : APM_FileSpecRF_UF__Base
 {
 }
 
 
-internal partial class APM_FileSpecRF_UF_Base : ISpecification<PdfDictionary>
+internal partial class APM_FileSpecRF_UF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FileSpecRF_UF";
     public static bool RuleGroup() { return false; }
@@ -161,7 +165,11 @@ internal partial class APM_FileSpecRF_UF_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_FileSpecRF_UF>(obj, "UF", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
-        // TODO special case
+        var UF = obj.Get("UF");
+        if (!(eq(mod(((UF as PdfArray)?.Count),2),0))) 
+        {
+            ctx.Fail<APM_FileSpecRF_UF>($"Value failed special case check: fn:Eval((fn:ArrayLength(UF) mod 2)==0)");
+        }
         // no value restrictions
         ctx.Run<APM_RelatedFilesArray, PdfArray>(stack, val, obj);
         

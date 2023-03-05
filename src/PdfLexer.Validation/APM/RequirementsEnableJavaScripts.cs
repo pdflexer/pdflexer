@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsEnableJavaScripts : APM_RequirementsEnableJavaScripts_Base
+internal partial class APM_RequirementsEnableJavaScripts : APM_RequirementsEnableJavaScripts__Base
 {
 }
 
-internal partial class APM_RequirementsEnableJavaScripts_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEnableJavaScripts__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsEnableJavaScripts";
@@ -88,12 +88,12 @@ internal partial class APM_RequirementsEnableJavaScripts_Base : ISpecification<P
 /// <summary>
 /// RequirementsEnableJavaScripts_Type Table 273 and Table 275
 /// </summary>
-internal partial class APM_RequirementsEnableJavaScripts_Type : APM_RequirementsEnableJavaScripts_Type_Base
+internal partial class APM_RequirementsEnableJavaScripts_Type : APM_RequirementsEnableJavaScripts_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsEnableJavaScripts_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEnableJavaScripts_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEnableJavaScripts_Type";
     public static bool RuleGroup() { return false; }
@@ -104,13 +104,11 @@ internal partial class APM_RequirementsEnableJavaScripts_Type_Base : ISpecificat
         var val = ctx.GetOptional<PdfName, APM_RequirementsEnableJavaScripts_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Requirement")) 
         {
             ctx.Fail<APM_RequirementsEnableJavaScripts_Type>($"Invalid value {val}, allowed are: [Requirement]");
-        }
         }
         // no linked objects
         
@@ -122,12 +120,12 @@ internal partial class APM_RequirementsEnableJavaScripts_Type_Base : ISpecificat
 /// <summary>
 /// RequirementsEnableJavaScripts_S 
 /// </summary>
-internal partial class APM_RequirementsEnableJavaScripts_S : APM_RequirementsEnableJavaScripts_S_Base
+internal partial class APM_RequirementsEnableJavaScripts_S : APM_RequirementsEnableJavaScripts_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsEnableJavaScripts_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEnableJavaScripts_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEnableJavaScripts_S";
     public static bool RuleGroup() { return false; }
@@ -138,13 +136,11 @@ internal partial class APM_RequirementsEnableJavaScripts_S_Base : ISpecification
         var val = ctx.GetRequired<PdfName, APM_RequirementsEnableJavaScripts_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "EnableJavaScripts")) 
         {
             ctx.Fail<APM_RequirementsEnableJavaScripts_S>($"Invalid value {val}, allowed are: [EnableJavaScripts]");
-        }
         }
         // no linked objects
         
@@ -156,12 +152,12 @@ internal partial class APM_RequirementsEnableJavaScripts_S_Base : ISpecification
 /// <summary>
 /// RequirementsEnableJavaScripts_V 
 /// </summary>
-internal partial class APM_RequirementsEnableJavaScripts_V : APM_RequirementsEnableJavaScripts_V_Base
+internal partial class APM_RequirementsEnableJavaScripts_V : APM_RequirementsEnableJavaScripts_V__Base
 {
 }
 
 
-internal partial class APM_RequirementsEnableJavaScripts_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEnableJavaScripts_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEnableJavaScripts_V";
     public static bool RuleGroup() { return false; }
@@ -204,12 +200,12 @@ internal partial class APM_RequirementsEnableJavaScripts_V_Base : ISpecification
 /// <summary>
 /// RequirementsEnableJavaScripts_RH 
 /// </summary>
-internal partial class APM_RequirementsEnableJavaScripts_RH : APM_RequirementsEnableJavaScripts_RH_Base
+internal partial class APM_RequirementsEnableJavaScripts_RH : APM_RequirementsEnableJavaScripts_RH__Base
 {
 }
 
 
-internal partial class APM_RequirementsEnableJavaScripts_RH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEnableJavaScripts_RH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEnableJavaScripts_RH";
     public static bool RuleGroup() { return false; }
@@ -252,12 +248,12 @@ internal partial class APM_RequirementsEnableJavaScripts_RH_Base : ISpecificatio
 /// <summary>
 /// RequirementsEnableJavaScripts_Penalty 
 /// </summary>
-internal partial class APM_RequirementsEnableJavaScripts_Penalty : APM_RequirementsEnableJavaScripts_Penalty_Base
+internal partial class APM_RequirementsEnableJavaScripts_Penalty : APM_RequirementsEnableJavaScripts_Penalty__Base
 {
 }
 
 
-internal partial class APM_RequirementsEnableJavaScripts_Penalty_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsEnableJavaScripts_Penalty__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsEnableJavaScripts_Penalty";
     public static bool RuleGroup() { return false; }
@@ -268,13 +264,11 @@ internal partial class APM_RequirementsEnableJavaScripts_Penalty_Base : ISpecifi
         var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsEnableJavaScripts_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Penalty = val;
-        if (!((gte(@Penalty,0)&&lte(@Penalty,100)))) 
+        var Penalty = obj.Get("Penalty");
+        if (!((gte(Penalty,0)&&lte(Penalty,100)))) 
         {
             ctx.Fail<APM_RequirementsEnableJavaScripts_Penalty>($"Invalid value {val}, allowed are: [fn:Eval((@Penalty>=0) && (@Penalty<=100))]");
-        }
         }
         // no linked objects
         

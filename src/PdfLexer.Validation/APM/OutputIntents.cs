@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OutputIntents : APM_OutputIntents_Base
+internal partial class APM_OutputIntents : APM_OutputIntents__Base
 {
 }
 
-internal partial class APM_OutputIntents_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OutputIntents";
@@ -123,12 +123,12 @@ internal partial class APM_OutputIntents_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutputIntents_Type Table 401
 /// </summary>
-internal partial class APM_OutputIntents_Type : APM_OutputIntents_Type_Base
+internal partial class APM_OutputIntents_Type : APM_OutputIntents_Type__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_Type";
     public static bool RuleGroup() { return false; }
@@ -139,13 +139,11 @@ internal partial class APM_OutputIntents_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_OutputIntents_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "OutputIntent")) 
         {
             ctx.Fail<APM_OutputIntents_Type>($"Invalid value {val}, allowed are: [OutputIntent]");
-        }
         }
         // no linked objects
         
@@ -157,12 +155,12 @@ internal partial class APM_OutputIntents_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// OutputIntents_S 
 /// </summary>
-internal partial class APM_OutputIntents_S : APM_OutputIntents_S_Base
+internal partial class APM_OutputIntents_S : APM_OutputIntents_S__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_S";
     public static bool RuleGroup() { return false; }
@@ -173,13 +171,11 @@ internal partial class APM_OutputIntents_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_OutputIntents_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "GTS_PDFX" || val == "GTS_PDFA1" || val == "ISO_PDFE1")) 
         {
             ctx.Fail<APM_OutputIntents_S>($"Invalid value {val}, allowed are: [GTS_PDFX,GTS_PDFA1,ISO_PDFE1]");
-        }
         }
         // no linked objects
         
@@ -191,12 +187,12 @@ internal partial class APM_OutputIntents_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OutputIntents_OutputCondition 
 /// </summary>
-internal partial class APM_OutputIntents_OutputCondition : APM_OutputIntents_OutputCondition_Base
+internal partial class APM_OutputIntents_OutputCondition : APM_OutputIntents_OutputCondition__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_OutputCondition_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_OutputCondition__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_OutputCondition";
     public static bool RuleGroup() { return false; }
@@ -218,12 +214,12 @@ internal partial class APM_OutputIntents_OutputCondition_Base : ISpecification<P
 /// <summary>
 /// OutputIntents_OutputConditionIdentifier 
 /// </summary>
-internal partial class APM_OutputIntents_OutputConditionIdentifier : APM_OutputIntents_OutputConditionIdentifier_Base
+internal partial class APM_OutputIntents_OutputConditionIdentifier : APM_OutputIntents_OutputConditionIdentifier__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_OutputConditionIdentifier_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_OutputConditionIdentifier__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_OutputConditionIdentifier";
     public static bool RuleGroup() { return false; }
@@ -245,12 +241,12 @@ internal partial class APM_OutputIntents_OutputConditionIdentifier_Base : ISpeci
 /// <summary>
 /// OutputIntents_RegistryName 
 /// </summary>
-internal partial class APM_OutputIntents_RegistryName : APM_OutputIntents_RegistryName_Base
+internal partial class APM_OutputIntents_RegistryName : APM_OutputIntents_RegistryName__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_RegistryName_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_RegistryName__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_RegistryName";
     public static bool RuleGroup() { return false; }
@@ -272,12 +268,12 @@ internal partial class APM_OutputIntents_RegistryName_Base : ISpecification<PdfD
 /// <summary>
 /// OutputIntents_Info 
 /// </summary>
-internal partial class APM_OutputIntents_Info : APM_OutputIntents_Info_Base
+internal partial class APM_OutputIntents_Info : APM_OutputIntents_Info__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_Info_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_Info__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_Info";
     public static bool RuleGroup() { return false; }
@@ -299,12 +295,12 @@ internal partial class APM_OutputIntents_Info_Base : ISpecification<PdfDictionar
 /// <summary>
 /// OutputIntents_DestOutputProfile 
 /// </summary>
-internal partial class APM_OutputIntents_DestOutputProfile : APM_OutputIntents_DestOutputProfile_Base
+internal partial class APM_OutputIntents_DestOutputProfile : APM_OutputIntents_DestOutputProfile__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_DestOutputProfile_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_DestOutputProfile__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_DestOutputProfile";
     public static bool RuleGroup() { return false; }
@@ -326,12 +322,12 @@ internal partial class APM_OutputIntents_DestOutputProfile_Base : ISpecification
 /// <summary>
 /// OutputIntents_DestOutputProfileRef 
 /// </summary>
-internal partial class APM_OutputIntents_DestOutputProfileRef : APM_OutputIntents_DestOutputProfileRef_Base
+internal partial class APM_OutputIntents_DestOutputProfileRef : APM_OutputIntents_DestOutputProfileRef__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_DestOutputProfileRef_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_DestOutputProfileRef__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_DestOutputProfileRef";
     public static bool RuleGroup() { return false; }
@@ -353,12 +349,12 @@ internal partial class APM_OutputIntents_DestOutputProfileRef_Base : ISpecificat
 /// <summary>
 /// OutputIntents_MixingHints 
 /// </summary>
-internal partial class APM_OutputIntents_MixingHints : APM_OutputIntents_MixingHints_Base
+internal partial class APM_OutputIntents_MixingHints : APM_OutputIntents_MixingHints__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_MixingHints_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_MixingHints__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_MixingHints";
     public static bool RuleGroup() { return false; }
@@ -380,12 +376,12 @@ internal partial class APM_OutputIntents_MixingHints_Base : ISpecification<PdfDi
 /// <summary>
 /// OutputIntents_SpectralData 
 /// </summary>
-internal partial class APM_OutputIntents_SpectralData : APM_OutputIntents_SpectralData_Base
+internal partial class APM_OutputIntents_SpectralData : APM_OutputIntents_SpectralData__Base
 {
 }
 
 
-internal partial class APM_OutputIntents_SpectralData_Base : ISpecification<PdfDictionary>
+internal partial class APM_OutputIntents_SpectralData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OutputIntents_SpectralData";
     public static bool RuleGroup() { return false; }

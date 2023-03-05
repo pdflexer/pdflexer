@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RenditionMH : APM_RenditionMH_Base
+internal partial class APM_RenditionMH : APM_RenditionMH__Base
 {
 }
 
-internal partial class APM_RenditionMH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMH__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RenditionMH";
@@ -98,12 +98,12 @@ internal partial class APM_RenditionMH_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RenditionMH_C Table 278
 /// </summary>
-internal partial class APM_RenditionMH_C : APM_RenditionMH_C_Base
+internal partial class APM_RenditionMH_C : APM_RenditionMH_C__Base
 {
 }
 
 
-internal partial class APM_RenditionMH_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_RenditionMH_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RenditionMH_C";
     public static bool RuleGroup() { return false; }

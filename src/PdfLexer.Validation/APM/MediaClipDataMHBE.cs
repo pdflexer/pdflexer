@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaClipDataMHBE : APM_MediaClipDataMHBE_Base
+internal partial class APM_MediaClipDataMHBE : APM_MediaClipDataMHBE__Base
 {
 }
 
-internal partial class APM_MediaClipDataMHBE_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipDataMHBE__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaClipDataMHBE";
@@ -98,12 +98,12 @@ internal partial class APM_MediaClipDataMHBE_Base : ISpecification<PdfDictionary
 /// <summary>
 /// MediaClipDataMHBE_BU Table 287 - absolute URL as base URL
 /// </summary>
-internal partial class APM_MediaClipDataMHBE_BU : APM_MediaClipDataMHBE_BU_Base
+internal partial class APM_MediaClipDataMHBE_BU : APM_MediaClipDataMHBE_BU__Base
 {
 }
 
 
-internal partial class APM_MediaClipDataMHBE_BU_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaClipDataMHBE_BU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaClipDataMHBE_BU";
     public static bool RuleGroup() { return false; }

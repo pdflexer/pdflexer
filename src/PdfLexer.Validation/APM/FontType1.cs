@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FontType1 : APM_FontType1_Base
+internal partial class APM_FontType1 : APM_FontType1__Base
 {
 }
 
-internal partial class APM_FontType1_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FontType1";
@@ -163,12 +163,12 @@ internal partial class APM_FontType1_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontType1_Type Table 109
 /// </summary>
-internal partial class APM_FontType1_Type : APM_FontType1_Type_Base
+internal partial class APM_FontType1_Type : APM_FontType1_Type__Base
 {
 }
 
 
-internal partial class APM_FontType1_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_Type";
     public static bool RuleGroup() { return false; }
@@ -179,13 +179,11 @@ internal partial class APM_FontType1_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_FontType1_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Font")) 
         {
             ctx.Fail<APM_FontType1_Type>($"Invalid value {val}, allowed are: [Font]");
-        }
         }
         // no linked objects
         
@@ -197,12 +195,12 @@ internal partial class APM_FontType1_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontType1_Subtype 
 /// </summary>
-internal partial class APM_FontType1_Subtype : APM_FontType1_Subtype_Base
+internal partial class APM_FontType1_Subtype : APM_FontType1_Subtype__Base
 {
 }
 
 
-internal partial class APM_FontType1_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_Subtype";
     public static bool RuleGroup() { return false; }
@@ -213,13 +211,11 @@ internal partial class APM_FontType1_Subtype_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_FontType1_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Type1")) 
         {
             ctx.Fail<APM_FontType1_Subtype>($"Invalid value {val}, allowed are: [Type1]");
-        }
         }
         // no linked objects
         
@@ -231,12 +227,12 @@ internal partial class APM_FontType1_Subtype_Base : ISpecification<PdfDictionary
 /// <summary>
 /// FontType1_Name 
 /// </summary>
-internal partial class APM_FontType1_Name : APM_FontType1_Name_Base
+internal partial class APM_FontType1_Name : APM_FontType1_Name__Base
 {
 }
 
 
-internal partial class APM_FontType1_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_Name";
     public static bool RuleGroup() { return false; }
@@ -244,15 +240,12 @@ internal partial class APM_FontType1_Name_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            
-            if ((ctx.Version == 1.0m)) {
-                val = ctx.GetRequired<PdfName, APM_FontType1_Name>(obj, "Name", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_FontType1_Name>(obj, "Name", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfName, APM_FontType1_Name>(obj, "Name", IndirectRequirement.Either);
+        if (((ctx.Version == 1.0m)) && val == null) {
+            ctx.Fail<APM_FontType1_Name>("Name is required when 'fn:IsRequired(fn:IsPDFVersion(1.0))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -266,12 +259,12 @@ internal partial class APM_FontType1_Name_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontType1_BaseFont 
 /// </summary>
-internal partial class APM_FontType1_BaseFont : APM_FontType1_BaseFont_Base
+internal partial class APM_FontType1_BaseFont : APM_FontType1_BaseFont__Base
 {
 }
 
 
-internal partial class APM_FontType1_BaseFont_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_BaseFont__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_BaseFont";
     public static bool RuleGroup() { return false; }
@@ -293,12 +286,12 @@ internal partial class APM_FontType1_BaseFont_Base : ISpecification<PdfDictionar
 /// <summary>
 /// FontType1_FirstChar 
 /// </summary>
-internal partial class APM_FontType1_FirstChar : APM_FontType1_FirstChar_Base
+internal partial class APM_FontType1_FirstChar : APM_FontType1_FirstChar__Base
 {
 }
 
 
-internal partial class APM_FontType1_FirstChar_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_FirstChar__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_FirstChar";
     public static bool RuleGroup() { return false; }
@@ -306,15 +299,12 @@ internal partial class APM_FontType1_FirstChar_Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfIntNumber? val;
-        {
-            
-            if ((ctx.Version >= 2.0m||NotStandard14Font(obj))) {
-                val = ctx.GetRequired<PdfIntNumber, APM_FontType1_FirstChar>(obj, "FirstChar", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfIntNumber, APM_FontType1_FirstChar>(obj, "FirstChar", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfIntNumber, APM_FontType1_FirstChar>(obj, "FirstChar", IndirectRequirement.Either);
+        if (((ctx.Version >= 2.0m||NotStandard14Font(obj))) && val == null) {
+            ctx.Fail<APM_FontType1_FirstChar>("FirstChar is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:NotStandard14Font())"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -328,12 +318,12 @@ internal partial class APM_FontType1_FirstChar_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FontType1_LastChar 
 /// </summary>
-internal partial class APM_FontType1_LastChar : APM_FontType1_LastChar_Base
+internal partial class APM_FontType1_LastChar : APM_FontType1_LastChar__Base
 {
 }
 
 
-internal partial class APM_FontType1_LastChar_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_LastChar__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_LastChar";
     public static bool RuleGroup() { return false; }
@@ -341,15 +331,12 @@ internal partial class APM_FontType1_LastChar_Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfIntNumber? val;
-        {
-            
-            if ((ctx.Version >= 2.0m||NotStandard14Font(obj))) {
-                val = ctx.GetRequired<PdfIntNumber, APM_FontType1_LastChar>(obj, "LastChar", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfIntNumber, APM_FontType1_LastChar>(obj, "LastChar", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfIntNumber, APM_FontType1_LastChar>(obj, "LastChar", IndirectRequirement.Either);
+        if (((ctx.Version >= 2.0m||NotStandard14Font(obj))) && val == null) {
+            ctx.Fail<APM_FontType1_LastChar>("LastChar is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:NotStandard14Font())"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -363,12 +350,12 @@ internal partial class APM_FontType1_LastChar_Base : ISpecification<PdfDictionar
 /// <summary>
 /// FontType1_Widths 
 /// </summary>
-internal partial class APM_FontType1_Widths : APM_FontType1_Widths_Base
+internal partial class APM_FontType1_Widths : APM_FontType1_Widths__Base
 {
 }
 
 
-internal partial class APM_FontType1_Widths_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_Widths__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_Widths";
     public static bool RuleGroup() { return false; }
@@ -376,17 +363,20 @@ internal partial class APM_FontType1_Widths_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if ((ctx.Version >= 2.0m||NotStandard14Font(obj))) {
-                val = ctx.GetRequired<PdfArray, APM_FontType1_Widths>(obj, "Widths", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_FontType1_Widths>(obj, "Widths", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_FontType1_Widths>(obj, "Widths", IndirectRequirement.Either);
+        if (((ctx.Version >= 2.0m||NotStandard14Font(obj))) && val == null) {
+            ctx.Fail<APM_FontType1_Widths>("Widths is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:NotStandard14Font())"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
+        var Widths = obj.Get("Widths");
+        var LastChar = obj.Get("LastChar");
+        var FirstChar = obj.Get("FirstChar");
+        if (!(eq(((Widths as PdfArray)?.Count),1 + ((LastChar?.GetAs<PdfIntNumber>()?.Value ?? 0) - (FirstChar?.GetAs<PdfIntNumber>()?.Value ?? 0))))) 
+        {
+            ctx.Fail<APM_FontType1_Widths>($"Value failed special case check: fn:Eval(fn:ArrayLength(Widths)==(1+(@LastChar - @FirstChar)))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -398,12 +388,12 @@ internal partial class APM_FontType1_Widths_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontType1_FontDescriptor https://github.com/pdf-association/pdf-issues/issues/106
 /// </summary>
-internal partial class APM_FontType1_FontDescriptor : APM_FontType1_FontDescriptor_Base
+internal partial class APM_FontType1_FontDescriptor : APM_FontType1_FontDescriptor__Base
 {
 }
 
 
-internal partial class APM_FontType1_FontDescriptor_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_FontDescriptor__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_FontDescriptor";
     public static bool RuleGroup() { return false; }
@@ -411,15 +401,12 @@ internal partial class APM_FontType1_FontDescriptor_Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if ((ctx.Version >= 2.0m||NotStandard14Font(obj))) {
-                val = ctx.GetRequired<PdfDictionary, APM_FontType1_FontDescriptor>(obj, "FontDescriptor", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_FontType1_FontDescriptor>(obj, "FontDescriptor", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_FontType1_FontDescriptor>(obj, "FontDescriptor", IndirectRequirement.Either);
+        if (((ctx.Version >= 2.0m||NotStandard14Font(obj))) && val == null) {
+            ctx.Fail<APM_FontType1_FontDescriptor>("FontDescriptor is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:NotStandard14Font())"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -433,12 +420,12 @@ internal partial class APM_FontType1_FontDescriptor_Base : ISpecification<PdfDic
 /// <summary>
 /// FontType1_Encoding 
 /// </summary>
-internal partial class APM_FontType1_Encoding : APM_FontType1_Encoding_Base
+internal partial class APM_FontType1_Encoding : APM_FontType1_Encoding__Base
 {
 }
 
 
-internal partial class APM_FontType1_Encoding_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_Encoding__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_Encoding";
     public static bool RuleGroup() { return false; }
@@ -464,13 +451,11 @@ internal partial class APM_FontType1_Encoding_Base : ISpecification<PdfDictionar
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "MacRomanEncoding" || val == "MacExpertEncoding" || val == "WinAnsiEncoding")) 
                     {
                         ctx.Fail<APM_FontType1_Encoding>($"Invalid value {val}, allowed are: [MacRomanEncoding,MacExpertEncoding,WinAnsiEncoding]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -488,12 +473,12 @@ internal partial class APM_FontType1_Encoding_Base : ISpecification<PdfDictionar
 /// <summary>
 /// FontType1_ToUnicode 
 /// </summary>
-internal partial class APM_FontType1_ToUnicode : APM_FontType1_ToUnicode_Base
+internal partial class APM_FontType1_ToUnicode : APM_FontType1_ToUnicode__Base
 {
 }
 
 
-internal partial class APM_FontType1_ToUnicode_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontType1_ToUnicode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontType1_ToUnicode";
     public static bool RuleGroup() { return false; }

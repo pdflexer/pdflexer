@@ -20,7 +20,7 @@ internal partial class APM_ArrayOfOPI2Inks : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -38,13 +38,11 @@ internal partial class APM_ArrayOfOPI2Inks_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_ArrayOfOPI2Inks_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "monochrome")) 
         {
             ctx.Fail<APM_ArrayOfOPI2Inks_0>($"Invalid value {val}, allowed are: [monochrome]");
-        }
         }
         // no linked objects
         
@@ -98,13 +96,11 @@ internal partial class APM_ArrayOfOPI2Inks_2x : ISpecification<PdfArray>
             var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI2Inks_2x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
-            {
             IPdfObject v = val;
             
             if (!((gte(v,0)&&lte(v,1)))) 
             {
                 ctx.Fail<APM_ArrayOfOPI2Inks_2x>($"Invalid value {val}, allowed are: [fn:Eval((@2*>=0) && (@2*<=1))]");
-            }
             }
             // no linked objects
             

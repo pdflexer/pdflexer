@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Thread : APM_Thread_Base
+internal partial class APM_Thread : APM_Thread__Base
 {
 }
 
-internal partial class APM_Thread_Base : ISpecification<PdfDictionary>
+internal partial class APM_Thread__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Thread";
@@ -147,12 +147,12 @@ internal partial class APM_Thread_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Thread_Type Table 162
 /// </summary>
-internal partial class APM_Thread_Type : APM_Thread_Type_Base
+internal partial class APM_Thread_Type : APM_Thread_Type__Base
 {
 }
 
 
-internal partial class APM_Thread_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Thread_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Thread_Type";
     public static bool RuleGroup() { return false; }
@@ -163,13 +163,11 @@ internal partial class APM_Thread_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Thread_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Thread")) 
         {
             ctx.Fail<APM_Thread_Type>($"Invalid value {val}, allowed are: [Thread]");
-        }
         }
         // no linked objects
         
@@ -181,12 +179,12 @@ internal partial class APM_Thread_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Thread_F 
 /// </summary>
-internal partial class APM_Thread_F : APM_Thread_F_Base
+internal partial class APM_Thread_F : APM_Thread_F__Base
 {
 }
 
 
-internal partial class APM_Thread_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_Thread_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Thread_F";
     public static bool RuleGroup() { return false; }
@@ -208,12 +206,12 @@ internal partial class APM_Thread_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Thread_I 
 /// </summary>
-internal partial class APM_Thread_I : APM_Thread_I_Base
+internal partial class APM_Thread_I : APM_Thread_I__Base
 {
 }
 
 
-internal partial class APM_Thread_I_Base : ISpecification<PdfDictionary>
+internal partial class APM_Thread_I__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Thread_I";
     public static bool RuleGroup() { return false; }
@@ -235,12 +233,12 @@ internal partial class APM_Thread_I_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Thread_Metadata 
 /// </summary>
-internal partial class APM_Thread_Metadata : APM_Thread_Metadata_Base
+internal partial class APM_Thread_Metadata : APM_Thread_Metadata__Base
 {
 }
 
 
-internal partial class APM_Thread_Metadata_Base : ISpecification<PdfDictionary>
+internal partial class APM_Thread_Metadata__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Thread_Metadata";
     public static bool RuleGroup() { return false; }

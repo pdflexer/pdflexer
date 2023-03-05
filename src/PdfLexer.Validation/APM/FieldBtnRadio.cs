@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FieldBtnRadio : APM_FieldBtnRadio_Base
+internal partial class APM_FieldBtnRadio : APM_FieldBtnRadio__Base
 {
 }
 
-internal partial class APM_FieldBtnRadio_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FieldBtnRadio";
@@ -142,12 +142,12 @@ internal partial class APM_FieldBtnRadio_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_FT Table 226
 /// </summary>
-internal partial class APM_FieldBtnRadio_FT : APM_FieldBtnRadio_FT_Base
+internal partial class APM_FieldBtnRadio_FT : APM_FieldBtnRadio_FT__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_FT_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_FT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_FT";
     public static bool RuleGroup() { return false; }
@@ -158,13 +158,11 @@ internal partial class APM_FieldBtnRadio_FT_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_FieldBtnRadio_FT>(obj, "FT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Btn")) 
         {
             ctx.Fail<APM_FieldBtnRadio_FT>($"Invalid value {val}, allowed are: [Btn]");
-        }
         }
         // no linked objects
         
@@ -176,12 +174,12 @@ internal partial class APM_FieldBtnRadio_FT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_Parent 
 /// </summary>
-internal partial class APM_FieldBtnRadio_Parent : APM_FieldBtnRadio_Parent_Base
+internal partial class APM_FieldBtnRadio_Parent : APM_FieldBtnRadio_Parent__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_Parent";
     public static bool RuleGroup() { return false; }
@@ -211,6 +209,9 @@ internal partial class APM_FieldBtnRadio_Parent_Base : ISpecification<PdfDiction
         } else if (APM_Field.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_Field, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_FieldSig, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_FieldBtnRadio_Parent>("Parent did not match any allowable types: '[FieldTx,FieldBtnPush,FieldBtnCheckbox,FieldBtnRadio,FieldChoice,fn:SinceVersion(1.3,FieldSig),Field]'");
@@ -224,12 +225,12 @@ internal partial class APM_FieldBtnRadio_Parent_Base : ISpecification<PdfDiction
 /// <summary>
 /// FieldBtnRadio_Kids 
 /// </summary>
-internal partial class APM_FieldBtnRadio_Kids : APM_FieldBtnRadio_Kids_Base
+internal partial class APM_FieldBtnRadio_Kids : APM_FieldBtnRadio_Kids__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_Kids_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_Kids__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_Kids";
     public static bool RuleGroup() { return false; }
@@ -251,12 +252,12 @@ internal partial class APM_FieldBtnRadio_Kids_Base : ISpecification<PdfDictionar
 /// <summary>
 /// FieldBtnRadio_T 
 /// </summary>
-internal partial class APM_FieldBtnRadio_T : APM_FieldBtnRadio_T_Base
+internal partial class APM_FieldBtnRadio_T : APM_FieldBtnRadio_T__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_T";
     public static bool RuleGroup() { return false; }
@@ -278,12 +279,12 @@ internal partial class APM_FieldBtnRadio_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_TU 
 /// </summary>
-internal partial class APM_FieldBtnRadio_TU : APM_FieldBtnRadio_TU_Base
+internal partial class APM_FieldBtnRadio_TU : APM_FieldBtnRadio_TU__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_TU_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_TU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_TU";
     public static bool RuleGroup() { return false; }
@@ -305,12 +306,12 @@ internal partial class APM_FieldBtnRadio_TU_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_TM 
 /// </summary>
-internal partial class APM_FieldBtnRadio_TM : APM_FieldBtnRadio_TM_Base
+internal partial class APM_FieldBtnRadio_TM : APM_FieldBtnRadio_TM__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_TM_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_TM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_TM";
     public static bool RuleGroup() { return false; }
@@ -332,12 +333,12 @@ internal partial class APM_FieldBtnRadio_TM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_Ff Table 227 and Table 229
 /// </summary>
-internal partial class APM_FieldBtnRadio_Ff : APM_FieldBtnRadio_Ff_Base
+internal partial class APM_FieldBtnRadio_Ff : APM_FieldBtnRadio_Ff__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_Ff_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_Ff__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_Ff";
     public static bool RuleGroup() { return false; }
@@ -347,7 +348,11 @@ internal partial class APM_FieldBtnRadio_Ff_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldBtnRadio_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj)&&BitSet(obj)&&BitsClear(obj)&&BitsClear(obj))) 
+        {
+            ctx.Fail<APM_FieldBtnRadio_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(4,14) && fn:BitSet(16) && fn:BitsClear(17,25) && fn:BitsClear(27,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -359,12 +364,12 @@ internal partial class APM_FieldBtnRadio_Ff_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_AA 
 /// </summary>
-internal partial class APM_FieldBtnRadio_AA : APM_FieldBtnRadio_AA_Base
+internal partial class APM_FieldBtnRadio_AA : APM_FieldBtnRadio_AA__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_AA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_AA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_AA";
     public static bool RuleGroup() { return false; }
@@ -386,12 +391,12 @@ internal partial class APM_FieldBtnRadio_AA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_DA 
 /// </summary>
-internal partial class APM_FieldBtnRadio_DA : APM_FieldBtnRadio_DA_Base
+internal partial class APM_FieldBtnRadio_DA : APM_FieldBtnRadio_DA__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_DA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_DA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_DA";
     public static bool RuleGroup() { return false; }
@@ -413,12 +418,12 @@ internal partial class APM_FieldBtnRadio_DA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_Q 
 /// </summary>
-internal partial class APM_FieldBtnRadio_Q : APM_FieldBtnRadio_Q_Base
+internal partial class APM_FieldBtnRadio_Q : APM_FieldBtnRadio_Q__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_Q_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_Q__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_Q";
     public static bool RuleGroup() { return false; }
@@ -429,13 +434,11 @@ internal partial class APM_FieldBtnRadio_Q_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldBtnRadio_Q>(obj, "Q", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_FieldBtnRadio_Q>($"Invalid value {val}, allowed are: [0,1,2]");
-        }
         }
         // no linked objects
         
@@ -447,12 +450,12 @@ internal partial class APM_FieldBtnRadio_Q_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_DS 
 /// </summary>
-internal partial class APM_FieldBtnRadio_DS : APM_FieldBtnRadio_DS_Base
+internal partial class APM_FieldBtnRadio_DS : APM_FieldBtnRadio_DS__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_DS_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_DS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_DS";
     public static bool RuleGroup() { return false; }
@@ -474,12 +477,12 @@ internal partial class APM_FieldBtnRadio_DS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_RV 
 /// </summary>
-internal partial class APM_FieldBtnRadio_RV : APM_FieldBtnRadio_RV_Base
+internal partial class APM_FieldBtnRadio_RV : APM_FieldBtnRadio_RV__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_RV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_RV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_RV";
     public static bool RuleGroup() { return false; }
@@ -522,12 +525,12 @@ internal partial class APM_FieldBtnRadio_RV_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_Opt Table 227 and Table 230
 /// </summary>
-internal partial class APM_FieldBtnRadio_Opt : APM_FieldBtnRadio_Opt_Base
+internal partial class APM_FieldBtnRadio_Opt : APM_FieldBtnRadio_Opt__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_Opt_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_Opt__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_Opt";
     public static bool RuleGroup() { return false; }
@@ -549,12 +552,12 @@ internal partial class APM_FieldBtnRadio_Opt_Base : ISpecification<PdfDictionary
 /// <summary>
 /// FieldBtnRadio_V 
 /// </summary>
-internal partial class APM_FieldBtnRadio_V : APM_FieldBtnRadio_V_Base
+internal partial class APM_FieldBtnRadio_V : APM_FieldBtnRadio_V__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_V";
     public static bool RuleGroup() { return false; }
@@ -576,12 +579,12 @@ internal partial class APM_FieldBtnRadio_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnRadio_DV 
 /// </summary>
-internal partial class APM_FieldBtnRadio_DV : APM_FieldBtnRadio_DV_Base
+internal partial class APM_FieldBtnRadio_DV : APM_FieldBtnRadio_DV__Base
 {
 }
 
 
-internal partial class APM_FieldBtnRadio_DV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnRadio_DV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnRadio_DV";
     public static bool RuleGroup() { return false; }

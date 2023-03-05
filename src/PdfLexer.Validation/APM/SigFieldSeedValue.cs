@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SigFieldSeedValue : APM_SigFieldSeedValue_Base
+internal partial class APM_SigFieldSeedValue : APM_SigFieldSeedValue__Base
 {
 }
 
-internal partial class APM_SigFieldSeedValue_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SigFieldSeedValue";
@@ -117,12 +117,12 @@ internal partial class APM_SigFieldSeedValue_Base : ISpecification<PdfDictionary
 /// <summary>
 /// SigFieldSeedValue_Type Table 237
 /// </summary>
-internal partial class APM_SigFieldSeedValue_Type : APM_SigFieldSeedValue_Type_Base
+internal partial class APM_SigFieldSeedValue_Type : APM_SigFieldSeedValue_Type__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_Type";
     public static bool RuleGroup() { return false; }
@@ -133,13 +133,11 @@ internal partial class APM_SigFieldSeedValue_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_SigFieldSeedValue_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SV")) 
         {
             ctx.Fail<APM_SigFieldSeedValue_Type>($"Invalid value {val}, allowed are: [SV]");
-        }
         }
         // no linked objects
         
@@ -151,12 +149,12 @@ internal partial class APM_SigFieldSeedValue_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// SigFieldSeedValue_Ff 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_Ff : APM_SigFieldSeedValue_Ff_Base
+internal partial class APM_SigFieldSeedValue_Ff : APM_SigFieldSeedValue_Ff__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_Ff_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_Ff__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_Ff";
     public static bool RuleGroup() { return false; }
@@ -166,7 +164,11 @@ internal partial class APM_SigFieldSeedValue_Ff_Base : ISpecification<PdfDiction
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_SigFieldSeedValue_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!((ctx.Version < 2.0m && BitsClear(obj)&&BitsClear(obj)))) 
+        {
+            ctx.Fail<APM_SigFieldSeedValue_Ff>($"Value failed special case check: fn:Eval(fn:BeforeVersion(2.0,fn:BitsClear(8,32)) && fn:BitsClear(10,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -178,12 +180,12 @@ internal partial class APM_SigFieldSeedValue_Ff_Base : ISpecification<PdfDiction
 /// <summary>
 /// SigFieldSeedValue_Filter 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_Filter : APM_SigFieldSeedValue_Filter_Base
+internal partial class APM_SigFieldSeedValue_Filter : APM_SigFieldSeedValue_Filter__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_Filter";
     public static bool RuleGroup() { return false; }
@@ -205,12 +207,12 @@ internal partial class APM_SigFieldSeedValue_Filter_Base : ISpecification<PdfDic
 /// <summary>
 /// SigFieldSeedValue_SubFilter 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_SubFilter : APM_SigFieldSeedValue_SubFilter_Base
+internal partial class APM_SigFieldSeedValue_SubFilter : APM_SigFieldSeedValue_SubFilter__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_SubFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_SubFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_SubFilter";
     public static bool RuleGroup() { return false; }
@@ -232,12 +234,12 @@ internal partial class APM_SigFieldSeedValue_SubFilter_Base : ISpecification<Pdf
 /// <summary>
 /// SigFieldSeedValue_DigestMethod https://github.com/pdf-association/pdf-issues/issues/159
 /// </summary>
-internal partial class APM_SigFieldSeedValue_DigestMethod : APM_SigFieldSeedValue_DigestMethod_Base
+internal partial class APM_SigFieldSeedValue_DigestMethod : APM_SigFieldSeedValue_DigestMethod__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_DigestMethod_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_DigestMethod__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_DigestMethod";
     public static bool RuleGroup() { return false; }
@@ -259,12 +261,12 @@ internal partial class APM_SigFieldSeedValue_DigestMethod_Base : ISpecification<
 /// <summary>
 /// SigFieldSeedValue_V 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_V : APM_SigFieldSeedValue_V_Base
+internal partial class APM_SigFieldSeedValue_V : APM_SigFieldSeedValue_V__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_V";
     public static bool RuleGroup() { return false; }
@@ -275,13 +277,11 @@ internal partial class APM_SigFieldSeedValue_V_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfIntNumber, APM_SigFieldSeedValue_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2 || val == 3)) 
         {
             ctx.Fail<APM_SigFieldSeedValue_V>($"Invalid value {val}, allowed are: [0,1,2,3]");
-        }
         }
         // no linked objects
         
@@ -293,12 +293,12 @@ internal partial class APM_SigFieldSeedValue_V_Base : ISpecification<PdfDictiona
 /// <summary>
 /// SigFieldSeedValue_Cert 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_Cert : APM_SigFieldSeedValue_Cert_Base
+internal partial class APM_SigFieldSeedValue_Cert : APM_SigFieldSeedValue_Cert__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_Cert_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_Cert__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_Cert";
     public static bool RuleGroup() { return false; }
@@ -320,12 +320,12 @@ internal partial class APM_SigFieldSeedValue_Cert_Base : ISpecification<PdfDicti
 /// <summary>
 /// SigFieldSeedValue_Reasons 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_Reasons : APM_SigFieldSeedValue_Reasons_Base
+internal partial class APM_SigFieldSeedValue_Reasons : APM_SigFieldSeedValue_Reasons__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_Reasons_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_Reasons__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_Reasons";
     public static bool RuleGroup() { return false; }
@@ -347,12 +347,12 @@ internal partial class APM_SigFieldSeedValue_Reasons_Base : ISpecification<PdfDi
 /// <summary>
 /// SigFieldSeedValue_MDP 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_MDP : APM_SigFieldSeedValue_MDP_Base
+internal partial class APM_SigFieldSeedValue_MDP : APM_SigFieldSeedValue_MDP__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_MDP_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_MDP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_MDP";
     public static bool RuleGroup() { return false; }
@@ -374,12 +374,12 @@ internal partial class APM_SigFieldSeedValue_MDP_Base : ISpecification<PdfDictio
 /// <summary>
 /// SigFieldSeedValue_TimeStamp 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_TimeStamp : APM_SigFieldSeedValue_TimeStamp_Base
+internal partial class APM_SigFieldSeedValue_TimeStamp : APM_SigFieldSeedValue_TimeStamp__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_TimeStamp_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_TimeStamp__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_TimeStamp";
     public static bool RuleGroup() { return false; }
@@ -401,12 +401,12 @@ internal partial class APM_SigFieldSeedValue_TimeStamp_Base : ISpecification<Pdf
 /// <summary>
 /// SigFieldSeedValue_LegalAttestation 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_LegalAttestation : APM_SigFieldSeedValue_LegalAttestation_Base
+internal partial class APM_SigFieldSeedValue_LegalAttestation : APM_SigFieldSeedValue_LegalAttestation__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_LegalAttestation_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_LegalAttestation__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_LegalAttestation";
     public static bool RuleGroup() { return false; }
@@ -428,12 +428,12 @@ internal partial class APM_SigFieldSeedValue_LegalAttestation_Base : ISpecificat
 /// <summary>
 /// SigFieldSeedValue_AddRevInfo 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_AddRevInfo : APM_SigFieldSeedValue_AddRevInfo_Base
+internal partial class APM_SigFieldSeedValue_AddRevInfo : APM_SigFieldSeedValue_AddRevInfo__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_AddRevInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_AddRevInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_AddRevInfo";
     public static bool RuleGroup() { return false; }
@@ -455,12 +455,12 @@ internal partial class APM_SigFieldSeedValue_AddRevInfo_Base : ISpecification<Pd
 /// <summary>
 /// SigFieldSeedValue_LockDocument 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_LockDocument : APM_SigFieldSeedValue_LockDocument_Base
+internal partial class APM_SigFieldSeedValue_LockDocument : APM_SigFieldSeedValue_LockDocument__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_LockDocument_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_LockDocument__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_LockDocument";
     public static bool RuleGroup() { return false; }
@@ -471,13 +471,11 @@ internal partial class APM_SigFieldSeedValue_LockDocument_Base : ISpecification<
         var val = ctx.GetOptional<PdfName, APM_SigFieldSeedValue_LockDocument>(obj, "LockDocument", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "true" || val == "false" || val == "auto")) 
         {
             ctx.Fail<APM_SigFieldSeedValue_LockDocument>($"Invalid value {val}, allowed are: [true,false,auto]");
-        }
         }
         // no linked objects
         
@@ -489,12 +487,12 @@ internal partial class APM_SigFieldSeedValue_LockDocument_Base : ISpecification<
 /// <summary>
 /// SigFieldSeedValue_AppearanceFilter 
 /// </summary>
-internal partial class APM_SigFieldSeedValue_AppearanceFilter : APM_SigFieldSeedValue_AppearanceFilter_Base
+internal partial class APM_SigFieldSeedValue_AppearanceFilter : APM_SigFieldSeedValue_AppearanceFilter__Base
 {
 }
 
 
-internal partial class APM_SigFieldSeedValue_AppearanceFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_SigFieldSeedValue_AppearanceFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SigFieldSeedValue_AppearanceFilter";
     public static bool RuleGroup() { return false; }

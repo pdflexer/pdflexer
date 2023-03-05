@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotPolygon : APM_AnnotPolygon_Base
+internal partial class APM_AnnotPolygon : APM_AnnotPolygon__Base
 {
 }
 
-internal partial class APM_AnnotPolygon_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotPolygon";
@@ -138,12 +138,12 @@ internal partial class APM_AnnotPolygon_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_Type Table 166 and Table 172 and Table 181 (markup annot)
 /// </summary>
-internal partial class APM_AnnotPolygon_Type : APM_AnnotPolygon_Type_Base
+internal partial class APM_AnnotPolygon_Type : APM_AnnotPolygon_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Type";
     public static bool RuleGroup() { return false; }
@@ -154,13 +154,11 @@ internal partial class APM_AnnotPolygon_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_AnnotPolygon_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotPolygon_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -172,12 +170,12 @@ internal partial class APM_AnnotPolygon_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotPolygon_Subtype 
 /// </summary>
-internal partial class APM_AnnotPolygon_Subtype : APM_AnnotPolygon_Subtype_Base
+internal partial class APM_AnnotPolygon_Subtype : APM_AnnotPolygon_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Subtype";
     public static bool RuleGroup() { return false; }
@@ -188,13 +186,11 @@ internal partial class APM_AnnotPolygon_Subtype_Base : ISpecification<PdfDiction
         var val = ctx.GetRequired<PdfName, APM_AnnotPolygon_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Polygon")) 
         {
             ctx.Fail<APM_AnnotPolygon_Subtype>($"Invalid value {val}, allowed are: [Polygon]");
-        }
         }
         // no linked objects
         
@@ -206,12 +202,12 @@ internal partial class APM_AnnotPolygon_Subtype_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotPolygon_Rect 
 /// </summary>
-internal partial class APM_AnnotPolygon_Rect : APM_AnnotPolygon_Rect_Base
+internal partial class APM_AnnotPolygon_Rect : APM_AnnotPolygon_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Rect";
     public static bool RuleGroup() { return false; }
@@ -233,12 +229,12 @@ internal partial class APM_AnnotPolygon_Rect_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotPolygon_Contents 
 /// </summary>
-internal partial class APM_AnnotPolygon_Contents : APM_AnnotPolygon_Contents_Base
+internal partial class APM_AnnotPolygon_Contents : APM_AnnotPolygon_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Contents";
     public static bool RuleGroup() { return false; }
@@ -260,12 +256,12 @@ internal partial class APM_AnnotPolygon_Contents_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotPolygon_P 
 /// </summary>
-internal partial class APM_AnnotPolygon_P : APM_AnnotPolygon_P_Base
+internal partial class APM_AnnotPolygon_P : APM_AnnotPolygon_P__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_P";
     public static bool RuleGroup() { return false; }
@@ -287,12 +283,12 @@ internal partial class APM_AnnotPolygon_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_NM 
 /// </summary>
-internal partial class APM_AnnotPolygon_NM : APM_AnnotPolygon_NM_Base
+internal partial class APM_AnnotPolygon_NM : APM_AnnotPolygon_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_NM";
     public static bool RuleGroup() { return false; }
@@ -314,12 +310,12 @@ internal partial class APM_AnnotPolygon_NM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_M 
 /// </summary>
-internal partial class APM_AnnotPolygon_M : APM_AnnotPolygon_M_Base
+internal partial class APM_AnnotPolygon_M : APM_AnnotPolygon_M__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_M";
     public static bool RuleGroup() { return false; }
@@ -346,12 +342,12 @@ internal partial class APM_AnnotPolygon_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_F Table 167
 /// </summary>
-internal partial class APM_AnnotPolygon_F : APM_AnnotPolygon_F_Base
+internal partial class APM_AnnotPolygon_F : APM_AnnotPolygon_F__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_F";
     public static bool RuleGroup() { return false; }
@@ -361,7 +357,11 @@ internal partial class APM_AnnotPolygon_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotPolygon_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!((ctx.Version < 1.7m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj)))))) 
+        {
+            ctx.Fail<APM_AnnotPolygon_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.7,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -373,12 +373,12 @@ internal partial class APM_AnnotPolygon_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_AP 
 /// </summary>
-internal partial class APM_AnnotPolygon_AP : APM_AnnotPolygon_AP_Base
+internal partial class APM_AnnotPolygon_AP : APM_AnnotPolygon_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_AP";
     public static bool RuleGroup() { return false; }
@@ -386,15 +386,12 @@ internal partial class APM_AnnotPolygon_AP_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Rect = obj.Get("Rect");
-            if (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotPolygon_AP>(obj, "AP", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotPolygon_AP>(obj, "AP", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Rect = obj.Get("Rect");
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotPolygon_AP>(obj, "AP", IndirectRequirement.Either);
+        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+            ctx.Fail<APM_AnnotPolygon_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -408,12 +405,12 @@ internal partial class APM_AnnotPolygon_AP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_AS 
 /// </summary>
-internal partial class APM_AnnotPolygon_AS : APM_AnnotPolygon_AS_Base
+internal partial class APM_AnnotPolygon_AS : APM_AnnotPolygon_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_AS";
     public static bool RuleGroup() { return false; }
@@ -421,17 +418,14 @@ internal partial class APM_AnnotPolygon_AS_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotPolygon_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotPolygon_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotPolygon_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotPolygon_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -445,12 +439,12 @@ internal partial class APM_AnnotPolygon_AS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_Border 
 /// </summary>
-internal partial class APM_AnnotPolygon_Border : APM_AnnotPolygon_Border_Base
+internal partial class APM_AnnotPolygon_Border : APM_AnnotPolygon_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Border";
     public static bool RuleGroup() { return false; }
@@ -460,7 +454,7 @@ internal partial class APM_AnnotPolygon_Border_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfArray, APM_AnnotPolygon_Border>(obj, "Border", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOf_4AnnotBorderCharacteristics, PdfArray>(stack, val, obj);
         
@@ -472,12 +466,12 @@ internal partial class APM_AnnotPolygon_Border_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotPolygon_C 
 /// </summary>
-internal partial class APM_AnnotPolygon_C : APM_AnnotPolygon_C_Base
+internal partial class APM_AnnotPolygon_C : APM_AnnotPolygon_C__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_C";
     public static bool RuleGroup() { return false; }
@@ -499,12 +493,12 @@ internal partial class APM_AnnotPolygon_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotPolygon_StructParent : APM_AnnotPolygon_StructParent_Base
+internal partial class APM_AnnotPolygon_StructParent : APM_AnnotPolygon_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_StructParent";
     public static bool RuleGroup() { return false; }
@@ -526,12 +520,12 @@ internal partial class APM_AnnotPolygon_StructParent_Base : ISpecification<PdfDi
 /// <summary>
 /// AnnotPolygon_OC 
 /// </summary>
-internal partial class APM_AnnotPolygon_OC : APM_AnnotPolygon_OC_Base
+internal partial class APM_AnnotPolygon_OC : APM_AnnotPolygon_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_OC";
     public static bool RuleGroup() { return false; }
@@ -562,12 +556,12 @@ internal partial class APM_AnnotPolygon_OC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_AF 
 /// </summary>
-internal partial class APM_AnnotPolygon_AF : APM_AnnotPolygon_AF_Base
+internal partial class APM_AnnotPolygon_AF : APM_AnnotPolygon_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_AF";
     public static bool RuleGroup() { return false; }
@@ -610,12 +604,12 @@ internal partial class APM_AnnotPolygon_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_ca 
 /// </summary>
-internal partial class APM_AnnotPolygon_ca : APM_AnnotPolygon_ca_Base
+internal partial class APM_AnnotPolygon_ca : APM_AnnotPolygon_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_ca";
     public static bool RuleGroup() { return false; }
@@ -626,13 +620,11 @@ internal partial class APM_AnnotPolygon_ca_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotPolygon_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotPolygon_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -644,12 +636,12 @@ internal partial class APM_AnnotPolygon_ca_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_CA 
 /// </summary>
-internal partial class APM_AnnotPolygon_CA : APM_AnnotPolygon_CA_Base
+internal partial class APM_AnnotPolygon_CA : APM_AnnotPolygon_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_CA";
     public static bool RuleGroup() { return false; }
@@ -660,13 +652,11 @@ internal partial class APM_AnnotPolygon_CA_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotPolygon_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotPolygon_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -678,12 +668,12 @@ internal partial class APM_AnnotPolygon_CA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotPolygon_BM : APM_AnnotPolygon_BM_Base
+internal partial class APM_AnnotPolygon_BM : APM_AnnotPolygon_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_BM";
     public static bool RuleGroup() { return false; }
@@ -694,13 +684,11 @@ internal partial class APM_AnnotPolygon_BM_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotPolygon_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotPolygon_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -712,12 +700,12 @@ internal partial class APM_AnnotPolygon_BM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_Lang 
 /// </summary>
-internal partial class APM_AnnotPolygon_Lang : APM_AnnotPolygon_Lang_Base
+internal partial class APM_AnnotPolygon_Lang : APM_AnnotPolygon_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Lang";
     public static bool RuleGroup() { return false; }
@@ -739,12 +727,12 @@ internal partial class APM_AnnotPolygon_Lang_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotPolygon_T 
 /// </summary>
-internal partial class APM_AnnotPolygon_T : APM_AnnotPolygon_T_Base
+internal partial class APM_AnnotPolygon_T : APM_AnnotPolygon_T__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_T";
     public static bool RuleGroup() { return false; }
@@ -766,12 +754,12 @@ internal partial class APM_AnnotPolygon_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_Popup 
 /// </summary>
-internal partial class APM_AnnotPolygon_Popup : APM_AnnotPolygon_Popup_Base
+internal partial class APM_AnnotPolygon_Popup : APM_AnnotPolygon_Popup__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Popup_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Popup__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Popup";
     public static bool RuleGroup() { return false; }
@@ -793,12 +781,12 @@ internal partial class APM_AnnotPolygon_Popup_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotPolygon_RC 
 /// </summary>
-internal partial class APM_AnnotPolygon_RC : APM_AnnotPolygon_RC_Base
+internal partial class APM_AnnotPolygon_RC : APM_AnnotPolygon_RC__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_RC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_RC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_RC";
     public static bool RuleGroup() { return false; }
@@ -841,12 +829,12 @@ internal partial class APM_AnnotPolygon_RC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_CreationDate 
 /// </summary>
-internal partial class APM_AnnotPolygon_CreationDate : APM_AnnotPolygon_CreationDate_Base
+internal partial class APM_AnnotPolygon_CreationDate : APM_AnnotPolygon_CreationDate__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -868,12 +856,12 @@ internal partial class APM_AnnotPolygon_CreationDate_Base : ISpecification<PdfDi
 /// <summary>
 /// AnnotPolygon_IRT 
 /// </summary>
-internal partial class APM_AnnotPolygon_IRT : APM_AnnotPolygon_IRT_Base
+internal partial class APM_AnnotPolygon_IRT : APM_AnnotPolygon_IRT__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_IRT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_IRT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_IRT";
     public static bool RuleGroup() { return false; }
@@ -881,15 +869,12 @@ internal partial class APM_AnnotPolygon_IRT_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (obj.ContainsKey("RT")) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotPolygon_IRT>(obj, "IRT", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotPolygon_IRT>(obj, "IRT", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotPolygon_IRT>(obj, "IRT", IndirectRequirement.Either);
+        if ((obj.ContainsKey("RT")) && val == null) {
+            ctx.Fail<APM_AnnotPolygon_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -956,6 +941,21 @@ internal partial class APM_AnnotPolygon_IRT_Base : ISpecification<PdfDictionary>
         } else if (APM_AnnotPrinterMark.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_AnnotPrinterMark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotWatermark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_Annot3D, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.7m || (ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotPolygon_IRT>("IRT did not match any allowable types: '[AnnotText,AnnotLink,AnnotFreeText,AnnotLine,AnnotSquare,AnnotCircle,AnnotPolygon,AnnotHighlight,AnnotUnderline,AnnotSquiggly,AnnotStrikeOut,AnnotCaret,AnnotStamp,AnnotInk,AnnotPopup,AnnotFileAttachment,AnnotSound,AnnotMovie,AnnotScreen,AnnotWidget,AnnotPrinterMark,fn:SinceVersion(1.6,AnnotWatermark),fn:SinceVersion(1.6,Annot3D),fn:SinceVersion(1.7,AnnotRedact),fn:SinceVersion(2.0,AnnotProjection),fn:SinceVersion(2.0,AnnotRichMedia)]'");
@@ -969,12 +969,12 @@ internal partial class APM_AnnotPolygon_IRT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_Subj 
 /// </summary>
-internal partial class APM_AnnotPolygon_Subj : APM_AnnotPolygon_Subj_Base
+internal partial class APM_AnnotPolygon_Subj : APM_AnnotPolygon_Subj__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Subj_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Subj__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Subj";
     public static bool RuleGroup() { return false; }
@@ -996,12 +996,12 @@ internal partial class APM_AnnotPolygon_Subj_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotPolygon_RT 
 /// </summary>
-internal partial class APM_AnnotPolygon_RT : APM_AnnotPolygon_RT_Base
+internal partial class APM_AnnotPolygon_RT : APM_AnnotPolygon_RT__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_RT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_RT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_RT";
     public static bool RuleGroup() { return false; }
@@ -1011,14 +1011,12 @@ internal partial class APM_AnnotPolygon_RT_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_AnnotPolygon_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "R" || val == "Group")) 
         {
             ctx.Fail<APM_AnnotPolygon_RT>($"Invalid value {val}, allowed are: [R,Group]");
-        }
         }
         // no linked objects
         
@@ -1030,12 +1028,12 @@ internal partial class APM_AnnotPolygon_RT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_Vertices 
 /// </summary>
-internal partial class APM_AnnotPolygon_Vertices : APM_AnnotPolygon_Vertices_Base
+internal partial class APM_AnnotPolygon_Vertices : APM_AnnotPolygon_Vertices__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Vertices_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Vertices__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Vertices";
     public static bool RuleGroup() { return false; }
@@ -1043,17 +1041,14 @@ internal partial class APM_AnnotPolygon_Vertices_Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if (!obj.ContainsKey("Path")) {
-                val = ctx.GetRequired<PdfArray, APM_AnnotPolygon_Vertices>(obj, "Vertices", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_AnnotPolygon_Vertices>(obj, "Vertices", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_AnnotPolygon_Vertices>(obj, "Vertices", IndirectRequirement.Either);
+        if ((!obj.ContainsKey("Path")) && val == null) {
+            ctx.Fail<APM_AnnotPolygon_Vertices>("Vertices is required when 'fn:IsRequired(fn:Not(fn:IsPresent(Path)))"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -1065,12 +1060,12 @@ internal partial class APM_AnnotPolygon_Vertices_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotPolygon_LE 
 /// </summary>
-internal partial class APM_AnnotPolygon_LE : APM_AnnotPolygon_LE_Base
+internal partial class APM_AnnotPolygon_LE : APM_AnnotPolygon_LE__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_LE_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_LE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_LE";
     public static bool RuleGroup() { return false; }
@@ -1080,7 +1075,7 @@ internal partial class APM_AnnotPolygon_LE_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_AnnotPolygon_LE>(obj, "LE", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOf_2LineEndingsNames, PdfArray>(stack, val, obj);
         
@@ -1092,12 +1087,12 @@ internal partial class APM_AnnotPolygon_LE_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_BS 
 /// </summary>
-internal partial class APM_AnnotPolygon_BS : APM_AnnotPolygon_BS_Base
+internal partial class APM_AnnotPolygon_BS : APM_AnnotPolygon_BS__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_BS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_BS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_BS";
     public static bool RuleGroup() { return false; }
@@ -1119,12 +1114,12 @@ internal partial class APM_AnnotPolygon_BS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_IC 
 /// </summary>
-internal partial class APM_AnnotPolygon_IC : APM_AnnotPolygon_IC_Base
+internal partial class APM_AnnotPolygon_IC : APM_AnnotPolygon_IC__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_IC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_IC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_IC";
     public static bool RuleGroup() { return false; }
@@ -1146,12 +1141,12 @@ internal partial class APM_AnnotPolygon_IC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_BE 
 /// </summary>
-internal partial class APM_AnnotPolygon_BE : APM_AnnotPolygon_BE_Base
+internal partial class APM_AnnotPolygon_BE : APM_AnnotPolygon_BE__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_BE";
     public static bool RuleGroup() { return false; }
@@ -1161,7 +1156,7 @@ internal partial class APM_AnnotPolygon_BE_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotPolygon_BE>(obj, "BE", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_BorderEffect, PdfDictionary>(stack, val, obj);
         
@@ -1173,12 +1168,12 @@ internal partial class APM_AnnotPolygon_BE_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_IT 
 /// </summary>
-internal partial class APM_AnnotPolygon_IT : APM_AnnotPolygon_IT_Base
+internal partial class APM_AnnotPolygon_IT : APM_AnnotPolygon_IT__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_IT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_IT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_IT";
     public static bool RuleGroup() { return false; }
@@ -1189,13 +1184,11 @@ internal partial class APM_AnnotPolygon_IT_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotPolygon_IT>(obj, "IT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(val == "PolygonCloud" || ctx.Version >= 1.7m && val == "PolyLineDimension" || ctx.Version >= 1.7m && val == "PolygonDimension")) 
+        if (!(val == "PolygonCloud" || (ctx.Version < 1.7m || (ctx.Version >= 1.7m && val == "PolyLineDimension")) || (ctx.Version < 1.7m || (ctx.Version >= 1.7m && val == "PolygonDimension")))) 
         {
             ctx.Fail<APM_AnnotPolygon_IT>($"Invalid value {val}, allowed are: [PolygonCloud,fn:SinceVersion(1.7,PolyLineDimension),fn:SinceVersion(1.7,PolygonDimension)]");
-        }
         }
         // no linked objects
         
@@ -1207,12 +1200,12 @@ internal partial class APM_AnnotPolygon_IT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotPolygon_Measure 
 /// </summary>
-internal partial class APM_AnnotPolygon_Measure : APM_AnnotPolygon_Measure_Base
+internal partial class APM_AnnotPolygon_Measure : APM_AnnotPolygon_Measure__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Measure_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Measure__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Measure";
     public static bool RuleGroup() { return false; }
@@ -1227,6 +1220,9 @@ internal partial class APM_AnnotPolygon_Measure_Base : ISpecification<PdfDiction
         if (APM_MeasureRL.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_MeasureRL, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_MeasureGEO.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_MeasureGEO, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotPolygon_Measure>("Measure did not match any allowable types: '[MeasureRL,fn:SinceVersion(2.0,MeasureGEO)]'");
@@ -1240,12 +1236,12 @@ internal partial class APM_AnnotPolygon_Measure_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotPolygon_Path 
 /// </summary>
-internal partial class APM_AnnotPolygon_Path : APM_AnnotPolygon_Path_Base
+internal partial class APM_AnnotPolygon_Path : APM_AnnotPolygon_Path__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_Path_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_Path__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_Path";
     public static bool RuleGroup() { return false; }
@@ -1255,7 +1251,11 @@ internal partial class APM_AnnotPolygon_Path_Base : ISpecification<PdfDictionary
     {
         var val = ctx.GetOptional<PdfArray, APM_AnnotPolygon_Path>(obj, "Path", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (obj.ContainsKey("Vertices")) 
+        {
+            ctx.Fail<APM_AnnotPolygon_Path>($"Value failed special case check: fn:Not(fn:IsPresent(Vertices))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfArraysPaths, PdfArray>(stack, val, obj);
         
@@ -1267,12 +1267,12 @@ internal partial class APM_AnnotPolygon_Path_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotPolygon_ExData 2D markup annots only 
 /// </summary>
-internal partial class APM_AnnotPolygon_ExData : APM_AnnotPolygon_ExData_Base
+internal partial class APM_AnnotPolygon_ExData : APM_AnnotPolygon_ExData__Base
 {
 }
 
 
-internal partial class APM_AnnotPolygon_ExData_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotPolygon_ExData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotPolygon_ExData";
     public static bool RuleGroup() { return false; }
@@ -1287,6 +1287,15 @@ internal partial class APM_AnnotPolygon_ExData_Base : ISpecification<PdfDictiona
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataProjection, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotPolygon_ExData>("ExData did not match any allowable types: '[ExData3DMarkup,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,ExDataMarkupGeo)),fn:SinceVersion(2.0,ExDataMarkupGeo),fn:SinceVersion(2.0,ExDataProjection)]'");

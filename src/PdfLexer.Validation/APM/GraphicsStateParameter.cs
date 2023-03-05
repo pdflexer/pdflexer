@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_GraphicsStateParameter : APM_GraphicsStateParameter_Base
+internal partial class APM_GraphicsStateParameter : APM_GraphicsStateParameter__Base
 {
 }
 
-internal partial class APM_GraphicsStateParameter_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "GraphicsStateParameter";
@@ -163,12 +163,12 @@ internal partial class APM_GraphicsStateParameter_Base : ISpecification<PdfDicti
 /// <summary>
 /// GraphicsStateParameter_Type Table 57
 /// </summary>
-internal partial class APM_GraphicsStateParameter_Type : APM_GraphicsStateParameter_Type_Base
+internal partial class APM_GraphicsStateParameter_Type : APM_GraphicsStateParameter_Type__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_Type";
     public static bool RuleGroup() { return false; }
@@ -179,13 +179,11 @@ internal partial class APM_GraphicsStateParameter_Type_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_GraphicsStateParameter_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ExtGState")) 
         {
             ctx.Fail<APM_GraphicsStateParameter_Type>($"Invalid value {val}, allowed are: [ExtGState]");
-        }
         }
         // no linked objects
         
@@ -197,12 +195,12 @@ internal partial class APM_GraphicsStateParameter_Type_Base : ISpecification<Pdf
 /// <summary>
 /// GraphicsStateParameter_LW 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_LW : APM_GraphicsStateParameter_LW_Base
+internal partial class APM_GraphicsStateParameter_LW : APM_GraphicsStateParameter_LW__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_LW_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_LW__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_LW";
     public static bool RuleGroup() { return false; }
@@ -213,13 +211,11 @@ internal partial class APM_GraphicsStateParameter_LW_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_LW>(obj, "LW", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @LW = val;
-        if (!(gte(@LW,0))) 
+        var LW = obj.Get("LW");
+        if (!(gte(LW,0))) 
         {
             ctx.Fail<APM_GraphicsStateParameter_LW>($"Invalid value {val}, allowed are: [fn:Eval(@LW>=0)]");
-        }
         }
         // no linked objects
         
@@ -231,12 +227,12 @@ internal partial class APM_GraphicsStateParameter_LW_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_LC Table 53
 /// </summary>
-internal partial class APM_GraphicsStateParameter_LC : APM_GraphicsStateParameter_LC_Base
+internal partial class APM_GraphicsStateParameter_LC : APM_GraphicsStateParameter_LC__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_LC_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_LC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_LC";
     public static bool RuleGroup() { return false; }
@@ -247,13 +243,11 @@ internal partial class APM_GraphicsStateParameter_LC_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfIntNumber, APM_GraphicsStateParameter_LC>(obj, "LC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @LC = val;
-        if (!((gte(@LC,0)&&lte(@LC,2)))) 
+        var LC = obj.Get("LC");
+        if (!((gte(LC,0)&&lte(LC,2)))) 
         {
             ctx.Fail<APM_GraphicsStateParameter_LC>($"Invalid value {val}, allowed are: [fn:Eval((@LC>=0) && (@LC<=2))]");
-        }
         }
         // no linked objects
         
@@ -265,12 +259,12 @@ internal partial class APM_GraphicsStateParameter_LC_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_LJ Table 54
 /// </summary>
-internal partial class APM_GraphicsStateParameter_LJ : APM_GraphicsStateParameter_LJ_Base
+internal partial class APM_GraphicsStateParameter_LJ : APM_GraphicsStateParameter_LJ__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_LJ_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_LJ__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_LJ";
     public static bool RuleGroup() { return false; }
@@ -281,13 +275,11 @@ internal partial class APM_GraphicsStateParameter_LJ_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfIntNumber, APM_GraphicsStateParameter_LJ>(obj, "LJ", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @LJ = val;
-        if (!((gte(@LJ,0)&&lte(@LJ,2)))) 
+        var LJ = obj.Get("LJ");
+        if (!((gte(LJ,0)&&lte(LJ,2)))) 
         {
             ctx.Fail<APM_GraphicsStateParameter_LJ>($"Invalid value {val}, allowed are: [fn:Eval((@LJ>=0) && (@LJ<=2))]");
-        }
         }
         // no linked objects
         
@@ -299,12 +291,12 @@ internal partial class APM_GraphicsStateParameter_LJ_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_ML 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_ML : APM_GraphicsStateParameter_ML_Base
+internal partial class APM_GraphicsStateParameter_ML : APM_GraphicsStateParameter_ML__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_ML_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_ML__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_ML";
     public static bool RuleGroup() { return false; }
@@ -315,13 +307,11 @@ internal partial class APM_GraphicsStateParameter_ML_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_ML>(obj, "ML", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ML = val;
-        if (!(gte(@ML,1))) 
+        var ML = obj.Get("ML");
+        if (!(gte(ML,1))) 
         {
             ctx.Fail<APM_GraphicsStateParameter_ML>($"Invalid value {val}, allowed are: [fn:Eval(@ML>=1)]");
-        }
         }
         // no linked objects
         
@@ -333,12 +323,12 @@ internal partial class APM_GraphicsStateParameter_ML_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_D 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_D : APM_GraphicsStateParameter_D_Base
+internal partial class APM_GraphicsStateParameter_D : APM_GraphicsStateParameter_D__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_D";
     public static bool RuleGroup() { return false; }
@@ -360,12 +350,12 @@ internal partial class APM_GraphicsStateParameter_D_Base : ISpecification<PdfDic
 /// <summary>
 /// GraphicsStateParameter_RI Table 69
 /// </summary>
-internal partial class APM_GraphicsStateParameter_RI : APM_GraphicsStateParameter_RI_Base
+internal partial class APM_GraphicsStateParameter_RI : APM_GraphicsStateParameter_RI__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_RI_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_RI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_RI";
     public static bool RuleGroup() { return false; }
@@ -376,13 +366,11 @@ internal partial class APM_GraphicsStateParameter_RI_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfName, APM_GraphicsStateParameter_RI>(obj, "RI", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "AbsoluteColorimetric" || val == "RelativeColorimetric" || val == "Saturation" || val == "Perceptual")) 
         {
             ctx.Fail<APM_GraphicsStateParameter_RI>($"Invalid value {val}, allowed are: [AbsoluteColorimetric,RelativeColorimetric,Saturation,Perceptual]");
-        }
         }
         // no linked objects
         
@@ -394,12 +382,12 @@ internal partial class APM_GraphicsStateParameter_RI_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_OP 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_OP : APM_GraphicsStateParameter_OP_Base
+internal partial class APM_GraphicsStateParameter_OP : APM_GraphicsStateParameter_OP__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_OP_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_OP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_OP";
     public static bool RuleGroup() { return false; }
@@ -421,12 +409,12 @@ internal partial class APM_GraphicsStateParameter_OP_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_op 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_op : APM_GraphicsStateParameter_op_Base
+internal partial class APM_GraphicsStateParameter_op : APM_GraphicsStateParameter_op__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_op_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_op__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_op";
     public static bool RuleGroup() { return false; }
@@ -448,12 +436,12 @@ internal partial class APM_GraphicsStateParameter_op_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_OPM 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_OPM : APM_GraphicsStateParameter_OPM_Base
+internal partial class APM_GraphicsStateParameter_OPM : APM_GraphicsStateParameter_OPM__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_OPM_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_OPM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_OPM";
     public static bool RuleGroup() { return false; }
@@ -464,13 +452,11 @@ internal partial class APM_GraphicsStateParameter_OPM_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfIntNumber, APM_GraphicsStateParameter_OPM>(obj, "OPM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @OPM = val;
-        if (!((gte(@OPM,0)&&lte(@OPM,1)))) 
+        var OPM = obj.Get("OPM");
+        if (!((gte(OPM,0)&&lte(OPM,1)))) 
         {
             ctx.Fail<APM_GraphicsStateParameter_OPM>($"Invalid value {val}, allowed are: [fn:Eval((@OPM>=0) && (@OPM<=1))]");
-        }
         }
         // no linked objects
         
@@ -482,12 +468,12 @@ internal partial class APM_GraphicsStateParameter_OPM_Base : ISpecification<PdfD
 /// <summary>
 /// GraphicsStateParameter_Font 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_Font : APM_GraphicsStateParameter_Font_Base
+internal partial class APM_GraphicsStateParameter_Font : APM_GraphicsStateParameter_Font__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_Font_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_Font__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_Font";
     public static bool RuleGroup() { return false; }
@@ -509,12 +495,12 @@ internal partial class APM_GraphicsStateParameter_Font_Base : ISpecification<Pdf
 /// <summary>
 /// GraphicsStateParameter_BG 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_BG : APM_GraphicsStateParameter_BG_Base
+internal partial class APM_GraphicsStateParameter_BG : APM_GraphicsStateParameter_BG__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_BG_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_BG__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_BG";
     public static bool RuleGroup() { return false; }
@@ -526,7 +512,7 @@ internal partial class APM_GraphicsStateParameter_BG_Base : ISpecification<PdfDi
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.3,dictionary)
+            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -536,6 +522,9 @@ internal partial class APM_GraphicsStateParameter_BG_Base : ISpecification<PdfDi
                     if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                    {
+                        ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_BG>("BG did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
@@ -555,12 +544,12 @@ internal partial class APM_GraphicsStateParameter_BG_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_BG2 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_BG2 : APM_GraphicsStateParameter_BG2_Base
+internal partial class APM_GraphicsStateParameter_BG2 : APM_GraphicsStateParameter_BG2__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_BG2_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_BG2__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_BG2";
     public static bool RuleGroup() { return false; }
@@ -630,12 +619,12 @@ internal partial class APM_GraphicsStateParameter_BG2_Base : ISpecification<PdfD
 /// <summary>
 /// GraphicsStateParameter_UCR 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_UCR : APM_GraphicsStateParameter_UCR_Base
+internal partial class APM_GraphicsStateParameter_UCR : APM_GraphicsStateParameter_UCR__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_UCR_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_UCR__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_UCR";
     public static bool RuleGroup() { return false; }
@@ -647,7 +636,7 @@ internal partial class APM_GraphicsStateParameter_UCR_Base : ISpecification<PdfD
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.3,dictionary)
+            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -657,6 +646,9 @@ internal partial class APM_GraphicsStateParameter_UCR_Base : ISpecification<PdfD
                     if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                    {
+                        ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_UCR>("UCR did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
@@ -676,12 +668,12 @@ internal partial class APM_GraphicsStateParameter_UCR_Base : ISpecification<PdfD
 /// <summary>
 /// GraphicsStateParameter_UCR2 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_UCR2 : APM_GraphicsStateParameter_UCR2_Base
+internal partial class APM_GraphicsStateParameter_UCR2 : APM_GraphicsStateParameter_UCR2__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_UCR2_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_UCR2__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_UCR2";
     public static bool RuleGroup() { return false; }
@@ -751,12 +743,12 @@ internal partial class APM_GraphicsStateParameter_UCR2_Base : ISpecification<Pdf
 /// <summary>
 /// GraphicsStateParameter_TR 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_TR : APM_GraphicsStateParameter_TR_Base
+internal partial class APM_GraphicsStateParameter_TR : APM_GraphicsStateParameter_TR__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_TR_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_TR__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_TR";
     public static bool RuleGroup() { return false; }
@@ -768,7 +760,7 @@ internal partial class APM_GraphicsStateParameter_TR_Base : ISpecification<PdfDi
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.3,dictionary)
+            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.ArrayObj:
                 {
                     var val =  (PdfArray)utval;
@@ -796,6 +788,9 @@ internal partial class APM_GraphicsStateParameter_TR_Base : ISpecification<PdfDi
                     if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                    {
+                        ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_TR>("TR did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
@@ -815,12 +810,12 @@ internal partial class APM_GraphicsStateParameter_TR_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_TR2 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_TR2 : APM_GraphicsStateParameter_TR2_Base
+internal partial class APM_GraphicsStateParameter_TR2 : APM_GraphicsStateParameter_TR2__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_TR2_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_TR2__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_TR2";
     public static bool RuleGroup() { return false; }
@@ -899,12 +894,12 @@ internal partial class APM_GraphicsStateParameter_TR2_Base : ISpecification<PdfD
 /// <summary>
 /// GraphicsStateParameter_HT 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_HT : APM_GraphicsStateParameter_HT_Base
+internal partial class APM_GraphicsStateParameter_HT : APM_GraphicsStateParameter_HT__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_HT_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_HT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_HT";
     public static bool RuleGroup() { return false; }
@@ -955,6 +950,9 @@ internal partial class APM_GraphicsStateParameter_HT_Base : ISpecification<PdfDi
                     } else if (APM_HalftoneType10.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_HalftoneType10, PdfDictionary>(stack, val.Dictionary, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_HalftoneType16.MatchesType(ctx, val.Dictionary)))) 
+                    {
+                        ctx.Run<APM_HalftoneType16, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_HT>("HT did not match any allowable types: '[HalftoneType6,HalftoneType10,fn:SinceVersion(1.3,HalftoneType16)]'");
@@ -974,12 +972,12 @@ internal partial class APM_GraphicsStateParameter_HT_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_FL 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_FL : APM_GraphicsStateParameter_FL_Base
+internal partial class APM_GraphicsStateParameter_FL : APM_GraphicsStateParameter_FL__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_FL_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_FL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_FL";
     public static bool RuleGroup() { return false; }
@@ -990,13 +988,11 @@ internal partial class APM_GraphicsStateParameter_FL_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_FL>(obj, "FL", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @FL = val;
-        if (!(gt(@FL,0))) 
+        var FL = obj.Get("FL");
+        if (!(gt(FL,0))) 
         {
             ctx.Fail<APM_GraphicsStateParameter_FL>($"Invalid value {val}, allowed are: [fn:Eval(@FL>0)]");
-        }
         }
         // no linked objects
         
@@ -1008,12 +1004,12 @@ internal partial class APM_GraphicsStateParameter_FL_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_SM 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_SM : APM_GraphicsStateParameter_SM_Base
+internal partial class APM_GraphicsStateParameter_SM : APM_GraphicsStateParameter_SM__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_SM_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_SM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_SM";
     public static bool RuleGroup() { return false; }
@@ -1024,13 +1020,11 @@ internal partial class APM_GraphicsStateParameter_SM_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_SM>(obj, "SM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @SM = val;
-        if (!((gte(@SM,0)&&lte(@SM,1)))) 
+        var SM = obj.Get("SM");
+        if (!((gte(SM,0)&&lte(SM,1)))) 
         {
             ctx.Fail<APM_GraphicsStateParameter_SM>($"Invalid value {val}, allowed are: [fn:Eval((@SM>=0) && (@SM<=1))]");
-        }
         }
         // no linked objects
         
@@ -1042,12 +1036,12 @@ internal partial class APM_GraphicsStateParameter_SM_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_SA 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_SA : APM_GraphicsStateParameter_SA_Base
+internal partial class APM_GraphicsStateParameter_SA : APM_GraphicsStateParameter_SA__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_SA_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_SA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_SA";
     public static bool RuleGroup() { return false; }
@@ -1069,12 +1063,12 @@ internal partial class APM_GraphicsStateParameter_SA_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_GraphicsStateParameter_BM : APM_GraphicsStateParameter_BM_Base
+internal partial class APM_GraphicsStateParameter_BM : APM_GraphicsStateParameter_BM__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_BM";
     public static bool RuleGroup() { return false; }
@@ -1086,19 +1080,17 @@ internal partial class APM_GraphicsStateParameter_BM_Base : ISpecification<PdfDi
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // funcs: fn:Deprecated(2.0,array)
+            // TODO funcs: fn:Deprecated(2.0,array)
             case PdfObjectType.NameObj:
                 {
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -1116,12 +1108,12 @@ internal partial class APM_GraphicsStateParameter_BM_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_SMask 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_SMask : APM_GraphicsStateParameter_SMask_Base
+internal partial class APM_GraphicsStateParameter_SMask : APM_GraphicsStateParameter_SMask__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_SMask_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_SMask__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_SMask";
     public static bool RuleGroup() { return false; }
@@ -1156,13 +1148,11 @@ internal partial class APM_GraphicsStateParameter_SMask_Base : ISpecification<Pd
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "None")) 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_SMask>($"Invalid value {val}, allowed are: [None]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -1180,12 +1170,12 @@ internal partial class APM_GraphicsStateParameter_SMask_Base : ISpecification<Pd
 /// <summary>
 /// GraphicsStateParameter_CA 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_CA : APM_GraphicsStateParameter_CA_Base
+internal partial class APM_GraphicsStateParameter_CA : APM_GraphicsStateParameter_CA__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_CA";
     public static bool RuleGroup() { return false; }
@@ -1196,13 +1186,11 @@ internal partial class APM_GraphicsStateParameter_CA_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0)&&lte(@CA,1)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0)&&lte(CA,1)))) 
         {
             ctx.Fail<APM_GraphicsStateParameter_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0) && (@CA<=1))]");
-        }
         }
         // no linked objects
         
@@ -1214,12 +1202,12 @@ internal partial class APM_GraphicsStateParameter_CA_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_ca 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_ca : APM_GraphicsStateParameter_ca_Base
+internal partial class APM_GraphicsStateParameter_ca : APM_GraphicsStateParameter_ca__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_ca";
     public static bool RuleGroup() { return false; }
@@ -1230,13 +1218,11 @@ internal partial class APM_GraphicsStateParameter_ca_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0)&&lte(@ca,1)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0)&&lte(ca,1)))) 
         {
             ctx.Fail<APM_GraphicsStateParameter_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0) && (@ca<=1))]");
-        }
         }
         // no linked objects
         
@@ -1248,12 +1234,12 @@ internal partial class APM_GraphicsStateParameter_ca_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_AIS 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_AIS : APM_GraphicsStateParameter_AIS_Base
+internal partial class APM_GraphicsStateParameter_AIS : APM_GraphicsStateParameter_AIS__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_AIS_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_AIS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_AIS";
     public static bool RuleGroup() { return false; }
@@ -1275,12 +1261,12 @@ internal partial class APM_GraphicsStateParameter_AIS_Base : ISpecification<PdfD
 /// <summary>
 /// GraphicsStateParameter_TK 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_TK : APM_GraphicsStateParameter_TK_Base
+internal partial class APM_GraphicsStateParameter_TK : APM_GraphicsStateParameter_TK__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_TK_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_TK__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_TK";
     public static bool RuleGroup() { return false; }
@@ -1302,12 +1288,12 @@ internal partial class APM_GraphicsStateParameter_TK_Base : ISpecification<PdfDi
 /// <summary>
 /// GraphicsStateParameter_UseBlackPtComp 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_UseBlackPtComp : APM_GraphicsStateParameter_UseBlackPtComp_Base
+internal partial class APM_GraphicsStateParameter_UseBlackPtComp : APM_GraphicsStateParameter_UseBlackPtComp__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_UseBlackPtComp_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_UseBlackPtComp__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_UseBlackPtComp";
     public static bool RuleGroup() { return false; }
@@ -1318,13 +1304,11 @@ internal partial class APM_GraphicsStateParameter_UseBlackPtComp_Base : ISpecifi
         var val = ctx.GetOptional<PdfName, APM_GraphicsStateParameter_UseBlackPtComp>(obj, "UseBlackPtComp", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "OFF" || val == "ON" || val == "Default")) 
         {
             ctx.Fail<APM_GraphicsStateParameter_UseBlackPtComp>($"Invalid value {val}, allowed are: [OFF,ON,Default]");
-        }
         }
         // no linked objects
         
@@ -1336,12 +1320,12 @@ internal partial class APM_GraphicsStateParameter_UseBlackPtComp_Base : ISpecifi
 /// <summary>
 /// GraphicsStateParameter_HTO 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_HTO : APM_GraphicsStateParameter_HTO_Base
+internal partial class APM_GraphicsStateParameter_HTO : APM_GraphicsStateParameter_HTO__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_HTO_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_HTO__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_HTO";
     public static bool RuleGroup() { return false; }
@@ -1363,12 +1347,12 @@ internal partial class APM_GraphicsStateParameter_HTO_Base : ISpecification<PdfD
 /// <summary>
 /// GraphicsStateParameter_HTP 
 /// </summary>
-internal partial class APM_GraphicsStateParameter_HTP : APM_GraphicsStateParameter_HTP_Base
+internal partial class APM_GraphicsStateParameter_HTP : APM_GraphicsStateParameter_HTP__Base
 {
 }
 
 
-internal partial class APM_GraphicsStateParameter_HTP_Base : ISpecification<PdfDictionary>
+internal partial class APM_GraphicsStateParameter_HTP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GraphicsStateParameter_HTP";
     public static bool RuleGroup() { return false; }

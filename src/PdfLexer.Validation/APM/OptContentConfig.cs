@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentConfig : APM_OptContentConfig_Base
+internal partial class APM_OptContentConfig : APM_OptContentConfig__Base
 {
 }
 
-internal partial class APM_OptContentConfig_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentConfig";
@@ -108,12 +108,12 @@ internal partial class APM_OptContentConfig_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OptContentConfig_Name Table 99
 /// </summary>
-internal partial class APM_OptContentConfig_Name : APM_OptContentConfig_Name_Base
+internal partial class APM_OptContentConfig_Name : APM_OptContentConfig_Name__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_Name";
     public static bool RuleGroup() { return false; }
@@ -135,12 +135,12 @@ internal partial class APM_OptContentConfig_Name_Base : ISpecification<PdfDictio
 /// <summary>
 /// OptContentConfig_Creator 
 /// </summary>
-internal partial class APM_OptContentConfig_Creator : APM_OptContentConfig_Creator_Base
+internal partial class APM_OptContentConfig_Creator : APM_OptContentConfig_Creator__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_Creator_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_Creator__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_Creator";
     public static bool RuleGroup() { return false; }
@@ -162,12 +162,12 @@ internal partial class APM_OptContentConfig_Creator_Base : ISpecification<PdfDic
 /// <summary>
 /// OptContentConfig_BaseState 
 /// </summary>
-internal partial class APM_OptContentConfig_BaseState : APM_OptContentConfig_BaseState_Base
+internal partial class APM_OptContentConfig_BaseState : APM_OptContentConfig_BaseState__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_BaseState_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_BaseState__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_BaseState";
     public static bool RuleGroup() { return false; }
@@ -178,13 +178,11 @@ internal partial class APM_OptContentConfig_BaseState_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_OptContentConfig_BaseState>(obj, "BaseState", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ON" || val == "OFF" || val == "Unchanged")) 
         {
             ctx.Fail<APM_OptContentConfig_BaseState>($"Invalid value {val}, allowed are: [ON,OFF,Unchanged]");
-        }
         }
         // no linked objects
         
@@ -196,12 +194,12 @@ internal partial class APM_OptContentConfig_BaseState_Base : ISpecification<PdfD
 /// <summary>
 /// OptContentConfig_ON 
 /// </summary>
-internal partial class APM_OptContentConfig_ON : APM_OptContentConfig_ON_Base
+internal partial class APM_OptContentConfig_ON : APM_OptContentConfig_ON__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_ON_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_ON__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_ON";
     public static bool RuleGroup() { return false; }
@@ -223,12 +221,12 @@ internal partial class APM_OptContentConfig_ON_Base : ISpecification<PdfDictiona
 /// <summary>
 /// OptContentConfig_OFF 
 /// </summary>
-internal partial class APM_OptContentConfig_OFF : APM_OptContentConfig_OFF_Base
+internal partial class APM_OptContentConfig_OFF : APM_OptContentConfig_OFF__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_OFF_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_OFF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_OFF";
     public static bool RuleGroup() { return false; }
@@ -250,12 +248,12 @@ internal partial class APM_OptContentConfig_OFF_Base : ISpecification<PdfDiction
 /// <summary>
 /// OptContentConfig_Intent 
 /// </summary>
-internal partial class APM_OptContentConfig_Intent : APM_OptContentConfig_Intent_Base
+internal partial class APM_OptContentConfig_Intent : APM_OptContentConfig_Intent__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_Intent_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_Intent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_Intent";
     public static bool RuleGroup() { return false; }
@@ -281,13 +279,11 @@ internal partial class APM_OptContentConfig_Intent_Base : ISpecification<PdfDict
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "All" || val == "Design" || val == "View")) 
                     {
                         ctx.Fail<APM_OptContentConfig_Intent>($"Invalid value {val}, allowed are: [All,Design,View]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -305,12 +301,12 @@ internal partial class APM_OptContentConfig_Intent_Base : ISpecification<PdfDict
 /// <summary>
 /// OptContentConfig_AS 
 /// </summary>
-internal partial class APM_OptContentConfig_AS : APM_OptContentConfig_AS_Base
+internal partial class APM_OptContentConfig_AS : APM_OptContentConfig_AS__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_AS";
     public static bool RuleGroup() { return false; }
@@ -332,12 +328,12 @@ internal partial class APM_OptContentConfig_AS_Base : ISpecification<PdfDictiona
 /// <summary>
 /// OptContentConfig_Order 
 /// </summary>
-internal partial class APM_OptContentConfig_Order : APM_OptContentConfig_Order_Base
+internal partial class APM_OptContentConfig_Order : APM_OptContentConfig_Order__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_Order_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_Order__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_Order";
     public static bool RuleGroup() { return false; }
@@ -359,12 +355,12 @@ internal partial class APM_OptContentConfig_Order_Base : ISpecification<PdfDicti
 /// <summary>
 /// OptContentConfig_ListMode 
 /// </summary>
-internal partial class APM_OptContentConfig_ListMode : APM_OptContentConfig_ListMode_Base
+internal partial class APM_OptContentConfig_ListMode : APM_OptContentConfig_ListMode__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_ListMode_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_ListMode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_ListMode";
     public static bool RuleGroup() { return false; }
@@ -375,13 +371,11 @@ internal partial class APM_OptContentConfig_ListMode_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfName, APM_OptContentConfig_ListMode>(obj, "ListMode", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "AllPages" || val == "VisiblePages")) 
         {
             ctx.Fail<APM_OptContentConfig_ListMode>($"Invalid value {val}, allowed are: [AllPages,VisiblePages]");
-        }
         }
         // no linked objects
         
@@ -393,12 +387,12 @@ internal partial class APM_OptContentConfig_ListMode_Base : ISpecification<PdfDi
 /// <summary>
 /// OptContentConfig_RBGroups 
 /// </summary>
-internal partial class APM_OptContentConfig_RBGroups : APM_OptContentConfig_RBGroups_Base
+internal partial class APM_OptContentConfig_RBGroups : APM_OptContentConfig_RBGroups__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_RBGroups_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_RBGroups__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_RBGroups";
     public static bool RuleGroup() { return false; }
@@ -420,12 +414,12 @@ internal partial class APM_OptContentConfig_RBGroups_Base : ISpecification<PdfDi
 /// <summary>
 /// OptContentConfig_Locked 
 /// </summary>
-internal partial class APM_OptContentConfig_Locked : APM_OptContentConfig_Locked_Base
+internal partial class APM_OptContentConfig_Locked : APM_OptContentConfig_Locked__Base
 {
 }
 
 
-internal partial class APM_OptContentConfig_Locked_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentConfig_Locked__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentConfig_Locked";
     public static bool RuleGroup() { return false; }

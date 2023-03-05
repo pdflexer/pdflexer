@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_XRefStream : APM_XRefStream_Base
+internal partial class APM_XRefStream : APM_XRefStream__Base
 {
 }
 
-internal partial class APM_XRefStream_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "XRefStream";
@@ -120,12 +120,12 @@ internal partial class APM_XRefStream_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_Type Table 5 and Table 15 and Table 17
 /// </summary>
-internal partial class APM_XRefStream_Type : APM_XRefStream_Type_Base
+internal partial class APM_XRefStream_Type : APM_XRefStream_Type__Base
 {
 }
 
 
-internal partial class APM_XRefStream_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_Type";
     public static bool RuleGroup() { return false; }
@@ -136,13 +136,11 @@ internal partial class APM_XRefStream_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_XRefStream_Type>(obj, "Type", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "XRef")) 
         {
             ctx.Fail<APM_XRefStream_Type>($"Invalid value {val}, allowed are: [XRef]");
-        }
         }
         // no linked objects
         
@@ -154,12 +152,12 @@ internal partial class APM_XRefStream_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_Size 
 /// </summary>
-internal partial class APM_XRefStream_Size : APM_XRefStream_Size_Base
+internal partial class APM_XRefStream_Size : APM_XRefStream_Size__Base
 {
 }
 
 
-internal partial class APM_XRefStream_Size_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_Size__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_Size";
     public static bool RuleGroup() { return false; }
@@ -170,13 +168,11 @@ internal partial class APM_XRefStream_Size_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfIntNumber, APM_XRefStream_Size>(obj, "Size", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Size = val;
-        if (!(gt(@Size,1))) 
+        var Size = obj.Get("Size");
+        if (!(gt(Size,1))) 
         {
             ctx.Fail<APM_XRefStream_Size>($"Invalid value {val}, allowed are: [fn:Eval(@Size>1)]");
-        }
         }
         // no linked objects
         
@@ -188,12 +184,12 @@ internal partial class APM_XRefStream_Size_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_Index Must be even array length. Object numbers can only be in one subsection.
 /// </summary>
-internal partial class APM_XRefStream_Index : APM_XRefStream_Index_Base
+internal partial class APM_XRefStream_Index : APM_XRefStream_Index__Base
 {
 }
 
 
-internal partial class APM_XRefStream_Index_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_Index__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_Index";
     public static bool RuleGroup() { return false; }
@@ -203,7 +199,11 @@ internal partial class APM_XRefStream_Index_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_XRefStream_Index>(obj, "Index", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
-        // TODO special case
+        var Index = obj.Get("Index");
+        if (!((eq(mod(((Index as PdfArray)?.Count),2),0)&&ArraySortAscending(obj)))) 
+        {
+            ctx.Fail<APM_XRefStream_Index>($"Value failed special case check: fn:Eval(((fn:ArrayLength(Index) mod 2)==0) && fn:ArraySortAscending(Index,2))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfXRefIndexIntegers, PdfArray>(stack, val, obj);
         
@@ -215,12 +215,12 @@ internal partial class APM_XRefStream_Index_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_Prev 
 /// </summary>
-internal partial class APM_XRefStream_Prev : APM_XRefStream_Prev_Base
+internal partial class APM_XRefStream_Prev : APM_XRefStream_Prev__Base
 {
 }
 
 
-internal partial class APM_XRefStream_Prev_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_Prev__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_Prev";
     public static bool RuleGroup() { return false; }
@@ -231,13 +231,11 @@ internal partial class APM_XRefStream_Prev_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_XRefStream_Prev>(obj, "Prev", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Prev = val;
-        if (!((gte(@Prev,0)&&lte(@Prev,ctx.FileSize)))) 
+        var Prev = obj.Get("Prev");
+        if (!((gte(Prev,0)&&lte(Prev,ctx.FileSize)))) 
         {
             ctx.Fail<APM_XRefStream_Prev>($"Invalid value {val}, allowed are: [fn:Eval((@Prev>=0) && (@Prev<=fn:FileSize()))]");
-        }
         }
         // no linked objects
         
@@ -249,12 +247,12 @@ internal partial class APM_XRefStream_Prev_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_W 
 /// </summary>
-internal partial class APM_XRefStream_W : APM_XRefStream_W_Base
+internal partial class APM_XRefStream_W : APM_XRefStream_W__Base
 {
 }
 
 
-internal partial class APM_XRefStream_W_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_W__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_W";
     public static bool RuleGroup() { return false; }
@@ -276,12 +274,12 @@ internal partial class APM_XRefStream_W_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_Length 
 /// </summary>
-internal partial class APM_XRefStream_Length : APM_XRefStream_Length_Base
+internal partial class APM_XRefStream_Length : APM_XRefStream_Length__Base
 {
 }
 
 
-internal partial class APM_XRefStream_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_Length";
     public static bool RuleGroup() { return false; }
@@ -292,13 +290,11 @@ internal partial class APM_XRefStream_Length_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfIntNumber, APM_XRefStream_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Length = val;
-        if (!(gte(@Length,0))) 
+        var Length = obj.Get("Length");
+        if (!(gte(Length,0))) 
         {
             ctx.Fail<APM_XRefStream_Length>($"Invalid value {val}, allowed are: [fn:Eval(@Length>=0)]");
-        }
         }
         // no linked objects
         
@@ -310,12 +306,12 @@ internal partial class APM_XRefStream_Length_Base : ISpecification<PdfDictionary
 /// <summary>
 /// XRefStream_Filter Table 6
 /// </summary>
-internal partial class APM_XRefStream_Filter : APM_XRefStream_Filter_Base
+internal partial class APM_XRefStream_Filter : APM_XRefStream_Filter__Base
 {
 }
 
 
-internal partial class APM_XRefStream_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_Filter";
     public static bool RuleGroup() { return false; }
@@ -334,7 +330,13 @@ internal partial class APM_XRefStream_Filter_Base : ISpecification<PdfDictionary
                         ctx.Fail<APM_XRefStream_Filter>("Filter is required to be indirect when a array");
                         return;
                     }
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    var Filter2 = obj.Get("Filter");
+                    if (!((eq(((DecodeParms as PdfArray)?.Count),((Filter2 as PdfArray)?.Count))&&!Contains(Filter2, "Crypt")))) 
+                    {
+                        ctx.Fail<APM_XRefStream_Filter>($"Value failed special case check: fn:Eval((fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter)) && (fn:Not(fn:Contains(@Filter,Crypt))))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -347,13 +349,11 @@ internal partial class APM_XRefStream_Filter_Base : ISpecification<PdfDictionary
                         return;
                     }
                     // no special cases
-                    {
                     
                     
                     if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode")) 
                     {
                         ctx.Fail<APM_XRefStream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -371,12 +371,12 @@ internal partial class APM_XRefStream_Filter_Base : ISpecification<PdfDictionary
 /// <summary>
 /// XRefStream_DecodeParms 
 /// </summary>
-internal partial class APM_XRefStream_DecodeParms : APM_XRefStream_DecodeParms_Base
+internal partial class APM_XRefStream_DecodeParms : APM_XRefStream_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_XRefStream_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -395,7 +395,12 @@ internal partial class APM_XRefStream_DecodeParms_Base : ISpecification<PdfDicti
                         ctx.Fail<APM_XRefStream_DecodeParms>("DecodeParms is required to be indirect when a array");
                         return;
                     }
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XRefStream_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -434,12 +439,12 @@ internal partial class APM_XRefStream_DecodeParms_Base : ISpecification<PdfDicti
 /// <summary>
 /// XRefStream_F 
 /// </summary>
-internal partial class APM_XRefStream_F : APM_XRefStream_F_Base
+internal partial class APM_XRefStream_F : APM_XRefStream_F__Base
 {
 }
 
 
-internal partial class APM_XRefStream_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_F";
     public static bool RuleGroup() { return false; }
@@ -464,7 +469,11 @@ internal partial class APM_XRefStream_F_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    
+                    if (!(AlwaysUnencrypted(obj))) 
+                    {
+                        ctx.Fail<APM_XRefStream_F>($"Value failed special case check: fn:Eval(fn:AlwaysUnencrypted())");
+                    }
                     // no value restrictions
                     // no linked objects
                     return;
@@ -482,12 +491,12 @@ internal partial class APM_XRefStream_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_FFilter Table 6
 /// </summary>
-internal partial class APM_XRefStream_FFilter : APM_XRefStream_FFilter_Base
+internal partial class APM_XRefStream_FFilter : APM_XRefStream_FFilter__Base
 {
 }
 
 
-internal partial class APM_XRefStream_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_FFilter";
     public static bool RuleGroup() { return false; }
@@ -503,7 +512,12 @@ internal partial class APM_XRefStream_FFilter_Base : ISpecification<PdfDictionar
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XRefStream_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -513,13 +527,11 @@ internal partial class APM_XRefStream_FFilter_Base : ISpecification<PdfDictionar
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode")) 
                     {
                         ctx.Fail<APM_XRefStream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -537,12 +549,12 @@ internal partial class APM_XRefStream_FFilter_Base : ISpecification<PdfDictionar
 /// <summary>
 /// XRefStream_FDecodeParms 
 /// </summary>
-internal partial class APM_XRefStream_FDecodeParms : APM_XRefStream_FDecodeParms_Base
+internal partial class APM_XRefStream_FDecodeParms : APM_XRefStream_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_XRefStream_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -558,7 +570,12 @@ internal partial class APM_XRefStream_FDecodeParms_Base : ISpecification<PdfDict
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_XRefStream_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -594,12 +611,12 @@ internal partial class APM_XRefStream_FDecodeParms_Base : ISpecification<PdfDict
 /// <summary>
 /// XRefStream_DL 
 /// </summary>
-internal partial class APM_XRefStream_DL : APM_XRefStream_DL_Base
+internal partial class APM_XRefStream_DL : APM_XRefStream_DL__Base
 {
 }
 
 
-internal partial class APM_XRefStream_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_DL";
     public static bool RuleGroup() { return false; }
@@ -609,14 +626,16 @@ internal partial class APM_XRefStream_DL_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_XRefStream_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
         {
+            ctx.Fail<APM_XRefStream_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         
-        IPdfObject @DL = val;
-        if (!(gte(@DL,0))) 
+        
+        if (!(gte(DL,0))) 
         {
             ctx.Fail<APM_XRefStream_DL>($"Invalid value {val}, allowed are: [fn:Eval(@DL>=0)]");
-        }
         }
         // no linked objects
         
@@ -628,12 +647,12 @@ internal partial class APM_XRefStream_DL_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_Root 
 /// </summary>
-internal partial class APM_XRefStream_Root : APM_XRefStream_Root_Base
+internal partial class APM_XRefStream_Root : APM_XRefStream_Root__Base
 {
 }
 
 
-internal partial class APM_XRefStream_Root_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_Root__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_Root";
     public static bool RuleGroup() { return false; }
@@ -655,12 +674,12 @@ internal partial class APM_XRefStream_Root_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_Info https://github.com/pdf-association/pdf-issues/issues/106
 /// </summary>
-internal partial class APM_XRefStream_Info : APM_XRefStream_Info_Base
+internal partial class APM_XRefStream_Info : APM_XRefStream_Info__Base
 {
 }
 
 
-internal partial class APM_XRefStream_Info_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_Info__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_Info";
     public static bool RuleGroup() { return false; }
@@ -682,12 +701,12 @@ internal partial class APM_XRefStream_Info_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_ID 
 /// </summary>
-internal partial class APM_XRefStream_ID : APM_XRefStream_ID_Base
+internal partial class APM_XRefStream_ID : APM_XRefStream_ID__Base
 {
 }
 
 
-internal partial class APM_XRefStream_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_ID";
     public static bool RuleGroup() { return false; }
@@ -695,17 +714,19 @@ internal partial class APM_XRefStream_ID_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if ((ctx.Version >= 2.0m||obj.ContainsKey("Encrypt"))) {
-                val = ctx.GetRequired<PdfArray, APM_XRefStream_ID>(obj, "ID", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_XRefStream_ID>(obj, "ID", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_XRefStream_ID>(obj, "ID", IndirectRequirement.Either);
+        if (((ctx.Version >= 2.0m||obj.ContainsKey("Encrypt"))) && val == null) {
+            ctx.Fail<APM_XRefStream_ID>("ID is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:IsPresent(Encrypt))"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
+        var ID0 = obj.Get("ID")?.Get("0");
+        var ID1 = obj.Get("ID")?.Get("1");
+        if (!((MustBeDirect(ID0)&&MustBeDirect(ID1)))) 
+        {
+            ctx.Fail<APM_XRefStream_ID>($"Value failed special case check: fn:Eval(fn:MustBeDirect(ID::0) && fn:MustBeDirect(ID::1))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOf_2StringsByte, PdfArray>(stack, val, obj);
         
@@ -717,12 +738,12 @@ internal partial class APM_XRefStream_ID_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// XRefStream_Encrypt 
 /// </summary>
-internal partial class APM_XRefStream_Encrypt : APM_XRefStream_Encrypt_Base
+internal partial class APM_XRefStream_Encrypt : APM_XRefStream_Encrypt__Base
 {
 }
 
 
-internal partial class APM_XRefStream_Encrypt_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_Encrypt__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_Encrypt";
     public static bool RuleGroup() { return false; }
@@ -753,12 +774,12 @@ internal partial class APM_XRefStream_Encrypt_Base : ISpecification<PdfDictionar
 /// <summary>
 /// XRefStream_AuthCode ISO/TS 32004 integrity protection
 /// </summary>
-internal partial class APM_XRefStream_AuthCode : APM_XRefStream_AuthCode_Base
+internal partial class APM_XRefStream_AuthCode : APM_XRefStream_AuthCode__Base
 {
 }
 
 
-internal partial class APM_XRefStream_AuthCode_Base : ISpecification<PdfDictionary>
+internal partial class APM_XRefStream_AuthCode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "XRefStream_AuthCode";
     public static bool RuleGroup() { return false; }
@@ -768,7 +789,11 @@ internal partial class APM_XRefStream_AuthCode_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfDictionary, APM_XRefStream_AuthCode>(obj, "AuthCode", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
-        // TODO special case
+        var EncryptV = obj.Get("Encrypt")?.Get("V");
+        if (!(gte(EncryptV,5))) 
+        {
+            ctx.Fail<APM_XRefStream_AuthCode>($"Value failed special case check: fn:Eval(Encrypt::@V>=5)");
+        }
         // no value restrictions
         ctx.Run<APM_AuthCode, PdfDictionary>(stack, val, obj);
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_PageTreeNodeRoot : APM_PageTreeNodeRoot_Base
+internal partial class APM_PageTreeNodeRoot : APM_PageTreeNodeRoot__Base
 {
 }
 
-internal partial class APM_PageTreeNodeRoot_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageTreeNodeRoot__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "PageTreeNodeRoot";
@@ -160,12 +160,12 @@ internal partial class APM_PageTreeNodeRoot_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageTreeNodeRoot_Type Table 30 and Table 31 for inheritable keys
 /// </summary>
-internal partial class APM_PageTreeNodeRoot_Type : APM_PageTreeNodeRoot_Type_Base
+internal partial class APM_PageTreeNodeRoot_Type : APM_PageTreeNodeRoot_Type__Base
 {
 }
 
 
-internal partial class APM_PageTreeNodeRoot_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageTreeNodeRoot_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageTreeNodeRoot_Type";
     public static bool RuleGroup() { return false; }
@@ -176,13 +176,11 @@ internal partial class APM_PageTreeNodeRoot_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfName, APM_PageTreeNodeRoot_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Pages")) 
         {
             ctx.Fail<APM_PageTreeNodeRoot_Type>($"Invalid value {val}, allowed are: [Pages]");
-        }
         }
         // no linked objects
         
@@ -194,12 +192,12 @@ internal partial class APM_PageTreeNodeRoot_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// PageTreeNodeRoot_Kids 
 /// </summary>
-internal partial class APM_PageTreeNodeRoot_Kids : APM_PageTreeNodeRoot_Kids_Base
+internal partial class APM_PageTreeNodeRoot_Kids : APM_PageTreeNodeRoot_Kids__Base
 {
 }
 
 
-internal partial class APM_PageTreeNodeRoot_Kids_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageTreeNodeRoot_Kids__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageTreeNodeRoot_Kids";
     public static bool RuleGroup() { return false; }
@@ -221,12 +219,12 @@ internal partial class APM_PageTreeNodeRoot_Kids_Base : ISpecification<PdfDictio
 /// <summary>
 /// PageTreeNodeRoot_Count 
 /// </summary>
-internal partial class APM_PageTreeNodeRoot_Count : APM_PageTreeNodeRoot_Count_Base
+internal partial class APM_PageTreeNodeRoot_Count : APM_PageTreeNodeRoot_Count__Base
 {
 }
 
 
-internal partial class APM_PageTreeNodeRoot_Count_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageTreeNodeRoot_Count__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageTreeNodeRoot_Count";
     public static bool RuleGroup() { return false; }
@@ -237,13 +235,11 @@ internal partial class APM_PageTreeNodeRoot_Count_Base : ISpecification<PdfDicti
         var val = ctx.GetRequired<PdfIntNumber, APM_PageTreeNodeRoot_Count>(obj, "Count", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Count = val;
-        if (!(gte(@Count,0))) 
+        var Count = obj.Get("Count");
+        if (!(gte(Count,0))) 
         {
             ctx.Fail<APM_PageTreeNodeRoot_Count>($"Invalid value {val}, allowed are: [fn:Eval(@Count>=0)]");
-        }
         }
         // no linked objects
         
@@ -255,12 +251,12 @@ internal partial class APM_PageTreeNodeRoot_Count_Base : ISpecification<PdfDicti
 /// <summary>
 /// PageTreeNodeRoot_Resources Inheritable
 /// </summary>
-internal partial class APM_PageTreeNodeRoot_Resources : APM_PageTreeNodeRoot_Resources_Base
+internal partial class APM_PageTreeNodeRoot_Resources : APM_PageTreeNodeRoot_Resources__Base
 {
 }
 
 
-internal partial class APM_PageTreeNodeRoot_Resources_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageTreeNodeRoot_Resources__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageTreeNodeRoot_Resources";
     public static bool RuleGroup() { return false; }
@@ -282,12 +278,12 @@ internal partial class APM_PageTreeNodeRoot_Resources_Base : ISpecification<PdfD
 /// <summary>
 /// PageTreeNodeRoot_MediaBox Inheritable
 /// </summary>
-internal partial class APM_PageTreeNodeRoot_MediaBox : APM_PageTreeNodeRoot_MediaBox_Base
+internal partial class APM_PageTreeNodeRoot_MediaBox : APM_PageTreeNodeRoot_MediaBox__Base
 {
 }
 
 
-internal partial class APM_PageTreeNodeRoot_MediaBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageTreeNodeRoot_MediaBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageTreeNodeRoot_MediaBox";
     public static bool RuleGroup() { return false; }
@@ -309,12 +305,12 @@ internal partial class APM_PageTreeNodeRoot_MediaBox_Base : ISpecification<PdfDi
 /// <summary>
 /// PageTreeNodeRoot_CropBox Inheritable
 /// </summary>
-internal partial class APM_PageTreeNodeRoot_CropBox : APM_PageTreeNodeRoot_CropBox_Base
+internal partial class APM_PageTreeNodeRoot_CropBox : APM_PageTreeNodeRoot_CropBox__Base
 {
 }
 
 
-internal partial class APM_PageTreeNodeRoot_CropBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageTreeNodeRoot_CropBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageTreeNodeRoot_CropBox";
     public static bool RuleGroup() { return false; }
@@ -336,12 +332,12 @@ internal partial class APM_PageTreeNodeRoot_CropBox_Base : ISpecification<PdfDic
 /// <summary>
 /// PageTreeNodeRoot_Rotate Inheritable
 /// </summary>
-internal partial class APM_PageTreeNodeRoot_Rotate : APM_PageTreeNodeRoot_Rotate_Base
+internal partial class APM_PageTreeNodeRoot_Rotate : APM_PageTreeNodeRoot_Rotate__Base
 {
 }
 
 
-internal partial class APM_PageTreeNodeRoot_Rotate_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageTreeNodeRoot_Rotate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageTreeNodeRoot_Rotate";
     public static bool RuleGroup() { return false; }
@@ -352,13 +348,11 @@ internal partial class APM_PageTreeNodeRoot_Rotate_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfIntNumber, APM_PageTreeNodeRoot_Rotate>(obj, "Rotate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Rotate = val;
-        if (!(eq(mod(@Rotate,90),0))) 
+        var Rotate = obj.Get("Rotate");
+        if (!(eq(mod(Rotate,90),0))) 
         {
             ctx.Fail<APM_PageTreeNodeRoot_Rotate>($"Invalid value {val}, allowed are: [fn:Eval((@Rotate mod 90)==0)]");
-        }
         }
         // no linked objects
         

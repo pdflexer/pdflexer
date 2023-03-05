@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotRedact : APM_AnnotRedact_Base
+internal partial class APM_AnnotRedact : APM_AnnotRedact__Base
 {
 }
 
-internal partial class APM_AnnotRedact_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotRedact";
@@ -118,12 +118,12 @@ internal partial class APM_AnnotRedact_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_Type Table 166 and Table 172 and Table 195 (markup annot)
 /// </summary>
-internal partial class APM_AnnotRedact_Type : APM_AnnotRedact_Type_Base
+internal partial class APM_AnnotRedact_Type : APM_AnnotRedact_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Type";
     public static bool RuleGroup() { return false; }
@@ -134,13 +134,11 @@ internal partial class APM_AnnotRedact_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotRedact_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotRedact_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -152,12 +150,12 @@ internal partial class APM_AnnotRedact_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_Subtype 
 /// </summary>
-internal partial class APM_AnnotRedact_Subtype : APM_AnnotRedact_Subtype_Base
+internal partial class APM_AnnotRedact_Subtype : APM_AnnotRedact_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Subtype";
     public static bool RuleGroup() { return false; }
@@ -168,13 +166,11 @@ internal partial class APM_AnnotRedact_Subtype_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_AnnotRedact_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Redact")) 
         {
             ctx.Fail<APM_AnnotRedact_Subtype>($"Invalid value {val}, allowed are: [Redact]");
-        }
         }
         // no linked objects
         
@@ -186,12 +182,12 @@ internal partial class APM_AnnotRedact_Subtype_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotRedact_Rect 
 /// </summary>
-internal partial class APM_AnnotRedact_Rect : APM_AnnotRedact_Rect_Base
+internal partial class APM_AnnotRedact_Rect : APM_AnnotRedact_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Rect";
     public static bool RuleGroup() { return false; }
@@ -213,12 +209,12 @@ internal partial class APM_AnnotRedact_Rect_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_Contents 
 /// </summary>
-internal partial class APM_AnnotRedact_Contents : APM_AnnotRedact_Contents_Base
+internal partial class APM_AnnotRedact_Contents : APM_AnnotRedact_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Contents";
     public static bool RuleGroup() { return false; }
@@ -240,12 +236,12 @@ internal partial class APM_AnnotRedact_Contents_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotRedact_P 
 /// </summary>
-internal partial class APM_AnnotRedact_P : APM_AnnotRedact_P_Base
+internal partial class APM_AnnotRedact_P : APM_AnnotRedact_P__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_P";
     public static bool RuleGroup() { return false; }
@@ -267,12 +263,12 @@ internal partial class APM_AnnotRedact_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_NM 
 /// </summary>
-internal partial class APM_AnnotRedact_NM : APM_AnnotRedact_NM_Base
+internal partial class APM_AnnotRedact_NM : APM_AnnotRedact_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_NM";
     public static bool RuleGroup() { return false; }
@@ -294,12 +290,12 @@ internal partial class APM_AnnotRedact_NM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_M 
 /// </summary>
-internal partial class APM_AnnotRedact_M : APM_AnnotRedact_M_Base
+internal partial class APM_AnnotRedact_M : APM_AnnotRedact_M__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_M";
     public static bool RuleGroup() { return false; }
@@ -326,12 +322,12 @@ internal partial class APM_AnnotRedact_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_F Table 167
 /// </summary>
-internal partial class APM_AnnotRedact_F : APM_AnnotRedact_F_Base
+internal partial class APM_AnnotRedact_F : APM_AnnotRedact_F__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_F";
     public static bool RuleGroup() { return false; }
@@ -341,7 +337,11 @@ internal partial class APM_AnnotRedact_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotRedact_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_AnnotRedact_F>($"Value failed special case check: fn:Eval(fn:BitsClear(11,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -353,12 +353,12 @@ internal partial class APM_AnnotRedact_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_AP 
 /// </summary>
-internal partial class APM_AnnotRedact_AP : APM_AnnotRedact_AP_Base
+internal partial class APM_AnnotRedact_AP : APM_AnnotRedact_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_AP";
     public static bool RuleGroup() { return false; }
@@ -366,15 +366,12 @@ internal partial class APM_AnnotRedact_AP_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Rect = obj.Get("Rect");
-            if (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotRedact_AP>(obj, "AP", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotRedact_AP>(obj, "AP", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Rect = obj.Get("Rect");
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotRedact_AP>(obj, "AP", IndirectRequirement.Either);
+        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+            ctx.Fail<APM_AnnotRedact_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -388,12 +385,12 @@ internal partial class APM_AnnotRedact_AP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_AS 
 /// </summary>
-internal partial class APM_AnnotRedact_AS : APM_AnnotRedact_AS_Base
+internal partial class APM_AnnotRedact_AS : APM_AnnotRedact_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_AS";
     public static bool RuleGroup() { return false; }
@@ -401,17 +398,14 @@ internal partial class APM_AnnotRedact_AS_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotRedact_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotRedact_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotRedact_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotRedact_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -425,12 +419,12 @@ internal partial class APM_AnnotRedact_AS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_Border 
 /// </summary>
-internal partial class APM_AnnotRedact_Border : APM_AnnotRedact_Border_Base
+internal partial class APM_AnnotRedact_Border : APM_AnnotRedact_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Border";
     public static bool RuleGroup() { return false; }
@@ -452,12 +446,12 @@ internal partial class APM_AnnotRedact_Border_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotRedact_C 
 /// </summary>
-internal partial class APM_AnnotRedact_C : APM_AnnotRedact_C_Base
+internal partial class APM_AnnotRedact_C : APM_AnnotRedact_C__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_C";
     public static bool RuleGroup() { return false; }
@@ -479,12 +473,12 @@ internal partial class APM_AnnotRedact_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotRedact_StructParent : APM_AnnotRedact_StructParent_Base
+internal partial class APM_AnnotRedact_StructParent : APM_AnnotRedact_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_StructParent";
     public static bool RuleGroup() { return false; }
@@ -506,12 +500,12 @@ internal partial class APM_AnnotRedact_StructParent_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotRedact_OC 
 /// </summary>
-internal partial class APM_AnnotRedact_OC : APM_AnnotRedact_OC_Base
+internal partial class APM_AnnotRedact_OC : APM_AnnotRedact_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_OC";
     public static bool RuleGroup() { return false; }
@@ -542,12 +536,12 @@ internal partial class APM_AnnotRedact_OC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_AF 
 /// </summary>
-internal partial class APM_AnnotRedact_AF : APM_AnnotRedact_AF_Base
+internal partial class APM_AnnotRedact_AF : APM_AnnotRedact_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_AF";
     public static bool RuleGroup() { return false; }
@@ -590,12 +584,12 @@ internal partial class APM_AnnotRedact_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_ca 
 /// </summary>
-internal partial class APM_AnnotRedact_ca : APM_AnnotRedact_ca_Base
+internal partial class APM_AnnotRedact_ca : APM_AnnotRedact_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_ca";
     public static bool RuleGroup() { return false; }
@@ -606,13 +600,11 @@ internal partial class APM_AnnotRedact_ca_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotRedact_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotRedact_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -624,12 +616,12 @@ internal partial class APM_AnnotRedact_ca_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_CA 
 /// </summary>
-internal partial class APM_AnnotRedact_CA : APM_AnnotRedact_CA_Base
+internal partial class APM_AnnotRedact_CA : APM_AnnotRedact_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_CA";
     public static bool RuleGroup() { return false; }
@@ -640,13 +632,11 @@ internal partial class APM_AnnotRedact_CA_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotRedact_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotRedact_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -658,12 +648,12 @@ internal partial class APM_AnnotRedact_CA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotRedact_BM : APM_AnnotRedact_BM_Base
+internal partial class APM_AnnotRedact_BM : APM_AnnotRedact_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_BM";
     public static bool RuleGroup() { return false; }
@@ -674,13 +664,11 @@ internal partial class APM_AnnotRedact_BM_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotRedact_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotRedact_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -692,12 +680,12 @@ internal partial class APM_AnnotRedact_BM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_Lang 
 /// </summary>
-internal partial class APM_AnnotRedact_Lang : APM_AnnotRedact_Lang_Base
+internal partial class APM_AnnotRedact_Lang : APM_AnnotRedact_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Lang";
     public static bool RuleGroup() { return false; }
@@ -719,12 +707,12 @@ internal partial class APM_AnnotRedact_Lang_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_T 
 /// </summary>
-internal partial class APM_AnnotRedact_T : APM_AnnotRedact_T_Base
+internal partial class APM_AnnotRedact_T : APM_AnnotRedact_T__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_T";
     public static bool RuleGroup() { return false; }
@@ -746,12 +734,12 @@ internal partial class APM_AnnotRedact_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_Popup 
 /// </summary>
-internal partial class APM_AnnotRedact_Popup : APM_AnnotRedact_Popup_Base
+internal partial class APM_AnnotRedact_Popup : APM_AnnotRedact_Popup__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Popup_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Popup__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Popup";
     public static bool RuleGroup() { return false; }
@@ -773,12 +761,12 @@ internal partial class APM_AnnotRedact_Popup_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotRedact_RC 
 /// </summary>
-internal partial class APM_AnnotRedact_RC : APM_AnnotRedact_RC_Base
+internal partial class APM_AnnotRedact_RC : APM_AnnotRedact_RC__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_RC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_RC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_RC";
     public static bool RuleGroup() { return false; }
@@ -821,12 +809,12 @@ internal partial class APM_AnnotRedact_RC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_CreationDate 
 /// </summary>
-internal partial class APM_AnnotRedact_CreationDate : APM_AnnotRedact_CreationDate_Base
+internal partial class APM_AnnotRedact_CreationDate : APM_AnnotRedact_CreationDate__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -848,12 +836,12 @@ internal partial class APM_AnnotRedact_CreationDate_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotRedact_IRT 
 /// </summary>
-internal partial class APM_AnnotRedact_IRT : APM_AnnotRedact_IRT_Base
+internal partial class APM_AnnotRedact_IRT : APM_AnnotRedact_IRT__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_IRT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_IRT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_IRT";
     public static bool RuleGroup() { return false; }
@@ -861,15 +849,12 @@ internal partial class APM_AnnotRedact_IRT_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (obj.ContainsKey("RT")) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotRedact_IRT>(obj, "IRT", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotRedact_IRT>(obj, "IRT", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotRedact_IRT>(obj, "IRT", IndirectRequirement.Either);
+        if ((obj.ContainsKey("RT")) && val == null) {
+            ctx.Fail<APM_AnnotRedact_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -945,6 +930,12 @@ internal partial class APM_AnnotRedact_IRT_Base : ISpecification<PdfDictionary>
         } else if (APM_AnnotRedact.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotRedact_IRT>("IRT did not match any allowable types: '[AnnotText,AnnotLink,AnnotFreeText,AnnotLine,AnnotSquare,AnnotCircle,AnnotPolygon,AnnotHighlight,AnnotUnderline,AnnotSquiggly,AnnotStrikeOut,AnnotCaret,AnnotStamp,AnnotInk,AnnotPopup,AnnotFileAttachment,AnnotSound,AnnotMovie,AnnotScreen,AnnotWidget,AnnotPrinterMark,AnnotWatermark,Annot3D,AnnotRedact,fn:SinceVersion(2.0,AnnotProjection),fn:SinceVersion(2.0,AnnotRichMedia)]'");
@@ -958,12 +949,12 @@ internal partial class APM_AnnotRedact_IRT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_Subj 
 /// </summary>
-internal partial class APM_AnnotRedact_Subj : APM_AnnotRedact_Subj_Base
+internal partial class APM_AnnotRedact_Subj : APM_AnnotRedact_Subj__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Subj_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Subj__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Subj";
     public static bool RuleGroup() { return false; }
@@ -985,12 +976,12 @@ internal partial class APM_AnnotRedact_Subj_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_RT 
 /// </summary>
-internal partial class APM_AnnotRedact_RT : APM_AnnotRedact_RT_Base
+internal partial class APM_AnnotRedact_RT : APM_AnnotRedact_RT__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_RT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_RT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_RT";
     public static bool RuleGroup() { return false; }
@@ -1000,14 +991,12 @@ internal partial class APM_AnnotRedact_RT_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_AnnotRedact_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "R" || val == "Group")) 
         {
             ctx.Fail<APM_AnnotRedact_RT>($"Invalid value {val}, allowed are: [R,Group]");
-        }
         }
         // no linked objects
         
@@ -1019,12 +1008,12 @@ internal partial class APM_AnnotRedact_RT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_IT 
 /// </summary>
-internal partial class APM_AnnotRedact_IT : APM_AnnotRedact_IT_Base
+internal partial class APM_AnnotRedact_IT : APM_AnnotRedact_IT__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_IT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_IT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_IT";
     public static bool RuleGroup() { return false; }
@@ -1046,12 +1035,12 @@ internal partial class APM_AnnotRedact_IT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_QuadPoints 
 /// </summary>
-internal partial class APM_AnnotRedact_QuadPoints : APM_AnnotRedact_QuadPoints_Base
+internal partial class APM_AnnotRedact_QuadPoints : APM_AnnotRedact_QuadPoints__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_QuadPoints_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_QuadPoints__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_QuadPoints";
     public static bool RuleGroup() { return false; }
@@ -1073,12 +1062,12 @@ internal partial class APM_AnnotRedact_QuadPoints_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotRedact_IC 
 /// </summary>
-internal partial class APM_AnnotRedact_IC : APM_AnnotRedact_IC_Base
+internal partial class APM_AnnotRedact_IC : APM_AnnotRedact_IC__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_IC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_IC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_IC";
     public static bool RuleGroup() { return false; }
@@ -1100,12 +1089,12 @@ internal partial class APM_AnnotRedact_IC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_RO 
 /// </summary>
-internal partial class APM_AnnotRedact_RO : APM_AnnotRedact_RO_Base
+internal partial class APM_AnnotRedact_RO : APM_AnnotRedact_RO__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_RO_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_RO__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_RO";
     public static bool RuleGroup() { return false; }
@@ -1127,12 +1116,12 @@ internal partial class APM_AnnotRedact_RO_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_OverlayText 
 /// </summary>
-internal partial class APM_AnnotRedact_OverlayText : APM_AnnotRedact_OverlayText_Base
+internal partial class APM_AnnotRedact_OverlayText : APM_AnnotRedact_OverlayText__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_OverlayText_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_OverlayText__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_OverlayText";
     public static bool RuleGroup() { return false; }
@@ -1154,12 +1143,12 @@ internal partial class APM_AnnotRedact_OverlayText_Base : ISpecification<PdfDict
 /// <summary>
 /// AnnotRedact_Repeat 
 /// </summary>
-internal partial class APM_AnnotRedact_Repeat : APM_AnnotRedact_Repeat_Base
+internal partial class APM_AnnotRedact_Repeat : APM_AnnotRedact_Repeat__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Repeat_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Repeat__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Repeat";
     public static bool RuleGroup() { return false; }
@@ -1181,12 +1170,12 @@ internal partial class APM_AnnotRedact_Repeat_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotRedact_DA 
 /// </summary>
-internal partial class APM_AnnotRedact_DA : APM_AnnotRedact_DA_Base
+internal partial class APM_AnnotRedact_DA : APM_AnnotRedact_DA__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_DA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_DA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_DA";
     public static bool RuleGroup() { return false; }
@@ -1208,12 +1197,12 @@ internal partial class APM_AnnotRedact_DA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_Q 
 /// </summary>
-internal partial class APM_AnnotRedact_Q : APM_AnnotRedact_Q_Base
+internal partial class APM_AnnotRedact_Q : APM_AnnotRedact_Q__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_Q_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_Q__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_Q";
     public static bool RuleGroup() { return false; }
@@ -1224,13 +1213,11 @@ internal partial class APM_AnnotRedact_Q_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotRedact_Q>(obj, "Q", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_AnnotRedact_Q>($"Invalid value {val}, allowed are: [0,1,2]");
-        }
         }
         // no linked objects
         
@@ -1242,12 +1229,12 @@ internal partial class APM_AnnotRedact_Q_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotRedact_ExData 2D markup annots only 
 /// </summary>
-internal partial class APM_AnnotRedact_ExData : APM_AnnotRedact_ExData_Base
+internal partial class APM_AnnotRedact_ExData : APM_AnnotRedact_ExData__Base
 {
 }
 
 
-internal partial class APM_AnnotRedact_ExData_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotRedact_ExData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotRedact_ExData";
     public static bool RuleGroup() { return false; }
@@ -1262,6 +1249,15 @@ internal partial class APM_AnnotRedact_ExData_Base : ISpecification<PdfDictionar
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataProjection, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotRedact_ExData>("ExData did not match any allowable types: '[ExData3DMarkup,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,ExDataMarkupGeo)),fn:SinceVersion(2.0,ExDataMarkupGeo),fn:SinceVersion(2.0,ExDataProjection)]'");

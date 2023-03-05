@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionGoTo3DView : APM_ActionGoTo3DView_Base
+internal partial class APM_ActionGoTo3DView : APM_ActionGoTo3DView__Base
 {
 }
 
-internal partial class APM_ActionGoTo3DView_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionGoTo3DView__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionGoTo3DView";
@@ -98,12 +98,12 @@ internal partial class APM_ActionGoTo3DView_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionGoTo3DView_Type Table 196 and Table 220
 /// </summary>
-internal partial class APM_ActionGoTo3DView_Type : APM_ActionGoTo3DView_Type_Base
+internal partial class APM_ActionGoTo3DView_Type : APM_ActionGoTo3DView_Type__Base
 {
 }
 
 
-internal partial class APM_ActionGoTo3DView_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionGoTo3DView_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionGoTo3DView_Type";
     public static bool RuleGroup() { return false; }
@@ -114,13 +114,11 @@ internal partial class APM_ActionGoTo3DView_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_ActionGoTo3DView_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionGoTo3DView_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -132,12 +130,12 @@ internal partial class APM_ActionGoTo3DView_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// ActionGoTo3DView_S 
 /// </summary>
-internal partial class APM_ActionGoTo3DView_S : APM_ActionGoTo3DView_S_Base
+internal partial class APM_ActionGoTo3DView_S : APM_ActionGoTo3DView_S__Base
 {
 }
 
 
-internal partial class APM_ActionGoTo3DView_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionGoTo3DView_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionGoTo3DView_S";
     public static bool RuleGroup() { return false; }
@@ -148,13 +146,11 @@ internal partial class APM_ActionGoTo3DView_S_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfName, APM_ActionGoTo3DView_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "GoTo3DView")) 
         {
             ctx.Fail<APM_ActionGoTo3DView_S>($"Invalid value {val}, allowed are: [GoTo3DView]");
-        }
         }
         // no linked objects
         
@@ -166,12 +162,12 @@ internal partial class APM_ActionGoTo3DView_S_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ActionGoTo3DView_Next 
 /// </summary>
-internal partial class APM_ActionGoTo3DView_Next : APM_ActionGoTo3DView_Next_Base
+internal partial class APM_ActionGoTo3DView_Next : APM_ActionGoTo3DView_Next__Base
 {
 }
 
 
-internal partial class APM_ActionGoTo3DView_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionGoTo3DView_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionGoTo3DView_Next";
     public static bool RuleGroup() { return false; }
@@ -252,6 +248,12 @@ internal partial class APM_ActionGoTo3DView_Next_Base : ISpecification<PdfDictio
                     } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ActionGoTo3DView_Next>("Next did not match any allowable types: '[ActionGoTo,ActionGoToR,ActionGoToE,fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,ActionGoTo3DView,ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -271,12 +273,12 @@ internal partial class APM_ActionGoTo3DView_Next_Base : ISpecification<PdfDictio
 /// <summary>
 /// ActionGoTo3DView_TA 
 /// </summary>
-internal partial class APM_ActionGoTo3DView_TA : APM_ActionGoTo3DView_TA_Base
+internal partial class APM_ActionGoTo3DView_TA : APM_ActionGoTo3DView_TA__Base
 {
 }
 
 
-internal partial class APM_ActionGoTo3DView_TA_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionGoTo3DView_TA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionGoTo3DView_TA";
     public static bool RuleGroup() { return false; }
@@ -291,6 +293,9 @@ internal partial class APM_ActionGoTo3DView_TA_Base : ISpecification<PdfDictiona
         if (APM_Annot3D.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_Annot3D, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_ActionGoTo3DView_TA>("TA did not match any allowable types: '[Annot3D,fn:SinceVersion(2.0,AnnotRichMedia)]'");
@@ -304,12 +309,12 @@ internal partial class APM_ActionGoTo3DView_TA_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ActionGoTo3DView_V 
 /// </summary>
-internal partial class APM_ActionGoTo3DView_V : APM_ActionGoTo3DView_V_Base
+internal partial class APM_ActionGoTo3DView_V : APM_ActionGoTo3DView_V__Base
 {
 }
 
 
-internal partial class APM_ActionGoTo3DView_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionGoTo3DView_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionGoTo3DView_V";
     public static bool RuleGroup() { return false; }

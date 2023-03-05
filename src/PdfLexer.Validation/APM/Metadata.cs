@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Metadata : APM_Metadata_Base
+internal partial class APM_Metadata : APM_Metadata__Base
 {
 }
 
-internal partial class APM_Metadata_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Metadata";
@@ -122,12 +122,12 @@ internal partial class APM_Metadata_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Metadata_Type Table 5 and Table 347
 /// </summary>
-internal partial class APM_Metadata_Type : APM_Metadata_Type_Base
+internal partial class APM_Metadata_Type : APM_Metadata_Type__Base
 {
 }
 
 
-internal partial class APM_Metadata_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Metadata_Type";
     public static bool RuleGroup() { return false; }
@@ -138,13 +138,11 @@ internal partial class APM_Metadata_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_Metadata_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Metadata")) 
         {
             ctx.Fail<APM_Metadata_Type>($"Invalid value {val}, allowed are: [Metadata]");
-        }
         }
         // no linked objects
         
@@ -156,12 +154,12 @@ internal partial class APM_Metadata_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Metadata_Subtype 
 /// </summary>
-internal partial class APM_Metadata_Subtype : APM_Metadata_Subtype_Base
+internal partial class APM_Metadata_Subtype : APM_Metadata_Subtype__Base
 {
 }
 
 
-internal partial class APM_Metadata_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Metadata_Subtype";
     public static bool RuleGroup() { return false; }
@@ -172,13 +170,11 @@ internal partial class APM_Metadata_Subtype_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_Metadata_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "XML")) 
         {
             ctx.Fail<APM_Metadata_Subtype>($"Invalid value {val}, allowed are: [XML]");
-        }
         }
         // no linked objects
         
@@ -190,12 +186,12 @@ internal partial class APM_Metadata_Subtype_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Metadata_Length 
 /// </summary>
-internal partial class APM_Metadata_Length : APM_Metadata_Length_Base
+internal partial class APM_Metadata_Length : APM_Metadata_Length__Base
 {
 }
 
 
-internal partial class APM_Metadata_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Metadata_Length";
     public static bool RuleGroup() { return false; }
@@ -217,12 +213,12 @@ internal partial class APM_Metadata_Length_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Metadata_Filter 
 /// </summary>
-internal partial class APM_Metadata_Filter : APM_Metadata_Filter_Base
+internal partial class APM_Metadata_Filter : APM_Metadata_Filter__Base
 {
 }
 
 
-internal partial class APM_Metadata_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Metadata_Filter";
     public static bool RuleGroup() { return false; }
@@ -238,7 +234,12 @@ internal partial class APM_Metadata_Filter_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_Metadata_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -248,13 +249,11 @@ internal partial class APM_Metadata_Filter_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_Metadata_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -272,12 +271,12 @@ internal partial class APM_Metadata_Filter_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Metadata_DecodeParms 
 /// </summary>
-internal partial class APM_Metadata_DecodeParms : APM_Metadata_DecodeParms_Base
+internal partial class APM_Metadata_DecodeParms : APM_Metadata_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_Metadata_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Metadata_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -293,7 +292,12 @@ internal partial class APM_Metadata_DecodeParms_Base : ISpecification<PdfDiction
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_Metadata_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -310,6 +314,9 @@ internal partial class APM_Metadata_DecodeParms_Base : ISpecification<PdfDiction
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_Metadata_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -329,12 +336,12 @@ internal partial class APM_Metadata_DecodeParms_Base : ISpecification<PdfDiction
 /// <summary>
 /// Metadata_F 
 /// </summary>
-internal partial class APM_Metadata_F : APM_Metadata_F_Base
+internal partial class APM_Metadata_F : APM_Metadata_F__Base
 {
 }
 
 
-internal partial class APM_Metadata_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Metadata_F";
     public static bool RuleGroup() { return false; }
@@ -377,12 +384,12 @@ internal partial class APM_Metadata_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Metadata_FFilter 
 /// </summary>
-internal partial class APM_Metadata_FFilter : APM_Metadata_FFilter_Base
+internal partial class APM_Metadata_FFilter : APM_Metadata_FFilter__Base
 {
 }
 
 
-internal partial class APM_Metadata_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Metadata_FFilter";
     public static bool RuleGroup() { return false; }
@@ -398,7 +405,12 @@ internal partial class APM_Metadata_FFilter_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_Metadata_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -408,13 +420,11 @@ internal partial class APM_Metadata_FFilter_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_Metadata_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -432,12 +442,12 @@ internal partial class APM_Metadata_FFilter_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Metadata_FDecodeParms 
 /// </summary>
-internal partial class APM_Metadata_FDecodeParms : APM_Metadata_FDecodeParms_Base
+internal partial class APM_Metadata_FDecodeParms : APM_Metadata_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_Metadata_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Metadata_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -453,7 +463,12 @@ internal partial class APM_Metadata_FDecodeParms_Base : ISpecification<PdfDictio
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_Metadata_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -470,6 +485,9 @@ internal partial class APM_Metadata_FDecodeParms_Base : ISpecification<PdfDictio
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_Metadata_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -489,12 +507,12 @@ internal partial class APM_Metadata_FDecodeParms_Base : ISpecification<PdfDictio
 /// <summary>
 /// Metadata_DL 
 /// </summary>
-internal partial class APM_Metadata_DL : APM_Metadata_DL_Base
+internal partial class APM_Metadata_DL : APM_Metadata_DL__Base
 {
 }
 
 
-internal partial class APM_Metadata_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_Metadata_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Metadata_DL";
     public static bool RuleGroup() { return false; }
@@ -504,7 +522,11 @@ internal partial class APM_Metadata_DL_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_Metadata_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
+        {
+            ctx.Fail<APM_Metadata_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         // no value restrictions
         // no linked objects
         

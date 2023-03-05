@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FieldTx : APM_FieldTx_Base
+internal partial class APM_FieldTx : APM_FieldTx__Base
 {
 }
 
-internal partial class APM_FieldTx_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FieldTx";
@@ -142,12 +142,12 @@ internal partial class APM_FieldTx_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_FT Table 226, Table 228 and Table 231
 /// </summary>
-internal partial class APM_FieldTx_FT : APM_FieldTx_FT_Base
+internal partial class APM_FieldTx_FT : APM_FieldTx_FT__Base
 {
 }
 
 
-internal partial class APM_FieldTx_FT_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_FT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_FT";
     public static bool RuleGroup() { return false; }
@@ -158,13 +158,11 @@ internal partial class APM_FieldTx_FT_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_FieldTx_FT>(obj, "FT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Tx")) 
         {
             ctx.Fail<APM_FieldTx_FT>($"Invalid value {val}, allowed are: [Tx]");
-        }
         }
         // no linked objects
         
@@ -176,12 +174,12 @@ internal partial class APM_FieldTx_FT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_Parent 
 /// </summary>
-internal partial class APM_FieldTx_Parent : APM_FieldTx_Parent_Base
+internal partial class APM_FieldTx_Parent : APM_FieldTx_Parent__Base
 {
 }
 
 
-internal partial class APM_FieldTx_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_Parent";
     public static bool RuleGroup() { return false; }
@@ -211,6 +209,9 @@ internal partial class APM_FieldTx_Parent_Base : ISpecification<PdfDictionary>
         } else if (APM_Field.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_Field, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_FieldSig, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_FieldTx_Parent>("Parent did not match any allowable types: '[FieldTx,FieldBtnPush,FieldBtnCheckbox,FieldBtnRadio,FieldChoice,fn:SinceVersion(1.3,FieldSig),Field]'");
@@ -224,12 +225,12 @@ internal partial class APM_FieldTx_Parent_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_Kids 
 /// </summary>
-internal partial class APM_FieldTx_Kids : APM_FieldTx_Kids_Base
+internal partial class APM_FieldTx_Kids : APM_FieldTx_Kids__Base
 {
 }
 
 
-internal partial class APM_FieldTx_Kids_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_Kids__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_Kids";
     public static bool RuleGroup() { return false; }
@@ -251,12 +252,12 @@ internal partial class APM_FieldTx_Kids_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_T 
 /// </summary>
-internal partial class APM_FieldTx_T : APM_FieldTx_T_Base
+internal partial class APM_FieldTx_T : APM_FieldTx_T__Base
 {
 }
 
 
-internal partial class APM_FieldTx_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_T";
     public static bool RuleGroup() { return false; }
@@ -278,12 +279,12 @@ internal partial class APM_FieldTx_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_TU 
 /// </summary>
-internal partial class APM_FieldTx_TU : APM_FieldTx_TU_Base
+internal partial class APM_FieldTx_TU : APM_FieldTx_TU__Base
 {
 }
 
 
-internal partial class APM_FieldTx_TU_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_TU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_TU";
     public static bool RuleGroup() { return false; }
@@ -305,12 +306,12 @@ internal partial class APM_FieldTx_TU_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_TM 
 /// </summary>
-internal partial class APM_FieldTx_TM : APM_FieldTx_TM_Base
+internal partial class APM_FieldTx_TM : APM_FieldTx_TM__Base
 {
 }
 
 
-internal partial class APM_FieldTx_TM_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_TM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_TM";
     public static bool RuleGroup() { return false; }
@@ -332,12 +333,12 @@ internal partial class APM_FieldTx_TM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_Ff Table 231
 /// </summary>
-internal partial class APM_FieldTx_Ff : APM_FieldTx_Ff_Base
+internal partial class APM_FieldTx_Ff : APM_FieldTx_Ff__Base
 {
 }
 
 
-internal partial class APM_FieldTx_Ff_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_Ff__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_Ff";
     public static bool RuleGroup() { return false; }
@@ -347,7 +348,11 @@ internal partial class APM_FieldTx_Ff_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldTx_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj)&&ctx.Version < 1.4m && BitClear(obj)&&BitClear(obj)&&ctx.Version < 1.4m && BitsClear(obj)&&ctx.Version < 1.5m && BitsClear(obj)&&BitsClear(obj))) 
+        {
+            ctx.Fail<APM_FieldTx_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(15,20) && fn:BeforeVersion(1.4,fn:BitClear(21)) && fn:BitClear(22) && fn:BeforeVersion(1.4,fn:BitsClear(23,24)) && fn:BeforeVersion(1.5,fn:BitsClear(25,26)) && fn:BitsClear(27,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -359,12 +364,12 @@ internal partial class APM_FieldTx_Ff_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_V 
 /// </summary>
-internal partial class APM_FieldTx_V : APM_FieldTx_V_Base
+internal partial class APM_FieldTx_V : APM_FieldTx_V__Base
 {
 }
 
 
-internal partial class APM_FieldTx_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_V";
     public static bool RuleGroup() { return false; }
@@ -407,12 +412,12 @@ internal partial class APM_FieldTx_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_DV 
 /// </summary>
-internal partial class APM_FieldTx_DV : APM_FieldTx_DV_Base
+internal partial class APM_FieldTx_DV : APM_FieldTx_DV__Base
 {
 }
 
 
-internal partial class APM_FieldTx_DV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_DV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_DV";
     public static bool RuleGroup() { return false; }
@@ -455,12 +460,12 @@ internal partial class APM_FieldTx_DV_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_AA 
 /// </summary>
-internal partial class APM_FieldTx_AA : APM_FieldTx_AA_Base
+internal partial class APM_FieldTx_AA : APM_FieldTx_AA__Base
 {
 }
 
 
-internal partial class APM_FieldTx_AA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_AA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_AA";
     public static bool RuleGroup() { return false; }
@@ -482,12 +487,12 @@ internal partial class APM_FieldTx_AA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_DA 
 /// </summary>
-internal partial class APM_FieldTx_DA : APM_FieldTx_DA_Base
+internal partial class APM_FieldTx_DA : APM_FieldTx_DA__Base
 {
 }
 
 
-internal partial class APM_FieldTx_DA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_DA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_DA";
     public static bool RuleGroup() { return false; }
@@ -509,12 +514,12 @@ internal partial class APM_FieldTx_DA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_Q 
 /// </summary>
-internal partial class APM_FieldTx_Q : APM_FieldTx_Q_Base
+internal partial class APM_FieldTx_Q : APM_FieldTx_Q__Base
 {
 }
 
 
-internal partial class APM_FieldTx_Q_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_Q__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_Q";
     public static bool RuleGroup() { return false; }
@@ -525,13 +530,11 @@ internal partial class APM_FieldTx_Q_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldTx_Q>(obj, "Q", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_FieldTx_Q>($"Invalid value {val}, allowed are: [0,1,2]");
-        }
         }
         // no linked objects
         
@@ -543,12 +546,12 @@ internal partial class APM_FieldTx_Q_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_DS 
 /// </summary>
-internal partial class APM_FieldTx_DS : APM_FieldTx_DS_Base
+internal partial class APM_FieldTx_DS : APM_FieldTx_DS__Base
 {
 }
 
 
-internal partial class APM_FieldTx_DS_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_DS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_DS";
     public static bool RuleGroup() { return false; }
@@ -570,12 +573,12 @@ internal partial class APM_FieldTx_DS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_RV 
 /// </summary>
-internal partial class APM_FieldTx_RV : APM_FieldTx_RV_Base
+internal partial class APM_FieldTx_RV : APM_FieldTx_RV__Base
 {
 }
 
 
-internal partial class APM_FieldTx_RV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_RV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_RV";
     public static bool RuleGroup() { return false; }
@@ -618,12 +621,12 @@ internal partial class APM_FieldTx_RV_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldTx_MaxLen Table 232 and https://github.com/pdf-association/pdf-issues/issues/191
 /// </summary>
-internal partial class APM_FieldTx_MaxLen : APM_FieldTx_MaxLen_Base
+internal partial class APM_FieldTx_MaxLen : APM_FieldTx_MaxLen__Base
 {
 }
 
 
-internal partial class APM_FieldTx_MaxLen_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldTx_MaxLen__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldTx_MaxLen";
     public static bool RuleGroup() { return false; }
@@ -633,7 +636,11 @@ internal partial class APM_FieldTx_MaxLen_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldTx_MaxLen>(obj, "MaxLen", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var MaxLen = obj.Get("MaxLen");
+        if (!(gte(MaxLen,0))) 
+        {
+            ctx.Fail<APM_FieldTx_MaxLen>($"Value failed special case check: fn:Eval(@MaxLen>=0)");
+        }
         // no value restrictions
         // no linked objects
         

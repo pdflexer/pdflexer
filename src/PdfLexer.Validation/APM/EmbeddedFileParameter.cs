@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_EmbeddedFileParameter : APM_EmbeddedFileParameter_Base
+internal partial class APM_EmbeddedFileParameter : APM_EmbeddedFileParameter__Base
 {
 }
 
-internal partial class APM_EmbeddedFileParameter_Base : ISpecification<PdfDictionary>
+internal partial class APM_EmbeddedFileParameter__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "EmbeddedFileParameter";
@@ -122,12 +122,12 @@ internal partial class APM_EmbeddedFileParameter_Base : ISpecification<PdfDictio
 /// <summary>
 /// EmbeddedFileParameter_Size Table 45
 /// </summary>
-internal partial class APM_EmbeddedFileParameter_Size : APM_EmbeddedFileParameter_Size_Base
+internal partial class APM_EmbeddedFileParameter_Size : APM_EmbeddedFileParameter_Size__Base
 {
 }
 
 
-internal partial class APM_EmbeddedFileParameter_Size_Base : ISpecification<PdfDictionary>
+internal partial class APM_EmbeddedFileParameter_Size__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EmbeddedFileParameter_Size";
     public static bool RuleGroup() { return false; }
@@ -138,13 +138,11 @@ internal partial class APM_EmbeddedFileParameter_Size_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfIntNumber, APM_EmbeddedFileParameter_Size>(obj, "Size", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Size = val;
-        if (!(gte(@Size,0))) 
+        var Size = obj.Get("Size");
+        if (!(gte(Size,0))) 
         {
             ctx.Fail<APM_EmbeddedFileParameter_Size>($"Invalid value {val}, allowed are: [fn:Eval(@Size>=0)]");
-        }
         }
         // no linked objects
         
@@ -156,12 +154,12 @@ internal partial class APM_EmbeddedFileParameter_Size_Base : ISpecification<PdfD
 /// <summary>
 /// EmbeddedFileParameter_CreationDate 
 /// </summary>
-internal partial class APM_EmbeddedFileParameter_CreationDate : APM_EmbeddedFileParameter_CreationDate_Base
+internal partial class APM_EmbeddedFileParameter_CreationDate : APM_EmbeddedFileParameter_CreationDate__Base
 {
 }
 
 
-internal partial class APM_EmbeddedFileParameter_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_EmbeddedFileParameter_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EmbeddedFileParameter_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -183,12 +181,12 @@ internal partial class APM_EmbeddedFileParameter_CreationDate_Base : ISpecificat
 /// <summary>
 /// EmbeddedFileParameter_ModDate 
 /// </summary>
-internal partial class APM_EmbeddedFileParameter_ModDate : APM_EmbeddedFileParameter_ModDate_Base
+internal partial class APM_EmbeddedFileParameter_ModDate : APM_EmbeddedFileParameter_ModDate__Base
 {
 }
 
 
-internal partial class APM_EmbeddedFileParameter_ModDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_EmbeddedFileParameter_ModDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EmbeddedFileParameter_ModDate";
     public static bool RuleGroup() { return false; }
@@ -196,15 +194,12 @@ internal partial class APM_EmbeddedFileParameter_ModDate_Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfString? val;
-        {
-            
-            if (ctx.Version >= 2.0m && IsAssociatedFile(obj)) {
-                val = ctx.GetRequired<PdfString, APM_EmbeddedFileParameter_ModDate>(obj, "ModDate", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_ModDate>(obj, "ModDate", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_ModDate>(obj, "ModDate", IndirectRequirement.Either);
+        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && IsAssociatedFile(obj)))) && val == null) {
+            ctx.Fail<APM_EmbeddedFileParameter_ModDate>("ModDate is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsAssociatedFile()))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -218,12 +213,12 @@ internal partial class APM_EmbeddedFileParameter_ModDate_Base : ISpecification<P
 /// <summary>
 /// EmbeddedFileParameter_Mac 
 /// </summary>
-internal partial class APM_EmbeddedFileParameter_Mac : APM_EmbeddedFileParameter_Mac_Base
+internal partial class APM_EmbeddedFileParameter_Mac : APM_EmbeddedFileParameter_Mac__Base
 {
 }
 
 
-internal partial class APM_EmbeddedFileParameter_Mac_Base : ISpecification<PdfDictionary>
+internal partial class APM_EmbeddedFileParameter_Mac__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EmbeddedFileParameter_Mac";
     public static bool RuleGroup() { return false; }
@@ -245,12 +240,12 @@ internal partial class APM_EmbeddedFileParameter_Mac_Base : ISpecification<PdfDi
 /// <summary>
 /// EmbeddedFileParameter_CheckSum MD5 checksum
 /// </summary>
-internal partial class APM_EmbeddedFileParameter_CheckSum : APM_EmbeddedFileParameter_CheckSum_Base
+internal partial class APM_EmbeddedFileParameter_CheckSum : APM_EmbeddedFileParameter_CheckSum__Base
 {
 }
 
 
-internal partial class APM_EmbeddedFileParameter_CheckSum_Base : ISpecification<PdfDictionary>
+internal partial class APM_EmbeddedFileParameter_CheckSum__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EmbeddedFileParameter_CheckSum";
     public static bool RuleGroup() { return false; }
@@ -260,7 +255,11 @@ internal partial class APM_EmbeddedFileParameter_CheckSum_Base : ISpecification<
     {
         var val = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_CheckSum>(obj, "CheckSum", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(eq(StringLength(obj),16))) 
+        {
+            ctx.Fail<APM_EmbeddedFileParameter_CheckSum>($"Value failed special case check: fn:Eval(fn:StringLength(CheckSum)==16)");
+        }
         // no value restrictions
         // no linked objects
         

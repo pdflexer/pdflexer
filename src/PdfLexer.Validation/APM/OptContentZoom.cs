@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentZoom : APM_OptContentZoom_Base
+internal partial class APM_OptContentZoom : APM_OptContentZoom__Base
 {
 }
 
-internal partial class APM_OptContentZoom_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentZoom__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentZoom";
@@ -99,12 +99,12 @@ internal partial class APM_OptContentZoom_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OptContentZoom_min Table 100, Zoom cell
 /// </summary>
-internal partial class APM_OptContentZoom_min : APM_OptContentZoom_min_Base
+internal partial class APM_OptContentZoom_min : APM_OptContentZoom_min__Base
 {
 }
 
 
-internal partial class APM_OptContentZoom_min_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentZoom_min__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentZoom_min";
     public static bool RuleGroup() { return false; }
@@ -112,25 +112,20 @@ internal partial class APM_OptContentZoom_min_Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfNumber? val;
-        {
-            
-            if (!obj.ContainsKey("max")) {
-                val = ctx.GetRequired<PdfNumber, APM_OptContentZoom_min>(obj, "min", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfNumber, APM_OptContentZoom_min>(obj, "min", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfNumber, APM_OptContentZoom_min>(obj, "min", IndirectRequirement.Either);
+        if ((!obj.ContainsKey("max")) && val == null) {
+            ctx.Fail<APM_OptContentZoom_min>("min is required when 'fn:IsRequired(fn:Not(fn:IsPresent(max)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
-        {
         
-        IPdfObject @min = val;
+        var min = obj.Get("min");
         var max = obj.Get("max");
-        if (!((gte(@min,0.0m)&&lte(@min,max)))) 
+        if (!((gte(min,0.0m)&&lte(min,max)))) 
         {
             ctx.Fail<APM_OptContentZoom_min>($"Invalid value {val}, allowed are: [fn:Eval((@min>=0.0) && (@min<=@max))]");
-        }
         }
         // no linked objects
         
@@ -142,12 +137,12 @@ internal partial class APM_OptContentZoom_min_Base : ISpecification<PdfDictionar
 /// <summary>
 /// OptContentZoom_max Default is really infinity
 /// </summary>
-internal partial class APM_OptContentZoom_max : APM_OptContentZoom_max_Base
+internal partial class APM_OptContentZoom_max : APM_OptContentZoom_max__Base
 {
 }
 
 
-internal partial class APM_OptContentZoom_max_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentZoom_max__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentZoom_max";
     public static bool RuleGroup() { return false; }
@@ -155,25 +150,20 @@ internal partial class APM_OptContentZoom_max_Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfNumber? val;
-        {
-            
-            if (!obj.ContainsKey("min")) {
-                val = ctx.GetRequired<PdfNumber, APM_OptContentZoom_max>(obj, "max", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfNumber, APM_OptContentZoom_max>(obj, "max", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfNumber, APM_OptContentZoom_max>(obj, "max", IndirectRequirement.Either);
+        if ((!obj.ContainsKey(val)) && val == null) {
+            ctx.Fail<APM_OptContentZoom_max>("max is required when 'fn:IsRequired(fn:Not(fn:IsPresent(min)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
-        {
         
-        IPdfObject @max = val;
+        var max = obj.Get("max");
         var min = obj.Get("min");
-        if (!((gte(@max,0.0m)&&gte(@max,min)))) 
+        if (!((gte(max,0.0m)&&gte(max,min)))) 
         {
             ctx.Fail<APM_OptContentZoom_max>($"Invalid value {val}, allowed are: [fn:Eval((@max>=0.0) && (@max>=@min))]");
-        }
         }
         // no linked objects
         

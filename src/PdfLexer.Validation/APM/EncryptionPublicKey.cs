@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_EncryptionPublicKey : APM_EncryptionPublicKey_Base
+internal partial class APM_EncryptionPublicKey : APM_EncryptionPublicKey__Base
 {
 }
 
-internal partial class APM_EncryptionPublicKey_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "EncryptionPublicKey";
@@ -149,12 +149,12 @@ internal partial class APM_EncryptionPublicKey_Base : ISpecification<PdfDictiona
 /// <summary>
 /// EncryptionPublicKey_Recipients Table 23, https://github.com/pdf-association/pdf-issues/issues/16
 /// </summary>
-internal partial class APM_EncryptionPublicKey_Recipients : APM_EncryptionPublicKey_Recipients_Base
+internal partial class APM_EncryptionPublicKey_Recipients : APM_EncryptionPublicKey_Recipients__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_Recipients_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_Recipients__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_Recipients";
     public static bool RuleGroup() { return false; }
@@ -162,15 +162,12 @@ internal partial class APM_EncryptionPublicKey_Recipients_Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            var SubFilter = obj.Get("SubFilter");
-            if ((eq(SubFilter,"adbe.pkcs7.s3")||eq(SubFilter,"adbe.pkcs7.s4"))) {
-                val = ctx.GetRequired<PdfArray, APM_EncryptionPublicKey_Recipients>(obj, "Recipients", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_EncryptionPublicKey_Recipients>(obj, "Recipients", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var SubFilter = obj.Get("SubFilter");
+        var val = ctx.GetOptional<PdfArray, APM_EncryptionPublicKey_Recipients>(obj, "Recipients", IndirectRequirement.Either);
+        if (((eq(SubFilter,"adbe.pkcs7.s3")||eq(SubFilter,"adbe.pkcs7.s4"))) && val == null) {
+            ctx.Fail<APM_EncryptionPublicKey_Recipients>("Recipients is required when 'fn:IsRequired((@SubFilter==adbe.pkcs7.s3) || (@SubFilter==adbe.pkcs7.s4))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -184,12 +181,12 @@ internal partial class APM_EncryptionPublicKey_Recipients_Base : ISpecification<
 /// <summary>
 /// EncryptionPublicKey_P Table 23 and Table 24 - removed from ISO 32000-2:2020
 /// </summary>
-internal partial class APM_EncryptionPublicKey_P : APM_EncryptionPublicKey_P_Base
+internal partial class APM_EncryptionPublicKey_P : APM_EncryptionPublicKey_P__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_P";
     public static bool RuleGroup() { return false; }
@@ -199,7 +196,11 @@ internal partial class APM_EncryptionPublicKey_P_Base : ISpecification<PdfDictio
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_EncryptionPublicKey_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_EncryptionPublicKey_P>($"Value failed special case check: fn:Eval(fn:BitsClear(13,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -211,12 +212,12 @@ internal partial class APM_EncryptionPublicKey_P_Base : ISpecification<PdfDictio
 /// <summary>
 /// EncryptionPublicKey_Filter Table 20
 /// </summary>
-internal partial class APM_EncryptionPublicKey_Filter : APM_EncryptionPublicKey_Filter_Base
+internal partial class APM_EncryptionPublicKey_Filter : APM_EncryptionPublicKey_Filter__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_Filter";
     public static bool RuleGroup() { return false; }
@@ -227,13 +228,11 @@ internal partial class APM_EncryptionPublicKey_Filter_Base : ISpecification<PdfD
         var val = ctx.GetRequired<PdfName, APM_EncryptionPublicKey_Filter>(obj, "Filter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Adobe.PubSec" || val == "AdobePPKLite")) 
         {
             ctx.Fail<APM_EncryptionPublicKey_Filter>($"Invalid value {val}, allowed are: [Adobe.PubSec,AdobePPKLite]");
-        }
         }
         // no linked objects
         
@@ -245,12 +244,12 @@ internal partial class APM_EncryptionPublicKey_Filter_Base : ISpecification<PdfD
 /// <summary>
 /// EncryptionPublicKey_SubFilter https://github.com/pdf-association/pdf-issues/issues/219
 /// </summary>
-internal partial class APM_EncryptionPublicKey_SubFilter : APM_EncryptionPublicKey_SubFilter_Base
+internal partial class APM_EncryptionPublicKey_SubFilter : APM_EncryptionPublicKey_SubFilter__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_SubFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_SubFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_SubFilter";
     public static bool RuleGroup() { return false; }
@@ -261,13 +260,11 @@ internal partial class APM_EncryptionPublicKey_SubFilter_Base : ISpecification<P
         var val = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_SubFilter>(obj, "SubFilter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(val == "adbe.pkcs7.s3" || ctx.Version >= 1.4m && val == "adbe.pkcs7.s4" || ctx.Version >= 1.5m && val == "adbe.pkcs7.s5")) 
+        if (!(val == "adbe.pkcs7.s3" || (ctx.Version < 1.4m || (ctx.Version >= 1.4m && val == "adbe.pkcs7.s4")) || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "adbe.pkcs7.s5")))) 
         {
             ctx.Fail<APM_EncryptionPublicKey_SubFilter>($"Invalid value {val}, allowed are: [adbe.pkcs7.s3,fn:SinceVersion(1.4,adbe.pkcs7.s4),fn:SinceVersion(1.5,adbe.pkcs7.s5)]");
-        }
         }
         // no linked objects
         
@@ -279,12 +276,12 @@ internal partial class APM_EncryptionPublicKey_SubFilter_Base : ISpecification<P
 /// <summary>
 /// EncryptionPublicKey_V 
 /// </summary>
-internal partial class APM_EncryptionPublicKey_V : APM_EncryptionPublicKey_V_Base
+internal partial class APM_EncryptionPublicKey_V : APM_EncryptionPublicKey_V__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_V";
     public static bool RuleGroup() { return false; }
@@ -295,13 +292,11 @@ internal partial class APM_EncryptionPublicKey_V_Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfIntNumber, APM_EncryptionPublicKey_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!((ctx.Version <= 1.1m && val == 0) || (ctx.Version <= 2.0m && val == 1) || (ctx.Version <= 2.0m && ctx.Version >= 1.4m && val == 2) || (ctx.Version <= 2.0m && ctx.Version >= 1.4m && val == 3) || (ctx.Version <= 2.0m && ctx.Version >= 1.5m && val == 4) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == 5)) || ctx.Version >= 2.0m && val == 5 || ctx.Version >= 2.0m && (ctx.Extensions.Contains("ISO_TS_32003") && val == 6))) 
+        if (!((ctx.Version <= 1.1m && val == 0) || (ctx.Version <= 2.0m && val == 1) || (ctx.Version <= 2.0m && (ctx.Version < 1.4m || (ctx.Version >= 1.4m && val == 2))) || (ctx.Version <= 2.0m && (ctx.Version < 1.4m || (ctx.Version >= 1.4m && val == 3))) || (ctx.Version <= 2.0m && (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == 4))) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == 5)) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == 5)) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && (ctx.Extensions.Contains("ISO_TS_32003") && val == 6))))) 
         {
             ctx.Fail<APM_EncryptionPublicKey_V>($"Invalid value {val}, allowed are: [fn:Deprecated(1.1,0),fn:Deprecated(2.0,1),fn:Deprecated(2.0,fn:SinceVersion(1.4,2)),fn:Deprecated(2.0,fn:SinceVersion(1.4,3)),fn:Deprecated(2.0,fn:SinceVersion(1.5,4)),fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5)),fn:SinceVersion(2.0,5),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,6))]");
-        }
         }
         // no linked objects
         
@@ -313,12 +308,12 @@ internal partial class APM_EncryptionPublicKey_V_Base : ISpecification<PdfDictio
 /// <summary>
 /// EncryptionPublicKey_Length 
 /// </summary>
-internal partial class APM_EncryptionPublicKey_Length : APM_EncryptionPublicKey_Length_Base
+internal partial class APM_EncryptionPublicKey_Length : APM_EncryptionPublicKey_Length__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_Length";
     public static bool RuleGroup() { return false; }
@@ -329,13 +324,11 @@ internal partial class APM_EncryptionPublicKey_Length_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfIntNumber, APM_EncryptionPublicKey_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Length = val;
-        if (!(gte(@Length,40)&&lte(@Length,128)&&eq(mod(@Length,8),0))) 
+        var Length = obj.Get("Length");
+        if (!(gte(Length,40)&&lte(Length,128)&&eq(mod(Length,8),0))) 
         {
             ctx.Fail<APM_EncryptionPublicKey_Length>($"Invalid value {val}, allowed are: [fn:Eval((@Length>=40) && (@Length<=128) && ((@Length mod 8)==0))]");
-        }
         }
         // no linked objects
         
@@ -347,12 +340,12 @@ internal partial class APM_EncryptionPublicKey_Length_Base : ISpecification<PdfD
 /// <summary>
 /// EncryptionPublicKey_CF 
 /// </summary>
-internal partial class APM_EncryptionPublicKey_CF : APM_EncryptionPublicKey_CF_Base
+internal partial class APM_EncryptionPublicKey_CF : APM_EncryptionPublicKey_CF__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_CF_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_CF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_CF";
     public static bool RuleGroup() { return false; }
@@ -362,7 +355,7 @@ internal partial class APM_EncryptionPublicKey_CF_Base : ISpecification<PdfDicti
     {
         var val = ctx.GetOptional<PdfDictionary, APM_EncryptionPublicKey_CF>(obj, "CF", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         if (APM_CryptFilterMap.MatchesType(ctx, val)) 
         {
@@ -383,12 +376,12 @@ internal partial class APM_EncryptionPublicKey_CF_Base : ISpecification<PdfDicti
 /// <summary>
 /// EncryptionPublicKey_StmF 
 /// </summary>
-internal partial class APM_EncryptionPublicKey_StmF : APM_EncryptionPublicKey_StmF_Base
+internal partial class APM_EncryptionPublicKey_StmF : APM_EncryptionPublicKey_StmF__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_StmF_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_StmF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_StmF";
     public static bool RuleGroup() { return false; }
@@ -398,14 +391,12 @@ internal partial class APM_EncryptionPublicKey_StmF_Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_StmF>(obj, "StmF", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "Identity" || val == "DefaultCryptFilter" || val == "DefEmbeddedFile")) 
         {
             ctx.Fail<APM_EncryptionPublicKey_StmF>($"Invalid value {val}, allowed are: [Identity,DefaultCryptFilter,DefEmbeddedFile]");
-        }
         }
         // no linked objects
         
@@ -417,12 +408,12 @@ internal partial class APM_EncryptionPublicKey_StmF_Base : ISpecification<PdfDic
 /// <summary>
 /// EncryptionPublicKey_StrF 
 /// </summary>
-internal partial class APM_EncryptionPublicKey_StrF : APM_EncryptionPublicKey_StrF_Base
+internal partial class APM_EncryptionPublicKey_StrF : APM_EncryptionPublicKey_StrF__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_StrF_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_StrF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_StrF";
     public static bool RuleGroup() { return false; }
@@ -432,14 +423,12 @@ internal partial class APM_EncryptionPublicKey_StrF_Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_StrF>(obj, "StrF", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "Identity" || val == "DefaultCryptFilter")) 
         {
             ctx.Fail<APM_EncryptionPublicKey_StrF>($"Invalid value {val}, allowed are: [Identity,DefaultCryptFilter]");
-        }
         }
         // no linked objects
         
@@ -451,12 +440,12 @@ internal partial class APM_EncryptionPublicKey_StrF_Base : ISpecification<PdfDic
 /// <summary>
 /// EncryptionPublicKey_EFF 
 /// </summary>
-internal partial class APM_EncryptionPublicKey_EFF : APM_EncryptionPublicKey_EFF_Base
+internal partial class APM_EncryptionPublicKey_EFF : APM_EncryptionPublicKey_EFF__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_EFF_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_EFF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_EFF";
     public static bool RuleGroup() { return false; }
@@ -466,14 +455,12 @@ internal partial class APM_EncryptionPublicKey_EFF_Base : ISpecification<PdfDict
     {
         var val = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_EFF>(obj, "EFF", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "Identity" || val == "DefaultCryptFilter" || val == "DefEmbeddedFile")) 
         {
             ctx.Fail<APM_EncryptionPublicKey_EFF>($"Invalid value {val}, allowed are: [Identity,DefaultCryptFilter,DefEmbeddedFile]");
-        }
         }
         // no linked objects
         
@@ -485,12 +472,12 @@ internal partial class APM_EncryptionPublicKey_EFF_Base : ISpecification<PdfDict
 /// <summary>
 /// EncryptionPublicKey_EncryptMetadata 
 /// </summary>
-internal partial class APM_EncryptionPublicKey_EncryptMetadata : APM_EncryptionPublicKey_EncryptMetadata_Base
+internal partial class APM_EncryptionPublicKey_EncryptMetadata : APM_EncryptionPublicKey_EncryptMetadata__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_EncryptMetadata_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_EncryptMetadata__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_EncryptMetadata";
     public static bool RuleGroup() { return false; }
@@ -512,12 +499,12 @@ internal partial class APM_EncryptionPublicKey_EncryptMetadata_Base : ISpecifica
 /// <summary>
 /// EncryptionPublicKey_KDFSalt ISO/TS 32004 integrity protection
 /// </summary>
-internal partial class APM_EncryptionPublicKey_KDFSalt : APM_EncryptionPublicKey_KDFSalt_Base
+internal partial class APM_EncryptionPublicKey_KDFSalt : APM_EncryptionPublicKey_KDFSalt__Base
 {
 }
 
 
-internal partial class APM_EncryptionPublicKey_KDFSalt_Base : ISpecification<PdfDictionary>
+internal partial class APM_EncryptionPublicKey_KDFSalt__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "EncryptionPublicKey_KDFSalt";
     public static bool RuleGroup() { return false; }
@@ -527,7 +514,11 @@ internal partial class APM_EncryptionPublicKey_KDFSalt_Base : ISpecification<Pdf
     {
         var val = ctx.GetOptional<PdfString, APM_EncryptionPublicKey_KDFSalt>(obj, "KDFSalt", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(AlwaysUnencrypted(obj))) 
+        {
+            ctx.Fail<APM_EncryptionPublicKey_KDFSalt>($"Value failed special case check: fn:Eval(fn:AlwaysUnencrypted())");
+        }
         // no value restrictions
         // no linked objects
         

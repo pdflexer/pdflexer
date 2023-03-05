@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_BeadFirst : APM_BeadFirst_Base
+internal partial class APM_BeadFirst : APM_BeadFirst__Base
 {
 }
 
-internal partial class APM_BeadFirst_Base : ISpecification<PdfDictionary>
+internal partial class APM_BeadFirst__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "BeadFirst";
@@ -149,12 +149,12 @@ internal partial class APM_BeadFirst_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BeadFirst_Type Table 163
 /// </summary>
-internal partial class APM_BeadFirst_Type : APM_BeadFirst_Type_Base
+internal partial class APM_BeadFirst_Type : APM_BeadFirst_Type__Base
 {
 }
 
 
-internal partial class APM_BeadFirst_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_BeadFirst_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BeadFirst_Type";
     public static bool RuleGroup() { return false; }
@@ -165,13 +165,11 @@ internal partial class APM_BeadFirst_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_BeadFirst_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Bead")) 
         {
             ctx.Fail<APM_BeadFirst_Type>($"Invalid value {val}, allowed are: [Bead]");
-        }
         }
         // no linked objects
         
@@ -183,12 +181,12 @@ internal partial class APM_BeadFirst_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BeadFirst_T 
 /// </summary>
-internal partial class APM_BeadFirst_T : APM_BeadFirst_T_Base
+internal partial class APM_BeadFirst_T : APM_BeadFirst_T__Base
 {
 }
 
 
-internal partial class APM_BeadFirst_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_BeadFirst_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BeadFirst_T";
     public static bool RuleGroup() { return false; }
@@ -210,12 +208,12 @@ internal partial class APM_BeadFirst_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BeadFirst_N 
 /// </summary>
-internal partial class APM_BeadFirst_N : APM_BeadFirst_N_Base
+internal partial class APM_BeadFirst_N : APM_BeadFirst_N__Base
 {
 }
 
 
-internal partial class APM_BeadFirst_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_BeadFirst_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BeadFirst_N";
     public static bool RuleGroup() { return false; }
@@ -246,12 +244,12 @@ internal partial class APM_BeadFirst_N_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BeadFirst_V 
 /// </summary>
-internal partial class APM_BeadFirst_V : APM_BeadFirst_V_Base
+internal partial class APM_BeadFirst_V : APM_BeadFirst_V__Base
 {
 }
 
 
-internal partial class APM_BeadFirst_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_BeadFirst_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BeadFirst_V";
     public static bool RuleGroup() { return false; }
@@ -282,12 +280,12 @@ internal partial class APM_BeadFirst_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BeadFirst_P 
 /// </summary>
-internal partial class APM_BeadFirst_P : APM_BeadFirst_P_Base
+internal partial class APM_BeadFirst_P : APM_BeadFirst_P__Base
 {
 }
 
 
-internal partial class APM_BeadFirst_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_BeadFirst_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BeadFirst_P";
     public static bool RuleGroup() { return false; }
@@ -309,12 +307,12 @@ internal partial class APM_BeadFirst_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BeadFirst_R 
 /// </summary>
-internal partial class APM_BeadFirst_R : APM_BeadFirst_R_Base
+internal partial class APM_BeadFirst_R : APM_BeadFirst_R__Base
 {
 }
 
 
-internal partial class APM_BeadFirst_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_BeadFirst_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BeadFirst_R";
     public static bool RuleGroup() { return false; }

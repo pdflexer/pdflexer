@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FontCIDType2 : APM_FontCIDType2_Base
+internal partial class APM_FontCIDType2 : APM_FontCIDType2__Base
 {
 }
 
-internal partial class APM_FontCIDType2_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FontCIDType2";
@@ -144,12 +144,12 @@ internal partial class APM_FontCIDType2_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontCIDType2_Type Table 115
 /// </summary>
-internal partial class APM_FontCIDType2_Type : APM_FontCIDType2_Type_Base
+internal partial class APM_FontCIDType2_Type : APM_FontCIDType2_Type__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_Type";
     public static bool RuleGroup() { return false; }
@@ -160,13 +160,11 @@ internal partial class APM_FontCIDType2_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_FontCIDType2_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Font")) 
         {
             ctx.Fail<APM_FontCIDType2_Type>($"Invalid value {val}, allowed are: [Font]");
-        }
         }
         // no linked objects
         
@@ -178,12 +176,12 @@ internal partial class APM_FontCIDType2_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// FontCIDType2_Subtype 
 /// </summary>
-internal partial class APM_FontCIDType2_Subtype : APM_FontCIDType2_Subtype_Base
+internal partial class APM_FontCIDType2_Subtype : APM_FontCIDType2_Subtype__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_Subtype";
     public static bool RuleGroup() { return false; }
@@ -194,13 +192,11 @@ internal partial class APM_FontCIDType2_Subtype_Base : ISpecification<PdfDiction
         var val = ctx.GetRequired<PdfName, APM_FontCIDType2_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CIDFontType2")) 
         {
             ctx.Fail<APM_FontCIDType2_Subtype>($"Invalid value {val}, allowed are: [CIDFontType2]");
-        }
         }
         // no linked objects
         
@@ -212,12 +208,12 @@ internal partial class APM_FontCIDType2_Subtype_Base : ISpecification<PdfDiction
 /// <summary>
 /// FontCIDType2_BaseFont 
 /// </summary>
-internal partial class APM_FontCIDType2_BaseFont : APM_FontCIDType2_BaseFont_Base
+internal partial class APM_FontCIDType2_BaseFont : APM_FontCIDType2_BaseFont__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_BaseFont_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_BaseFont__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_BaseFont";
     public static bool RuleGroup() { return false; }
@@ -239,12 +235,12 @@ internal partial class APM_FontCIDType2_BaseFont_Base : ISpecification<PdfDictio
 /// <summary>
 /// FontCIDType2_CIDSystemInfo 
 /// </summary>
-internal partial class APM_FontCIDType2_CIDSystemInfo : APM_FontCIDType2_CIDSystemInfo_Base
+internal partial class APM_FontCIDType2_CIDSystemInfo : APM_FontCIDType2_CIDSystemInfo__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_CIDSystemInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_CIDSystemInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_CIDSystemInfo";
     public static bool RuleGroup() { return false; }
@@ -266,12 +262,12 @@ internal partial class APM_FontCIDType2_CIDSystemInfo_Base : ISpecification<PdfD
 /// <summary>
 /// FontCIDType2_FontDescriptor https://github.com/pdf-association/pdf-issues/issues/106
 /// </summary>
-internal partial class APM_FontCIDType2_FontDescriptor : APM_FontCIDType2_FontDescriptor_Base
+internal partial class APM_FontCIDType2_FontDescriptor : APM_FontCIDType2_FontDescriptor__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_FontDescriptor_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_FontDescriptor__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_FontDescriptor";
     public static bool RuleGroup() { return false; }
@@ -293,12 +289,12 @@ internal partial class APM_FontCIDType2_FontDescriptor_Base : ISpecification<Pdf
 /// <summary>
 /// FontCIDType2_DW 
 /// </summary>
-internal partial class APM_FontCIDType2_DW : APM_FontCIDType2_DW_Base
+internal partial class APM_FontCIDType2_DW : APM_FontCIDType2_DW__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_DW_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_DW__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_DW";
     public static bool RuleGroup() { return false; }
@@ -320,12 +316,12 @@ internal partial class APM_FontCIDType2_DW_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontCIDType2_W 
 /// </summary>
-internal partial class APM_FontCIDType2_W : APM_FontCIDType2_W_Base
+internal partial class APM_FontCIDType2_W : APM_FontCIDType2_W__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_W_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_W__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_W";
     public static bool RuleGroup() { return false; }
@@ -347,12 +343,12 @@ internal partial class APM_FontCIDType2_W_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontCIDType2_DW2 
 /// </summary>
-internal partial class APM_FontCIDType2_DW2 : APM_FontCIDType2_DW2_Base
+internal partial class APM_FontCIDType2_DW2 : APM_FontCIDType2_DW2__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_DW2_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_DW2__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_DW2";
     public static bool RuleGroup() { return false; }
@@ -374,12 +370,12 @@ internal partial class APM_FontCIDType2_DW2_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontCIDType2_W2 
 /// </summary>
-internal partial class APM_FontCIDType2_W2 : APM_FontCIDType2_W2_Base
+internal partial class APM_FontCIDType2_W2 : APM_FontCIDType2_W2__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_W2_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_W2__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_W2";
     public static bool RuleGroup() { return false; }
@@ -401,12 +397,12 @@ internal partial class APM_FontCIDType2_W2_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontCIDType2_CIDToGIDMap 
 /// </summary>
-internal partial class APM_FontCIDType2_CIDToGIDMap : APM_FontCIDType2_CIDToGIDMap_Base
+internal partial class APM_FontCIDType2_CIDToGIDMap : APM_FontCIDType2_CIDToGIDMap__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_CIDToGIDMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_CIDToGIDMap__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_CIDToGIDMap";
     public static bool RuleGroup() { return false; }
@@ -415,14 +411,14 @@ internal partial class APM_FontCIDType2_CIDToGIDMap_Base : ISpecification<PdfDic
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var (utval, wasIR) = ctx.GetOptional<APM_FontCIDType2_CIDToGIDMap>(obj, "CIDToGIDMap", IndirectRequirement.Either);
-        {
-            var FontDescriptorFontFile2 = obj.Get("FontDescriptor")?.Get("FontFile2");
-            if (((ctx.Version >= 2.0m&&obj.ContainsKey(FontDescriptorFontFile2))) && utval == null) {
-                ctx.Fail<APM_FontCIDType2_CIDToGIDMap>("CIDToGIDMap is required"); return;
-            } else if (utval == null) {
-                return;
-            }
+        
+        var FontDescriptorFontFile2 = obj.Get("FontDescriptor")?.Get("FontFile2");
+        if (((ctx.Version >= 2.0m&&(FontDescriptorFontFile2 != null))) && utval == null) {
+            ctx.Fail<APM_FontCIDType2_CIDToGIDMap>("CIDToGIDMap is required"); return;
+        } else if (utval == null) {
+            return;
         }
+        
         switch (utval.Type) 
         {
             case PdfObjectType.NameObj:
@@ -430,13 +426,11 @@ internal partial class APM_FontCIDType2_CIDToGIDMap_Base : ISpecification<PdfDic
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "Identity")) 
                     {
                         ctx.Fail<APM_FontCIDType2_CIDToGIDMap>($"Invalid value {val}, allowed are: [Identity]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -463,12 +457,12 @@ internal partial class APM_FontCIDType2_CIDToGIDMap_Base : ISpecification<PdfDic
 /// <summary>
 /// FontCIDType2_ToUnicode 
 /// </summary>
-internal partial class APM_FontCIDType2_ToUnicode : APM_FontCIDType2_ToUnicode_Base
+internal partial class APM_FontCIDType2_ToUnicode : APM_FontCIDType2_ToUnicode__Base
 {
 }
 
 
-internal partial class APM_FontCIDType2_ToUnicode_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontCIDType2_ToUnicode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontCIDType2_ToUnicode";
     public static bool RuleGroup() { return false; }

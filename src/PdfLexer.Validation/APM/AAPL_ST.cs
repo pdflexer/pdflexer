@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AAPL_ST : APM_AAPL_ST_Base
+internal partial class APM_AAPL_ST : APM_AAPL_ST__Base
 {
 }
 
-internal partial class APM_AAPL_ST_Base : ISpecification<PdfDictionary>
+internal partial class APM_AAPL_ST__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AAPL_ST";
@@ -50,12 +50,12 @@ internal partial class APM_AAPL_ST_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AAPL_ST_Type AAPL:ST in Graphics State
 /// </summary>
-internal partial class APM_AAPL_ST_Type : APM_AAPL_ST_Type_Base
+internal partial class APM_AAPL_ST_Type : APM_AAPL_ST_Type__Base
 {
 }
 
 
-internal partial class APM_AAPL_ST_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AAPL_ST_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AAPL_ST_Type";
     public static bool RuleGroup() { return false; }
@@ -66,13 +66,11 @@ internal partial class APM_AAPL_ST_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AAPL_ST_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Style")) 
         {
             ctx.Fail<APM_AAPL_ST_Type>($"Invalid value {val}, allowed are: [Style]");
-        }
         }
         // no linked objects
         
@@ -84,12 +82,12 @@ internal partial class APM_AAPL_ST_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AAPL_ST_Subtype 
 /// </summary>
-internal partial class APM_AAPL_ST_Subtype : APM_AAPL_ST_Subtype_Base
+internal partial class APM_AAPL_ST_Subtype : APM_AAPL_ST_Subtype__Base
 {
 }
 
 
-internal partial class APM_AAPL_ST_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AAPL_ST_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AAPL_ST_Subtype";
     public static bool RuleGroup() { return false; }
@@ -100,13 +98,11 @@ internal partial class APM_AAPL_ST_Subtype_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AAPL_ST_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Shadow")) 
         {
             ctx.Fail<APM_AAPL_ST_Subtype>($"Invalid value {val}, allowed are: [Shadow]");
-        }
         }
         // no linked objects
         
@@ -118,12 +114,12 @@ internal partial class APM_AAPL_ST_Subtype_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AAPL_ST_Offset X,Y offset for drop shadow
 /// </summary>
-internal partial class APM_AAPL_ST_Offset : APM_AAPL_ST_Offset_Base
+internal partial class APM_AAPL_ST_Offset : APM_AAPL_ST_Offset__Base
 {
 }
 
 
-internal partial class APM_AAPL_ST_Offset_Base : ISpecification<PdfDictionary>
+internal partial class APM_AAPL_ST_Offset__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AAPL_ST_Offset";
     public static bool RuleGroup() { return false; }
@@ -145,12 +141,12 @@ internal partial class APM_AAPL_ST_Offset_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AAPL_ST_Radius 
 /// </summary>
-internal partial class APM_AAPL_ST_Radius : APM_AAPL_ST_Radius_Base
+internal partial class APM_AAPL_ST_Radius : APM_AAPL_ST_Radius__Base
 {
 }
 
 
-internal partial class APM_AAPL_ST_Radius_Base : ISpecification<PdfDictionary>
+internal partial class APM_AAPL_ST_Radius__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AAPL_ST_Radius";
     public static bool RuleGroup() { return false; }
@@ -160,7 +156,11 @@ internal partial class APM_AAPL_ST_Radius_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfNumber, APM_AAPL_ST_Radius>(obj, "Radius", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Radius = obj.Get("Radius");
+        if (!(gt(Radius,0))) 
+        {
+            ctx.Fail<APM_AAPL_ST_Radius>($"Value failed special case check: fn:Eval(@Radius>0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -172,12 +172,12 @@ internal partial class APM_AAPL_ST_Radius_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AAPL_ST_ColorSpace 
 /// </summary>
-internal partial class APM_AAPL_ST_ColorSpace : APM_AAPL_ST_ColorSpace_Base
+internal partial class APM_AAPL_ST_ColorSpace : APM_AAPL_ST_ColorSpace__Base
 {
 }
 
 
-internal partial class APM_AAPL_ST_ColorSpace_Base : ISpecification<PdfDictionary>
+internal partial class APM_AAPL_ST_ColorSpace__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AAPL_ST_ColorSpace";
     public static bool RuleGroup() { return false; }
@@ -198,6 +198,18 @@ internal partial class APM_AAPL_ST_ColorSpace_Base : ISpecification<PdfDictionar
                     if (APM_IndexedColorSpace.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_IndexedColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_CalGrayColorSpace.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_CalGrayColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_CalRGBColorSpace.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_CalRGBColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_LabColorSpace.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_LabColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_AAPL_ST_ColorSpace>("ColorSpace did not match any allowable types: '[fn:SinceVersion(1.1,CalGrayColorSpace),fn:SinceVersion(1.1,CalRGBColorSpace),fn:SinceVersion(1.1,LabColorSpace),fn:SinceVersion(1.3,ICCBasedColorSpace),IndexedColorSpace]'");
@@ -209,13 +221,11 @@ internal partial class APM_AAPL_ST_ColorSpace_Base : ISpecification<PdfDictionar
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                     {
                         ctx.Fail<APM_AAPL_ST_ColorSpace>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -233,12 +243,12 @@ internal partial class APM_AAPL_ST_ColorSpace_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AAPL_ST_Color 
 /// </summary>
-internal partial class APM_AAPL_ST_Color : APM_AAPL_ST_Color_Base
+internal partial class APM_AAPL_ST_Color : APM_AAPL_ST_Color__Base
 {
 }
 
 
-internal partial class APM_AAPL_ST_Color_Base : ISpecification<PdfDictionary>
+internal partial class APM_AAPL_ST_Color__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AAPL_ST_Color";
     public static bool RuleGroup() { return false; }

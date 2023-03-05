@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DLightingScheme : APM_3DLightingScheme_Base
+internal partial class APM_3DLightingScheme : APM_3DLightingScheme__Base
 {
 }
 
-internal partial class APM_3DLightingScheme_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DLightingScheme__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DLightingScheme";
@@ -85,12 +85,12 @@ internal partial class APM_3DLightingScheme_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DLightingScheme_Type Table 320
 /// </summary>
-internal partial class APM_3DLightingScheme_Type : APM_3DLightingScheme_Type_Base
+internal partial class APM_3DLightingScheme_Type : APM_3DLightingScheme_Type__Base
 {
 }
 
 
-internal partial class APM_3DLightingScheme_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DLightingScheme_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DLightingScheme_Type";
     public static bool RuleGroup() { return false; }
@@ -101,13 +101,11 @@ internal partial class APM_3DLightingScheme_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_3DLightingScheme_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DLightingScheme")) 
         {
             ctx.Fail<APM_3DLightingScheme_Type>($"Invalid value {val}, allowed are: [3DLightingScheme]");
-        }
         }
         // no linked objects
         
@@ -119,12 +117,12 @@ internal partial class APM_3DLightingScheme_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// 3DLightingScheme_Subtype Table 321
 /// </summary>
-internal partial class APM_3DLightingScheme_Subtype : APM_3DLightingScheme_Subtype_Base
+internal partial class APM_3DLightingScheme_Subtype : APM_3DLightingScheme_Subtype__Base
 {
 }
 
 
-internal partial class APM_3DLightingScheme_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DLightingScheme_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DLightingScheme_Subtype";
     public static bool RuleGroup() { return false; }
@@ -135,13 +133,11 @@ internal partial class APM_3DLightingScheme_Subtype_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfName, APM_3DLightingScheme_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Artwork" || val == "None" || val == "White" || val == "Day" || val == "Night" || val == "Hard" || val == "Primary" || val == "Blue" || val == "Red" || val == "Cube" || val == "CAD" || val == "Headlamp")) 
         {
             ctx.Fail<APM_3DLightingScheme_Subtype>($"Invalid value {val}, allowed are: [Artwork,None,White,Day,Night,Hard,Primary,Blue,Red,Cube,CAD,Headlamp]");
-        }
         }
         // no linked objects
         

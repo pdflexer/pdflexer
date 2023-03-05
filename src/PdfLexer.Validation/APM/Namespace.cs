@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Namespace : APM_Namespace_Base
+internal partial class APM_Namespace : APM_Namespace__Base
 {
 }
 
-internal partial class APM_Namespace_Base : ISpecification<PdfDictionary>
+internal partial class APM_Namespace__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Namespace";
@@ -57,12 +57,12 @@ internal partial class APM_Namespace_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Namespace_Type Table 356
 /// </summary>
-internal partial class APM_Namespace_Type : APM_Namespace_Type_Base
+internal partial class APM_Namespace_Type : APM_Namespace_Type__Base
 {
 }
 
 
-internal partial class APM_Namespace_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Namespace_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Namespace_Type";
     public static bool RuleGroup() { return false; }
@@ -73,13 +73,11 @@ internal partial class APM_Namespace_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Namespace_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Namespace")) 
         {
             ctx.Fail<APM_Namespace_Type>($"Invalid value {val}, allowed are: [Namespace]");
-        }
         }
         // no linked objects
         
@@ -91,12 +89,12 @@ internal partial class APM_Namespace_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Namespace_NS 
 /// </summary>
-internal partial class APM_Namespace_NS : APM_Namespace_NS_Base
+internal partial class APM_Namespace_NS : APM_Namespace_NS__Base
 {
 }
 
 
-internal partial class APM_Namespace_NS_Base : ISpecification<PdfDictionary>
+internal partial class APM_Namespace_NS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Namespace_NS";
     public static bool RuleGroup() { return false; }
@@ -118,12 +116,12 @@ internal partial class APM_Namespace_NS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Namespace_Schema 
 /// </summary>
-internal partial class APM_Namespace_Schema : APM_Namespace_Schema_Base
+internal partial class APM_Namespace_Schema : APM_Namespace_Schema__Base
 {
 }
 
 
-internal partial class APM_Namespace_Schema_Base : ISpecification<PdfDictionary>
+internal partial class APM_Namespace_Schema__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Namespace_Schema";
     public static bool RuleGroup() { return false; }
@@ -166,12 +164,12 @@ internal partial class APM_Namespace_Schema_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Namespace_RoleMapNS 
 /// </summary>
-internal partial class APM_Namespace_RoleMapNS : APM_Namespace_RoleMapNS_Base
+internal partial class APM_Namespace_RoleMapNS : APM_Namespace_RoleMapNS__Base
 {
 }
 
 
-internal partial class APM_Namespace_RoleMapNS_Base : ISpecification<PdfDictionary>
+internal partial class APM_Namespace_RoleMapNS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Namespace_RoleMapNS";
     public static bool RuleGroup() { return false; }

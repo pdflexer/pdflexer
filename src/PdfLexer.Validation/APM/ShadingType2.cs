@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ShadingType2 : APM_ShadingType2_Base
+internal partial class APM_ShadingType2 : APM_ShadingType2__Base
 {
 }
 
-internal partial class APM_ShadingType2_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ShadingType2";
@@ -126,12 +126,12 @@ internal partial class APM_ShadingType2_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ShadingType2_Coords Table 77 and Table 79
 /// </summary>
-internal partial class APM_ShadingType2_Coords : APM_ShadingType2_Coords_Base
+internal partial class APM_ShadingType2_Coords : APM_ShadingType2_Coords__Base
 {
 }
 
 
-internal partial class APM_ShadingType2_Coords_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2_Coords__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType2_Coords";
     public static bool RuleGroup() { return false; }
@@ -153,12 +153,12 @@ internal partial class APM_ShadingType2_Coords_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ShadingType2_Domain 
 /// </summary>
-internal partial class APM_ShadingType2_Domain : APM_ShadingType2_Domain_Base
+internal partial class APM_ShadingType2_Domain : APM_ShadingType2_Domain__Base
 {
 }
 
 
-internal partial class APM_ShadingType2_Domain_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2_Domain__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType2_Domain";
     public static bool RuleGroup() { return false; }
@@ -180,12 +180,12 @@ internal partial class APM_ShadingType2_Domain_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ShadingType2_Function 
 /// </summary>
-internal partial class APM_ShadingType2_Function : APM_ShadingType2_Function_Base
+internal partial class APM_ShadingType2_Function : APM_ShadingType2_Function__Base
 {
 }
 
 
-internal partial class APM_ShadingType2_Function_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2_Function__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType2_Function";
     public static bool RuleGroup() { return false; }
@@ -255,12 +255,12 @@ internal partial class APM_ShadingType2_Function_Base : ISpecification<PdfDictio
 /// <summary>
 /// ShadingType2_Extend 
 /// </summary>
-internal partial class APM_ShadingType2_Extend : APM_ShadingType2_Extend_Base
+internal partial class APM_ShadingType2_Extend : APM_ShadingType2_Extend__Base
 {
 }
 
 
-internal partial class APM_ShadingType2_Extend_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2_Extend__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType2_Extend";
     public static bool RuleGroup() { return false; }
@@ -282,12 +282,12 @@ internal partial class APM_ShadingType2_Extend_Base : ISpecification<PdfDictiona
 /// <summary>
 /// ShadingType2_ShadingType 
 /// </summary>
-internal partial class APM_ShadingType2_ShadingType : APM_ShadingType2_ShadingType_Base
+internal partial class APM_ShadingType2_ShadingType : APM_ShadingType2_ShadingType__Base
 {
 }
 
 
-internal partial class APM_ShadingType2_ShadingType_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2_ShadingType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType2_ShadingType";
     public static bool RuleGroup() { return false; }
@@ -298,13 +298,11 @@ internal partial class APM_ShadingType2_ShadingType_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfIntNumber, APM_ShadingType2_ShadingType>(obj, "ShadingType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 2)) 
         {
             ctx.Fail<APM_ShadingType2_ShadingType>($"Invalid value {val}, allowed are: [2]");
-        }
         }
         // no linked objects
         
@@ -316,12 +314,12 @@ internal partial class APM_ShadingType2_ShadingType_Base : ISpecification<PdfDic
 /// <summary>
 /// ShadingType2_ColorSpace except pattern
 /// </summary>
-internal partial class APM_ShadingType2_ColorSpace : APM_ShadingType2_ColorSpace_Base
+internal partial class APM_ShadingType2_ColorSpace : APM_ShadingType2_ColorSpace__Base
 {
 }
 
 
-internal partial class APM_ShadingType2_ColorSpace_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2_ColorSpace__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType2_ColorSpace";
     public static bool RuleGroup() { return false; }
@@ -371,13 +369,11 @@ internal partial class APM_ShadingType2_ColorSpace_Base : ISpecification<PdfDict
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                     {
                         ctx.Fail<APM_ShadingType2_ColorSpace>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -395,12 +391,12 @@ internal partial class APM_ShadingType2_ColorSpace_Base : ISpecification<PdfDict
 /// <summary>
 /// ShadingType2_Background 
 /// </summary>
-internal partial class APM_ShadingType2_Background : APM_ShadingType2_Background_Base
+internal partial class APM_ShadingType2_Background : APM_ShadingType2_Background__Base
 {
 }
 
 
-internal partial class APM_ShadingType2_Background_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2_Background__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType2_Background";
     public static bool RuleGroup() { return false; }
@@ -422,12 +418,12 @@ internal partial class APM_ShadingType2_Background_Base : ISpecification<PdfDict
 /// <summary>
 /// ShadingType2_BBox 
 /// </summary>
-internal partial class APM_ShadingType2_BBox : APM_ShadingType2_BBox_Base
+internal partial class APM_ShadingType2_BBox : APM_ShadingType2_BBox__Base
 {
 }
 
 
-internal partial class APM_ShadingType2_BBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2_BBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType2_BBox";
     public static bool RuleGroup() { return false; }
@@ -449,12 +445,12 @@ internal partial class APM_ShadingType2_BBox_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ShadingType2_AntiAlias 
 /// </summary>
-internal partial class APM_ShadingType2_AntiAlias : APM_ShadingType2_AntiAlias_Base
+internal partial class APM_ShadingType2_AntiAlias : APM_ShadingType2_AntiAlias__Base
 {
 }
 
 
-internal partial class APM_ShadingType2_AntiAlias_Base : ISpecification<PdfDictionary>
+internal partial class APM_ShadingType2_AntiAlias__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ShadingType2_AntiAlias";
     public static bool RuleGroup() { return false; }

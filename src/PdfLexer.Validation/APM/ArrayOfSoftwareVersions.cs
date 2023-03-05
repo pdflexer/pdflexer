@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfSoftwareVersions : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -42,13 +42,11 @@ internal partial class APM_ArrayOfSoftwareVersions_x : ISpecification<PdfArray>
             var val = ctx.GetOptional<PdfIntNumber, APM_ArrayOfSoftwareVersions_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
-            {
             
             
             if (!(gte(val,0))) 
             {
                 ctx.Fail<APM_ArrayOfSoftwareVersions_x>($"Invalid value {val}, allowed are: [fn:Eval(@*>=0)]");
-            }
             }
             // no linked objects
             

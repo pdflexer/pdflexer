@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Separation : APM_Separation_Base
+internal partial class APM_Separation : APM_Separation__Base
 {
 }
 
-internal partial class APM_Separation_Base : ISpecification<PdfDictionary>
+internal partial class APM_Separation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Separation";
@@ -120,12 +120,12 @@ internal partial class APM_Separation_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Separation_Pages Table 400
 /// </summary>
-internal partial class APM_Separation_Pages : APM_Separation_Pages_Base
+internal partial class APM_Separation_Pages : APM_Separation_Pages__Base
 {
 }
 
 
-internal partial class APM_Separation_Pages_Base : ISpecification<PdfDictionary>
+internal partial class APM_Separation_Pages__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Separation_Pages";
     public static bool RuleGroup() { return false; }
@@ -147,12 +147,12 @@ internal partial class APM_Separation_Pages_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Separation_DeviceColorant 
 /// </summary>
-internal partial class APM_Separation_DeviceColorant : APM_Separation_DeviceColorant_Base
+internal partial class APM_Separation_DeviceColorant : APM_Separation_DeviceColorant__Base
 {
 }
 
 
-internal partial class APM_Separation_DeviceColorant_Base : ISpecification<PdfDictionary>
+internal partial class APM_Separation_DeviceColorant__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Separation_DeviceColorant";
     public static bool RuleGroup() { return false; }
@@ -195,12 +195,12 @@ internal partial class APM_Separation_DeviceColorant_Base : ISpecification<PdfDi
 /// <summary>
 /// Separation_ColorSpace 
 /// </summary>
-internal partial class APM_Separation_ColorSpace : APM_Separation_ColorSpace_Base
+internal partial class APM_Separation_ColorSpace : APM_Separation_ColorSpace__Base
 {
 }
 
 
-internal partial class APM_Separation_ColorSpace_Base : ISpecification<PdfDictionary>
+internal partial class APM_Separation_ColorSpace__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Separation_ColorSpace";
     public static bool RuleGroup() { return false; }

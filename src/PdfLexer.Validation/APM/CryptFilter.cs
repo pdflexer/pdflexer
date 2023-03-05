@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CryptFilter : APM_CryptFilter_Base
+internal partial class APM_CryptFilter : APM_CryptFilter__Base
 {
 }
 
-internal partial class APM_CryptFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilter__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CryptFilter";
@@ -107,12 +107,12 @@ internal partial class APM_CryptFilter_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CryptFilter_Type Table 25 
 /// </summary>
-internal partial class APM_CryptFilter_Type : APM_CryptFilter_Type_Base
+internal partial class APM_CryptFilter_Type : APM_CryptFilter_Type__Base
 {
 }
 
 
-internal partial class APM_CryptFilter_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilter_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilter_Type";
     public static bool RuleGroup() { return false; }
@@ -123,13 +123,11 @@ internal partial class APM_CryptFilter_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_CryptFilter_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CryptFilter")) 
         {
             ctx.Fail<APM_CryptFilter_Type>($"Invalid value {val}, allowed are: [CryptFilter]");
-        }
         }
         // no linked objects
         
@@ -141,12 +139,12 @@ internal partial class APM_CryptFilter_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CryptFilter_CFM 
 /// </summary>
-internal partial class APM_CryptFilter_CFM : APM_CryptFilter_CFM_Base
+internal partial class APM_CryptFilter_CFM : APM_CryptFilter_CFM__Base
 {
 }
 
 
-internal partial class APM_CryptFilter_CFM_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilter_CFM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilter_CFM";
     public static bool RuleGroup() { return false; }
@@ -157,13 +155,11 @@ internal partial class APM_CryptFilter_CFM_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_CryptFilter_CFM>(obj, "CFM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(val == "None" || (ctx.Version <= 2.0m && val == "V2") || (ctx.Version <= 2.0m && ctx.Version >= 1.6m && val == "AESV2") || (ctx.Version <= 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "AESV3"))) || ctx.Version >= 2.0m && val == "AESV3" || ctx.Version >= 2.0m && (ctx.Extensions.Contains("ISO_TS_32003") && val == "AESV4"))) 
+        if (!(val == "None" || (ctx.Version <= 2.0m && val == "V2") || (ctx.Version <= 2.0m && (ctx.Version < 1.6m || (ctx.Version >= 1.6m && val == "AESV2"))) || (ctx.Version <= 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "AESV3"))) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "AESV3")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && (ctx.Extensions.Contains("ISO_TS_32003") && val == "AESV4"))))) 
         {
             ctx.Fail<APM_CryptFilter_CFM>($"Invalid value {val}, allowed are: [None,fn:Deprecated(2.0,V2),fn:Deprecated(2.0,fn:SinceVersion(1.6,AESV2)),fn:Deprecated(2.0,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,AESV3))),fn:SinceVersion(2.0,AESV3),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,AESV4))]");
-        }
         }
         // no linked objects
         
@@ -175,12 +171,12 @@ internal partial class APM_CryptFilter_CFM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CryptFilter_AuthEvent 
 /// </summary>
-internal partial class APM_CryptFilter_AuthEvent : APM_CryptFilter_AuthEvent_Base
+internal partial class APM_CryptFilter_AuthEvent : APM_CryptFilter_AuthEvent__Base
 {
 }
 
 
-internal partial class APM_CryptFilter_AuthEvent_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilter_AuthEvent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilter_AuthEvent";
     public static bool RuleGroup() { return false; }
@@ -191,13 +187,11 @@ internal partial class APM_CryptFilter_AuthEvent_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_CryptFilter_AuthEvent>(obj, "AuthEvent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DocOpen" || val == "EFOpen")) 
         {
             ctx.Fail<APM_CryptFilter_AuthEvent>($"Invalid value {val}, allowed are: [DocOpen,EFOpen]");
-        }
         }
         // no linked objects
         
@@ -209,12 +203,12 @@ internal partial class APM_CryptFilter_AuthEvent_Base : ISpecification<PdfDictio
 /// <summary>
 /// CryptFilter_Length Expressed in BYTES. https://github.com/pdf-association/pdf-issues/issues/184
 /// </summary>
-internal partial class APM_CryptFilter_Length : APM_CryptFilter_Length_Base
+internal partial class APM_CryptFilter_Length : APM_CryptFilter_Length__Base
 {
 }
 
 
-internal partial class APM_CryptFilter_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilter_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilter_Length";
     public static bool RuleGroup() { return false; }
@@ -225,14 +219,13 @@ internal partial class APM_CryptFilter_Length_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfIntNumber, APM_CryptFilter_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         var CFM = obj.Get("CFM");
-        IPdfObject @Length = val;
-        if (!((gte(@Length,5)&&lte(@Length,16)))) 
+        var Length = obj.Get("Length");
+        // TODO required value checks
+        if (!((gte(Length,5)&&lte(Length,16)))) 
         {
             ctx.Fail<APM_CryptFilter_Length>($"Invalid value {val}, allowed are: [fn:RequiredValue(@CFM==AESV2,16),fn:RequiredValue(@CFM==AESV3,32),fn:Eval((@Length>=5) && (@Length<=16))]");
-        }
         }
         // no linked objects
         

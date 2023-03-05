@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaWindow : APM_RichMediaWindow_Base
+internal partial class APM_RichMediaWindow : APM_RichMediaWindow__Base
 {
 }
 
-internal partial class APM_RichMediaWindow_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaWindow__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaWindow";
@@ -48,12 +48,12 @@ internal partial class APM_RichMediaWindow_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RichMediaWindow_Type Table 339
 /// </summary>
-internal partial class APM_RichMediaWindow_Type : APM_RichMediaWindow_Type_Base
+internal partial class APM_RichMediaWindow_Type : APM_RichMediaWindow_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaWindow_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaWindow_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaWindow_Type";
     public static bool RuleGroup() { return false; }
@@ -64,13 +64,11 @@ internal partial class APM_RichMediaWindow_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_RichMediaWindow_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaWindow")) 
         {
             ctx.Fail<APM_RichMediaWindow_Type>($"Invalid value {val}, allowed are: [RichMediaWindow]");
-        }
         }
         // no linked objects
         
@@ -82,12 +80,12 @@ internal partial class APM_RichMediaWindow_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// RichMediaWindow_Width 
 /// </summary>
-internal partial class APM_RichMediaWindow_Width : APM_RichMediaWindow_Width_Base
+internal partial class APM_RichMediaWindow_Width : APM_RichMediaWindow_Width__Base
 {
 }
 
 
-internal partial class APM_RichMediaWindow_Width_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaWindow_Width__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaWindow_Width";
     public static bool RuleGroup() { return false; }
@@ -109,12 +107,12 @@ internal partial class APM_RichMediaWindow_Width_Base : ISpecification<PdfDictio
 /// <summary>
 /// RichMediaWindow_Height 
 /// </summary>
-internal partial class APM_RichMediaWindow_Height : APM_RichMediaWindow_Height_Base
+internal partial class APM_RichMediaWindow_Height : APM_RichMediaWindow_Height__Base
 {
 }
 
 
-internal partial class APM_RichMediaWindow_Height_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaWindow_Height__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaWindow_Height";
     public static bool RuleGroup() { return false; }
@@ -136,12 +134,12 @@ internal partial class APM_RichMediaWindow_Height_Base : ISpecification<PdfDicti
 /// <summary>
 /// RichMediaWindow_Position 
 /// </summary>
-internal partial class APM_RichMediaWindow_Position : APM_RichMediaWindow_Position_Base
+internal partial class APM_RichMediaWindow_Position : APM_RichMediaWindow_Position__Base
 {
 }
 
 
-internal partial class APM_RichMediaWindow_Position_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaWindow_Position__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaWindow_Position";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_VRI : APM_VRI_Base
+internal partial class APM_VRI : APM_VRI__Base
 {
 }
 
-internal partial class APM_VRI_Base : ISpecification<PdfDictionary>
+internal partial class APM_VRI__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "VRI";
@@ -59,12 +59,12 @@ internal partial class APM_VRI_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// VRI_Type Table 262
 /// </summary>
-internal partial class APM_VRI_Type : APM_VRI_Type_Base
+internal partial class APM_VRI_Type : APM_VRI_Type__Base
 {
 }
 
 
-internal partial class APM_VRI_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_VRI_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "VRI_Type";
     public static bool RuleGroup() { return false; }
@@ -75,13 +75,11 @@ internal partial class APM_VRI_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_VRI_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "VRI")) 
         {
             ctx.Fail<APM_VRI_Type>($"Invalid value {val}, allowed are: [VRI]");
-        }
         }
         // no linked objects
         
@@ -93,12 +91,12 @@ internal partial class APM_VRI_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// VRI_Cert 
 /// </summary>
-internal partial class APM_VRI_Cert : APM_VRI_Cert_Base
+internal partial class APM_VRI_Cert : APM_VRI_Cert__Base
 {
 }
 
 
-internal partial class APM_VRI_Cert_Base : ISpecification<PdfDictionary>
+internal partial class APM_VRI_Cert__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "VRI_Cert";
     public static bool RuleGroup() { return false; }
@@ -120,12 +118,12 @@ internal partial class APM_VRI_Cert_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// VRI_CRL 
 /// </summary>
-internal partial class APM_VRI_CRL : APM_VRI_CRL_Base
+internal partial class APM_VRI_CRL : APM_VRI_CRL__Base
 {
 }
 
 
-internal partial class APM_VRI_CRL_Base : ISpecification<PdfDictionary>
+internal partial class APM_VRI_CRL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "VRI_CRL";
     public static bool RuleGroup() { return false; }
@@ -133,15 +131,12 @@ internal partial class APM_VRI_CRL_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            var parentCRLs = parent?.Get("CRLs");
-            if (gt(((parentCRLs as PdfArray)?.Count),0)) {
-                val = ctx.GetRequired<PdfArray, APM_VRI_CRL>(obj, "CRL", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_VRI_CRL>(obj, "CRL", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var parentCRLs = parent?.Get("CRLs");
+        var val = ctx.GetOptional<PdfArray, APM_VRI_CRL>(obj, "CRL", IndirectRequirement.Either);
+        if ((gt(((parentCRLs as PdfArray)?.Count),0)) && val == null) {
+            ctx.Fail<APM_VRI_CRL>("CRL is required when 'fn:IsRequired(fn:ArrayLength(parent::CRLs)>0)"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -155,12 +150,12 @@ internal partial class APM_VRI_CRL_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// VRI_OCSP 
 /// </summary>
-internal partial class APM_VRI_OCSP : APM_VRI_OCSP_Base
+internal partial class APM_VRI_OCSP : APM_VRI_OCSP__Base
 {
 }
 
 
-internal partial class APM_VRI_OCSP_Base : ISpecification<PdfDictionary>
+internal partial class APM_VRI_OCSP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "VRI_OCSP";
     public static bool RuleGroup() { return false; }
@@ -168,15 +163,12 @@ internal partial class APM_VRI_OCSP_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            var parentOCSPs = parent?.Get("OCSPs");
-            if (gt(((parentOCSPs as PdfArray)?.Count),0)) {
-                val = ctx.GetRequired<PdfArray, APM_VRI_OCSP>(obj, "OCSP", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_VRI_OCSP>(obj, "OCSP", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var parentOCSPs = parent?.Get("OCSPs");
+        var val = ctx.GetOptional<PdfArray, APM_VRI_OCSP>(obj, "OCSP", IndirectRequirement.Either);
+        if ((gt(((parentOCSPs as PdfArray)?.Count),0)) && val == null) {
+            ctx.Fail<APM_VRI_OCSP>("OCSP is required when 'fn:IsRequired(fn:ArrayLength(parent::OCSPs)>0)"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -190,12 +182,12 @@ internal partial class APM_VRI_OCSP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// VRI_TU 
 /// </summary>
-internal partial class APM_VRI_TU : APM_VRI_TU_Base
+internal partial class APM_VRI_TU : APM_VRI_TU__Base
 {
 }
 
 
-internal partial class APM_VRI_TU_Base : ISpecification<PdfDictionary>
+internal partial class APM_VRI_TU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "VRI_TU";
     public static bool RuleGroup() { return false; }
@@ -217,12 +209,12 @@ internal partial class APM_VRI_TU_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// VRI_TS 
 /// </summary>
-internal partial class APM_VRI_TS : APM_VRI_TS_Base
+internal partial class APM_VRI_TS : APM_VRI_TS__Base
 {
 }
 
 
-internal partial class APM_VRI_TS_Base : ISpecification<PdfDictionary>
+internal partial class APM_VRI_TS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "VRI_TS";
     public static bool RuleGroup() { return false; }

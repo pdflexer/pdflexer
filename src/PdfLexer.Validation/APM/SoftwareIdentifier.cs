@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SoftwareIdentifier : APM_SoftwareIdentifier_Base
+internal partial class APM_SoftwareIdentifier : APM_SoftwareIdentifier__Base
 {
 }
 
-internal partial class APM_SoftwareIdentifier_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftwareIdentifier__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SoftwareIdentifier";
@@ -110,12 +110,12 @@ internal partial class APM_SoftwareIdentifier_Base : ISpecification<PdfDictionar
 /// <summary>
 /// SoftwareIdentifier_Type Table 303
 /// </summary>
-internal partial class APM_SoftwareIdentifier_Type : APM_SoftwareIdentifier_Type_Base
+internal partial class APM_SoftwareIdentifier_Type : APM_SoftwareIdentifier_Type__Base
 {
 }
 
 
-internal partial class APM_SoftwareIdentifier_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftwareIdentifier_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftwareIdentifier_Type";
     public static bool RuleGroup() { return false; }
@@ -126,13 +126,11 @@ internal partial class APM_SoftwareIdentifier_Type_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfName, APM_SoftwareIdentifier_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SoftwareIdentifier")) 
         {
             ctx.Fail<APM_SoftwareIdentifier_Type>($"Invalid value {val}, allowed are: [SoftwareIdentifier]");
-        }
         }
         // no linked objects
         
@@ -144,12 +142,12 @@ internal partial class APM_SoftwareIdentifier_Type_Base : ISpecification<PdfDict
 /// <summary>
 /// SoftwareIdentifier_U 
 /// </summary>
-internal partial class APM_SoftwareIdentifier_U : APM_SoftwareIdentifier_U_Base
+internal partial class APM_SoftwareIdentifier_U : APM_SoftwareIdentifier_U__Base
 {
 }
 
 
-internal partial class APM_SoftwareIdentifier_U_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftwareIdentifier_U__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftwareIdentifier_U";
     public static bool RuleGroup() { return false; }
@@ -171,12 +169,12 @@ internal partial class APM_SoftwareIdentifier_U_Base : ISpecification<PdfDiction
 /// <summary>
 /// SoftwareIdentifier_L 
 /// </summary>
-internal partial class APM_SoftwareIdentifier_L : APM_SoftwareIdentifier_L_Base
+internal partial class APM_SoftwareIdentifier_L : APM_SoftwareIdentifier_L__Base
 {
 }
 
 
-internal partial class APM_SoftwareIdentifier_L_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftwareIdentifier_L__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftwareIdentifier_L";
     public static bool RuleGroup() { return false; }
@@ -198,12 +196,12 @@ internal partial class APM_SoftwareIdentifier_L_Base : ISpecification<PdfDiction
 /// <summary>
 /// SoftwareIdentifier_LI 
 /// </summary>
-internal partial class APM_SoftwareIdentifier_LI : APM_SoftwareIdentifier_LI_Base
+internal partial class APM_SoftwareIdentifier_LI : APM_SoftwareIdentifier_LI__Base
 {
 }
 
 
-internal partial class APM_SoftwareIdentifier_LI_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftwareIdentifier_LI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftwareIdentifier_LI";
     public static bool RuleGroup() { return false; }
@@ -225,12 +223,12 @@ internal partial class APM_SoftwareIdentifier_LI_Base : ISpecification<PdfDictio
 /// <summary>
 /// SoftwareIdentifier_H 
 /// </summary>
-internal partial class APM_SoftwareIdentifier_H : APM_SoftwareIdentifier_H_Base
+internal partial class APM_SoftwareIdentifier_H : APM_SoftwareIdentifier_H__Base
 {
 }
 
 
-internal partial class APM_SoftwareIdentifier_H_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftwareIdentifier_H__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftwareIdentifier_H";
     public static bool RuleGroup() { return false; }
@@ -252,12 +250,12 @@ internal partial class APM_SoftwareIdentifier_H_Base : ISpecification<PdfDiction
 /// <summary>
 /// SoftwareIdentifier_HI 
 /// </summary>
-internal partial class APM_SoftwareIdentifier_HI : APM_SoftwareIdentifier_HI_Base
+internal partial class APM_SoftwareIdentifier_HI : APM_SoftwareIdentifier_HI__Base
 {
 }
 
 
-internal partial class APM_SoftwareIdentifier_HI_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftwareIdentifier_HI__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftwareIdentifier_HI";
     public static bool RuleGroup() { return false; }
@@ -279,12 +277,12 @@ internal partial class APM_SoftwareIdentifier_HI_Base : ISpecification<PdfDictio
 /// <summary>
 /// SoftwareIdentifier_OS 
 /// </summary>
-internal partial class APM_SoftwareIdentifier_OS : APM_SoftwareIdentifier_OS_Base
+internal partial class APM_SoftwareIdentifier_OS : APM_SoftwareIdentifier_OS__Base
 {
 }
 
 
-internal partial class APM_SoftwareIdentifier_OS_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftwareIdentifier_OS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftwareIdentifier_OS";
     public static bool RuleGroup() { return false; }

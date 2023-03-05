@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaCommand : APM_RichMediaCommand_Base
+internal partial class APM_RichMediaCommand : APM_RichMediaCommand__Base
 {
 }
 
-internal partial class APM_RichMediaCommand_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCommand__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaCommand";
@@ -47,12 +47,12 @@ internal partial class APM_RichMediaCommand_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RichMediaCommand_Type Table 223
 /// </summary>
-internal partial class APM_RichMediaCommand_Type : APM_RichMediaCommand_Type_Base
+internal partial class APM_RichMediaCommand_Type : APM_RichMediaCommand_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaCommand_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCommand_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaCommand_Type";
     public static bool RuleGroup() { return false; }
@@ -63,13 +63,11 @@ internal partial class APM_RichMediaCommand_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_RichMediaCommand_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaCommand")) 
         {
             ctx.Fail<APM_RichMediaCommand_Type>($"Invalid value {val}, allowed are: [RichMediaCommand]");
-        }
         }
         // no linked objects
         
@@ -81,12 +79,12 @@ internal partial class APM_RichMediaCommand_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// RichMediaCommand_C 
 /// </summary>
-internal partial class APM_RichMediaCommand_C : APM_RichMediaCommand_C_Base
+internal partial class APM_RichMediaCommand_C : APM_RichMediaCommand_C__Base
 {
 }
 
 
-internal partial class APM_RichMediaCommand_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCommand_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaCommand_C";
     public static bool RuleGroup() { return false; }
@@ -108,12 +106,12 @@ internal partial class APM_RichMediaCommand_C_Base : ISpecification<PdfDictionar
 /// <summary>
 /// RichMediaCommand_A 
 /// </summary>
-internal partial class APM_RichMediaCommand_A : APM_RichMediaCommand_A_Base
+internal partial class APM_RichMediaCommand_A : APM_RichMediaCommand_A__Base
 {
 }
 
 
-internal partial class APM_RichMediaCommand_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCommand_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaCommand_A";
     public static bool RuleGroup() { return false; }

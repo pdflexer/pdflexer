@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FilterCCITTFaxDecode : APM_FilterCCITTFaxDecode_Base
+internal partial class APM_FilterCCITTFaxDecode : APM_FilterCCITTFaxDecode__Base
 {
 }
 
-internal partial class APM_FilterCCITTFaxDecode_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FilterCCITTFaxDecode";
@@ -156,12 +156,12 @@ internal partial class APM_FilterCCITTFaxDecode_Base : ISpecification<PdfDiction
 /// <summary>
 /// FilterCCITTFaxDecode_K Table 11
 /// </summary>
-internal partial class APM_FilterCCITTFaxDecode_K : APM_FilterCCITTFaxDecode_K_Base
+internal partial class APM_FilterCCITTFaxDecode_K : APM_FilterCCITTFaxDecode_K__Base
 {
 }
 
 
-internal partial class APM_FilterCCITTFaxDecode_K_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode_K__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCCITTFaxDecode_K";
     public static bool RuleGroup() { return false; }
@@ -183,12 +183,12 @@ internal partial class APM_FilterCCITTFaxDecode_K_Base : ISpecification<PdfDicti
 /// <summary>
 /// FilterCCITTFaxDecode_EndOfLine 
 /// </summary>
-internal partial class APM_FilterCCITTFaxDecode_EndOfLine : APM_FilterCCITTFaxDecode_EndOfLine_Base
+internal partial class APM_FilterCCITTFaxDecode_EndOfLine : APM_FilterCCITTFaxDecode_EndOfLine__Base
 {
 }
 
 
-internal partial class APM_FilterCCITTFaxDecode_EndOfLine_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode_EndOfLine__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCCITTFaxDecode_EndOfLine";
     public static bool RuleGroup() { return false; }
@@ -210,12 +210,12 @@ internal partial class APM_FilterCCITTFaxDecode_EndOfLine_Base : ISpecification<
 /// <summary>
 /// FilterCCITTFaxDecode_EncodedByteAlign 
 /// </summary>
-internal partial class APM_FilterCCITTFaxDecode_EncodedByteAlign : APM_FilterCCITTFaxDecode_EncodedByteAlign_Base
+internal partial class APM_FilterCCITTFaxDecode_EncodedByteAlign : APM_FilterCCITTFaxDecode_EncodedByteAlign__Base
 {
 }
 
 
-internal partial class APM_FilterCCITTFaxDecode_EncodedByteAlign_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode_EncodedByteAlign__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCCITTFaxDecode_EncodedByteAlign";
     public static bool RuleGroup() { return false; }
@@ -237,12 +237,12 @@ internal partial class APM_FilterCCITTFaxDecode_EncodedByteAlign_Base : ISpecifi
 /// <summary>
 /// FilterCCITTFaxDecode_Columns 
 /// </summary>
-internal partial class APM_FilterCCITTFaxDecode_Columns : APM_FilterCCITTFaxDecode_Columns_Base
+internal partial class APM_FilterCCITTFaxDecode_Columns : APM_FilterCCITTFaxDecode_Columns__Base
 {
 }
 
 
-internal partial class APM_FilterCCITTFaxDecode_Columns_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode_Columns__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCCITTFaxDecode_Columns";
     public static bool RuleGroup() { return false; }
@@ -253,13 +253,11 @@ internal partial class APM_FilterCCITTFaxDecode_Columns_Base : ISpecification<Pd
         var val = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_Columns>(obj, "Columns", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Columns = val;
-        if (!(gte(@Columns,0))) 
+        var Columns = obj.Get("Columns");
+        if (!(gte(Columns,0))) 
         {
             ctx.Fail<APM_FilterCCITTFaxDecode_Columns>($"Invalid value {val}, allowed are: [fn:Eval(@Columns>=0)]");
-        }
         }
         // no linked objects
         
@@ -271,12 +269,12 @@ internal partial class APM_FilterCCITTFaxDecode_Columns_Base : ISpecification<Pd
 /// <summary>
 /// FilterCCITTFaxDecode_Rows 
 /// </summary>
-internal partial class APM_FilterCCITTFaxDecode_Rows : APM_FilterCCITTFaxDecode_Rows_Base
+internal partial class APM_FilterCCITTFaxDecode_Rows : APM_FilterCCITTFaxDecode_Rows__Base
 {
 }
 
 
-internal partial class APM_FilterCCITTFaxDecode_Rows_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode_Rows__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCCITTFaxDecode_Rows";
     public static bool RuleGroup() { return false; }
@@ -287,13 +285,11 @@ internal partial class APM_FilterCCITTFaxDecode_Rows_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_Rows>(obj, "Rows", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Rows = val;
-        if (!(gte(@Rows,0))) 
+        var Rows = obj.Get("Rows");
+        if (!(gte(Rows,0))) 
         {
             ctx.Fail<APM_FilterCCITTFaxDecode_Rows>($"Invalid value {val}, allowed are: [fn:Eval(@Rows>=0)]");
-        }
         }
         // no linked objects
         
@@ -305,12 +301,12 @@ internal partial class APM_FilterCCITTFaxDecode_Rows_Base : ISpecification<PdfDi
 /// <summary>
 /// FilterCCITTFaxDecode_EndOfBlock 
 /// </summary>
-internal partial class APM_FilterCCITTFaxDecode_EndOfBlock : APM_FilterCCITTFaxDecode_EndOfBlock_Base
+internal partial class APM_FilterCCITTFaxDecode_EndOfBlock : APM_FilterCCITTFaxDecode_EndOfBlock__Base
 {
 }
 
 
-internal partial class APM_FilterCCITTFaxDecode_EndOfBlock_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode_EndOfBlock__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCCITTFaxDecode_EndOfBlock";
     public static bool RuleGroup() { return false; }
@@ -332,12 +328,12 @@ internal partial class APM_FilterCCITTFaxDecode_EndOfBlock_Base : ISpecification
 /// <summary>
 /// FilterCCITTFaxDecode_BlackIs1 
 /// </summary>
-internal partial class APM_FilterCCITTFaxDecode_BlackIs1 : APM_FilterCCITTFaxDecode_BlackIs1_Base
+internal partial class APM_FilterCCITTFaxDecode_BlackIs1 : APM_FilterCCITTFaxDecode_BlackIs1__Base
 {
 }
 
 
-internal partial class APM_FilterCCITTFaxDecode_BlackIs1_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode_BlackIs1__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCCITTFaxDecode_BlackIs1";
     public static bool RuleGroup() { return false; }
@@ -359,12 +355,12 @@ internal partial class APM_FilterCCITTFaxDecode_BlackIs1_Base : ISpecification<P
 /// <summary>
 /// FilterCCITTFaxDecode_DamagedRowsBeforeError 
 /// </summary>
-internal partial class APM_FilterCCITTFaxDecode_DamagedRowsBeforeError : APM_FilterCCITTFaxDecode_DamagedRowsBeforeError_Base
+internal partial class APM_FilterCCITTFaxDecode_DamagedRowsBeforeError : APM_FilterCCITTFaxDecode_DamagedRowsBeforeError__Base
 {
 }
 
 
-internal partial class APM_FilterCCITTFaxDecode_DamagedRowsBeforeError_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode_DamagedRowsBeforeError__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCCITTFaxDecode_DamagedRowsBeforeError";
     public static bool RuleGroup() { return false; }
@@ -374,14 +370,12 @@ internal partial class APM_FilterCCITTFaxDecode_DamagedRowsBeforeError_Base : IS
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_DamagedRowsBeforeError>(obj, "DamagedRowsBeforeError", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:Ignore, not pertinent to validation
         
-        IPdfObject @DamagedRowsBeforeError = val;
-        if (!(gte(@DamagedRowsBeforeError,0))) 
+        var DamagedRowsBeforeError = obj.Get("DamagedRowsBeforeError");
+        if (!(gte(DamagedRowsBeforeError,0))) 
         {
             ctx.Fail<APM_FilterCCITTFaxDecode_DamagedRowsBeforeError>($"Invalid value {val}, allowed are: [fn:Eval(@DamagedRowsBeforeError>=0)]");
-        }
         }
         // no linked objects
         
@@ -393,12 +387,12 @@ internal partial class APM_FilterCCITTFaxDecode_DamagedRowsBeforeError_Base : IS
 /// <summary>
 /// FilterCCITTFaxDecode_Blackls1 
 /// </summary>
-internal partial class APM_FilterCCITTFaxDecode_Blackls1 : APM_FilterCCITTFaxDecode_Blackls1_Base
+internal partial class APM_FilterCCITTFaxDecode_Blackls1 : APM_FilterCCITTFaxDecode_Blackls1__Base
 {
 }
 
 
-internal partial class APM_FilterCCITTFaxDecode_Blackls1_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterCCITTFaxDecode_Blackls1__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterCCITTFaxDecode_Blackls1";
     public static bool RuleGroup() { return false; }

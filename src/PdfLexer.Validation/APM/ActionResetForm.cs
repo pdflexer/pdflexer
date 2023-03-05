@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionResetForm : APM_ActionResetForm_Base
+internal partial class APM_ActionResetForm : APM_ActionResetForm__Base
 {
 }
 
-internal partial class APM_ActionResetForm_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionResetForm__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionResetForm";
@@ -138,12 +138,12 @@ internal partial class APM_ActionResetForm_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionResetForm_Type Table 196 and Table 241
 /// </summary>
-internal partial class APM_ActionResetForm_Type : APM_ActionResetForm_Type_Base
+internal partial class APM_ActionResetForm_Type : APM_ActionResetForm_Type__Base
 {
 }
 
 
-internal partial class APM_ActionResetForm_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionResetForm_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionResetForm_Type";
     public static bool RuleGroup() { return false; }
@@ -154,13 +154,11 @@ internal partial class APM_ActionResetForm_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_ActionResetForm_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionResetForm_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -172,12 +170,12 @@ internal partial class APM_ActionResetForm_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// ActionResetForm_S 
 /// </summary>
-internal partial class APM_ActionResetForm_S : APM_ActionResetForm_S_Base
+internal partial class APM_ActionResetForm_S : APM_ActionResetForm_S__Base
 {
 }
 
 
-internal partial class APM_ActionResetForm_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionResetForm_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionResetForm_S";
     public static bool RuleGroup() { return false; }
@@ -188,13 +186,11 @@ internal partial class APM_ActionResetForm_S_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_ActionResetForm_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ResetForm")) 
         {
             ctx.Fail<APM_ActionResetForm_S>($"Invalid value {val}, allowed are: [ResetForm]");
-        }
         }
         // no linked objects
         
@@ -206,12 +202,12 @@ internal partial class APM_ActionResetForm_S_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ActionResetForm_Next 
 /// </summary>
-internal partial class APM_ActionResetForm_Next : APM_ActionResetForm_Next_Base
+internal partial class APM_ActionResetForm_Next : APM_ActionResetForm_Next__Base
 {
 }
 
 
-internal partial class APM_ActionResetForm_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionResetForm_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionResetForm_Next";
     public static bool RuleGroup() { return false; }
@@ -274,6 +270,36 @@ internal partial class APM_ActionResetForm_Next_Base : ISpecification<PdfDiction
                     } else if (APM_ActionImportData.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionImportData, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionNOP.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionNOP, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionSetState.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionSetState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionSetOCGState.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionSetOCGState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionRendition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRendition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionTransition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionTransition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ActionECMAScript.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ActionResetForm_Next>("Next did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,fn:IsPDFVersion(1.2,ActionNOP),fn:IsPDFVersion(1.2,ActionSetState),ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,fn:SinceVersion(1.5,ActionSetOCGState),fn:SinceVersion(1.5,ActionRendition),fn:SinceVersion(1.5,ActionTransition),fn:SinceVersion(1.6,ActionGoTo3DView),fn:SinceVersion(1.3,ActionECMAScript),fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -293,12 +319,12 @@ internal partial class APM_ActionResetForm_Next_Base : ISpecification<PdfDiction
 /// <summary>
 /// ActionResetForm_Fields 
 /// </summary>
-internal partial class APM_ActionResetForm_Fields : APM_ActionResetForm_Fields_Base
+internal partial class APM_ActionResetForm_Fields : APM_ActionResetForm_Fields__Base
 {
 }
 
 
-internal partial class APM_ActionResetForm_Fields_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionResetForm_Fields__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionResetForm_Fields";
     public static bool RuleGroup() { return false; }
@@ -320,12 +346,12 @@ internal partial class APM_ActionResetForm_Fields_Base : ISpecification<PdfDicti
 /// <summary>
 /// ActionResetForm_Flags Table 242
 /// </summary>
-internal partial class APM_ActionResetForm_Flags : APM_ActionResetForm_Flags_Base
+internal partial class APM_ActionResetForm_Flags : APM_ActionResetForm_Flags__Base
 {
 }
 
 
-internal partial class APM_ActionResetForm_Flags_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionResetForm_Flags__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionResetForm_Flags";
     public static bool RuleGroup() { return false; }
@@ -335,7 +361,11 @@ internal partial class APM_ActionResetForm_Flags_Base : ISpecification<PdfDictio
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_ActionResetForm_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_ActionResetForm_Flags>($"Value failed special case check: fn:Eval(fn:BitsClear(2,32))");
+        }
         // TODO value checks bitmask
         // no linked objects
         

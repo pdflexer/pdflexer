@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MicrosoftWindowsLaunchParam : APM_MicrosoftWindowsLaunchParam_Base
+internal partial class APM_MicrosoftWindowsLaunchParam : APM_MicrosoftWindowsLaunchParam__Base
 {
 }
 
-internal partial class APM_MicrosoftWindowsLaunchParam_Base : ISpecification<PdfDictionary>
+internal partial class APM_MicrosoftWindowsLaunchParam__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MicrosoftWindowsLaunchParam";
@@ -131,12 +131,12 @@ internal partial class APM_MicrosoftWindowsLaunchParam_Base : ISpecification<Pdf
 /// <summary>
 /// MicrosoftWindowsLaunchParam_F Table 208
 /// </summary>
-internal partial class APM_MicrosoftWindowsLaunchParam_F : APM_MicrosoftWindowsLaunchParam_F_Base
+internal partial class APM_MicrosoftWindowsLaunchParam_F : APM_MicrosoftWindowsLaunchParam_F__Base
 {
 }
 
 
-internal partial class APM_MicrosoftWindowsLaunchParam_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_MicrosoftWindowsLaunchParam_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MicrosoftWindowsLaunchParam_F";
     public static bool RuleGroup() { return false; }
@@ -158,12 +158,12 @@ internal partial class APM_MicrosoftWindowsLaunchParam_F_Base : ISpecification<P
 /// <summary>
 /// MicrosoftWindowsLaunchParam_D 
 /// </summary>
-internal partial class APM_MicrosoftWindowsLaunchParam_D : APM_MicrosoftWindowsLaunchParam_D_Base
+internal partial class APM_MicrosoftWindowsLaunchParam_D : APM_MicrosoftWindowsLaunchParam_D__Base
 {
 }
 
 
-internal partial class APM_MicrosoftWindowsLaunchParam_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_MicrosoftWindowsLaunchParam_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MicrosoftWindowsLaunchParam_D";
     public static bool RuleGroup() { return false; }
@@ -185,12 +185,12 @@ internal partial class APM_MicrosoftWindowsLaunchParam_D_Base : ISpecification<P
 /// <summary>
 /// MicrosoftWindowsLaunchParam_O 
 /// </summary>
-internal partial class APM_MicrosoftWindowsLaunchParam_O : APM_MicrosoftWindowsLaunchParam_O_Base
+internal partial class APM_MicrosoftWindowsLaunchParam_O : APM_MicrosoftWindowsLaunchParam_O__Base
 {
 }
 
 
-internal partial class APM_MicrosoftWindowsLaunchParam_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_MicrosoftWindowsLaunchParam_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MicrosoftWindowsLaunchParam_O";
     public static bool RuleGroup() { return false; }
@@ -212,12 +212,12 @@ internal partial class APM_MicrosoftWindowsLaunchParam_O_Base : ISpecification<P
 /// <summary>
 /// MicrosoftWindowsLaunchParam_P 
 /// </summary>
-internal partial class APM_MicrosoftWindowsLaunchParam_P : APM_MicrosoftWindowsLaunchParam_P_Base
+internal partial class APM_MicrosoftWindowsLaunchParam_P : APM_MicrosoftWindowsLaunchParam_P__Base
 {
 }
 
 
-internal partial class APM_MicrosoftWindowsLaunchParam_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_MicrosoftWindowsLaunchParam_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MicrosoftWindowsLaunchParam_P";
     public static bool RuleGroup() { return false; }

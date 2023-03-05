@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SourceInformation : APM_SourceInformation_Base
+internal partial class APM_SourceInformation : APM_SourceInformation__Base
 {
 }
 
-internal partial class APM_SourceInformation_Base : ISpecification<PdfDictionary>
+internal partial class APM_SourceInformation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SourceInformation";
@@ -122,12 +122,12 @@ internal partial class APM_SourceInformation_Base : ISpecification<PdfDictionary
 /// <summary>
 /// SourceInformation_AU Table 391
 /// </summary>
-internal partial class APM_SourceInformation_AU : APM_SourceInformation_AU_Base
+internal partial class APM_SourceInformation_AU : APM_SourceInformation_AU__Base
 {
 }
 
 
-internal partial class APM_SourceInformation_AU_Base : ISpecification<PdfDictionary>
+internal partial class APM_SourceInformation_AU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SourceInformation_AU";
     public static bool RuleGroup() { return false; }
@@ -170,12 +170,12 @@ internal partial class APM_SourceInformation_AU_Base : ISpecification<PdfDiction
 /// <summary>
 /// SourceInformation_TS 
 /// </summary>
-internal partial class APM_SourceInformation_TS : APM_SourceInformation_TS_Base
+internal partial class APM_SourceInformation_TS : APM_SourceInformation_TS__Base
 {
 }
 
 
-internal partial class APM_SourceInformation_TS_Base : ISpecification<PdfDictionary>
+internal partial class APM_SourceInformation_TS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SourceInformation_TS";
     public static bool RuleGroup() { return false; }
@@ -197,12 +197,12 @@ internal partial class APM_SourceInformation_TS_Base : ISpecification<PdfDiction
 /// <summary>
 /// SourceInformation_E 
 /// </summary>
-internal partial class APM_SourceInformation_E : APM_SourceInformation_E_Base
+internal partial class APM_SourceInformation_E : APM_SourceInformation_E__Base
 {
 }
 
 
-internal partial class APM_SourceInformation_E_Base : ISpecification<PdfDictionary>
+internal partial class APM_SourceInformation_E__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SourceInformation_E";
     public static bool RuleGroup() { return false; }
@@ -224,12 +224,12 @@ internal partial class APM_SourceInformation_E_Base : ISpecification<PdfDictiona
 /// <summary>
 /// SourceInformation_S only for spider page sets
 /// </summary>
-internal partial class APM_SourceInformation_S : APM_SourceInformation_S_Base
+internal partial class APM_SourceInformation_S : APM_SourceInformation_S__Base
 {
 }
 
 
-internal partial class APM_SourceInformation_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_SourceInformation_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SourceInformation_S";
     public static bool RuleGroup() { return false; }
@@ -239,14 +239,16 @@ internal partial class APM_SourceInformation_S_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_SourceInformation_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var parentS = parent?.Get("S");
+        if (!(eq(parentS,"SPS"))) 
         {
+            ctx.Fail<APM_SourceInformation_S>($"Value failed special case check: fn:Eval(parent::@S==SPS)");
+        }
         
         
         if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_SourceInformation_S>($"Invalid value {val}, allowed are: [0,1,2]");
-        }
         }
         // no linked objects
         
@@ -258,12 +260,12 @@ internal partial class APM_SourceInformation_S_Base : ISpecification<PdfDictiona
 /// <summary>
 /// SourceInformation_C only for spider page sets
 /// </summary>
-internal partial class APM_SourceInformation_C : APM_SourceInformation_C_Base
+internal partial class APM_SourceInformation_C : APM_SourceInformation_C__Base
 {
 }
 
 
-internal partial class APM_SourceInformation_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_SourceInformation_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SourceInformation_C";
     public static bool RuleGroup() { return false; }
@@ -273,7 +275,11 @@ internal partial class APM_SourceInformation_C_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfDictionary, APM_SourceInformation_C>(obj, "C", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
-        // TODO special case
+        var parentS = parent?.Get("S");
+        if (!(eq(parentS,"SPS"))) 
+        {
+            ctx.Fail<APM_SourceInformation_C>($"Value failed special case check: fn:Eval(parent::@S==SPS)");
+        }
         // no value restrictions
         ctx.Run<APM_WebCaptureCommand, PdfDictionary>(stack, val, obj);
         

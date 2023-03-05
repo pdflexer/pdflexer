@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaActivation : APM_RichMediaActivation_Base
+internal partial class APM_RichMediaActivation : APM_RichMediaActivation__Base
 {
 }
 
-internal partial class APM_RichMediaActivation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaActivation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaActivation";
@@ -51,12 +51,12 @@ internal partial class APM_RichMediaActivation_Base : ISpecification<PdfDictiona
 /// <summary>
 /// RichMediaActivation_Type Table 335
 /// </summary>
-internal partial class APM_RichMediaActivation_Type : APM_RichMediaActivation_Type_Base
+internal partial class APM_RichMediaActivation_Type : APM_RichMediaActivation_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaActivation_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaActivation_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaActivation_Type";
     public static bool RuleGroup() { return false; }
@@ -67,13 +67,11 @@ internal partial class APM_RichMediaActivation_Type_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_RichMediaActivation_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaActivation")) 
         {
             ctx.Fail<APM_RichMediaActivation_Type>($"Invalid value {val}, allowed are: [RichMediaActivation]");
-        }
         }
         // no linked objects
         
@@ -85,12 +83,12 @@ internal partial class APM_RichMediaActivation_Type_Base : ISpecification<PdfDic
 /// <summary>
 /// RichMediaActivation_Condition 
 /// </summary>
-internal partial class APM_RichMediaActivation_Condition : APM_RichMediaActivation_Condition_Base
+internal partial class APM_RichMediaActivation_Condition : APM_RichMediaActivation_Condition__Base
 {
 }
 
 
-internal partial class APM_RichMediaActivation_Condition_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaActivation_Condition__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaActivation_Condition";
     public static bool RuleGroup() { return false; }
@@ -101,13 +99,11 @@ internal partial class APM_RichMediaActivation_Condition_Base : ISpecification<P
         var val = ctx.GetOptional<PdfName, APM_RichMediaActivation_Condition>(obj, "Condition", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "XA" || val == "PO" || val == "PV")) 
         {
             ctx.Fail<APM_RichMediaActivation_Condition>($"Invalid value {val}, allowed are: [XA,PO,PV]");
-        }
         }
         // no linked objects
         
@@ -119,12 +115,12 @@ internal partial class APM_RichMediaActivation_Condition_Base : ISpecification<P
 /// <summary>
 /// RichMediaActivation_Animation 
 /// </summary>
-internal partial class APM_RichMediaActivation_Animation : APM_RichMediaActivation_Animation_Base
+internal partial class APM_RichMediaActivation_Animation : APM_RichMediaActivation_Animation__Base
 {
 }
 
 
-internal partial class APM_RichMediaActivation_Animation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaActivation_Animation__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaActivation_Animation";
     public static bool RuleGroup() { return false; }
@@ -146,12 +142,12 @@ internal partial class APM_RichMediaActivation_Animation_Base : ISpecification<P
 /// <summary>
 /// RichMediaActivation_View 
 /// </summary>
-internal partial class APM_RichMediaActivation_View : APM_RichMediaActivation_View_Base
+internal partial class APM_RichMediaActivation_View : APM_RichMediaActivation_View__Base
 {
 }
 
 
-internal partial class APM_RichMediaActivation_View_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaActivation_View__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaActivation_View";
     public static bool RuleGroup() { return false; }
@@ -182,12 +178,12 @@ internal partial class APM_RichMediaActivation_View_Base : ISpecification<PdfDic
 /// <summary>
 /// RichMediaActivation_Configuration https://github.com/pdf-association/pdf-issues/issues/166
 /// </summary>
-internal partial class APM_RichMediaActivation_Configuration : APM_RichMediaActivation_Configuration_Base
+internal partial class APM_RichMediaActivation_Configuration : APM_RichMediaActivation_Configuration__Base
 {
 }
 
 
-internal partial class APM_RichMediaActivation_Configuration_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaActivation_Configuration__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaActivation_Configuration";
     public static bool RuleGroup() { return false; }
@@ -209,12 +205,12 @@ internal partial class APM_RichMediaActivation_Configuration_Base : ISpecificati
 /// <summary>
 /// RichMediaActivation_Presentation 
 /// </summary>
-internal partial class APM_RichMediaActivation_Presentation : APM_RichMediaActivation_Presentation_Base
+internal partial class APM_RichMediaActivation_Presentation : APM_RichMediaActivation_Presentation__Base
 {
 }
 
 
-internal partial class APM_RichMediaActivation_Presentation_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaActivation_Presentation__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaActivation_Presentation";
     public static bool RuleGroup() { return false; }
@@ -236,12 +232,12 @@ internal partial class APM_RichMediaActivation_Presentation_Base : ISpecificatio
 /// <summary>
 /// RichMediaActivation_Scripts https://github.com/pdf-association/pdf-issues/issues/59
 /// </summary>
-internal partial class APM_RichMediaActivation_Scripts : APM_RichMediaActivation_Scripts_Base
+internal partial class APM_RichMediaActivation_Scripts : APM_RichMediaActivation_Scripts__Base
 {
 }
 
 
-internal partial class APM_RichMediaActivation_Scripts_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaActivation_Scripts__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaActivation_Scripts";
     public static bool RuleGroup() { return false; }

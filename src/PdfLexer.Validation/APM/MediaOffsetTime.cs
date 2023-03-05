@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaOffsetTime : APM_MediaOffsetTime_Base
+internal partial class APM_MediaOffsetTime : APM_MediaOffsetTime__Base
 {
 }
 
-internal partial class APM_MediaOffsetTime_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaOffsetTime__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaOffsetTime";
@@ -106,12 +106,12 @@ internal partial class APM_MediaOffsetTime_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaOffsetTime_Type Table 296 and Table 297
 /// </summary>
-internal partial class APM_MediaOffsetTime_Type : APM_MediaOffsetTime_Type_Base
+internal partial class APM_MediaOffsetTime_Type : APM_MediaOffsetTime_Type__Base
 {
 }
 
 
-internal partial class APM_MediaOffsetTime_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaOffsetTime_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaOffsetTime_Type";
     public static bool RuleGroup() { return false; }
@@ -122,13 +122,11 @@ internal partial class APM_MediaOffsetTime_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_MediaOffsetTime_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaOffset")) 
         {
             ctx.Fail<APM_MediaOffsetTime_Type>($"Invalid value {val}, allowed are: [MediaOffset]");
-        }
         }
         // no linked objects
         
@@ -140,12 +138,12 @@ internal partial class APM_MediaOffsetTime_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// MediaOffsetTime_S 
 /// </summary>
-internal partial class APM_MediaOffsetTime_S : APM_MediaOffsetTime_S_Base
+internal partial class APM_MediaOffsetTime_S : APM_MediaOffsetTime_S__Base
 {
 }
 
 
-internal partial class APM_MediaOffsetTime_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaOffsetTime_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaOffsetTime_S";
     public static bool RuleGroup() { return false; }
@@ -156,13 +154,11 @@ internal partial class APM_MediaOffsetTime_S_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_MediaOffsetTime_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "T")) 
         {
             ctx.Fail<APM_MediaOffsetTime_S>($"Invalid value {val}, allowed are: [T]");
-        }
         }
         // no linked objects
         
@@ -174,12 +170,12 @@ internal partial class APM_MediaOffsetTime_S_Base : ISpecification<PdfDictionary
 /// <summary>
 /// MediaOffsetTime_T 
 /// </summary>
-internal partial class APM_MediaOffsetTime_T : APM_MediaOffsetTime_T_Base
+internal partial class APM_MediaOffsetTime_T : APM_MediaOffsetTime_T__Base
 {
 }
 
 
-internal partial class APM_MediaOffsetTime_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaOffsetTime_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaOffsetTime_T";
     public static bool RuleGroup() { return false; }

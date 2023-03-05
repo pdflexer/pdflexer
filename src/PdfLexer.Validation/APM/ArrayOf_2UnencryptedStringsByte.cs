@@ -19,7 +19,7 @@ internal partial class APM_ArrayOf_2UnencryptedStringsByte : ISpecification<PdfA
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -36,7 +36,11 @@ internal partial class APM_ArrayOf_2UnencryptedStringsByte_0 : ISpecification<Pd
     {
         var val = ctx.GetRequired<PdfString, APM_ArrayOf_2UnencryptedStringsByte_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(AlwaysUnencrypted(obj))) 
+        {
+            ctx.Fail<APM_ArrayOf_2UnencryptedStringsByte_0>($"Value failed special case check: fn:Eval(fn:AlwaysUnencrypted())");
+        }
         // no value restrictions
         // no linked objects
         
@@ -56,7 +60,11 @@ internal partial class APM_ArrayOf_2UnencryptedStringsByte_1 : ISpecification<Pd
     {
         var val = ctx.GetRequired<PdfString, APM_ArrayOf_2UnencryptedStringsByte_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(AlwaysUnencrypted(obj))) 
+        {
+            ctx.Fail<APM_ArrayOf_2UnencryptedStringsByte_1>($"Value failed special case check: fn:Eval(fn:AlwaysUnencrypted())");
+        }
         // no value restrictions
         // no linked objects
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CalGrayDict : APM_CalGrayDict_Base
+internal partial class APM_CalGrayDict : APM_CalGrayDict__Base
 {
 }
 
-internal partial class APM_CalGrayDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_CalGrayDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CalGrayDict";
@@ -140,12 +140,12 @@ internal partial class APM_CalGrayDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CalGrayDict_WhitePoint Table 62
 /// </summary>
-internal partial class APM_CalGrayDict_WhitePoint : APM_CalGrayDict_WhitePoint_Base
+internal partial class APM_CalGrayDict_WhitePoint : APM_CalGrayDict_WhitePoint__Base
 {
 }
 
 
-internal partial class APM_CalGrayDict_WhitePoint_Base : ISpecification<PdfDictionary>
+internal partial class APM_CalGrayDict_WhitePoint__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CalGrayDict_WhitePoint";
     public static bool RuleGroup() { return false; }
@@ -167,12 +167,12 @@ internal partial class APM_CalGrayDict_WhitePoint_Base : ISpecification<PdfDicti
 /// <summary>
 /// CalGrayDict_BlackPoint 
 /// </summary>
-internal partial class APM_CalGrayDict_BlackPoint : APM_CalGrayDict_BlackPoint_Base
+internal partial class APM_CalGrayDict_BlackPoint : APM_CalGrayDict_BlackPoint__Base
 {
 }
 
 
-internal partial class APM_CalGrayDict_BlackPoint_Base : ISpecification<PdfDictionary>
+internal partial class APM_CalGrayDict_BlackPoint__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CalGrayDict_BlackPoint";
     public static bool RuleGroup() { return false; }
@@ -194,12 +194,12 @@ internal partial class APM_CalGrayDict_BlackPoint_Base : ISpecification<PdfDicti
 /// <summary>
 /// CalGrayDict_Gamma 
 /// </summary>
-internal partial class APM_CalGrayDict_Gamma : APM_CalGrayDict_Gamma_Base
+internal partial class APM_CalGrayDict_Gamma : APM_CalGrayDict_Gamma__Base
 {
 }
 
 
-internal partial class APM_CalGrayDict_Gamma_Base : ISpecification<PdfDictionary>
+internal partial class APM_CalGrayDict_Gamma__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CalGrayDict_Gamma";
     public static bool RuleGroup() { return false; }
@@ -210,13 +210,11 @@ internal partial class APM_CalGrayDict_Gamma_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfNumber, APM_CalGrayDict_Gamma>(obj, "Gamma", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Gamma = val;
-        if (!(gt(@Gamma,0))) 
+        var Gamma = obj.Get("Gamma");
+        if (!(gt(Gamma,0))) 
         {
             ctx.Fail<APM_CalGrayDict_Gamma>($"Invalid value {val}, allowed are: [fn:Eval(@Gamma>0)]");
-        }
         }
         // no linked objects
         

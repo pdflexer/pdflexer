@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_PageLabel : APM_PageLabel_Base
+internal partial class APM_PageLabel : APM_PageLabel__Base
 {
 }
 
-internal partial class APM_PageLabel_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageLabel__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "PageLabel";
@@ -127,12 +127,12 @@ internal partial class APM_PageLabel_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageLabel_Type Table 161
 /// </summary>
-internal partial class APM_PageLabel_Type : APM_PageLabel_Type_Base
+internal partial class APM_PageLabel_Type : APM_PageLabel_Type__Base
 {
 }
 
 
-internal partial class APM_PageLabel_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageLabel_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageLabel_Type";
     public static bool RuleGroup() { return false; }
@@ -143,13 +143,11 @@ internal partial class APM_PageLabel_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_PageLabel_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PageLabel")) 
         {
             ctx.Fail<APM_PageLabel_Type>($"Invalid value {val}, allowed are: [PageLabel]");
-        }
         }
         // no linked objects
         
@@ -161,12 +159,12 @@ internal partial class APM_PageLabel_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageLabel_S 
 /// </summary>
-internal partial class APM_PageLabel_S : APM_PageLabel_S_Base
+internal partial class APM_PageLabel_S : APM_PageLabel_S__Base
 {
 }
 
 
-internal partial class APM_PageLabel_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageLabel_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageLabel_S";
     public static bool RuleGroup() { return false; }
@@ -177,13 +175,11 @@ internal partial class APM_PageLabel_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_PageLabel_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "D" || val == "R" || val == "r" || val == "A" || val == "a")) 
         {
             ctx.Fail<APM_PageLabel_S>($"Invalid value {val}, allowed are: [D,R,r,A,a]");
-        }
         }
         // no linked objects
         
@@ -195,12 +191,12 @@ internal partial class APM_PageLabel_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageLabel_P 
 /// </summary>
-internal partial class APM_PageLabel_P : APM_PageLabel_P_Base
+internal partial class APM_PageLabel_P : APM_PageLabel_P__Base
 {
 }
 
 
-internal partial class APM_PageLabel_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageLabel_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageLabel_P";
     public static bool RuleGroup() { return false; }
@@ -222,12 +218,12 @@ internal partial class APM_PageLabel_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageLabel_St 
 /// </summary>
-internal partial class APM_PageLabel_St : APM_PageLabel_St_Base
+internal partial class APM_PageLabel_St : APM_PageLabel_St__Base
 {
 }
 
 
-internal partial class APM_PageLabel_St_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageLabel_St__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageLabel_St";
     public static bool RuleGroup() { return false; }
@@ -238,13 +234,11 @@ internal partial class APM_PageLabel_St_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_PageLabel_St>(obj, "St", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @St = val;
-        if (!(gte(@St,1))) 
+        var St = obj.Get("St");
+        if (!(gte(St,1))) 
         {
             ctx.Fail<APM_PageLabel_St>($"Invalid value {val}, allowed are: [fn:Eval(@St>=1)]");
-        }
         }
         // no linked objects
         

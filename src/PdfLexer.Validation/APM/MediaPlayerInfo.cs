@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaPlayerInfo : APM_MediaPlayerInfo_Base
+internal partial class APM_MediaPlayerInfo : APM_MediaPlayerInfo__Base
 {
 }
 
-internal partial class APM_MediaPlayerInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayerInfo__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaPlayerInfo";
@@ -107,12 +107,12 @@ internal partial class APM_MediaPlayerInfo_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaPlayerInfo_Type Table 302
 /// </summary>
-internal partial class APM_MediaPlayerInfo_Type : APM_MediaPlayerInfo_Type_Base
+internal partial class APM_MediaPlayerInfo_Type : APM_MediaPlayerInfo_Type__Base
 {
 }
 
 
-internal partial class APM_MediaPlayerInfo_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayerInfo_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayerInfo_Type";
     public static bool RuleGroup() { return false; }
@@ -123,13 +123,11 @@ internal partial class APM_MediaPlayerInfo_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_MediaPlayerInfo_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaPlayerInfo")) 
         {
             ctx.Fail<APM_MediaPlayerInfo_Type>($"Invalid value {val}, allowed are: [MediaPlayerInfo]");
-        }
         }
         // no linked objects
         
@@ -141,12 +139,12 @@ internal partial class APM_MediaPlayerInfo_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// MediaPlayerInfo_PID 
 /// </summary>
-internal partial class APM_MediaPlayerInfo_PID : APM_MediaPlayerInfo_PID_Base
+internal partial class APM_MediaPlayerInfo_PID : APM_MediaPlayerInfo_PID__Base
 {
 }
 
 
-internal partial class APM_MediaPlayerInfo_PID_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayerInfo_PID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayerInfo_PID";
     public static bool RuleGroup() { return false; }
@@ -168,12 +166,12 @@ internal partial class APM_MediaPlayerInfo_PID_Base : ISpecification<PdfDictiona
 /// <summary>
 /// MediaPlayerInfo_MH 
 /// </summary>
-internal partial class APM_MediaPlayerInfo_MH : APM_MediaPlayerInfo_MH_Base
+internal partial class APM_MediaPlayerInfo_MH : APM_MediaPlayerInfo_MH__Base
 {
 }
 
 
-internal partial class APM_MediaPlayerInfo_MH_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayerInfo_MH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayerInfo_MH";
     public static bool RuleGroup() { return false; }
@@ -195,12 +193,12 @@ internal partial class APM_MediaPlayerInfo_MH_Base : ISpecification<PdfDictionar
 /// <summary>
 /// MediaPlayerInfo_BE 
 /// </summary>
-internal partial class APM_MediaPlayerInfo_BE : APM_MediaPlayerInfo_BE_Base
+internal partial class APM_MediaPlayerInfo_BE : APM_MediaPlayerInfo_BE__Base
 {
 }
 
 
-internal partial class APM_MediaPlayerInfo_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayerInfo_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayerInfo_BE";
     public static bool RuleGroup() { return false; }

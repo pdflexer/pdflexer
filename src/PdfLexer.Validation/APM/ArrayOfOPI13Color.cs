@@ -22,7 +22,7 @@ internal partial class APM_ArrayOfOPI13Color : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -40,13 +40,11 @@ internal partial class APM_ArrayOfOPI13Color_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
-        if (!((gte(v,0)&&lte(v,1)))) 
+        if (!((gte(v,v)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOfOPI13Color_0>($"Invalid value {val}, allowed are: [fn:Eval((@0>=0) && (@0<=1))]");
-        }
         }
         // no linked objects
         
@@ -67,13 +65,11 @@ internal partial class APM_ArrayOfOPI13Color_1 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
-        if (!((gte(v,0)&&lte(v,1)))) 
+        if (!((gte(v,0)&&lte(v,v)))) 
         {
             ctx.Fail<APM_ArrayOfOPI13Color_1>($"Invalid value {val}, allowed are: [fn:Eval((@1>=0) && (@1<=1))]");
-        }
         }
         // no linked objects
         
@@ -94,13 +90,11 @@ internal partial class APM_ArrayOfOPI13Color_2 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOfOPI13Color_2>($"Invalid value {val}, allowed are: [fn:Eval((@2>=0) && (@2<=1))]");
-        }
         }
         // no linked objects
         
@@ -121,13 +115,11 @@ internal partial class APM_ArrayOfOPI13Color_3 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_3>(obj, 3, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOfOPI13Color_3>($"Invalid value {val}, allowed are: [fn:Eval((@3>=0) && (@3<=1))]");
-        }
         }
         // no linked objects
         

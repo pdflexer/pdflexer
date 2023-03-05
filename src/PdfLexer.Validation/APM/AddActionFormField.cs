@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AddActionFormField : APM_AddActionFormField_Base
+internal partial class APM_AddActionFormField : APM_AddActionFormField__Base
 {
 }
 
-internal partial class APM_AddActionFormField_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionFormField__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AddActionFormField";
@@ -121,12 +121,12 @@ internal partial class APM_AddActionFormField_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AddActionFormField_K Table 199
 /// </summary>
-internal partial class APM_AddActionFormField_K : APM_AddActionFormField_K_Base
+internal partial class APM_AddActionFormField_K : APM_AddActionFormField_K__Base
 {
 }
 
 
-internal partial class APM_AddActionFormField_K_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionFormField_K__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionFormField_K";
     public static bool RuleGroup() { return false; }
@@ -148,12 +148,12 @@ internal partial class APM_AddActionFormField_K_Base : ISpecification<PdfDiction
 /// <summary>
 /// AddActionFormField_F 
 /// </summary>
-internal partial class APM_AddActionFormField_F : APM_AddActionFormField_F_Base
+internal partial class APM_AddActionFormField_F : APM_AddActionFormField_F__Base
 {
 }
 
 
-internal partial class APM_AddActionFormField_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionFormField_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionFormField_F";
     public static bool RuleGroup() { return false; }
@@ -175,12 +175,12 @@ internal partial class APM_AddActionFormField_F_Base : ISpecification<PdfDiction
 /// <summary>
 /// AddActionFormField_V 
 /// </summary>
-internal partial class APM_AddActionFormField_V : APM_AddActionFormField_V_Base
+internal partial class APM_AddActionFormField_V : APM_AddActionFormField_V__Base
 {
 }
 
 
-internal partial class APM_AddActionFormField_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionFormField_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionFormField_V";
     public static bool RuleGroup() { return false; }
@@ -202,12 +202,12 @@ internal partial class APM_AddActionFormField_V_Base : ISpecification<PdfDiction
 /// <summary>
 /// AddActionFormField_C 
 /// </summary>
-internal partial class APM_AddActionFormField_C : APM_AddActionFormField_C_Base
+internal partial class APM_AddActionFormField_C : APM_AddActionFormField_C__Base
 {
 }
 
 
-internal partial class APM_AddActionFormField_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionFormField_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionFormField_C";
     public static bool RuleGroup() { return false; }

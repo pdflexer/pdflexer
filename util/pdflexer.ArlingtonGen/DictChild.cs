@@ -26,12 +26,12 @@ internal class DictChild : GenBase
 /// <summary>
 /// {{Root.Name}}_{{Row.Key}} {{Row.Notes}}
 /// </summary>
-internal partial class APM_{{Root.Name}}_{{Key}} : APM_{{Root.Name}}_{{Key}}_Base
+internal partial class APM_{{Root.Name}}_{{Key}} : APM_{{Root.Name}}_{{Key}}__Base
 {
 }
 
 
-internal partial class APM_{{Root.Name}}_{{Key}}_Base : ISpecification<PdfDictionary>
+internal partial class APM_{{Root.Name}}_{{Key}}__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "{{Root.Name}}_{{Row.Key}}";
     public static bool RuleGroup() { return false; }
@@ -66,7 +66,8 @@ internal partial class APM_{{Root.Name}}_{{Key}}_Base : ISpecification<PdfDictio
 
     private string GetRepeated()
     {
-        
+        VariableContext.Vars["*"] = "val";
+        VariableContext.Vars["@*"] = "val";
         return $$"""
 
 foreach (var key in obj.Keys)

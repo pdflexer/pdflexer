@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MDPDict : APM_MDPDict_Base
+internal partial class APM_MDPDict : APM_MDPDict__Base
 {
 }
 
-internal partial class APM_MDPDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_MDPDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MDPDict";
@@ -88,12 +88,12 @@ internal partial class APM_MDPDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MDPDict_P Table 237, MDP cell
 /// </summary>
-internal partial class APM_MDPDict_P : APM_MDPDict_P_Base
+internal partial class APM_MDPDict_P : APM_MDPDict_P__Base
 {
 }
 
 
-internal partial class APM_MDPDict_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_MDPDict_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MDPDict_P";
     public static bool RuleGroup() { return false; }
@@ -104,13 +104,11 @@ internal partial class APM_MDPDict_P_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_MDPDict_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2 || val == 3)) 
         {
             ctx.Fail<APM_MDPDict_P>($"Invalid value {val}, allowed are: [0,1,2,3]");
-        }
         }
         // no linked objects
         

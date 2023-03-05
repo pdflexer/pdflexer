@@ -20,7 +20,7 @@ internal partial class APM_WhitepointArray : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -38,13 +38,11 @@ internal partial class APM_WhitepointArray_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_WhitepointArray_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
-        if (!(gt(v,0))) 
+        if (!(gt(v,v))) 
         {
             ctx.Fail<APM_WhitepointArray_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>0)]");
-        }
         }
         // no linked objects
         
@@ -65,13 +63,11 @@ internal partial class APM_WhitepointArray_1 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_WhitepointArray_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(val == 1)) 
+        if (!(val == val)) 
         {
             ctx.Fail<APM_WhitepointArray_1>($"Invalid value {val}, allowed are: [1]");
-        }
         }
         // no linked objects
         
@@ -92,13 +88,11 @@ internal partial class APM_WhitepointArray_2 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_WhitepointArray_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!(gt(v,0))) 
         {
             ctx.Fail<APM_WhitepointArray_2>($"Invalid value {val}, allowed are: [fn:Eval(@2>0)]");
-        }
         }
         // no linked objects
         

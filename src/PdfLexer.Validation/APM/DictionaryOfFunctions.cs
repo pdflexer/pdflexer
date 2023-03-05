@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DictionaryOfFunctions : APM_DictionaryOfFunctions_Base
+internal partial class APM_DictionaryOfFunctions : APM_DictionaryOfFunctions__Base
 {
 }
 
-internal partial class APM_DictionaryOfFunctions_Base : ISpecification<PdfDictionary>
+internal partial class APM_DictionaryOfFunctions__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DictionaryOfFunctions";
@@ -36,12 +36,12 @@ internal partial class APM_DictionaryOfFunctions_Base : ISpecification<PdfDictio
 /// <summary>
 /// DictionaryOfFunctions_Default Table 72, DotGain
 /// </summary>
-internal partial class APM_DictionaryOfFunctions_Default : APM_DictionaryOfFunctions_Default_Base
+internal partial class APM_DictionaryOfFunctions_Default : APM_DictionaryOfFunctions_Default__Base
 {
 }
 
 
-internal partial class APM_DictionaryOfFunctions_Default_Base : ISpecification<PdfDictionary>
+internal partial class APM_DictionaryOfFunctions_Default__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DictionaryOfFunctions_Default";
     public static bool RuleGroup() { return false; }
@@ -102,12 +102,12 @@ internal partial class APM_DictionaryOfFunctions_Default_Base : ISpecification<P
 /// <summary>
 /// DictionaryOfFunctions_* 
 /// </summary>
-internal partial class APM_DictionaryOfFunctions_CatchAll : APM_DictionaryOfFunctions_CatchAll_Base
+internal partial class APM_DictionaryOfFunctions_CatchAll : APM_DictionaryOfFunctions_CatchAll__Base
 {
 }
 
 
-internal partial class APM_DictionaryOfFunctions_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_DictionaryOfFunctions_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DictionaryOfFunctions_*";
     public static bool RuleGroup() { return false; }

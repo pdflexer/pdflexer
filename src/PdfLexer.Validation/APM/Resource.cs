@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Resource : APM_Resource_Base
+internal partial class APM_Resource : APM_Resource__Base
 {
 }
 
-internal partial class APM_Resource_Base : ISpecification<PdfDictionary>
+internal partial class APM_Resource__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Resource";
@@ -155,12 +155,12 @@ internal partial class APM_Resource_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Resource_ExtGState Table 34
 /// </summary>
-internal partial class APM_Resource_ExtGState : APM_Resource_ExtGState_Base
+internal partial class APM_Resource_ExtGState : APM_Resource_ExtGState__Base
 {
 }
 
 
-internal partial class APM_Resource_ExtGState_Base : ISpecification<PdfDictionary>
+internal partial class APM_Resource_ExtGState__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Resource_ExtGState";
     public static bool RuleGroup() { return false; }
@@ -182,12 +182,12 @@ internal partial class APM_Resource_ExtGState_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Resource_ColorSpace 
 /// </summary>
-internal partial class APM_Resource_ColorSpace : APM_Resource_ColorSpace_Base
+internal partial class APM_Resource_ColorSpace : APM_Resource_ColorSpace__Base
 {
 }
 
 
-internal partial class APM_Resource_ColorSpace_Base : ISpecification<PdfDictionary>
+internal partial class APM_Resource_ColorSpace__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Resource_ColorSpace";
     public static bool RuleGroup() { return false; }
@@ -209,12 +209,12 @@ internal partial class APM_Resource_ColorSpace_Base : ISpecification<PdfDictiona
 /// <summary>
 /// Resource_Pattern 
 /// </summary>
-internal partial class APM_Resource_Pattern : APM_Resource_Pattern_Base
+internal partial class APM_Resource_Pattern : APM_Resource_Pattern__Base
 {
 }
 
 
-internal partial class APM_Resource_Pattern_Base : ISpecification<PdfDictionary>
+internal partial class APM_Resource_Pattern__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Resource_Pattern";
     public static bool RuleGroup() { return false; }
@@ -236,12 +236,12 @@ internal partial class APM_Resource_Pattern_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Resource_Shading 
 /// </summary>
-internal partial class APM_Resource_Shading : APM_Resource_Shading_Base
+internal partial class APM_Resource_Shading : APM_Resource_Shading__Base
 {
 }
 
 
-internal partial class APM_Resource_Shading_Base : ISpecification<PdfDictionary>
+internal partial class APM_Resource_Shading__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Resource_Shading";
     public static bool RuleGroup() { return false; }
@@ -263,12 +263,12 @@ internal partial class APM_Resource_Shading_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Resource_XObject 
 /// </summary>
-internal partial class APM_Resource_XObject : APM_Resource_XObject_Base
+internal partial class APM_Resource_XObject : APM_Resource_XObject__Base
 {
 }
 
 
-internal partial class APM_Resource_XObject_Base : ISpecification<PdfDictionary>
+internal partial class APM_Resource_XObject__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Resource_XObject";
     public static bool RuleGroup() { return false; }
@@ -290,12 +290,12 @@ internal partial class APM_Resource_XObject_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Resource_Font 
 /// </summary>
-internal partial class APM_Resource_Font : APM_Resource_Font_Base
+internal partial class APM_Resource_Font : APM_Resource_Font__Base
 {
 }
 
 
-internal partial class APM_Resource_Font_Base : ISpecification<PdfDictionary>
+internal partial class APM_Resource_Font__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Resource_Font";
     public static bool RuleGroup() { return false; }
@@ -317,12 +317,12 @@ internal partial class APM_Resource_Font_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Resource_ProcSet Clause 14.2 says deprecated in 1.4
 /// </summary>
-internal partial class APM_Resource_ProcSet : APM_Resource_ProcSet_Base
+internal partial class APM_Resource_ProcSet : APM_Resource_ProcSet__Base
 {
 }
 
 
-internal partial class APM_Resource_ProcSet_Base : ISpecification<PdfDictionary>
+internal partial class APM_Resource_ProcSet__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Resource_ProcSet";
     public static bool RuleGroup() { return false; }
@@ -344,12 +344,12 @@ internal partial class APM_Resource_ProcSet_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Resource_Properties 
 /// </summary>
-internal partial class APM_Resource_Properties : APM_Resource_Properties_Base
+internal partial class APM_Resource_Properties : APM_Resource_Properties__Base
 {
 }
 
 
-internal partial class APM_Resource_Properties_Base : ISpecification<PdfDictionary>
+internal partial class APM_Resource_Properties__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Resource_Properties";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CMapStream : APM_CMapStream_Base
+internal partial class APM_CMapStream : APM_CMapStream__Base
 {
 }
 
-internal partial class APM_CMapStream_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CMapStream";
@@ -145,12 +145,12 @@ internal partial class APM_CMapStream_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CMapStream_Type Table 5 and Table 118
 /// </summary>
-internal partial class APM_CMapStream_Type : APM_CMapStream_Type_Base
+internal partial class APM_CMapStream_Type : APM_CMapStream_Type__Base
 {
 }
 
 
-internal partial class APM_CMapStream_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_Type";
     public static bool RuleGroup() { return false; }
@@ -161,13 +161,11 @@ internal partial class APM_CMapStream_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_CMapStream_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CMap")) 
         {
             ctx.Fail<APM_CMapStream_Type>($"Invalid value {val}, allowed are: [CMap]");
-        }
         }
         // no linked objects
         
@@ -179,12 +177,12 @@ internal partial class APM_CMapStream_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CMapStream_CMapName 
 /// </summary>
-internal partial class APM_CMapStream_CMapName : APM_CMapStream_CMapName_Base
+internal partial class APM_CMapStream_CMapName : APM_CMapStream_CMapName__Base
 {
 }
 
 
-internal partial class APM_CMapStream_CMapName_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_CMapName__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_CMapName";
     public static bool RuleGroup() { return false; }
@@ -206,12 +204,12 @@ internal partial class APM_CMapStream_CMapName_Base : ISpecification<PdfDictiona
 /// <summary>
 /// CMapStream_CIDSystemInfo 
 /// </summary>
-internal partial class APM_CMapStream_CIDSystemInfo : APM_CMapStream_CIDSystemInfo_Base
+internal partial class APM_CMapStream_CIDSystemInfo : APM_CMapStream_CIDSystemInfo__Base
 {
 }
 
 
-internal partial class APM_CMapStream_CIDSystemInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_CIDSystemInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_CIDSystemInfo";
     public static bool RuleGroup() { return false; }
@@ -233,12 +231,12 @@ internal partial class APM_CMapStream_CIDSystemInfo_Base : ISpecification<PdfDic
 /// <summary>
 /// CMapStream_WMode 
 /// </summary>
-internal partial class APM_CMapStream_WMode : APM_CMapStream_WMode_Base
+internal partial class APM_CMapStream_WMode : APM_CMapStream_WMode__Base
 {
 }
 
 
-internal partial class APM_CMapStream_WMode_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_WMode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_WMode";
     public static bool RuleGroup() { return false; }
@@ -249,13 +247,11 @@ internal partial class APM_CMapStream_WMode_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_CMapStream_WMode>(obj, "WMode", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 0)) 
         {
             ctx.Fail<APM_CMapStream_WMode>($"Invalid value {val}, allowed are: [1,0]");
-        }
         }
         // no linked objects
         
@@ -267,12 +263,12 @@ internal partial class APM_CMapStream_WMode_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CMapStream_UseCMap Table 116
 /// </summary>
-internal partial class APM_CMapStream_UseCMap : APM_CMapStream_UseCMap_Base
+internal partial class APM_CMapStream_UseCMap : APM_CMapStream_UseCMap__Base
 {
 }
 
 
-internal partial class APM_CMapStream_UseCMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_UseCMap__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_UseCMap";
     public static bool RuleGroup() { return false; }
@@ -289,13 +285,11 @@ internal partial class APM_CMapStream_UseCMap_Base : ISpecification<PdfDictionar
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "GB-EUC-H" || val == "GB-EUC-V" || val == "GBpc-EUC-H" || val == "GBpc-EUC-V" || val == "GBK-EUC-H" || val == "GBK-EUC-V" || val == "GBKp-EUC-H" || val == "GBKp-EUC-V" || val == "GBK2K-H" || val == "GBK2K-V" || val == "UniGB-UCS2-H" || val == "UniGB-UCS2-V" || val == "UniGB-UTF16-H" || val == "UniGB-UTF16-V" || val == "B5pc-H" || val == "B5pc-V" || val == "HKscs-B5-H" || val == "HKscs-B5-V" || val == "ETen-B5-H" || val == "ETen-B5-V" || val == "ETenms-B5-H" || val == "ETenms-B5-V" || val == "CNS-EUC-H" || val == "CNS-EUC-V" || val == "UniCNS-UCS2-H" || val == "UniCNS-UCS2-V" || val == "UniCNS-UTF16-H" || val == "UniCNS-UTF16-V" || val == "83pv-RKSJ-H" || val == "90ms-RKSJ-H" || val == "90ms-RKSJ-V" || val == "90msp-RKSJ-H" || val == "90msp-RKSJ-V" || val == "90pv-RKSJ-H" || val == "Add-RKSJ-H" || val == "Add-RKSJ-V" || val == "EUC-H" || val == "EUC-V" || val == "Ext-RKSJ-H" || val == "Ext-RKSJ-V" || val == "H" || val == "V" || val == "UniJIS-UCS2-H" || val == "UniJIS-UCS2-V" || val == "UniJIS-UCS2-HW-H" || val == "UniJIS-UCS2-HW-V" || val == "UniJIS-UTF16-H" || val == "UniJIS-UTF16-V" || val == "KSC-EUC-H" || val == "KSC-EUC-V" || val == "KSCms-UHC-H" || val == "KSCms-UHC-V" || val == "KSCms-UHC-HW-H" || val == "KSCms-UHC-HW-V" || val == "KSCpc-EUC-H" || val == "UniKS-UCS2-H" || val == "UniKS-UCS2-V" || val == "UniKS-UTF16-H" || val == "UniKS-UTF16-V" || val == "Identity-H" || val == "Identity-V")) 
                     {
                         ctx.Fail<APM_CMapStream_UseCMap>($"Invalid value {val}, allowed are: [GB-EUC-H,GB-EUC-V,GBpc-EUC-H,GBpc-EUC-V,GBK-EUC-H,GBK-EUC-V,GBKp-EUC-H,GBKp-EUC-V,GBK2K-H,GBK2K-V,UniGB-UCS2-H,UniGB-UCS2-V,UniGB-UTF16-H,UniGB-UTF16-V,B5pc-H,B5pc-V,HKscs-B5-H,HKscs-B5-V,ETen-B5-H,ETen-B5-V,ETenms-B5-H,ETenms-B5-V,CNS-EUC-H,CNS-EUC-V,UniCNS-UCS2-H,UniCNS-UCS2-V,UniCNS-UTF16-H,UniCNS-UTF16-V,83pv-RKSJ-H,90ms-RKSJ-H,90ms-RKSJ-V,90msp-RKSJ-H,90msp-RKSJ-V,90pv-RKSJ-H,Add-RKSJ-H,Add-RKSJ-V,EUC-H,EUC-V,Ext-RKSJ-H,Ext-RKSJ-V,H,V,UniJIS-UCS2-H,UniJIS-UCS2-V,UniJIS-UCS2-HW-H,UniJIS-UCS2-HW-V,UniJIS-UTF16-H,UniJIS-UTF16-V,KSC-EUC-H,KSC-EUC-V,KSCms-UHC-H,KSCms-UHC-V,KSCms-UHC-HW-H,KSCms-UHC-HW-V,KSCpc-EUC-H,UniKS-UCS2-H,UniKS-UCS2-V,UniKS-UTF16-H,UniKS-UTF16-V,Identity-H,Identity-V]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -322,12 +316,12 @@ internal partial class APM_CMapStream_UseCMap_Base : ISpecification<PdfDictionar
 /// <summary>
 /// CMapStream_Length 
 /// </summary>
-internal partial class APM_CMapStream_Length : APM_CMapStream_Length_Base
+internal partial class APM_CMapStream_Length : APM_CMapStream_Length__Base
 {
 }
 
 
-internal partial class APM_CMapStream_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_Length";
     public static bool RuleGroup() { return false; }
@@ -349,12 +343,12 @@ internal partial class APM_CMapStream_Length_Base : ISpecification<PdfDictionary
 /// <summary>
 /// CMapStream_Filter 
 /// </summary>
-internal partial class APM_CMapStream_Filter : APM_CMapStream_Filter_Base
+internal partial class APM_CMapStream_Filter : APM_CMapStream_Filter__Base
 {
 }
 
 
-internal partial class APM_CMapStream_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_Filter";
     public static bool RuleGroup() { return false; }
@@ -370,7 +364,12 @@ internal partial class APM_CMapStream_Filter_Base : ISpecification<PdfDictionary
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_CMapStream_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -380,13 +379,11 @@ internal partial class APM_CMapStream_Filter_Base : ISpecification<PdfDictionary
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_CMapStream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -404,12 +401,12 @@ internal partial class APM_CMapStream_Filter_Base : ISpecification<PdfDictionary
 /// <summary>
 /// CMapStream_DecodeParms 
 /// </summary>
-internal partial class APM_CMapStream_DecodeParms : APM_CMapStream_DecodeParms_Base
+internal partial class APM_CMapStream_DecodeParms : APM_CMapStream_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_CMapStream_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -425,7 +422,12 @@ internal partial class APM_CMapStream_DecodeParms_Base : ISpecification<PdfDicti
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_CMapStream_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -442,6 +444,9 @@ internal partial class APM_CMapStream_DecodeParms_Base : ISpecification<PdfDicti
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_CMapStream_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -461,12 +466,12 @@ internal partial class APM_CMapStream_DecodeParms_Base : ISpecification<PdfDicti
 /// <summary>
 /// CMapStream_F 
 /// </summary>
-internal partial class APM_CMapStream_F : APM_CMapStream_F_Base
+internal partial class APM_CMapStream_F : APM_CMapStream_F__Base
 {
 }
 
 
-internal partial class APM_CMapStream_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_F";
     public static bool RuleGroup() { return false; }
@@ -509,12 +514,12 @@ internal partial class APM_CMapStream_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CMapStream_FFilter 
 /// </summary>
-internal partial class APM_CMapStream_FFilter : APM_CMapStream_FFilter_Base
+internal partial class APM_CMapStream_FFilter : APM_CMapStream_FFilter__Base
 {
 }
 
 
-internal partial class APM_CMapStream_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_FFilter";
     public static bool RuleGroup() { return false; }
@@ -530,7 +535,12 @@ internal partial class APM_CMapStream_FFilter_Base : ISpecification<PdfDictionar
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_CMapStream_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -540,13 +550,11 @@ internal partial class APM_CMapStream_FFilter_Base : ISpecification<PdfDictionar
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_CMapStream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -564,12 +572,12 @@ internal partial class APM_CMapStream_FFilter_Base : ISpecification<PdfDictionar
 /// <summary>
 /// CMapStream_FDecodeParms 
 /// </summary>
-internal partial class APM_CMapStream_FDecodeParms : APM_CMapStream_FDecodeParms_Base
+internal partial class APM_CMapStream_FDecodeParms : APM_CMapStream_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_CMapStream_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -585,7 +593,12 @@ internal partial class APM_CMapStream_FDecodeParms_Base : ISpecification<PdfDict
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_CMapStream_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -602,6 +615,9 @@ internal partial class APM_CMapStream_FDecodeParms_Base : ISpecification<PdfDict
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_CMapStream_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -621,12 +637,12 @@ internal partial class APM_CMapStream_FDecodeParms_Base : ISpecification<PdfDict
 /// <summary>
 /// CMapStream_DL 
 /// </summary>
-internal partial class APM_CMapStream_DL : APM_CMapStream_DL_Base
+internal partial class APM_CMapStream_DL : APM_CMapStream_DL__Base
 {
 }
 
 
-internal partial class APM_CMapStream_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_CMapStream_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CMapStream_DL";
     public static bool RuleGroup() { return false; }
@@ -636,7 +652,11 @@ internal partial class APM_CMapStream_DL_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_CMapStream_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
+        {
+            ctx.Fail<APM_CMapStream_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         // no value restrictions
         // no linked objects
         

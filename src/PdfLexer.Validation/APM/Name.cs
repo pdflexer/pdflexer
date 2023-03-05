@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Name : APM_Name_Base
+internal partial class APM_Name : APM_Name__Base
 {
 }
 
-internal partial class APM_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Name";
@@ -138,12 +138,12 @@ internal partial class APM_Name_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Name_Dests Table 32
 /// </summary>
-internal partial class APM_Name_Dests : APM_Name_Dests_Base
+internal partial class APM_Name_Dests : APM_Name_Dests__Base
 {
 }
 
 
-internal partial class APM_Name_Dests_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_Dests__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_Dests";
     public static bool RuleGroup() { return false; }
@@ -165,12 +165,12 @@ internal partial class APM_Name_Dests_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Name_AP 
 /// </summary>
-internal partial class APM_Name_AP : APM_Name_AP_Base
+internal partial class APM_Name_AP : APM_Name_AP__Base
 {
 }
 
 
-internal partial class APM_Name_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_AP";
     public static bool RuleGroup() { return false; }
@@ -192,12 +192,12 @@ internal partial class APM_Name_AP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Name_JavaScript 
 /// </summary>
-internal partial class APM_Name_JavaScript : APM_Name_JavaScript_Base
+internal partial class APM_Name_JavaScript : APM_Name_JavaScript__Base
 {
 }
 
 
-internal partial class APM_Name_JavaScript_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_JavaScript__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_JavaScript";
     public static bool RuleGroup() { return false; }
@@ -219,12 +219,12 @@ internal partial class APM_Name_JavaScript_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Name_Pages 
 /// </summary>
-internal partial class APM_Name_Pages : APM_Name_Pages_Base
+internal partial class APM_Name_Pages : APM_Name_Pages__Base
 {
 }
 
 
-internal partial class APM_Name_Pages_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_Pages__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_Pages";
     public static bool RuleGroup() { return false; }
@@ -246,12 +246,12 @@ internal partial class APM_Name_Pages_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Name_Templates 
 /// </summary>
-internal partial class APM_Name_Templates : APM_Name_Templates_Base
+internal partial class APM_Name_Templates : APM_Name_Templates__Base
 {
 }
 
 
-internal partial class APM_Name_Templates_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_Templates__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_Templates";
     public static bool RuleGroup() { return false; }
@@ -273,12 +273,12 @@ internal partial class APM_Name_Templates_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Name_IDS 
 /// </summary>
-internal partial class APM_Name_IDS : APM_Name_IDS_Base
+internal partial class APM_Name_IDS : APM_Name_IDS__Base
 {
 }
 
 
-internal partial class APM_Name_IDS_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_IDS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_IDS";
     public static bool RuleGroup() { return false; }
@@ -300,12 +300,12 @@ internal partial class APM_Name_IDS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Name_URLS 
 /// </summary>
-internal partial class APM_Name_URLS : APM_Name_URLS_Base
+internal partial class APM_Name_URLS : APM_Name_URLS__Base
 {
 }
 
 
-internal partial class APM_Name_URLS_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_URLS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_URLS";
     public static bool RuleGroup() { return false; }
@@ -327,12 +327,12 @@ internal partial class APM_Name_URLS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Name_EmbeddedFiles 
 /// </summary>
-internal partial class APM_Name_EmbeddedFiles : APM_Name_EmbeddedFiles_Base
+internal partial class APM_Name_EmbeddedFiles : APM_Name_EmbeddedFiles__Base
 {
 }
 
 
-internal partial class APM_Name_EmbeddedFiles_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_EmbeddedFiles__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_EmbeddedFiles";
     public static bool RuleGroup() { return false; }
@@ -354,12 +354,12 @@ internal partial class APM_Name_EmbeddedFiles_Base : ISpecification<PdfDictionar
 /// <summary>
 /// Name_AlternatePresentations 
 /// </summary>
-internal partial class APM_Name_AlternatePresentations : APM_Name_AlternatePresentations_Base
+internal partial class APM_Name_AlternatePresentations : APM_Name_AlternatePresentations__Base
 {
 }
 
 
-internal partial class APM_Name_AlternatePresentations_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_AlternatePresentations__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_AlternatePresentations";
     public static bool RuleGroup() { return false; }
@@ -381,12 +381,12 @@ internal partial class APM_Name_AlternatePresentations_Base : ISpecification<Pdf
 /// <summary>
 /// Name_Renditions 
 /// </summary>
-internal partial class APM_Name_Renditions : APM_Name_Renditions_Base
+internal partial class APM_Name_Renditions : APM_Name_Renditions__Base
 {
 }
 
 
-internal partial class APM_Name_Renditions_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_Renditions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_Renditions";
     public static bool RuleGroup() { return false; }
@@ -408,12 +408,12 @@ internal partial class APM_Name_Renditions_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Name_XFAResources Adobe Extension Level 3
 /// </summary>
-internal partial class APM_Name_XFAResources : APM_Name_XFAResources_Base
+internal partial class APM_Name_XFAResources : APM_Name_XFAResources__Base
 {
 }
 
 
-internal partial class APM_Name_XFAResources_Base : ISpecification<PdfDictionary>
+internal partial class APM_Name_XFAResources__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Name_XFAResources";
     public static bool RuleGroup() { return false; }

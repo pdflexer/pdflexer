@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaPermissions : APM_MediaPermissions_Base
+internal partial class APM_MediaPermissions : APM_MediaPermissions__Base
 {
 }
 
-internal partial class APM_MediaPermissions_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPermissions__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaPermissions";
@@ -105,12 +105,12 @@ internal partial class APM_MediaPermissions_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaPermissions_Type Table 286
 /// </summary>
-internal partial class APM_MediaPermissions_Type : APM_MediaPermissions_Type_Base
+internal partial class APM_MediaPermissions_Type : APM_MediaPermissions_Type__Base
 {
 }
 
 
-internal partial class APM_MediaPermissions_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPermissions_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPermissions_Type";
     public static bool RuleGroup() { return false; }
@@ -121,13 +121,11 @@ internal partial class APM_MediaPermissions_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_MediaPermissions_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaPermissions")) 
         {
             ctx.Fail<APM_MediaPermissions_Type>($"Invalid value {val}, allowed are: [MediaPermissions]");
-        }
         }
         // no linked objects
         
@@ -139,12 +137,12 @@ internal partial class APM_MediaPermissions_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// MediaPermissions_TF 
 /// </summary>
-internal partial class APM_MediaPermissions_TF : APM_MediaPermissions_TF_Base
+internal partial class APM_MediaPermissions_TF : APM_MediaPermissions_TF__Base
 {
 }
 
 
-internal partial class APM_MediaPermissions_TF_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPermissions_TF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPermissions_TF";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_WebCaptureCommand : APM_WebCaptureCommand_Base
+internal partial class APM_WebCaptureCommand : APM_WebCaptureCommand__Base
 {
 }
 
-internal partial class APM_WebCaptureCommand_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommand__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "WebCaptureCommand";
@@ -124,12 +124,12 @@ internal partial class APM_WebCaptureCommand_Base : ISpecification<PdfDictionary
 /// <summary>
 /// WebCaptureCommand_URL Table 393
 /// </summary>
-internal partial class APM_WebCaptureCommand_URL : APM_WebCaptureCommand_URL_Base
+internal partial class APM_WebCaptureCommand_URL : APM_WebCaptureCommand_URL__Base
 {
 }
 
 
-internal partial class APM_WebCaptureCommand_URL_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommand_URL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureCommand_URL";
     public static bool RuleGroup() { return false; }
@@ -151,12 +151,12 @@ internal partial class APM_WebCaptureCommand_URL_Base : ISpecification<PdfDictio
 /// <summary>
 /// WebCaptureCommand_L 
 /// </summary>
-internal partial class APM_WebCaptureCommand_L : APM_WebCaptureCommand_L_Base
+internal partial class APM_WebCaptureCommand_L : APM_WebCaptureCommand_L__Base
 {
 }
 
 
-internal partial class APM_WebCaptureCommand_L_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommand_L__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureCommand_L";
     public static bool RuleGroup() { return false; }
@@ -166,7 +166,11 @@ internal partial class APM_WebCaptureCommand_L_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_WebCaptureCommand_L>(obj, "L", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var L = obj.Get("L");
+        if (!(gte(L,1))) 
+        {
+            ctx.Fail<APM_WebCaptureCommand_L>($"Value failed special case check: fn:Eval(@L>=1)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -178,12 +182,12 @@ internal partial class APM_WebCaptureCommand_L_Base : ISpecification<PdfDictiona
 /// <summary>
 /// WebCaptureCommand_F Table 394
 /// </summary>
-internal partial class APM_WebCaptureCommand_F : APM_WebCaptureCommand_F_Base
+internal partial class APM_WebCaptureCommand_F : APM_WebCaptureCommand_F__Base
 {
 }
 
 
-internal partial class APM_WebCaptureCommand_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommand_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureCommand_F";
     public static bool RuleGroup() { return false; }
@@ -193,7 +197,11 @@ internal partial class APM_WebCaptureCommand_F_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_WebCaptureCommand_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_WebCaptureCommand_F>($"Value failed special case check: fn:Eval(fn:BitsClear(4,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -205,12 +213,12 @@ internal partial class APM_WebCaptureCommand_F_Base : ISpecification<PdfDictiona
 /// <summary>
 /// WebCaptureCommand_P 
 /// </summary>
-internal partial class APM_WebCaptureCommand_P : APM_WebCaptureCommand_P_Base
+internal partial class APM_WebCaptureCommand_P : APM_WebCaptureCommand_P__Base
 {
 }
 
 
-internal partial class APM_WebCaptureCommand_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommand_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureCommand_P";
     public static bool RuleGroup() { return false; }
@@ -253,12 +261,12 @@ internal partial class APM_WebCaptureCommand_P_Base : ISpecification<PdfDictiona
 /// <summary>
 /// WebCaptureCommand_CT shall describe the content type of the posted data as described in Internet RFC 2045
 /// </summary>
-internal partial class APM_WebCaptureCommand_CT : APM_WebCaptureCommand_CT_Base
+internal partial class APM_WebCaptureCommand_CT : APM_WebCaptureCommand_CT__Base
 {
 }
 
 
-internal partial class APM_WebCaptureCommand_CT_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommand_CT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureCommand_CT";
     public static bool RuleGroup() { return false; }
@@ -280,12 +288,12 @@ internal partial class APM_WebCaptureCommand_CT_Base : ISpecification<PdfDiction
 /// <summary>
 /// WebCaptureCommand_H 
 /// </summary>
-internal partial class APM_WebCaptureCommand_H : APM_WebCaptureCommand_H_Base
+internal partial class APM_WebCaptureCommand_H : APM_WebCaptureCommand_H__Base
 {
 }
 
 
-internal partial class APM_WebCaptureCommand_H_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommand_H__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureCommand_H";
     public static bool RuleGroup() { return false; }
@@ -307,12 +315,12 @@ internal partial class APM_WebCaptureCommand_H_Base : ISpecification<PdfDictiona
 /// <summary>
 /// WebCaptureCommand_S 
 /// </summary>
-internal partial class APM_WebCaptureCommand_S : APM_WebCaptureCommand_S_Base
+internal partial class APM_WebCaptureCommand_S : APM_WebCaptureCommand_S__Base
 {
 }
 
 
-internal partial class APM_WebCaptureCommand_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommand_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureCommand_S";
     public static bool RuleGroup() { return false; }

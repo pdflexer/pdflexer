@@ -23,9 +23,18 @@ internal class EFunc_ArrayLength : EFunBase, INode
     IEnumerable<string> INode.GetRequiredValues()
     {
         var val = (Inputs[0].Children[0] as EValue)?.Text;
-        if (val != null)
+        if (val != null && val != "*" && !int.TryParse(val, out _))
         {
             yield return val;
+        } else
+        {
+            foreach (var item in Children)
+            {
+                foreach (var var in item.GetRequiredValues())
+                {
+                    yield return var;
+                }
+            }
         }
     }
 }

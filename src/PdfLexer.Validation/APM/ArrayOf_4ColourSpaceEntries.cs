@@ -21,7 +21,7 @@ internal partial class APM_ArrayOf_4ColourSpaceEntries : ISpecification<PdfArray
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -39,13 +39,11 @@ internal partial class APM_ArrayOf_4ColourSpaceEntries_0 : ISpecification<PdfArr
         var val = ctx.GetRequired<PdfName, APM_ArrayOf_4ColourSpaceEntries_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DeviceRGB")) 
         {
             ctx.Fail<APM_ArrayOf_4ColourSpaceEntries_0>($"Invalid value {val}, allowed are: [DeviceRGB]");
-        }
         }
         // no linked objects
         
@@ -66,13 +64,11 @@ internal partial class APM_ArrayOf_4ColourSpaceEntries_1 : ISpecification<PdfArr
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_4ColourSpaceEntries_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
-        if (!((gte(v,0)&&lte(v,1)))) 
+        if (!((gte(v,0)&&lte(v,v)))) 
         {
             ctx.Fail<APM_ArrayOf_4ColourSpaceEntries_1>($"Invalid value {val}, allowed are: [fn:Eval((@1>=0) && (@1<=1))]");
-        }
         }
         // no linked objects
         
@@ -93,13 +89,11 @@ internal partial class APM_ArrayOf_4ColourSpaceEntries_2 : ISpecification<PdfArr
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_4ColourSpaceEntries_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_4ColourSpaceEntries_2>($"Invalid value {val}, allowed are: [fn:Eval((@2>=0) && (@2<=1))]");
-        }
         }
         // no linked objects
         
@@ -120,13 +114,11 @@ internal partial class APM_ArrayOf_4ColourSpaceEntries_3 : ISpecification<PdfArr
         var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_4ColourSpaceEntries_3>(obj, 3, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
         
         if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_4ColourSpaceEntries_3>($"Invalid value {val}, allowed are: [fn:Eval((@3>=0) && (@3<=1))]");
-        }
         }
         // no linked objects
         

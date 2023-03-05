@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SoftMaskLuminosity : APM_SoftMaskLuminosity_Base
+internal partial class APM_SoftMaskLuminosity : APM_SoftMaskLuminosity__Base
 {
 }
 
-internal partial class APM_SoftMaskLuminosity_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskLuminosity__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SoftMaskLuminosity";
@@ -118,12 +118,12 @@ internal partial class APM_SoftMaskLuminosity_Base : ISpecification<PdfDictionar
 /// <summary>
 /// SoftMaskLuminosity_Type Table 142
 /// </summary>
-internal partial class APM_SoftMaskLuminosity_Type : APM_SoftMaskLuminosity_Type_Base
+internal partial class APM_SoftMaskLuminosity_Type : APM_SoftMaskLuminosity_Type__Base
 {
 }
 
 
-internal partial class APM_SoftMaskLuminosity_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskLuminosity_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskLuminosity_Type";
     public static bool RuleGroup() { return false; }
@@ -134,13 +134,11 @@ internal partial class APM_SoftMaskLuminosity_Type_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfName, APM_SoftMaskLuminosity_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Mask")) 
         {
             ctx.Fail<APM_SoftMaskLuminosity_Type>($"Invalid value {val}, allowed are: [Mask]");
-        }
         }
         // no linked objects
         
@@ -152,12 +150,12 @@ internal partial class APM_SoftMaskLuminosity_Type_Base : ISpecification<PdfDict
 /// <summary>
 /// SoftMaskLuminosity_S 
 /// </summary>
-internal partial class APM_SoftMaskLuminosity_S : APM_SoftMaskLuminosity_S_Base
+internal partial class APM_SoftMaskLuminosity_S : APM_SoftMaskLuminosity_S__Base
 {
 }
 
 
-internal partial class APM_SoftMaskLuminosity_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskLuminosity_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskLuminosity_S";
     public static bool RuleGroup() { return false; }
@@ -168,13 +166,11 @@ internal partial class APM_SoftMaskLuminosity_S_Base : ISpecification<PdfDiction
         var val = ctx.GetRequired<PdfName, APM_SoftMaskLuminosity_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Luminosity")) 
         {
             ctx.Fail<APM_SoftMaskLuminosity_S>($"Invalid value {val}, allowed are: [Luminosity]");
-        }
         }
         // no linked objects
         
@@ -186,12 +182,12 @@ internal partial class APM_SoftMaskLuminosity_S_Base : ISpecification<PdfDiction
 /// <summary>
 /// SoftMaskLuminosity_G 
 /// </summary>
-internal partial class APM_SoftMaskLuminosity_G : APM_SoftMaskLuminosity_G_Base
+internal partial class APM_SoftMaskLuminosity_G : APM_SoftMaskLuminosity_G__Base
 {
 }
 
 
-internal partial class APM_SoftMaskLuminosity_G_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskLuminosity_G__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskLuminosity_G";
     public static bool RuleGroup() { return false; }
@@ -201,7 +197,12 @@ internal partial class APM_SoftMaskLuminosity_G_Base : ISpecification<PdfDiction
     {
         var val = ctx.GetRequired<PdfStream, APM_SoftMaskLuminosity_G>(obj, "G", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
-        // TODO special case
+        var GGroupS = obj.Get("G")?.Get("Group")?.Get("S");
+        var GGroupCS = obj.Get("G")?.Get("Group")?.Get("CS");
+        if (!((eq(GGroupS,"Transparency")&&(GGroupCS != null)))) 
+        {
+            ctx.Fail<APM_SoftMaskLuminosity_G>($"Value failed special case check: fn:Eval((G::Group::@S==Transparency) && fn:IsPresent(G::Group::CS))");
+        }
         // no value restrictions
         ctx.Run<APM_XObjectFormType1, PdfDictionary>(stack, val.Dictionary, obj);
         
@@ -213,12 +214,12 @@ internal partial class APM_SoftMaskLuminosity_G_Base : ISpecification<PdfDiction
 /// <summary>
 /// SoftMaskLuminosity_BC 
 /// </summary>
-internal partial class APM_SoftMaskLuminosity_BC : APM_SoftMaskLuminosity_BC_Base
+internal partial class APM_SoftMaskLuminosity_BC : APM_SoftMaskLuminosity_BC__Base
 {
 }
 
 
-internal partial class APM_SoftMaskLuminosity_BC_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskLuminosity_BC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskLuminosity_BC";
     public static bool RuleGroup() { return false; }
@@ -240,12 +241,12 @@ internal partial class APM_SoftMaskLuminosity_BC_Base : ISpecification<PdfDictio
 /// <summary>
 /// SoftMaskLuminosity_TR 
 /// </summary>
-internal partial class APM_SoftMaskLuminosity_TR : APM_SoftMaskLuminosity_TR_Base
+internal partial class APM_SoftMaskLuminosity_TR : APM_SoftMaskLuminosity_TR__Base
 {
 }
 
 
-internal partial class APM_SoftMaskLuminosity_TR_Base : ISpecification<PdfDictionary>
+internal partial class APM_SoftMaskLuminosity_TR__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SoftMaskLuminosity_TR";
     public static bool RuleGroup() { return false; }
@@ -280,13 +281,11 @@ internal partial class APM_SoftMaskLuminosity_TR_Base : ISpecification<PdfDictio
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "Identity")) 
                     {
                         ctx.Fail<APM_SoftMaskLuminosity_TR>($"Invalid value {val}, allowed are: [Identity]");
-                    }
                     }
                     // no linked objects
                     return;

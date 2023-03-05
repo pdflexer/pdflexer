@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentPrint : APM_OptContentPrint_Base
+internal partial class APM_OptContentPrint : APM_OptContentPrint__Base
 {
 }
 
-internal partial class APM_OptContentPrint_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentPrint__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentPrint";
@@ -99,12 +99,12 @@ internal partial class APM_OptContentPrint_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OptContentPrint_Subtype Table 100, Print cell
 /// </summary>
-internal partial class APM_OptContentPrint_Subtype : APM_OptContentPrint_Subtype_Base
+internal partial class APM_OptContentPrint_Subtype : APM_OptContentPrint_Subtype__Base
 {
 }
 
 
-internal partial class APM_OptContentPrint_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentPrint_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentPrint_Subtype";
     public static bool RuleGroup() { return false; }
@@ -126,12 +126,12 @@ internal partial class APM_OptContentPrint_Subtype_Base : ISpecification<PdfDict
 /// <summary>
 /// OptContentPrint_PrintState 
 /// </summary>
-internal partial class APM_OptContentPrint_PrintState : APM_OptContentPrint_PrintState_Base
+internal partial class APM_OptContentPrint_PrintState : APM_OptContentPrint_PrintState__Base
 {
 }
 
 
-internal partial class APM_OptContentPrint_PrintState_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentPrint_PrintState__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentPrint_PrintState";
     public static bool RuleGroup() { return false; }
@@ -142,13 +142,11 @@ internal partial class APM_OptContentPrint_PrintState_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_OptContentPrint_PrintState>(obj, "PrintState", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ON" || val == "OFF")) 
         {
             ctx.Fail<APM_OptContentPrint_PrintState>($"Invalid value {val}, allowed are: [ON,OFF]");
-        }
         }
         // no linked objects
         

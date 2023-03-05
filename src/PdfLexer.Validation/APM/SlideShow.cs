@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_SlideShow : APM_SlideShow_Base
+internal partial class APM_SlideShow : APM_SlideShow__Base
 {
 }
 
-internal partial class APM_SlideShow_Base : ISpecification<PdfDictionary>
+internal partial class APM_SlideShow__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "SlideShow";
@@ -107,12 +107,12 @@ internal partial class APM_SlideShow_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SlideShow_Type Table 308
 /// </summary>
-internal partial class APM_SlideShow_Type : APM_SlideShow_Type_Base
+internal partial class APM_SlideShow_Type : APM_SlideShow_Type__Base
 {
 }
 
 
-internal partial class APM_SlideShow_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_SlideShow_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SlideShow_Type";
     public static bool RuleGroup() { return false; }
@@ -123,13 +123,11 @@ internal partial class APM_SlideShow_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_SlideShow_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SlideShow")) 
         {
             ctx.Fail<APM_SlideShow_Type>($"Invalid value {val}, allowed are: [SlideShow]");
-        }
         }
         // no linked objects
         
@@ -141,12 +139,12 @@ internal partial class APM_SlideShow_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// SlideShow_Subtype 
 /// </summary>
-internal partial class APM_SlideShow_Subtype : APM_SlideShow_Subtype_Base
+internal partial class APM_SlideShow_Subtype : APM_SlideShow_Subtype__Base
 {
 }
 
 
-internal partial class APM_SlideShow_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_SlideShow_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SlideShow_Subtype";
     public static bool RuleGroup() { return false; }
@@ -157,13 +155,11 @@ internal partial class APM_SlideShow_Subtype_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_SlideShow_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Embedded")) 
         {
             ctx.Fail<APM_SlideShow_Subtype>($"Invalid value {val}, allowed are: [Embedded]");
-        }
         }
         // no linked objects
         
@@ -175,12 +171,12 @@ internal partial class APM_SlideShow_Subtype_Base : ISpecification<PdfDictionary
 /// <summary>
 /// SlideShow_Resources 
 /// </summary>
-internal partial class APM_SlideShow_Resources : APM_SlideShow_Resources_Base
+internal partial class APM_SlideShow_Resources : APM_SlideShow_Resources__Base
 {
 }
 
 
-internal partial class APM_SlideShow_Resources_Base : ISpecification<PdfDictionary>
+internal partial class APM_SlideShow_Resources__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SlideShow_Resources";
     public static bool RuleGroup() { return false; }
@@ -202,12 +198,12 @@ internal partial class APM_SlideShow_Resources_Base : ISpecification<PdfDictiona
 /// <summary>
 /// SlideShow_StartResource 
 /// </summary>
-internal partial class APM_SlideShow_StartResource : APM_SlideShow_StartResource_Base
+internal partial class APM_SlideShow_StartResource : APM_SlideShow_StartResource__Base
 {
 }
 
 
-internal partial class APM_SlideShow_StartResource_Base : ISpecification<PdfDictionary>
+internal partial class APM_SlideShow_StartResource__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "SlideShow_StartResource";
     public static bool RuleGroup() { return false; }
@@ -217,7 +213,7 @@ internal partial class APM_SlideShow_StartResource_Base : ISpecification<PdfDict
     {
         var val = ctx.GetRequired<PdfString, APM_SlideShow_StartResource>(obj, "StartResource", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // TODO special case: fn:InNameTree(Resources)
         // no value restrictions
         // no linked objects
         

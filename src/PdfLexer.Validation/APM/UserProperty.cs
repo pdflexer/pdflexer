@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_UserProperty : APM_UserProperty_Base
+internal partial class APM_UserProperty : APM_UserProperty__Base
 {
 }
 
-internal partial class APM_UserProperty_Base : ISpecification<PdfDictionary>
+internal partial class APM_UserProperty__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "UserProperty";
@@ -91,12 +91,12 @@ internal partial class APM_UserProperty_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// UserProperty_N Table 362
 /// </summary>
-internal partial class APM_UserProperty_N : APM_UserProperty_N_Base
+internal partial class APM_UserProperty_N : APM_UserProperty_N__Base
 {
 }
 
 
-internal partial class APM_UserProperty_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_UserProperty_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "UserProperty_N";
     public static bool RuleGroup() { return false; }
@@ -106,7 +106,11 @@ internal partial class APM_UserProperty_N_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetRequired<PdfString, APM_UserProperty_N>(obj, "N", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var trailerCatalogMarkInfoUserProperties = obj.Get("trailer")?.Get("Catalog")?.Get("MarkInfo")?.Get("UserProperties");
+        if (!(eq(trailerCatalogMarkInfoUserProperties,PdfBoolean.True))) 
+        {
+            ctx.Fail<APM_UserProperty_N>($"Value failed special case check: fn:Eval(trailer::Catalog::MarkInfo::@UserProperties==true)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -118,12 +122,12 @@ internal partial class APM_UserProperty_N_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// UserProperty_V any PDF object
 /// </summary>
-internal partial class APM_UserProperty_V : APM_UserProperty_V_Base
+internal partial class APM_UserProperty_V : APM_UserProperty_V__Base
 {
 }
 
 
-internal partial class APM_UserProperty_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_UserProperty_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "UserProperty_V";
     public static bool RuleGroup() { return false; }
@@ -220,12 +224,12 @@ internal partial class APM_UserProperty_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// UserProperty_F 
 /// </summary>
-internal partial class APM_UserProperty_F : APM_UserProperty_F_Base
+internal partial class APM_UserProperty_F : APM_UserProperty_F__Base
 {
 }
 
 
-internal partial class APM_UserProperty_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_UserProperty_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "UserProperty_F";
     public static bool RuleGroup() { return false; }
@@ -247,12 +251,12 @@ internal partial class APM_UserProperty_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// UserProperty_H 
 /// </summary>
-internal partial class APM_UserProperty_H : APM_UserProperty_H_Base
+internal partial class APM_UserProperty_H : APM_UserProperty_H__Base
 {
 }
 
 
-internal partial class APM_UserProperty_H_Base : ISpecification<PdfDictionary>
+internal partial class APM_UserProperty_H__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "UserProperty_H";
     public static bool RuleGroup() { return false; }

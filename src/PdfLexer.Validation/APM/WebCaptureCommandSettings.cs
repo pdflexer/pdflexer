@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_WebCaptureCommandSettings : APM_WebCaptureCommandSettings_Base
+internal partial class APM_WebCaptureCommandSettings : APM_WebCaptureCommandSettings__Base
 {
 }
 
-internal partial class APM_WebCaptureCommandSettings_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommandSettings__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "WebCaptureCommandSettings";
@@ -119,12 +119,12 @@ internal partial class APM_WebCaptureCommandSettings_Base : ISpecification<PdfDi
 /// <summary>
 /// WebCaptureCommandSettings_G Table 395
 /// </summary>
-internal partial class APM_WebCaptureCommandSettings_G : APM_WebCaptureCommandSettings_G_Base
+internal partial class APM_WebCaptureCommandSettings_G : APM_WebCaptureCommandSettings_G__Base
 {
 }
 
 
-internal partial class APM_WebCaptureCommandSettings_G_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommandSettings_G__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureCommandSettings_G";
     public static bool RuleGroup() { return false; }
@@ -146,12 +146,12 @@ internal partial class APM_WebCaptureCommandSettings_G_Base : ISpecification<Pdf
 /// <summary>
 /// WebCaptureCommandSettings_C 
 /// </summary>
-internal partial class APM_WebCaptureCommandSettings_C : APM_WebCaptureCommandSettings_C_Base
+internal partial class APM_WebCaptureCommandSettings_C : APM_WebCaptureCommandSettings_C__Base
 {
 }
 
 
-internal partial class APM_WebCaptureCommandSettings_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_WebCaptureCommandSettings_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "WebCaptureCommandSettings_C";
     public static bool RuleGroup() { return false; }

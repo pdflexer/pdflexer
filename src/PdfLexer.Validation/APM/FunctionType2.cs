@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FunctionType2 : APM_FunctionType2_Base
+internal partial class APM_FunctionType2 : APM_FunctionType2__Base
 {
 }
 
-internal partial class APM_FunctionType2_Base : ISpecification<PdfDictionary>
+internal partial class APM_FunctionType2__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FunctionType2";
@@ -123,12 +123,12 @@ internal partial class APM_FunctionType2_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FunctionType2_FunctionType Table 38 and Table 40
 /// </summary>
-internal partial class APM_FunctionType2_FunctionType : APM_FunctionType2_FunctionType_Base
+internal partial class APM_FunctionType2_FunctionType : APM_FunctionType2_FunctionType__Base
 {
 }
 
 
-internal partial class APM_FunctionType2_FunctionType_Base : ISpecification<PdfDictionary>
+internal partial class APM_FunctionType2_FunctionType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FunctionType2_FunctionType";
     public static bool RuleGroup() { return false; }
@@ -139,13 +139,11 @@ internal partial class APM_FunctionType2_FunctionType_Base : ISpecification<PdfD
         var val = ctx.GetRequired<PdfIntNumber, APM_FunctionType2_FunctionType>(obj, "FunctionType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 2)) 
         {
             ctx.Fail<APM_FunctionType2_FunctionType>($"Invalid value {val}, allowed are: [2]");
-        }
         }
         // no linked objects
         
@@ -157,12 +155,12 @@ internal partial class APM_FunctionType2_FunctionType_Base : ISpecification<PdfD
 /// <summary>
 /// FunctionType2_Domain 
 /// </summary>
-internal partial class APM_FunctionType2_Domain : APM_FunctionType2_Domain_Base
+internal partial class APM_FunctionType2_Domain : APM_FunctionType2_Domain__Base
 {
 }
 
 
-internal partial class APM_FunctionType2_Domain_Base : ISpecification<PdfDictionary>
+internal partial class APM_FunctionType2_Domain__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FunctionType2_Domain";
     public static bool RuleGroup() { return false; }
@@ -172,7 +170,11 @@ internal partial class APM_FunctionType2_Domain_Base : ISpecification<PdfDiction
     {
         var val = ctx.GetRequired<PdfArray, APM_FunctionType2_Domain>(obj, "Domain", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Domain = obj.Get("Domain");
+        if (!(eq(mod(((Domain as PdfArray)?.Count),2),0))) 
+        {
+            ctx.Fail<APM_FunctionType2_Domain>($"Value failed special case check: fn:Eval((fn:ArrayLength(Domain) mod 2)==0)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -184,12 +186,12 @@ internal partial class APM_FunctionType2_Domain_Base : ISpecification<PdfDiction
 /// <summary>
 /// FunctionType2_Range 
 /// </summary>
-internal partial class APM_FunctionType2_Range : APM_FunctionType2_Range_Base
+internal partial class APM_FunctionType2_Range : APM_FunctionType2_Range__Base
 {
 }
 
 
-internal partial class APM_FunctionType2_Range_Base : ISpecification<PdfDictionary>
+internal partial class APM_FunctionType2_Range__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FunctionType2_Range";
     public static bool RuleGroup() { return false; }
@@ -199,7 +201,11 @@ internal partial class APM_FunctionType2_Range_Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfArray, APM_FunctionType2_Range>(obj, "Range", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Range = obj.Get("Range");
+        if (!(eq(mod(((Range as PdfArray)?.Count),2),0))) 
+        {
+            ctx.Fail<APM_FunctionType2_Range>($"Value failed special case check: fn:Eval((fn:ArrayLength(Range) mod 2)==0)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -211,12 +217,12 @@ internal partial class APM_FunctionType2_Range_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FunctionType2_C0 
 /// </summary>
-internal partial class APM_FunctionType2_C0 : APM_FunctionType2_C0_Base
+internal partial class APM_FunctionType2_C0 : APM_FunctionType2_C0__Base
 {
 }
 
 
-internal partial class APM_FunctionType2_C0_Base : ISpecification<PdfDictionary>
+internal partial class APM_FunctionType2_C0__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FunctionType2_C0";
     public static bool RuleGroup() { return false; }
@@ -226,7 +232,12 @@ internal partial class APM_FunctionType2_C0_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_FunctionType2_C0>(obj, "C0", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var C0 = obj.Get("C0");
+        var C1 = obj.Get("C1");
+        if (!(eq(((C0 as PdfArray)?.Count),((C1 as PdfArray)?.Count)))) 
+        {
+            ctx.Fail<APM_FunctionType2_C0>($"Value failed special case check: fn:Eval(fn:ArrayLength(C0)==fn:ArrayLength(C1))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -238,12 +249,12 @@ internal partial class APM_FunctionType2_C0_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FunctionType2_C1 
 /// </summary>
-internal partial class APM_FunctionType2_C1 : APM_FunctionType2_C1_Base
+internal partial class APM_FunctionType2_C1 : APM_FunctionType2_C1__Base
 {
 }
 
 
-internal partial class APM_FunctionType2_C1_Base : ISpecification<PdfDictionary>
+internal partial class APM_FunctionType2_C1__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FunctionType2_C1";
     public static bool RuleGroup() { return false; }
@@ -253,7 +264,12 @@ internal partial class APM_FunctionType2_C1_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_FunctionType2_C1>(obj, "C1", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var C1 = obj.Get("C1");
+        var C0 = obj.Get("C0");
+        if (!(eq(((C1 as PdfArray)?.Count),((C0 as PdfArray)?.Count)))) 
+        {
+            ctx.Fail<APM_FunctionType2_C1>($"Value failed special case check: fn:Eval(fn:ArrayLength(C1)==fn:ArrayLength(C0))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
         
@@ -265,12 +281,12 @@ internal partial class APM_FunctionType2_C1_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FunctionType2_N 
 /// </summary>
-internal partial class APM_FunctionType2_N : APM_FunctionType2_N_Base
+internal partial class APM_FunctionType2_N : APM_FunctionType2_N__Base
 {
 }
 
 
-internal partial class APM_FunctionType2_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_FunctionType2_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FunctionType2_N";
     public static bool RuleGroup() { return false; }

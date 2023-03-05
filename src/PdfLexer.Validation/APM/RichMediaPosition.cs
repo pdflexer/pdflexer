@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaPosition : APM_RichMediaPosition_Base
+internal partial class APM_RichMediaPosition : APM_RichMediaPosition__Base
 {
 }
 
-internal partial class APM_RichMediaPosition_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPosition__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaPosition";
@@ -49,12 +49,12 @@ internal partial class APM_RichMediaPosition_Base : ISpecification<PdfDictionary
 /// <summary>
 /// RichMediaPosition_Type Table 340
 /// </summary>
-internal partial class APM_RichMediaPosition_Type : APM_RichMediaPosition_Type_Base
+internal partial class APM_RichMediaPosition_Type : APM_RichMediaPosition_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaPosition_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPosition_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPosition_Type";
     public static bool RuleGroup() { return false; }
@@ -65,13 +65,11 @@ internal partial class APM_RichMediaPosition_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_RichMediaPosition_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaPosition")) 
         {
             ctx.Fail<APM_RichMediaPosition_Type>($"Invalid value {val}, allowed are: [RichMediaPosition]");
-        }
         }
         // no linked objects
         
@@ -83,12 +81,12 @@ internal partial class APM_RichMediaPosition_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// RichMediaPosition_HAlign 
 /// </summary>
-internal partial class APM_RichMediaPosition_HAlign : APM_RichMediaPosition_HAlign_Base
+internal partial class APM_RichMediaPosition_HAlign : APM_RichMediaPosition_HAlign__Base
 {
 }
 
 
-internal partial class APM_RichMediaPosition_HAlign_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPosition_HAlign__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPosition_HAlign";
     public static bool RuleGroup() { return false; }
@@ -99,13 +97,11 @@ internal partial class APM_RichMediaPosition_HAlign_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_RichMediaPosition_HAlign>(obj, "HAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Near" || val == "Center" || val == "Far")) 
         {
             ctx.Fail<APM_RichMediaPosition_HAlign>($"Invalid value {val}, allowed are: [Near,Center,Far]");
-        }
         }
         // no linked objects
         
@@ -117,12 +113,12 @@ internal partial class APM_RichMediaPosition_HAlign_Base : ISpecification<PdfDic
 /// <summary>
 /// RichMediaPosition_VAlign 
 /// </summary>
-internal partial class APM_RichMediaPosition_VAlign : APM_RichMediaPosition_VAlign_Base
+internal partial class APM_RichMediaPosition_VAlign : APM_RichMediaPosition_VAlign__Base
 {
 }
 
 
-internal partial class APM_RichMediaPosition_VAlign_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPosition_VAlign__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPosition_VAlign";
     public static bool RuleGroup() { return false; }
@@ -133,13 +129,11 @@ internal partial class APM_RichMediaPosition_VAlign_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfName, APM_RichMediaPosition_VAlign>(obj, "VAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Near" || val == "Center" || val == "Far")) 
         {
             ctx.Fail<APM_RichMediaPosition_VAlign>($"Invalid value {val}, allowed are: [Near,Center,Far]");
-        }
         }
         // no linked objects
         
@@ -151,12 +145,12 @@ internal partial class APM_RichMediaPosition_VAlign_Base : ISpecification<PdfDic
 /// <summary>
 /// RichMediaPosition_HOffset 
 /// </summary>
-internal partial class APM_RichMediaPosition_HOffset : APM_RichMediaPosition_HOffset_Base
+internal partial class APM_RichMediaPosition_HOffset : APM_RichMediaPosition_HOffset__Base
 {
 }
 
 
-internal partial class APM_RichMediaPosition_HOffset_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPosition_HOffset__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPosition_HOffset";
     public static bool RuleGroup() { return false; }
@@ -178,12 +172,12 @@ internal partial class APM_RichMediaPosition_HOffset_Base : ISpecification<PdfDi
 /// <summary>
 /// RichMediaPosition_VOffset 
 /// </summary>
-internal partial class APM_RichMediaPosition_VOffset : APM_RichMediaPosition_VOffset_Base
+internal partial class APM_RichMediaPosition_VOffset : APM_RichMediaPosition_VOffset__Base
 {
 }
 
 
-internal partial class APM_RichMediaPosition_VOffset_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaPosition_VOffset__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaPosition_VOffset";
     public static bool RuleGroup() { return false; }

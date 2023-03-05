@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DMeasure3DC : APM_3DMeasure3DC_Base
+internal partial class APM_3DMeasure3DC : APM_3DMeasure3DC__Base
 {
 }
 
-internal partial class APM_3DMeasure3DC_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DMeasure3DC";
@@ -55,12 +55,12 @@ internal partial class APM_3DMeasure3DC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DMeasure3DC_Type Table 326 and Table 331 3D comment note
 /// </summary>
-internal partial class APM_3DMeasure3DC_Type : APM_3DMeasure3DC_Type_Base
+internal partial class APM_3DMeasure3DC_Type : APM_3DMeasure3DC_Type__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_Type";
     public static bool RuleGroup() { return false; }
@@ -71,13 +71,11 @@ internal partial class APM_3DMeasure3DC_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_3DMeasure3DC_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DMeasure")) 
         {
             ctx.Fail<APM_3DMeasure3DC_Type>($"Invalid value {val}, allowed are: [3DMeasure]");
-        }
         }
         // no linked objects
         
@@ -89,12 +87,12 @@ internal partial class APM_3DMeasure3DC_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// 3DMeasure3DC_Subtype 
 /// </summary>
-internal partial class APM_3DMeasure3DC_Subtype : APM_3DMeasure3DC_Subtype_Base
+internal partial class APM_3DMeasure3DC_Subtype : APM_3DMeasure3DC_Subtype__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_Subtype";
     public static bool RuleGroup() { return false; }
@@ -105,13 +103,11 @@ internal partial class APM_3DMeasure3DC_Subtype_Base : ISpecification<PdfDiction
         var val = ctx.GetRequired<PdfName, APM_3DMeasure3DC_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DC")) 
         {
             ctx.Fail<APM_3DMeasure3DC_Subtype>($"Invalid value {val}, allowed are: [3DC]");
-        }
         }
         // no linked objects
         
@@ -123,12 +119,12 @@ internal partial class APM_3DMeasure3DC_Subtype_Base : ISpecification<PdfDiction
 /// <summary>
 /// 3DMeasure3DC_TRL 
 /// </summary>
-internal partial class APM_3DMeasure3DC_TRL : APM_3DMeasure3DC_TRL_Base
+internal partial class APM_3DMeasure3DC_TRL : APM_3DMeasure3DC_TRL__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_TRL_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_TRL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_TRL";
     public static bool RuleGroup() { return false; }
@@ -150,12 +146,12 @@ internal partial class APM_3DMeasure3DC_TRL_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DMeasure3DC_A1 
 /// </summary>
-internal partial class APM_3DMeasure3DC_A1 : APM_3DMeasure3DC_A1_Base
+internal partial class APM_3DMeasure3DC_A1 : APM_3DMeasure3DC_A1__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_A1_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_A1__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_A1";
     public static bool RuleGroup() { return false; }
@@ -177,12 +173,12 @@ internal partial class APM_3DMeasure3DC_A1_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DMeasure3DC_N1 
 /// </summary>
-internal partial class APM_3DMeasure3DC_N1 : APM_3DMeasure3DC_N1_Base
+internal partial class APM_3DMeasure3DC_N1 : APM_3DMeasure3DC_N1__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_N1_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_N1__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_N1";
     public static bool RuleGroup() { return false; }
@@ -204,12 +200,12 @@ internal partial class APM_3DMeasure3DC_N1_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DMeasure3DC_TP 
 /// </summary>
-internal partial class APM_3DMeasure3DC_TP : APM_3DMeasure3DC_TP_Base
+internal partial class APM_3DMeasure3DC_TP : APM_3DMeasure3DC_TP__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_TP_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_TP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_TP";
     public static bool RuleGroup() { return false; }
@@ -231,12 +227,12 @@ internal partial class APM_3DMeasure3DC_TP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DMeasure3DC_TB 
 /// </summary>
-internal partial class APM_3DMeasure3DC_TB : APM_3DMeasure3DC_TB_Base
+internal partial class APM_3DMeasure3DC_TB : APM_3DMeasure3DC_TB__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_TB_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_TB__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_TB";
     public static bool RuleGroup() { return false; }
@@ -258,12 +254,12 @@ internal partial class APM_3DMeasure3DC_TB_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DMeasure3DC_TS text point size
 /// </summary>
-internal partial class APM_3DMeasure3DC_TS : APM_3DMeasure3DC_TS_Base
+internal partial class APM_3DMeasure3DC_TS : APM_3DMeasure3DC_TS__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_TS_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_TS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_TS";
     public static bool RuleGroup() { return false; }
@@ -285,12 +281,12 @@ internal partial class APM_3DMeasure3DC_TS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DMeasure3DC_C 
 /// </summary>
-internal partial class APM_3DMeasure3DC_C : APM_3DMeasure3DC_C_Base
+internal partial class APM_3DMeasure3DC_C : APM_3DMeasure3DC_C__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_C";
     public static bool RuleGroup() { return false; }
@@ -312,12 +308,12 @@ internal partial class APM_3DMeasure3DC_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DMeasure3DC_UT 
 /// </summary>
-internal partial class APM_3DMeasure3DC_UT : APM_3DMeasure3DC_UT_Base
+internal partial class APM_3DMeasure3DC_UT : APM_3DMeasure3DC_UT__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_UT_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_UT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_UT";
     public static bool RuleGroup() { return false; }
@@ -339,12 +335,12 @@ internal partial class APM_3DMeasure3DC_UT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DMeasure3DC_S 
 /// </summary>
-internal partial class APM_3DMeasure3DC_S : APM_3DMeasure3DC_S_Base
+internal partial class APM_3DMeasure3DC_S : APM_3DMeasure3DC_S__Base
 {
 }
 
 
-internal partial class APM_3DMeasure3DC_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DMeasure3DC_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DMeasure3DC_S";
     public static bool RuleGroup() { return false; }

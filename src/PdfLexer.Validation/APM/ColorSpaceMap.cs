@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ColorSpaceMap : APM_ColorSpaceMap_Base
+internal partial class APM_ColorSpaceMap : APM_ColorSpaceMap__Base
 {
 }
 
-internal partial class APM_ColorSpaceMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_ColorSpaceMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ColorSpaceMap";
@@ -38,12 +38,12 @@ internal partial class APM_ColorSpaceMap_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ColorSpaceMap_DefaultRGB Table 34
 /// </summary>
-internal partial class APM_ColorSpaceMap_DefaultRGB : APM_ColorSpaceMap_DefaultRGB_Base
+internal partial class APM_ColorSpaceMap_DefaultRGB : APM_ColorSpaceMap_DefaultRGB__Base
 {
 }
 
 
-internal partial class APM_ColorSpaceMap_DefaultRGB_Base : ISpecification<PdfDictionary>
+internal partial class APM_ColorSpaceMap_DefaultRGB__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ColorSpaceMap_DefaultRGB";
     public static bool RuleGroup() { return false; }
@@ -58,6 +58,12 @@ internal partial class APM_ColorSpaceMap_DefaultRGB_Base : ISpecification<PdfDic
         if (APM_CalRGBColorSpace.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_CalRGBColorSpace, PdfArray>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_DeviceNColorSpace, PdfArray>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_ColorSpaceMap_DefaultRGB>("DefaultRGB did not match any allowable types: '[CalRGBColorSpace,fn:SinceVersion(1.3,ICCBasedColorSpace),fn:SinceVersion(1.3,DeviceNColorSpace)]'");
@@ -71,12 +77,12 @@ internal partial class APM_ColorSpaceMap_DefaultRGB_Base : ISpecification<PdfDic
 /// <summary>
 /// ColorSpaceMap_DefaultCMYK 
 /// </summary>
-internal partial class APM_ColorSpaceMap_DefaultCMYK : APM_ColorSpaceMap_DefaultCMYK_Base
+internal partial class APM_ColorSpaceMap_DefaultCMYK : APM_ColorSpaceMap_DefaultCMYK__Base
 {
 }
 
 
-internal partial class APM_ColorSpaceMap_DefaultCMYK_Base : ISpecification<PdfDictionary>
+internal partial class APM_ColorSpaceMap_DefaultCMYK__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ColorSpaceMap_DefaultCMYK";
     public static bool RuleGroup() { return false; }
@@ -107,12 +113,12 @@ internal partial class APM_ColorSpaceMap_DefaultCMYK_Base : ISpecification<PdfDi
 /// <summary>
 /// ColorSpaceMap_DefaultGray 
 /// </summary>
-internal partial class APM_ColorSpaceMap_DefaultGray : APM_ColorSpaceMap_DefaultGray_Base
+internal partial class APM_ColorSpaceMap_DefaultGray : APM_ColorSpaceMap_DefaultGray__Base
 {
 }
 
 
-internal partial class APM_ColorSpaceMap_DefaultGray_Base : ISpecification<PdfDictionary>
+internal partial class APM_ColorSpaceMap_DefaultGray__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ColorSpaceMap_DefaultGray";
     public static bool RuleGroup() { return false; }
@@ -127,6 +133,15 @@ internal partial class APM_ColorSpaceMap_DefaultGray_Base : ISpecification<PdfDi
         if (APM_CalGrayColorSpace.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_CalGrayColorSpace, PdfArray>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
+        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_SeparationColorSpace.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_SeparationColorSpace, PdfArray>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_DeviceNColorSpace, PdfArray>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_ColorSpaceMap_DefaultGray>("DefaultGray did not match any allowable types: '[CalGrayColorSpace,fn:SinceVersion(1.3,ICCBasedColorSpace),fn:SinceVersion(1.2,SeparationColorSpace),fn:SinceVersion(1.3,DeviceNColorSpace)]'");
@@ -140,12 +155,12 @@ internal partial class APM_ColorSpaceMap_DefaultGray_Base : ISpecification<PdfDi
 /// <summary>
 /// ColorSpaceMap_* 
 /// </summary>
-internal partial class APM_ColorSpaceMap_CatchAll : APM_ColorSpaceMap_CatchAll_Base
+internal partial class APM_ColorSpaceMap_CatchAll : APM_ColorSpaceMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_ColorSpaceMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_ColorSpaceMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ColorSpaceMap_*";
     public static bool RuleGroup() { return false; }
@@ -172,6 +187,27 @@ internal partial class APM_ColorSpaceMap_CatchAll_Base : ISpecification<PdfDicti
                         if (APM_IndexedColorSpace.MatchesType(ctx, val)) 
                         {
                             ctx.Run<APM_IndexedColorSpace, PdfArray>(stack, val, obj);
+                        } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_CalGrayColorSpace.MatchesType(ctx, val)))) 
+                        {
+                            ctx.Run<APM_CalGrayColorSpace, PdfArray>(stack, val, obj);
+                        } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_CalRGBColorSpace.MatchesType(ctx, val)))) 
+                        {
+                            ctx.Run<APM_CalRGBColorSpace, PdfArray>(stack, val, obj);
+                        } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_LabColorSpace.MatchesType(ctx, val)))) 
+                        {
+                            ctx.Run<APM_LabColorSpace, PdfArray>(stack, val, obj);
+                        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+                        {
+                            ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
+                        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_SeparationColorSpace.MatchesType(ctx, val)))) 
+                        {
+                            ctx.Run<APM_SeparationColorSpace, PdfArray>(stack, val, obj);
+                        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val)))) 
+                        {
+                            ctx.Run<APM_DeviceNColorSpace, PdfArray>(stack, val, obj);
+                        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_PatternColorSpace.MatchesType(ctx, val)))) 
+                        {
+                            ctx.Run<APM_PatternColorSpace, PdfArray>(stack, val, obj);
                         }else 
                         {
                             ctx.Fail<APM_ColorSpaceMap_CatchAll>("CatchAll did not match any allowable types: '[fn:SinceVersion(1.1,CalGrayColorSpace),fn:SinceVersion(1.1,CalRGBColorSpace),fn:SinceVersion(1.1,LabColorSpace),fn:SinceVersion(1.3,ICCBasedColorSpace),IndexedColorSpace,fn:SinceVersion(1.2,SeparationColorSpace),fn:SinceVersion(1.3,DeviceNColorSpace),fn:SinceVersion(1.2,PatternColorSpace)]'");
@@ -183,13 +219,11 @@ internal partial class APM_ColorSpaceMap_CatchAll_Base : ISpecification<PdfDicti
                         var val =  (PdfName)utval;
                         // no indirect obj reqs
                         // no special cases
-                        {
                         
                         
                         if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                         {
                             ctx.Fail<APM_ColorSpaceMap_CatchAll>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                        }
                         }
                         // no linked objects
                         return;

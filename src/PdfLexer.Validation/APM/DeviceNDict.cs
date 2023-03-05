@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DeviceNDict : APM_DeviceNDict_Base
+internal partial class APM_DeviceNDict : APM_DeviceNDict__Base
 {
 }
 
-internal partial class APM_DeviceNDict_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNDict__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DeviceNDict";
@@ -121,12 +121,12 @@ internal partial class APM_DeviceNDict_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DeviceNDict_Subtype Table 70
 /// </summary>
-internal partial class APM_DeviceNDict_Subtype : APM_DeviceNDict_Subtype_Base
+internal partial class APM_DeviceNDict_Subtype : APM_DeviceNDict_Subtype__Base
 {
 }
 
 
-internal partial class APM_DeviceNDict_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNDict_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DeviceNDict_Subtype";
     public static bool RuleGroup() { return false; }
@@ -137,13 +137,11 @@ internal partial class APM_DeviceNDict_Subtype_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_DeviceNDict_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DeviceN" || val == "NChannel")) 
         {
             ctx.Fail<APM_DeviceNDict_Subtype>($"Invalid value {val}, allowed are: [DeviceN,NChannel]");
-        }
         }
         // no linked objects
         
@@ -155,12 +153,12 @@ internal partial class APM_DeviceNDict_Subtype_Base : ISpecification<PdfDictiona
 /// <summary>
 /// DeviceNDict_Colorants 
 /// </summary>
-internal partial class APM_DeviceNDict_Colorants : APM_DeviceNDict_Colorants_Base
+internal partial class APM_DeviceNDict_Colorants : APM_DeviceNDict_Colorants__Base
 {
 }
 
 
-internal partial class APM_DeviceNDict_Colorants_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNDict_Colorants__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DeviceNDict_Colorants";
     public static bool RuleGroup() { return false; }
@@ -168,16 +166,13 @@ internal partial class APM_DeviceNDict_Colorants_Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Subtype = obj.Get("Subtype");
-            var parent1 = parent?.Get("1");
-            if ((ctx.Version >= 1.6m && eq(Subtype,"NChannel")&&HasSpotColorants(parent1))) {
-                val = ctx.GetRequired<PdfDictionary, APM_DeviceNDict_Colorants>(obj, "Colorants", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Colorants>(obj, "Colorants", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Subtype = obj.Get("Subtype");
+        var parent1 = parent?.Get("1");
+        var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Colorants>(obj, "Colorants", IndirectRequirement.Either);
+        if ((((ctx.Version < 1.6m || (ctx.Version >= 1.6m && eq(Subtype,"NChannel")))&&HasSpotColorants(parent1))) && val == null) {
+            ctx.Fail<APM_DeviceNDict_Colorants>("Colorants is required when 'fn:IsRequired(fn:SinceVersion(1.6,(@Subtype==NChannel)) && fn:HasSpotColorants(parent::1))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -191,12 +186,12 @@ internal partial class APM_DeviceNDict_Colorants_Base : ISpecification<PdfDictio
 /// <summary>
 /// DeviceNDict_Process 
 /// </summary>
-internal partial class APM_DeviceNDict_Process : APM_DeviceNDict_Process_Base
+internal partial class APM_DeviceNDict_Process : APM_DeviceNDict_Process__Base
 {
 }
 
 
-internal partial class APM_DeviceNDict_Process_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNDict_Process__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DeviceNDict_Process";
     public static bool RuleGroup() { return false; }
@@ -204,16 +199,13 @@ internal partial class APM_DeviceNDict_Process_Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Subtype = obj.Get("Subtype");
-            var parent1 = parent?.Get("1");
-            if ((eq(Subtype,"NChannel")&&HasProcessColorants(parent1))) {
-                val = ctx.GetRequired<PdfDictionary, APM_DeviceNDict_Process>(obj, "Process", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Process>(obj, "Process", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Subtype = obj.Get("Subtype");
+        var parent1 = parent?.Get("1");
+        var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Process>(obj, "Process", IndirectRequirement.Either);
+        if (((eq(Subtype,"NChannel")&&HasProcessColorants(parent1))) && val == null) {
+            ctx.Fail<APM_DeviceNDict_Process>("Process is required when 'fn:IsRequired((@Subtype==NChannel) && fn:HasProcessColorants(parent::1))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -227,12 +219,12 @@ internal partial class APM_DeviceNDict_Process_Base : ISpecification<PdfDictiona
 /// <summary>
 /// DeviceNDict_MixingHints 
 /// </summary>
-internal partial class APM_DeviceNDict_MixingHints : APM_DeviceNDict_MixingHints_Base
+internal partial class APM_DeviceNDict_MixingHints : APM_DeviceNDict_MixingHints__Base
 {
 }
 
 
-internal partial class APM_DeviceNDict_MixingHints_Base : ISpecification<PdfDictionary>
+internal partial class APM_DeviceNDict_MixingHints__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DeviceNDict_MixingHints";
     public static bool RuleGroup() { return false; }

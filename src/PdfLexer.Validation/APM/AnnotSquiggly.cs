@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotSquiggly : APM_AnnotSquiggly_Base
+internal partial class APM_AnnotSquiggly : APM_AnnotSquiggly__Base
 {
 }
 
-internal partial class APM_AnnotSquiggly_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotSquiggly";
@@ -142,12 +142,12 @@ internal partial class APM_AnnotSquiggly_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_Type Table 166 and Table 172 and Table 182 (markup annot)
 /// </summary>
-internal partial class APM_AnnotSquiggly_Type : APM_AnnotSquiggly_Type_Base
+internal partial class APM_AnnotSquiggly_Type : APM_AnnotSquiggly_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_Type";
     public static bool RuleGroup() { return false; }
@@ -158,13 +158,11 @@ internal partial class APM_AnnotSquiggly_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_AnnotSquiggly_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotSquiggly_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -176,12 +174,12 @@ internal partial class APM_AnnotSquiggly_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotSquiggly_Subtype 
 /// </summary>
-internal partial class APM_AnnotSquiggly_Subtype : APM_AnnotSquiggly_Subtype_Base
+internal partial class APM_AnnotSquiggly_Subtype : APM_AnnotSquiggly_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_Subtype";
     public static bool RuleGroup() { return false; }
@@ -192,13 +190,11 @@ internal partial class APM_AnnotSquiggly_Subtype_Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfName, APM_AnnotSquiggly_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Squiggly")) 
         {
             ctx.Fail<APM_AnnotSquiggly_Subtype>($"Invalid value {val}, allowed are: [Squiggly]");
-        }
         }
         // no linked objects
         
@@ -210,12 +206,12 @@ internal partial class APM_AnnotSquiggly_Subtype_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotSquiggly_Rect 
 /// </summary>
-internal partial class APM_AnnotSquiggly_Rect : APM_AnnotSquiggly_Rect_Base
+internal partial class APM_AnnotSquiggly_Rect : APM_AnnotSquiggly_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_Rect";
     public static bool RuleGroup() { return false; }
@@ -237,12 +233,12 @@ internal partial class APM_AnnotSquiggly_Rect_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotSquiggly_Contents 
 /// </summary>
-internal partial class APM_AnnotSquiggly_Contents : APM_AnnotSquiggly_Contents_Base
+internal partial class APM_AnnotSquiggly_Contents : APM_AnnotSquiggly_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_Contents";
     public static bool RuleGroup() { return false; }
@@ -264,12 +260,12 @@ internal partial class APM_AnnotSquiggly_Contents_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotSquiggly_P 
 /// </summary>
-internal partial class APM_AnnotSquiggly_P : APM_AnnotSquiggly_P_Base
+internal partial class APM_AnnotSquiggly_P : APM_AnnotSquiggly_P__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_P";
     public static bool RuleGroup() { return false; }
@@ -291,12 +287,12 @@ internal partial class APM_AnnotSquiggly_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_NM 
 /// </summary>
-internal partial class APM_AnnotSquiggly_NM : APM_AnnotSquiggly_NM_Base
+internal partial class APM_AnnotSquiggly_NM : APM_AnnotSquiggly_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_NM";
     public static bool RuleGroup() { return false; }
@@ -318,12 +314,12 @@ internal partial class APM_AnnotSquiggly_NM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_M 
 /// </summary>
-internal partial class APM_AnnotSquiggly_M : APM_AnnotSquiggly_M_Base
+internal partial class APM_AnnotSquiggly_M : APM_AnnotSquiggly_M__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_M";
     public static bool RuleGroup() { return false; }
@@ -350,12 +346,12 @@ internal partial class APM_AnnotSquiggly_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_F Table 167
 /// </summary>
-internal partial class APM_AnnotSquiggly_F : APM_AnnotSquiggly_F_Base
+internal partial class APM_AnnotSquiggly_F : APM_AnnotSquiggly_F__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_F";
     public static bool RuleGroup() { return false; }
@@ -365,7 +361,11 @@ internal partial class APM_AnnotSquiggly_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotSquiggly_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(ctx.Version < 1.5m && BitsClear(obj)&&ctx.Version < 1.6m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj))))) 
+        {
+            ctx.Fail<APM_AnnotSquiggly_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -377,12 +377,12 @@ internal partial class APM_AnnotSquiggly_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_AP 
 /// </summary>
-internal partial class APM_AnnotSquiggly_AP : APM_AnnotSquiggly_AP_Base
+internal partial class APM_AnnotSquiggly_AP : APM_AnnotSquiggly_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_AP";
     public static bool RuleGroup() { return false; }
@@ -390,15 +390,12 @@ internal partial class APM_AnnotSquiggly_AP_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Rect = obj.Get("Rect");
-            if (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotSquiggly_AP>(obj, "AP", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotSquiggly_AP>(obj, "AP", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Rect = obj.Get("Rect");
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotSquiggly_AP>(obj, "AP", IndirectRequirement.Either);
+        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+            ctx.Fail<APM_AnnotSquiggly_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -412,12 +409,12 @@ internal partial class APM_AnnotSquiggly_AP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_AS 
 /// </summary>
-internal partial class APM_AnnotSquiggly_AS : APM_AnnotSquiggly_AS_Base
+internal partial class APM_AnnotSquiggly_AS : APM_AnnotSquiggly_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_AS";
     public static bool RuleGroup() { return false; }
@@ -425,17 +422,14 @@ internal partial class APM_AnnotSquiggly_AS_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotSquiggly_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotSquiggly_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotSquiggly_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotSquiggly_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -449,12 +443,12 @@ internal partial class APM_AnnotSquiggly_AS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_Border 
 /// </summary>
-internal partial class APM_AnnotSquiggly_Border : APM_AnnotSquiggly_Border_Base
+internal partial class APM_AnnotSquiggly_Border : APM_AnnotSquiggly_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_Border";
     public static bool RuleGroup() { return false; }
@@ -476,12 +470,12 @@ internal partial class APM_AnnotSquiggly_Border_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotSquiggly_C 
 /// </summary>
-internal partial class APM_AnnotSquiggly_C : APM_AnnotSquiggly_C_Base
+internal partial class APM_AnnotSquiggly_C : APM_AnnotSquiggly_C__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_C";
     public static bool RuleGroup() { return false; }
@@ -503,12 +497,12 @@ internal partial class APM_AnnotSquiggly_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotSquiggly_StructParent : APM_AnnotSquiggly_StructParent_Base
+internal partial class APM_AnnotSquiggly_StructParent : APM_AnnotSquiggly_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_StructParent";
     public static bool RuleGroup() { return false; }
@@ -530,12 +524,12 @@ internal partial class APM_AnnotSquiggly_StructParent_Base : ISpecification<PdfD
 /// <summary>
 /// AnnotSquiggly_OC 
 /// </summary>
-internal partial class APM_AnnotSquiggly_OC : APM_AnnotSquiggly_OC_Base
+internal partial class APM_AnnotSquiggly_OC : APM_AnnotSquiggly_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_OC";
     public static bool RuleGroup() { return false; }
@@ -566,12 +560,12 @@ internal partial class APM_AnnotSquiggly_OC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_AF 
 /// </summary>
-internal partial class APM_AnnotSquiggly_AF : APM_AnnotSquiggly_AF_Base
+internal partial class APM_AnnotSquiggly_AF : APM_AnnotSquiggly_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_AF";
     public static bool RuleGroup() { return false; }
@@ -614,12 +608,12 @@ internal partial class APM_AnnotSquiggly_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_ca 
 /// </summary>
-internal partial class APM_AnnotSquiggly_ca : APM_AnnotSquiggly_ca_Base
+internal partial class APM_AnnotSquiggly_ca : APM_AnnotSquiggly_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_ca";
     public static bool RuleGroup() { return false; }
@@ -630,13 +624,11 @@ internal partial class APM_AnnotSquiggly_ca_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotSquiggly_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotSquiggly_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -648,12 +640,12 @@ internal partial class APM_AnnotSquiggly_ca_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_CA 
 /// </summary>
-internal partial class APM_AnnotSquiggly_CA : APM_AnnotSquiggly_CA_Base
+internal partial class APM_AnnotSquiggly_CA : APM_AnnotSquiggly_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_CA";
     public static bool RuleGroup() { return false; }
@@ -664,13 +656,11 @@ internal partial class APM_AnnotSquiggly_CA_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotSquiggly_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotSquiggly_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -682,12 +672,12 @@ internal partial class APM_AnnotSquiggly_CA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotSquiggly_BM : APM_AnnotSquiggly_BM_Base
+internal partial class APM_AnnotSquiggly_BM : APM_AnnotSquiggly_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_BM";
     public static bool RuleGroup() { return false; }
@@ -698,13 +688,11 @@ internal partial class APM_AnnotSquiggly_BM_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotSquiggly_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotSquiggly_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -716,12 +704,12 @@ internal partial class APM_AnnotSquiggly_BM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_Lang 
 /// </summary>
-internal partial class APM_AnnotSquiggly_Lang : APM_AnnotSquiggly_Lang_Base
+internal partial class APM_AnnotSquiggly_Lang : APM_AnnotSquiggly_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_Lang";
     public static bool RuleGroup() { return false; }
@@ -743,12 +731,12 @@ internal partial class APM_AnnotSquiggly_Lang_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotSquiggly_T 
 /// </summary>
-internal partial class APM_AnnotSquiggly_T : APM_AnnotSquiggly_T_Base
+internal partial class APM_AnnotSquiggly_T : APM_AnnotSquiggly_T__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_T";
     public static bool RuleGroup() { return false; }
@@ -770,12 +758,12 @@ internal partial class APM_AnnotSquiggly_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_Popup 
 /// </summary>
-internal partial class APM_AnnotSquiggly_Popup : APM_AnnotSquiggly_Popup_Base
+internal partial class APM_AnnotSquiggly_Popup : APM_AnnotSquiggly_Popup__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_Popup_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_Popup__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_Popup";
     public static bool RuleGroup() { return false; }
@@ -797,12 +785,12 @@ internal partial class APM_AnnotSquiggly_Popup_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotSquiggly_RC 
 /// </summary>
-internal partial class APM_AnnotSquiggly_RC : APM_AnnotSquiggly_RC_Base
+internal partial class APM_AnnotSquiggly_RC : APM_AnnotSquiggly_RC__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_RC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_RC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_RC";
     public static bool RuleGroup() { return false; }
@@ -845,12 +833,12 @@ internal partial class APM_AnnotSquiggly_RC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_CreationDate 
 /// </summary>
-internal partial class APM_AnnotSquiggly_CreationDate : APM_AnnotSquiggly_CreationDate_Base
+internal partial class APM_AnnotSquiggly_CreationDate : APM_AnnotSquiggly_CreationDate__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -872,12 +860,12 @@ internal partial class APM_AnnotSquiggly_CreationDate_Base : ISpecification<PdfD
 /// <summary>
 /// AnnotSquiggly_IRT 
 /// </summary>
-internal partial class APM_AnnotSquiggly_IRT : APM_AnnotSquiggly_IRT_Base
+internal partial class APM_AnnotSquiggly_IRT : APM_AnnotSquiggly_IRT__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_IRT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_IRT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_IRT";
     public static bool RuleGroup() { return false; }
@@ -885,15 +873,12 @@ internal partial class APM_AnnotSquiggly_IRT_Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (obj.ContainsKey("RT")) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotSquiggly_IRT>(obj, "IRT", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotSquiggly_IRT>(obj, "IRT", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotSquiggly_IRT>(obj, "IRT", IndirectRequirement.Either);
+        if ((obj.ContainsKey("RT")) && val == null) {
+            ctx.Fail<APM_AnnotSquiggly_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -960,6 +945,21 @@ internal partial class APM_AnnotSquiggly_IRT_Base : ISpecification<PdfDictionary
         } else if (APM_AnnotPrinterMark.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_AnnotPrinterMark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotWatermark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_Annot3D, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.7m || (ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotSquiggly_IRT>("IRT did not match any allowable types: '[AnnotText,AnnotLink,AnnotFreeText,AnnotLine,AnnotSquare,AnnotCircle,AnnotPolygon,AnnotHighlight,AnnotUnderline,AnnotSquiggly,AnnotStrikeOut,AnnotCaret,AnnotStamp,AnnotInk,AnnotPopup,AnnotFileAttachment,AnnotSound,AnnotMovie,AnnotScreen,AnnotWidget,AnnotPrinterMark,fn:SinceVersion(1.6,AnnotWatermark),fn:SinceVersion(1.6,Annot3D),fn:SinceVersion(1.7,AnnotRedact),fn:SinceVersion(2.0,AnnotProjection),fn:SinceVersion(2.0,AnnotRichMedia)]'");
@@ -973,12 +973,12 @@ internal partial class APM_AnnotSquiggly_IRT_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotSquiggly_Subj 
 /// </summary>
-internal partial class APM_AnnotSquiggly_Subj : APM_AnnotSquiggly_Subj_Base
+internal partial class APM_AnnotSquiggly_Subj : APM_AnnotSquiggly_Subj__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_Subj_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_Subj__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_Subj";
     public static bool RuleGroup() { return false; }
@@ -1000,12 +1000,12 @@ internal partial class APM_AnnotSquiggly_Subj_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotSquiggly_RT 
 /// </summary>
-internal partial class APM_AnnotSquiggly_RT : APM_AnnotSquiggly_RT_Base
+internal partial class APM_AnnotSquiggly_RT : APM_AnnotSquiggly_RT__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_RT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_RT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_RT";
     public static bool RuleGroup() { return false; }
@@ -1015,14 +1015,12 @@ internal partial class APM_AnnotSquiggly_RT_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_AnnotSquiggly_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "R" || val == "Group")) 
         {
             ctx.Fail<APM_AnnotSquiggly_RT>($"Invalid value {val}, allowed are: [R,Group]");
-        }
         }
         // no linked objects
         
@@ -1034,12 +1032,12 @@ internal partial class APM_AnnotSquiggly_RT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_IT 
 /// </summary>
-internal partial class APM_AnnotSquiggly_IT : APM_AnnotSquiggly_IT_Base
+internal partial class APM_AnnotSquiggly_IT : APM_AnnotSquiggly_IT__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_IT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_IT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_IT";
     public static bool RuleGroup() { return false; }
@@ -1061,12 +1059,12 @@ internal partial class APM_AnnotSquiggly_IT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquiggly_QuadPoints 
 /// </summary>
-internal partial class APM_AnnotSquiggly_QuadPoints : APM_AnnotSquiggly_QuadPoints_Base
+internal partial class APM_AnnotSquiggly_QuadPoints : APM_AnnotSquiggly_QuadPoints__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_QuadPoints_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_QuadPoints__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_QuadPoints";
     public static bool RuleGroup() { return false; }
@@ -1088,12 +1086,12 @@ internal partial class APM_AnnotSquiggly_QuadPoints_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotSquiggly_ExData 2D markup annots only 
 /// </summary>
-internal partial class APM_AnnotSquiggly_ExData : APM_AnnotSquiggly_ExData_Base
+internal partial class APM_AnnotSquiggly_ExData : APM_AnnotSquiggly_ExData__Base
 {
 }
 
 
-internal partial class APM_AnnotSquiggly_ExData_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquiggly_ExData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquiggly_ExData";
     public static bool RuleGroup() { return false; }
@@ -1108,6 +1106,15 @@ internal partial class APM_AnnotSquiggly_ExData_Base : ISpecification<PdfDiction
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataProjection, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotSquiggly_ExData>("ExData did not match any allowable types: '[ExData3DMarkup,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,ExDataMarkupGeo)),fn:SinceVersion(2.0,ExDataMarkupGeo),fn:SinceVersion(2.0,ExDataProjection)]'");

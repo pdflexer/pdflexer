@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DPartRoot : APM_DPartRoot_Base
+internal partial class APM_DPartRoot : APM_DPartRoot__Base
 {
 }
 
-internal partial class APM_DPartRoot_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPartRoot__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DPartRoot";
@@ -48,12 +48,12 @@ internal partial class APM_DPartRoot_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPartRoot_Type Table 408
 /// </summary>
-internal partial class APM_DPartRoot_Type : APM_DPartRoot_Type_Base
+internal partial class APM_DPartRoot_Type : APM_DPartRoot_Type__Base
 {
 }
 
 
-internal partial class APM_DPartRoot_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPartRoot_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPartRoot_Type";
     public static bool RuleGroup() { return false; }
@@ -64,13 +64,11 @@ internal partial class APM_DPartRoot_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_DPartRoot_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DPartRoot")) 
         {
             ctx.Fail<APM_DPartRoot_Type>($"Invalid value {val}, allowed are: [DPartRoot]");
-        }
         }
         // no linked objects
         
@@ -82,12 +80,12 @@ internal partial class APM_DPartRoot_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DPartRoot_DPartRootNode 
 /// </summary>
-internal partial class APM_DPartRoot_DPartRootNode : APM_DPartRoot_DPartRootNode_Base
+internal partial class APM_DPartRoot_DPartRootNode : APM_DPartRoot_DPartRootNode__Base
 {
 }
 
 
-internal partial class APM_DPartRoot_DPartRootNode_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPartRoot_DPartRootNode__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPartRoot_DPartRootNode";
     public static bool RuleGroup() { return false; }
@@ -109,12 +107,12 @@ internal partial class APM_DPartRoot_DPartRootNode_Base : ISpecification<PdfDict
 /// <summary>
 /// DPartRoot_RecordLevel 
 /// </summary>
-internal partial class APM_DPartRoot_RecordLevel : APM_DPartRoot_RecordLevel_Base
+internal partial class APM_DPartRoot_RecordLevel : APM_DPartRoot_RecordLevel__Base
 {
 }
 
 
-internal partial class APM_DPartRoot_RecordLevel_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPartRoot_RecordLevel__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPartRoot_RecordLevel";
     public static bool RuleGroup() { return false; }
@@ -124,7 +122,11 @@ internal partial class APM_DPartRoot_RecordLevel_Base : ISpecification<PdfDictio
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_DPartRoot_RecordLevel>(obj, "RecordLevel", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var RecordLevel = obj.Get("RecordLevel");
+        if (!(gte(RecordLevel,0))) 
+        {
+            ctx.Fail<APM_DPartRoot_RecordLevel>($"Value failed special case check: fn:Eval(@RecordLevel>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -136,12 +138,12 @@ internal partial class APM_DPartRoot_RecordLevel_Base : ISpecification<PdfDictio
 /// <summary>
 /// DPartRoot_NodeNameList since PDF/X-4 with PDF 1.6
 /// </summary>
-internal partial class APM_DPartRoot_NodeNameList : APM_DPartRoot_NodeNameList_Base
+internal partial class APM_DPartRoot_NodeNameList : APM_DPartRoot_NodeNameList__Base
 {
 }
 
 
-internal partial class APM_DPartRoot_NodeNameList_Base : ISpecification<PdfDictionary>
+internal partial class APM_DPartRoot_NodeNameList__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DPartRoot_NodeNameList";
     public static bool RuleGroup() { return false; }
@@ -149,15 +151,12 @@ internal partial class APM_DPartRoot_NodeNameList_Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfArray? val;
-        {
-            
-            if ((ctx.Extensions.Contains("PDF_VT2"))) {
-                val = ctx.GetRequired<PdfArray, APM_DPartRoot_NodeNameList>(obj, "NodeNameList", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfArray, APM_DPartRoot_NodeNameList>(obj, "NodeNameList", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfArray, APM_DPartRoot_NodeNameList>(obj, "NodeNameList", IndirectRequirement.Either);
+        if (((ctx.Extensions.Contains("PDF_VT2"))) && val == null) {
+            ctx.Fail<APM_DPartRoot_NodeNameList>("NodeNameList is required when 'fn:IsRequired(fn:Extension(PDF_VT2))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions

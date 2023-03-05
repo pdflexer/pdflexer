@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_LegalAttestation : APM_LegalAttestation_Base
+internal partial class APM_LegalAttestation : APM_LegalAttestation__Base
 {
 }
 
-internal partial class APM_LegalAttestation_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "LegalAttestation";
@@ -119,12 +119,12 @@ internal partial class APM_LegalAttestation_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// LegalAttestation_JavaScriptActions Table 264
 /// </summary>
-internal partial class APM_LegalAttestation_JavaScriptActions : APM_LegalAttestation_JavaScriptActions_Base
+internal partial class APM_LegalAttestation_JavaScriptActions : APM_LegalAttestation_JavaScriptActions__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_JavaScriptActions_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_JavaScriptActions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_JavaScriptActions";
     public static bool RuleGroup() { return false; }
@@ -134,7 +134,11 @@ internal partial class APM_LegalAttestation_JavaScriptActions_Base : ISpecificat
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_JavaScriptActions>(obj, "JavaScriptActions", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var JavaScriptActions = obj.Get("JavaScriptActions");
+        if (!(gte(JavaScriptActions,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_JavaScriptActions>($"Value failed special case check: fn:Eval(@JavaScriptActions>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -146,12 +150,12 @@ internal partial class APM_LegalAttestation_JavaScriptActions_Base : ISpecificat
 /// <summary>
 /// LegalAttestation_LaunchActions 
 /// </summary>
-internal partial class APM_LegalAttestation_LaunchActions : APM_LegalAttestation_LaunchActions_Base
+internal partial class APM_LegalAttestation_LaunchActions : APM_LegalAttestation_LaunchActions__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_LaunchActions_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_LaunchActions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_LaunchActions";
     public static bool RuleGroup() { return false; }
@@ -161,7 +165,11 @@ internal partial class APM_LegalAttestation_LaunchActions_Base : ISpecification<
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_LaunchActions>(obj, "LaunchActions", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var LaunchActions = obj.Get("LaunchActions");
+        if (!(gte(LaunchActions,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_LaunchActions>($"Value failed special case check: fn:Eval(@LaunchActions>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -173,12 +181,12 @@ internal partial class APM_LegalAttestation_LaunchActions_Base : ISpecification<
 /// <summary>
 /// LegalAttestation_URIActions 
 /// </summary>
-internal partial class APM_LegalAttestation_URIActions : APM_LegalAttestation_URIActions_Base
+internal partial class APM_LegalAttestation_URIActions : APM_LegalAttestation_URIActions__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_URIActions_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_URIActions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_URIActions";
     public static bool RuleGroup() { return false; }
@@ -188,7 +196,11 @@ internal partial class APM_LegalAttestation_URIActions_Base : ISpecification<Pdf
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_URIActions>(obj, "URIActions", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var URIActions = obj.Get("URIActions");
+        if (!(gte(URIActions,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_URIActions>($"Value failed special case check: fn:Eval(@URIActions>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -200,12 +212,12 @@ internal partial class APM_LegalAttestation_URIActions_Base : ISpecification<Pdf
 /// <summary>
 /// LegalAttestation_MovieActions 
 /// </summary>
-internal partial class APM_LegalAttestation_MovieActions : APM_LegalAttestation_MovieActions_Base
+internal partial class APM_LegalAttestation_MovieActions : APM_LegalAttestation_MovieActions__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_MovieActions_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_MovieActions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_MovieActions";
     public static bool RuleGroup() { return false; }
@@ -215,7 +227,11 @@ internal partial class APM_LegalAttestation_MovieActions_Base : ISpecification<P
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_MovieActions>(obj, "MovieActions", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var MovieActions = obj.Get("MovieActions");
+        if (!(gte(MovieActions,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_MovieActions>($"Value failed special case check: fn:Eval(@MovieActions>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -227,12 +243,12 @@ internal partial class APM_LegalAttestation_MovieActions_Base : ISpecification<P
 /// <summary>
 /// LegalAttestation_SoundActions 
 /// </summary>
-internal partial class APM_LegalAttestation_SoundActions : APM_LegalAttestation_SoundActions_Base
+internal partial class APM_LegalAttestation_SoundActions : APM_LegalAttestation_SoundActions__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_SoundActions_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_SoundActions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_SoundActions";
     public static bool RuleGroup() { return false; }
@@ -242,7 +258,11 @@ internal partial class APM_LegalAttestation_SoundActions_Base : ISpecification<P
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_SoundActions>(obj, "SoundActions", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var SoundActions = obj.Get("SoundActions");
+        if (!(gte(SoundActions,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_SoundActions>($"Value failed special case check: fn:Eval(@SoundActions>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -254,12 +274,12 @@ internal partial class APM_LegalAttestation_SoundActions_Base : ISpecification<P
 /// <summary>
 /// LegalAttestation_HideAnnotationActions 
 /// </summary>
-internal partial class APM_LegalAttestation_HideAnnotationActions : APM_LegalAttestation_HideAnnotationActions_Base
+internal partial class APM_LegalAttestation_HideAnnotationActions : APM_LegalAttestation_HideAnnotationActions__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_HideAnnotationActions_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_HideAnnotationActions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_HideAnnotationActions";
     public static bool RuleGroup() { return false; }
@@ -269,7 +289,11 @@ internal partial class APM_LegalAttestation_HideAnnotationActions_Base : ISpecif
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_HideAnnotationActions>(obj, "HideAnnotationActions", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var HideAnnotationActions = obj.Get("HideAnnotationActions");
+        if (!(gte(HideAnnotationActions,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_HideAnnotationActions>($"Value failed special case check: fn:Eval(@HideAnnotationActions>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -281,12 +305,12 @@ internal partial class APM_LegalAttestation_HideAnnotationActions_Base : ISpecif
 /// <summary>
 /// LegalAttestation_GoToRemoteActions 
 /// </summary>
-internal partial class APM_LegalAttestation_GoToRemoteActions : APM_LegalAttestation_GoToRemoteActions_Base
+internal partial class APM_LegalAttestation_GoToRemoteActions : APM_LegalAttestation_GoToRemoteActions__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_GoToRemoteActions_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_GoToRemoteActions__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_GoToRemoteActions";
     public static bool RuleGroup() { return false; }
@@ -296,7 +320,11 @@ internal partial class APM_LegalAttestation_GoToRemoteActions_Base : ISpecificat
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_GoToRemoteActions>(obj, "GoToRemoteActions", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var GoToRemoteActions = obj.Get("GoToRemoteActions");
+        if (!(gte(GoToRemoteActions,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_GoToRemoteActions>($"Value failed special case check: fn:Eval(@GoToRemoteActions>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -308,12 +336,12 @@ internal partial class APM_LegalAttestation_GoToRemoteActions_Base : ISpecificat
 /// <summary>
 /// LegalAttestation_AlternateImages 
 /// </summary>
-internal partial class APM_LegalAttestation_AlternateImages : APM_LegalAttestation_AlternateImages_Base
+internal partial class APM_LegalAttestation_AlternateImages : APM_LegalAttestation_AlternateImages__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_AlternateImages_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_AlternateImages__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_AlternateImages";
     public static bool RuleGroup() { return false; }
@@ -323,7 +351,11 @@ internal partial class APM_LegalAttestation_AlternateImages_Base : ISpecificatio
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_AlternateImages>(obj, "AlternateImages", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var AlternateImages = obj.Get("AlternateImages");
+        if (!(gte(AlternateImages,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_AlternateImages>($"Value failed special case check: fn:Eval(@AlternateImages>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -335,12 +367,12 @@ internal partial class APM_LegalAttestation_AlternateImages_Base : ISpecificatio
 /// <summary>
 /// LegalAttestation_ExternalStreams 
 /// </summary>
-internal partial class APM_LegalAttestation_ExternalStreams : APM_LegalAttestation_ExternalStreams_Base
+internal partial class APM_LegalAttestation_ExternalStreams : APM_LegalAttestation_ExternalStreams__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_ExternalStreams_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_ExternalStreams__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_ExternalStreams";
     public static bool RuleGroup() { return false; }
@@ -350,7 +382,11 @@ internal partial class APM_LegalAttestation_ExternalStreams_Base : ISpecificatio
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_ExternalStreams>(obj, "ExternalStreams", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var ExternalStreams = obj.Get("ExternalStreams");
+        if (!(gte(ExternalStreams,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_ExternalStreams>($"Value failed special case check: fn:Eval(@ExternalStreams>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -362,12 +398,12 @@ internal partial class APM_LegalAttestation_ExternalStreams_Base : ISpecificatio
 /// <summary>
 /// LegalAttestation_TrueTypeFonts 
 /// </summary>
-internal partial class APM_LegalAttestation_TrueTypeFonts : APM_LegalAttestation_TrueTypeFonts_Base
+internal partial class APM_LegalAttestation_TrueTypeFonts : APM_LegalAttestation_TrueTypeFonts__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_TrueTypeFonts_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_TrueTypeFonts__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_TrueTypeFonts";
     public static bool RuleGroup() { return false; }
@@ -377,7 +413,11 @@ internal partial class APM_LegalAttestation_TrueTypeFonts_Base : ISpecification<
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_TrueTypeFonts>(obj, "TrueTypeFonts", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var TrueTypeFonts = obj.Get("TrueTypeFonts");
+        if (!(gte(TrueTypeFonts,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_TrueTypeFonts>($"Value failed special case check: fn:Eval(@TrueTypeFonts>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -389,12 +429,12 @@ internal partial class APM_LegalAttestation_TrueTypeFonts_Base : ISpecification<
 /// <summary>
 /// LegalAttestation_ExternalRefXobjects 
 /// </summary>
-internal partial class APM_LegalAttestation_ExternalRefXobjects : APM_LegalAttestation_ExternalRefXobjects_Base
+internal partial class APM_LegalAttestation_ExternalRefXobjects : APM_LegalAttestation_ExternalRefXobjects__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_ExternalRefXobjects_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_ExternalRefXobjects__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_ExternalRefXobjects";
     public static bool RuleGroup() { return false; }
@@ -404,7 +444,11 @@ internal partial class APM_LegalAttestation_ExternalRefXobjects_Base : ISpecific
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_ExternalRefXobjects>(obj, "ExternalRefXobjects", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var ExternalRefXobjects = obj.Get("ExternalRefXobjects");
+        if (!(gte(ExternalRefXobjects,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_ExternalRefXobjects>($"Value failed special case check: fn:Eval(@ExternalRefXobjects>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -416,12 +460,12 @@ internal partial class APM_LegalAttestation_ExternalRefXobjects_Base : ISpecific
 /// <summary>
 /// LegalAttestation_ExternalOPIdicts 
 /// </summary>
-internal partial class APM_LegalAttestation_ExternalOPIdicts : APM_LegalAttestation_ExternalOPIdicts_Base
+internal partial class APM_LegalAttestation_ExternalOPIdicts : APM_LegalAttestation_ExternalOPIdicts__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_ExternalOPIdicts_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_ExternalOPIdicts__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_ExternalOPIdicts";
     public static bool RuleGroup() { return false; }
@@ -431,7 +475,11 @@ internal partial class APM_LegalAttestation_ExternalOPIdicts_Base : ISpecificati
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_ExternalOPIdicts>(obj, "ExternalOPIdicts", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var ExternalOPIdicts = obj.Get("ExternalOPIdicts");
+        if (!(gte(ExternalOPIdicts,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_ExternalOPIdicts>($"Value failed special case check: fn:Eval(@ExternalOPIdicts>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -443,12 +491,12 @@ internal partial class APM_LegalAttestation_ExternalOPIdicts_Base : ISpecificati
 /// <summary>
 /// LegalAttestation_NonEmbeddedFonts 
 /// </summary>
-internal partial class APM_LegalAttestation_NonEmbeddedFonts : APM_LegalAttestation_NonEmbeddedFonts_Base
+internal partial class APM_LegalAttestation_NonEmbeddedFonts : APM_LegalAttestation_NonEmbeddedFonts__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_NonEmbeddedFonts_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_NonEmbeddedFonts__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_NonEmbeddedFonts";
     public static bool RuleGroup() { return false; }
@@ -458,7 +506,11 @@ internal partial class APM_LegalAttestation_NonEmbeddedFonts_Base : ISpecificati
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_NonEmbeddedFonts>(obj, "NonEmbeddedFonts", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var NonEmbeddedFonts = obj.Get("NonEmbeddedFonts");
+        if (!(gte(NonEmbeddedFonts,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_NonEmbeddedFonts>($"Value failed special case check: fn:Eval(@NonEmbeddedFonts>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -470,12 +522,12 @@ internal partial class APM_LegalAttestation_NonEmbeddedFonts_Base : ISpecificati
 /// <summary>
 /// LegalAttestation_DevDepGS_OP 
 /// </summary>
-internal partial class APM_LegalAttestation_DevDepGS_OP : APM_LegalAttestation_DevDepGS_OP_Base
+internal partial class APM_LegalAttestation_DevDepGS_OP : APM_LegalAttestation_DevDepGS_OP__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_DevDepGS_OP_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_DevDepGS_OP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_DevDepGS_OP";
     public static bool RuleGroup() { return false; }
@@ -485,7 +537,11 @@ internal partial class APM_LegalAttestation_DevDepGS_OP_Base : ISpecification<Pd
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_OP>(obj, "DevDepGS_OP", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DevDepGSOP = obj.Get("DevDepGS_OP");
+        if (!(gte(DevDepGSOP,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_DevDepGS_OP>($"Value failed special case check: fn:Eval(@DevDepGS_OP>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -497,12 +553,12 @@ internal partial class APM_LegalAttestation_DevDepGS_OP_Base : ISpecification<Pd
 /// <summary>
 /// LegalAttestation_DevDepGS_HT 
 /// </summary>
-internal partial class APM_LegalAttestation_DevDepGS_HT : APM_LegalAttestation_DevDepGS_HT_Base
+internal partial class APM_LegalAttestation_DevDepGS_HT : APM_LegalAttestation_DevDepGS_HT__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_DevDepGS_HT_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_DevDepGS_HT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_DevDepGS_HT";
     public static bool RuleGroup() { return false; }
@@ -512,7 +568,11 @@ internal partial class APM_LegalAttestation_DevDepGS_HT_Base : ISpecification<Pd
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_HT>(obj, "DevDepGS_HT", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DevDepGSHT = obj.Get("DevDepGS_HT");
+        if (!(gte(DevDepGSHT,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_DevDepGS_HT>($"Value failed special case check: fn:Eval(@DevDepGS_HT>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -524,12 +584,12 @@ internal partial class APM_LegalAttestation_DevDepGS_HT_Base : ISpecification<Pd
 /// <summary>
 /// LegalAttestation_DevDepGS_TR 
 /// </summary>
-internal partial class APM_LegalAttestation_DevDepGS_TR : APM_LegalAttestation_DevDepGS_TR_Base
+internal partial class APM_LegalAttestation_DevDepGS_TR : APM_LegalAttestation_DevDepGS_TR__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_DevDepGS_TR_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_DevDepGS_TR__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_DevDepGS_TR";
     public static bool RuleGroup() { return false; }
@@ -539,7 +599,11 @@ internal partial class APM_LegalAttestation_DevDepGS_TR_Base : ISpecification<Pd
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_TR>(obj, "DevDepGS_TR", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DevDepGSTR = obj.Get("DevDepGS_TR");
+        if (!(gte(DevDepGSTR,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_DevDepGS_TR>($"Value failed special case check: fn:Eval(@DevDepGS_TR>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -551,12 +615,12 @@ internal partial class APM_LegalAttestation_DevDepGS_TR_Base : ISpecification<Pd
 /// <summary>
 /// LegalAttestation_DevDepGS_UCR 
 /// </summary>
-internal partial class APM_LegalAttestation_DevDepGS_UCR : APM_LegalAttestation_DevDepGS_UCR_Base
+internal partial class APM_LegalAttestation_DevDepGS_UCR : APM_LegalAttestation_DevDepGS_UCR__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_DevDepGS_UCR_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_DevDepGS_UCR__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_DevDepGS_UCR";
     public static bool RuleGroup() { return false; }
@@ -566,7 +630,11 @@ internal partial class APM_LegalAttestation_DevDepGS_UCR_Base : ISpecification<P
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_UCR>(obj, "DevDepGS_UCR", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DevDepGSUCR = obj.Get("DevDepGS_UCR");
+        if (!(gte(DevDepGSUCR,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_DevDepGS_UCR>($"Value failed special case check: fn:Eval(@DevDepGS_UCR>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -578,12 +646,12 @@ internal partial class APM_LegalAttestation_DevDepGS_UCR_Base : ISpecification<P
 /// <summary>
 /// LegalAttestation_DevDepGS_BG 
 /// </summary>
-internal partial class APM_LegalAttestation_DevDepGS_BG : APM_LegalAttestation_DevDepGS_BG_Base
+internal partial class APM_LegalAttestation_DevDepGS_BG : APM_LegalAttestation_DevDepGS_BG__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_DevDepGS_BG_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_DevDepGS_BG__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_DevDepGS_BG";
     public static bool RuleGroup() { return false; }
@@ -593,7 +661,11 @@ internal partial class APM_LegalAttestation_DevDepGS_BG_Base : ISpecification<Pd
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_BG>(obj, "DevDepGS_BG", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DevDepGSBG = obj.Get("DevDepGS_BG");
+        if (!(gte(DevDepGSBG,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_DevDepGS_BG>($"Value failed special case check: fn:Eval(@DevDepGS_BG>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -605,12 +677,12 @@ internal partial class APM_LegalAttestation_DevDepGS_BG_Base : ISpecification<Pd
 /// <summary>
 /// LegalAttestation_DevDepGS_FL 
 /// </summary>
-internal partial class APM_LegalAttestation_DevDepGS_FL : APM_LegalAttestation_DevDepGS_FL_Base
+internal partial class APM_LegalAttestation_DevDepGS_FL : APM_LegalAttestation_DevDepGS_FL__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_DevDepGS_FL_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_DevDepGS_FL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_DevDepGS_FL";
     public static bool RuleGroup() { return false; }
@@ -620,7 +692,11 @@ internal partial class APM_LegalAttestation_DevDepGS_FL_Base : ISpecification<Pd
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_FL>(obj, "DevDepGS_FL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DevDepGSFL = obj.Get("DevDepGS_FL");
+        if (!(gte(DevDepGSFL,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_DevDepGS_FL>($"Value failed special case check: fn:Eval(@DevDepGS_FL>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -632,12 +708,12 @@ internal partial class APM_LegalAttestation_DevDepGS_FL_Base : ISpecification<Pd
 /// <summary>
 /// LegalAttestation_Annotations 
 /// </summary>
-internal partial class APM_LegalAttestation_Annotations : APM_LegalAttestation_Annotations_Base
+internal partial class APM_LegalAttestation_Annotations : APM_LegalAttestation_Annotations__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_Annotations_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_Annotations__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_Annotations";
     public static bool RuleGroup() { return false; }
@@ -647,7 +723,11 @@ internal partial class APM_LegalAttestation_Annotations_Base : ISpecification<Pd
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_Annotations>(obj, "Annotations", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Annotations = obj.Get("Annotations");
+        if (!(gte(Annotations,0))) 
+        {
+            ctx.Fail<APM_LegalAttestation_Annotations>($"Value failed special case check: fn:Eval(@Annotations>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -659,12 +739,12 @@ internal partial class APM_LegalAttestation_Annotations_Base : ISpecification<Pd
 /// <summary>
 /// LegalAttestation_OptionalContent 
 /// </summary>
-internal partial class APM_LegalAttestation_OptionalContent : APM_LegalAttestation_OptionalContent_Base
+internal partial class APM_LegalAttestation_OptionalContent : APM_LegalAttestation_OptionalContent__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_OptionalContent_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_OptionalContent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_OptionalContent";
     public static bool RuleGroup() { return false; }
@@ -686,12 +766,12 @@ internal partial class APM_LegalAttestation_OptionalContent_Base : ISpecificatio
 /// <summary>
 /// LegalAttestation_Attestation 
 /// </summary>
-internal partial class APM_LegalAttestation_Attestation : APM_LegalAttestation_Attestation_Base
+internal partial class APM_LegalAttestation_Attestation : APM_LegalAttestation_Attestation__Base
 {
 }
 
 
-internal partial class APM_LegalAttestation_Attestation_Base : ISpecification<PdfDictionary>
+internal partial class APM_LegalAttestation_Attestation__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "LegalAttestation_Attestation";
     public static bool RuleGroup() { return false; }

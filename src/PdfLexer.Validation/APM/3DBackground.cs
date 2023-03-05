@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DBackground : APM_3DBackground_Base
+internal partial class APM_3DBackground : APM_3DBackground__Base
 {
 }
 
-internal partial class APM_3DBackground_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DBackground__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DBackground";
@@ -98,12 +98,12 @@ internal partial class APM_3DBackground_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DBackground_Type Table 317
 /// </summary>
-internal partial class APM_3DBackground_Type : APM_3DBackground_Type_Base
+internal partial class APM_3DBackground_Type : APM_3DBackground_Type__Base
 {
 }
 
 
-internal partial class APM_3DBackground_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DBackground_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DBackground_Type";
     public static bool RuleGroup() { return false; }
@@ -114,13 +114,11 @@ internal partial class APM_3DBackground_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_3DBackground_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DBG")) 
         {
             ctx.Fail<APM_3DBackground_Type>($"Invalid value {val}, allowed are: [3DBG]");
-        }
         }
         // no linked objects
         
@@ -132,12 +130,12 @@ internal partial class APM_3DBackground_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// 3DBackground_Subtype 
 /// </summary>
-internal partial class APM_3DBackground_Subtype : APM_3DBackground_Subtype_Base
+internal partial class APM_3DBackground_Subtype : APM_3DBackground_Subtype__Base
 {
 }
 
 
-internal partial class APM_3DBackground_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DBackground_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DBackground_Subtype";
     public static bool RuleGroup() { return false; }
@@ -148,13 +146,11 @@ internal partial class APM_3DBackground_Subtype_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_3DBackground_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "SC")) 
         {
             ctx.Fail<APM_3DBackground_Subtype>($"Invalid value {val}, allowed are: [SC]");
-        }
         }
         // no linked objects
         
@@ -166,12 +162,12 @@ internal partial class APM_3DBackground_Subtype_Base : ISpecification<PdfDiction
 /// <summary>
 /// 3DBackground_CS 
 /// </summary>
-internal partial class APM_3DBackground_CS : APM_3DBackground_CS_Base
+internal partial class APM_3DBackground_CS : APM_3DBackground_CS__Base
 {
 }
 
 
-internal partial class APM_3DBackground_CS_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DBackground_CS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DBackground_CS";
     public static bool RuleGroup() { return false; }
@@ -182,13 +178,11 @@ internal partial class APM_3DBackground_CS_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DBackground_CS>(obj, "CS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DeviceRGB")) 
         {
             ctx.Fail<APM_3DBackground_CS>($"Invalid value {val}, allowed are: [DeviceRGB]");
-        }
         }
         // no linked objects
         
@@ -200,12 +194,12 @@ internal partial class APM_3DBackground_CS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DBackground_C 
 /// </summary>
-internal partial class APM_3DBackground_C : APM_3DBackground_C_Base
+internal partial class APM_3DBackground_C : APM_3DBackground_C__Base
 {
 }
 
 
-internal partial class APM_3DBackground_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DBackground_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DBackground_C";
     public static bool RuleGroup() { return false; }
@@ -227,12 +221,12 @@ internal partial class APM_3DBackground_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DBackground_EA 
 /// </summary>
-internal partial class APM_3DBackground_EA : APM_3DBackground_EA_Base
+internal partial class APM_3DBackground_EA : APM_3DBackground_EA__Base
 {
 }
 
 
-internal partial class APM_3DBackground_EA_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DBackground_EA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DBackground_EA";
     public static bool RuleGroup() { return false; }

@@ -20,7 +20,7 @@ internal partial class APM_ArrayOf_3CenterOfRotationNumbers : ISpecification<Pdf
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 

@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfSignatureReferences : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 

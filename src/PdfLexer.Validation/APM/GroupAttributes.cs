@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_GroupAttributes : APM_GroupAttributes_Base
+internal partial class APM_GroupAttributes : APM_GroupAttributes__Base
 {
 }
 
-internal partial class APM_GroupAttributes_Base : ISpecification<PdfDictionary>
+internal partial class APM_GroupAttributes__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "GroupAttributes";
@@ -118,12 +118,12 @@ internal partial class APM_GroupAttributes_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// GroupAttributes_Type Table 94 and Table 145
 /// </summary>
-internal partial class APM_GroupAttributes_Type : APM_GroupAttributes_Type_Base
+internal partial class APM_GroupAttributes_Type : APM_GroupAttributes_Type__Base
 {
 }
 
 
-internal partial class APM_GroupAttributes_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_GroupAttributes_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GroupAttributes_Type";
     public static bool RuleGroup() { return false; }
@@ -134,13 +134,11 @@ internal partial class APM_GroupAttributes_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_GroupAttributes_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Group")) 
         {
             ctx.Fail<APM_GroupAttributes_Type>($"Invalid value {val}, allowed are: [Group]");
-        }
         }
         // no linked objects
         
@@ -152,12 +150,12 @@ internal partial class APM_GroupAttributes_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// GroupAttributes_S 
 /// </summary>
-internal partial class APM_GroupAttributes_S : APM_GroupAttributes_S_Base
+internal partial class APM_GroupAttributes_S : APM_GroupAttributes_S__Base
 {
 }
 
 
-internal partial class APM_GroupAttributes_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_GroupAttributes_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GroupAttributes_S";
     public static bool RuleGroup() { return false; }
@@ -168,13 +166,11 @@ internal partial class APM_GroupAttributes_S_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_GroupAttributes_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Transparency")) 
         {
             ctx.Fail<APM_GroupAttributes_S>($"Invalid value {val}, allowed are: [Transparency]");
-        }
         }
         // no linked objects
         
@@ -186,12 +182,12 @@ internal partial class APM_GroupAttributes_S_Base : ISpecification<PdfDictionary
 /// <summary>
 /// GroupAttributes_CS 
 /// </summary>
-internal partial class APM_GroupAttributes_CS : APM_GroupAttributes_CS_Base
+internal partial class APM_GroupAttributes_CS : APM_GroupAttributes_CS__Base
 {
 }
 
 
-internal partial class APM_GroupAttributes_CS_Base : ISpecification<PdfDictionary>
+internal partial class APM_GroupAttributes_CS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GroupAttributes_CS";
     public static bool RuleGroup() { return false; }
@@ -229,13 +225,11 @@ internal partial class APM_GroupAttributes_CS_Base : ISpecification<PdfDictionar
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                     {
                         ctx.Fail<APM_GroupAttributes_CS>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -253,12 +247,12 @@ internal partial class APM_GroupAttributes_CS_Base : ISpecification<PdfDictionar
 /// <summary>
 /// GroupAttributes_I 
 /// </summary>
-internal partial class APM_GroupAttributes_I : APM_GroupAttributes_I_Base
+internal partial class APM_GroupAttributes_I : APM_GroupAttributes_I__Base
 {
 }
 
 
-internal partial class APM_GroupAttributes_I_Base : ISpecification<PdfDictionary>
+internal partial class APM_GroupAttributes_I__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GroupAttributes_I";
     public static bool RuleGroup() { return false; }
@@ -280,12 +274,12 @@ internal partial class APM_GroupAttributes_I_Base : ISpecification<PdfDictionary
 /// <summary>
 /// GroupAttributes_K 
 /// </summary>
-internal partial class APM_GroupAttributes_K : APM_GroupAttributes_K_Base
+internal partial class APM_GroupAttributes_K : APM_GroupAttributes_K__Base
 {
 }
 
 
-internal partial class APM_GroupAttributes_K_Base : ISpecification<PdfDictionary>
+internal partial class APM_GroupAttributes_K__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GroupAttributes_K";
     public static bool RuleGroup() { return false; }

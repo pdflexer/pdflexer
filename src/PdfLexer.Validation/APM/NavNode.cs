@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_NavNode : APM_NavNode_Base
+internal partial class APM_NavNode : APM_NavNode__Base
 {
 }
 
-internal partial class APM_NavNode_Base : ISpecification<PdfDictionary>
+internal partial class APM_NavNode__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "NavNode";
@@ -109,12 +109,12 @@ internal partial class APM_NavNode_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NavNode_Type Table 165
 /// </summary>
-internal partial class APM_NavNode_Type : APM_NavNode_Type_Base
+internal partial class APM_NavNode_Type : APM_NavNode_Type__Base
 {
 }
 
 
-internal partial class APM_NavNode_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_NavNode_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NavNode_Type";
     public static bool RuleGroup() { return false; }
@@ -125,13 +125,11 @@ internal partial class APM_NavNode_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_NavNode_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "NavNode")) 
         {
             ctx.Fail<APM_NavNode_Type>($"Invalid value {val}, allowed are: [NavNode]");
-        }
         }
         // no linked objects
         
@@ -143,12 +141,12 @@ internal partial class APM_NavNode_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NavNode_NA 
 /// </summary>
-internal partial class APM_NavNode_NA : APM_NavNode_NA_Base
+internal partial class APM_NavNode_NA : APM_NavNode_NA__Base
 {
 }
 
 
-internal partial class APM_NavNode_NA_Base : ISpecification<PdfDictionary>
+internal partial class APM_NavNode_NA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NavNode_NA";
     public static bool RuleGroup() { return false; }
@@ -208,6 +206,18 @@ internal partial class APM_NavNode_NA_Base : ISpecification<PdfDictionary>
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_NavNode_NA>("NA did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -221,12 +231,12 @@ internal partial class APM_NavNode_NA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NavNode_PA 
 /// </summary>
-internal partial class APM_NavNode_PA : APM_NavNode_PA_Base
+internal partial class APM_NavNode_PA : APM_NavNode_PA__Base
 {
 }
 
 
-internal partial class APM_NavNode_PA_Base : ISpecification<PdfDictionary>
+internal partial class APM_NavNode_PA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NavNode_PA";
     public static bool RuleGroup() { return false; }
@@ -286,6 +296,18 @@ internal partial class APM_NavNode_PA_Base : ISpecification<PdfDictionary>
         } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_NavNode_PA>("PA did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -299,12 +321,12 @@ internal partial class APM_NavNode_PA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NavNode_Next 
 /// </summary>
-internal partial class APM_NavNode_Next : APM_NavNode_Next_Base
+internal partial class APM_NavNode_Next : APM_NavNode_Next__Base
 {
 }
 
 
-internal partial class APM_NavNode_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_NavNode_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NavNode_Next";
     public static bool RuleGroup() { return false; }
@@ -326,12 +348,12 @@ internal partial class APM_NavNode_Next_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NavNode_Prev 
 /// </summary>
-internal partial class APM_NavNode_Prev : APM_NavNode_Prev_Base
+internal partial class APM_NavNode_Prev : APM_NavNode_Prev__Base
 {
 }
 
 
-internal partial class APM_NavNode_Prev_Base : ISpecification<PdfDictionary>
+internal partial class APM_NavNode_Prev__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NavNode_Prev";
     public static bool RuleGroup() { return false; }
@@ -353,12 +375,12 @@ internal partial class APM_NavNode_Prev_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// NavNode_Dur 
 /// </summary>
-internal partial class APM_NavNode_Dur : APM_NavNode_Dur_Base
+internal partial class APM_NavNode_Dur : APM_NavNode_Dur__Base
 {
 }
 
 
-internal partial class APM_NavNode_Dur_Base : ISpecification<PdfDictionary>
+internal partial class APM_NavNode_Dur__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "NavNode_Dur";
     public static bool RuleGroup() { return false; }

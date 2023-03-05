@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AlternateImage : APM_AlternateImage_Base
+internal partial class APM_AlternateImage : APM_AlternateImage__Base
 {
 }
 
-internal partial class APM_AlternateImage_Base : ISpecification<PdfDictionary>
+internal partial class APM_AlternateImage__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AlternateImage";
@@ -120,12 +120,12 @@ internal partial class APM_AlternateImage_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AlternateImage_Image Table 89
 /// </summary>
-internal partial class APM_AlternateImage_Image : APM_AlternateImage_Image_Base
+internal partial class APM_AlternateImage_Image : APM_AlternateImage_Image__Base
 {
 }
 
 
-internal partial class APM_AlternateImage_Image_Base : ISpecification<PdfDictionary>
+internal partial class APM_AlternateImage_Image__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AlternateImage_Image";
     public static bool RuleGroup() { return false; }
@@ -147,12 +147,12 @@ internal partial class APM_AlternateImage_Image_Base : ISpecification<PdfDiction
 /// <summary>
 /// AlternateImage_DefaultForPrinting 
 /// </summary>
-internal partial class APM_AlternateImage_DefaultForPrinting : APM_AlternateImage_DefaultForPrinting_Base
+internal partial class APM_AlternateImage_DefaultForPrinting : APM_AlternateImage_DefaultForPrinting__Base
 {
 }
 
 
-internal partial class APM_AlternateImage_DefaultForPrinting_Base : ISpecification<PdfDictionary>
+internal partial class APM_AlternateImage_DefaultForPrinting__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AlternateImage_DefaultForPrinting";
     public static bool RuleGroup() { return false; }
@@ -174,12 +174,12 @@ internal partial class APM_AlternateImage_DefaultForPrinting_Base : ISpecificati
 /// <summary>
 /// AlternateImage_OC 
 /// </summary>
-internal partial class APM_AlternateImage_OC : APM_AlternateImage_OC_Base
+internal partial class APM_AlternateImage_OC : APM_AlternateImage_OC__Base
 {
 }
 
 
-internal partial class APM_AlternateImage_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AlternateImage_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AlternateImage_OC";
     public static bool RuleGroup() { return false; }

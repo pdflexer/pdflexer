@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaCuePoint : APM_RichMediaCuePoint_Base
+internal partial class APM_RichMediaCuePoint : APM_RichMediaCuePoint__Base
 {
 }
 
-internal partial class APM_RichMediaCuePoint_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCuePoint__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaCuePoint";
@@ -49,12 +49,12 @@ internal partial class APM_RichMediaCuePoint_Base : ISpecification<PdfDictionary
 /// <summary>
 /// RichMediaCuePoint_Type Adobe Extension Level 3, Table 9.51e
 /// </summary>
-internal partial class APM_RichMediaCuePoint_Type : APM_RichMediaCuePoint_Type_Base
+internal partial class APM_RichMediaCuePoint_Type : APM_RichMediaCuePoint_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaCuePoint_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCuePoint_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaCuePoint_Type";
     public static bool RuleGroup() { return false; }
@@ -65,13 +65,11 @@ internal partial class APM_RichMediaCuePoint_Type_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_RichMediaCuePoint_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CuePoint")) 
         {
             ctx.Fail<APM_RichMediaCuePoint_Type>($"Invalid value {val}, allowed are: [CuePoint]");
-        }
         }
         // no linked objects
         
@@ -83,12 +81,12 @@ internal partial class APM_RichMediaCuePoint_Type_Base : ISpecification<PdfDicti
 /// <summary>
 /// RichMediaCuePoint_Subtype 
 /// </summary>
-internal partial class APM_RichMediaCuePoint_Subtype : APM_RichMediaCuePoint_Subtype_Base
+internal partial class APM_RichMediaCuePoint_Subtype : APM_RichMediaCuePoint_Subtype__Base
 {
 }
 
 
-internal partial class APM_RichMediaCuePoint_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCuePoint_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaCuePoint_Subtype";
     public static bool RuleGroup() { return false; }
@@ -99,13 +97,11 @@ internal partial class APM_RichMediaCuePoint_Subtype_Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfName, APM_RichMediaCuePoint_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Navigation" || val == "Event")) 
         {
             ctx.Fail<APM_RichMediaCuePoint_Subtype>($"Invalid value {val}, allowed are: [Navigation,Event]");
-        }
         }
         // no linked objects
         
@@ -117,12 +113,12 @@ internal partial class APM_RichMediaCuePoint_Subtype_Base : ISpecification<PdfDi
 /// <summary>
 /// RichMediaCuePoint_Name 
 /// </summary>
-internal partial class APM_RichMediaCuePoint_Name : APM_RichMediaCuePoint_Name_Base
+internal partial class APM_RichMediaCuePoint_Name : APM_RichMediaCuePoint_Name__Base
 {
 }
 
 
-internal partial class APM_RichMediaCuePoint_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCuePoint_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaCuePoint_Name";
     public static bool RuleGroup() { return false; }
@@ -144,12 +140,12 @@ internal partial class APM_RichMediaCuePoint_Name_Base : ISpecification<PdfDicti
 /// <summary>
 /// RichMediaCuePoint_Time 
 /// </summary>
-internal partial class APM_RichMediaCuePoint_Time : APM_RichMediaCuePoint_Time_Base
+internal partial class APM_RichMediaCuePoint_Time : APM_RichMediaCuePoint_Time__Base
 {
 }
 
 
-internal partial class APM_RichMediaCuePoint_Time_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCuePoint_Time__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaCuePoint_Time";
     public static bool RuleGroup() { return false; }
@@ -171,12 +167,12 @@ internal partial class APM_RichMediaCuePoint_Time_Base : ISpecification<PdfDicti
 /// <summary>
 /// RichMediaCuePoint_A 
 /// </summary>
-internal partial class APM_RichMediaCuePoint_A : APM_RichMediaCuePoint_A_Base
+internal partial class APM_RichMediaCuePoint_A : APM_RichMediaCuePoint_A__Base
 {
 }
 
 
-internal partial class APM_RichMediaCuePoint_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaCuePoint_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaCuePoint_A";
     public static bool RuleGroup() { return false; }

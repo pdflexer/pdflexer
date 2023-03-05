@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MeasureRL : APM_MeasureRL_Base
+internal partial class APM_MeasureRL : APM_MeasureRL__Base
 {
 }
 
-internal partial class APM_MeasureRL_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MeasureRL";
@@ -104,12 +104,12 @@ internal partial class APM_MeasureRL_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_Type Table 266 and Table 267
 /// </summary>
-internal partial class APM_MeasureRL_Type : APM_MeasureRL_Type_Base
+internal partial class APM_MeasureRL_Type : APM_MeasureRL_Type__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_Type";
     public static bool RuleGroup() { return false; }
@@ -120,13 +120,11 @@ internal partial class APM_MeasureRL_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_MeasureRL_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Measure")) 
         {
             ctx.Fail<APM_MeasureRL_Type>($"Invalid value {val}, allowed are: [Measure]");
-        }
         }
         // no linked objects
         
@@ -138,12 +136,12 @@ internal partial class APM_MeasureRL_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_Subtype 
 /// </summary>
-internal partial class APM_MeasureRL_Subtype : APM_MeasureRL_Subtype_Base
+internal partial class APM_MeasureRL_Subtype : APM_MeasureRL_Subtype__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_Subtype";
     public static bool RuleGroup() { return false; }
@@ -154,13 +152,11 @@ internal partial class APM_MeasureRL_Subtype_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_MeasureRL_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RL")) 
         {
             ctx.Fail<APM_MeasureRL_Subtype>($"Invalid value {val}, allowed are: [RL]");
-        }
         }
         // no linked objects
         
@@ -172,12 +168,12 @@ internal partial class APM_MeasureRL_Subtype_Base : ISpecification<PdfDictionary
 /// <summary>
 /// MeasureRL_R 
 /// </summary>
-internal partial class APM_MeasureRL_R : APM_MeasureRL_R_Base
+internal partial class APM_MeasureRL_R : APM_MeasureRL_R__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_R";
     public static bool RuleGroup() { return false; }
@@ -199,12 +195,12 @@ internal partial class APM_MeasureRL_R_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_X 
 /// </summary>
-internal partial class APM_MeasureRL_X : APM_MeasureRL_X_Base
+internal partial class APM_MeasureRL_X : APM_MeasureRL_X__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_X_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_X__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_X";
     public static bool RuleGroup() { return false; }
@@ -226,12 +222,12 @@ internal partial class APM_MeasureRL_X_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_Y 
 /// </summary>
-internal partial class APM_MeasureRL_Y : APM_MeasureRL_Y_Base
+internal partial class APM_MeasureRL_Y : APM_MeasureRL_Y__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_Y_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_Y__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_Y";
     public static bool RuleGroup() { return false; }
@@ -253,12 +249,12 @@ internal partial class APM_MeasureRL_Y_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_D 
 /// </summary>
-internal partial class APM_MeasureRL_D : APM_MeasureRL_D_Base
+internal partial class APM_MeasureRL_D : APM_MeasureRL_D__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_D";
     public static bool RuleGroup() { return false; }
@@ -280,12 +276,12 @@ internal partial class APM_MeasureRL_D_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_A 
 /// </summary>
-internal partial class APM_MeasureRL_A : APM_MeasureRL_A_Base
+internal partial class APM_MeasureRL_A : APM_MeasureRL_A__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_A";
     public static bool RuleGroup() { return false; }
@@ -307,12 +303,12 @@ internal partial class APM_MeasureRL_A_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_T 
 /// </summary>
-internal partial class APM_MeasureRL_T : APM_MeasureRL_T_Base
+internal partial class APM_MeasureRL_T : APM_MeasureRL_T__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_T";
     public static bool RuleGroup() { return false; }
@@ -334,12 +330,12 @@ internal partial class APM_MeasureRL_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_S 
 /// </summary>
-internal partial class APM_MeasureRL_S : APM_MeasureRL_S_Base
+internal partial class APM_MeasureRL_S : APM_MeasureRL_S__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_S";
     public static bool RuleGroup() { return false; }
@@ -361,12 +357,12 @@ internal partial class APM_MeasureRL_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_O 
 /// </summary>
-internal partial class APM_MeasureRL_O : APM_MeasureRL_O_Base
+internal partial class APM_MeasureRL_O : APM_MeasureRL_O__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_O";
     public static bool RuleGroup() { return false; }
@@ -388,12 +384,12 @@ internal partial class APM_MeasureRL_O_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MeasureRL_CYX 
 /// </summary>
-internal partial class APM_MeasureRL_CYX : APM_MeasureRL_CYX_Base
+internal partial class APM_MeasureRL_CYX : APM_MeasureRL_CYX__Base
 {
 }
 
 
-internal partial class APM_MeasureRL_CYX_Base : ISpecification<PdfDictionary>
+internal partial class APM_MeasureRL_CYX__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MeasureRL_CYX";
     public static bool RuleGroup() { return false; }
@@ -403,7 +399,7 @@ internal partial class APM_MeasureRL_CYX_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfNumber, APM_MeasureRL_CYX>(obj, "CYX", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         // no linked objects
         

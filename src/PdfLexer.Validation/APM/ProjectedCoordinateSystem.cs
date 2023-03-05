@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ProjectedCoordinateSystem : APM_ProjectedCoordinateSystem_Base
+internal partial class APM_ProjectedCoordinateSystem : APM_ProjectedCoordinateSystem__Base
 {
 }
 
-internal partial class APM_ProjectedCoordinateSystem_Base : ISpecification<PdfDictionary>
+internal partial class APM_ProjectedCoordinateSystem__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ProjectedCoordinateSystem";
@@ -47,12 +47,12 @@ internal partial class APM_ProjectedCoordinateSystem_Base : ISpecification<PdfDi
 /// <summary>
 /// ProjectedCoordinateSystem_Type Table 271
 /// </summary>
-internal partial class APM_ProjectedCoordinateSystem_Type : APM_ProjectedCoordinateSystem_Type_Base
+internal partial class APM_ProjectedCoordinateSystem_Type : APM_ProjectedCoordinateSystem_Type__Base
 {
 }
 
 
-internal partial class APM_ProjectedCoordinateSystem_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ProjectedCoordinateSystem_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ProjectedCoordinateSystem_Type";
     public static bool RuleGroup() { return false; }
@@ -63,13 +63,11 @@ internal partial class APM_ProjectedCoordinateSystem_Type_Base : ISpecification<
         var val = ctx.GetRequired<PdfName, APM_ProjectedCoordinateSystem_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "PROJCS")) 
         {
             ctx.Fail<APM_ProjectedCoordinateSystem_Type>($"Invalid value {val}, allowed are: [PROJCS]");
-        }
         }
         // no linked objects
         
@@ -81,12 +79,12 @@ internal partial class APM_ProjectedCoordinateSystem_Type_Base : ISpecification<
 /// <summary>
 /// ProjectedCoordinateSystem_EPSG 
 /// </summary>
-internal partial class APM_ProjectedCoordinateSystem_EPSG : APM_ProjectedCoordinateSystem_EPSG_Base
+internal partial class APM_ProjectedCoordinateSystem_EPSG : APM_ProjectedCoordinateSystem_EPSG__Base
 {
 }
 
 
-internal partial class APM_ProjectedCoordinateSystem_EPSG_Base : ISpecification<PdfDictionary>
+internal partial class APM_ProjectedCoordinateSystem_EPSG__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ProjectedCoordinateSystem_EPSG";
     public static bool RuleGroup() { return false; }
@@ -94,15 +92,12 @@ internal partial class APM_ProjectedCoordinateSystem_EPSG_Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfIntNumber? val;
-        {
-            
-            if (!obj.ContainsKey("WKT")) {
-                val = ctx.GetRequired<PdfIntNumber, APM_ProjectedCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfIntNumber, APM_ProjectedCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfIntNumber, APM_ProjectedCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
+        if ((!obj.ContainsKey("WKT")) && val == null) {
+            ctx.Fail<APM_ProjectedCoordinateSystem_EPSG>("EPSG is required when 'fn:IsRequired(fn:Not(fn:IsPresent(WKT)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -116,12 +111,12 @@ internal partial class APM_ProjectedCoordinateSystem_EPSG_Base : ISpecification<
 /// <summary>
 /// ProjectedCoordinateSystem_WKT 
 /// </summary>
-internal partial class APM_ProjectedCoordinateSystem_WKT : APM_ProjectedCoordinateSystem_WKT_Base
+internal partial class APM_ProjectedCoordinateSystem_WKT : APM_ProjectedCoordinateSystem_WKT__Base
 {
 }
 
 
-internal partial class APM_ProjectedCoordinateSystem_WKT_Base : ISpecification<PdfDictionary>
+internal partial class APM_ProjectedCoordinateSystem_WKT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ProjectedCoordinateSystem_WKT";
     public static bool RuleGroup() { return false; }
@@ -129,15 +124,12 @@ internal partial class APM_ProjectedCoordinateSystem_WKT_Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfString? val;
-        {
-            
-            if (!obj.ContainsKey("EPSG")) {
-                val = ctx.GetRequired<PdfString, APM_ProjectedCoordinateSystem_WKT>(obj, "WKT", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfString, APM_ProjectedCoordinateSystem_WKT>(obj, "WKT", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfString, APM_ProjectedCoordinateSystem_WKT>(obj, "WKT", IndirectRequirement.Either);
+        if ((!obj.ContainsKey(val)) && val == null) {
+            ctx.Fail<APM_ProjectedCoordinateSystem_WKT>("WKT is required when 'fn:IsRequired(fn:Not(fn:IsPresent(EPSG)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions

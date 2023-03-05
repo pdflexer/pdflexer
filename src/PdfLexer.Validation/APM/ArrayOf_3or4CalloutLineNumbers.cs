@@ -23,7 +23,7 @@ internal partial class APM_ArrayOf_3or4CalloutLineNumbers : ISpecification<PdfAr
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 

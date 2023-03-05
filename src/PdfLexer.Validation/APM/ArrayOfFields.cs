@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfFields : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -64,6 +64,9 @@ internal partial class APM_ArrayOfFields_x : ISpecification<PdfArray>
             } else if (APM_AnnotWidget.MatchesType(ctx, val)) 
             {
                 ctx.Run<APM_AnnotWidget, PdfDictionary>(stack, val, obj);
+            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val)))) 
+            {
+                ctx.Run<APM_FieldSig, PdfDictionary>(stack, val, obj);
             }else 
             {
                 ctx.Fail<APM_ArrayOfFields_x>("n did not match any allowable types: '[FieldTx,FieldBtnPush,FieldBtnCheckbox,FieldBtnRadio,FieldChoice,fn:SinceVersion(1.3,FieldSig),Field,AnnotWidget]'");

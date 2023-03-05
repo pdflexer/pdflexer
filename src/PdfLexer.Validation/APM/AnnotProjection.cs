@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotProjection : APM_AnnotProjection_Base
+internal partial class APM_AnnotProjection : APM_AnnotProjection__Base
 {
 }
 
-internal partial class APM_AnnotProjection_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotProjection";
@@ -81,12 +81,12 @@ internal partial class APM_AnnotProjection_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotProjection_Type Table 166 and Table 172 and Clause 12.5.6.24 (markup annot)
 /// </summary>
-internal partial class APM_AnnotProjection_Type : APM_AnnotProjection_Type_Base
+internal partial class APM_AnnotProjection_Type : APM_AnnotProjection_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_Type";
     public static bool RuleGroup() { return false; }
@@ -97,13 +97,11 @@ internal partial class APM_AnnotProjection_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_AnnotProjection_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotProjection_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -115,12 +113,12 @@ internal partial class APM_AnnotProjection_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotProjection_Subtype 
 /// </summary>
-internal partial class APM_AnnotProjection_Subtype : APM_AnnotProjection_Subtype_Base
+internal partial class APM_AnnotProjection_Subtype : APM_AnnotProjection_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_Subtype";
     public static bool RuleGroup() { return false; }
@@ -131,13 +129,11 @@ internal partial class APM_AnnotProjection_Subtype_Base : ISpecification<PdfDict
         var val = ctx.GetRequired<PdfName, APM_AnnotProjection_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Projection")) 
         {
             ctx.Fail<APM_AnnotProjection_Subtype>($"Invalid value {val}, allowed are: [Projection]");
-        }
         }
         // no linked objects
         
@@ -149,12 +145,12 @@ internal partial class APM_AnnotProjection_Subtype_Base : ISpecification<PdfDict
 /// <summary>
 /// AnnotProjection_Rect 
 /// </summary>
-internal partial class APM_AnnotProjection_Rect : APM_AnnotProjection_Rect_Base
+internal partial class APM_AnnotProjection_Rect : APM_AnnotProjection_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_Rect";
     public static bool RuleGroup() { return false; }
@@ -176,12 +172,12 @@ internal partial class APM_AnnotProjection_Rect_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotProjection_Contents 
 /// </summary>
-internal partial class APM_AnnotProjection_Contents : APM_AnnotProjection_Contents_Base
+internal partial class APM_AnnotProjection_Contents : APM_AnnotProjection_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_Contents";
     public static bool RuleGroup() { return false; }
@@ -203,12 +199,12 @@ internal partial class APM_AnnotProjection_Contents_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotProjection_P 
 /// </summary>
-internal partial class APM_AnnotProjection_P : APM_AnnotProjection_P_Base
+internal partial class APM_AnnotProjection_P : APM_AnnotProjection_P__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_P";
     public static bool RuleGroup() { return false; }
@@ -230,12 +226,12 @@ internal partial class APM_AnnotProjection_P_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotProjection_NM 
 /// </summary>
-internal partial class APM_AnnotProjection_NM : APM_AnnotProjection_NM_Base
+internal partial class APM_AnnotProjection_NM : APM_AnnotProjection_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_NM";
     public static bool RuleGroup() { return false; }
@@ -257,12 +253,12 @@ internal partial class APM_AnnotProjection_NM_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_M 
 /// </summary>
-internal partial class APM_AnnotProjection_M : APM_AnnotProjection_M_Base
+internal partial class APM_AnnotProjection_M : APM_AnnotProjection_M__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_M";
     public static bool RuleGroup() { return false; }
@@ -289,12 +285,12 @@ internal partial class APM_AnnotProjection_M_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotProjection_F Table 167
 /// </summary>
-internal partial class APM_AnnotProjection_F : APM_AnnotProjection_F_Base
+internal partial class APM_AnnotProjection_F : APM_AnnotProjection_F__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_F";
     public static bool RuleGroup() { return false; }
@@ -304,7 +300,11 @@ internal partial class APM_AnnotProjection_F_Base : ISpecification<PdfDictionary
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotProjection_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj))) 
+        {
+            ctx.Fail<APM_AnnotProjection_F>($"Value failed special case check: fn:Eval(fn:BitsClear(11,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -316,12 +316,12 @@ internal partial class APM_AnnotProjection_F_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotProjection_AP 
 /// </summary>
-internal partial class APM_AnnotProjection_AP : APM_AnnotProjection_AP_Base
+internal partial class APM_AnnotProjection_AP : APM_AnnotProjection_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_AP";
     public static bool RuleGroup() { return false; }
@@ -343,12 +343,12 @@ internal partial class APM_AnnotProjection_AP_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_AS 
 /// </summary>
-internal partial class APM_AnnotProjection_AS : APM_AnnotProjection_AS_Base
+internal partial class APM_AnnotProjection_AS : APM_AnnotProjection_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_AS";
     public static bool RuleGroup() { return false; }
@@ -356,17 +356,14 @@ internal partial class APM_AnnotProjection_AS_Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotProjection_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotProjection_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotProjection_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotProjection_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -380,12 +377,12 @@ internal partial class APM_AnnotProjection_AS_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_Border 
 /// </summary>
-internal partial class APM_AnnotProjection_Border : APM_AnnotProjection_Border_Base
+internal partial class APM_AnnotProjection_Border : APM_AnnotProjection_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_Border";
     public static bool RuleGroup() { return false; }
@@ -407,12 +404,12 @@ internal partial class APM_AnnotProjection_Border_Base : ISpecification<PdfDicti
 /// <summary>
 /// AnnotProjection_C 
 /// </summary>
-internal partial class APM_AnnotProjection_C : APM_AnnotProjection_C_Base
+internal partial class APM_AnnotProjection_C : APM_AnnotProjection_C__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_C";
     public static bool RuleGroup() { return false; }
@@ -434,12 +431,12 @@ internal partial class APM_AnnotProjection_C_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotProjection_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotProjection_StructParent : APM_AnnotProjection_StructParent_Base
+internal partial class APM_AnnotProjection_StructParent : APM_AnnotProjection_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_StructParent";
     public static bool RuleGroup() { return false; }
@@ -461,12 +458,12 @@ internal partial class APM_AnnotProjection_StructParent_Base : ISpecification<Pd
 /// <summary>
 /// AnnotProjection_OC 
 /// </summary>
-internal partial class APM_AnnotProjection_OC : APM_AnnotProjection_OC_Base
+internal partial class APM_AnnotProjection_OC : APM_AnnotProjection_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_OC";
     public static bool RuleGroup() { return false; }
@@ -497,12 +494,12 @@ internal partial class APM_AnnotProjection_OC_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_AF 
 /// </summary>
-internal partial class APM_AnnotProjection_AF : APM_AnnotProjection_AF_Base
+internal partial class APM_AnnotProjection_AF : APM_AnnotProjection_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_AF";
     public static bool RuleGroup() { return false; }
@@ -545,12 +542,12 @@ internal partial class APM_AnnotProjection_AF_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_ca 
 /// </summary>
-internal partial class APM_AnnotProjection_ca : APM_AnnotProjection_ca_Base
+internal partial class APM_AnnotProjection_ca : APM_AnnotProjection_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_ca";
     public static bool RuleGroup() { return false; }
@@ -561,13 +558,11 @@ internal partial class APM_AnnotProjection_ca_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfNumber, APM_AnnotProjection_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotProjection_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -579,12 +574,12 @@ internal partial class APM_AnnotProjection_ca_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_CA 
 /// </summary>
-internal partial class APM_AnnotProjection_CA : APM_AnnotProjection_CA_Base
+internal partial class APM_AnnotProjection_CA : APM_AnnotProjection_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_CA";
     public static bool RuleGroup() { return false; }
@@ -595,13 +590,11 @@ internal partial class APM_AnnotProjection_CA_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfNumber, APM_AnnotProjection_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotProjection_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -613,12 +606,12 @@ internal partial class APM_AnnotProjection_CA_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotProjection_BM : APM_AnnotProjection_BM_Base
+internal partial class APM_AnnotProjection_BM : APM_AnnotProjection_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_BM";
     public static bool RuleGroup() { return false; }
@@ -629,13 +622,11 @@ internal partial class APM_AnnotProjection_BM_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_AnnotProjection_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotProjection_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -647,12 +638,12 @@ internal partial class APM_AnnotProjection_BM_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_Lang 
 /// </summary>
-internal partial class APM_AnnotProjection_Lang : APM_AnnotProjection_Lang_Base
+internal partial class APM_AnnotProjection_Lang : APM_AnnotProjection_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_Lang";
     public static bool RuleGroup() { return false; }
@@ -674,12 +665,12 @@ internal partial class APM_AnnotProjection_Lang_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotProjection_T 
 /// </summary>
-internal partial class APM_AnnotProjection_T : APM_AnnotProjection_T_Base
+internal partial class APM_AnnotProjection_T : APM_AnnotProjection_T__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_T";
     public static bool RuleGroup() { return false; }
@@ -701,12 +692,12 @@ internal partial class APM_AnnotProjection_T_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotProjection_Popup 
 /// </summary>
-internal partial class APM_AnnotProjection_Popup : APM_AnnotProjection_Popup_Base
+internal partial class APM_AnnotProjection_Popup : APM_AnnotProjection_Popup__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_Popup_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_Popup__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_Popup";
     public static bool RuleGroup() { return false; }
@@ -728,12 +719,12 @@ internal partial class APM_AnnotProjection_Popup_Base : ISpecification<PdfDictio
 /// <summary>
 /// AnnotProjection_RC 
 /// </summary>
-internal partial class APM_AnnotProjection_RC : APM_AnnotProjection_RC_Base
+internal partial class APM_AnnotProjection_RC : APM_AnnotProjection_RC__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_RC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_RC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_RC";
     public static bool RuleGroup() { return false; }
@@ -776,12 +767,12 @@ internal partial class APM_AnnotProjection_RC_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_CreationDate 
 /// </summary>
-internal partial class APM_AnnotProjection_CreationDate : APM_AnnotProjection_CreationDate_Base
+internal partial class APM_AnnotProjection_CreationDate : APM_AnnotProjection_CreationDate__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -803,12 +794,12 @@ internal partial class APM_AnnotProjection_CreationDate_Base : ISpecification<Pd
 /// <summary>
 /// AnnotProjection_IRT 
 /// </summary>
-internal partial class APM_AnnotProjection_IRT : APM_AnnotProjection_IRT_Base
+internal partial class APM_AnnotProjection_IRT : APM_AnnotProjection_IRT__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_IRT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_IRT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_IRT";
     public static bool RuleGroup() { return false; }
@@ -816,15 +807,12 @@ internal partial class APM_AnnotProjection_IRT_Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (obj.ContainsKey("RT")) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotProjection_IRT>(obj, "IRT", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_IRT>(obj, "IRT", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_IRT>(obj, "IRT", IndirectRequirement.Either);
+        if ((obj.ContainsKey("RT")) && val == null) {
+            ctx.Fail<APM_AnnotProjection_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -919,12 +907,12 @@ internal partial class APM_AnnotProjection_IRT_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotProjection_Subj 
 /// </summary>
-internal partial class APM_AnnotProjection_Subj : APM_AnnotProjection_Subj_Base
+internal partial class APM_AnnotProjection_Subj : APM_AnnotProjection_Subj__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_Subj_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_Subj__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_Subj";
     public static bool RuleGroup() { return false; }
@@ -946,12 +934,12 @@ internal partial class APM_AnnotProjection_Subj_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotProjection_RT 
 /// </summary>
-internal partial class APM_AnnotProjection_RT : APM_AnnotProjection_RT_Base
+internal partial class APM_AnnotProjection_RT : APM_AnnotProjection_RT__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_RT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_RT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_RT";
     public static bool RuleGroup() { return false; }
@@ -961,14 +949,12 @@ internal partial class APM_AnnotProjection_RT_Base : ISpecification<PdfDictionar
     {
         var val = ctx.GetOptional<PdfName, APM_AnnotProjection_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "R" || val == "Group")) 
         {
             ctx.Fail<APM_AnnotProjection_RT>($"Invalid value {val}, allowed are: [R,Group]");
-        }
         }
         // no linked objects
         
@@ -980,12 +966,12 @@ internal partial class APM_AnnotProjection_RT_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_IT 
 /// </summary>
-internal partial class APM_AnnotProjection_IT : APM_AnnotProjection_IT_Base
+internal partial class APM_AnnotProjection_IT : APM_AnnotProjection_IT__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_IT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_IT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_IT";
     public static bool RuleGroup() { return false; }
@@ -1007,12 +993,12 @@ internal partial class APM_AnnotProjection_IT_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotProjection_ExData 2D markup annots only
 /// </summary>
-internal partial class APM_AnnotProjection_ExData : APM_AnnotProjection_ExData_Base
+internal partial class APM_AnnotProjection_ExData : APM_AnnotProjection_ExData__Base
 {
 }
 
 
-internal partial class APM_AnnotProjection_ExData_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotProjection_ExData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotProjection_ExData";
     public static bool RuleGroup() { return false; }

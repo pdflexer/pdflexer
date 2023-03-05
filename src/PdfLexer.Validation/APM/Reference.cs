@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Reference : APM_Reference_Base
+internal partial class APM_Reference : APM_Reference__Base
 {
 }
 
-internal partial class APM_Reference_Base : ISpecification<PdfDictionary>
+internal partial class APM_Reference__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Reference";
@@ -110,12 +110,12 @@ internal partial class APM_Reference_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Reference_F Table 95
 /// </summary>
-internal partial class APM_Reference_F : APM_Reference_F_Base
+internal partial class APM_Reference_F : APM_Reference_F__Base
 {
 }
 
 
-internal partial class APM_Reference_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_Reference_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Reference_F";
     public static bool RuleGroup() { return false; }
@@ -158,12 +158,12 @@ internal partial class APM_Reference_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Reference_Page 
 /// </summary>
-internal partial class APM_Reference_Page : APM_Reference_Page_Base
+internal partial class APM_Reference_Page : APM_Reference_Page__Base
 {
 }
 
 
-internal partial class APM_Reference_Page_Base : ISpecification<PdfDictionary>
+internal partial class APM_Reference_Page__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Reference_Page";
     public static bool RuleGroup() { return false; }
@@ -180,13 +180,11 @@ internal partial class APM_Reference_Page_Base : ISpecification<PdfDictionary>
                     var val =  (PdfIntNumber)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
-                    IPdfObject @Page = val;
-                    if (!(gte(@Page,0))) 
+                    var Page = obj.Get("Page");
+                    if (!(gte(Page,0))) 
                     {
                         ctx.Fail<APM_Reference_Page>($"Invalid value {val}, allowed are: [fn:Eval(@Page>=0)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -213,12 +211,12 @@ internal partial class APM_Reference_Page_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Reference_ID 
 /// </summary>
-internal partial class APM_Reference_ID : APM_Reference_ID_Base
+internal partial class APM_Reference_ID : APM_Reference_ID__Base
 {
 }
 
 
-internal partial class APM_Reference_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_Reference_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Reference_ID";
     public static bool RuleGroup() { return false; }

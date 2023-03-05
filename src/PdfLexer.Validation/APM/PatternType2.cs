@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_PatternType2 : APM_PatternType2_Base
+internal partial class APM_PatternType2 : APM_PatternType2__Base
 {
 }
 
-internal partial class APM_PatternType2_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType2__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "PatternType2";
@@ -128,12 +128,12 @@ internal partial class APM_PatternType2_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PatternType2_Type Table 75
 /// </summary>
-internal partial class APM_PatternType2_Type : APM_PatternType2_Type_Base
+internal partial class APM_PatternType2_Type : APM_PatternType2_Type__Base
 {
 }
 
 
-internal partial class APM_PatternType2_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType2_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType2_Type";
     public static bool RuleGroup() { return false; }
@@ -144,13 +144,11 @@ internal partial class APM_PatternType2_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_PatternType2_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Pattern")) 
         {
             ctx.Fail<APM_PatternType2_Type>($"Invalid value {val}, allowed are: [Pattern]");
-        }
         }
         // no linked objects
         
@@ -162,12 +160,12 @@ internal partial class APM_PatternType2_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// PatternType2_PatternType 
 /// </summary>
-internal partial class APM_PatternType2_PatternType : APM_PatternType2_PatternType_Base
+internal partial class APM_PatternType2_PatternType : APM_PatternType2_PatternType__Base
 {
 }
 
 
-internal partial class APM_PatternType2_PatternType_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType2_PatternType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType2_PatternType";
     public static bool RuleGroup() { return false; }
@@ -178,13 +176,11 @@ internal partial class APM_PatternType2_PatternType_Base : ISpecification<PdfDic
         var val = ctx.GetRequired<PdfIntNumber, APM_PatternType2_PatternType>(obj, "PatternType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 2)) 
         {
             ctx.Fail<APM_PatternType2_PatternType>($"Invalid value {val}, allowed are: [2]");
-        }
         }
         // no linked objects
         
@@ -196,12 +192,12 @@ internal partial class APM_PatternType2_PatternType_Base : ISpecification<PdfDic
 /// <summary>
 /// PatternType2_Shading 
 /// </summary>
-internal partial class APM_PatternType2_Shading : APM_PatternType2_Shading_Base
+internal partial class APM_PatternType2_Shading : APM_PatternType2_Shading__Base
 {
 }
 
 
-internal partial class APM_PatternType2_Shading_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType2_Shading__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType2_Shading";
     public static bool RuleGroup() { return false; }
@@ -271,12 +267,12 @@ internal partial class APM_PatternType2_Shading_Base : ISpecification<PdfDiction
 /// <summary>
 /// PatternType2_Matrix 
 /// </summary>
-internal partial class APM_PatternType2_Matrix : APM_PatternType2_Matrix_Base
+internal partial class APM_PatternType2_Matrix : APM_PatternType2_Matrix__Base
 {
 }
 
 
-internal partial class APM_PatternType2_Matrix_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType2_Matrix__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType2_Matrix";
     public static bool RuleGroup() { return false; }
@@ -298,12 +294,12 @@ internal partial class APM_PatternType2_Matrix_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PatternType2_ExtGState 
 /// </summary>
-internal partial class APM_PatternType2_ExtGState : APM_PatternType2_ExtGState_Base
+internal partial class APM_PatternType2_ExtGState : APM_PatternType2_ExtGState__Base
 {
 }
 
 
-internal partial class APM_PatternType2_ExtGState_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternType2_ExtGState__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternType2_ExtGState";
     public static bool RuleGroup() { return false; }

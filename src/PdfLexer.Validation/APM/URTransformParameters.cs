@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_URTransformParameters : APM_URTransformParameters_Base
+internal partial class APM_URTransformParameters : APM_URTransformParameters__Base
 {
 }
 
-internal partial class APM_URTransformParameters_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "URTransformParameters";
@@ -102,12 +102,12 @@ internal partial class APM_URTransformParameters_Base : ISpecification<PdfDictio
 /// <summary>
 /// URTransformParameters_Type Table 258
 /// </summary>
-internal partial class APM_URTransformParameters_Type : APM_URTransformParameters_Type_Base
+internal partial class APM_URTransformParameters_Type : APM_URTransformParameters_Type__Base
 {
 }
 
 
-internal partial class APM_URTransformParameters_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URTransformParameters_Type";
     public static bool RuleGroup() { return false; }
@@ -118,13 +118,11 @@ internal partial class APM_URTransformParameters_Type_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_URTransformParameters_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "TransformParams")) 
         {
             ctx.Fail<APM_URTransformParameters_Type>($"Invalid value {val}, allowed are: [TransformParams]");
-        }
         }
         // no linked objects
         
@@ -136,12 +134,12 @@ internal partial class APM_URTransformParameters_Type_Base : ISpecification<PdfD
 /// <summary>
 /// URTransformParameters_Document 
 /// </summary>
-internal partial class APM_URTransformParameters_Document : APM_URTransformParameters_Document_Base
+internal partial class APM_URTransformParameters_Document : APM_URTransformParameters_Document__Base
 {
 }
 
 
-internal partial class APM_URTransformParameters_Document_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters_Document__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URTransformParameters_Document";
     public static bool RuleGroup() { return false; }
@@ -163,12 +161,12 @@ internal partial class APM_URTransformParameters_Document_Base : ISpecification<
 /// <summary>
 /// URTransformParameters_Msg 
 /// </summary>
-internal partial class APM_URTransformParameters_Msg : APM_URTransformParameters_Msg_Base
+internal partial class APM_URTransformParameters_Msg : APM_URTransformParameters_Msg__Base
 {
 }
 
 
-internal partial class APM_URTransformParameters_Msg_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters_Msg__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URTransformParameters_Msg";
     public static bool RuleGroup() { return false; }
@@ -190,12 +188,12 @@ internal partial class APM_URTransformParameters_Msg_Base : ISpecification<PdfDi
 /// <summary>
 /// URTransformParameters_V 
 /// </summary>
-internal partial class APM_URTransformParameters_V : APM_URTransformParameters_V_Base
+internal partial class APM_URTransformParameters_V : APM_URTransformParameters_V__Base
 {
 }
 
 
-internal partial class APM_URTransformParameters_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URTransformParameters_V";
     public static bool RuleGroup() { return false; }
@@ -217,12 +215,12 @@ internal partial class APM_URTransformParameters_V_Base : ISpecification<PdfDict
 /// <summary>
 /// URTransformParameters_Annots 
 /// </summary>
-internal partial class APM_URTransformParameters_Annots : APM_URTransformParameters_Annots_Base
+internal partial class APM_URTransformParameters_Annots : APM_URTransformParameters_Annots__Base
 {
 }
 
 
-internal partial class APM_URTransformParameters_Annots_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters_Annots__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URTransformParameters_Annots";
     public static bool RuleGroup() { return false; }
@@ -244,12 +242,12 @@ internal partial class APM_URTransformParameters_Annots_Base : ISpecification<Pd
 /// <summary>
 /// URTransformParameters_Form 
 /// </summary>
-internal partial class APM_URTransformParameters_Form : APM_URTransformParameters_Form_Base
+internal partial class APM_URTransformParameters_Form : APM_URTransformParameters_Form__Base
 {
 }
 
 
-internal partial class APM_URTransformParameters_Form_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters_Form__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URTransformParameters_Form";
     public static bool RuleGroup() { return false; }
@@ -271,12 +269,12 @@ internal partial class APM_URTransformParameters_Form_Base : ISpecification<PdfD
 /// <summary>
 /// URTransformParameters_Signature 
 /// </summary>
-internal partial class APM_URTransformParameters_Signature : APM_URTransformParameters_Signature_Base
+internal partial class APM_URTransformParameters_Signature : APM_URTransformParameters_Signature__Base
 {
 }
 
 
-internal partial class APM_URTransformParameters_Signature_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters_Signature__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URTransformParameters_Signature";
     public static bool RuleGroup() { return false; }
@@ -298,12 +296,12 @@ internal partial class APM_URTransformParameters_Signature_Base : ISpecification
 /// <summary>
 /// URTransformParameters_EF 
 /// </summary>
-internal partial class APM_URTransformParameters_EF : APM_URTransformParameters_EF_Base
+internal partial class APM_URTransformParameters_EF : APM_URTransformParameters_EF__Base
 {
 }
 
 
-internal partial class APM_URTransformParameters_EF_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters_EF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URTransformParameters_EF";
     public static bool RuleGroup() { return false; }
@@ -325,12 +323,12 @@ internal partial class APM_URTransformParameters_EF_Base : ISpecification<PdfDic
 /// <summary>
 /// URTransformParameters_P 
 /// </summary>
-internal partial class APM_URTransformParameters_P : APM_URTransformParameters_P_Base
+internal partial class APM_URTransformParameters_P : APM_URTransformParameters_P__Base
 {
 }
 
 
-internal partial class APM_URTransformParameters_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_URTransformParameters_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "URTransformParameters_P";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Appearance : APM_Appearance_Base
+internal partial class APM_Appearance : APM_Appearance__Base
 {
 }
 
-internal partial class APM_Appearance_Base : ISpecification<PdfDictionary>
+internal partial class APM_Appearance__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Appearance";
@@ -130,12 +130,12 @@ internal partial class APM_Appearance_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Appearance_N Table 170
 /// </summary>
-internal partial class APM_Appearance_N : APM_Appearance_N_Base
+internal partial class APM_Appearance_N : APM_Appearance_N__Base
 {
 }
 
 
-internal partial class APM_Appearance_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_Appearance_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Appearance_N";
     public static bool RuleGroup() { return false; }
@@ -147,7 +147,7 @@ internal partial class APM_Appearance_N_Base : ISpecification<PdfDictionary>
         if (utval == null) { ctx.Fail<APM_Appearance_N>("N is required"); return; }
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.3,dictionary)
+            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -182,12 +182,12 @@ internal partial class APM_Appearance_N_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Appearance_R 
 /// </summary>
-internal partial class APM_Appearance_R : APM_Appearance_R_Base
+internal partial class APM_Appearance_R : APM_Appearance_R__Base
 {
 }
 
 
-internal partial class APM_Appearance_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_Appearance_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Appearance_R";
     public static bool RuleGroup() { return false; }
@@ -199,7 +199,7 @@ internal partial class APM_Appearance_R_Base : ISpecification<PdfDictionary>
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.3,dictionary)
+            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -234,12 +234,12 @@ internal partial class APM_Appearance_R_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Appearance_D 
 /// </summary>
-internal partial class APM_Appearance_D : APM_Appearance_D_Base
+internal partial class APM_Appearance_D : APM_Appearance_D__Base
 {
 }
 
 
-internal partial class APM_Appearance_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_Appearance_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Appearance_D";
     public static bool RuleGroup() { return false; }
@@ -251,7 +251,7 @@ internal partial class APM_Appearance_D_Base : ISpecification<PdfDictionary>
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // funcs: fn:SinceVersion(1.3,dictionary)
+            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;

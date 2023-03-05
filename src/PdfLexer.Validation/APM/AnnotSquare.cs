@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AnnotSquare : APM_AnnotSquare_Base
+internal partial class APM_AnnotSquare : APM_AnnotSquare__Base
 {
 }
 
-internal partial class APM_AnnotSquare_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AnnotSquare";
@@ -155,12 +155,12 @@ internal partial class APM_AnnotSquare_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_Type Table 166 and Table 172 and Table 180 (markup annot)
 /// </summary>
-internal partial class APM_AnnotSquare_Type : APM_AnnotSquare_Type_Base
+internal partial class APM_AnnotSquare_Type : APM_AnnotSquare_Type__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_Type";
     public static bool RuleGroup() { return false; }
@@ -171,13 +171,11 @@ internal partial class APM_AnnotSquare_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotSquare_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Annot")) 
         {
             ctx.Fail<APM_AnnotSquare_Type>($"Invalid value {val}, allowed are: [Annot]");
-        }
         }
         // no linked objects
         
@@ -189,12 +187,12 @@ internal partial class APM_AnnotSquare_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_Subtype 
 /// </summary>
-internal partial class APM_AnnotSquare_Subtype : APM_AnnotSquare_Subtype_Base
+internal partial class APM_AnnotSquare_Subtype : APM_AnnotSquare_Subtype__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_Subtype";
     public static bool RuleGroup() { return false; }
@@ -205,13 +203,11 @@ internal partial class APM_AnnotSquare_Subtype_Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfName, APM_AnnotSquare_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Square")) 
         {
             ctx.Fail<APM_AnnotSquare_Subtype>($"Invalid value {val}, allowed are: [Square]");
-        }
         }
         // no linked objects
         
@@ -223,12 +219,12 @@ internal partial class APM_AnnotSquare_Subtype_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AnnotSquare_Rect 
 /// </summary>
-internal partial class APM_AnnotSquare_Rect : APM_AnnotSquare_Rect_Base
+internal partial class APM_AnnotSquare_Rect : APM_AnnotSquare_Rect__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_Rect_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_Rect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_Rect";
     public static bool RuleGroup() { return false; }
@@ -250,12 +246,12 @@ internal partial class APM_AnnotSquare_Rect_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_Contents 
 /// </summary>
-internal partial class APM_AnnotSquare_Contents : APM_AnnotSquare_Contents_Base
+internal partial class APM_AnnotSquare_Contents : APM_AnnotSquare_Contents__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_Contents";
     public static bool RuleGroup() { return false; }
@@ -277,12 +273,12 @@ internal partial class APM_AnnotSquare_Contents_Base : ISpecification<PdfDiction
 /// <summary>
 /// AnnotSquare_P 
 /// </summary>
-internal partial class APM_AnnotSquare_P : APM_AnnotSquare_P_Base
+internal partial class APM_AnnotSquare_P : APM_AnnotSquare_P__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_P";
     public static bool RuleGroup() { return false; }
@@ -304,12 +300,12 @@ internal partial class APM_AnnotSquare_P_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_NM 
 /// </summary>
-internal partial class APM_AnnotSquare_NM : APM_AnnotSquare_NM_Base
+internal partial class APM_AnnotSquare_NM : APM_AnnotSquare_NM__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_NM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_NM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_NM";
     public static bool RuleGroup() { return false; }
@@ -331,12 +327,12 @@ internal partial class APM_AnnotSquare_NM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_M 
 /// </summary>
-internal partial class APM_AnnotSquare_M : APM_AnnotSquare_M_Base
+internal partial class APM_AnnotSquare_M : APM_AnnotSquare_M__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_M";
     public static bool RuleGroup() { return false; }
@@ -363,12 +359,12 @@ internal partial class APM_AnnotSquare_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_F Table 167
 /// </summary>
-internal partial class APM_AnnotSquare_F : APM_AnnotSquare_F_Base
+internal partial class APM_AnnotSquare_F : APM_AnnotSquare_F__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_F";
     public static bool RuleGroup() { return false; }
@@ -378,7 +374,11 @@ internal partial class APM_AnnotSquare_F_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotSquare_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(ctx.Version < 1.4m && BitsClear(obj)&&ctx.Version < 1.5m && BitsClear(obj)&&ctx.Version < 1.6m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj))))) 
+        {
+            ctx.Fail<APM_AnnotSquare_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.4,fn:BitsClear(8,32)) && fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -390,12 +390,12 @@ internal partial class APM_AnnotSquare_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_AP 
 /// </summary>
-internal partial class APM_AnnotSquare_AP : APM_AnnotSquare_AP_Base
+internal partial class APM_AnnotSquare_AP : APM_AnnotSquare_AP__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_AP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_AP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_AP";
     public static bool RuleGroup() { return false; }
@@ -403,15 +403,12 @@ internal partial class APM_AnnotSquare_AP_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Rect = obj.Get("Rect");
-            if (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotSquare_AP>(obj, "AP", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotSquare_AP>(obj, "AP", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var Rect = obj.Get("Rect");
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotSquare_AP>(obj, "AP", IndirectRequirement.Either);
+        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+            ctx.Fail<APM_AnnotSquare_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -425,12 +422,12 @@ internal partial class APM_AnnotSquare_AP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_AS 
 /// </summary>
-internal partial class APM_AnnotSquare_AS : APM_AnnotSquare_AS_Base
+internal partial class APM_AnnotSquare_AS : APM_AnnotSquare_AS__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_AS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_AS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_AS";
     public static bool RuleGroup() { return false; }
@@ -438,17 +435,14 @@ internal partial class APM_AnnotSquare_AS_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var APN = obj.Get("AP")?.Get("N");
-            var APR = obj.Get("AP")?.Get("R");
-            var APD = obj.Get("AP")?.Get("D");
-            if (obj.ContainsKey(APN)||obj.ContainsKey(APR)||obj.ContainsKey(APD)) {
-                val = ctx.GetRequired<PdfName, APM_AnnotSquare_AS>(obj, "AS", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_AnnotSquare_AS>(obj, "AS", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var APN = obj.Get("AP")?.Get("N");
+        var APR = obj.Get("AP")?.Get("R");
+        var APD = obj.Get("AP")?.Get("D");
+        var val = ctx.GetOptional<PdfName, APM_AnnotSquare_AS>(obj, "AS", IndirectRequirement.Either);
+        if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
+            ctx.Fail<APM_AnnotSquare_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -462,12 +456,12 @@ internal partial class APM_AnnotSquare_AS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_Border 
 /// </summary>
-internal partial class APM_AnnotSquare_Border : APM_AnnotSquare_Border_Base
+internal partial class APM_AnnotSquare_Border : APM_AnnotSquare_Border__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_Border_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_Border__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_Border";
     public static bool RuleGroup() { return false; }
@@ -477,7 +471,7 @@ internal partial class APM_AnnotSquare_Border_Base : ISpecification<PdfDictionar
     {
         var val = ctx.GetOptional<PdfArray, APM_AnnotSquare_Border>(obj, "Border", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOf_4AnnotBorderCharacteristics, PdfArray>(stack, val, obj);
         
@@ -489,12 +483,12 @@ internal partial class APM_AnnotSquare_Border_Base : ISpecification<PdfDictionar
 /// <summary>
 /// AnnotSquare_C 
 /// </summary>
-internal partial class APM_AnnotSquare_C : APM_AnnotSquare_C_Base
+internal partial class APM_AnnotSquare_C : APM_AnnotSquare_C__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_C";
     public static bool RuleGroup() { return false; }
@@ -516,12 +510,12 @@ internal partial class APM_AnnotSquare_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_StructParent Table 359
 /// </summary>
-internal partial class APM_AnnotSquare_StructParent : APM_AnnotSquare_StructParent_Base
+internal partial class APM_AnnotSquare_StructParent : APM_AnnotSquare_StructParent__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_StructParent_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_StructParent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_StructParent";
     public static bool RuleGroup() { return false; }
@@ -543,12 +537,12 @@ internal partial class APM_AnnotSquare_StructParent_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotSquare_OC 
 /// </summary>
-internal partial class APM_AnnotSquare_OC : APM_AnnotSquare_OC_Base
+internal partial class APM_AnnotSquare_OC : APM_AnnotSquare_OC__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_OC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_OC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_OC";
     public static bool RuleGroup() { return false; }
@@ -579,12 +573,12 @@ internal partial class APM_AnnotSquare_OC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_AF 
 /// </summary>
-internal partial class APM_AnnotSquare_AF : APM_AnnotSquare_AF_Base
+internal partial class APM_AnnotSquare_AF : APM_AnnotSquare_AF__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_AF";
     public static bool RuleGroup() { return false; }
@@ -627,12 +621,12 @@ internal partial class APM_AnnotSquare_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_ca 
 /// </summary>
-internal partial class APM_AnnotSquare_ca : APM_AnnotSquare_ca_Base
+internal partial class APM_AnnotSquare_ca : APM_AnnotSquare_ca__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_ca_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_ca__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_ca";
     public static bool RuleGroup() { return false; }
@@ -643,13 +637,11 @@ internal partial class APM_AnnotSquare_ca_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotSquare_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @ca = val;
-        if (!((gte(@ca,0.0m)&&lte(@ca,1.0m)))) 
+        var ca = obj.Get("ca");
+        if (!((gte(ca,0.0m)&&lte(ca,1.0m)))) 
         {
             ctx.Fail<APM_AnnotSquare_ca>($"Invalid value {val}, allowed are: [fn:Eval((@ca>=0.0) && (@ca<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -661,12 +653,12 @@ internal partial class APM_AnnotSquare_ca_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_CA 
 /// </summary>
-internal partial class APM_AnnotSquare_CA : APM_AnnotSquare_CA_Base
+internal partial class APM_AnnotSquare_CA : APM_AnnotSquare_CA__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_CA_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_CA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_CA";
     public static bool RuleGroup() { return false; }
@@ -677,13 +669,11 @@ internal partial class APM_AnnotSquare_CA_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_AnnotSquare_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @CA = val;
-        if (!((gte(@CA,0.0m)&&lte(@CA,1.0m)))) 
+        var CA = obj.Get("CA");
+        if (!((gte(CA,0.0m)&&lte(CA,1.0m)))) 
         {
             ctx.Fail<APM_AnnotSquare_CA>($"Invalid value {val}, allowed are: [fn:Eval((@CA>=0.0) && (@CA<=1.0))]");
-        }
         }
         // no linked objects
         
@@ -695,12 +685,12 @@ internal partial class APM_AnnotSquare_CA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_BM Table 134 and Table 135
 /// </summary>
-internal partial class APM_AnnotSquare_BM : APM_AnnotSquare_BM_Base
+internal partial class APM_AnnotSquare_BM : APM_AnnotSquare_BM__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_BM_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_BM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_BM";
     public static bool RuleGroup() { return false; }
@@ -711,13 +701,11 @@ internal partial class APM_AnnotSquare_BM_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotSquare_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
         {
             ctx.Fail<APM_AnnotSquare_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
-        }
         }
         // no linked objects
         
@@ -729,12 +717,12 @@ internal partial class APM_AnnotSquare_BM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_Lang 
 /// </summary>
-internal partial class APM_AnnotSquare_Lang : APM_AnnotSquare_Lang_Base
+internal partial class APM_AnnotSquare_Lang : APM_AnnotSquare_Lang__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_Lang_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_Lang__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_Lang";
     public static bool RuleGroup() { return false; }
@@ -756,12 +744,12 @@ internal partial class APM_AnnotSquare_Lang_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_T 
 /// </summary>
-internal partial class APM_AnnotSquare_T : APM_AnnotSquare_T_Base
+internal partial class APM_AnnotSquare_T : APM_AnnotSquare_T__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_T";
     public static bool RuleGroup() { return false; }
@@ -783,12 +771,12 @@ internal partial class APM_AnnotSquare_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_Popup 
 /// </summary>
-internal partial class APM_AnnotSquare_Popup : APM_AnnotSquare_Popup_Base
+internal partial class APM_AnnotSquare_Popup : APM_AnnotSquare_Popup__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_Popup_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_Popup__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_Popup";
     public static bool RuleGroup() { return false; }
@@ -810,12 +798,12 @@ internal partial class APM_AnnotSquare_Popup_Base : ISpecification<PdfDictionary
 /// <summary>
 /// AnnotSquare_RC 
 /// </summary>
-internal partial class APM_AnnotSquare_RC : APM_AnnotSquare_RC_Base
+internal partial class APM_AnnotSquare_RC : APM_AnnotSquare_RC__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_RC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_RC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_RC";
     public static bool RuleGroup() { return false; }
@@ -858,12 +846,12 @@ internal partial class APM_AnnotSquare_RC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_CreationDate 
 /// </summary>
-internal partial class APM_AnnotSquare_CreationDate : APM_AnnotSquare_CreationDate_Base
+internal partial class APM_AnnotSquare_CreationDate : APM_AnnotSquare_CreationDate__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_CreationDate_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_CreationDate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_CreationDate";
     public static bool RuleGroup() { return false; }
@@ -885,12 +873,12 @@ internal partial class APM_AnnotSquare_CreationDate_Base : ISpecification<PdfDic
 /// <summary>
 /// AnnotSquare_IRT 
 /// </summary>
-internal partial class APM_AnnotSquare_IRT : APM_AnnotSquare_IRT_Base
+internal partial class APM_AnnotSquare_IRT : APM_AnnotSquare_IRT__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_IRT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_IRT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_IRT";
     public static bool RuleGroup() { return false; }
@@ -898,15 +886,12 @@ internal partial class APM_AnnotSquare_IRT_Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            
-            if (obj.ContainsKey("RT")) {
-                val = ctx.GetRequired<PdfDictionary, APM_AnnotSquare_IRT>(obj, "IRT", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_AnnotSquare_IRT>(obj, "IRT", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfDictionary, APM_AnnotSquare_IRT>(obj, "IRT", IndirectRequirement.Either);
+        if ((obj.ContainsKey("RT")) && val == null) {
+            ctx.Fail<APM_AnnotSquare_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -973,6 +958,21 @@ internal partial class APM_AnnotSquare_IRT_Base : ISpecification<PdfDictionary>
         } else if (APM_AnnotPrinterMark.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_AnnotPrinterMark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotWatermark, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_Annot3D, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.7m || (ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotSquare_IRT>("IRT did not match any allowable types: '[AnnotText,AnnotLink,AnnotFreeText,AnnotLine,AnnotSquare,AnnotCircle,AnnotPolygon,AnnotHighlight,AnnotUnderline,AnnotSquiggly,AnnotStrikeOut,AnnotCaret,AnnotStamp,AnnotInk,AnnotPopup,AnnotFileAttachment,AnnotSound,AnnotMovie,AnnotScreen,AnnotWidget,AnnotPrinterMark,fn:SinceVersion(1.6,AnnotWatermark),fn:SinceVersion(1.6,Annot3D),fn:SinceVersion(1.7,AnnotRedact),fn:SinceVersion(2.0,AnnotProjection),fn:SinceVersion(2.0,AnnotRichMedia)]'");
@@ -986,12 +986,12 @@ internal partial class APM_AnnotSquare_IRT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_Subj 
 /// </summary>
-internal partial class APM_AnnotSquare_Subj : APM_AnnotSquare_Subj_Base
+internal partial class APM_AnnotSquare_Subj : APM_AnnotSquare_Subj__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_Subj_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_Subj__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_Subj";
     public static bool RuleGroup() { return false; }
@@ -1013,12 +1013,12 @@ internal partial class APM_AnnotSquare_Subj_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_RT 
 /// </summary>
-internal partial class APM_AnnotSquare_RT : APM_AnnotSquare_RT_Base
+internal partial class APM_AnnotSquare_RT : APM_AnnotSquare_RT__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_RT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_RT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_RT";
     public static bool RuleGroup() { return false; }
@@ -1028,14 +1028,12 @@ internal partial class APM_AnnotSquare_RT_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_AnnotSquare_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
-        {
+        // special case is an fn:IsMeaningful, not pertinent to validation
         
         
         if (!(val == "R" || val == "Group")) 
         {
             ctx.Fail<APM_AnnotSquare_RT>($"Invalid value {val}, allowed are: [R,Group]");
-        }
         }
         // no linked objects
         
@@ -1047,12 +1045,12 @@ internal partial class APM_AnnotSquare_RT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_IT 
 /// </summary>
-internal partial class APM_AnnotSquare_IT : APM_AnnotSquare_IT_Base
+internal partial class APM_AnnotSquare_IT : APM_AnnotSquare_IT__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_IT_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_IT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_IT";
     public static bool RuleGroup() { return false; }
@@ -1074,12 +1072,12 @@ internal partial class APM_AnnotSquare_IT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_BS 
 /// </summary>
-internal partial class APM_AnnotSquare_BS : APM_AnnotSquare_BS_Base
+internal partial class APM_AnnotSquare_BS : APM_AnnotSquare_BS__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_BS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_BS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_BS";
     public static bool RuleGroup() { return false; }
@@ -1101,12 +1099,12 @@ internal partial class APM_AnnotSquare_BS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_IC 
 /// </summary>
-internal partial class APM_AnnotSquare_IC : APM_AnnotSquare_IC_Base
+internal partial class APM_AnnotSquare_IC : APM_AnnotSquare_IC__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_IC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_IC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_IC";
     public static bool RuleGroup() { return false; }
@@ -1128,12 +1126,12 @@ internal partial class APM_AnnotSquare_IC_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_BE 
 /// </summary>
-internal partial class APM_AnnotSquare_BE : APM_AnnotSquare_BE_Base
+internal partial class APM_AnnotSquare_BE : APM_AnnotSquare_BE__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_BE";
     public static bool RuleGroup() { return false; }
@@ -1155,12 +1153,12 @@ internal partial class APM_AnnotSquare_BE_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_RD 
 /// </summary>
-internal partial class APM_AnnotSquare_RD : APM_AnnotSquare_RD_Base
+internal partial class APM_AnnotSquare_RD : APM_AnnotSquare_RD__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_RD_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_RD__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_RD";
     public static bool RuleGroup() { return false; }
@@ -1170,7 +1168,17 @@ internal partial class APM_AnnotSquare_RD_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_AnnotSquare_RD>(obj, "RD", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var RD0 = obj.Get("RD")?.Get("0");
+        var RD1 = obj.Get("RD")?.Get("1");
+        var RD2 = obj.Get("RD")?.Get("2");
+        var RD3 = obj.Get("RD")?.Get("3");
+        var RD1RD3 = obj.Get("RD")?.Get("1+RD")?.Get("3");
+        var Rect = obj.Get("Rect");
+        var RD0RD2 = obj.Get("RD")?.Get("0+RD")?.Get("2");
+        if (!(gte(RD0,0)&&gte(RD1,0)&&gte(RD2,0)&&gte(RD3,0)&&lt(RD1RD3,RectHeight(Rect))&&lt(RD0RD2,RectWidth(obj)))) 
+        {
+            ctx.Fail<APM_AnnotSquare_RD>($"Value failed special case check: fn:Eval((RD::@0>=0) && (RD::@1>=0) && (RD::@2>=0) && (RD::@3>=0) && ((RD::@1+RD::@3)<fn:RectHeight(Rect)) && ((RD::@0+RD::@2)<fn:RectWidth(Rect)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -1182,12 +1190,12 @@ internal partial class APM_AnnotSquare_RD_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AnnotSquare_ExData 2D markup annots only 
 /// </summary>
-internal partial class APM_AnnotSquare_ExData : APM_AnnotSquare_ExData_Base
+internal partial class APM_AnnotSquare_ExData : APM_AnnotSquare_ExData__Base
 {
 }
 
 
-internal partial class APM_AnnotSquare_ExData_Base : ISpecification<PdfDictionary>
+internal partial class APM_AnnotSquare_ExData__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AnnotSquare_ExData";
     public static bool RuleGroup() { return false; }
@@ -1202,6 +1210,15 @@ internal partial class APM_AnnotSquare_ExData_Base : ISpecification<PdfDictionar
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_ExDataProjection, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_AnnotSquare_ExData>("ExData did not match any allowable types: '[ExData3DMarkup,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,ExDataMarkupGeo)),fn:SinceVersion(2.0,ExDataMarkupGeo),fn:SinceVersion(2.0,ExDataProjection)]'");

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AppearancePrinterMark : APM_AppearancePrinterMark_Base
+internal partial class APM_AppearancePrinterMark : APM_AppearancePrinterMark__Base
 {
 }
 
-internal partial class APM_AppearancePrinterMark_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearancePrinterMark__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AppearancePrinterMark";
@@ -110,12 +110,12 @@ internal partial class APM_AppearancePrinterMark_Base : ISpecification<PdfDictio
 /// <summary>
 /// AppearancePrinterMark_N Table 170
 /// </summary>
-internal partial class APM_AppearancePrinterMark_N : APM_AppearancePrinterMark_N_Base
+internal partial class APM_AppearancePrinterMark_N : APM_AppearancePrinterMark_N__Base
 {
 }
 
 
-internal partial class APM_AppearancePrinterMark_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearancePrinterMark_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearancePrinterMark_N";
     public static bool RuleGroup() { return false; }
@@ -158,12 +158,12 @@ internal partial class APM_AppearancePrinterMark_N_Base : ISpecification<PdfDict
 /// <summary>
 /// AppearancePrinterMark_R 
 /// </summary>
-internal partial class APM_AppearancePrinterMark_R : APM_AppearancePrinterMark_R_Base
+internal partial class APM_AppearancePrinterMark_R : APM_AppearancePrinterMark_R__Base
 {
 }
 
 
-internal partial class APM_AppearancePrinterMark_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearancePrinterMark_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearancePrinterMark_R";
     public static bool RuleGroup() { return false; }
@@ -206,12 +206,12 @@ internal partial class APM_AppearancePrinterMark_R_Base : ISpecification<PdfDict
 /// <summary>
 /// AppearancePrinterMark_D 
 /// </summary>
-internal partial class APM_AppearancePrinterMark_D : APM_AppearancePrinterMark_D_Base
+internal partial class APM_AppearancePrinterMark_D : APM_AppearancePrinterMark_D__Base
 {
 }
 
 
-internal partial class APM_AppearancePrinterMark_D_Base : ISpecification<PdfDictionary>
+internal partial class APM_AppearancePrinterMark_D__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AppearancePrinterMark_D";
     public static bool RuleGroup() { return false; }

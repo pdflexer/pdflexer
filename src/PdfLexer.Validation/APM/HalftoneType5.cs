@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_HalftoneType5 : APM_HalftoneType5_Base
+internal partial class APM_HalftoneType5 : APM_HalftoneType5__Base
 {
 }
 
-internal partial class APM_HalftoneType5_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType5__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "HalftoneType5";
@@ -45,12 +45,12 @@ internal partial class APM_HalftoneType5_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// HalftoneType5_Type Table 132
 /// </summary>
-internal partial class APM_HalftoneType5_Type : APM_HalftoneType5_Type_Base
+internal partial class APM_HalftoneType5_Type : APM_HalftoneType5_Type__Base
 {
 }
 
 
-internal partial class APM_HalftoneType5_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType5_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType5_Type";
     public static bool RuleGroup() { return false; }
@@ -61,13 +61,11 @@ internal partial class APM_HalftoneType5_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_HalftoneType5_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Halftone")) 
         {
             ctx.Fail<APM_HalftoneType5_Type>($"Invalid value {val}, allowed are: [Halftone]");
-        }
         }
         // no linked objects
         
@@ -79,12 +77,12 @@ internal partial class APM_HalftoneType5_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// HalftoneType5_HalftoneType 
 /// </summary>
-internal partial class APM_HalftoneType5_HalftoneType : APM_HalftoneType5_HalftoneType_Base
+internal partial class APM_HalftoneType5_HalftoneType : APM_HalftoneType5_HalftoneType__Base
 {
 }
 
 
-internal partial class APM_HalftoneType5_HalftoneType_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType5_HalftoneType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType5_HalftoneType";
     public static bool RuleGroup() { return false; }
@@ -95,13 +93,11 @@ internal partial class APM_HalftoneType5_HalftoneType_Base : ISpecification<PdfD
         var val = ctx.GetRequired<PdfIntNumber, APM_HalftoneType5_HalftoneType>(obj, "HalftoneType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 5)) 
         {
             ctx.Fail<APM_HalftoneType5_HalftoneType>($"Invalid value {val}, allowed are: [5]");
-        }
         }
         // no linked objects
         
@@ -113,12 +109,12 @@ internal partial class APM_HalftoneType5_HalftoneType_Base : ISpecification<PdfD
 /// <summary>
 /// HalftoneType5_HalftoneName 
 /// </summary>
-internal partial class APM_HalftoneType5_HalftoneName : APM_HalftoneType5_HalftoneName_Base
+internal partial class APM_HalftoneType5_HalftoneName : APM_HalftoneType5_HalftoneName__Base
 {
 }
 
 
-internal partial class APM_HalftoneType5_HalftoneName_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType5_HalftoneName__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType5_HalftoneName";
     public static bool RuleGroup() { return false; }
@@ -140,12 +136,12 @@ internal partial class APM_HalftoneType5_HalftoneName_Base : ISpecification<PdfD
 /// <summary>
 /// HalftoneType5_Default 
 /// </summary>
-internal partial class APM_HalftoneType5_Default : APM_HalftoneType5_Default_Base
+internal partial class APM_HalftoneType5_Default : APM_HalftoneType5_Default__Base
 {
 }
 
 
-internal partial class APM_HalftoneType5_Default_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType5_Default__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType5_Default";
     public static bool RuleGroup() { return false; }
@@ -178,6 +174,9 @@ internal partial class APM_HalftoneType5_Default_Base : ISpecification<PdfDictio
                     } else if (APM_HalftoneType10.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_HalftoneType10, PdfDictionary>(stack, val.Dictionary, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_HalftoneType16.MatchesType(ctx, val.Dictionary)))) 
+                    {
+                        ctx.Run<APM_HalftoneType16, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
                     {
                         ctx.Fail<APM_HalftoneType5_Default>("Default did not match any allowable types: '[HalftoneType6,HalftoneType10,fn:SinceVersion(1.3,HalftoneType16)]'");
@@ -197,12 +196,12 @@ internal partial class APM_HalftoneType5_Default_Base : ISpecification<PdfDictio
 /// <summary>
 /// HalftoneType5_* 
 /// </summary>
-internal partial class APM_HalftoneType5_CatchAll : APM_HalftoneType5_CatchAll_Base
+internal partial class APM_HalftoneType5_CatchAll : APM_HalftoneType5_CatchAll__Base
 {
 }
 
 
-internal partial class APM_HalftoneType5_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_HalftoneType5_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "HalftoneType5_*";
     public static bool RuleGroup() { return false; }
@@ -224,7 +223,7 @@ internal partial class APM_HalftoneType5_CatchAll_Base : ISpecification<PdfDicti
                     {
                         var val =  (PdfDictionary)utval;
                         // no indirect obj reqs
-                        // TODO special case
+                        // TODO special case: fn:KeyNameIsColorant()
                         // no value restrictions
                         ctx.Run<APM_HalftoneType1, PdfDictionary>(stack, val, obj);
                         return;
@@ -233,7 +232,7 @@ internal partial class APM_HalftoneType5_CatchAll_Base : ISpecification<PdfDicti
                     {
                         var val =  (PdfStream)utval;
                         if (!wasIR) { ctx.Fail<APM_HalftoneType5_CatchAll>("* is required to be indirect when a stream"); return; }
-                        // TODO special case
+                        // TODO special case: fn:KeyNameIsColorant()
                         // no value restrictions
                         if (APM_HalftoneType6.MatchesType(ctx, val.Dictionary)) 
                         {
@@ -241,6 +240,9 @@ internal partial class APM_HalftoneType5_CatchAll_Base : ISpecification<PdfDicti
                         } else if (APM_HalftoneType10.MatchesType(ctx, val.Dictionary)) 
                         {
                             ctx.Run<APM_HalftoneType10, PdfDictionary>(stack, val.Dictionary, obj);
+                        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_HalftoneType16.MatchesType(ctx, val.Dictionary)))) 
+                        {
+                            ctx.Run<APM_HalftoneType16, PdfDictionary>(stack, val.Dictionary, obj);
                         }else 
                         {
                             ctx.Fail<APM_HalftoneType5_CatchAll>("CatchAll did not match any allowable types: '[HalftoneType6,HalftoneType10,fn:SinceVersion(1.3,HalftoneType16)]'");

@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfIndirectFileSpecifications : ISpecification<Pd
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -41,7 +41,7 @@ internal partial class APM_ArrayOfIndirectFileSpecifications_x : ISpecification<
         {
             var val = ctx.GetOptional<PdfDictionary, APM_ArrayOfIndirectFileSpecifications_x>(obj, n, IndirectRequirement.MustBeIndirect);
             if (val == null) { return; }
-            // TODO special case
+            // TODO special case: fn:InNameTree(parent::RichMediaContent::Assets)
             // no value restrictions
             ctx.Run<APM_FileSpecification, PdfDictionary>(stack, val, obj);
             

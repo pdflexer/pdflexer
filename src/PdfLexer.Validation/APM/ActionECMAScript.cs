@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionECMAScript : APM_ActionECMAScript_Base
+internal partial class APM_ActionECMAScript : APM_ActionECMAScript__Base
 {
 }
 
-internal partial class APM_ActionECMAScript_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionECMAScript__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionECMAScript";
@@ -127,12 +127,12 @@ internal partial class APM_ActionECMAScript_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionECMAScript_Type Table 196 and Table 221
 /// </summary>
-internal partial class APM_ActionECMAScript_Type : APM_ActionECMAScript_Type_Base
+internal partial class APM_ActionECMAScript_Type : APM_ActionECMAScript_Type__Base
 {
 }
 
 
-internal partial class APM_ActionECMAScript_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionECMAScript_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionECMAScript_Type";
     public static bool RuleGroup() { return false; }
@@ -143,13 +143,11 @@ internal partial class APM_ActionECMAScript_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_ActionECMAScript_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionECMAScript_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -161,12 +159,12 @@ internal partial class APM_ActionECMAScript_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// ActionECMAScript_S 
 /// </summary>
-internal partial class APM_ActionECMAScript_S : APM_ActionECMAScript_S_Base
+internal partial class APM_ActionECMAScript_S : APM_ActionECMAScript_S__Base
 {
 }
 
 
-internal partial class APM_ActionECMAScript_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionECMAScript_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionECMAScript_S";
     public static bool RuleGroup() { return false; }
@@ -177,13 +175,11 @@ internal partial class APM_ActionECMAScript_S_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfName, APM_ActionECMAScript_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "JavaScript")) 
         {
             ctx.Fail<APM_ActionECMAScript_S>($"Invalid value {val}, allowed are: [JavaScript]");
-        }
         }
         // no linked objects
         
@@ -195,12 +191,12 @@ internal partial class APM_ActionECMAScript_S_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ActionECMAScript_Next 
 /// </summary>
-internal partial class APM_ActionECMAScript_Next : APM_ActionECMAScript_Next_Base
+internal partial class APM_ActionECMAScript_Next : APM_ActionECMAScript_Next__Base
 {
 }
 
 
-internal partial class APM_ActionECMAScript_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionECMAScript_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionECMAScript_Next";
     public static bool RuleGroup() { return false; }
@@ -266,6 +262,27 @@ internal partial class APM_ActionECMAScript_Next_Base : ISpecification<PdfDictio
                     } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionSetOCGState.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionSetOCGState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionRendition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRendition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionTransition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionTransition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ActionECMAScript_Next>("Next did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,fn:SinceVersion(1.5,ActionSetOCGState),fn:SinceVersion(1.5,ActionRendition),fn:SinceVersion(1.5,ActionTransition),fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -285,12 +302,12 @@ internal partial class APM_ActionECMAScript_Next_Base : ISpecification<PdfDictio
 /// <summary>
 /// ActionECMAScript_JS 
 /// </summary>
-internal partial class APM_ActionECMAScript_JS : APM_ActionECMAScript_JS_Base
+internal partial class APM_ActionECMAScript_JS : APM_ActionECMAScript_JS__Base
 {
 }
 
 
-internal partial class APM_ActionECMAScript_JS_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionECMAScript_JS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionECMAScript_JS";
     public static bool RuleGroup() { return false; }

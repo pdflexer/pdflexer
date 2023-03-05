@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentMembership : APM_OptContentMembership_Base
+internal partial class APM_OptContentMembership : APM_OptContentMembership__Base
 {
 }
 
-internal partial class APM_OptContentMembership_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentMembership__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentMembership";
@@ -107,12 +107,12 @@ internal partial class APM_OptContentMembership_Base : ISpecification<PdfDiction
 /// <summary>
 /// OptContentMembership_Type Table 97
 /// </summary>
-internal partial class APM_OptContentMembership_Type : APM_OptContentMembership_Type_Base
+internal partial class APM_OptContentMembership_Type : APM_OptContentMembership_Type__Base
 {
 }
 
 
-internal partial class APM_OptContentMembership_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentMembership_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentMembership_Type";
     public static bool RuleGroup() { return false; }
@@ -123,13 +123,11 @@ internal partial class APM_OptContentMembership_Type_Base : ISpecification<PdfDi
         var val = ctx.GetRequired<PdfName, APM_OptContentMembership_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "OCMD")) 
         {
             ctx.Fail<APM_OptContentMembership_Type>($"Invalid value {val}, allowed are: [OCMD]");
-        }
         }
         // no linked objects
         
@@ -141,12 +139,12 @@ internal partial class APM_OptContentMembership_Type_Base : ISpecification<PdfDi
 /// <summary>
 /// OptContentMembership_OCGs 
 /// </summary>
-internal partial class APM_OptContentMembership_OCGs : APM_OptContentMembership_OCGs_Base
+internal partial class APM_OptContentMembership_OCGs : APM_OptContentMembership_OCGs__Base
 {
 }
 
 
-internal partial class APM_OptContentMembership_OCGs_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentMembership_OCGs__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentMembership_OCGs";
     public static bool RuleGroup() { return false; }
@@ -198,12 +196,12 @@ internal partial class APM_OptContentMembership_OCGs_Base : ISpecification<PdfDi
 /// <summary>
 /// OptContentMembership_P 
 /// </summary>
-internal partial class APM_OptContentMembership_P : APM_OptContentMembership_P_Base
+internal partial class APM_OptContentMembership_P : APM_OptContentMembership_P__Base
 {
 }
 
 
-internal partial class APM_OptContentMembership_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentMembership_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentMembership_P";
     public static bool RuleGroup() { return false; }
@@ -214,13 +212,11 @@ internal partial class APM_OptContentMembership_P_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_OptContentMembership_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "AllOn" || val == "AnyOn" || val == "AnyOff" || val == "AllOff")) 
         {
             ctx.Fail<APM_OptContentMembership_P>($"Invalid value {val}, allowed are: [AllOn,AnyOn,AnyOff,AllOff]");
-        }
         }
         // no linked objects
         
@@ -232,12 +228,12 @@ internal partial class APM_OptContentMembership_P_Base : ISpecification<PdfDicti
 /// <summary>
 /// OptContentMembership_VE 
 /// </summary>
-internal partial class APM_OptContentMembership_VE : APM_OptContentMembership_VE_Base
+internal partial class APM_OptContentMembership_VE : APM_OptContentMembership_VE__Base
 {
 }
 
 
-internal partial class APM_OptContentMembership_VE_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentMembership_VE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentMembership_VE";
     public static bool RuleGroup() { return false; }

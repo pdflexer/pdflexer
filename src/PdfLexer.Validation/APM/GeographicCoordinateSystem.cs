@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_GeographicCoordinateSystem : APM_GeographicCoordinateSystem_Base
+internal partial class APM_GeographicCoordinateSystem : APM_GeographicCoordinateSystem__Base
 {
 }
 
-internal partial class APM_GeographicCoordinateSystem_Base : ISpecification<PdfDictionary>
+internal partial class APM_GeographicCoordinateSystem__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "GeographicCoordinateSystem";
@@ -47,12 +47,12 @@ internal partial class APM_GeographicCoordinateSystem_Base : ISpecification<PdfD
 /// <summary>
 /// GeographicCoordinateSystem_Type Table 270
 /// </summary>
-internal partial class APM_GeographicCoordinateSystem_Type : APM_GeographicCoordinateSystem_Type_Base
+internal partial class APM_GeographicCoordinateSystem_Type : APM_GeographicCoordinateSystem_Type__Base
 {
 }
 
 
-internal partial class APM_GeographicCoordinateSystem_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_GeographicCoordinateSystem_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GeographicCoordinateSystem_Type";
     public static bool RuleGroup() { return false; }
@@ -63,13 +63,11 @@ internal partial class APM_GeographicCoordinateSystem_Type_Base : ISpecification
         var val = ctx.GetRequired<PdfName, APM_GeographicCoordinateSystem_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "GEOGCS")) 
         {
             ctx.Fail<APM_GeographicCoordinateSystem_Type>($"Invalid value {val}, allowed are: [GEOGCS]");
-        }
         }
         // no linked objects
         
@@ -81,12 +79,12 @@ internal partial class APM_GeographicCoordinateSystem_Type_Base : ISpecification
 /// <summary>
 /// GeographicCoordinateSystem_EPSG 
 /// </summary>
-internal partial class APM_GeographicCoordinateSystem_EPSG : APM_GeographicCoordinateSystem_EPSG_Base
+internal partial class APM_GeographicCoordinateSystem_EPSG : APM_GeographicCoordinateSystem_EPSG__Base
 {
 }
 
 
-internal partial class APM_GeographicCoordinateSystem_EPSG_Base : ISpecification<PdfDictionary>
+internal partial class APM_GeographicCoordinateSystem_EPSG__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GeographicCoordinateSystem_EPSG";
     public static bool RuleGroup() { return false; }
@@ -96,7 +94,11 @@ internal partial class APM_GeographicCoordinateSystem_EPSG_Base : ISpecification
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_GeographicCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(!obj.ContainsKey("WKT"))) 
+        {
+            ctx.Fail<APM_GeographicCoordinateSystem_EPSG>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent(WKT)))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -108,12 +110,12 @@ internal partial class APM_GeographicCoordinateSystem_EPSG_Base : ISpecification
 /// <summary>
 /// GeographicCoordinateSystem_WKT 
 /// </summary>
-internal partial class APM_GeographicCoordinateSystem_WKT : APM_GeographicCoordinateSystem_WKT_Base
+internal partial class APM_GeographicCoordinateSystem_WKT : APM_GeographicCoordinateSystem_WKT__Base
 {
 }
 
 
-internal partial class APM_GeographicCoordinateSystem_WKT_Base : ISpecification<PdfDictionary>
+internal partial class APM_GeographicCoordinateSystem_WKT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "GeographicCoordinateSystem_WKT";
     public static bool RuleGroup() { return false; }
@@ -123,7 +125,11 @@ internal partial class APM_GeographicCoordinateSystem_WKT_Base : ISpecification<
     {
         var val = ctx.GetOptional<PdfString, APM_GeographicCoordinateSystem_WKT>(obj, "WKT", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(!obj.ContainsKey("EPSG"))) 
+        {
+            ctx.Fail<APM_GeographicCoordinateSystem_WKT>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent(EPSG)))");
+        }
         // no value restrictions
         // no linked objects
         

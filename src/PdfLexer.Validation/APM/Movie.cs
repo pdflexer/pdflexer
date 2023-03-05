@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Movie : APM_Movie_Base
+internal partial class APM_Movie : APM_Movie__Base
 {
 }
 
-internal partial class APM_Movie_Base : ISpecification<PdfDictionary>
+internal partial class APM_Movie__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Movie";
@@ -121,12 +121,12 @@ internal partial class APM_Movie_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Movie_F Table 306
 /// </summary>
-internal partial class APM_Movie_F : APM_Movie_F_Base
+internal partial class APM_Movie_F : APM_Movie_F__Base
 {
 }
 
 
-internal partial class APM_Movie_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_Movie_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Movie_F";
     public static bool RuleGroup() { return false; }
@@ -169,12 +169,12 @@ internal partial class APM_Movie_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Movie_Aspect 
 /// </summary>
-internal partial class APM_Movie_Aspect : APM_Movie_Aspect_Base
+internal partial class APM_Movie_Aspect : APM_Movie_Aspect__Base
 {
 }
 
 
-internal partial class APM_Movie_Aspect_Base : ISpecification<PdfDictionary>
+internal partial class APM_Movie_Aspect__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Movie_Aspect";
     public static bool RuleGroup() { return false; }
@@ -196,12 +196,12 @@ internal partial class APM_Movie_Aspect_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Movie_Rotate 
 /// </summary>
-internal partial class APM_Movie_Rotate : APM_Movie_Rotate_Base
+internal partial class APM_Movie_Rotate : APM_Movie_Rotate__Base
 {
 }
 
 
-internal partial class APM_Movie_Rotate_Base : ISpecification<PdfDictionary>
+internal partial class APM_Movie_Rotate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Movie_Rotate";
     public static bool RuleGroup() { return false; }
@@ -212,13 +212,11 @@ internal partial class APM_Movie_Rotate_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_Movie_Rotate>(obj, "Rotate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Rotate = val;
-        if (!(eq(mod(@Rotate,90),0))) 
+        var Rotate = obj.Get("Rotate");
+        if (!(eq(mod(Rotate,90),0))) 
         {
             ctx.Fail<APM_Movie_Rotate>($"Invalid value {val}, allowed are: [fn:Eval((@Rotate mod 90)==0)]");
-        }
         }
         // no linked objects
         
@@ -230,12 +228,12 @@ internal partial class APM_Movie_Rotate_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Movie_Poster 
 /// </summary>
-internal partial class APM_Movie_Poster : APM_Movie_Poster_Base
+internal partial class APM_Movie_Poster : APM_Movie_Poster__Base
 {
 }
 
 
-internal partial class APM_Movie_Poster_Base : ISpecification<PdfDictionary>
+internal partial class APM_Movie_Poster__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Movie_Poster";
     public static bool RuleGroup() { return false; }

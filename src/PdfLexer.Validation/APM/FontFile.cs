@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FontFile : APM_FontFile_Base
+internal partial class APM_FontFile : APM_FontFile__Base
 {
 }
 
-internal partial class APM_FontFile_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FontFile";
@@ -138,12 +138,12 @@ internal partial class APM_FontFile_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontFile_Length1 Table 5 and Table 125
 /// </summary>
-internal partial class APM_FontFile_Length1 : APM_FontFile_Length1_Base
+internal partial class APM_FontFile_Length1 : APM_FontFile_Length1__Base
 {
 }
 
 
-internal partial class APM_FontFile_Length1_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_Length1__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_Length1";
     public static bool RuleGroup() { return false; }
@@ -153,7 +153,11 @@ internal partial class APM_FontFile_Length1_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FontFile_Length1>(obj, "Length1", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Length1 = obj.Get("Length1");
+        if (!(gte(Length1,0))) 
+        {
+            ctx.Fail<APM_FontFile_Length1>($"Value failed special case check: fn:Eval(@Length1>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -165,12 +169,12 @@ internal partial class APM_FontFile_Length1_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontFile_Length2 
 /// </summary>
-internal partial class APM_FontFile_Length2 : APM_FontFile_Length2_Base
+internal partial class APM_FontFile_Length2 : APM_FontFile_Length2__Base
 {
 }
 
 
-internal partial class APM_FontFile_Length2_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_Length2__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_Length2";
     public static bool RuleGroup() { return false; }
@@ -180,7 +184,11 @@ internal partial class APM_FontFile_Length2_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FontFile_Length2>(obj, "Length2", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Length2 = obj.Get("Length2");
+        if (!(gte(Length2,0))) 
+        {
+            ctx.Fail<APM_FontFile_Length2>($"Value failed special case check: fn:Eval(@Length2>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -192,12 +200,12 @@ internal partial class APM_FontFile_Length2_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontFile_Length3 
 /// </summary>
-internal partial class APM_FontFile_Length3 : APM_FontFile_Length3_Base
+internal partial class APM_FontFile_Length3 : APM_FontFile_Length3__Base
 {
 }
 
 
-internal partial class APM_FontFile_Length3_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_Length3__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_Length3";
     public static bool RuleGroup() { return false; }
@@ -207,7 +215,11 @@ internal partial class APM_FontFile_Length3_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FontFile_Length3>(obj, "Length3", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Length3 = obj.Get("Length3");
+        if (!(gte(Length3,0))) 
+        {
+            ctx.Fail<APM_FontFile_Length3>($"Value failed special case check: fn:Eval(@Length3>=0)");
+        }
         // no value restrictions
         // no linked objects
         
@@ -219,12 +231,12 @@ internal partial class APM_FontFile_Length3_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontFile_Subtype 
 /// </summary>
-internal partial class APM_FontFile_Subtype : APM_FontFile_Subtype_Base
+internal partial class APM_FontFile_Subtype : APM_FontFile_Subtype__Base
 {
 }
 
 
-internal partial class APM_FontFile_Subtype_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_Subtype__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_Subtype";
     public static bool RuleGroup() { return false; }
@@ -235,13 +247,11 @@ internal partial class APM_FontFile_Subtype_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_FontFile_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Type1C" || val == "CIDFontType0C" || val == "OpenType")) 
         {
             ctx.Fail<APM_FontFile_Subtype>($"Invalid value {val}, allowed are: [Type1C,CIDFontType0C,OpenType]");
-        }
         }
         // no linked objects
         
@@ -253,12 +263,12 @@ internal partial class APM_FontFile_Subtype_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontFile_Length 
 /// </summary>
-internal partial class APM_FontFile_Length : APM_FontFile_Length_Base
+internal partial class APM_FontFile_Length : APM_FontFile_Length__Base
 {
 }
 
 
-internal partial class APM_FontFile_Length_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_Length__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_Length";
     public static bool RuleGroup() { return false; }
@@ -280,12 +290,12 @@ internal partial class APM_FontFile_Length_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontFile_Filter 
 /// </summary>
-internal partial class APM_FontFile_Filter : APM_FontFile_Filter_Base
+internal partial class APM_FontFile_Filter : APM_FontFile_Filter__Base
 {
 }
 
 
-internal partial class APM_FontFile_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_Filter";
     public static bool RuleGroup() { return false; }
@@ -301,7 +311,12 @@ internal partial class APM_FontFile_Filter_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_FontFile_Filter>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -311,13 +326,11 @@ internal partial class APM_FontFile_Filter_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_FontFile_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -335,12 +348,12 @@ internal partial class APM_FontFile_Filter_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontFile_DecodeParms 
 /// </summary>
-internal partial class APM_FontFile_DecodeParms : APM_FontFile_DecodeParms_Base
+internal partial class APM_FontFile_DecodeParms : APM_FontFile_DecodeParms__Base
 {
 }
 
 
-internal partial class APM_FontFile_DecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_DecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_DecodeParms";
     public static bool RuleGroup() { return false; }
@@ -356,7 +369,12 @@ internal partial class APM_FontFile_DecodeParms_Base : ISpecification<PdfDiction
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var DecodeParms = obj.Get("DecodeParms");
+                    var Filter = obj.Get("Filter");
+                    if (!(eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_FontFile_DecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -373,6 +391,9 @@ internal partial class APM_FontFile_DecodeParms_Base : ISpecification<PdfDiction
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_FontFile_DecodeParms>("DecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -392,12 +413,12 @@ internal partial class APM_FontFile_DecodeParms_Base : ISpecification<PdfDiction
 /// <summary>
 /// FontFile_F 
 /// </summary>
-internal partial class APM_FontFile_F : APM_FontFile_F_Base
+internal partial class APM_FontFile_F : APM_FontFile_F__Base
 {
 }
 
 
-internal partial class APM_FontFile_F_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_F__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_F";
     public static bool RuleGroup() { return false; }
@@ -440,12 +461,12 @@ internal partial class APM_FontFile_F_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontFile_FFilter 
 /// </summary>
-internal partial class APM_FontFile_FFilter : APM_FontFile_FFilter_Base
+internal partial class APM_FontFile_FFilter : APM_FontFile_FFilter__Base
 {
 }
 
 
-internal partial class APM_FontFile_FFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_FFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_FFilter";
     public static bool RuleGroup() { return false; }
@@ -461,7 +482,12 @@ internal partial class APM_FontFile_FFilter_Base : ISpecification<PdfDictionary>
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_FontFile_FFilter>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfCompressionFilterNames, PdfArray>(stack, val, obj);
                     return;
@@ -471,13 +497,11 @@ internal partial class APM_FontFile_FFilter_Base : ISpecification<PdfDictionary>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || ctx.Version >= 1.5m && val == "Crypt")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
                     {
                         ctx.Fail<APM_FontFile_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
-                    }
                     }
                     // no linked objects
                     return;
@@ -495,12 +519,12 @@ internal partial class APM_FontFile_FFilter_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontFile_FDecodeParms 
 /// </summary>
-internal partial class APM_FontFile_FDecodeParms : APM_FontFile_FDecodeParms_Base
+internal partial class APM_FontFile_FDecodeParms : APM_FontFile_FDecodeParms__Base
 {
 }
 
 
-internal partial class APM_FontFile_FDecodeParms_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_FDecodeParms__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_FDecodeParms";
     public static bool RuleGroup() { return false; }
@@ -516,7 +540,12 @@ internal partial class APM_FontFile_FDecodeParms_Base : ISpecification<PdfDictio
                 {
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
-                    // TODO special case
+                    var FDecodeParms = obj.Get("FDecodeParms");
+                    var FFilter = obj.Get("FFilter");
+                    if (!(eq(((FDecodeParms as PdfArray)?.Count),((FFilter as PdfArray)?.Count)))) 
+                    {
+                        ctx.Fail<APM_FontFile_FDecodeParms>($"Value failed special case check: fn:Eval(fn:ArrayLength(FDecodeParms)==fn:ArrayLength(FFilter))");
+                    }
                     // no value restrictions
                     ctx.Run<APM_ArrayOfDecodeParams, PdfArray>(stack, val, obj);
                     return;
@@ -533,6 +562,9 @@ internal partial class APM_FontFile_FDecodeParms_Base : ISpecification<PdfDictio
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_FontFile_FDecodeParms>("FDecodeParms did not match any allowable types: '[FilterLZWDecode,FilterFlateDecode,fn:SinceVersion(1.5,FilterCrypt)]'");
@@ -552,12 +584,12 @@ internal partial class APM_FontFile_FDecodeParms_Base : ISpecification<PdfDictio
 /// <summary>
 /// FontFile_DL 
 /// </summary>
-internal partial class APM_FontFile_DL : APM_FontFile_DL_Base
+internal partial class APM_FontFile_DL : APM_FontFile_DL__Base
 {
 }
 
 
-internal partial class APM_FontFile_DL_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontFile_DL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontFile_DL";
     public static bool RuleGroup() { return false; }
@@ -567,7 +599,11 @@ internal partial class APM_FontFile_DL_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FontFile_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var DL = obj.Get("DL");
+        if (!(gte(DL,0))) 
+        {
+            ctx.Fail<APM_FontFile_DL>($"Value failed special case check: fn:Eval(@DL>=0)");
+        }
         // no value restrictions
         // no linked objects
         

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FilterDCTDecode : APM_FilterDCTDecode_Base
+internal partial class APM_FilterDCTDecode : APM_FilterDCTDecode__Base
 {
 }
 
-internal partial class APM_FilterDCTDecode_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterDCTDecode__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FilterDCTDecode";
@@ -148,12 +148,12 @@ internal partial class APM_FilterDCTDecode_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FilterDCTDecode_ColorTransform Table 13
 /// </summary>
-internal partial class APM_FilterDCTDecode_ColorTransform : APM_FilterDCTDecode_ColorTransform_Base
+internal partial class APM_FilterDCTDecode_ColorTransform : APM_FilterDCTDecode_ColorTransform__Base
 {
 }
 
 
-internal partial class APM_FilterDCTDecode_ColorTransform_Base : ISpecification<PdfDictionary>
+internal partial class APM_FilterDCTDecode_ColorTransform__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FilterDCTDecode_ColorTransform";
     public static bool RuleGroup() { return false; }
@@ -164,13 +164,11 @@ internal partial class APM_FilterDCTDecode_ColorTransform_Base : ISpecification<
         var val = ctx.GetOptional<PdfIntNumber, APM_FilterDCTDecode_ColorTransform>(obj, "ColorTransform", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1)) 
         {
             ctx.Fail<APM_FilterDCTDecode_ColorTransform>($"Invalid value {val}, allowed are: [0,1]");
-        }
         }
         // no linked objects
         

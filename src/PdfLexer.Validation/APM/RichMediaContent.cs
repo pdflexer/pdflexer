@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaContent : APM_RichMediaContent_Base
+internal partial class APM_RichMediaContent : APM_RichMediaContent__Base
 {
 }
 
-internal partial class APM_RichMediaContent_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaContent__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaContent";
@@ -48,12 +48,12 @@ internal partial class APM_RichMediaContent_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RichMediaContent_Type Table 341
 /// </summary>
-internal partial class APM_RichMediaContent_Type : APM_RichMediaContent_Type_Base
+internal partial class APM_RichMediaContent_Type : APM_RichMediaContent_Type__Base
 {
 }
 
 
-internal partial class APM_RichMediaContent_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaContent_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaContent_Type";
     public static bool RuleGroup() { return false; }
@@ -64,13 +64,11 @@ internal partial class APM_RichMediaContent_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_RichMediaContent_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "RichMediaContent")) 
         {
             ctx.Fail<APM_RichMediaContent_Type>($"Invalid value {val}, allowed are: [RichMediaContent]");
-        }
         }
         // no linked objects
         
@@ -82,12 +80,12 @@ internal partial class APM_RichMediaContent_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// RichMediaContent_Assets 
 /// </summary>
-internal partial class APM_RichMediaContent_Assets : APM_RichMediaContent_Assets_Base
+internal partial class APM_RichMediaContent_Assets : APM_RichMediaContent_Assets__Base
 {
 }
 
 
-internal partial class APM_RichMediaContent_Assets_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaContent_Assets__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaContent_Assets";
     public static bool RuleGroup() { return false; }
@@ -109,12 +107,12 @@ internal partial class APM_RichMediaContent_Assets_Base : ISpecification<PdfDict
 /// <summary>
 /// RichMediaContent_Configurations https://github.com/pdf-association/pdf-issues/issues/166
 /// </summary>
-internal partial class APM_RichMediaContent_Configurations : APM_RichMediaContent_Configurations_Base
+internal partial class APM_RichMediaContent_Configurations : APM_RichMediaContent_Configurations__Base
 {
 }
 
 
-internal partial class APM_RichMediaContent_Configurations_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaContent_Configurations__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaContent_Configurations";
     public static bool RuleGroup() { return false; }
@@ -124,7 +122,11 @@ internal partial class APM_RichMediaContent_Configurations_Base : ISpecification
     {
         var val = ctx.GetRequired<PdfArray, APM_RichMediaContent_Configurations>(obj, "Configurations", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Configurations = obj.Get("Configurations");
+        if (!(gt(((Configurations as PdfArray)?.Count),0))) 
+        {
+            ctx.Fail<APM_RichMediaContent_Configurations>($"Value failed special case check: fn:Eval(fn:ArrayLength(Configurations)>0)");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfRichMediaConfiguration, PdfArray>(stack, val, obj);
         
@@ -136,12 +138,12 @@ internal partial class APM_RichMediaContent_Configurations_Base : ISpecification
 /// <summary>
 /// RichMediaContent_Views 
 /// </summary>
-internal partial class APM_RichMediaContent_Views : APM_RichMediaContent_Views_Base
+internal partial class APM_RichMediaContent_Views : APM_RichMediaContent_Views__Base
 {
 }
 
 
-internal partial class APM_RichMediaContent_Views_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaContent_Views__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaContent_Views";
     public static bool RuleGroup() { return false; }

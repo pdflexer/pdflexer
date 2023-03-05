@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaScreenParameters : APM_MediaScreenParameters_Base
+internal partial class APM_MediaScreenParameters : APM_MediaScreenParameters__Base
 {
 }
 
-internal partial class APM_MediaScreenParameters_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaScreenParameters__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaScreenParameters";
@@ -106,12 +106,12 @@ internal partial class APM_MediaScreenParameters_Base : ISpecification<PdfDictio
 /// <summary>
 /// MediaScreenParameters_Type Table 293
 /// </summary>
-internal partial class APM_MediaScreenParameters_Type : APM_MediaScreenParameters_Type_Base
+internal partial class APM_MediaScreenParameters_Type : APM_MediaScreenParameters_Type__Base
 {
 }
 
 
-internal partial class APM_MediaScreenParameters_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaScreenParameters_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaScreenParameters_Type";
     public static bool RuleGroup() { return false; }
@@ -122,13 +122,11 @@ internal partial class APM_MediaScreenParameters_Type_Base : ISpecification<PdfD
         var val = ctx.GetOptional<PdfName, APM_MediaScreenParameters_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaScreenParams")) 
         {
             ctx.Fail<APM_MediaScreenParameters_Type>($"Invalid value {val}, allowed are: [MediaScreenParams]");
-        }
         }
         // no linked objects
         
@@ -140,12 +138,12 @@ internal partial class APM_MediaScreenParameters_Type_Base : ISpecification<PdfD
 /// <summary>
 /// MediaScreenParameters_MH 
 /// </summary>
-internal partial class APM_MediaScreenParameters_MH : APM_MediaScreenParameters_MH_Base
+internal partial class APM_MediaScreenParameters_MH : APM_MediaScreenParameters_MH__Base
 {
 }
 
 
-internal partial class APM_MediaScreenParameters_MH_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaScreenParameters_MH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaScreenParameters_MH";
     public static bool RuleGroup() { return false; }
@@ -167,12 +165,12 @@ internal partial class APM_MediaScreenParameters_MH_Base : ISpecification<PdfDic
 /// <summary>
 /// MediaScreenParameters_BE 
 /// </summary>
-internal partial class APM_MediaScreenParameters_BE : APM_MediaScreenParameters_BE_Base
+internal partial class APM_MediaScreenParameters_BE : APM_MediaScreenParameters_BE__Base
 {
 }
 
 
-internal partial class APM_MediaScreenParameters_BE_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaScreenParameters_BE__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaScreenParameters_BE";
     public static bool RuleGroup() { return false; }

@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DocTimeStamp : APM_DocTimeStamp_Base
+internal partial class APM_DocTimeStamp : APM_DocTimeStamp__Base
 {
 }
 
-internal partial class APM_DocTimeStamp_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DocTimeStamp";
@@ -142,12 +142,12 @@ internal partial class APM_DocTimeStamp_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocTimeStamp_Type Table 255
 /// </summary>
-internal partial class APM_DocTimeStamp_Type : APM_DocTimeStamp_Type_Base
+internal partial class APM_DocTimeStamp_Type : APM_DocTimeStamp_Type__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Type";
     public static bool RuleGroup() { return false; }
@@ -158,13 +158,11 @@ internal partial class APM_DocTimeStamp_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_DocTimeStamp_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DocTimeStamp")) 
         {
             ctx.Fail<APM_DocTimeStamp_Type>($"Invalid value {val}, allowed are: [DocTimeStamp]");
-        }
         }
         // no linked objects
         
@@ -176,12 +174,12 @@ internal partial class APM_DocTimeStamp_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// DocTimeStamp_Filter Inheritable from Parent
 /// </summary>
-internal partial class APM_DocTimeStamp_Filter : APM_DocTimeStamp_Filter_Base
+internal partial class APM_DocTimeStamp_Filter : APM_DocTimeStamp_Filter__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Filter_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Filter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Filter";
     public static bool RuleGroup() { return false; }
@@ -203,12 +201,12 @@ internal partial class APM_DocTimeStamp_Filter_Base : ISpecification<PdfDictiona
 /// <summary>
 /// DocTimeStamp_SubFilter 
 /// </summary>
-internal partial class APM_DocTimeStamp_SubFilter : APM_DocTimeStamp_SubFilter_Base
+internal partial class APM_DocTimeStamp_SubFilter : APM_DocTimeStamp_SubFilter__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_SubFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_SubFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_SubFilter";
     public static bool RuleGroup() { return false; }
@@ -219,13 +217,11 @@ internal partial class APM_DocTimeStamp_SubFilter_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfName, APM_DocTimeStamp_SubFilter>(obj, "SubFilter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ETSI.RFC3161")) 
         {
             ctx.Fail<APM_DocTimeStamp_SubFilter>($"Invalid value {val}, allowed are: [ETSI.RFC3161]");
-        }
         }
         // no linked objects
         
@@ -237,12 +233,12 @@ internal partial class APM_DocTimeStamp_SubFilter_Base : ISpecification<PdfDicti
 /// <summary>
 /// DocTimeStamp_Contents 
 /// </summary>
-internal partial class APM_DocTimeStamp_Contents : APM_DocTimeStamp_Contents_Base
+internal partial class APM_DocTimeStamp_Contents : APM_DocTimeStamp_Contents__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Contents";
     public static bool RuleGroup() { return false; }
@@ -264,12 +260,12 @@ internal partial class APM_DocTimeStamp_Contents_Base : ISpecification<PdfDictio
 /// <summary>
 /// DocTimeStamp_Cert 
 /// </summary>
-internal partial class APM_DocTimeStamp_Cert : APM_DocTimeStamp_Cert_Base
+internal partial class APM_DocTimeStamp_Cert : APM_DocTimeStamp_Cert__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Cert_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Cert__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Cert";
     public static bool RuleGroup() { return false; }
@@ -312,12 +308,12 @@ internal partial class APM_DocTimeStamp_Cert_Base : ISpecification<PdfDictionary
 /// <summary>
 /// DocTimeStamp_ByteRange 
 /// </summary>
-internal partial class APM_DocTimeStamp_ByteRange : APM_DocTimeStamp_ByteRange_Base
+internal partial class APM_DocTimeStamp_ByteRange : APM_DocTimeStamp_ByteRange__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_ByteRange_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_ByteRange__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_ByteRange";
     public static bool RuleGroup() { return false; }
@@ -339,12 +335,12 @@ internal partial class APM_DocTimeStamp_ByteRange_Base : ISpecification<PdfDicti
 /// <summary>
 /// DocTimeStamp_Reference 
 /// </summary>
-internal partial class APM_DocTimeStamp_Reference : APM_DocTimeStamp_Reference_Base
+internal partial class APM_DocTimeStamp_Reference : APM_DocTimeStamp_Reference__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Reference_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Reference__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Reference";
     public static bool RuleGroup() { return false; }
@@ -366,12 +362,12 @@ internal partial class APM_DocTimeStamp_Reference_Base : ISpecification<PdfDicti
 /// <summary>
 /// DocTimeStamp_Changes 
 /// </summary>
-internal partial class APM_DocTimeStamp_Changes : APM_DocTimeStamp_Changes_Base
+internal partial class APM_DocTimeStamp_Changes : APM_DocTimeStamp_Changes__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Changes_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Changes__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Changes";
     public static bool RuleGroup() { return false; }
@@ -393,12 +389,12 @@ internal partial class APM_DocTimeStamp_Changes_Base : ISpecification<PdfDiction
 /// <summary>
 /// DocTimeStamp_Name 
 /// </summary>
-internal partial class APM_DocTimeStamp_Name : APM_DocTimeStamp_Name_Base
+internal partial class APM_DocTimeStamp_Name : APM_DocTimeStamp_Name__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Name_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Name__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Name";
     public static bool RuleGroup() { return false; }
@@ -420,12 +416,12 @@ internal partial class APM_DocTimeStamp_Name_Base : ISpecification<PdfDictionary
 /// <summary>
 /// DocTimeStamp_M 
 /// </summary>
-internal partial class APM_DocTimeStamp_M : APM_DocTimeStamp_M_Base
+internal partial class APM_DocTimeStamp_M : APM_DocTimeStamp_M__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_M";
     public static bool RuleGroup() { return false; }
@@ -447,12 +443,12 @@ internal partial class APM_DocTimeStamp_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocTimeStamp_Location 
 /// </summary>
-internal partial class APM_DocTimeStamp_Location : APM_DocTimeStamp_Location_Base
+internal partial class APM_DocTimeStamp_Location : APM_DocTimeStamp_Location__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Location_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Location__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Location";
     public static bool RuleGroup() { return false; }
@@ -474,12 +470,12 @@ internal partial class APM_DocTimeStamp_Location_Base : ISpecification<PdfDictio
 /// <summary>
 /// DocTimeStamp_Reason 
 /// </summary>
-internal partial class APM_DocTimeStamp_Reason : APM_DocTimeStamp_Reason_Base
+internal partial class APM_DocTimeStamp_Reason : APM_DocTimeStamp_Reason__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Reason_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Reason__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Reason";
     public static bool RuleGroup() { return false; }
@@ -501,12 +497,12 @@ internal partial class APM_DocTimeStamp_Reason_Base : ISpecification<PdfDictiona
 /// <summary>
 /// DocTimeStamp_ContactInfo 
 /// </summary>
-internal partial class APM_DocTimeStamp_ContactInfo : APM_DocTimeStamp_ContactInfo_Base
+internal partial class APM_DocTimeStamp_ContactInfo : APM_DocTimeStamp_ContactInfo__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_ContactInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_ContactInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_ContactInfo";
     public static bool RuleGroup() { return false; }
@@ -528,12 +524,12 @@ internal partial class APM_DocTimeStamp_ContactInfo_Base : ISpecification<PdfDic
 /// <summary>
 /// DocTimeStamp_R 
 /// </summary>
-internal partial class APM_DocTimeStamp_R : APM_DocTimeStamp_R_Base
+internal partial class APM_DocTimeStamp_R : APM_DocTimeStamp_R__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_R";
     public static bool RuleGroup() { return false; }
@@ -555,12 +551,12 @@ internal partial class APM_DocTimeStamp_R_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocTimeStamp_V 
 /// </summary>
-internal partial class APM_DocTimeStamp_V : APM_DocTimeStamp_V_Base
+internal partial class APM_DocTimeStamp_V : APM_DocTimeStamp_V__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_V";
     public static bool RuleGroup() { return false; }
@@ -582,12 +578,12 @@ internal partial class APM_DocTimeStamp_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DocTimeStamp_Prop_Build 
 /// </summary>
-internal partial class APM_DocTimeStamp_Prop_Build : APM_DocTimeStamp_Prop_Build_Base
+internal partial class APM_DocTimeStamp_Prop_Build : APM_DocTimeStamp_Prop_Build__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Prop_Build_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Prop_Build__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Prop_Build";
     public static bool RuleGroup() { return false; }
@@ -609,12 +605,12 @@ internal partial class APM_DocTimeStamp_Prop_Build_Base : ISpecification<PdfDict
 /// <summary>
 /// DocTimeStamp_Prop_AuthTime 
 /// </summary>
-internal partial class APM_DocTimeStamp_Prop_AuthTime : APM_DocTimeStamp_Prop_AuthTime_Base
+internal partial class APM_DocTimeStamp_Prop_AuthTime : APM_DocTimeStamp_Prop_AuthTime__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Prop_AuthTime_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Prop_AuthTime__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Prop_AuthTime";
     public static bool RuleGroup() { return false; }
@@ -636,12 +632,12 @@ internal partial class APM_DocTimeStamp_Prop_AuthTime_Base : ISpecification<PdfD
 /// <summary>
 /// DocTimeStamp_Prop_AuthType 
 /// </summary>
-internal partial class APM_DocTimeStamp_Prop_AuthType : APM_DocTimeStamp_Prop_AuthType_Base
+internal partial class APM_DocTimeStamp_Prop_AuthType : APM_DocTimeStamp_Prop_AuthType__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_Prop_AuthType_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_Prop_AuthType__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_Prop_AuthType";
     public static bool RuleGroup() { return false; }
@@ -663,12 +659,12 @@ internal partial class APM_DocTimeStamp_Prop_AuthType_Base : ISpecification<PdfD
 /// <summary>
 /// DocTimeStamp_ADBE_Build Adobe "Digital Signature Build Dictionary Specification"
 /// </summary>
-internal partial class APM_DocTimeStamp_ADBE_Build : APM_DocTimeStamp_ADBE_Build_Base
+internal partial class APM_DocTimeStamp_ADBE_Build : APM_DocTimeStamp_ADBE_Build__Base
 {
 }
 
 
-internal partial class APM_DocTimeStamp_ADBE_Build_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocTimeStamp_ADBE_Build__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocTimeStamp_ADBE_Build";
     public static bool RuleGroup() { return false; }

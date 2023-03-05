@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FieldBtnPush : APM_FieldBtnPush_Base
+internal partial class APM_FieldBtnPush : APM_FieldBtnPush__Base
 {
 }
 
-internal partial class APM_FieldBtnPush_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FieldBtnPush";
@@ -141,12 +141,12 @@ internal partial class APM_FieldBtnPush_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_FT Table 226
 /// </summary>
-internal partial class APM_FieldBtnPush_FT : APM_FieldBtnPush_FT_Base
+internal partial class APM_FieldBtnPush_FT : APM_FieldBtnPush_FT__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_FT_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_FT__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_FT";
     public static bool RuleGroup() { return false; }
@@ -157,13 +157,11 @@ internal partial class APM_FieldBtnPush_FT_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_FieldBtnPush_FT>(obj, "FT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Btn")) 
         {
             ctx.Fail<APM_FieldBtnPush_FT>($"Invalid value {val}, allowed are: [Btn]");
-        }
         }
         // no linked objects
         
@@ -175,12 +173,12 @@ internal partial class APM_FieldBtnPush_FT_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_Parent 
 /// </summary>
-internal partial class APM_FieldBtnPush_Parent : APM_FieldBtnPush_Parent_Base
+internal partial class APM_FieldBtnPush_Parent : APM_FieldBtnPush_Parent__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_Parent";
     public static bool RuleGroup() { return false; }
@@ -210,6 +208,9 @@ internal partial class APM_FieldBtnPush_Parent_Base : ISpecification<PdfDictiona
         } else if (APM_Field.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_Field, PdfDictionary>(stack, val, obj);
+        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val)))) 
+        {
+            ctx.Run<APM_FieldSig, PdfDictionary>(stack, val, obj);
         }else 
         {
             ctx.Fail<APM_FieldBtnPush_Parent>("Parent did not match any allowable types: '[FieldTx,FieldBtnPush,FieldBtnCheckbox,FieldBtnRadio,FieldChoice,fn:SinceVersion(1.3,FieldSig),Field]'");
@@ -223,12 +224,12 @@ internal partial class APM_FieldBtnPush_Parent_Base : ISpecification<PdfDictiona
 /// <summary>
 /// FieldBtnPush_Kids 
 /// </summary>
-internal partial class APM_FieldBtnPush_Kids : APM_FieldBtnPush_Kids_Base
+internal partial class APM_FieldBtnPush_Kids : APM_FieldBtnPush_Kids__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_Kids_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_Kids__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_Kids";
     public static bool RuleGroup() { return false; }
@@ -250,12 +251,12 @@ internal partial class APM_FieldBtnPush_Kids_Base : ISpecification<PdfDictionary
 /// <summary>
 /// FieldBtnPush_T 
 /// </summary>
-internal partial class APM_FieldBtnPush_T : APM_FieldBtnPush_T_Base
+internal partial class APM_FieldBtnPush_T : APM_FieldBtnPush_T__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_T_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_T__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_T";
     public static bool RuleGroup() { return false; }
@@ -277,12 +278,12 @@ internal partial class APM_FieldBtnPush_T_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_TU 
 /// </summary>
-internal partial class APM_FieldBtnPush_TU : APM_FieldBtnPush_TU_Base
+internal partial class APM_FieldBtnPush_TU : APM_FieldBtnPush_TU__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_TU_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_TU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_TU";
     public static bool RuleGroup() { return false; }
@@ -304,12 +305,12 @@ internal partial class APM_FieldBtnPush_TU_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_TM 
 /// </summary>
-internal partial class APM_FieldBtnPush_TM : APM_FieldBtnPush_TM_Base
+internal partial class APM_FieldBtnPush_TM : APM_FieldBtnPush_TM__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_TM_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_TM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_TM";
     public static bool RuleGroup() { return false; }
@@ -331,12 +332,12 @@ internal partial class APM_FieldBtnPush_TM_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_Ff Table 227 and Table 229
 /// </summary>
-internal partial class APM_FieldBtnPush_Ff : APM_FieldBtnPush_Ff_Base
+internal partial class APM_FieldBtnPush_Ff : APM_FieldBtnPush_Ff__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_Ff_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_Ff__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_Ff";
     public static bool RuleGroup() { return false; }
@@ -346,7 +347,11 @@ internal partial class APM_FieldBtnPush_Ff_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldBtnPush_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitsClear(obj)&&BitClear(obj)&&BitSet(obj)&&BitsClear(obj)&&BitsClear(obj))) 
+        {
+            ctx.Fail<APM_FieldBtnPush_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(4,14) && fn:BitClear(16) && fn:BitSet(17) && fn:BitsClear(18,25) && fn:BitsClear(27,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -358,12 +363,12 @@ internal partial class APM_FieldBtnPush_Ff_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_AA 
 /// </summary>
-internal partial class APM_FieldBtnPush_AA : APM_FieldBtnPush_AA_Base
+internal partial class APM_FieldBtnPush_AA : APM_FieldBtnPush_AA__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_AA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_AA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_AA";
     public static bool RuleGroup() { return false; }
@@ -385,12 +390,12 @@ internal partial class APM_FieldBtnPush_AA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_DA 
 /// </summary>
-internal partial class APM_FieldBtnPush_DA : APM_FieldBtnPush_DA_Base
+internal partial class APM_FieldBtnPush_DA : APM_FieldBtnPush_DA__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_DA_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_DA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_DA";
     public static bool RuleGroup() { return false; }
@@ -412,12 +417,12 @@ internal partial class APM_FieldBtnPush_DA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_Q 
 /// </summary>
-internal partial class APM_FieldBtnPush_Q : APM_FieldBtnPush_Q_Base
+internal partial class APM_FieldBtnPush_Q : APM_FieldBtnPush_Q__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_Q_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_Q__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_Q";
     public static bool RuleGroup() { return false; }
@@ -428,13 +433,11 @@ internal partial class APM_FieldBtnPush_Q_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldBtnPush_Q>(obj, "Q", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_FieldBtnPush_Q>($"Invalid value {val}, allowed are: [0,1,2]");
-        }
         }
         // no linked objects
         
@@ -446,12 +449,12 @@ internal partial class APM_FieldBtnPush_Q_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_DS 
 /// </summary>
-internal partial class APM_FieldBtnPush_DS : APM_FieldBtnPush_DS_Base
+internal partial class APM_FieldBtnPush_DS : APM_FieldBtnPush_DS__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_DS_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_DS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_DS";
     public static bool RuleGroup() { return false; }
@@ -473,12 +476,12 @@ internal partial class APM_FieldBtnPush_DS_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_RV 
 /// </summary>
-internal partial class APM_FieldBtnPush_RV : APM_FieldBtnPush_RV_Base
+internal partial class APM_FieldBtnPush_RV : APM_FieldBtnPush_RV__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_RV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_RV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_RV";
     public static bool RuleGroup() { return false; }
@@ -521,12 +524,12 @@ internal partial class APM_FieldBtnPush_RV_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_V 
 /// </summary>
-internal partial class APM_FieldBtnPush_V : APM_FieldBtnPush_V_Base
+internal partial class APM_FieldBtnPush_V : APM_FieldBtnPush_V__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_V";
     public static bool RuleGroup() { return false; }
@@ -536,7 +539,7 @@ internal partial class APM_FieldBtnPush_V_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_FieldBtnPush_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         // no linked objects
         
@@ -548,12 +551,12 @@ internal partial class APM_FieldBtnPush_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FieldBtnPush_DV 
 /// </summary>
-internal partial class APM_FieldBtnPush_DV : APM_FieldBtnPush_DV_Base
+internal partial class APM_FieldBtnPush_DV : APM_FieldBtnPush_DV__Base
 {
 }
 
 
-internal partial class APM_FieldBtnPush_DV_Base : ISpecification<PdfDictionary>
+internal partial class APM_FieldBtnPush_DV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FieldBtnPush_DV";
     public static bool RuleGroup() { return false; }
@@ -563,7 +566,7 @@ internal partial class APM_FieldBtnPush_DV_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfName, APM_FieldBtnPush_DV>(obj, "DV", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         // no linked objects
         

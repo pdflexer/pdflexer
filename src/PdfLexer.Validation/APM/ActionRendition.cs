@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionRendition : APM_ActionRendition_Base
+internal partial class APM_ActionRendition : APM_ActionRendition__Base
 {
 }
 
-internal partial class APM_ActionRendition_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRendition__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionRendition";
@@ -110,12 +110,12 @@ internal partial class APM_ActionRendition_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionRendition_Type Table 196 and Table 218
 /// </summary>
-internal partial class APM_ActionRendition_Type : APM_ActionRendition_Type_Base
+internal partial class APM_ActionRendition_Type : APM_ActionRendition_Type__Base
 {
 }
 
 
-internal partial class APM_ActionRendition_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRendition_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRendition_Type";
     public static bool RuleGroup() { return false; }
@@ -126,13 +126,11 @@ internal partial class APM_ActionRendition_Type_Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfName, APM_ActionRendition_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionRendition_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -144,12 +142,12 @@ internal partial class APM_ActionRendition_Type_Base : ISpecification<PdfDiction
 /// <summary>
 /// ActionRendition_S 
 /// </summary>
-internal partial class APM_ActionRendition_S : APM_ActionRendition_S_Base
+internal partial class APM_ActionRendition_S : APM_ActionRendition_S__Base
 {
 }
 
 
-internal partial class APM_ActionRendition_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRendition_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRendition_S";
     public static bool RuleGroup() { return false; }
@@ -160,13 +158,11 @@ internal partial class APM_ActionRendition_S_Base : ISpecification<PdfDictionary
         var val = ctx.GetRequired<PdfName, APM_ActionRendition_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Rendition")) 
         {
             ctx.Fail<APM_ActionRendition_S>($"Invalid value {val}, allowed are: [Rendition]");
-        }
         }
         // no linked objects
         
@@ -178,12 +174,12 @@ internal partial class APM_ActionRendition_S_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ActionRendition_Next 
 /// </summary>
-internal partial class APM_ActionRendition_Next : APM_ActionRendition_Next_Base
+internal partial class APM_ActionRendition_Next : APM_ActionRendition_Next__Base
 {
 }
 
 
-internal partial class APM_ActionRendition_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRendition_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRendition_Next";
     public static bool RuleGroup() { return false; }
@@ -258,6 +254,18 @@ internal partial class APM_ActionRendition_Next_Base : ISpecification<PdfDiction
                     } else if (APM_ActionECMAScript.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ActionRendition_Next>("Next did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,ActionSetOCGState,ActionRendition,ActionTransition,fn:SinceVersion(1.6,ActionGoTo3DView),ActionECMAScript,fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -277,12 +285,12 @@ internal partial class APM_ActionRendition_Next_Base : ISpecification<PdfDiction
 /// <summary>
 /// ActionRendition_R 
 /// </summary>
-internal partial class APM_ActionRendition_R : APM_ActionRendition_R_Base
+internal partial class APM_ActionRendition_R : APM_ActionRendition_R__Base
 {
 }
 
 
-internal partial class APM_ActionRendition_R_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRendition_R__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRendition_R";
     public static bool RuleGroup() { return false; }
@@ -290,15 +298,12 @@ internal partial class APM_ActionRendition_R_Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var OP = obj.Get("OP");
-            if ((eq(OP,0)||eq(OP,4))) {
-                val = ctx.GetRequired<PdfDictionary, APM_ActionRendition_R>(obj, "R", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_ActionRendition_R>(obj, "R", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var OP = obj.Get("OP");
+        var val = ctx.GetOptional<PdfDictionary, APM_ActionRendition_R>(obj, "R", IndirectRequirement.Either);
+        if (((eq(OP,0)||eq(OP,4))) && val == null) {
+            ctx.Fail<APM_ActionRendition_R>("R is required when 'fn:IsRequired((@OP==0) || (@OP==4))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -321,12 +326,12 @@ internal partial class APM_ActionRendition_R_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ActionRendition_AN 
 /// </summary>
-internal partial class APM_ActionRendition_AN : APM_ActionRendition_AN_Base
+internal partial class APM_ActionRendition_AN : APM_ActionRendition_AN__Base
 {
 }
 
 
-internal partial class APM_ActionRendition_AN_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRendition_AN__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRendition_AN";
     public static bool RuleGroup() { return false; }
@@ -334,15 +339,12 @@ internal partial class APM_ActionRendition_AN_Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var OP = obj.Get("OP");
-            if ((gte(OP,0)&&lte(OP,4))) {
-                val = ctx.GetRequired<PdfDictionary, APM_ActionRendition_AN>(obj, "AN", IndirectRequirement.MustBeIndirect);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_ActionRendition_AN>(obj, "AN", IndirectRequirement.MustBeIndirect);
-            }
-            if (val == null) { return; }
+        var OP = obj.Get("OP");
+        var val = ctx.GetOptional<PdfDictionary, APM_ActionRendition_AN>(obj, "AN", IndirectRequirement.MustBeIndirect);
+        if (((gte(OP,0)&&lte(OP,4))) && val == null) {
+            ctx.Fail<APM_ActionRendition_AN>("AN is required when 'fn:IsRequired((@OP>=0) && (@OP<=4))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -356,12 +358,12 @@ internal partial class APM_ActionRendition_AN_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ActionRendition_OP 
 /// </summary>
-internal partial class APM_ActionRendition_OP : APM_ActionRendition_OP_Base
+internal partial class APM_ActionRendition_OP : APM_ActionRendition_OP__Base
 {
 }
 
 
-internal partial class APM_ActionRendition_OP_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRendition_OP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRendition_OP";
     public static bool RuleGroup() { return false; }
@@ -372,13 +374,11 @@ internal partial class APM_ActionRendition_OP_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfIntNumber, APM_ActionRendition_OP>(obj, "OP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @OP = val;
-        if (!((gte(@OP,0)&&lte(@OP,4)))) 
+        var OP = obj.Get("OP");
+        if (!((gte(OP,0)&&lte(OP,4)))) 
         {
             ctx.Fail<APM_ActionRendition_OP>($"Invalid value {val}, allowed are: [fn:Eval((@OP>=0) && (@OP<=4))]");
-        }
         }
         // no linked objects
         
@@ -390,12 +390,12 @@ internal partial class APM_ActionRendition_OP_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ActionRendition_JS 
 /// </summary>
-internal partial class APM_ActionRendition_JS : APM_ActionRendition_JS_Base
+internal partial class APM_ActionRendition_JS : APM_ActionRendition_JS__Base
 {
 }
 
 
-internal partial class APM_ActionRendition_JS_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionRendition_JS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionRendition_JS";
     public static bool RuleGroup() { return false; }

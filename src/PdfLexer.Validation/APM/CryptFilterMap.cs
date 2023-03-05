@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CryptFilterMap : APM_CryptFilterMap_Base
+internal partial class APM_CryptFilterMap : APM_CryptFilterMap__Base
 {
 }
 
-internal partial class APM_CryptFilterMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilterMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CryptFilterMap";
@@ -37,12 +37,12 @@ internal partial class APM_CryptFilterMap_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CryptFilterMap_Identity Table 26 explicitly defines Identity
 /// </summary>
-internal partial class APM_CryptFilterMap_Identity : APM_CryptFilterMap_Identity_Base
+internal partial class APM_CryptFilterMap_Identity : APM_CryptFilterMap_Identity__Base
 {
 }
 
 
-internal partial class APM_CryptFilterMap_Identity_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilterMap_Identity__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilterMap_Identity";
     public static bool RuleGroup() { return false; }
@@ -64,12 +64,12 @@ internal partial class APM_CryptFilterMap_Identity_Base : ISpecification<PdfDict
 /// <summary>
 /// CryptFilterMap_StdCF Clause 7.6.4
 /// </summary>
-internal partial class APM_CryptFilterMap_StdCF : APM_CryptFilterMap_StdCF_Base
+internal partial class APM_CryptFilterMap_StdCF : APM_CryptFilterMap_StdCF__Base
 {
 }
 
 
-internal partial class APM_CryptFilterMap_StdCF_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilterMap_StdCF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilterMap_StdCF";
     public static bool RuleGroup() { return false; }
@@ -79,7 +79,11 @@ internal partial class APM_CryptFilterMap_StdCF_Base : ISpecification<PdfDiction
     {
         var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterMap_StdCF>(obj, "StdCF", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var StdCFAuthEvent = obj.Get("StdCF")?.Get("AuthEvent");
+        if (!(eq(StdCFAuthEvent,"DocOpen"))) 
+        {
+            ctx.Fail<APM_CryptFilterMap_StdCF>($"Value failed special case check: fn:Eval(StdCF::@AuthEvent==DocOpen)");
+        }
         // no value restrictions
         ctx.Run<APM_CryptFilter, PdfDictionary>(stack, val, obj);
         
@@ -91,12 +95,12 @@ internal partial class APM_CryptFilterMap_StdCF_Base : ISpecification<PdfDiction
 /// <summary>
 /// CryptFilterMap_* 
 /// </summary>
-internal partial class APM_CryptFilterMap_CatchAll : APM_CryptFilterMap_CatchAll_Base
+internal partial class APM_CryptFilterMap_CatchAll : APM_CryptFilterMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_CryptFilterMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilterMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilterMap_*";
     public static bool RuleGroup() { return false; }

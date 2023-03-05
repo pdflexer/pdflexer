@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_ActionSound : APM_ActionSound_Base
+internal partial class APM_ActionSound : APM_ActionSound__Base
 {
 }
 
-internal partial class APM_ActionSound_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSound__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "ActionSound";
@@ -131,12 +131,12 @@ internal partial class APM_ActionSound_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionSound_Type Table 196 and Table 212
 /// </summary>
-internal partial class APM_ActionSound_Type : APM_ActionSound_Type_Base
+internal partial class APM_ActionSound_Type : APM_ActionSound_Type__Base
 {
 }
 
 
-internal partial class APM_ActionSound_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSound_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSound_Type";
     public static bool RuleGroup() { return false; }
@@ -147,13 +147,11 @@ internal partial class APM_ActionSound_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_ActionSound_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Action")) 
         {
             ctx.Fail<APM_ActionSound_Type>($"Invalid value {val}, allowed are: [Action]");
-        }
         }
         // no linked objects
         
@@ -165,12 +163,12 @@ internal partial class APM_ActionSound_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionSound_S 
 /// </summary>
-internal partial class APM_ActionSound_S : APM_ActionSound_S_Base
+internal partial class APM_ActionSound_S : APM_ActionSound_S__Base
 {
 }
 
 
-internal partial class APM_ActionSound_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSound_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSound_S";
     public static bool RuleGroup() { return false; }
@@ -181,13 +179,11 @@ internal partial class APM_ActionSound_S_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_ActionSound_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Sound")) 
         {
             ctx.Fail<APM_ActionSound_S>($"Invalid value {val}, allowed are: [Sound]");
-        }
         }
         // no linked objects
         
@@ -199,12 +195,12 @@ internal partial class APM_ActionSound_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionSound_Next 
 /// </summary>
-internal partial class APM_ActionSound_Next : APM_ActionSound_Next_Base
+internal partial class APM_ActionSound_Next : APM_ActionSound_Next__Base
 {
 }
 
 
-internal partial class APM_ActionSound_Next_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSound_Next__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSound_Next";
     public static bool RuleGroup() { return false; }
@@ -267,6 +263,36 @@ internal partial class APM_ActionSound_Next_Base : ISpecification<PdfDictionary>
                     } else if (APM_ActionImportData.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionImportData, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoToE.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToE, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionNOP.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionNOP, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version == 1.2m && APM_ActionSetState.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ActionSetState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionSetOCGState.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionSetOCGState, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionRendition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRendition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_ActionTransition.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionTransition, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_ActionGoTo3DView.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionGoTo3DView, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ActionECMAScript.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionECMAScript, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionRichMediaExecute.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_ActionSound_Next>("Next did not match any allowable types: '[ActionGoTo,ActionGoToR,fn:SinceVersion(1.6,ActionGoToE),fn:SinceVersion(2.0,ActionGoToDp),ActionLaunch,fn:IsPDFVersion(1.2,ActionNOP),fn:IsPDFVersion(1.2,ActionSetState),ActionThread,ActionURI,ActionSound,ActionMovie,ActionHide,ActionNamed,ActionSubmitForm,ActionResetForm,ActionImportData,fn:SinceVersion(1.5,ActionSetOCGState),fn:SinceVersion(1.5,ActionRendition),fn:SinceVersion(1.5,ActionTransition),fn:SinceVersion(1.6,ActionGoTo3DView),fn:SinceVersion(1.3,ActionECMAScript),fn:SinceVersion(2.0,ActionRichMediaExecute)]'");
@@ -286,12 +312,12 @@ internal partial class APM_ActionSound_Next_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// ActionSound_Sound 
 /// </summary>
-internal partial class APM_ActionSound_Sound : APM_ActionSound_Sound_Base
+internal partial class APM_ActionSound_Sound : APM_ActionSound_Sound__Base
 {
 }
 
 
-internal partial class APM_ActionSound_Sound_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSound_Sound__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSound_Sound";
     public static bool RuleGroup() { return false; }
@@ -313,12 +339,12 @@ internal partial class APM_ActionSound_Sound_Base : ISpecification<PdfDictionary
 /// <summary>
 /// ActionSound_Volume 
 /// </summary>
-internal partial class APM_ActionSound_Volume : APM_ActionSound_Volume_Base
+internal partial class APM_ActionSound_Volume : APM_ActionSound_Volume__Base
 {
 }
 
 
-internal partial class APM_ActionSound_Volume_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSound_Volume__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSound_Volume";
     public static bool RuleGroup() { return false; }
@@ -329,13 +355,11 @@ internal partial class APM_ActionSound_Volume_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfNumber, APM_ActionSound_Volume>(obj, "Volume", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Volume = val;
-        if (!((gte(@Volume,-1)&&lte(@Volume,1)))) 
+        var Volume = obj.Get("Volume");
+        if (!((gte(Volume,-1)&&lte(Volume,1)))) 
         {
             ctx.Fail<APM_ActionSound_Volume>($"Invalid value {val}, allowed are: [fn:Eval((@Volume>=-1) && (@Volume<=1))]");
-        }
         }
         // no linked objects
         
@@ -347,12 +371,12 @@ internal partial class APM_ActionSound_Volume_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ActionSound_Synchronous 
 /// </summary>
-internal partial class APM_ActionSound_Synchronous : APM_ActionSound_Synchronous_Base
+internal partial class APM_ActionSound_Synchronous : APM_ActionSound_Synchronous__Base
 {
 }
 
 
-internal partial class APM_ActionSound_Synchronous_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSound_Synchronous__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSound_Synchronous";
     public static bool RuleGroup() { return false; }
@@ -374,12 +398,12 @@ internal partial class APM_ActionSound_Synchronous_Base : ISpecification<PdfDict
 /// <summary>
 /// ActionSound_Repeat 
 /// </summary>
-internal partial class APM_ActionSound_Repeat : APM_ActionSound_Repeat_Base
+internal partial class APM_ActionSound_Repeat : APM_ActionSound_Repeat__Base
 {
 }
 
 
-internal partial class APM_ActionSound_Repeat_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSound_Repeat__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSound_Repeat";
     public static bool RuleGroup() { return false; }
@@ -401,12 +425,12 @@ internal partial class APM_ActionSound_Repeat_Base : ISpecification<PdfDictionar
 /// <summary>
 /// ActionSound_Mix 
 /// </summary>
-internal partial class APM_ActionSound_Mix : APM_ActionSound_Mix_Base
+internal partial class APM_ActionSound_Mix : APM_ActionSound_Mix__Base
 {
 }
 
 
-internal partial class APM_ActionSound_Mix_Base : ISpecification<PdfDictionary>
+internal partial class APM_ActionSound_Mix__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "ActionSound_Mix";
     public static bool RuleGroup() { return false; }

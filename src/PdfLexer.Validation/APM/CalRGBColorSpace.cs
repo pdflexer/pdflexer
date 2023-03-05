@@ -19,7 +19,7 @@ internal partial class APM_CalRGBColorSpace : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -37,13 +37,11 @@ internal partial class APM_CalRGBColorSpace_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_CalRGBColorSpace_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CalRGB")) 
         {
             ctx.Fail<APM_CalRGBColorSpace_0>($"Invalid value {val}, allowed are: [CalRGB]");
-        }
         }
         // no linked objects
         

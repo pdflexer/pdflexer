@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CollectionSort : APM_CollectionSort_Base
+internal partial class APM_CollectionSort : APM_CollectionSort__Base
 {
 }
 
-internal partial class APM_CollectionSort_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSort__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CollectionSort";
@@ -86,12 +86,12 @@ internal partial class APM_CollectionSort_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CollectionSort_Type Table 156
 /// </summary>
-internal partial class APM_CollectionSort_Type : APM_CollectionSort_Type_Base
+internal partial class APM_CollectionSort_Type : APM_CollectionSort_Type__Base
 {
 }
 
 
-internal partial class APM_CollectionSort_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSort_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSort_Type";
     public static bool RuleGroup() { return false; }
@@ -102,13 +102,11 @@ internal partial class APM_CollectionSort_Type_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_CollectionSort_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CollectionSort")) 
         {
             ctx.Fail<APM_CollectionSort_Type>($"Invalid value {val}, allowed are: [CollectionSort]");
-        }
         }
         // no linked objects
         
@@ -120,12 +118,12 @@ internal partial class APM_CollectionSort_Type_Base : ISpecification<PdfDictiona
 /// <summary>
 /// CollectionSort_S 
 /// </summary>
-internal partial class APM_CollectionSort_S : APM_CollectionSort_S_Base
+internal partial class APM_CollectionSort_S : APM_CollectionSort_S__Base
 {
 }
 
 
-internal partial class APM_CollectionSort_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSort_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSort_S";
     public static bool RuleGroup() { return false; }
@@ -168,12 +166,12 @@ internal partial class APM_CollectionSort_S_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CollectionSort_A 
 /// </summary>
-internal partial class APM_CollectionSort_A : APM_CollectionSort_A_Base
+internal partial class APM_CollectionSort_A : APM_CollectionSort_A__Base
 {
 }
 
 
-internal partial class APM_CollectionSort_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionSort_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionSort_A";
     public static bool RuleGroup() { return false; }

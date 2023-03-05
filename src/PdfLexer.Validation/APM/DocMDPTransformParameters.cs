@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DocMDPTransformParameters : APM_DocMDPTransformParameters_Base
+internal partial class APM_DocMDPTransformParameters : APM_DocMDPTransformParameters__Base
 {
 }
 
-internal partial class APM_DocMDPTransformParameters_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocMDPTransformParameters__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DocMDPTransformParameters";
@@ -106,12 +106,12 @@ internal partial class APM_DocMDPTransformParameters_Base : ISpecification<PdfDi
 /// <summary>
 /// DocMDPTransformParameters_Type Table 257
 /// </summary>
-internal partial class APM_DocMDPTransformParameters_Type : APM_DocMDPTransformParameters_Type_Base
+internal partial class APM_DocMDPTransformParameters_Type : APM_DocMDPTransformParameters_Type__Base
 {
 }
 
 
-internal partial class APM_DocMDPTransformParameters_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocMDPTransformParameters_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocMDPTransformParameters_Type";
     public static bool RuleGroup() { return false; }
@@ -122,13 +122,11 @@ internal partial class APM_DocMDPTransformParameters_Type_Base : ISpecification<
         var val = ctx.GetOptional<PdfName, APM_DocMDPTransformParameters_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "TransformParams")) 
         {
             ctx.Fail<APM_DocMDPTransformParameters_Type>($"Invalid value {val}, allowed are: [TransformParams]");
-        }
         }
         // no linked objects
         
@@ -140,12 +138,12 @@ internal partial class APM_DocMDPTransformParameters_Type_Base : ISpecification<
 /// <summary>
 /// DocMDPTransformParameters_P https://github.com/pdf-association/pdf-issues/issues/152
 /// </summary>
-internal partial class APM_DocMDPTransformParameters_P : APM_DocMDPTransformParameters_P_Base
+internal partial class APM_DocMDPTransformParameters_P : APM_DocMDPTransformParameters_P__Base
 {
 }
 
 
-internal partial class APM_DocMDPTransformParameters_P_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocMDPTransformParameters_P__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocMDPTransformParameters_P";
     public static bool RuleGroup() { return false; }
@@ -156,13 +154,11 @@ internal partial class APM_DocMDPTransformParameters_P_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfIntNumber, APM_DocMDPTransformParameters_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == 1 || val == 2 || val == 3)) 
         {
             ctx.Fail<APM_DocMDPTransformParameters_P>($"Invalid value {val}, allowed are: [1,2,3]");
-        }
         }
         // no linked objects
         
@@ -174,12 +170,12 @@ internal partial class APM_DocMDPTransformParameters_P_Base : ISpecification<Pdf
 /// <summary>
 /// DocMDPTransformParameters_V 
 /// </summary>
-internal partial class APM_DocMDPTransformParameters_V : APM_DocMDPTransformParameters_V_Base
+internal partial class APM_DocMDPTransformParameters_V : APM_DocMDPTransformParameters_V__Base
 {
 }
 
 
-internal partial class APM_DocMDPTransformParameters_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_DocMDPTransformParameters_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DocMDPTransformParameters_V";
     public static bool RuleGroup() { return false; }
@@ -190,13 +186,11 @@ internal partial class APM_DocMDPTransformParameters_V_Base : ISpecification<Pdf
         var val = ctx.GetOptional<PdfName, APM_DocMDPTransformParameters_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "1.2")) 
         {
             ctx.Fail<APM_DocMDPTransformParameters_V>($"Invalid value {val}, allowed are: [1.2]");
-        }
         }
         // no linked objects
         

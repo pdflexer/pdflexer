@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaHeight : APM_RichMediaHeight_Base
+internal partial class APM_RichMediaHeight : APM_RichMediaHeight__Base
 {
 }
 
-internal partial class APM_RichMediaHeight_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaHeight__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaHeight";
@@ -41,12 +41,12 @@ internal partial class APM_RichMediaHeight_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RichMediaHeight_Default Table 339
 /// </summary>
-internal partial class APM_RichMediaHeight_Default : APM_RichMediaHeight_Default_Base
+internal partial class APM_RichMediaHeight_Default : APM_RichMediaHeight_Default__Base
 {
 }
 
 
-internal partial class APM_RichMediaHeight_Default_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaHeight_Default__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaHeight_Default";
     public static bool RuleGroup() { return false; }
@@ -57,13 +57,11 @@ internal partial class APM_RichMediaHeight_Default_Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaHeight_Default>(obj, "Default", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Default = val;
-        if (!(gt(@Default,0))) 
+        var Default = obj.Get("Default");
+        if (!(gt(Default,0))) 
         {
             ctx.Fail<APM_RichMediaHeight_Default>($"Invalid value {val}, allowed are: [fn:Eval(@Default>0)]");
-        }
         }
         // no linked objects
         
@@ -75,12 +73,12 @@ internal partial class APM_RichMediaHeight_Default_Base : ISpecification<PdfDict
 /// <summary>
 /// RichMediaHeight_Max 
 /// </summary>
-internal partial class APM_RichMediaHeight_Max : APM_RichMediaHeight_Max_Base
+internal partial class APM_RichMediaHeight_Max : APM_RichMediaHeight_Max__Base
 {
 }
 
 
-internal partial class APM_RichMediaHeight_Max_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaHeight_Max__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaHeight_Max";
     public static bool RuleGroup() { return false; }
@@ -91,13 +89,11 @@ internal partial class APM_RichMediaHeight_Max_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaHeight_Max>(obj, "Max", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Max = val;
-        if (!(gt(@Max,0))) 
+        var Max = obj.Get("Max");
+        if (!(gt(Max,0))) 
         {
             ctx.Fail<APM_RichMediaHeight_Max>($"Invalid value {val}, allowed are: [fn:Eval(@Max>0)]");
-        }
         }
         // no linked objects
         
@@ -109,12 +105,12 @@ internal partial class APM_RichMediaHeight_Max_Base : ISpecification<PdfDictiona
 /// <summary>
 /// RichMediaHeight_Min 
 /// </summary>
-internal partial class APM_RichMediaHeight_Min : APM_RichMediaHeight_Min_Base
+internal partial class APM_RichMediaHeight_Min : APM_RichMediaHeight_Min__Base
 {
 }
 
 
-internal partial class APM_RichMediaHeight_Min_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaHeight_Min__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaHeight_Min";
     public static bool RuleGroup() { return false; }
@@ -125,13 +121,11 @@ internal partial class APM_RichMediaHeight_Min_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaHeight_Min>(obj, "Min", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Min = val;
-        if (!(gt(@Min,0))) 
+        var Min = obj.Get("Min");
+        if (!(gt(Min,0))) 
         {
             ctx.Fail<APM_RichMediaHeight_Min>($"Invalid value {val}, allowed are: [fn:Eval(@Min>0)]");
-        }
         }
         // no linked objects
         

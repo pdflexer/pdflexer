@@ -21,7 +21,7 @@ internal partial class APM_LabRangeArray : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -39,13 +39,11 @@ internal partial class APM_LabRangeArray_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_LabRangeArray_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
-        
-        if (!(lte(v,obj.Get(1)))) 
+        var v1 = obj.Get(1);
+        if (!(lte(v,v1))) 
         {
             ctx.Fail<APM_LabRangeArray_0>($"Invalid value {val}, allowed are: [fn:Eval(@0<=@1)]");
-        }
         }
         // no linked objects
         
@@ -66,13 +64,11 @@ internal partial class APM_LabRangeArray_1 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_LabRangeArray_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
-        
-        if (!(gte(v,obj.Get(0)))) 
+        var v0 = obj.Get(0);
+        if (!(gte(v,v0))) 
         {
             ctx.Fail<APM_LabRangeArray_1>($"Invalid value {val}, allowed are: [fn:Eval(@1>=@0)]");
-        }
         }
         // no linked objects
         
@@ -93,13 +89,11 @@ internal partial class APM_LabRangeArray_2 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_LabRangeArray_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
-        
-        if (!(lte(v,obj.Get(3)))) 
+        var v3 = obj.Get(3);
+        if (!(lte(v,v3))) 
         {
             ctx.Fail<APM_LabRangeArray_2>($"Invalid value {val}, allowed are: [fn:Eval(@2<=@3)]");
-        }
         }
         // no linked objects
         
@@ -120,13 +114,11 @@ internal partial class APM_LabRangeArray_3 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfNumber, APM_LabRangeArray_3>(obj, 3, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         IPdfObject v = val;
-        
-        if (!(gte(v,obj.Get(2)))) 
+        var v2 = obj.Get(2);
+        if (!(gte(v,v2))) 
         {
             ctx.Fail<APM_LabRangeArray_3>($"Invalid value {val}, allowed are: [fn:Eval(@3>=@2)]");
-        }
         }
         // no linked objects
         

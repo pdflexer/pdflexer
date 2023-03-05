@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_PageObject : APM_PageObject_Base
+internal partial class APM_PageObject : APM_PageObject__Base
 {
 }
 
-internal partial class APM_PageObject_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "PageObject";
@@ -187,12 +187,12 @@ internal partial class APM_PageObject_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_Type Table 31
 /// </summary>
-internal partial class APM_PageObject_Type : APM_PageObject_Type_Base
+internal partial class APM_PageObject_Type : APM_PageObject_Type__Base
 {
 }
 
 
-internal partial class APM_PageObject_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Type";
     public static bool RuleGroup() { return false; }
@@ -203,13 +203,11 @@ internal partial class APM_PageObject_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetRequired<PdfName, APM_PageObject_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Page" || val == "Template")) 
         {
             ctx.Fail<APM_PageObject_Type>($"Invalid value {val}, allowed are: [Page,Template]");
-        }
         }
         // no linked objects
         
@@ -221,12 +219,12 @@ internal partial class APM_PageObject_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_Parent 
 /// </summary>
-internal partial class APM_PageObject_Parent : APM_PageObject_Parent_Base
+internal partial class APM_PageObject_Parent : APM_PageObject_Parent__Base
 {
 }
 
 
-internal partial class APM_PageObject_Parent_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Parent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Parent";
     public static bool RuleGroup() { return false; }
@@ -234,17 +232,18 @@ internal partial class APM_PageObject_Parent_Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfDictionary? val;
-        {
-            var Type = obj.Get("Type");
-            if (!eq(Type,"Template")) {
-                val = ctx.GetRequired<PdfDictionary, APM_PageObject_Parent>(obj, "Parent", IndirectRequirement.MustBeIndirect);
-            } else {
-                val = ctx.GetOptional<PdfDictionary, APM_PageObject_Parent>(obj, "Parent", IndirectRequirement.MustBeIndirect);
-            }
-            if (val == null) { return; }
+        var Type = obj.Get("Type");
+        var val = ctx.GetOptional<PdfDictionary, APM_PageObject_Parent>(obj, "Parent", IndirectRequirement.MustBeIndirect);
+        if ((!eq(Type,"Template")) && val == null) {
+            ctx.Fail<APM_PageObject_Parent>("Parent is required when 'fn:IsRequired(@Type!=Template)"); return;
+        } else if (val == null) {
+            return;
         }
-        // TODO special case
+        
+        if (eq(Type,"Template")) 
+        {
+            ctx.Fail<APM_PageObject_Parent>($"Value failed special case check: fn:Not(fn:IsPresent(@Type==Template))");
+        }
         // no value restrictions
         if (APM_PageTreeNode.MatchesType(ctx, val)) 
         {
@@ -265,12 +264,12 @@ internal partial class APM_PageObject_Parent_Base : ISpecification<PdfDictionary
 /// <summary>
 /// PageObject_LastModified 
 /// </summary>
-internal partial class APM_PageObject_LastModified : APM_PageObject_LastModified_Base
+internal partial class APM_PageObject_LastModified : APM_PageObject_LastModified__Base
 {
 }
 
 
-internal partial class APM_PageObject_LastModified_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_LastModified__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_LastModified";
     public static bool RuleGroup() { return false; }
@@ -278,15 +277,12 @@ internal partial class APM_PageObject_LastModified_Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfString? val;
-        {
-            
-            if (obj.ContainsKey("PieceInfo")) {
-                val = ctx.GetRequired<PdfString, APM_PageObject_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfString, APM_PageObject_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfString, APM_PageObject_LastModified>(obj, "LastModified", IndirectRequirement.Either);
+        if ((obj.ContainsKey("PieceInfo")) && val == null) {
+            ctx.Fail<APM_PageObject_LastModified>("LastModified is required when 'fn:IsRequired(fn:IsPresent(PieceInfo))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -300,12 +296,12 @@ internal partial class APM_PageObject_LastModified_Base : ISpecification<PdfDict
 /// <summary>
 /// PageObject_Resources Inheritable from Parent
 /// </summary>
-internal partial class APM_PageObject_Resources : APM_PageObject_Resources_Base
+internal partial class APM_PageObject_Resources : APM_PageObject_Resources__Base
 {
 }
 
 
-internal partial class APM_PageObject_Resources_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Resources__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Resources";
     public static bool RuleGroup() { return false; }
@@ -327,12 +323,12 @@ internal partial class APM_PageObject_Resources_Base : ISpecification<PdfDiction
 /// <summary>
 /// PageObject_MediaBox Inheritable from Parent
 /// </summary>
-internal partial class APM_PageObject_MediaBox : APM_PageObject_MediaBox_Base
+internal partial class APM_PageObject_MediaBox : APM_PageObject_MediaBox__Base
 {
 }
 
 
-internal partial class APM_PageObject_MediaBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_MediaBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_MediaBox";
     public static bool RuleGroup() { return false; }
@@ -354,12 +350,12 @@ internal partial class APM_PageObject_MediaBox_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PageObject_CropBox Inheritable from Parent
 /// </summary>
-internal partial class APM_PageObject_CropBox : APM_PageObject_CropBox_Base
+internal partial class APM_PageObject_CropBox : APM_PageObject_CropBox__Base
 {
 }
 
 
-internal partial class APM_PageObject_CropBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_CropBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_CropBox";
     public static bool RuleGroup() { return false; }
@@ -381,12 +377,12 @@ internal partial class APM_PageObject_CropBox_Base : ISpecification<PdfDictionar
 /// <summary>
 /// PageObject_BleedBox Inheritable from Parent
 /// </summary>
-internal partial class APM_PageObject_BleedBox : APM_PageObject_BleedBox_Base
+internal partial class APM_PageObject_BleedBox : APM_PageObject_BleedBox__Base
 {
 }
 
 
-internal partial class APM_PageObject_BleedBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_BleedBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_BleedBox";
     public static bool RuleGroup() { return false; }
@@ -408,12 +404,12 @@ internal partial class APM_PageObject_BleedBox_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PageObject_TrimBox 
 /// </summary>
-internal partial class APM_PageObject_TrimBox : APM_PageObject_TrimBox_Base
+internal partial class APM_PageObject_TrimBox : APM_PageObject_TrimBox__Base
 {
 }
 
 
-internal partial class APM_PageObject_TrimBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_TrimBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_TrimBox";
     public static bool RuleGroup() { return false; }
@@ -435,12 +431,12 @@ internal partial class APM_PageObject_TrimBox_Base : ISpecification<PdfDictionar
 /// <summary>
 /// PageObject_ArtBox 
 /// </summary>
-internal partial class APM_PageObject_ArtBox : APM_PageObject_ArtBox_Base
+internal partial class APM_PageObject_ArtBox : APM_PageObject_ArtBox__Base
 {
 }
 
 
-internal partial class APM_PageObject_ArtBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_ArtBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_ArtBox";
     public static bool RuleGroup() { return false; }
@@ -462,12 +458,12 @@ internal partial class APM_PageObject_ArtBox_Base : ISpecification<PdfDictionary
 /// <summary>
 /// PageObject_BoxColorInfo 
 /// </summary>
-internal partial class APM_PageObject_BoxColorInfo : APM_PageObject_BoxColorInfo_Base
+internal partial class APM_PageObject_BoxColorInfo : APM_PageObject_BoxColorInfo__Base
 {
 }
 
 
-internal partial class APM_PageObject_BoxColorInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_BoxColorInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_BoxColorInfo";
     public static bool RuleGroup() { return false; }
@@ -489,12 +485,12 @@ internal partial class APM_PageObject_BoxColorInfo_Base : ISpecification<PdfDict
 /// <summary>
 /// PageObject_Contents 
 /// </summary>
-internal partial class APM_PageObject_Contents : APM_PageObject_Contents_Base
+internal partial class APM_PageObject_Contents : APM_PageObject_Contents__Base
 {
 }
 
 
-internal partial class APM_PageObject_Contents_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Contents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Contents";
     public static bool RuleGroup() { return false; }
@@ -537,12 +533,12 @@ internal partial class APM_PageObject_Contents_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PageObject_Rotate Inheritable from Parent
 /// </summary>
-internal partial class APM_PageObject_Rotate : APM_PageObject_Rotate_Base
+internal partial class APM_PageObject_Rotate : APM_PageObject_Rotate__Base
 {
 }
 
 
-internal partial class APM_PageObject_Rotate_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Rotate__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Rotate";
     public static bool RuleGroup() { return false; }
@@ -553,13 +549,11 @@ internal partial class APM_PageObject_Rotate_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfIntNumber, APM_PageObject_Rotate>(obj, "Rotate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Rotate = val;
-        if (!(eq(mod(@Rotate,90),0))) 
+        var Rotate = obj.Get("Rotate");
+        if (!(eq(mod(Rotate,90),0))) 
         {
             ctx.Fail<APM_PageObject_Rotate>($"Invalid value {val}, allowed are: [fn:Eval((@Rotate mod 90)==0)]");
-        }
         }
         // no linked objects
         
@@ -571,12 +565,12 @@ internal partial class APM_PageObject_Rotate_Base : ISpecification<PdfDictionary
 /// <summary>
 /// PageObject_Group 
 /// </summary>
-internal partial class APM_PageObject_Group : APM_PageObject_Group_Base
+internal partial class APM_PageObject_Group : APM_PageObject_Group__Base
 {
 }
 
 
-internal partial class APM_PageObject_Group_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Group__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Group";
     public static bool RuleGroup() { return false; }
@@ -598,12 +592,12 @@ internal partial class APM_PageObject_Group_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_Thumb 
 /// </summary>
-internal partial class APM_PageObject_Thumb : APM_PageObject_Thumb_Base
+internal partial class APM_PageObject_Thumb : APM_PageObject_Thumb__Base
 {
 }
 
 
-internal partial class APM_PageObject_Thumb_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Thumb__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Thumb";
     public static bool RuleGroup() { return false; }
@@ -625,12 +619,12 @@ internal partial class APM_PageObject_Thumb_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_B 
 /// </summary>
-internal partial class APM_PageObject_B : APM_PageObject_B_Base
+internal partial class APM_PageObject_B : APM_PageObject_B__Base
 {
 }
 
 
-internal partial class APM_PageObject_B_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_B__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_B";
     public static bool RuleGroup() { return false; }
@@ -640,7 +634,11 @@ internal partial class APM_PageObject_B_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_PageObject_B>(obj, "B", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        var Type = obj.Get("Type");
+        if (eq(Type,"Template")) 
+        {
+            ctx.Fail<APM_PageObject_B>($"Value failed special case check: fn:Not(fn:IsPresent(@Type==Template))");
+        }
         // no value restrictions
         ctx.Run<APM_ArrayOfBeads, PdfArray>(stack, val, obj);
         
@@ -652,12 +650,12 @@ internal partial class APM_PageObject_B_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_Dur 
 /// </summary>
-internal partial class APM_PageObject_Dur : APM_PageObject_Dur_Base
+internal partial class APM_PageObject_Dur : APM_PageObject_Dur__Base
 {
 }
 
 
-internal partial class APM_PageObject_Dur_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Dur__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Dur";
     public static bool RuleGroup() { return false; }
@@ -679,12 +677,12 @@ internal partial class APM_PageObject_Dur_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_Trans 
 /// </summary>
-internal partial class APM_PageObject_Trans : APM_PageObject_Trans_Base
+internal partial class APM_PageObject_Trans : APM_PageObject_Trans__Base
 {
 }
 
 
-internal partial class APM_PageObject_Trans_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Trans__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Trans";
     public static bool RuleGroup() { return false; }
@@ -706,12 +704,12 @@ internal partial class APM_PageObject_Trans_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_Annots 
 /// </summary>
-internal partial class APM_PageObject_Annots : APM_PageObject_Annots_Base
+internal partial class APM_PageObject_Annots : APM_PageObject_Annots__Base
 {
 }
 
 
-internal partial class APM_PageObject_Annots_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Annots__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Annots";
     public static bool RuleGroup() { return false; }
@@ -733,12 +731,12 @@ internal partial class APM_PageObject_Annots_Base : ISpecification<PdfDictionary
 /// <summary>
 /// PageObject_AA 
 /// </summary>
-internal partial class APM_PageObject_AA : APM_PageObject_AA_Base
+internal partial class APM_PageObject_AA : APM_PageObject_AA__Base
 {
 }
 
 
-internal partial class APM_PageObject_AA_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_AA__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_AA";
     public static bool RuleGroup() { return false; }
@@ -760,12 +758,12 @@ internal partial class APM_PageObject_AA_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_Metadata 
 /// </summary>
-internal partial class APM_PageObject_Metadata : APM_PageObject_Metadata_Base
+internal partial class APM_PageObject_Metadata : APM_PageObject_Metadata__Base
 {
 }
 
 
-internal partial class APM_PageObject_Metadata_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Metadata__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Metadata";
     public static bool RuleGroup() { return false; }
@@ -787,12 +785,12 @@ internal partial class APM_PageObject_Metadata_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PageObject_PieceInfo 
 /// </summary>
-internal partial class APM_PageObject_PieceInfo : APM_PageObject_PieceInfo_Base
+internal partial class APM_PageObject_PieceInfo : APM_PageObject_PieceInfo__Base
 {
 }
 
 
-internal partial class APM_PageObject_PieceInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_PieceInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_PieceInfo";
     public static bool RuleGroup() { return false; }
@@ -814,12 +812,12 @@ internal partial class APM_PageObject_PieceInfo_Base : ISpecification<PdfDiction
 /// <summary>
 /// PageObject_StructParents Table 359
 /// </summary>
-internal partial class APM_PageObject_StructParents : APM_PageObject_StructParents_Base
+internal partial class APM_PageObject_StructParents : APM_PageObject_StructParents__Base
 {
 }
 
 
-internal partial class APM_PageObject_StructParents_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_StructParents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_StructParents";
     public static bool RuleGroup() { return false; }
@@ -827,15 +825,12 @@ internal partial class APM_PageObject_StructParents_Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfIntNumber? val;
-        {
-            
-            if (PageContainsStructContentItems(obj)) {
-                val = ctx.GetRequired<PdfIntNumber, APM_PageObject_StructParents>(obj, "StructParents", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfIntNumber, APM_PageObject_StructParents>(obj, "StructParents", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        
+        var val = ctx.GetOptional<PdfIntNumber, APM_PageObject_StructParents>(obj, "StructParents", IndirectRequirement.Either);
+        if ((PageContainsStructContentItems(obj)) && val == null) {
+            ctx.Fail<APM_PageObject_StructParents>("StructParents is required when 'fn:IsRequired(fn:PageContainsStructContentItems())"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -849,12 +844,12 @@ internal partial class APM_PageObject_StructParents_Base : ISpecification<PdfDic
 /// <summary>
 /// PageObject_ID https://github.com/pdf-association/pdf-issues/issues/106
 /// </summary>
-internal partial class APM_PageObject_ID : APM_PageObject_ID_Base
+internal partial class APM_PageObject_ID : APM_PageObject_ID__Base
 {
 }
 
 
-internal partial class APM_PageObject_ID_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_ID__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_ID";
     public static bool RuleGroup() { return false; }
@@ -876,12 +871,12 @@ internal partial class APM_PageObject_ID_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_PZ 
 /// </summary>
-internal partial class APM_PageObject_PZ : APM_PageObject_PZ_Base
+internal partial class APM_PageObject_PZ : APM_PageObject_PZ__Base
 {
 }
 
 
-internal partial class APM_PageObject_PZ_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_PZ__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_PZ";
     public static bool RuleGroup() { return false; }
@@ -903,12 +898,12 @@ internal partial class APM_PageObject_PZ_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_SeparationInfo 
 /// </summary>
-internal partial class APM_PageObject_SeparationInfo : APM_PageObject_SeparationInfo_Base
+internal partial class APM_PageObject_SeparationInfo : APM_PageObject_SeparationInfo__Base
 {
 }
 
 
-internal partial class APM_PageObject_SeparationInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_SeparationInfo__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_SeparationInfo";
     public static bool RuleGroup() { return false; }
@@ -930,12 +925,12 @@ internal partial class APM_PageObject_SeparationInfo_Base : ISpecification<PdfDi
 /// <summary>
 /// PageObject_Tabs 
 /// </summary>
-internal partial class APM_PageObject_Tabs : APM_PageObject_Tabs_Base
+internal partial class APM_PageObject_Tabs : APM_PageObject_Tabs__Base
 {
 }
 
 
-internal partial class APM_PageObject_Tabs_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Tabs__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Tabs";
     public static bool RuleGroup() { return false; }
@@ -946,13 +941,11 @@ internal partial class APM_PageObject_Tabs_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_PageObject_Tabs>(obj, "Tabs", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
-        if (!(val == "R" || val == "C" || val == "S" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "A")) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "W")) || ctx.Version >= 2.0m && val == "A" || ctx.Version >= 2.0m && val == "W")) 
+        if (!(val == "R" || val == "C" || val == "S" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "A")) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "W")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "A")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "W")))) 
         {
             ctx.Fail<APM_PageObject_Tabs>($"Invalid value {val}, allowed are: [R,C,S,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,A)),fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,W)),fn:SinceVersion(2.0,A),fn:SinceVersion(2.0,W)]");
-        }
         }
         // no linked objects
         
@@ -964,12 +957,12 @@ internal partial class APM_PageObject_Tabs_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_TemplateInstantiated 
 /// </summary>
-internal partial class APM_PageObject_TemplateInstantiated : APM_PageObject_TemplateInstantiated_Base
+internal partial class APM_PageObject_TemplateInstantiated : APM_PageObject_TemplateInstantiated__Base
 {
 }
 
 
-internal partial class APM_PageObject_TemplateInstantiated_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_TemplateInstantiated__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_TemplateInstantiated";
     public static bool RuleGroup() { return false; }
@@ -977,16 +970,13 @@ internal partial class APM_PageObject_TemplateInstantiated_Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        PdfName? val;
-        {
-            var trailerCatalogNamesPages = obj.Get("trailer")?.Get("Catalog")?.Get("Names")?.Get("Pages");
-            var trailerCatalogNamesTemplates = obj.Get("trailer")?.Get("Catalog")?.Get("Names")?.Get("Templates");
-            if ((InNameTree(trailerCatalogNamesPages)||InNameTree(trailerCatalogNamesTemplates))) {
-                val = ctx.GetRequired<PdfName, APM_PageObject_TemplateInstantiated>(obj, "TemplateInstantiated", IndirectRequirement.Either);
-            } else {
-                val = ctx.GetOptional<PdfName, APM_PageObject_TemplateInstantiated>(obj, "TemplateInstantiated", IndirectRequirement.Either);
-            }
-            if (val == null) { return; }
+        var trailerCatalogNamesPages = obj.Get("trailer")?.Get("Catalog")?.Get("Names")?.Get("Pages");
+        var trailerCatalogNamesTemplates = obj.Get("trailer")?.Get("Catalog")?.Get("Names")?.Get("Templates");
+        var val = ctx.GetOptional<PdfName, APM_PageObject_TemplateInstantiated>(obj, "TemplateInstantiated", IndirectRequirement.Either);
+        if (((InNameTree(trailerCatalogNamesPages)||InNameTree(trailerCatalogNamesTemplates))) && val == null) {
+            ctx.Fail<APM_PageObject_TemplateInstantiated>("TemplateInstantiated is required when 'fn:IsRequired(fn:InNameTree(trailer::Catalog::Names::Pages) || fn:InNameTree(trailer::Catalog::Names::Templates))"); return;
+        } else if (val == null) {
+            return;
         }
         // no special cases
         // no value restrictions
@@ -1000,12 +990,12 @@ internal partial class APM_PageObject_TemplateInstantiated_Base : ISpecification
 /// <summary>
 /// PageObject_PresSteps 
 /// </summary>
-internal partial class APM_PageObject_PresSteps : APM_PageObject_PresSteps_Base
+internal partial class APM_PageObject_PresSteps : APM_PageObject_PresSteps__Base
 {
 }
 
 
-internal partial class APM_PageObject_PresSteps_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_PresSteps__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_PresSteps";
     public static bool RuleGroup() { return false; }
@@ -1027,12 +1017,12 @@ internal partial class APM_PageObject_PresSteps_Base : ISpecification<PdfDiction
 /// <summary>
 /// PageObject_UserUnit 
 /// </summary>
-internal partial class APM_PageObject_UserUnit : APM_PageObject_UserUnit_Base
+internal partial class APM_PageObject_UserUnit : APM_PageObject_UserUnit__Base
 {
 }
 
 
-internal partial class APM_PageObject_UserUnit_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_UserUnit__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_UserUnit";
     public static bool RuleGroup() { return false; }
@@ -1054,12 +1044,12 @@ internal partial class APM_PageObject_UserUnit_Base : ISpecification<PdfDictiona
 /// <summary>
 /// PageObject_VP 
 /// </summary>
-internal partial class APM_PageObject_VP : APM_PageObject_VP_Base
+internal partial class APM_PageObject_VP : APM_PageObject_VP__Base
 {
 }
 
 
-internal partial class APM_PageObject_VP_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_VP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_VP";
     public static bool RuleGroup() { return false; }
@@ -1081,12 +1071,12 @@ internal partial class APM_PageObject_VP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_AF 
 /// </summary>
-internal partial class APM_PageObject_AF : APM_PageObject_AF_Base
+internal partial class APM_PageObject_AF : APM_PageObject_AF__Base
 {
 }
 
 
-internal partial class APM_PageObject_AF_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_AF__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_AF";
     public static bool RuleGroup() { return false; }
@@ -1129,12 +1119,12 @@ internal partial class APM_PageObject_AF_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_OutputIntents 
 /// </summary>
-internal partial class APM_PageObject_OutputIntents : APM_PageObject_OutputIntents_Base
+internal partial class APM_PageObject_OutputIntents : APM_PageObject_OutputIntents__Base
 {
 }
 
 
-internal partial class APM_PageObject_OutputIntents_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_OutputIntents__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_OutputIntents";
     public static bool RuleGroup() { return false; }
@@ -1156,12 +1146,12 @@ internal partial class APM_PageObject_OutputIntents_Base : ISpecification<PdfDic
 /// <summary>
 /// PageObject_DPart 
 /// </summary>
-internal partial class APM_PageObject_DPart : APM_PageObject_DPart_Base
+internal partial class APM_PageObject_DPart : APM_PageObject_DPart__Base
 {
 }
 
 
-internal partial class APM_PageObject_DPart_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_DPart__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_DPart";
     public static bool RuleGroup() { return false; }
@@ -1183,12 +1173,12 @@ internal partial class APM_PageObject_DPart_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PageObject_Hid 
 /// </summary>
-internal partial class APM_PageObject_Hid : APM_PageObject_Hid_Base
+internal partial class APM_PageObject_Hid : APM_PageObject_Hid__Base
 {
 }
 
 
-internal partial class APM_PageObject_Hid_Base : ISpecification<PdfDictionary>
+internal partial class APM_PageObject_Hid__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PageObject_Hid";
     public static bool RuleGroup() { return false; }

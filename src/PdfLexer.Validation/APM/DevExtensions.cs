@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DevExtensions : APM_DevExtensions_Base
+internal partial class APM_DevExtensions : APM_DevExtensions__Base
 {
 }
 
-internal partial class APM_DevExtensions_Base : ISpecification<PdfDictionary>
+internal partial class APM_DevExtensions__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DevExtensions";
@@ -88,12 +88,12 @@ internal partial class APM_DevExtensions_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DevExtensions_Type Table 49
 /// </summary>
-internal partial class APM_DevExtensions_Type : APM_DevExtensions_Type_Base
+internal partial class APM_DevExtensions_Type : APM_DevExtensions_Type__Base
 {
 }
 
 
-internal partial class APM_DevExtensions_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_DevExtensions_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DevExtensions_Type";
     public static bool RuleGroup() { return false; }
@@ -104,13 +104,11 @@ internal partial class APM_DevExtensions_Type_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfName, APM_DevExtensions_Type>(obj, "Type", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "DeveloperExtensions")) 
         {
             ctx.Fail<APM_DevExtensions_Type>($"Invalid value {val}, allowed are: [DeveloperExtensions]");
-        }
         }
         // no linked objects
         
@@ -122,12 +120,12 @@ internal partial class APM_DevExtensions_Type_Base : ISpecification<PdfDictionar
 /// <summary>
 /// DevExtensions_BaseVersion 
 /// </summary>
-internal partial class APM_DevExtensions_BaseVersion : APM_DevExtensions_BaseVersion_Base
+internal partial class APM_DevExtensions_BaseVersion : APM_DevExtensions_BaseVersion__Base
 {
 }
 
 
-internal partial class APM_DevExtensions_BaseVersion_Base : ISpecification<PdfDictionary>
+internal partial class APM_DevExtensions_BaseVersion__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DevExtensions_BaseVersion";
     public static bool RuleGroup() { return false; }
@@ -138,13 +136,11 @@ internal partial class APM_DevExtensions_BaseVersion_Base : ISpecification<PdfDi
         var val = ctx.GetRequired<PdfName, APM_DevExtensions_BaseVersion>(obj, "BaseVersion", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "1.7" || val == "2.0")) 
         {
             ctx.Fail<APM_DevExtensions_BaseVersion>($"Invalid value {val}, allowed are: [1.7,2.0]");
-        }
         }
         // no linked objects
         
@@ -156,12 +152,12 @@ internal partial class APM_DevExtensions_BaseVersion_Base : ISpecification<PdfDi
 /// <summary>
 /// DevExtensions_ExtensionLevel 
 /// </summary>
-internal partial class APM_DevExtensions_ExtensionLevel : APM_DevExtensions_ExtensionLevel_Base
+internal partial class APM_DevExtensions_ExtensionLevel : APM_DevExtensions_ExtensionLevel__Base
 {
 }
 
 
-internal partial class APM_DevExtensions_ExtensionLevel_Base : ISpecification<PdfDictionary>
+internal partial class APM_DevExtensions_ExtensionLevel__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DevExtensions_ExtensionLevel";
     public static bool RuleGroup() { return false; }
@@ -183,12 +179,12 @@ internal partial class APM_DevExtensions_ExtensionLevel_Base : ISpecification<Pd
 /// <summary>
 /// DevExtensions_URL 
 /// </summary>
-internal partial class APM_DevExtensions_URL : APM_DevExtensions_URL_Base
+internal partial class APM_DevExtensions_URL : APM_DevExtensions_URL__Base
 {
 }
 
 
-internal partial class APM_DevExtensions_URL_Base : ISpecification<PdfDictionary>
+internal partial class APM_DevExtensions_URL__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DevExtensions_URL";
     public static bool RuleGroup() { return false; }
@@ -210,12 +206,12 @@ internal partial class APM_DevExtensions_URL_Base : ISpecification<PdfDictionary
 /// <summary>
 /// DevExtensions_ExtensionRevision 
 /// </summary>
-internal partial class APM_DevExtensions_ExtensionRevision : APM_DevExtensions_ExtensionRevision_Base
+internal partial class APM_DevExtensions_ExtensionRevision : APM_DevExtensions_ExtensionRevision__Base
 {
 }
 
 
-internal partial class APM_DevExtensions_ExtensionRevision_Base : ISpecification<PdfDictionary>
+internal partial class APM_DevExtensions_ExtensionRevision__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DevExtensions_ExtensionRevision";
     public static bool RuleGroup() { return false; }

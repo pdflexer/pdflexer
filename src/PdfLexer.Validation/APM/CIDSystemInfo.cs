@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CIDSystemInfo : APM_CIDSystemInfo_Base
+internal partial class APM_CIDSystemInfo : APM_CIDSystemInfo__Base
 {
 }
 
-internal partial class APM_CIDSystemInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDSystemInfo__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CIDSystemInfo";
@@ -130,12 +130,12 @@ internal partial class APM_CIDSystemInfo_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CIDSystemInfo_Registry Table 114
 /// </summary>
-internal partial class APM_CIDSystemInfo_Registry : APM_CIDSystemInfo_Registry_Base
+internal partial class APM_CIDSystemInfo_Registry : APM_CIDSystemInfo_Registry__Base
 {
 }
 
 
-internal partial class APM_CIDSystemInfo_Registry_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDSystemInfo_Registry__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDSystemInfo_Registry";
     public static bool RuleGroup() { return false; }
@@ -157,12 +157,12 @@ internal partial class APM_CIDSystemInfo_Registry_Base : ISpecification<PdfDicti
 /// <summary>
 /// CIDSystemInfo_Ordering 
 /// </summary>
-internal partial class APM_CIDSystemInfo_Ordering : APM_CIDSystemInfo_Ordering_Base
+internal partial class APM_CIDSystemInfo_Ordering : APM_CIDSystemInfo_Ordering__Base
 {
 }
 
 
-internal partial class APM_CIDSystemInfo_Ordering_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDSystemInfo_Ordering__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDSystemInfo_Ordering";
     public static bool RuleGroup() { return false; }
@@ -184,12 +184,12 @@ internal partial class APM_CIDSystemInfo_Ordering_Base : ISpecification<PdfDicti
 /// <summary>
 /// CIDSystemInfo_Supplement 
 /// </summary>
-internal partial class APM_CIDSystemInfo_Supplement : APM_CIDSystemInfo_Supplement_Base
+internal partial class APM_CIDSystemInfo_Supplement : APM_CIDSystemInfo_Supplement__Base
 {
 }
 
 
-internal partial class APM_CIDSystemInfo_Supplement_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDSystemInfo_Supplement__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDSystemInfo_Supplement";
     public static bool RuleGroup() { return false; }

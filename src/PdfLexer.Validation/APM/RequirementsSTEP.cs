@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RequirementsSTEP : APM_RequirementsSTEP_Base
+internal partial class APM_RequirementsSTEP : APM_RequirementsSTEP__Base
 {
 }
 
-internal partial class APM_RequirementsSTEP_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSTEP__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RequirementsSTEP";
@@ -49,12 +49,12 @@ internal partial class APM_RequirementsSTEP_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RequirementsSTEP_Type Table 273 and ISO/TS 24064
 /// </summary>
-internal partial class APM_RequirementsSTEP_Type : APM_RequirementsSTEP_Type_Base
+internal partial class APM_RequirementsSTEP_Type : APM_RequirementsSTEP_Type__Base
 {
 }
 
 
-internal partial class APM_RequirementsSTEP_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSTEP_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSTEP_Type";
     public static bool RuleGroup() { return false; }
@@ -65,13 +65,11 @@ internal partial class APM_RequirementsSTEP_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_RequirementsSTEP_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Requirement")) 
         {
             ctx.Fail<APM_RequirementsSTEP_Type>($"Invalid value {val}, allowed are: [Requirement]");
-        }
         }
         // no linked objects
         
@@ -83,12 +81,12 @@ internal partial class APM_RequirementsSTEP_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// RequirementsSTEP_S 
 /// </summary>
-internal partial class APM_RequirementsSTEP_S : APM_RequirementsSTEP_S_Base
+internal partial class APM_RequirementsSTEP_S : APM_RequirementsSTEP_S__Base
 {
 }
 
 
-internal partial class APM_RequirementsSTEP_S_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSTEP_S__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSTEP_S";
     public static bool RuleGroup() { return false; }
@@ -99,13 +97,11 @@ internal partial class APM_RequirementsSTEP_S_Base : ISpecification<PdfDictionar
         var val = ctx.GetRequired<PdfName, APM_RequirementsSTEP_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "STEP")) 
         {
             ctx.Fail<APM_RequirementsSTEP_S>($"Invalid value {val}, allowed are: [STEP]");
-        }
         }
         // no linked objects
         
@@ -117,12 +113,12 @@ internal partial class APM_RequirementsSTEP_S_Base : ISpecification<PdfDictionar
 /// <summary>
 /// RequirementsSTEP_V 
 /// </summary>
-internal partial class APM_RequirementsSTEP_V : APM_RequirementsSTEP_V_Base
+internal partial class APM_RequirementsSTEP_V : APM_RequirementsSTEP_V__Base
 {
 }
 
 
-internal partial class APM_RequirementsSTEP_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSTEP_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSTEP_V";
     public static bool RuleGroup() { return false; }
@@ -165,12 +161,12 @@ internal partial class APM_RequirementsSTEP_V_Base : ISpecification<PdfDictionar
 /// <summary>
 /// RequirementsSTEP_RH 
 /// </summary>
-internal partial class APM_RequirementsSTEP_RH : APM_RequirementsSTEP_RH_Base
+internal partial class APM_RequirementsSTEP_RH : APM_RequirementsSTEP_RH__Base
 {
 }
 
 
-internal partial class APM_RequirementsSTEP_RH_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSTEP_RH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSTEP_RH";
     public static bool RuleGroup() { return false; }
@@ -213,12 +209,12 @@ internal partial class APM_RequirementsSTEP_RH_Base : ISpecification<PdfDictiona
 /// <summary>
 /// RequirementsSTEP_Penalty 
 /// </summary>
-internal partial class APM_RequirementsSTEP_Penalty : APM_RequirementsSTEP_Penalty_Base
+internal partial class APM_RequirementsSTEP_Penalty : APM_RequirementsSTEP_Penalty__Base
 {
 }
 
 
-internal partial class APM_RequirementsSTEP_Penalty_Base : ISpecification<PdfDictionary>
+internal partial class APM_RequirementsSTEP_Penalty__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RequirementsSTEP_Penalty";
     public static bool RuleGroup() { return false; }
@@ -229,13 +225,11 @@ internal partial class APM_RequirementsSTEP_Penalty_Base : ISpecification<PdfDic
         var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsSTEP_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Penalty = val;
-        if (!((gte(@Penalty,0)&&lte(@Penalty,100)))) 
+        var Penalty = obj.Get("Penalty");
+        if (!((gte(Penalty,0)&&lte(Penalty,100)))) 
         {
             ctx.Fail<APM_RequirementsSTEP_Penalty>($"Invalid value {val}, allowed are: [fn:Eval((@Penalty>=0) && (@Penalty<=100))]");
-        }
         }
         // no linked objects
         

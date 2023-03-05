@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_MediaPlayers : APM_MediaPlayers_Base
+internal partial class APM_MediaPlayers : APM_MediaPlayers__Base
 {
 }
 
-internal partial class APM_MediaPlayers_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayers__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "MediaPlayers";
@@ -107,12 +107,12 @@ internal partial class APM_MediaPlayers_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaPlayers_Type Table 301
 /// </summary>
-internal partial class APM_MediaPlayers_Type : APM_MediaPlayers_Type_Base
+internal partial class APM_MediaPlayers_Type : APM_MediaPlayers_Type__Base
 {
 }
 
 
-internal partial class APM_MediaPlayers_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayers_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayers_Type";
     public static bool RuleGroup() { return false; }
@@ -123,13 +123,11 @@ internal partial class APM_MediaPlayers_Type_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfName, APM_MediaPlayers_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "MediaPlayers")) 
         {
             ctx.Fail<APM_MediaPlayers_Type>($"Invalid value {val}, allowed are: [MediaPlayers]");
-        }
         }
         // no linked objects
         
@@ -141,12 +139,12 @@ internal partial class APM_MediaPlayers_Type_Base : ISpecification<PdfDictionary
 /// <summary>
 /// MediaPlayers_MU 
 /// </summary>
-internal partial class APM_MediaPlayers_MU : APM_MediaPlayers_MU_Base
+internal partial class APM_MediaPlayers_MU : APM_MediaPlayers_MU__Base
 {
 }
 
 
-internal partial class APM_MediaPlayers_MU_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayers_MU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayers_MU";
     public static bool RuleGroup() { return false; }
@@ -168,12 +166,12 @@ internal partial class APM_MediaPlayers_MU_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaPlayers_A 
 /// </summary>
-internal partial class APM_MediaPlayers_A : APM_MediaPlayers_A_Base
+internal partial class APM_MediaPlayers_A : APM_MediaPlayers_A__Base
 {
 }
 
 
-internal partial class APM_MediaPlayers_A_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayers_A__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayers_A";
     public static bool RuleGroup() { return false; }
@@ -183,7 +181,7 @@ internal partial class APM_MediaPlayers_A_Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_MediaPlayers_A>(obj, "A", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOfMediaPlayerInfo, PdfArray>(stack, val, obj);
         
@@ -195,12 +193,12 @@ internal partial class APM_MediaPlayers_A_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// MediaPlayers_NU 
 /// </summary>
-internal partial class APM_MediaPlayers_NU : APM_MediaPlayers_NU_Base
+internal partial class APM_MediaPlayers_NU : APM_MediaPlayers_NU__Base
 {
 }
 
 
-internal partial class APM_MediaPlayers_NU_Base : ISpecification<PdfDictionary>
+internal partial class APM_MediaPlayers_NU__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "MediaPlayers_NU";
     public static bool RuleGroup() { return false; }

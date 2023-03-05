@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_PatternMap : APM_PatternMap_Base
+internal partial class APM_PatternMap : APM_PatternMap__Base
 {
 }
 
-internal partial class APM_PatternMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "PatternMap";
@@ -35,12 +35,12 @@ internal partial class APM_PatternMap_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// PatternMap_* Table 34
 /// </summary>
-internal partial class APM_PatternMap_CatchAll : APM_PatternMap_CatchAll_Base
+internal partial class APM_PatternMap_CatchAll : APM_PatternMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_PatternMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_PatternMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "PatternMap_*";
     public static bool RuleGroup() { return false; }
@@ -58,7 +58,7 @@ internal partial class APM_PatternMap_CatchAll_Base : ISpecification<PdfDictiona
             if (utval == null) { return; }
             switch (utval.Type) 
             {
-                // funcs: fn:SinceVersion(1.3,dictionary)
+                // TODO funcs: fn:SinceVersion(1.3,dictionary)
                 case PdfObjectType.StreamObj:
                     {
                         var val =  (PdfStream)utval;

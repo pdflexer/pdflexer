@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DCrossSection : APM_3DCrossSection_Base
+internal partial class APM_3DCrossSection : APM_3DCrossSection__Base
 {
 }
 
-internal partial class APM_3DCrossSection_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DCrossSection";
@@ -93,12 +93,12 @@ internal partial class APM_3DCrossSection_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DCrossSection_Type Table 322
 /// </summary>
-internal partial class APM_3DCrossSection_Type : APM_3DCrossSection_Type_Base
+internal partial class APM_3DCrossSection_Type : APM_3DCrossSection_Type__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_Type";
     public static bool RuleGroup() { return false; }
@@ -109,13 +109,11 @@ internal partial class APM_3DCrossSection_Type_Base : ISpecification<PdfDictiona
         var val = ctx.GetOptional<PdfName, APM_3DCrossSection_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DCrossSection")) 
         {
             ctx.Fail<APM_3DCrossSection_Type>($"Invalid value {val}, allowed are: [3DCrossSection]");
-        }
         }
         // no linked objects
         
@@ -127,12 +125,12 @@ internal partial class APM_3DCrossSection_Type_Base : ISpecification<PdfDictiona
 /// <summary>
 /// 3DCrossSection_C 
 /// </summary>
-internal partial class APM_3DCrossSection_C : APM_3DCrossSection_C_Base
+internal partial class APM_3DCrossSection_C : APM_3DCrossSection_C__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_C_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_C__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_C";
     public static bool RuleGroup() { return false; }
@@ -154,12 +152,12 @@ internal partial class APM_3DCrossSection_C_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DCrossSection_O 
 /// </summary>
-internal partial class APM_3DCrossSection_O : APM_3DCrossSection_O_Base
+internal partial class APM_3DCrossSection_O : APM_3DCrossSection_O__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_O";
     public static bool RuleGroup() { return false; }
@@ -181,12 +179,12 @@ internal partial class APM_3DCrossSection_O_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DCrossSection_PO 
 /// </summary>
-internal partial class APM_3DCrossSection_PO : APM_3DCrossSection_PO_Base
+internal partial class APM_3DCrossSection_PO : APM_3DCrossSection_PO__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_PO_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_PO__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_PO";
     public static bool RuleGroup() { return false; }
@@ -197,13 +195,11 @@ internal partial class APM_3DCrossSection_PO_Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfNumber, APM_3DCrossSection_PO>(obj, "PO", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @PO = val;
-        if (!((gte(@PO,0)&&lte(@PO,1)))) 
+        var PO = obj.Get("PO");
+        if (!((gte(PO,0)&&lte(PO,1)))) 
         {
             ctx.Fail<APM_3DCrossSection_PO>($"Invalid value {val}, allowed are: [fn:Eval((@PO>=0) && (@PO<=1))]");
-        }
         }
         // no linked objects
         
@@ -215,12 +211,12 @@ internal partial class APM_3DCrossSection_PO_Base : ISpecification<PdfDictionary
 /// <summary>
 /// 3DCrossSection_PC 
 /// </summary>
-internal partial class APM_3DCrossSection_PC : APM_3DCrossSection_PC_Base
+internal partial class APM_3DCrossSection_PC : APM_3DCrossSection_PC__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_PC_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_PC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_PC";
     public static bool RuleGroup() { return false; }
@@ -242,12 +238,12 @@ internal partial class APM_3DCrossSection_PC_Base : ISpecification<PdfDictionary
 /// <summary>
 /// 3DCrossSection_IV 
 /// </summary>
-internal partial class APM_3DCrossSection_IV : APM_3DCrossSection_IV_Base
+internal partial class APM_3DCrossSection_IV : APM_3DCrossSection_IV__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_IV_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_IV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_IV";
     public static bool RuleGroup() { return false; }
@@ -269,12 +265,12 @@ internal partial class APM_3DCrossSection_IV_Base : ISpecification<PdfDictionary
 /// <summary>
 /// 3DCrossSection_PV See https://github.com/pdf-association/pdf-issues/issues/49
 /// </summary>
-internal partial class APM_3DCrossSection_PV : APM_3DCrossSection_PV_Base
+internal partial class APM_3DCrossSection_PV : APM_3DCrossSection_PV__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_PV_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_PV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_PV";
     public static bool RuleGroup() { return false; }
@@ -296,12 +292,12 @@ internal partial class APM_3DCrossSection_PV_Base : ISpecification<PdfDictionary
 /// <summary>
 /// 3DCrossSection_IC 
 /// </summary>
-internal partial class APM_3DCrossSection_IC : APM_3DCrossSection_IC_Base
+internal partial class APM_3DCrossSection_IC : APM_3DCrossSection_IC__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_IC_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_IC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_IC";
     public static bool RuleGroup() { return false; }
@@ -311,7 +307,7 @@ internal partial class APM_3DCrossSection_IC_Base : ISpecification<PdfDictionary
     {
         var val = ctx.GetOptional<PdfArray, APM_3DCrossSection_IC>(obj, "IC", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
         ctx.Run<APM_ArrayOf_4ColourSpaceEntries, PdfArray>(stack, val, obj);
         
@@ -323,12 +319,12 @@ internal partial class APM_3DCrossSection_IC_Base : ISpecification<PdfDictionary
 /// <summary>
 /// 3DCrossSection_ST 
 /// </summary>
-internal partial class APM_3DCrossSection_ST : APM_3DCrossSection_ST_Base
+internal partial class APM_3DCrossSection_ST : APM_3DCrossSection_ST__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_ST_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_ST__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_ST";
     public static bool RuleGroup() { return false; }
@@ -350,12 +346,12 @@ internal partial class APM_3DCrossSection_ST_Base : ISpecification<PdfDictionary
 /// <summary>
 /// 3DCrossSection_SC 
 /// </summary>
-internal partial class APM_3DCrossSection_SC : APM_3DCrossSection_SC_Base
+internal partial class APM_3DCrossSection_SC : APM_3DCrossSection_SC__Base
 {
 }
 
 
-internal partial class APM_3DCrossSection_SC_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DCrossSection_SC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DCrossSection_SC";
     public static bool RuleGroup() { return false; }

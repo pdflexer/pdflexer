@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfArraysXPTSValues : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -41,7 +41,11 @@ internal partial class APM_ArrayOfArraysXPTSValues_x : ISpecification<PdfArray>
         {
             var val = ctx.GetOptional<PdfArray, APM_ArrayOfArraysXPTSValues_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
-            // TODO special case
+            var parentNames = parent?.Get("Names");
+            if (!(eq(((val as PdfArray)?.Count),((parentNames as PdfArray)?.Count)))) 
+            {
+                ctx.Fail<APM_ArrayOfArraysXPTSValues_x>($"Value failed special case check: fn:Eval(fn:ArrayLength(*)==fn:ArrayLength(parent::Names))");
+            }
             // no value restrictions
             ctx.Run<APM_ArrayOfXPTSValues, PdfArray>(stack, val, obj);
             

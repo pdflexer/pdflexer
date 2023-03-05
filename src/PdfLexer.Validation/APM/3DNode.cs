@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_3DNode : APM_3DNode_Base
+internal partial class APM_3DNode : APM_3DNode__Base
 {
 }
 
-internal partial class APM_3DNode_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DNode__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "3DNode";
@@ -91,12 +91,12 @@ internal partial class APM_3DNode_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DNode_Type Table 323
 /// </summary>
-internal partial class APM_3DNode_Type : APM_3DNode_Type_Base
+internal partial class APM_3DNode_Type : APM_3DNode_Type__Base
 {
 }
 
 
-internal partial class APM_3DNode_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DNode_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DNode_Type";
     public static bool RuleGroup() { return false; }
@@ -107,13 +107,11 @@ internal partial class APM_3DNode_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_3DNode_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "3DNode")) 
         {
             ctx.Fail<APM_3DNode_Type>($"Invalid value {val}, allowed are: [3DNode]");
-        }
         }
         // no linked objects
         
@@ -125,12 +123,12 @@ internal partial class APM_3DNode_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DNode_N 
 /// </summary>
-internal partial class APM_3DNode_N : APM_3DNode_N_Base
+internal partial class APM_3DNode_N : APM_3DNode_N__Base
 {
 }
 
 
-internal partial class APM_3DNode_N_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DNode_N__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DNode_N";
     public static bool RuleGroup() { return false; }
@@ -152,12 +150,12 @@ internal partial class APM_3DNode_N_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DNode_O 
 /// </summary>
-internal partial class APM_3DNode_O : APM_3DNode_O_Base
+internal partial class APM_3DNode_O : APM_3DNode_O__Base
 {
 }
 
 
-internal partial class APM_3DNode_O_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DNode_O__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DNode_O";
     public static bool RuleGroup() { return false; }
@@ -168,13 +166,11 @@ internal partial class APM_3DNode_O_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfNumber, APM_3DNode_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @O = val;
-        if (!((gte(@O,0)&&lte(@O,1)))) 
+        var O = obj.Get("O");
+        if (!((gte(O,0)&&lte(O,1)))) 
         {
             ctx.Fail<APM_3DNode_O>($"Invalid value {val}, allowed are: [fn:Eval((@O>=0) && (@O<=1))]");
-        }
         }
         // no linked objects
         
@@ -186,12 +182,12 @@ internal partial class APM_3DNode_O_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DNode_V 
 /// </summary>
-internal partial class APM_3DNode_V : APM_3DNode_V_Base
+internal partial class APM_3DNode_V : APM_3DNode_V__Base
 {
 }
 
 
-internal partial class APM_3DNode_V_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DNode_V__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DNode_V";
     public static bool RuleGroup() { return false; }
@@ -213,12 +209,12 @@ internal partial class APM_3DNode_V_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DNode_M 
 /// </summary>
-internal partial class APM_3DNode_M : APM_3DNode_M_Base
+internal partial class APM_3DNode_M : APM_3DNode_M__Base
 {
 }
 
 
-internal partial class APM_3DNode_M_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DNode_M__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DNode_M";
     public static bool RuleGroup() { return false; }
@@ -240,12 +236,12 @@ internal partial class APM_3DNode_M_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DNode_Instance 
 /// </summary>
-internal partial class APM_3DNode_Instance : APM_3DNode_Instance_Base
+internal partial class APM_3DNode_Instance : APM_3DNode_Instance__Base
 {
 }
 
 
-internal partial class APM_3DNode_Instance_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DNode_Instance__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DNode_Instance";
     public static bool RuleGroup() { return false; }
@@ -267,12 +263,12 @@ internal partial class APM_3DNode_Instance_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DNode_Data 
 /// </summary>
-internal partial class APM_3DNode_Data : APM_3DNode_Data_Base
+internal partial class APM_3DNode_Data : APM_3DNode_Data__Base
 {
 }
 
 
-internal partial class APM_3DNode_Data_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DNode_Data__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DNode_Data";
     public static bool RuleGroup() { return false; }
@@ -315,12 +311,12 @@ internal partial class APM_3DNode_Data_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// 3DNode_RM 
 /// </summary>
-internal partial class APM_3DNode_RM : APM_3DNode_RM_Base
+internal partial class APM_3DNode_RM : APM_3DNode_RM__Base
 {
 }
 
 
-internal partial class APM_3DNode_RM_Base : ISpecification<PdfDictionary>
+internal partial class APM_3DNode_RM__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "3DNode_RM";
     public static bool RuleGroup() { return false; }

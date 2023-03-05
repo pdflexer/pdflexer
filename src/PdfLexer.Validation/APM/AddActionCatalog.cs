@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_AddActionCatalog : APM_AddActionCatalog_Base
+internal partial class APM_AddActionCatalog : APM_AddActionCatalog__Base
 {
 }
 
-internal partial class APM_AddActionCatalog_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionCatalog__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "AddActionCatalog";
@@ -112,12 +112,12 @@ internal partial class APM_AddActionCatalog_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// AddActionCatalog_DC Table 200 - document close
 /// </summary>
-internal partial class APM_AddActionCatalog_DC : APM_AddActionCatalog_DC_Base
+internal partial class APM_AddActionCatalog_DC : APM_AddActionCatalog_DC__Base
 {
 }
 
 
-internal partial class APM_AddActionCatalog_DC_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionCatalog_DC__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionCatalog_DC";
     public static bool RuleGroup() { return false; }
@@ -139,12 +139,12 @@ internal partial class APM_AddActionCatalog_DC_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AddActionCatalog_WS Table 200 - will save
 /// </summary>
-internal partial class APM_AddActionCatalog_WS : APM_AddActionCatalog_WS_Base
+internal partial class APM_AddActionCatalog_WS : APM_AddActionCatalog_WS__Base
 {
 }
 
 
-internal partial class APM_AddActionCatalog_WS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionCatalog_WS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionCatalog_WS";
     public static bool RuleGroup() { return false; }
@@ -166,12 +166,12 @@ internal partial class APM_AddActionCatalog_WS_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AddActionCatalog_DS Table 200 - did save
 /// </summary>
-internal partial class APM_AddActionCatalog_DS : APM_AddActionCatalog_DS_Base
+internal partial class APM_AddActionCatalog_DS : APM_AddActionCatalog_DS__Base
 {
 }
 
 
-internal partial class APM_AddActionCatalog_DS_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionCatalog_DS__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionCatalog_DS";
     public static bool RuleGroup() { return false; }
@@ -193,12 +193,12 @@ internal partial class APM_AddActionCatalog_DS_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AddActionCatalog_WP Table 200 - will print
 /// </summary>
-internal partial class APM_AddActionCatalog_WP : APM_AddActionCatalog_WP_Base
+internal partial class APM_AddActionCatalog_WP : APM_AddActionCatalog_WP__Base
 {
 }
 
 
-internal partial class APM_AddActionCatalog_WP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionCatalog_WP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionCatalog_WP";
     public static bool RuleGroup() { return false; }
@@ -220,12 +220,12 @@ internal partial class APM_AddActionCatalog_WP_Base : ISpecification<PdfDictiona
 /// <summary>
 /// AddActionCatalog_DP Table 200 - did print
 /// </summary>
-internal partial class APM_AddActionCatalog_DP : APM_AddActionCatalog_DP_Base
+internal partial class APM_AddActionCatalog_DP : APM_AddActionCatalog_DP__Base
 {
 }
 
 
-internal partial class APM_AddActionCatalog_DP_Base : ISpecification<PdfDictionary>
+internal partial class APM_AddActionCatalog_DP__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "AddActionCatalog_DP";
     public static bool RuleGroup() { return false; }

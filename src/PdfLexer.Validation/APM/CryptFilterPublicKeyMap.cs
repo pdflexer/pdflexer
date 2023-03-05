@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CryptFilterPublicKeyMap : APM_CryptFilterPublicKeyMap_Base
+internal partial class APM_CryptFilterPublicKeyMap : APM_CryptFilterPublicKeyMap__Base
 {
 }
 
-internal partial class APM_CryptFilterPublicKeyMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilterPublicKeyMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CryptFilterPublicKeyMap";
@@ -37,12 +37,12 @@ internal partial class APM_CryptFilterPublicKeyMap_Base : ISpecification<PdfDict
 /// <summary>
 /// CryptFilterPublicKeyMap_DefaultCryptFilter Clause 7.6.4
 /// </summary>
-internal partial class APM_CryptFilterPublicKeyMap_DefaultCryptFilter : APM_CryptFilterPublicKeyMap_DefaultCryptFilter_Base
+internal partial class APM_CryptFilterPublicKeyMap_DefaultCryptFilter : APM_CryptFilterPublicKeyMap_DefaultCryptFilter__Base
 {
 }
 
 
-internal partial class APM_CryptFilterPublicKeyMap_DefaultCryptFilter_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilterPublicKeyMap_DefaultCryptFilter__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilterPublicKeyMap_DefaultCryptFilter";
     public static bool RuleGroup() { return false; }
@@ -52,7 +52,11 @@ internal partial class APM_CryptFilterPublicKeyMap_DefaultCryptFilter_Base : ISp
     {
         var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_DefaultCryptFilter>(obj, "DefaultCryptFilter", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(!obj.ContainsKey("StdCF"))) 
+        {
+            ctx.Fail<APM_CryptFilterPublicKeyMap_DefaultCryptFilter>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent(StdCF)))");
+        }
         // no value restrictions
         ctx.Run<APM_CryptFilterPublicKey, PdfDictionary>(stack, val, obj);
         
@@ -64,12 +68,12 @@ internal partial class APM_CryptFilterPublicKeyMap_DefaultCryptFilter_Base : ISp
 /// <summary>
 /// CryptFilterPublicKeyMap_DefEmbeddedFile 
 /// </summary>
-internal partial class APM_CryptFilterPublicKeyMap_DefEmbeddedFile : APM_CryptFilterPublicKeyMap_DefEmbeddedFile_Base
+internal partial class APM_CryptFilterPublicKeyMap_DefEmbeddedFile : APM_CryptFilterPublicKeyMap_DefEmbeddedFile__Base
 {
 }
 
 
-internal partial class APM_CryptFilterPublicKeyMap_DefEmbeddedFile_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilterPublicKeyMap_DefEmbeddedFile__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilterPublicKeyMap_DefEmbeddedFile";
     public static bool RuleGroup() { return false; }
@@ -79,7 +83,11 @@ internal partial class APM_CryptFilterPublicKeyMap_DefEmbeddedFile_Base : ISpeci
     {
         var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_DefEmbeddedFile>(obj, "DefEmbeddedFile", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(!obj.ContainsKey("StdCF"))) 
+        {
+            ctx.Fail<APM_CryptFilterPublicKeyMap_DefEmbeddedFile>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent(StdCF)))");
+        }
         // no value restrictions
         ctx.Run<APM_CryptFilterPublicKey, PdfDictionary>(stack, val, obj);
         
@@ -91,12 +99,12 @@ internal partial class APM_CryptFilterPublicKeyMap_DefEmbeddedFile_Base : ISpeci
 /// <summary>
 /// CryptFilterPublicKeyMap_* 
 /// </summary>
-internal partial class APM_CryptFilterPublicKeyMap_CatchAll : APM_CryptFilterPublicKeyMap_CatchAll_Base
+internal partial class APM_CryptFilterPublicKeyMap_CatchAll : APM_CryptFilterPublicKeyMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_CryptFilterPublicKeyMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_CryptFilterPublicKeyMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CryptFilterPublicKeyMap_*";
     public static bool RuleGroup() { return false; }

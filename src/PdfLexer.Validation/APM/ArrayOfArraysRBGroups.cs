@@ -18,7 +18,7 @@ internal partial class APM_ArrayOfArraysRBGroups : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -41,7 +41,11 @@ internal partial class APM_ArrayOfArraysRBGroups_x : ISpecification<PdfArray>
         {
             var val = ctx.GetOptional<PdfArray, APM_ArrayOfArraysRBGroups_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
-            // TODO special case
+            
+            if (!(gt(((val as PdfArray)?.Count),0))) 
+            {
+                ctx.Fail<APM_ArrayOfArraysRBGroups_x>($"Value failed special case check: fn:Eval(fn:ArrayLength(*)>0)");
+            }
             // no value restrictions
             ctx.Run<APM_ArrayOfOptContentGroups, PdfArray>(stack, val, obj);
             

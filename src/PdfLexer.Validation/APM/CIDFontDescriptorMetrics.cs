@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CIDFontDescriptorMetrics : APM_CIDFontDescriptorMetrics_Base
+internal partial class APM_CIDFontDescriptorMetrics : APM_CIDFontDescriptorMetrics__Base
 {
 }
 
-internal partial class APM_CIDFontDescriptorMetrics_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CIDFontDescriptorMetrics";
@@ -149,12 +149,12 @@ internal partial class APM_CIDFontDescriptorMetrics_Base : ISpecification<PdfDic
 /// <summary>
 /// CIDFontDescriptorMetrics_Type Clause 9.8.3.3
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_Type : APM_CIDFontDescriptorMetrics_Type_Base
+internal partial class APM_CIDFontDescriptorMetrics_Type : APM_CIDFontDescriptorMetrics_Type__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_Type";
     public static bool RuleGroup() { return false; }
@@ -165,13 +165,11 @@ internal partial class APM_CIDFontDescriptorMetrics_Type_Base : ISpecification<P
         var val = ctx.GetRequired<PdfName, APM_CIDFontDescriptorMetrics_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "FontDescriptor")) 
         {
             ctx.Fail<APM_CIDFontDescriptorMetrics_Type>($"Invalid value {val}, allowed are: [FontDescriptor]");
-        }
         }
         // no linked objects
         
@@ -183,12 +181,12 @@ internal partial class APM_CIDFontDescriptorMetrics_Type_Base : ISpecification<P
 /// <summary>
 /// CIDFontDescriptorMetrics_FontName 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_FontName : APM_CIDFontDescriptorMetrics_FontName_Base
+internal partial class APM_CIDFontDescriptorMetrics_FontName : APM_CIDFontDescriptorMetrics_FontName__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_FontName_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_FontName__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_FontName";
     public static bool RuleGroup() { return false; }
@@ -210,12 +208,12 @@ internal partial class APM_CIDFontDescriptorMetrics_FontName_Base : ISpecificati
 /// <summary>
 /// CIDFontDescriptorMetrics_Flags Table 121
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_Flags : APM_CIDFontDescriptorMetrics_Flags_Base
+internal partial class APM_CIDFontDescriptorMetrics_Flags : APM_CIDFontDescriptorMetrics_Flags__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_Flags_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_Flags__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_Flags";
     public static bool RuleGroup() { return false; }
@@ -225,7 +223,11 @@ internal partial class APM_CIDFontDescriptorMetrics_Flags_Base : ISpecification<
     {
         var val = ctx.GetRequired<PdfIntNumber, APM_CIDFontDescriptorMetrics_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
-        // TODO special case
+        
+        if (!(BitClear(obj)&&BitsClear(obj)&&BitsClear(obj))) 
+        {
+            ctx.Fail<APM_CIDFontDescriptorMetrics_Flags>($"Value failed special case check: fn:Eval(fn:BitClear(5) && fn:BitsClear(8,16) && fn:BitsClear(20,32))");
+        }
         // no value restrictions
         // no linked objects
         
@@ -237,12 +239,12 @@ internal partial class APM_CIDFontDescriptorMetrics_Flags_Base : ISpecification<
 /// <summary>
 /// CIDFontDescriptorMetrics_FontBBox 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_FontBBox : APM_CIDFontDescriptorMetrics_FontBBox_Base
+internal partial class APM_CIDFontDescriptorMetrics_FontBBox : APM_CIDFontDescriptorMetrics_FontBBox__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_FontBBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_FontBBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_FontBBox";
     public static bool RuleGroup() { return false; }
@@ -264,12 +266,12 @@ internal partial class APM_CIDFontDescriptorMetrics_FontBBox_Base : ISpecificati
 /// <summary>
 /// CIDFontDescriptorMetrics_ItalicAngle 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_ItalicAngle : APM_CIDFontDescriptorMetrics_ItalicAngle_Base
+internal partial class APM_CIDFontDescriptorMetrics_ItalicAngle : APM_CIDFontDescriptorMetrics_ItalicAngle__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_ItalicAngle_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_ItalicAngle__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_ItalicAngle";
     public static bool RuleGroup() { return false; }
@@ -291,12 +293,12 @@ internal partial class APM_CIDFontDescriptorMetrics_ItalicAngle_Base : ISpecific
 /// <summary>
 /// CIDFontDescriptorMetrics_Ascent 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_Ascent : APM_CIDFontDescriptorMetrics_Ascent_Base
+internal partial class APM_CIDFontDescriptorMetrics_Ascent : APM_CIDFontDescriptorMetrics_Ascent__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_Ascent_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_Ascent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_Ascent";
     public static bool RuleGroup() { return false; }
@@ -318,12 +320,12 @@ internal partial class APM_CIDFontDescriptorMetrics_Ascent_Base : ISpecification
 /// <summary>
 /// CIDFontDescriptorMetrics_Descent https://github.com/pdf-association/pdf-issues/issues/190
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_Descent : APM_CIDFontDescriptorMetrics_Descent_Base
+internal partial class APM_CIDFontDescriptorMetrics_Descent : APM_CIDFontDescriptorMetrics_Descent__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_Descent_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_Descent__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_Descent";
     public static bool RuleGroup() { return false; }
@@ -334,13 +336,11 @@ internal partial class APM_CIDFontDescriptorMetrics_Descent_Base : ISpecificatio
         var val = ctx.GetRequired<PdfNumber, APM_CIDFontDescriptorMetrics_Descent>(obj, "Descent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Descent = val;
-        if (!(lte(@Descent,0))) 
+        var Descent = obj.Get("Descent");
+        if (!(lte(Descent,0))) 
         {
             ctx.Fail<APM_CIDFontDescriptorMetrics_Descent>($"Invalid value {val}, allowed are: [fn:Eval(@Descent<=0)]");
-        }
         }
         // no linked objects
         
@@ -352,12 +352,12 @@ internal partial class APM_CIDFontDescriptorMetrics_Descent_Base : ISpecificatio
 /// <summary>
 /// CIDFontDescriptorMetrics_Leading 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_Leading : APM_CIDFontDescriptorMetrics_Leading_Base
+internal partial class APM_CIDFontDescriptorMetrics_Leading : APM_CIDFontDescriptorMetrics_Leading__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_Leading_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_Leading__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_Leading";
     public static bool RuleGroup() { return false; }
@@ -379,12 +379,12 @@ internal partial class APM_CIDFontDescriptorMetrics_Leading_Base : ISpecificatio
 /// <summary>
 /// CIDFontDescriptorMetrics_CapHeight 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_CapHeight : APM_CIDFontDescriptorMetrics_CapHeight_Base
+internal partial class APM_CIDFontDescriptorMetrics_CapHeight : APM_CIDFontDescriptorMetrics_CapHeight__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_CapHeight_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_CapHeight__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_CapHeight";
     public static bool RuleGroup() { return false; }
@@ -406,12 +406,12 @@ internal partial class APM_CIDFontDescriptorMetrics_CapHeight_Base : ISpecificat
 /// <summary>
 /// CIDFontDescriptorMetrics_XHeight 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_XHeight : APM_CIDFontDescriptorMetrics_XHeight_Base
+internal partial class APM_CIDFontDescriptorMetrics_XHeight : APM_CIDFontDescriptorMetrics_XHeight__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_XHeight_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_XHeight__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_XHeight";
     public static bool RuleGroup() { return false; }
@@ -433,12 +433,12 @@ internal partial class APM_CIDFontDescriptorMetrics_XHeight_Base : ISpecificatio
 /// <summary>
 /// CIDFontDescriptorMetrics_StemV 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_StemV : APM_CIDFontDescriptorMetrics_StemV_Base
+internal partial class APM_CIDFontDescriptorMetrics_StemV : APM_CIDFontDescriptorMetrics_StemV__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_StemV_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_StemV__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_StemV";
     public static bool RuleGroup() { return false; }
@@ -460,12 +460,12 @@ internal partial class APM_CIDFontDescriptorMetrics_StemV_Base : ISpecification<
 /// <summary>
 /// CIDFontDescriptorMetrics_StemH 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_StemH : APM_CIDFontDescriptorMetrics_StemH_Base
+internal partial class APM_CIDFontDescriptorMetrics_StemH : APM_CIDFontDescriptorMetrics_StemH__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_StemH_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_StemH__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_StemH";
     public static bool RuleGroup() { return false; }
@@ -487,12 +487,12 @@ internal partial class APM_CIDFontDescriptorMetrics_StemH_Base : ISpecification<
 /// <summary>
 /// CIDFontDescriptorMetrics_AvgWidth 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_AvgWidth : APM_CIDFontDescriptorMetrics_AvgWidth_Base
+internal partial class APM_CIDFontDescriptorMetrics_AvgWidth : APM_CIDFontDescriptorMetrics_AvgWidth__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_AvgWidth_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_AvgWidth__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_AvgWidth";
     public static bool RuleGroup() { return false; }
@@ -514,12 +514,12 @@ internal partial class APM_CIDFontDescriptorMetrics_AvgWidth_Base : ISpecificati
 /// <summary>
 /// CIDFontDescriptorMetrics_MaxWidth 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_MaxWidth : APM_CIDFontDescriptorMetrics_MaxWidth_Base
+internal partial class APM_CIDFontDescriptorMetrics_MaxWidth : APM_CIDFontDescriptorMetrics_MaxWidth__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_MaxWidth_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_MaxWidth__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_MaxWidth";
     public static bool RuleGroup() { return false; }
@@ -541,12 +541,12 @@ internal partial class APM_CIDFontDescriptorMetrics_MaxWidth_Base : ISpecificati
 /// <summary>
 /// CIDFontDescriptorMetrics_MissingWidth 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_MissingWidth : APM_CIDFontDescriptorMetrics_MissingWidth_Base
+internal partial class APM_CIDFontDescriptorMetrics_MissingWidth : APM_CIDFontDescriptorMetrics_MissingWidth__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_MissingWidth_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_MissingWidth__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_MissingWidth";
     public static bool RuleGroup() { return false; }
@@ -568,12 +568,12 @@ internal partial class APM_CIDFontDescriptorMetrics_MissingWidth_Base : ISpecifi
 /// <summary>
 /// CIDFontDescriptorMetrics_CharSet 
 /// </summary>
-internal partial class APM_CIDFontDescriptorMetrics_CharSet : APM_CIDFontDescriptorMetrics_CharSet_Base
+internal partial class APM_CIDFontDescriptorMetrics_CharSet : APM_CIDFontDescriptorMetrics_CharSet__Base
 {
 }
 
 
-internal partial class APM_CIDFontDescriptorMetrics_CharSet_Base : ISpecification<PdfDictionary>
+internal partial class APM_CIDFontDescriptorMetrics_CharSet__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CIDFontDescriptorMetrics_CharSet";
     public static bool RuleGroup() { return false; }

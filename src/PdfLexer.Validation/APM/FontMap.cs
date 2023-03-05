@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_FontMap : APM_FontMap_Base
+internal partial class APM_FontMap : APM_FontMap__Base
 {
 }
 
-internal partial class APM_FontMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "FontMap";
@@ -35,12 +35,12 @@ internal partial class APM_FontMap_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// FontMap_* Table 34
 /// </summary>
-internal partial class APM_FontMap_CatchAll : APM_FontMap_CatchAll_Base
+internal partial class APM_FontMap_CatchAll : APM_FontMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_FontMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_FontMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "FontMap_*";
     public static bool RuleGroup() { return false; }
@@ -70,6 +70,15 @@ internal partial class APM_FontMap_CatchAll_Base : ISpecification<PdfDictionary>
             } else if (APM_FontType3.MatchesType(ctx, val)) 
             {
                 ctx.Run<APM_FontType3, PdfDictionary>(stack, val, obj);
+            } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FontType0.MatchesType(ctx, val)))) 
+            {
+                ctx.Run<APM_FontType0, PdfDictionary>(stack, val, obj);
+            } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FontCIDType0.MatchesType(ctx, val)))) 
+            {
+                ctx.Run<APM_FontCIDType0, PdfDictionary>(stack, val, obj);
+            } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FontCIDType2.MatchesType(ctx, val)))) 
+            {
+                ctx.Run<APM_FontCIDType2, PdfDictionary>(stack, val, obj);
             }else 
             {
                 ctx.Fail<APM_FontMap_CatchAll>("key did not match any allowable types: '[FontType1,FontTrueType,FontMultipleMaster,FontType3,fn:SinceVersion(1.2,FontType0),fn:SinceVersion(1.2,FontCIDType0),fn:SinceVersion(1.2,FontCIDType2)]'");

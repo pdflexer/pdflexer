@@ -46,7 +46,6 @@ internal static partial class MathUtil
         if (val == null) { return false; }
         return val.Value == val2;
     }
-    
     public static bool eq(IPdfObject? obj, decimal val)
     {
         if (obj == null) { return false; }
@@ -109,13 +108,12 @@ internal static partial class MathUtil
         return gt(obj, val.Value);
     }
     public static bool gt(int val, IPdfObject? obj) => gt(obj, val);
-    public static bool gt(int val, int val2) => val == val2;
+    public static bool gt(int val, int val2) => val > val2;
     public static bool gt(int? val, int val2)
     {
         if (val == null) { return false; }
         return val.Value > val2;
     }
-    
     public static bool gt(IPdfObject? obj, decimal val)
     {
         if (obj == null) { return false; }
@@ -129,7 +127,7 @@ internal static partial class MathUtil
         return gt(obj, val.Value);
     }
     public static bool gt(decimal val, IPdfObject? obj) => gt(obj, val);
-    public static bool gt(decimal val, decimal val2) => val == val2;
+    public static bool gt(decimal val, decimal val2) => val > val2;
     public static bool gt(decimal? val, decimal val2)
     {
         if (val == null) { return false; }
@@ -171,13 +169,12 @@ internal static partial class MathUtil
         return lt(obj, val.Value);
     }
     public static bool lt(int val, IPdfObject? obj) => lt(obj, val);
-    public static bool lt(int val, int val2) => val == val2;
+    public static bool lt(int val, int val2) => val < val2;
     public static bool lt(int? val, int val2)
     {
         if (val == null) { return false; }
         return val.Value < val2;
     }
-    
     public static bool lt(IPdfObject? obj, decimal val)
     {
         if (obj == null) { return false; }
@@ -191,7 +188,7 @@ internal static partial class MathUtil
         return lt(obj, val.Value);
     }
     public static bool lt(decimal val, IPdfObject? obj) => lt(obj, val);
-    public static bool lt(decimal val, decimal val2) => val == val2;
+    public static bool lt(decimal val, decimal val2) => val < val2;
     public static bool lt(decimal? val, decimal val2)
     {
         if (val == null) { return false; }
@@ -233,13 +230,12 @@ internal static partial class MathUtil
         return gte(obj, val.Value);
     }
     public static bool gte(int val, IPdfObject? obj) => gte(obj, val);
-    public static bool gte(int val, int val2) => val == val2;
+    public static bool gte(int val, int val2) => val >= val2;
     public static bool gte(int? val, int val2)
     {
         if (val == null) { return false; }
         return val.Value >= val2;
     }
-    
     public static bool gte(IPdfObject? obj, decimal val)
     {
         if (obj == null) { return false; }
@@ -253,7 +249,7 @@ internal static partial class MathUtil
         return gte(obj, val.Value);
     }
     public static bool gte(decimal val, IPdfObject? obj) => gte(obj, val);
-    public static bool gte(decimal val, decimal val2) => val == val2;
+    public static bool gte(decimal val, decimal val2) => val >= val2;
     public static bool gte(decimal? val, decimal val2)
     {
         if (val == null) { return false; }
@@ -295,13 +291,12 @@ internal static partial class MathUtil
         return lte(obj, val.Value);
     }
     public static bool lte(int val, IPdfObject? obj) => lte(obj, val);
-    public static bool lte(int val, int val2) => val == val2;
+    public static bool lte(int val, int val2) => val <= val2;
     public static bool lte(int? val, int val2)
     {
         if (val == null) { return false; }
         return val.Value <= val2;
     }
-    
     public static bool lte(IPdfObject? obj, decimal val)
     {
         if (obj == null) { return false; }
@@ -315,11 +310,72 @@ internal static partial class MathUtil
         return lte(obj, val.Value);
     }
     public static bool lte(decimal val, IPdfObject? obj) => lte(obj, val);
-    public static bool lte(decimal val, decimal val2) => val == val2;
+    public static bool lte(decimal val, decimal val2) => val <= val2;
     public static bool lte(decimal? val, decimal val2)
     {
         if (val == null) { return false; }
         return val.Value <= val2;
+    }
+    public static decimal mult(IPdfObject? obj, int val)
+    {
+        if (obj == null) { return 0m; }
+        var n = obj as PdfIntNumber;
+        if (n == null) { return 0m; }
+        return mult(n, val);
+    }
+    // public static decimal mult(PdfNumber obj, int val) 
+    // {
+    //     if (obj.NumberType == PdfNumberType.Integer) 
+    //     {
+    //         return mult((PdfIntNumber)obj, val);
+    //     }
+    //     return mult(obj, (decimal)val);
+    // }
+    public static decimal mult(PdfIntNumber obj, int val) 
+    {
+        return (int)obj * val;
+    }
+    public static decimal mult(IPdfObject? obj, IPdfObject? val)
+    {
+        if (obj == null || val == null) { return 0m; } // custom for arlington eval to fail
+        if (obj.Type != val.Type) { return 0m; }
+        var n = obj as PdfNumber;
+        if (n == null) { return 0m; }
+        var n2 = val as PdfNumber;
+        if (n2 == null) { return 0m; }
+        return n * n2;
+    }
+    
+    public static decimal mult(IPdfObject? obj, int? val)
+    {
+        if (val == null) return 0m;
+        return mult(obj, val.Value);
+    }
+    public static decimal mult(int val, IPdfObject? obj) => mult(obj, val);
+    public static decimal mult(int val, int val2) => val * val2;
+    public static decimal mult(int? val, int val2)
+    {
+        if (val == null) { return 0m; }
+        return val.Value * val2;
+    }
+    public static decimal mult(IPdfObject? obj, decimal val)
+    {
+        if (obj == null) { return 0m; }
+        var n = obj as PdfNumber;
+        if (n == null) { return 0m; }
+        return  (decimal)n * val;
+    }
+    public static decimal mult(IPdfObject? obj, decimal? val)
+    {
+        if (val == null) return 0m;
+        return mult(obj, val.Value);
+    }
+    public static decimal mult(decimal val, IPdfObject? obj) => mult(obj, val);
+    public static decimal mult(decimal val, decimal val2) => val * val2;
+    public static decimal mult(decimal? val, decimal val2)
+    {
+        if (val == null) { return 0m; }
+        return val.Value * val2;
     }
     
 }

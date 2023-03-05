@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_Extensions : APM_Extensions_Base
+internal partial class APM_Extensions : APM_Extensions__Base
 {
 }
 
-internal partial class APM_Extensions_Base : ISpecification<PdfDictionary>
+internal partial class APM_Extensions__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "Extensions";
@@ -42,12 +42,12 @@ internal partial class APM_Extensions_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Extensions_Type Table 48
 /// </summary>
-internal partial class APM_Extensions_Type : APM_Extensions_Type_Base
+internal partial class APM_Extensions_Type : APM_Extensions_Type__Base
 {
 }
 
 
-internal partial class APM_Extensions_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_Extensions_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Extensions_Type";
     public static bool RuleGroup() { return false; }
@@ -58,13 +58,11 @@ internal partial class APM_Extensions_Type_Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_Extensions_Type>(obj, "Type", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Extensions")) 
         {
             ctx.Fail<APM_Extensions_Type>($"Invalid value {val}, allowed are: [Extensions]");
-        }
         }
         // no linked objects
         
@@ -76,12 +74,12 @@ internal partial class APM_Extensions_Type_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// Extensions_* 
 /// </summary>
-internal partial class APM_Extensions_CatchAll : APM_Extensions_CatchAll_Base
+internal partial class APM_Extensions_CatchAll : APM_Extensions_CatchAll__Base
 {
 }
 
 
-internal partial class APM_Extensions_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_Extensions_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "Extensions_*";
     public static bool RuleGroup() { return false; }
@@ -99,7 +97,7 @@ internal partial class APM_Extensions_CatchAll_Base : ISpecification<PdfDictiona
             if (utval == null) { return; }
             switch (utval.Type) 
             {
-                // funcs: fn:SinceVersion(2.0,array)
+                // TODO funcs: fn:SinceVersion(2.0,array)
                 case PdfObjectType.DictionaryObj:
                     {
                         var val =  (PdfDictionary)utval;

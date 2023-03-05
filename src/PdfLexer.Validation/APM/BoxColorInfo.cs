@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_BoxColorInfo : APM_BoxColorInfo_Base
+internal partial class APM_BoxColorInfo : APM_BoxColorInfo__Base
 {
 }
 
-internal partial class APM_BoxColorInfo_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxColorInfo__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "BoxColorInfo";
@@ -111,12 +111,12 @@ internal partial class APM_BoxColorInfo_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// BoxColorInfo_CropBox Table 396
 /// </summary>
-internal partial class APM_BoxColorInfo_CropBox : APM_BoxColorInfo_CropBox_Base
+internal partial class APM_BoxColorInfo_CropBox : APM_BoxColorInfo_CropBox__Base
 {
 }
 
 
-internal partial class APM_BoxColorInfo_CropBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxColorInfo_CropBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BoxColorInfo_CropBox";
     public static bool RuleGroup() { return false; }
@@ -138,12 +138,12 @@ internal partial class APM_BoxColorInfo_CropBox_Base : ISpecification<PdfDiction
 /// <summary>
 /// BoxColorInfo_BleedBox 
 /// </summary>
-internal partial class APM_BoxColorInfo_BleedBox : APM_BoxColorInfo_BleedBox_Base
+internal partial class APM_BoxColorInfo_BleedBox : APM_BoxColorInfo_BleedBox__Base
 {
 }
 
 
-internal partial class APM_BoxColorInfo_BleedBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxColorInfo_BleedBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BoxColorInfo_BleedBox";
     public static bool RuleGroup() { return false; }
@@ -165,12 +165,12 @@ internal partial class APM_BoxColorInfo_BleedBox_Base : ISpecification<PdfDictio
 /// <summary>
 /// BoxColorInfo_TrimBox 
 /// </summary>
-internal partial class APM_BoxColorInfo_TrimBox : APM_BoxColorInfo_TrimBox_Base
+internal partial class APM_BoxColorInfo_TrimBox : APM_BoxColorInfo_TrimBox__Base
 {
 }
 
 
-internal partial class APM_BoxColorInfo_TrimBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxColorInfo_TrimBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BoxColorInfo_TrimBox";
     public static bool RuleGroup() { return false; }
@@ -192,12 +192,12 @@ internal partial class APM_BoxColorInfo_TrimBox_Base : ISpecification<PdfDiction
 /// <summary>
 /// BoxColorInfo_ArtBox 
 /// </summary>
-internal partial class APM_BoxColorInfo_ArtBox : APM_BoxColorInfo_ArtBox_Base
+internal partial class APM_BoxColorInfo_ArtBox : APM_BoxColorInfo_ArtBox__Base
 {
 }
 
 
-internal partial class APM_BoxColorInfo_ArtBox_Base : ISpecification<PdfDictionary>
+internal partial class APM_BoxColorInfo_ArtBox__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "BoxColorInfo_ArtBox";
     public static bool RuleGroup() { return false; }

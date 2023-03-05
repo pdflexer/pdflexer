@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_RichMediaWidth : APM_RichMediaWidth_Base
+internal partial class APM_RichMediaWidth : APM_RichMediaWidth__Base
 {
 }
 
-internal partial class APM_RichMediaWidth_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaWidth__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "RichMediaWidth";
@@ -41,12 +41,12 @@ internal partial class APM_RichMediaWidth_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// RichMediaWidth_Default Table 339
 /// </summary>
-internal partial class APM_RichMediaWidth_Default : APM_RichMediaWidth_Default_Base
+internal partial class APM_RichMediaWidth_Default : APM_RichMediaWidth_Default__Base
 {
 }
 
 
-internal partial class APM_RichMediaWidth_Default_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaWidth_Default__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaWidth_Default";
     public static bool RuleGroup() { return false; }
@@ -57,13 +57,11 @@ internal partial class APM_RichMediaWidth_Default_Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaWidth_Default>(obj, "Default", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Default = val;
-        if (!(gt(@Default,0))) 
+        var Default = obj.Get("Default");
+        if (!(gt(Default,0))) 
         {
             ctx.Fail<APM_RichMediaWidth_Default>($"Invalid value {val}, allowed are: [fn:Eval(@Default>0)]");
-        }
         }
         // no linked objects
         
@@ -75,12 +73,12 @@ internal partial class APM_RichMediaWidth_Default_Base : ISpecification<PdfDicti
 /// <summary>
 /// RichMediaWidth_Max 
 /// </summary>
-internal partial class APM_RichMediaWidth_Max : APM_RichMediaWidth_Max_Base
+internal partial class APM_RichMediaWidth_Max : APM_RichMediaWidth_Max__Base
 {
 }
 
 
-internal partial class APM_RichMediaWidth_Max_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaWidth_Max__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaWidth_Max";
     public static bool RuleGroup() { return false; }
@@ -91,13 +89,11 @@ internal partial class APM_RichMediaWidth_Max_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaWidth_Max>(obj, "Max", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Max = val;
-        if (!(gt(@Max,0))) 
+        var Max = obj.Get("Max");
+        if (!(gt(Max,0))) 
         {
             ctx.Fail<APM_RichMediaWidth_Max>($"Invalid value {val}, allowed are: [fn:Eval(@Max>0)]");
-        }
         }
         // no linked objects
         
@@ -109,12 +105,12 @@ internal partial class APM_RichMediaWidth_Max_Base : ISpecification<PdfDictionar
 /// <summary>
 /// RichMediaWidth_Min 
 /// </summary>
-internal partial class APM_RichMediaWidth_Min : APM_RichMediaWidth_Min_Base
+internal partial class APM_RichMediaWidth_Min : APM_RichMediaWidth_Min__Base
 {
 }
 
 
-internal partial class APM_RichMediaWidth_Min_Base : ISpecification<PdfDictionary>
+internal partial class APM_RichMediaWidth_Min__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "RichMediaWidth_Min";
     public static bool RuleGroup() { return false; }
@@ -125,13 +121,11 @@ internal partial class APM_RichMediaWidth_Min_Base : ISpecification<PdfDictionar
         var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaWidth_Min>(obj, "Min", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
-        IPdfObject @Min = val;
-        if (!(gt(@Min,0))) 
+        var Min = obj.Get("Min");
+        if (!(gt(Min,0))) 
         {
             ctx.Fail<APM_RichMediaWidth_Min>($"Invalid value {val}, allowed are: [fn:Eval(@Min>0)]");
-        }
         }
         // no linked objects
         

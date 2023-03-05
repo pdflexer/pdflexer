@@ -19,7 +19,7 @@ internal partial class APM_PatternColorSpace : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false; // TODO
+        return false;
     }
 }
 
@@ -37,13 +37,11 @@ internal partial class APM_PatternColorSpace_0 : ISpecification<PdfArray>
         var val = ctx.GetRequired<PdfName, APM_PatternColorSpace_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "Pattern")) 
         {
             ctx.Fail<APM_PatternColorSpace_0>($"Invalid value {val}, allowed are: [Pattern]");
-        }
         }
         // no linked objects
         
@@ -86,6 +84,12 @@ internal partial class APM_PatternColorSpace_1 : ISpecification<PdfArray>
                     } else if (APM_SeparationColorSpace.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_SeparationColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val)))) 
+                    {
+                        ctx.Run<APM_DeviceNColorSpace, PdfArray>(stack, val, obj);
                     }else 
                     {
                         ctx.Fail<APM_PatternColorSpace_1>("1 did not match any allowable types: '[CalGrayColorSpace,CalRGBColorSpace,LabColorSpace,fn:SinceVersion(1.3,ICCBasedColorSpace),IndexedColorSpace,SeparationColorSpace,fn:SinceVersion(1.3,DeviceNColorSpace)]'");
@@ -97,13 +101,11 @@ internal partial class APM_PatternColorSpace_1 : ISpecification<PdfArray>
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     // no special cases
-                    {
                     
                     
                     if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
                     {
                         ctx.Fail<APM_PatternColorSpace_1>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
-                    }
                     }
                     // no linked objects
                     return;

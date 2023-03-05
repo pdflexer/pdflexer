@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_DestsMap : APM_DestsMap_Base
+internal partial class APM_DestsMap : APM_DestsMap__Base
 {
 }
 
-internal partial class APM_DestsMap_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestsMap__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "DestsMap";
@@ -35,12 +35,12 @@ internal partial class APM_DestsMap_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// DestsMap_* Table 29, Dests cell
 /// </summary>
-internal partial class APM_DestsMap_CatchAll : APM_DestsMap_CatchAll_Base
+internal partial class APM_DestsMap_CatchAll : APM_DestsMap_CatchAll__Base
 {
 }
 
 
-internal partial class APM_DestsMap_CatchAll_Base : ISpecification<PdfDictionary>
+internal partial class APM_DestsMap_CatchAll__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "DestsMap_*";
     public static bool RuleGroup() { return false; }

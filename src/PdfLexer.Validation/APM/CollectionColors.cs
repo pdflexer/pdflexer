@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_CollectionColors : APM_CollectionColors_Base
+internal partial class APM_CollectionColors : APM_CollectionColors__Base
 {
 }
 
-internal partial class APM_CollectionColors_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionColors__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "CollectionColors";
@@ -59,12 +59,12 @@ internal partial class APM_CollectionColors_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// CollectionColors_Type Table 157
 /// </summary>
-internal partial class APM_CollectionColors_Type : APM_CollectionColors_Type_Base
+internal partial class APM_CollectionColors_Type : APM_CollectionColors_Type__Base
 {
 }
 
 
-internal partial class APM_CollectionColors_Type_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionColors_Type__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionColors_Type";
     public static bool RuleGroup() { return false; }
@@ -75,13 +75,11 @@ internal partial class APM_CollectionColors_Type_Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfName, APM_CollectionColors_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "CollectionColors")) 
         {
             ctx.Fail<APM_CollectionColors_Type>($"Invalid value {val}, allowed are: [CollectionColors]");
-        }
         }
         // no linked objects
         
@@ -93,12 +91,12 @@ internal partial class APM_CollectionColors_Type_Base : ISpecification<PdfDictio
 /// <summary>
 /// CollectionColors_Background 
 /// </summary>
-internal partial class APM_CollectionColors_Background : APM_CollectionColors_Background_Base
+internal partial class APM_CollectionColors_Background : APM_CollectionColors_Background__Base
 {
 }
 
 
-internal partial class APM_CollectionColors_Background_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionColors_Background__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionColors_Background";
     public static bool RuleGroup() { return false; }
@@ -120,12 +118,12 @@ internal partial class APM_CollectionColors_Background_Base : ISpecification<Pdf
 /// <summary>
 /// CollectionColors_CardBackground 
 /// </summary>
-internal partial class APM_CollectionColors_CardBackground : APM_CollectionColors_CardBackground_Base
+internal partial class APM_CollectionColors_CardBackground : APM_CollectionColors_CardBackground__Base
 {
 }
 
 
-internal partial class APM_CollectionColors_CardBackground_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionColors_CardBackground__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionColors_CardBackground";
     public static bool RuleGroup() { return false; }
@@ -147,12 +145,12 @@ internal partial class APM_CollectionColors_CardBackground_Base : ISpecification
 /// <summary>
 /// CollectionColors_CardBorder 
 /// </summary>
-internal partial class APM_CollectionColors_CardBorder : APM_CollectionColors_CardBorder_Base
+internal partial class APM_CollectionColors_CardBorder : APM_CollectionColors_CardBorder__Base
 {
 }
 
 
-internal partial class APM_CollectionColors_CardBorder_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionColors_CardBorder__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionColors_CardBorder";
     public static bool RuleGroup() { return false; }
@@ -174,12 +172,12 @@ internal partial class APM_CollectionColors_CardBorder_Base : ISpecification<Pdf
 /// <summary>
 /// CollectionColors_PrimaryText 
 /// </summary>
-internal partial class APM_CollectionColors_PrimaryText : APM_CollectionColors_PrimaryText_Base
+internal partial class APM_CollectionColors_PrimaryText : APM_CollectionColors_PrimaryText__Base
 {
 }
 
 
-internal partial class APM_CollectionColors_PrimaryText_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionColors_PrimaryText__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionColors_PrimaryText";
     public static bool RuleGroup() { return false; }
@@ -201,12 +199,12 @@ internal partial class APM_CollectionColors_PrimaryText_Base : ISpecification<Pd
 /// <summary>
 /// CollectionColors_SecondaryText 
 /// </summary>
-internal partial class APM_CollectionColors_SecondaryText : APM_CollectionColors_SecondaryText_Base
+internal partial class APM_CollectionColors_SecondaryText : APM_CollectionColors_SecondaryText__Base
 {
 }
 
 
-internal partial class APM_CollectionColors_SecondaryText_Base : ISpecification<PdfDictionary>
+internal partial class APM_CollectionColors_SecondaryText__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "CollectionColors_SecondaryText";
     public static bool RuleGroup() { return false; }

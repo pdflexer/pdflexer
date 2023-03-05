@@ -7,11 +7,11 @@ namespace PdfLexer.Validation;
 
 using System.Linq;
 
-internal partial class APM_OptContentExport : APM_OptContentExport_Base
+internal partial class APM_OptContentExport : APM_OptContentExport__Base
 {
 }
 
-internal partial class APM_OptContentExport_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentExport__Base : ISpecification<PdfDictionary>
 {
     public static bool RuleGroup() { return true; }
     public static string Name { get; } = "OptContentExport";
@@ -98,12 +98,12 @@ internal partial class APM_OptContentExport_Base : ISpecification<PdfDictionary>
 /// <summary>
 /// OptContentExport_ExportState Table 100, Export cell
 /// </summary>
-internal partial class APM_OptContentExport_ExportState : APM_OptContentExport_ExportState_Base
+internal partial class APM_OptContentExport_ExportState : APM_OptContentExport_ExportState__Base
 {
 }
 
 
-internal partial class APM_OptContentExport_ExportState_Base : ISpecification<PdfDictionary>
+internal partial class APM_OptContentExport_ExportState__Base : ISpecification<PdfDictionary>
 {
     public static string Name { get; } = "OptContentExport_ExportState";
     public static bool RuleGroup() { return false; }
@@ -114,13 +114,11 @@ internal partial class APM_OptContentExport_ExportState_Base : ISpecification<Pd
         var val = ctx.GetRequired<PdfName, APM_OptContentExport_ExportState>(obj, "ExportState", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        {
         
         
         if (!(val == "ON" || val == "OFF")) 
         {
             ctx.Fail<APM_OptContentExport_ExportState>($"Invalid value {val}, allowed are: [ON,OFF]");
-        }
         }
         // no linked objects
         
