@@ -70,13 +70,13 @@ internal partial class APM_FontMap_CatchAll__Base : ISpecification<PdfDictionary
             } else if (APM_FontType3.MatchesType(ctx, val)) 
             {
                 ctx.Run<APM_FontType3, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FontType0.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.2m && APM_FontType0.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_FontType0, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FontCIDType0.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.2m && APM_FontCIDType0.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_FontCIDType0, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FontCIDType2.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.2m && APM_FontCIDType2.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_FontCIDType2, PdfDictionary>(stack, val, obj);
             }else 

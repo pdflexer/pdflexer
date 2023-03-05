@@ -58,13 +58,13 @@ internal partial class APM_ArrayOfDecodeParams_x : ISpecification<PdfArray>
                         } else if (APM_FilterDCTDecode.MatchesType(ctx, val)) 
                         {
                             ctx.Run<APM_FilterDCTDecode, PdfDictionary>(stack, val, obj);
-                        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FilterFlateDecode.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.2m && APM_FilterFlateDecode.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
-                        } else if ((ctx.Version < 1.4m || (ctx.Version >= 1.4m && APM_FilterJBIG2Decode.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.4m && APM_FilterJBIG2Decode.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_FilterJBIG2Decode, PdfDictionary>(stack, val, obj);
-                        } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                         }else 

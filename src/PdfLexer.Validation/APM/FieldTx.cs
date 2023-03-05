@@ -209,7 +209,7 @@ internal partial class APM_FieldTx_Parent__Base : ISpecification<PdfDictionary>
         } else if (APM_Field.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_Field, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_FieldSig, PdfDictionary>(stack, val, obj);
         }else 
@@ -349,7 +349,7 @@ internal partial class APM_FieldTx_Ff__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldTx_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj)&&ctx.Version < 1.4m && BitClear(obj)&&BitClear(obj)&&ctx.Version < 1.4m && BitsClear(obj)&&ctx.Version < 1.5m && BitsClear(obj)&&BitsClear(obj))) 
+        if (!(BitsClear(obj)&&(ctx.Version >= 1.4m || BitClear(obj))&&BitClear(obj)&&(ctx.Version >= 1.4m || BitsClear(obj))&&(ctx.Version >= 1.5m || BitsClear(obj))&&BitsClear(obj))) 
         {
             ctx.Fail<APM_FieldTx_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(15,20) && fn:BeforeVersion(1.4,fn:BitClear(21)) && fn:BitClear(22) && fn:BeforeVersion(1.4,fn:BitsClear(23,24)) && fn:BeforeVersion(1.5,fn:BitsClear(25,26)) && fn:BitsClear(27,32))");
         }

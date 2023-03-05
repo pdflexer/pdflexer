@@ -342,7 +342,7 @@ internal partial class APM_HalftoneType6_TransferFunction__Base : ISpecification
                     if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
-                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary))) 
                     {
                         ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
@@ -429,7 +429,7 @@ internal partial class APM_HalftoneType6_Filter__Base : ISpecification<PdfDictio
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
                     {
                         ctx.Fail<APM_HalftoneType6_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -492,7 +492,7 @@ internal partial class APM_HalftoneType6_DecodeParms__Base : ISpecification<PdfD
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
@@ -600,7 +600,7 @@ internal partial class APM_HalftoneType6_FFilter__Base : ISpecification<PdfDicti
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
                     {
                         ctx.Fail<APM_HalftoneType6_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -663,7 +663,7 @@ internal partial class APM_HalftoneType6_FDecodeParms__Base : ISpecification<Pdf
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 

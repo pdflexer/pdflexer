@@ -219,7 +219,7 @@ internal partial class APM_Stream_Filter__Base : ISpecification<PdfDictionary>
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version < 1.2m || (ctx.Version >= 1.2m && val == "FlateDecode")) || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version < 1.4m || (ctx.Version >= 1.4m && val == "JBIG2Decode")) || val == "DCTDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "JPXDecode")) || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version >= 1.2m && val == "FlateDecode") || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version >= 1.4m && val == "JBIG2Decode") || val == "DCTDecode" || (ctx.Version >= 1.5m && val == "JPXDecode") || (ctx.Version >= 1.5m && val == "Crypt"))) 
                     {
                         ctx.Fail<APM_Stream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,fn:SinceVersion(1.2,FlateDecode),RunLengthDecode,CCITTFaxDecode,fn:SinceVersion(1.4,JBIG2Decode),DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -285,13 +285,13 @@ internal partial class APM_Stream_DecodeParms__Base : ISpecification<PdfDictiona
                     } else if (APM_FilterDCTDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterDCTDecode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FilterFlateDecode.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.2m && APM_FilterFlateDecode.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.4m || (ctx.Version >= 1.4m && APM_FilterJBIG2Decode.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.4m && APM_FilterJBIG2Decode.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterJBIG2Decode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
@@ -399,7 +399,7 @@ internal partial class APM_Stream_FFilter__Base : ISpecification<PdfDictionary>
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version < 1.4m || (ctx.Version >= 1.4m && val == "JBIG2Decode")) || val == "DCTDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "JPXDecode")) || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version >= 1.4m && val == "JBIG2Decode") || val == "DCTDecode" || (ctx.Version >= 1.5m && val == "JPXDecode") || (ctx.Version >= 1.5m && val == "Crypt"))) 
                     {
                         ctx.Fail<APM_Stream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,CCITTFaxDecode,fn:SinceVersion(1.4,JBIG2Decode),DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -468,10 +468,10 @@ internal partial class APM_Stream_FDecodeParms__Base : ISpecification<PdfDiction
                     } else if (APM_FilterDCTDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterDCTDecode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.4m || (ctx.Version >= 1.4m && APM_FilterJBIG2Decode.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.4m && APM_FilterJBIG2Decode.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterJBIG2Decode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 

@@ -198,16 +198,16 @@ internal partial class APM_AAPL_ST_ColorSpace__Base : ISpecification<PdfDictiona
                     if (APM_IndexedColorSpace.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_IndexedColorSpace, PdfArray>(stack, val, obj);
-                    } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_CalGrayColorSpace.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.1m && APM_CalGrayColorSpace.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_CalGrayColorSpace, PdfArray>(stack, val, obj);
-                    } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_CalRGBColorSpace.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.1m && APM_CalRGBColorSpace.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_CalRGBColorSpace, PdfArray>(stack, val, obj);
-                    } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_LabColorSpace.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.1m && APM_LabColorSpace.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_LabColorSpace, PdfArray>(stack, val, obj);
-                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
                     }else 

@@ -353,7 +353,7 @@ internal partial class APM_AnnotPrinterMark_F__Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfIntNumber, APM_AnnotPrinterMark_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(ctx.Version < 1.5m && BitsClear(obj)&&ctx.Version < 1.6m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj))))) 
+        if (!((ctx.Version >= 1.5m || BitsClear(obj))&&(ctx.Version >= 1.6m || BitsClear(obj))&&(ctx.Version < 1.7m || BitsClear(obj)))) 
         {
             ctx.Fail<APM_AnnotPrinterMark_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
         }
@@ -383,7 +383,7 @@ internal partial class APM_AnnotPrinterMark_AP__Base : ISpecification<PdfDiction
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotPrinterMark_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotPrinterMark_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;

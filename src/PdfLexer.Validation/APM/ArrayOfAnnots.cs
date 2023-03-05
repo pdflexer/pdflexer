@@ -49,88 +49,88 @@ internal partial class APM_ArrayOfAnnots_x : ISpecification<PdfArray>
             } else if (APM_AnnotLink.MatchesType(ctx, val)) 
             {
                 ctx.Run<APM_AnnotLink, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotFreeText.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotFreeText.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotFreeText, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotLine.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotLine.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotLine, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotSquare.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotSquare.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotSquare, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotCircle.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotCircle.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotCircle, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_AnnotPolygon.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.5m && APM_AnnotPolygon.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotPolygon, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_AnnotPolyLine.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.5m && APM_AnnotPolyLine.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotPolyLine, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotHighlight.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotHighlight.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotHighlight, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotUnderline.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotUnderline.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotUnderline, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.4m || (ctx.Version >= 1.4m && APM_AnnotSquiggly.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.4m && APM_AnnotSquiggly.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotSquiggly, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotStrikeOut.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotStrikeOut.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotStrikeOut, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_AnnotCaret.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.5m && APM_AnnotCaret.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotCaret, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotStamp.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotStamp.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotStamp, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotInk.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotInk.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotInk, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotPopup.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotPopup.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotPopup, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotFileAttachment.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotFileAttachment.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotFileAttachment, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_AnnotSound.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.2m && APM_AnnotSound.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotSound, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_AnnotMovie.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.2m && APM_AnnotMovie.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotMovie, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_AnnotScreen.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.5m && APM_AnnotScreen.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotScreen, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_AnnotWidget.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.2m && APM_AnnotWidget.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotWidget, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.4m || (ctx.Version >= 1.4m && APM_AnnotPrinterMark.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.4m && APM_AnnotPrinterMark.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotPrinterMark, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_AnnotTrapNetwork.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_AnnotTrapNetwork.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotTrapNetwork, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotWatermark, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_Annot3D, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.7m || (ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
             } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_AnnotProjection.MatchesType(ctx, val)))) 
             {
                 ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
             } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
             {
                 ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
             }else 

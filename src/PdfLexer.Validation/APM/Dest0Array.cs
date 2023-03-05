@@ -85,7 +85,7 @@ internal partial class APM_Dest0Array_1 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "Fit" || (ctx.Version < 1.1m || (ctx.Version >= 1.1m && val == "FitB")))) 
+        if (!(val == "Fit" || (ctx.Version >= 1.1m && val == "FitB"))) 
         {
             ctx.Fail<APM_Dest0Array_1>($"Invalid value {val}, allowed are: [Fit,fn:SinceVersion(1.1,FitB)]");
         }

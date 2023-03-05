@@ -139,7 +139,7 @@ internal partial class APM_CollectionField_Subtype__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "S" || val == "D" || val == "N" || val == "F" || val == "Desc" || val == "ModDate" || val == "CreationDate" || val == "Size" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "CompressedSize")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "CompressedSize")))) 
+        if (!(val == "S" || val == "D" || val == "N" || val == "F" || val == "Desc" || val == "ModDate" || val == "CreationDate" || val == "Size" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "CompressedSize")) || (ctx.Version >= 2.0m && val == "CompressedSize"))) 
         {
             ctx.Fail<APM_CollectionField_Subtype>($"Invalid value {val}, allowed are: [S,D,N,F,Desc,ModDate,CreationDate,Size,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,CompressedSize)),fn:SinceVersion(2.0,CompressedSize)]");
         }

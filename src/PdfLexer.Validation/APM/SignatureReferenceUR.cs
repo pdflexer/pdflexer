@@ -300,7 +300,7 @@ internal partial class APM_SignatureReferenceUR_DigestMethod__Base : ISpecificat
         // no special cases
         
         
-        if (!((ctx.Version <= 2.0m && val == "MD5") || (ctx.Version <= 2.0m && val == "SHA1") || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "SHA256")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "SHA384")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "SHA512")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "RIPEMD160")) || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-256") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-384") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-512") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHAKE256"))) 
+        if (!((ctx.Version <= 2.0m && val == "MD5") || (ctx.Version <= 2.0m && val == "SHA1") || (ctx.Version >= 2.0m && val == "SHA256") || (ctx.Version >= 2.0m && val == "SHA384") || (ctx.Version >= 2.0m && val == "SHA512") || (ctx.Version >= 2.0m && val == "RIPEMD160") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-256") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-384") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-512") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHAKE256"))) 
         {
             ctx.Fail<APM_SignatureReferenceUR_DigestMethod>($"Invalid value {val}, allowed are: [fn:Deprecated(2.0,MD5),fn:Deprecated(2.0,SHA1),fn:SinceVersion(2.0,SHA256),fn:SinceVersion(2.0,SHA384),fn:SinceVersion(2.0,SHA512),fn:SinceVersion(2.0,RIPEMD160),fn:Extension(ISO_TS_32001,SHA3-256),fn:Extension(ISO_TS_32001,SHA3-384),fn:Extension(ISO_TS_32001,SHA3-512),fn:Extension(ISO_TS_32001,SHAKE256)]");
         }

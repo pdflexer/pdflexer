@@ -100,7 +100,7 @@ internal partial class APM_SeparationColorSpace_2 : ISpecification<PdfArray>
                     } else if (APM_LabColorSpace.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_LabColorSpace, PdfArray>(stack, val, obj);
-                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
                     }else 
@@ -156,7 +156,7 @@ internal partial class APM_SeparationColorSpace_3 : ISpecification<PdfArray>
                     if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
-                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary))) 
                     {
                         ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 

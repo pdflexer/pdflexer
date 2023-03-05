@@ -256,7 +256,7 @@ internal partial class APM_StructureAttributesDict_Placement__Base : ISpecificat
         }
         
         
-        if (!(val == "Block" || val == "Before" || val == "Start" || val == "End" || ctx.Version < 2.0m && val == "Inline")) 
+        if (!(val == "Block" || val == "Before" || val == "Start" || val == "End" || (ctx.Version > 2.0m && val == "Inline"))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Placement>($"Invalid value {val}, allowed are: [Block,Before,Start,End,fn:BeforeVersion(2.0,Inline)]");
         }
@@ -292,7 +292,7 @@ internal partial class APM_StructureAttributesDict_WritingMode__Base : ISpecific
         }
         
         
-        if (!(val == "LrTb" || val == "RlTb" || val == "TbRl" || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "TbLr")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "LrBt")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "RlBt")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "BtRl")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "BtLr")))) 
+        if (!(val == "LrTb" || val == "RlTb" || val == "TbRl" || (ctx.Version >= 2.0m && val == "TbLr") || (ctx.Version >= 2.0m && val == "LrBt") || (ctx.Version >= 2.0m && val == "RlBt") || (ctx.Version >= 2.0m && val == "BtRl") || (ctx.Version >= 2.0m && val == "BtLr"))) 
         {
             ctx.Fail<APM_StructureAttributesDict_WritingMode>($"Invalid value {val}, allowed are: [LrTb,RlTb,TbRl,fn:SinceVersion(2.0,TbLr),fn:SinceVersion(2.0,LrBt),fn:SinceVersion(2.0,RlBt),fn:SinceVersion(2.0,BtRl),fn:SinceVersion(2.0,BtLr)]");
         }
@@ -1633,7 +1633,7 @@ internal partial class APM_StructureAttributesDict_ListNumbering__Base : ISpecif
         }
         
         
-        if (!(val == "None" || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "Unordered")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "Description")) || val == "Disc" || val == "Circle" || val == "Square" || val == "Ordered" || val == "Decimal" || val == "UpperRoman" || val == "LowerRoman" || val == "UpperAlpha" || val == "LowerAlpha")) 
+        if (!(val == "None" || (ctx.Version >= 2.0m && val == "Unordered") || (ctx.Version >= 2.0m && val == "Description") || val == "Disc" || val == "Circle" || val == "Square" || val == "Ordered" || val == "Decimal" || val == "UpperRoman" || val == "LowerRoman" || val == "UpperAlpha" || val == "LowerAlpha")) 
         {
             ctx.Fail<APM_StructureAttributesDict_ListNumbering>($"Invalid value {val}, allowed are: [None,fn:SinceVersion(2.0,Unordered),fn:SinceVersion(2.0,Description),Disc,Circle,Square,Ordered,Decimal,UpperRoman,LowerRoman,UpperAlpha,LowerAlpha]");
         }
@@ -2093,7 +2093,7 @@ internal partial class APM_StructureAttributesDict_Type__Base : ISpecification<P
         }
         
         
-        if (!(val == "Pagination" || val == "Layout" || val == "Page" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "BatesN")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "Inline")))) 
+        if (!(val == "Pagination" || val == "Layout" || val == "Page" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "BatesN")) || (ctx.Version >= 2.0m && val == "Inline"))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Type>($"Invalid value {val}, allowed are: [Pagination,Layout,Page,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,BatesN)),fn:SinceVersion(2.0,Inline)]");
         }
@@ -2129,7 +2129,7 @@ internal partial class APM_StructureAttributesDict_Subtype__Base : ISpecificatio
         }
         
         
-        if (!(val == "Header" || val == "Footer" || val == "Watermark" || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "PageNum")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "Bates")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "LineNum")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "Redaction")))) 
+        if (!(val == "Header" || val == "Footer" || val == "Watermark" || (ctx.Version >= 2.0m && val == "PageNum") || (ctx.Version >= 2.0m && val == "Bates") || (ctx.Version >= 2.0m && val == "LineNum") || (ctx.Version >= 2.0m && val == "Redaction"))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Subtype>($"Invalid value {val}, allowed are: [Header,Footer,Watermark,fn:SinceVersion(2.0,PageNum),fn:SinceVersion(2.0,Bates),fn:SinceVersion(2.0,LineNum),fn:SinceVersion(2.0,Redaction)]");
         }

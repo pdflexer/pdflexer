@@ -354,7 +354,7 @@ internal partial class APM_Transition_Di__Base : ISpecification<PdfDictionary>
                     var Di = obj.Get("Di");
                     var S = obj.Get("S");
                     var SS = obj.Get("SS");
-                    if (!(eq(Di,"None")&&eq(S,"Fly")&&(ctx.Version < 1.5m || (ctx.Version >= 1.5m && !eq(SS,1.0m))))) 
+                    if (!(eq(Di,"None")&&eq(S,"Fly")&&(ctx.Version < 1.5m || !eq(SS,1.0m)))) 
                     {
                         ctx.Fail<APM_Transition_Di>($"Value failed special case check: fn:Eval(((@Di==None) && (@S==Fly) && fn:SinceVersion(1.5,(@SS!=1.0))))");
                     }

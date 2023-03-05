@@ -368,7 +368,7 @@ internal partial class APM_AnnotRedact_AP__Base : ISpecification<PdfDictionary>
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotRedact_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotRedact_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;
@@ -930,10 +930,10 @@ internal partial class APM_AnnotRedact_IRT__Base : ISpecification<PdfDictionary>
         } else if (APM_AnnotRedact.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
@@ -1252,10 +1252,10 @@ internal partial class APM_AnnotRedact_ExData__Base : ISpecification<PdfDictiona
         } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
         {
             ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_ExDataProjection, PdfDictionary>(stack, val, obj);
         }else 

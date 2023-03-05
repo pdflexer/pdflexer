@@ -234,7 +234,7 @@ internal partial class APM_CryptFilterPublicKey_CFM__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "None" || (ctx.Version <= 2.0m && val == "V2") || (ctx.Version <= 2.0m && (ctx.Version < 1.6m || (ctx.Version >= 1.6m && val == "AESV2"))) || (ctx.Version <= 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "AESV3"))) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "AESV3")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && (ctx.Extensions.Contains("ISO_TS_32003") && val == "AESV4"))))) 
+        if (!(val == "None" || (ctx.Version <= 2.0m && val == "V2") || (ctx.Version <= 2.0m && (ctx.Version >= 1.6m && val == "AESV2")) || (ctx.Version <= 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "AESV3"))) || (ctx.Version >= 2.0m && val == "AESV3") || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32003") && val == "AESV4")))) 
         {
             ctx.Fail<APM_CryptFilterPublicKey_CFM>($"Invalid value {val}, allowed are: [None,fn:Deprecated(2.0,V2),fn:Deprecated(2.0,fn:SinceVersion(1.6,AESV2)),fn:Deprecated(2.0,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,AESV3))),fn:SinceVersion(2.0,AESV3),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,AESV4))]");
         }

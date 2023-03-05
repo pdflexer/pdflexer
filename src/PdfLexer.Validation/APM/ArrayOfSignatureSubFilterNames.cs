@@ -44,7 +44,7 @@ internal partial class APM_ArrayOfSignatureSubFilterNames_x : ISpecification<Pdf
             // no special cases
             
             
-            if (!(val == "adbe.pkcs7.detached" || (ctx.Version <= 2.0m && val == "adbe.pkcs7.sha1") || val == "adbe.x509.rsa_sha1" || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "ETSI.CAdES.detached")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "ETSI.RFC3161")))) 
+            if (!(val == "adbe.pkcs7.detached" || (ctx.Version <= 2.0m && val == "adbe.pkcs7.sha1") || val == "adbe.x509.rsa_sha1" || (ctx.Version >= 2.0m && val == "ETSI.CAdES.detached") || (ctx.Version >= 2.0m && val == "ETSI.RFC3161"))) 
             {
                 ctx.Fail<APM_ArrayOfSignatureSubFilterNames_x>($"Invalid value {val}, allowed are: [adbe.pkcs7.detached,fn:Deprecated(2.0,adbe.pkcs7.sha1),adbe.x509.rsa_sha1,fn:SinceVersion(2.0,ETSI.CAdES.detached),fn:SinceVersion(2.0,ETSI.RFC3161)]");
             }

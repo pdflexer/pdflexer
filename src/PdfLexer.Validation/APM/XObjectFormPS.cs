@@ -228,7 +228,7 @@ internal partial class APM_XObjectFormPS_Filter__Base : ISpecification<PdfDictio
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version < 1.2m || (ctx.Version >= 1.2m && val == "FlateDecode")) || val == "RunLengthDecode")) 
+                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version >= 1.2m && val == "FlateDecode") || val == "RunLengthDecode")) 
                     {
                         ctx.Fail<APM_XObjectFormPS_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,fn:SinceVersion(1.2,FlateDecode),RunLengthDecode]");
                     }
@@ -288,10 +288,10 @@ internal partial class APM_XObjectFormPS_DecodeParms__Base : ISpecification<PdfD
                     if (APM_FilterLZWDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterLZWDecode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_FilterFlateDecode.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.2m && APM_FilterFlateDecode.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 
@@ -462,7 +462,7 @@ internal partial class APM_XObjectFormPS_FDecodeParms__Base : ISpecification<Pdf
                     } else if (APM_FilterFlateDecode.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_FilterFlateDecode, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 1.5m || (ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.5m && APM_FilterCrypt.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_FilterCrypt, PdfDictionary>(stack, val, obj);
                     }else 

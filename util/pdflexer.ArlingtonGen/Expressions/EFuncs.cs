@@ -235,18 +235,29 @@ internal class EFunc_SinceVersion : EFunBase, INode
             Inputs[0].Write(sb);
         } else
         {
-            using (var es = new EvalScope())
+            if ((Inputs[1] as INode).IsSingleValue())
             {
-                sb.Append("(ctx.Version < ");
-                Inputs[0].Write(sb);
-                sb.Append(" || (ctx.Version >= ");
-                Inputs[0].Write(sb);
-            }
-            sb.Append(" && ");
-            Inputs[1].Write(sb);
-            sb.Append("))");
-        }
+                using (var es = new EvalScope())
+                {
+                    sb.Append("(ctx.Version >= ");
+                    Inputs[0].Write(sb);
+                }
+                sb.Append(" && ");
+                Inputs[1].Write(sb);
+                sb.Append(")");
+            } else
+            {
+                using (var es = new EvalScope())
+                {
+                    sb.Append("(ctx.Version < ");
+                    Inputs[0].Write(sb);
+                    sb.Append(" || ");
+                }
 
+                Inputs[1].Write(sb);
+                sb.Append(")");
+            }
+        }
     }
 
     IEnumerable<string> INode.GetRequiredValues()
@@ -266,15 +277,37 @@ internal class EFunc_BeforeVersion : EFunBase, INode
     public EFunc_BeforeVersion(List<EGroup> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
-        using (var es = new EvalScope())
+        if (Inputs.Count == 1)
         {
+            using var es = new EvalScope();
             sb.Append("ctx.Version < ");
             Inputs[0].Write(sb);
         }
-        if (Inputs.Count > 1)
+        else
         {
-            sb.Append(" && ");
-            Inputs[1].Write(sb);
+            if ((Inputs[1] as INode).IsSingleValue())
+            {
+                using (var es = new EvalScope())
+                {
+                    sb.Append("(ctx.Version > ");
+                    Inputs[0].Write(sb);
+                }
+                sb.Append(" && ");
+                Inputs[1].Write(sb);
+                sb.Append(")");
+            }
+            else
+            {
+                using (var es = new EvalScope())
+                {
+                    sb.Append("(ctx.Version >= ");
+                    Inputs[0].Write(sb);
+                    sb.Append(" || ");
+                }
+
+                Inputs[1].Write(sb);
+                sb.Append(")");
+            }
         }
     }
 

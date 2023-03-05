@@ -341,7 +341,7 @@ internal partial class APM_HalftoneType1_SpotFunction__Base : ISpecification<Pdf
                     if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
-                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary))) 
                     {
                         ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
@@ -438,7 +438,7 @@ internal partial class APM_HalftoneType1_TransferFunction__Base : ISpecification
                     if (APM_FunctionType0.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_FunctionType0, PdfDictionary>(stack, val.Dictionary, obj);
-                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary)))) 
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType4.MatchesType(ctx, val.Dictionary))) 
                     {
                         ctx.Run<APM_FunctionType4, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 

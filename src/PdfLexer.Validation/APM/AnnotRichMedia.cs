@@ -324,7 +324,7 @@ internal partial class APM_AnnotRichMedia_AP__Base : ISpecification<PdfDictionar
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotRichMedia_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotRichMedia_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;

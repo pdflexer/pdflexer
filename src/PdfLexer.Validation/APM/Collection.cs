@@ -167,7 +167,7 @@ internal partial class APM_Collection_D__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfString, APM_Collection_D>(obj, "D", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && IsEncryptedWrapper(obj)))) && val == null) {
+        if (((ctx.Version < 2.0m || IsEncryptedWrapper(obj))) && val == null) {
             ctx.Fail<APM_Collection_D>("D is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsEncryptedWrapper()))"); return;
         } else if (val == null) {
             return;
@@ -199,19 +199,19 @@ internal partial class APM_Collection_View__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfName, APM_Collection_View>(obj, "View", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && IsEncryptedWrapper(obj)))) && val == null) {
+        if (((ctx.Version < 2.0m || IsEncryptedWrapper(obj))) && val == null) {
             ctx.Fail<APM_Collection_View>("View is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsEncryptedWrapper()))"); return;
         } else if (val == null) {
             return;
         }
         var View = obj.Get("View");
-        if (!((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (IsEncryptedWrapper(obj)&&eq(View,"H"))||(obj.ContainsKey("Navigator")&&eq(View,"C"))||!eq(View,"C"))))) 
+        if (!((ctx.Version < 2.0m || (IsEncryptedWrapper(obj)&&eq(View,"H"))||(obj.ContainsKey("Navigator")&&eq(View,"C"))||!eq(View,"C")))) 
         {
             ctx.Fail<APM_Collection_View>($"Value failed special case check: fn:Eval(fn:SinceVersion(2.0,((fn:IsEncryptedWrapper() && (@View==H)) || (fn:IsPresent(Navigator) && (@View==C)) || (@View!=C))))");
         }
         
         
-        if (!(val == "D" || val == "T" || val == "H" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "C")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "C")))) 
+        if (!(val == "D" || val == "T" || val == "H" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "C")) || (ctx.Version >= 2.0m && val == "C"))) 
         {
             ctx.Fail<APM_Collection_View>($"Invalid value {val}, allowed are: [D,T,H,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,C)),fn:SinceVersion(2.0,C)]");
         }

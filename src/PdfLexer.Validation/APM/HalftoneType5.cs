@@ -174,7 +174,7 @@ internal partial class APM_HalftoneType5_Default__Base : ISpecification<PdfDicti
                     } else if (APM_HalftoneType10.MatchesType(ctx, val.Dictionary)) 
                     {
                         ctx.Run<APM_HalftoneType10, PdfDictionary>(stack, val.Dictionary, obj);
-                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_HalftoneType16.MatchesType(ctx, val.Dictionary)))) 
+                    } else if ((ctx.Version >= 1.3m && APM_HalftoneType16.MatchesType(ctx, val.Dictionary))) 
                     {
                         ctx.Run<APM_HalftoneType16, PdfDictionary>(stack, val.Dictionary, obj);
                     }else 
@@ -240,7 +240,7 @@ internal partial class APM_HalftoneType5_CatchAll__Base : ISpecification<PdfDict
                         } else if (APM_HalftoneType10.MatchesType(ctx, val.Dictionary)) 
                         {
                             ctx.Run<APM_HalftoneType10, PdfDictionary>(stack, val.Dictionary, obj);
-                        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_HalftoneType16.MatchesType(ctx, val.Dictionary)))) 
+                        } else if ((ctx.Version >= 1.3m && APM_HalftoneType16.MatchesType(ctx, val.Dictionary))) 
                         {
                             ctx.Run<APM_HalftoneType16, PdfDictionary>(stack, val.Dictionary, obj);
                         }else 

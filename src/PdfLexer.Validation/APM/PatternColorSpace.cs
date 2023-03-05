@@ -84,10 +84,10 @@ internal partial class APM_PatternColorSpace_1 : ISpecification<PdfArray>
                     } else if (APM_SeparationColorSpace.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_SeparationColorSpace, PdfArray>(stack, val, obj);
-                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
-                    } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_DeviceNColorSpace, PdfArray>(stack, val, obj);
                     }else 

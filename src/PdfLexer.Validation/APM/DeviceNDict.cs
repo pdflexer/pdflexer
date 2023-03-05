@@ -169,7 +169,7 @@ internal partial class APM_DeviceNDict_Colorants__Base : ISpecification<PdfDicti
         var Subtype = obj.Get("Subtype");
         var parent1 = parent?.Get("1");
         var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Colorants>(obj, "Colorants", IndirectRequirement.Either);
-        if ((((ctx.Version < 1.6m || (ctx.Version >= 1.6m && eq(Subtype,"NChannel")))&&HasSpotColorants(parent1))) && val == null) {
+        if ((((ctx.Version < 1.6m || eq(Subtype,"NChannel"))&&HasSpotColorants(parent1))) && val == null) {
             ctx.Fail<APM_DeviceNDict_Colorants>("Colorants is required when 'fn:IsRequired(fn:SinceVersion(1.6,(@Subtype==NChannel)) && fn:HasSpotColorants(parent::1))"); return;
         } else if (val == null) {
             return;

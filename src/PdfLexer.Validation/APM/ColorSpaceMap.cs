@@ -58,10 +58,10 @@ internal partial class APM_ColorSpaceMap_DefaultRGB__Base : ISpecification<PdfDi
         if (APM_CalRGBColorSpace.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_CalRGBColorSpace, PdfArray>(stack, val, obj);
-        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
-        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_DeviceNColorSpace, PdfArray>(stack, val, obj);
         }else 
@@ -133,13 +133,13 @@ internal partial class APM_ColorSpaceMap_DefaultGray__Base : ISpecification<PdfD
         if (APM_CalGrayColorSpace.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_CalGrayColorSpace, PdfArray>(stack, val, obj);
-        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
-        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_SeparationColorSpace.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.2m && APM_SeparationColorSpace.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_SeparationColorSpace, PdfArray>(stack, val, obj);
-        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_DeviceNColorSpace, PdfArray>(stack, val, obj);
         }else 
@@ -187,25 +187,25 @@ internal partial class APM_ColorSpaceMap_CatchAll__Base : ISpecification<PdfDict
                         if (APM_IndexedColorSpace.MatchesType(ctx, val)) 
                         {
                             ctx.Run<APM_IndexedColorSpace, PdfArray>(stack, val, obj);
-                        } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_CalGrayColorSpace.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.1m && APM_CalGrayColorSpace.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_CalGrayColorSpace, PdfArray>(stack, val, obj);
-                        } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_CalRGBColorSpace.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.1m && APM_CalRGBColorSpace.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_CalRGBColorSpace, PdfArray>(stack, val, obj);
-                        } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_LabColorSpace.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.1m && APM_LabColorSpace.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_LabColorSpace, PdfArray>(stack, val, obj);
-                        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
-                        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_SeparationColorSpace.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.2m && APM_SeparationColorSpace.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_SeparationColorSpace, PdfArray>(stack, val, obj);
-                        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_DeviceNColorSpace, PdfArray>(stack, val, obj);
-                        } else if ((ctx.Version < 1.2m || (ctx.Version >= 1.2m && APM_PatternColorSpace.MatchesType(ctx, val)))) 
+                        } else if ((ctx.Version >= 1.2m && APM_PatternColorSpace.MatchesType(ctx, val))) 
                         {
                             ctx.Run<APM_PatternColorSpace, PdfArray>(stack, val, obj);
                         }else 

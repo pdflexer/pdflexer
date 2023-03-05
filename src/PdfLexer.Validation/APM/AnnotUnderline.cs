@@ -372,7 +372,7 @@ internal partial class APM_AnnotUnderline_F__Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotUnderline_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(ctx.Version < 1.4m && BitsClear(obj)&&ctx.Version < 1.5m && BitsClear(obj)&&ctx.Version < 1.6m && BitsClear(obj)&&(ctx.Version < 1.7m || (ctx.Version >= 1.7m && BitsClear(obj))))) 
+        if (!((ctx.Version >= 1.4m || BitsClear(obj))&&(ctx.Version >= 1.5m || BitsClear(obj))&&(ctx.Version >= 1.6m || BitsClear(obj))&&(ctx.Version < 1.7m || BitsClear(obj)))) 
         {
             ctx.Fail<APM_AnnotUnderline_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.4,fn:BitsClear(8,32)) && fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
         }
@@ -402,7 +402,7 @@ internal partial class APM_AnnotUnderline_AP__Base : ISpecification<PdfDictionar
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotUnderline_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;
@@ -955,19 +955,19 @@ internal partial class APM_AnnotUnderline_IRT__Base : ISpecification<PdfDictiona
         } else if (APM_AnnotPrinterMark.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_AnnotPrinterMark, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.6m && APM_AnnotWatermark.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_AnnotWatermark, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 1.6m || (ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.6m && APM_Annot3D.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_Annot3D, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 1.7m || (ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
         }else 
@@ -1119,10 +1119,10 @@ internal partial class APM_AnnotUnderline_ExData__Base : ISpecification<PdfDicti
         } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
         {
             ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 2.0m && APM_ExDataProjection.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_ExDataProjection, PdfDictionary>(stack, val, obj);
         }else 

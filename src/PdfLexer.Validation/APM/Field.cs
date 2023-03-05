@@ -169,7 +169,7 @@ internal partial class APM_Field_Parent__Base : ISpecification<PdfDictionary>
         } else if (APM_Field.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_Field, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_FieldSig, PdfDictionary>(stack, val, obj);
         }else 

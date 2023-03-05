@@ -181,7 +181,7 @@ internal partial class APM_FilterFlateDecode_Colors__Base : ISpecification<PdfDi
         // special case is an fn:Ignore, not pertinent to validation
         
         var Colors = obj.Get("Colors");
-        if (!((gte(Colors,1)&&ctx.Version < 1.3m && lte(Colors,4)))) 
+        if (!((gte(Colors,1)&&(ctx.Version >= 1.3m || lte(Colors,4))))) 
         {
             ctx.Fail<APM_FilterFlateDecode_Colors>($"Invalid value {val}, allowed are: [fn:Eval((@Colors>=1) && fn:BeforeVersion(1.3,fn:Eval(@Colors<=4)))]");
         }
@@ -213,7 +213,7 @@ internal partial class APM_FilterFlateDecode_BitsPerComponent__Base : ISpecifica
         // special case is an fn:Ignore, not pertinent to validation
         
         
-        if (!(val == 1 || val == 2 || val == 4 || val == 8 || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == 16)))) 
+        if (!(val == 1 || val == 2 || val == 4 || val == 8 || (ctx.Version >= 1.5m && val == 16))) 
         {
             ctx.Fail<APM_FilterFlateDecode_BitsPerComponent>($"Invalid value {val}, allowed are: [1,2,4,8,fn:SinceVersion(1.5,16)]");
         }

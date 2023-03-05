@@ -203,7 +203,7 @@ internal partial class APM_ActionRichMediaExecute_Next__Base : ISpecification<Pd
                     } else if (APM_ActionRichMediaExecute.MatchesType(ctx, val)) 
                     {
                         ctx.Run<APM_ActionRichMediaExecute, PdfDictionary>(stack, val, obj);
-                    } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val)))) 
+                    } else if ((ctx.Version >= 2.0m && APM_ActionGoToDp.MatchesType(ctx, val))) 
                     {
                         ctx.Run<APM_ActionGoToDp, PdfDictionary>(stack, val, obj);
                     }else 

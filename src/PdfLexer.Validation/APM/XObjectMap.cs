@@ -64,10 +64,10 @@ internal partial class APM_XObjectMap_CatchAll__Base : ISpecification<PdfDiction
             } else if (APM_XObjectImage.MatchesType(ctx, val.Dictionary)) 
             {
                 ctx.Run<APM_XObjectImage, PdfDictionary>(stack, val.Dictionary, obj);
-            } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_XObjectFormPS.MatchesType(ctx, val.Dictionary)))) 
+            } else if ((ctx.Version >= 1.1m && APM_XObjectFormPS.MatchesType(ctx, val.Dictionary))) 
             {
                 ctx.Run<APM_XObjectFormPS, PdfDictionary>(stack, val.Dictionary, obj);
-            } else if ((ctx.Version < 1.1m || (ctx.Version >= 1.1m && APM_XObjectFormPSpassthrough.MatchesType(ctx, val.Dictionary)))) 
+            } else if ((ctx.Version >= 1.1m && APM_XObjectFormPSpassthrough.MatchesType(ctx, val.Dictionary))) 
             {
                 ctx.Run<APM_XObjectFormPSpassthrough, PdfDictionary>(stack, val.Dictionary, obj);
             }else 

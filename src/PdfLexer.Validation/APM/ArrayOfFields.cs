@@ -64,7 +64,7 @@ internal partial class APM_ArrayOfFields_x : ISpecification<PdfArray>
             } else if (APM_AnnotWidget.MatchesType(ctx, val)) 
             {
                 ctx.Run<APM_AnnotWidget, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 1.3m || (ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 1.3m && APM_FieldSig.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_FieldSig, PdfDictionary>(stack, val, obj);
             }else 

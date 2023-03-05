@@ -943,7 +943,7 @@ internal partial class APM_PageObject_Tabs__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "R" || val == "C" || val == "S" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "A")) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "W")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "A")) || (ctx.Version < 2.0m || (ctx.Version >= 2.0m && val == "W")))) 
+        if (!(val == "R" || val == "C" || val == "S" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "A")) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "W")) || (ctx.Version >= 2.0m && val == "A") || (ctx.Version >= 2.0m && val == "W"))) 
         {
             ctx.Fail<APM_PageObject_Tabs>($"Invalid value {val}, allowed are: [R,C,S,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,A)),fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,W)),fn:SinceVersion(2.0,A),fn:SinceVersion(2.0,W)]");
         }

@@ -44,7 +44,7 @@ internal partial class APM_ArrayOfFilterNames_x : ISpecification<PdfArray>
             // no special cases
             
             
-            if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version < 1.2m || (ctx.Version >= 1.2m && val == "FlateDecode")) || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version < 1.4m || (ctx.Version >= 1.4m && val == "JBIG2Decode")) || val == "DCTDecode" || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "JPXDecode")) || (ctx.Version < 1.5m || (ctx.Version >= 1.5m && val == "Crypt")))) 
+            if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version >= 1.2m && val == "FlateDecode") || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version >= 1.4m && val == "JBIG2Decode") || val == "DCTDecode" || (ctx.Version >= 1.5m && val == "JPXDecode") || (ctx.Version >= 1.5m && val == "Crypt"))) 
             {
                 ctx.Fail<APM_ArrayOfFilterNames_x>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,fn:SinceVersion(1.2,FlateDecode),RunLengthDecode,CCITTFaxDecode,fn:SinceVersion(1.4,JBIG2Decode),DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
             }

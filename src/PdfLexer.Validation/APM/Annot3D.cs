@@ -339,7 +339,7 @@ internal partial class APM_Annot3D_F__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_Annot3D_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!((ctx.Version < 1.7m && BitsClear(obj)&&BitsClear(obj)))) 
+        if (!(((ctx.Version >= 1.7m || BitsClear(obj))&&BitsClear(obj)))) 
         {
             ctx.Fail<APM_Annot3D_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.7,fn:BitsClear(10,32)) && fn:BitsClear(11,32))");
         }
@@ -369,7 +369,7 @@ internal partial class APM_Annot3D_AP__Base : ISpecification<PdfDictionary>
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_Annot3D_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (ctx.Version >= 2.0m && (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0))))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_Annot3D_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;

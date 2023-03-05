@@ -204,7 +204,7 @@ internal partial class APM_Viewport_Measure__Base : ISpecification<PdfDictionary
         if (APM_MeasureRL.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_MeasureRL, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version < 2.0m || (ctx.Version >= 2.0m && APM_MeasureGEO.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version >= 2.0m && APM_MeasureGEO.MatchesType(ctx, val))) 
         {
             ctx.Run<APM_MeasureGEO, PdfDictionary>(stack, val, obj);
         }else 
