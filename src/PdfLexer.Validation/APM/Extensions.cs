@@ -97,7 +97,6 @@ internal partial class APM_Extensions_CatchAll__Base : ISpecification<PdfDiction
             if (utval == null) { return; }
             switch (utval.Type) 
             {
-                // TODO funcs: fn:SinceVersion(2.0,array)
                 case PdfObjectType.DictionaryObj:
                     {
                         var val =  (PdfDictionary)utval;
@@ -108,6 +107,28 @@ internal partial class APM_Extensions_CatchAll__Base : ISpecification<PdfDiction
                         // no special cases
                         // no value restrictions
                         ctx.Run<APM_DevExtensions, PdfDictionary>(stack, val, obj);
+                        return;
+                    }
+                case PdfObjectType.ArrayObj:
+                    {
+                        if (!(ctx.Version >= 2.0m)) 
+                        {
+                            ctx.Fail<APM_Extensions_CatchAll>("* was type array but not allowed for current conditions: 'fn:SinceVersion(2.0,array)'");
+                        }
+                        var val =  (PdfArray)utval;
+                        if (false && !wasIR) {
+                            ctx.Fail<APM_Extensions_CatchAll>("* is required to be indirect when a array");
+                            return;
+                        }
+                        // no special cases
+                        // no value restrictions
+                        if ((ctx.Version >= 2.0m && APM_ArrayOfDevExtensions.MatchesType(ctx, val))) 
+                        {
+                            ctx.Run<APM_ArrayOfDevExtensions, PdfArray>(stack, val, obj);
+                        }else 
+                        {
+                            ctx.Fail<APM_Extensions_CatchAll>("CatchAll did not match any allowable types: '[fn:SinceVersion(2.0,ArrayOfDevExtensions)]'");
+                        }
                         return;
                     }
                 

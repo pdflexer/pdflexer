@@ -512,7 +512,6 @@ internal partial class APM_GraphicsStateParameter_BG__Base : ISpecification<PdfD
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -528,6 +527,28 @@ internal partial class APM_GraphicsStateParameter_BG__Base : ISpecification<PdfD
                     }else 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_BG>("BG did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_GraphicsStateParameter_BG>("BG was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_FunctionType2.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType2, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType3.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType3, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_GraphicsStateParameter_BG>("BG did not match any allowable types: '[fn:SinceVersion(1.3,FunctionType2),fn:SinceVersion(1.3,FunctionType3)]'");
                     }
                     return;
                 }
@@ -636,7 +657,6 @@ internal partial class APM_GraphicsStateParameter_UCR__Base : ISpecification<Pdf
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -652,6 +672,28 @@ internal partial class APM_GraphicsStateParameter_UCR__Base : ISpecification<Pdf
                     }else 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_UCR>("UCR did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_GraphicsStateParameter_UCR>("UCR was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_FunctionType2.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType2, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType3.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType3, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_GraphicsStateParameter_UCR>("UCR did not match any allowable types: '[fn:SinceVersion(1.3,FunctionType2),fn:SinceVersion(1.3,FunctionType3)]'");
                     }
                     return;
                 }
@@ -760,7 +802,6 @@ internal partial class APM_GraphicsStateParameter_TR__Base : ISpecification<PdfD
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.ArrayObj:
                 {
                     var val =  (PdfArray)utval;
@@ -794,6 +835,28 @@ internal partial class APM_GraphicsStateParameter_TR__Base : ISpecification<PdfD
                     }else 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_TR>("TR did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_GraphicsStateParameter_TR>("TR was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_FunctionType2.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType2, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType3.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType3, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_GraphicsStateParameter_TR>("TR did not match any allowable types: '[fn:SinceVersion(1.3,FunctionType2),fn:SinceVersion(1.3,FunctionType3)]'");
                     }
                     return;
                 }
@@ -1080,7 +1143,6 @@ internal partial class APM_GraphicsStateParameter_BM__Base : ISpecification<PdfD
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:Deprecated(2.0,array)
             case PdfObjectType.NameObj:
                 {
                     var val =  (PdfName)utval;
@@ -1088,11 +1150,24 @@ internal partial class APM_GraphicsStateParameter_BM__Base : ISpecification<PdfD
                     // no special cases
                     
                     
-                    if (!((ctx.Version <= 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
+                    if (!((ctx.Version < 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
                     }
                     // no linked objects
+                    return;
+                }
+            case PdfObjectType.ArrayObj:
+                {
+                    if (!((ctx.Version < 2.0m))) 
+                    {
+                        ctx.Fail<APM_GraphicsStateParameter_BM>("BM was type array but not allowed for current conditions: 'fn:Deprecated(2.0,array)'");
+                    }
+                    var val =  (PdfArray)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    ctx.Run<APM_ArrayOfBlendModes, PdfArray>(stack, val, obj);
                     return;
                 }
             

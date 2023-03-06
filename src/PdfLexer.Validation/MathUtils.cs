@@ -27,6 +27,9 @@ internal static partial class MathUtil
     {
         if (obj == null || val == null) { return false; } // custom for arlington eval to fail
         if (obj.Type != val.Type) { return false; }
+        if (obj is PdfName nm1 && val is PdfName nm2) {
+            return nm1.Value == nm2.Value;
+        }
         var n = obj as PdfNumber;
         if (n == null) { return false; }
         var n2 = val as PdfNumber;
@@ -95,6 +98,7 @@ internal static partial class MathUtil
     {
         if (obj == null || val == null) { return false; } // custom for arlington eval to fail
         if (obj.Type != val.Type) { return false; }
+    
         var n = obj as PdfNumber;
         if (n == null) { return false; }
         var n2 = val as PdfNumber;
@@ -156,6 +160,7 @@ internal static partial class MathUtil
     {
         if (obj == null || val == null) { return false; } // custom for arlington eval to fail
         if (obj.Type != val.Type) { return false; }
+    
         var n = obj as PdfNumber;
         if (n == null) { return false; }
         var n2 = val as PdfNumber;
@@ -217,6 +222,7 @@ internal static partial class MathUtil
     {
         if (obj == null || val == null) { return false; } // custom for arlington eval to fail
         if (obj.Type != val.Type) { return false; }
+    
         var n = obj as PdfNumber;
         if (n == null) { return false; }
         var n2 = val as PdfNumber;
@@ -278,6 +284,7 @@ internal static partial class MathUtil
     {
         if (obj == null || val == null) { return false; } // custom for arlington eval to fail
         if (obj.Type != val.Type) { return false; }
+    
         var n = obj as PdfNumber;
         if (n == null) { return false; }
         var n2 = val as PdfNumber;
@@ -339,6 +346,7 @@ internal static partial class MathUtil
     {
         if (obj == null || val == null) { return 0m; } // custom for arlington eval to fail
         if (obj.Type != val.Type) { return 0m; }
+    
         var n = obj as PdfNumber;
         if (n == null) { return 0m; }
         var n2 = val as PdfNumber;

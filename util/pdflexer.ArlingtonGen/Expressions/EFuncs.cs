@@ -107,7 +107,7 @@ internal class EFunction : INode
 
 internal abstract class EFunBase : INode
 {
-    protected List<EGroup> Inputs { get; }
+    public List<EGroup> Inputs { get; }
     public List<INode> Children { get => Inputs.Cast<INode>().ToList(); }
     public EFunBase(List<EGroup> inputs)
     {
@@ -164,11 +164,15 @@ internal class EFunc_Deprecated : EFunBase
     {
         using (var es = new EvalScope())
         {
-            sb.Append($"(ctx.Version <= ");
+            sb.Append($"(ctx.Version < ");
             Inputs[0].Write(sb);
         }
-        sb.Append($" && ");
-        Inputs[1].Write(sb);
+
+        if (Inputs.Count > 1)
+        {
+            sb.Append(" && ");
+            Inputs[1].Write(sb);
+        }
         sb.Append($")");
     }
 }

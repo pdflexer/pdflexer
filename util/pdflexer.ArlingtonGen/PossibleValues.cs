@@ -37,7 +37,7 @@ internal class PossibleValues
     {
         var types = Row.Type.Split(';').ToList();
         var pv = Row.PossibleValues.Split(";");
-        var possible = pv.Length == 1 ? pv[0] : pv[types.IndexOf(type)];
+        var possible = pv.Length == 1 ? pv[0] : pv[types.FindIndex(x=> x.Contains(type))];
         if (string.IsNullOrEmpty(possible) || possible.Trim() == "[]")
         {
             return "// no value restrictions";

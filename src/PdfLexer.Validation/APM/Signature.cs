@@ -223,7 +223,7 @@ internal partial class APM_Signature_SubFilter__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!((ctx.Version >= 1.3m && val == "adbe.pkcs7.detached") || (ctx.Version <= 2.0m && (ctx.Version >= 1.4m && val == "adbe.pkcs7.sha1")) || (ctx.Version >= 1.3m && val == "adbe.x509.rsa_sha1") || (ctx.Version >= 2.0m && val == "ETSI.CAdES.detached") || (ctx.Version >= 2.0m && val == "ETSI.RFC3161"))) 
+        if (!((ctx.Version >= 1.3m && val == "adbe.pkcs7.detached") || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == "adbe.pkcs7.sha1")) || (ctx.Version >= 1.3m && val == "adbe.x509.rsa_sha1") || (ctx.Version >= 2.0m && val == "ETSI.CAdES.detached") || (ctx.Version >= 2.0m && val == "ETSI.RFC3161"))) 
         {
             ctx.Fail<APM_Signature_SubFilter>($"Invalid value {val}, allowed are: [fn:SinceVersion(1.3,adbe.pkcs7.detached),fn:Deprecated(2.0,fn:SinceVersion(1.4,adbe.pkcs7.sha1)),fn:SinceVersion(1.3,adbe.x509.rsa_sha1),fn:SinceVersion(2.0,ETSI.CAdES.detached),fn:SinceVersion(2.0,ETSI.RFC3161)]");
         }

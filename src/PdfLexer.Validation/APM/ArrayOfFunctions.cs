@@ -43,7 +43,6 @@ internal partial class APM_ArrayOfFunctions_x : ISpecification<PdfArray>
             if (utval == null) { return; }
             switch (utval.Type) 
             {
-                // TODO funcs: fn:SinceVersion(1.3,dictionary)
                 case PdfObjectType.StreamObj:
                     {
                         var val =  (PdfStream)utval;
@@ -59,6 +58,28 @@ internal partial class APM_ArrayOfFunctions_x : ISpecification<PdfArray>
                         }else 
                         {
                             ctx.Fail<APM_ArrayOfFunctions_x>("x did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
+                        }
+                        return;
+                    }
+                case PdfObjectType.DictionaryObj:
+                    {
+                        if (!(ctx.Version >= 1.3m)) 
+                        {
+                            ctx.Fail<APM_ArrayOfFunctions_x>("* was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                        }
+                        var val =  (PdfDictionary)utval;
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        if ((ctx.Version >= 1.3m && APM_FunctionType2.MatchesType(ctx, val))) 
+                        {
+                            ctx.Run<APM_FunctionType2, PdfDictionary>(stack, val, obj);
+                        } else if ((ctx.Version >= 1.3m && APM_FunctionType3.MatchesType(ctx, val))) 
+                        {
+                            ctx.Run<APM_FunctionType3, PdfDictionary>(stack, val, obj);
+                        }else 
+                        {
+                            ctx.Fail<APM_ArrayOfFunctions_x>("x did not match any allowable types: '[fn:SinceVersion(1.3,FunctionType2),fn:SinceVersion(1.3,FunctionType3)]'");
                         }
                         return;
                     }

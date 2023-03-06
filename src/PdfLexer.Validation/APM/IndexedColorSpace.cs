@@ -65,7 +65,6 @@ internal partial class APM_IndexedColorSpace_1 : ISpecification<PdfArray>
         if (utval == null) { ctx.Fail<APM_IndexedColorSpace_1>("1 is required"); return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.1,array)
             case PdfObjectType.NameObj:
                 {
                     var val =  (PdfName)utval;
@@ -78,6 +77,40 @@ internal partial class APM_IndexedColorSpace_1 : ISpecification<PdfArray>
                         ctx.Fail<APM_IndexedColorSpace_1>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }
                     // no linked objects
+                    return;
+                }
+            case PdfObjectType.ArrayObj:
+                {
+                    if (!(ctx.Version >= 1.1m)) 
+                    {
+                        ctx.Fail<APM_IndexedColorSpace_1>("1 was type array but not allowed for current conditions: 'fn:SinceVersion(1.1,array)'");
+                    }
+                    var val =  (PdfArray)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.1m && APM_CalGrayColorSpace.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_CalGrayColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.1m && APM_CalRGBColorSpace.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_CalRGBColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.1m && APM_LabColorSpace.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_LabColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.3m && APM_ICCBasedColorSpace.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ICCBasedColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.2m && APM_SeparationColorSpace.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_SeparationColorSpace, PdfArray>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.3m && APM_DeviceNColorSpace.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_DeviceNColorSpace, PdfArray>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_IndexedColorSpace_1>("1 did not match any allowable types: '[fn:SinceVersion(1.1,CalGrayColorSpace),fn:SinceVersion(1.1,CalRGBColorSpace),fn:SinceVersion(1.1,LabColorSpace),fn:SinceVersion(1.3,ICCBasedColorSpace),fn:SinceVersion(1.2,SeparationColorSpace),fn:SinceVersion(1.3,DeviceNColorSpace)]'");
+                    }
                     return;
                 }
             

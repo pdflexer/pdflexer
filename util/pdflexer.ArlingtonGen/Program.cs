@@ -97,7 +97,17 @@ foreach (var op in ops)
     var rt = op.Value.Item2;
     var dv = rt == "bool" ? "false" : "0m";
 
-    txt += $$"""
+    var mc = "";
+    if (t == "eq" || t == "ne")
+    {
+        mc += $$"""
+    if (obj is PdfName nm1 && val is PdfName nm2) {
+        return nm1.Value {{o}} nm2.Value;
+    }
+""";
+    }
+
+        txt += $$"""
 public static {{rt}} {{t}}(IPdfObject? obj, int val)
 {
     if (obj == null) { return {{dv}}; }
@@ -121,6 +131,7 @@ public static {{rt}} {{t}}(IPdfObject? obj, IPdfObject? val)
 {
     if (obj == null || val == null) { return {{dv}}; } // custom for arlington eval to fail
     if (obj.Type != val.Type) { return {{dv}}; }
+{{mc}}
     var n = obj as PdfNumber;
     if (n == null) { return {{dv}}; }
     var n2 = val as PdfNumber;

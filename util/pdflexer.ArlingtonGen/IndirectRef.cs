@@ -35,7 +35,7 @@ internal class IndirectRef
     {
         var types = Row.Type.Split(';').ToList();
         var irs = Row.IndirectReference.Split(";");
-        var requiresIndirect = irs.Length == 1 ? irs[0] : irs[types.IndexOf(type)];
+        var requiresIndirect = irs.Length == 1 ? irs[0] : irs[types.FindIndex(x=> x.Contains(type))];
 
         switch (requiresIndirect)
         {

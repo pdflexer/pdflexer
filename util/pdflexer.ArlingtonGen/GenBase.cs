@@ -103,7 +103,7 @@ if (({{req.GetComplex()}}) && {{prop}} == null) {
 
         var types = Row.Type.Split(';').ToList();
         var irs = Row.Link.Split(";");
-        var link = irs.Length == 1 ? irs[0] : irs[types.IndexOf(type)];
+        var link = irs.Length == 1 ? irs[0] : irs[types.FindIndex(x=>x.Contains(type))];
 
         return GetLinkType(type, link, key);
     }
@@ -255,14 +255,23 @@ if (({{req.GetComplex()}}) && val == null) {
 
     protected string BuildCaseStatement(string[] types)
     {
-        var fns = types.Where(x => x.Contains("fn:"));
         var txt = "";
-        if (fns.Any())
-        {
-            txt += "// TODO funcs: " + string.Join(",", fns) + "\n";
-        }
         var orig = VariableContext.Vars.ToDictionary(x => x.Key, x => x.Value);
         foreach (var type in types.Where(x => !x.Contains("fn:")).GroupBy(x => typemap[x]))
+        {
+            VariableContext.Vars = orig.ToDictionary(x => x.Key, x => x.Value);
+            var vals = type.ToList();
+            if (vals.Count == 1)
+            {
+                txt += MultiCaseStatement(vals[0]);
+            }
+            else
+            {
+                txt += "\n// TODO MC " + string.Join(";", types) + "\n";
+            }
+        }
+
+        foreach (var type in types.Where(x => x.Contains("fn:")).GroupBy(x => typemap[GetFnType(x)]))
         {
             VariableContext.Vars = orig.ToDictionary(x => x.Key, x => x.Value);
             var vals = type.ToList();
@@ -279,14 +288,38 @@ if (({{req.GetComplex()}}) && val == null) {
         return txt;
     }
 
+    private string GetFnType(string type)
+    {
+        var exp = new Exp(type);
+        var nm = exp.Children[0].Children[1].Children[0] as EValue;
+        return nm?.Text;
+    }
+
     private string MultiCaseStatement(string type)
     {
-        if (type.StartsWith("fn:")) { return "// TODO: " + type; }
+        var fn = type;
+        var check = "";
+        if (type.StartsWith("fn:")) 
+        {
+            // revisit if functions get more complex
+            var exp = new Exp(type);
+            var nm = exp.Children[0].Children[1].Children[0] as EValue;
+            type = nm.Text;
+            var func = exp.Children[0] as EFunBase;
+            func.Inputs.RemoveAt(1);
+            check += $$"""
+if (!({{exp.GetText()}})) 
+{
+    ctx.Fail<APM_{{RootName}}_{{Key}}>("{{Row.Key}} was type {{type}} but not allowed for current conditions: '{{fn}}'");
+}
+""";
+
+        }
         var sc = new SpecialCase(this, Row);
         var pv = new PossibleValues(this);
         return $$"""
 case PdfObjectType.{{typemap[type]}}:
-    {
+    {{{(check == "" ? null : "\n" + Ident(8, check))}}
 {{Ident(8, $"var val =  ({typeDomMap[type]})utval;")}}
 {{Ident(8, IRCheckMulti(type))}}
 {{Ident(8, sc.GetSpecialCase(type))}}

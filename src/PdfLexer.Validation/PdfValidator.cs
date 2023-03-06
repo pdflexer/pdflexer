@@ -26,7 +26,7 @@ public class PdfValidator
 
     internal void Fail<T>(string msg) where T : ISpecification
     {
-        Errors.Add($"[{T.Name}] " + msg);
+        Errors.Add($"[{T.Name}] " + msg + "\n(" + string.Join(" -> ", Current.Stack) + ")");
     }
 
     public PdfValidator Clone()

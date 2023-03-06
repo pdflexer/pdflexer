@@ -58,7 +58,6 @@ internal partial class APM_PatternMap_CatchAll__Base : ISpecification<PdfDiction
             if (utval == null) { return; }
             switch (utval.Type) 
             {
-                // TODO funcs: fn:SinceVersion(1.3,dictionary)
                 case PdfObjectType.StreamObj:
                     {
                         var val =  (PdfStream)utval;
@@ -66,6 +65,25 @@ internal partial class APM_PatternMap_CatchAll__Base : ISpecification<PdfDiction
                         // no special cases
                         // no value restrictions
                         ctx.Run<APM_PatternType1, PdfDictionary>(stack, val.Dictionary, obj);
+                        return;
+                    }
+                case PdfObjectType.DictionaryObj:
+                    {
+                        if (!(ctx.Version >= 1.3m)) 
+                        {
+                            ctx.Fail<APM_PatternMap_CatchAll>("* was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                        }
+                        var val =  (PdfDictionary)utval;
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        if ((ctx.Version >= 1.3m && APM_PatternType2.MatchesType(ctx, val))) 
+                        {
+                            ctx.Run<APM_PatternType2, PdfDictionary>(stack, val, obj);
+                        }else 
+                        {
+                            ctx.Fail<APM_PatternMap_CatchAll>("CatchAll did not match any allowable types: '[fn:SinceVersion(1.3,PatternType2)]'");
+                        }
                         return;
                     }
                 

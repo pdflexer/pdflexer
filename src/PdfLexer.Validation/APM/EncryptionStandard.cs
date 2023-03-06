@@ -231,7 +231,7 @@ internal partial class APM_EncryptionStandard_V__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!((ctx.Version <= 1.1m && val == 0) || (ctx.Version <= 2.0m && val == 1) || (ctx.Version <= 2.0m && (ctx.Version >= 1.4m && val == 2)) || (ctx.Version <= 2.0m && (ctx.Version >= 1.4m && val == 3)) || (ctx.Version <= 2.0m && (ctx.Version >= 1.5m && val == 4)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == 5)) || (ctx.Version >= 2.0m && val == 5) || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32003") && val == 6)))) 
+        if (!((ctx.Version < 1.1m && val == 0) || (ctx.Version < 2.0m && val == 1) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 2)) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 3)) || (ctx.Version < 2.0m && (ctx.Version >= 1.5m && val == 4)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == 5)) || (ctx.Version >= 2.0m && val == 5) || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32003") && val == 6)))) 
         {
             ctx.Fail<APM_EncryptionStandard_V>($"Invalid value {val}, allowed are: [fn:Deprecated(1.1,0),fn:Deprecated(2.0,1),fn:Deprecated(2.0,fn:SinceVersion(1.4,2)),fn:Deprecated(2.0,fn:SinceVersion(1.4,3)),fn:Deprecated(2.0,fn:SinceVersion(1.5,4)),fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5)),fn:SinceVersion(2.0,5),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,6))]");
         }
@@ -404,7 +404,7 @@ internal partial class APM_EncryptionStandard_R__Base : ISpecification<PdfDictio
         
         var V = obj.Get("V");
         // TODO required value checks
-        if (!((ctx.Version <= 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == 5))) || (ctx.Version <= 2.0m && (ctx.Version >= 2.0m && val == 5)) || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32003") && val == 7)))) 
+        if (!((ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == 5))) || (ctx.Version < 2.0m && (ctx.Version >= 2.0m && val == 5)) || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32003") && val == 7)))) 
         {
             ctx.Fail<APM_EncryptionStandard_R>($"Invalid value {val}, allowed are: [fn:Deprecated(2.0,fn:RequiredValue(@V<2,2)),fn:Deprecated(2.0,fn:RequiredValue((@V==2) || (@V==3),3)),fn:Deprecated(2.0,fn:RequiredValue(@V==4,4)),fn:Deprecated(2.0,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5))),fn:Deprecated(2.0,fn:SinceVersion(2.0,5)),fn:SinceVersion(2.0,fn:RequiredValue(@V==5,6)),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,7))]");
         }

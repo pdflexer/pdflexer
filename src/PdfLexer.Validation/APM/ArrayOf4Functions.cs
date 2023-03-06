@@ -40,7 +40,6 @@ internal partial class APM_ArrayOf4Functions_0 : ISpecification<PdfArray>
         if (utval == null) { ctx.Fail<APM_ArrayOf4Functions_0>("0 is required"); return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -56,6 +55,28 @@ internal partial class APM_ArrayOf4Functions_0 : ISpecification<PdfArray>
                     }else 
                     {
                         ctx.Fail<APM_ArrayOf4Functions_0>("0 did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_ArrayOf4Functions_0>("0 was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_FunctionType2.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType2, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType3.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType3, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_ArrayOf4Functions_0>("0 did not match any allowable types: '[fn:SinceVersion(1.3,FunctionType2),fn:SinceVersion(1.3,FunctionType3)]'");
                     }
                     return;
                 }
@@ -82,7 +103,6 @@ internal partial class APM_ArrayOf4Functions_1 : ISpecification<PdfArray>
         if (utval == null) { ctx.Fail<APM_ArrayOf4Functions_1>("1 is required"); return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -98,6 +118,28 @@ internal partial class APM_ArrayOf4Functions_1 : ISpecification<PdfArray>
                     }else 
                     {
                         ctx.Fail<APM_ArrayOf4Functions_1>("1 did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_ArrayOf4Functions_1>("1 was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_FunctionType2.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType2, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType3.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType3, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_ArrayOf4Functions_1>("1 did not match any allowable types: '[fn:SinceVersion(1.3,FunctionType2),fn:SinceVersion(1.3,FunctionType3)]'");
                     }
                     return;
                 }
@@ -124,7 +166,6 @@ internal partial class APM_ArrayOf4Functions_2 : ISpecification<PdfArray>
         if (utval == null) { ctx.Fail<APM_ArrayOf4Functions_2>("2 is required"); return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -140,6 +181,28 @@ internal partial class APM_ArrayOf4Functions_2 : ISpecification<PdfArray>
                     }else 
                     {
                         ctx.Fail<APM_ArrayOf4Functions_2>("2 did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_ArrayOf4Functions_2>("2 was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_FunctionType2.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType2, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType3.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType3, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_ArrayOf4Functions_2>("2 did not match any allowable types: '[fn:SinceVersion(1.3,FunctionType2),fn:SinceVersion(1.3,FunctionType3)]'");
                     }
                     return;
                 }
@@ -166,7 +229,6 @@ internal partial class APM_ArrayOf4Functions_3 : ISpecification<PdfArray>
         if (utval == null) { ctx.Fail<APM_ArrayOf4Functions_3>("3 is required"); return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -182,6 +244,28 @@ internal partial class APM_ArrayOf4Functions_3 : ISpecification<PdfArray>
                     }else 
                     {
                         ctx.Fail<APM_ArrayOf4Functions_3>("3 did not match any allowable types: '[FunctionType0,fn:SinceVersion(1.3,FunctionType4)]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_ArrayOf4Functions_3>("3 was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_FunctionType2.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType2, PdfDictionary>(stack, val, obj);
+                    } else if ((ctx.Version >= 1.3m && APM_FunctionType3.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FunctionType3, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_ArrayOf4Functions_3>("3 did not match any allowable types: '[fn:SinceVersion(1.3,FunctionType2),fn:SinceVersion(1.3,FunctionType3)]'");
                     }
                     return;
                 }

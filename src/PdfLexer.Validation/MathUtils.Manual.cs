@@ -158,6 +158,11 @@ internal static partial class MathUtil
 
     public static bool IsHexString(IPdfObject? obj)
     {
+        if (obj == null) return false;
+        if (obj is PdfString str)
+        {
+            return str.StringType == PdfStringType.Hex;
+        }
         return false;
     }
 
@@ -183,7 +188,12 @@ internal static partial class MathUtil
 
     public static int? StringLength(IPdfObject? obj)
     {
-        return 0;
+        if (obj == null) return null;
+        if (obj is PdfString str)
+        {
+            return str.Value.Length;
+        }
+        return null;
     }
 
     public static bool IsFieldName(IPdfObject? obj)

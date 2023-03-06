@@ -1172,7 +1172,6 @@ internal partial class APM_XObjectImage_F__Base : ISpecification<PdfDictionary>
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.1,dictionary)
             case PdfObjectType.StringObj:
                 {
                     var val =  (PdfString)utval;
@@ -1180,6 +1179,25 @@ internal partial class APM_XObjectImage_F__Base : ISpecification<PdfDictionary>
                     // no special cases
                     // no value restrictions
                     // no linked objects
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.1m)) 
+                    {
+                        ctx.Fail<APM_XObjectImage_F>("F was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.1,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.1m && APM_FileSpecification.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_FileSpecification, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_XObjectImage_F>("F did not match any allowable types: '[fn:SinceVersion(1.1,FileSpecification)]'");
+                    }
                     return;
                 }
             

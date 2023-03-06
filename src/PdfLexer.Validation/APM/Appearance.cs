@@ -147,7 +147,6 @@ internal partial class APM_Appearance_N__Base : ISpecification<PdfDictionary>
         if (utval == null) { ctx.Fail<APM_Appearance_N>("N is required"); return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -166,6 +165,25 @@ internal partial class APM_Appearance_N__Base : ISpecification<PdfDictionary>
                     }else 
                     {
                         ctx.Fail<APM_Appearance_N>("N did not match any allowable types: '[XObjectFormType1,XObjectFormPS,XObjectFormPSpassthrough]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_Appearance_N>("N was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_AppearanceSubDict.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_AppearanceSubDict, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_Appearance_N>("N did not match any allowable types: '[fn:SinceVersion(1.3,AppearanceSubDict)]'");
                     }
                     return;
                 }
@@ -199,7 +217,6 @@ internal partial class APM_Appearance_R__Base : ISpecification<PdfDictionary>
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -218,6 +235,25 @@ internal partial class APM_Appearance_R__Base : ISpecification<PdfDictionary>
                     }else 
                     {
                         ctx.Fail<APM_Appearance_R>("R did not match any allowable types: '[XObjectFormType1,XObjectFormPS,XObjectFormPSpassthrough]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_Appearance_R>("R was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_AppearanceSubDict.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_AppearanceSubDict, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_Appearance_R>("R did not match any allowable types: '[fn:SinceVersion(1.3,AppearanceSubDict)]'");
                     }
                     return;
                 }
@@ -251,7 +287,6 @@ internal partial class APM_Appearance_D__Base : ISpecification<PdfDictionary>
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.3,dictionary)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -270,6 +305,25 @@ internal partial class APM_Appearance_D__Base : ISpecification<PdfDictionary>
                     }else 
                     {
                         ctx.Fail<APM_Appearance_D>("D did not match any allowable types: '[XObjectFormType1,XObjectFormPS,XObjectFormPSpassthrough]'");
+                    }
+                    return;
+                }
+            case PdfObjectType.DictionaryObj:
+                {
+                    if (!(ctx.Version >= 1.3m)) 
+                    {
+                        ctx.Fail<APM_Appearance_D>("D was type dictionary but not allowed for current conditions: 'fn:SinceVersion(1.3,dictionary)'");
+                    }
+                    var val =  (PdfDictionary)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.3m && APM_AppearanceSubDict.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_AppearanceSubDict, PdfDictionary>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_Appearance_D>("D did not match any allowable types: '[fn:SinceVersion(1.3,AppearanceSubDict)]'");
                     }
                     return;
                 }

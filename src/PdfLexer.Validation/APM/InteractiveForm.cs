@@ -350,7 +350,6 @@ internal partial class APM_InteractiveForm_XFA__Base : ISpecification<PdfDiction
         if (utval == null) { return; }
         switch (utval.Type) 
         {
-            // TODO funcs: fn:SinceVersion(1.6,array)
             case PdfObjectType.StreamObj:
                 {
                     var val =  (PdfStream)utval;
@@ -358,6 +357,25 @@ internal partial class APM_InteractiveForm_XFA__Base : ISpecification<PdfDiction
                     // no special cases
                     // no value restrictions
                     ctx.Run<APM_Stream, PdfDictionary>(stack, val.Dictionary, obj);
+                    return;
+                }
+            case PdfObjectType.ArrayObj:
+                {
+                    if (!(ctx.Version >= 1.6m)) 
+                    {
+                        ctx.Fail<APM_InteractiveForm_XFA>("XFA was type array but not allowed for current conditions: 'fn:SinceVersion(1.6,array)'");
+                    }
+                    var val =  (PdfArray)utval;
+                    // no indirect obj reqs
+                    // no special cases
+                    // no value restrictions
+                    if ((ctx.Version >= 1.6m && APM_ArrayOfXFA.MatchesType(ctx, val))) 
+                    {
+                        ctx.Run<APM_ArrayOfXFA, PdfArray>(stack, val, obj);
+                    }else 
+                    {
+                        ctx.Fail<APM_InteractiveForm_XFA>("XFA did not match any allowable types: '[fn:SinceVersion(1.6,ArrayOfXFA)]'");
+                    }
                     return;
                 }
             
