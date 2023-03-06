@@ -197,7 +197,7 @@ internal partial class APM_EncryptionPublicKey_P__Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfIntNumber, APM_EncryptionPublicKey_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj))) 
+        if (!(BitsClear(val,0b11111111111111111111000000000000))) 
         {
             ctx.Fail<APM_EncryptionPublicKey_P>($"Value failed special case check: fn:Eval(fn:BitsClear(13,32))");
         }

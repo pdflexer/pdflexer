@@ -205,7 +205,7 @@ internal partial class APM_InteractiveForm_SigFlags__Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfIntNumber, APM_InteractiveForm_SigFlags>(obj, "SigFlags", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj))) 
+        if (!(BitsClear(val,0b11111111111111111111111111111100))) 
         {
             ctx.Fail<APM_InteractiveForm_SigFlags>($"Value failed special case check: fn:Eval(fn:BitsClear(3,32))");
         }

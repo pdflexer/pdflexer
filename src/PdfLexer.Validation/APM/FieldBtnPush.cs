@@ -348,7 +348,7 @@ internal partial class APM_FieldBtnPush_Ff__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldBtnPush_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj)&&BitClear(obj)&&BitSet(obj)&&BitsClear(obj)&&BitsClear(obj))) 
+        if (!(BitsClear(val,0b00000000000000000011111111111000)&&BitsClear(val,0b00000000000000001000000000000000)&&BitsSet(val,0b00000000000000010000000000000000)&&BitsClear(val,0b00000001111111100000000000000000)&&BitsClear(val,0b11111100000000000000000000000000))) 
         {
             ctx.Fail<APM_FieldBtnPush_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(4,14) && fn:BitClear(16) && fn:BitSet(17) && fn:BitsClear(18,25) && fn:BitsClear(27,32))");
         }

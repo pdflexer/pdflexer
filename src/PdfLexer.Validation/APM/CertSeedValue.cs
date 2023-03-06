@@ -164,7 +164,7 @@ internal partial class APM_CertSeedValue_Ff__Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfIntNumber, APM_CertSeedValue_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj))) 
+        if (!(BitsClear(val,0b11111111111111111111111110000000))) 
         {
             ctx.Fail<APM_CertSeedValue_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(8,32))");
         }

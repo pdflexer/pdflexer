@@ -255,7 +255,7 @@ internal partial class APM_ActionSubmitForm_Flags__Base : ISpecification<PdfDict
         var val = ctx.GetOptional<PdfIntNumber, APM_ActionSubmitForm_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!((BitClear(obj)&&BitsClear(obj)))) 
+        if (!((BitsClear(val,0b00000000000000000001000000000000)&&BitsClear(val,0b11111111111111111100000000000000)))) 
         {
             ctx.Fail<APM_ActionSubmitForm_Flags>($"Value failed special case check: fn:Eval(fn:BitClear(13) && fn:BitsClear(15,32))");
         }

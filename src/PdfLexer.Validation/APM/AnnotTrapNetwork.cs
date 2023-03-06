@@ -356,7 +356,7 @@ internal partial class APM_AnnotTrapNetwork_F__Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfIntNumber, APM_AnnotTrapNetwork_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj)&&BitSet(obj)&&BitsClear(obj)&&BitSet(obj)&&BitsClear(obj))) 
+        if (!(BitsClear(val,0b00000000000000000000000000000011)&&BitsSet(val,0b00000000000000000000000000000100)&&BitsClear(val,0b00000000000000000000000000111000)&&BitsSet(val,0b00000000000000000000000001000000)&&BitsClear(val,0b11111111111111111111111110000000))) 
         {
             ctx.Fail<APM_AnnotTrapNetwork_F>($"Value failed special case check: fn:Eval(fn:BitsClear(1,2) && fn:BitSet(3) && fn:BitsClear(4,6) && fn:BitSet(7) && fn:BitsClear(8,32))");
         }

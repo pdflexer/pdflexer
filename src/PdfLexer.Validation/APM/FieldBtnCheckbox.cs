@@ -349,7 +349,7 @@ internal partial class APM_FieldBtnCheckbox_Ff__Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldBtnCheckbox_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj)&&BitsClear(obj)&&BitsClear(obj))) 
+        if (!(BitsClear(val,0b00000000000000000011111111111000)&&BitsClear(val,0b00000001111111111000000000000000)&&BitsClear(val,0b11111100000000000000000000000000))) 
         {
             ctx.Fail<APM_FieldBtnCheckbox_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(4,14) && fn:BitsClear(16,25) && fn:BitsClear(27,32))");
         }

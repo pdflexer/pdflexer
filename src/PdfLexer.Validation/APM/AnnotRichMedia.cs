@@ -294,7 +294,7 @@ internal partial class APM_AnnotRichMedia_F__Base : ISpecification<PdfDictionary
         var val = ctx.GetOptional<PdfIntNumber, APM_AnnotRichMedia_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj))) 
+        if (!(BitsClear(val,0b11111111111111111111110000000000))) 
         {
             ctx.Fail<APM_AnnotRichMedia_F>($"Value failed special case check: fn:Eval(fn:BitsClear(11,32))");
         }

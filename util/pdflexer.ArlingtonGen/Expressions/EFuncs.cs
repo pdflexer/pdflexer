@@ -41,6 +41,14 @@ internal class EFunction : INode
                 return new EFunc_RectHeight(parts);
             case "IsRequired":
                 return new EFunc_IsRequired(parts);
+            case "BitClear":
+                return new EFunc_BitClear(parts);
+            case "BitsClear":
+                return new EFunc_BitsClear(parts);
+            case "BitSet":
+                return new EFunc_BitSet(parts);
+            case "BitsSet":
+                return new EFunc_BitsSet(parts);
             default:
                 return new EFunction(type, contents);
         }

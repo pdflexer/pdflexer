@@ -353,7 +353,7 @@ internal partial class APM_AnnotPrinterMark_F__Base : ISpecification<PdfDictiona
         var val = ctx.GetRequired<PdfIntNumber, APM_AnnotPrinterMark_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!((ctx.Version >= 1.5m || BitsClear(obj))&&(ctx.Version >= 1.6m || BitsClear(obj))&&(ctx.Version < 1.7m || BitsClear(obj)))) 
+        if (!((ctx.Version >= 1.5m || BitsClear(val,0b11111111111111111111111100000000))&&(ctx.Version >= 1.6m || BitsClear(val,0b11111111111111111111111000000000))&&(ctx.Version < 1.7m || BitsClear(val,0b11111111111111111111110000000000)))) 
         {
             ctx.Fail<APM_AnnotPrinterMark_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
         }

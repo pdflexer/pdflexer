@@ -611,7 +611,7 @@ internal partial class APM_OutlineItem_F__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_OutlineItem_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj))) 
+        if (!(BitsClear(val,0b11111111111111111111111111111100))) 
         {
             ctx.Fail<APM_OutlineItem_F>($"Value failed special case check: fn:Eval(fn:BitsClear(3,32))");
         }

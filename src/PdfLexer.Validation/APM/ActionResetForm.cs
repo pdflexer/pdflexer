@@ -362,7 +362,7 @@ internal partial class APM_ActionResetForm_Flags__Base : ISpecification<PdfDicti
         var val = ctx.GetOptional<PdfIntNumber, APM_ActionResetForm_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj))) 
+        if (!(BitsClear(val,0b11111111111111111111111111111110))) 
         {
             ctx.Fail<APM_ActionResetForm_Flags>($"Value failed special case check: fn:Eval(fn:BitsClear(2,32))");
         }

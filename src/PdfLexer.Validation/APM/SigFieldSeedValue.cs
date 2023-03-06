@@ -165,7 +165,7 @@ internal partial class APM_SigFieldSeedValue_Ff__Base : ISpecification<PdfDictio
         var val = ctx.GetOptional<PdfIntNumber, APM_SigFieldSeedValue_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(((ctx.Version >= 2.0m || BitsClear(obj))&&BitsClear(obj)))) 
+        if (!(((ctx.Version >= 2.0m || BitsClear(val,0b11111111111111111111111110000000))&&BitsClear(val,0b11111111111111111111111000000000)))) 
         {
             ctx.Fail<APM_SigFieldSeedValue_Ff>($"Value failed special case check: fn:Eval(fn:BeforeVersion(2.0,fn:BitsClear(8,32)) && fn:BitsClear(10,32))");
         }

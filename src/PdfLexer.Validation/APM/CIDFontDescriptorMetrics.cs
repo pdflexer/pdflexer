@@ -224,7 +224,7 @@ internal partial class APM_CIDFontDescriptorMetrics_Flags__Base : ISpecification
         var val = ctx.GetRequired<PdfIntNumber, APM_CIDFontDescriptorMetrics_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitClear(obj)&&BitsClear(obj)&&BitsClear(obj))) 
+        if (!(BitsClear(val,0b00000000000000000000000000010000)&&BitsClear(val,0b00000000000000001111111110000000)&&BitsClear(val,0b11111111111110000000000000000000))) 
         {
             ctx.Fail<APM_CIDFontDescriptorMetrics_Flags>($"Value failed special case check: fn:Eval(fn:BitClear(5) && fn:BitsClear(8,16) && fn:BitsClear(20,32))");
         }

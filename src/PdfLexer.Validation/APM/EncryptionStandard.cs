@@ -568,7 +568,7 @@ internal partial class APM_EncryptionStandard_P__Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfIntNumber, APM_EncryptionStandard_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj)&&BitsSet(obj)&&(ctx.Version < 2.0m || BitSet(obj))&&((ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32004") && BitsSet(obj)))||BitsSet(obj)))) 
+        if (!(BitsClear(val,0b00000000000000000000000000000011)&&BitsSet(val,0b00000000000000000000000011000000)&&(ctx.Version < 2.0m || BitsSet(val,0b00000000000000000000001000000000))&&((ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32004") && BitsSet(val,0b11111111111111111110000000000000)))||BitsSet(val,0b11111111111111111111000000000000)))) 
         {
             ctx.Fail<APM_EncryptionStandard_P>($"Value failed special case check: fn:Eval(fn:BitsClear(1,2) && fn:BitsSet(7,8) && fn:SinceVersion(2.0,fn:BitSet(10)) && (fn:SinceVersion(2.0,fn:Extension(ISO_TS_32004,fn:BitsSet(14,32))) || fn:BitsSet(13,32)))");
         }

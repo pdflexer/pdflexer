@@ -351,7 +351,7 @@ internal partial class APM_FieldChoice_Ff__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldChoice_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj)&&BitClear(obj)&&(ctx.Version >= 1.4m || BitsClear(obj))&&BitsClear(obj)&&(ctx.Version >= 1.5m || BitClear(obj))&&BitsClear(obj))) 
+        if (!(BitsClear(val,0b00000000000000000011111111111000)&&BitsClear(val,0b00000000000100000000000000000000)&&(ctx.Version >= 1.4m || BitsClear(val,0b00000000011000000000000000000000))&&BitsClear(val,0b00000011100000000000000000000000)&&(ctx.Version >= 1.5m || BitsClear(val,0b00000100000000000000000000000000))&&BitsClear(val,0b11111000000000000000000000000000))) 
         {
             ctx.Fail<APM_FieldChoice_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(4,14) && fn:BitClear(21) && fn:BeforeVersion(1.4,fn:BitsClear(22,23)) && fn:BitsClear(24,26) && fn:BeforeVersion(1.5,fn:BitClear(27)) && fn:BitsClear(28,32))");
         }

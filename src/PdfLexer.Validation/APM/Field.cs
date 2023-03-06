@@ -309,7 +309,7 @@ internal partial class APM_Field_Ff__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_Field_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj))) 
+        if (!(BitsClear(val,0b11111111111111111111111111111000))) 
         {
             ctx.Fail<APM_Field_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(4,32))");
         }

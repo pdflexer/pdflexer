@@ -198,7 +198,7 @@ internal partial class APM_WebCaptureCommand_F__Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfIntNumber, APM_WebCaptureCommand_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(obj))) 
+        if (!(BitsClear(val,0b11111111111111111111111111111000))) 
         {
             ctx.Fail<APM_WebCaptureCommand_F>($"Value failed special case check: fn:Eval(fn:BitsClear(4,32))");
         }

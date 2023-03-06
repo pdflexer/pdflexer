@@ -166,23 +166,25 @@ internal static partial class MathUtil
         return false;
     }
 
-    public static bool BitsClear(IPdfObject? obj)
+    public static bool BitsClear(IPdfObject? obj, uint mask)
     {
+        if (obj == null) return false;
+        if (obj is PdfNumber num)
+        {
+            var i = (uint)(int)num;
+            return (i & mask) == 0;
+        }
         return false;
     }
 
-    public static bool BitClear(IPdfObject? obj)
+    public static bool BitsSet(IPdfObject? obj, uint mask)
     {
-        return false;
-    }
-
-    public static bool BitSet(IPdfObject? obj)
-    {
-        return false;
-    }
-
-    public static bool BitsSet(IPdfObject? obj)
-    {
+        if (obj == null) return false;
+        if (obj is PdfNumber num)
+        {
+            var i = (uint)(int)num;
+            return (i & mask) == mask;
+        }
         return false;
     }
 
