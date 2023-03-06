@@ -159,8 +159,8 @@ internal partial class APM_FloatingWindowParameters_D__Base : ISpecification<Pdf
     {
         var val = ctx.GetRequired<PdfArray, APM_FloatingWindowParameters_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
-        var D0 = obj.Get("D")?.Get("0");
-        var D1 = obj.Get("D")?.Get("1");
+        var D0 = val.Get(0);
+        var D1 = val.Get(1);
         if (!((gte(D0,0)&&gte(D1,0)))) 
         {
             ctx.Fail<APM_FloatingWindowParameters_D>($"Value failed special case check: fn:Eval((D::@0>=0) && (D::@1>=0))");

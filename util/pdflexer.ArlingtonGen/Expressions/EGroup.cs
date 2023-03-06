@@ -17,7 +17,6 @@ internal class EGroup : INode
 
     public void Write(StringBuilder sw)
     {
-
         if (Children.Count == 3 && Children[1] is EOp op)
         {
             if (op.Text == "==")
@@ -48,6 +47,10 @@ internal class EGroup : INode
             {
                 sw.Append("mod");
             }
+            else if (op.Text == "+")
+            {
+                sw.Append("plus");
+            }
             else if (op.Text == "*")
             {
                 sw.Append("mult");
@@ -72,12 +75,10 @@ internal class EGroup : INode
         }
         else
         {
-            // sw.Append("(");
             foreach (var part in Children)
             {
                 part.Write(sw);
             }
-            // sw.Append(")");
         }
 
     }

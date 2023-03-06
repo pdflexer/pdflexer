@@ -323,6 +323,68 @@ internal static partial class MathUtil
         if (val == null) { return false; }
         return val.Value <= val2;
     }
+    public static decimal plus(IPdfObject? obj, int val)
+    {
+        if (obj == null) { return 0m; }
+        var n = obj as PdfIntNumber;
+        if (n == null) { return 0m; }
+        return plus(n, val);
+    }
+    // public static decimal plus(PdfNumber obj, int val) 
+    // {
+    //     if (obj.NumberType == PdfNumberType.Integer) 
+    //     {
+    //         return plus((PdfIntNumber)obj, val);
+    //     }
+    //     return plus(obj, (decimal)val);
+    // }
+    public static decimal plus(PdfIntNumber obj, int val) 
+    {
+        return (int)obj + val;
+    }
+    public static decimal plus(IPdfObject? obj, IPdfObject? val)
+    {
+        if (obj == null || val == null) { return 0m; } // custom for arlington eval to fail
+        if (obj.Type != val.Type) { return 0m; }
+    
+        var n = obj as PdfNumber;
+        if (n == null) { return 0m; }
+        var n2 = val as PdfNumber;
+        if (n2 == null) { return 0m; }
+        return n + n2;
+    }
+    
+    public static decimal plus(IPdfObject? obj, int? val)
+    {
+        if (val == null) return 0m;
+        return plus(obj, val.Value);
+    }
+    public static decimal plus(int val, IPdfObject? obj) => plus(obj, val);
+    public static decimal plus(int val, int val2) => val + val2;
+    public static decimal plus(int? val, int val2)
+    {
+        if (val == null) { return 0m; }
+        return val.Value + val2;
+    }
+    public static decimal plus(IPdfObject? obj, decimal val)
+    {
+        if (obj == null) { return 0m; }
+        var n = obj as PdfNumber;
+        if (n == null) { return 0m; }
+        return  (decimal)n + val;
+    }
+    public static decimal plus(IPdfObject? obj, decimal? val)
+    {
+        if (val == null) return 0m;
+        return plus(obj, val.Value);
+    }
+    public static decimal plus(decimal val, IPdfObject? obj) => plus(obj, val);
+    public static decimal plus(decimal val, decimal val2) => val + val2;
+    public static decimal plus(decimal? val, decimal val2)
+    {
+        if (val == null) { return 0m; }
+        return val.Value + val2;
+    }
     public static decimal mult(IPdfObject? obj, int val)
     {
         if (obj == null) { return 0m; }

@@ -234,7 +234,7 @@ internal partial class APM_FunctionType3_Functions__Base : ISpecification<PdfDic
         if (val == null) { return; }
         var Functions = obj.Get("Functions");
         var Bounds = obj.Get("Bounds");
-        if (!(eq(((Functions as PdfArray)?.Count),(((Bounds as PdfArray)?.Count)+1)))) 
+        if (!(eq(((Functions as PdfArray)?.Count),plus(((Bounds as PdfArray)?.Count),1)))) 
         {
             ctx.Fail<APM_FunctionType3_Functions>($"Value failed special case check: fn:Eval(fn:ArrayLength(Functions)==(fn:ArrayLength(Bounds)+1))");
         }

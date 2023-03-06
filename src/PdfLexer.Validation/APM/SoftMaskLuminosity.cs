@@ -197,8 +197,8 @@ internal partial class APM_SoftMaskLuminosity_G__Base : ISpecification<PdfDictio
     {
         var val = ctx.GetRequired<PdfStream, APM_SoftMaskLuminosity_G>(obj, "G", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
-        var GGroupS = obj.Get("G")?.Get("Group")?.Get("S");
-        var GGroupCS = obj.Get("G")?.Get("Group")?.Get("CS");
+        var GGroupS = val.Get("Group")?.Get("S");
+        var GGroupCS = val.Get("Group")?.Get("CS");
         if (!((eq(GGroupS,"Transparency")&&(GGroupCS != null)))) 
         {
             ctx.Fail<APM_SoftMaskLuminosity_G>($"Value failed special case check: fn:Eval((G::Group::@S==Transparency) && fn:IsPresent(G::Group::CS))");

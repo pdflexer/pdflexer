@@ -329,8 +329,8 @@ internal partial class APM_FileTrailer_ID__Base : ISpecification<PdfDictionary>
         } else if (val == null) {
             return;
         }
-        var ID0 = obj.Get("ID")?.Get("0");
-        var ID1 = obj.Get("ID")?.Get("1");
+        var ID0 = val.Get(0);
+        var ID1 = val.Get(1);
         if (!((MustBeDirect(ID0)&&MustBeDirect(ID1)))) 
         {
             ctx.Fail<APM_FileTrailer_ID>($"Value failed special case check: fn:Eval(fn:MustBeDirect(ID::0) && fn:MustBeDirect(ID::1))");

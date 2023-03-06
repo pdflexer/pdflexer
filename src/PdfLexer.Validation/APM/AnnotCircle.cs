@@ -1168,14 +1168,12 @@ internal partial class APM_AnnotCircle_RD__Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_AnnotCircle_RD>(obj, "RD", IndirectRequirement.Either);
         if (val == null) { return; }
-        var RD0 = obj.Get("RD")?.Get("0");
-        var RD1 = obj.Get("RD")?.Get("1");
-        var RD2 = obj.Get("RD")?.Get("2");
-        var RD3 = obj.Get("RD")?.Get("3");
-        var RD1RD3 = obj.Get("RD")?.Get("1+RD")?.Get("3");
+        var RD0 = val.Get(0);
+        var RD1 = val.Get(1);
+        var RD2 = val.Get(2);
+        var RD3 = val.Get(3);
         var Rect = obj.Get("Rect");
-        var RD0RD2 = obj.Get("RD")?.Get("0+RD")?.Get("2");
-        if (!(gte(RD0,0)&&gte(RD1,0)&&gte(RD2,0)&&gte(RD3,0)&&lt(RD1RD3,RectHeight(Rect))&&lt(RD0RD2,RectWidth(obj)))) 
+        if (!(gte(RD0,0)&&gte(RD1,0)&&gte(RD2,0)&&gte(RD3,0)&&lt(plus(RD1,RD3),RectHeight(Rect))&&lt(plus(RD0,RD2),RectWidth(obj)))) 
         {
             ctx.Fail<APM_AnnotCircle_RD>($"Value failed special case check: fn:Eval((RD::@0>=0) && (RD::@1>=0) && (RD::@2>=0) && (RD::@3>=0) && ((RD::@1+RD::@3)<fn:RectHeight(Rect)) && ((RD::@0+RD::@2)<fn:RectWidth(Rect)))");
         }

@@ -416,8 +416,8 @@ internal partial class APM_MovieActivation_FWScale__Base : ISpecification<PdfDic
     {
         var val = ctx.GetOptional<PdfArray, APM_MovieActivation_FWScale>(obj, "FWScale", IndirectRequirement.Either);
         if (val == null) { return; }
-        var FWScale0 = obj.Get("FWScale")?.Get("0");
-        var FWScale1 = obj.Get("FWScale")?.Get("1");
+        var FWScale0 = val.Get(0);
+        var FWScale1 = val.Get(1);
         if (!((gt(FWScale0,0)&&gt(FWScale1,0)))) 
         {
             ctx.Fail<APM_MovieActivation_FWScale>($"Value failed special case check: fn:Eval((FWScale::@0>0) && (FWScale::@1>0))");
@@ -448,8 +448,8 @@ internal partial class APM_MovieActivation_FWPosition__Base : ISpecification<Pdf
     {
         var val = ctx.GetOptional<PdfArray, APM_MovieActivation_FWPosition>(obj, "FWPosition", IndirectRequirement.Either);
         if (val == null) { return; }
-        var FWPosition0 = obj.Get("FWPosition")?.Get("0");
-        var FWPosition1 = obj.Get("FWPosition")?.Get("1");
+        var FWPosition0 = val.Get(0);
+        var FWPosition1 = val.Get(1);
         if (!(gte(FWPosition0,0.0m)&&lte(FWPosition0,1.0m)&&gte(FWPosition1,0.0m)&&lte(FWPosition1,1.0m))) 
         {
             ctx.Fail<APM_MovieActivation_FWPosition>($"Value failed special case check: fn:Eval((FWPosition::@0>=0.0) && (FWPosition::@0<=1.0) && (FWPosition::@1>=0.0) && (FWPosition::@1<=1.0))");

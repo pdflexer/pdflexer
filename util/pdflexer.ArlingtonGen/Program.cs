@@ -87,6 +87,7 @@ var ops = new Dictionary<string, (string, string)>
     ["lt"] = ("<", "bool"),
     ["gte"] = (">=", "bool"),
     ["lte"] = ("<=", "bool"),
+    ["plus"] = ("+", "decimal"),
     ["mult"] = ("*", "decimal"),
 };
 var txt = "";
@@ -208,7 +209,7 @@ sw2.WriteLine("}");
     {
         var f = $"C:\\source\\github\\pdflexer\\src\\pdflexer.Validation\\APM\\{c}.cs";
         var contents = File.ReadAllText(f);
-        contents = contents.Replace("1+m(LastChar-FirstChar)", "1 + ((LastChar?.GetAs<PdfIntNumber>()?.Value ?? 0) - (FirstChar?.GetAs<PdfIntNumber>()?.Value ?? 0))");
+        contents = contents.Replace("plus(1,(LastChar-FirstChar))", "1 + ((LastChar?.GetAs<PdfIntNumber>()?.Value ?? 0) - (FirstChar?.GetAs<PdfIntNumber>()?.Value ?? 0))");
         File.WriteAllText(f, contents);
     }
 }

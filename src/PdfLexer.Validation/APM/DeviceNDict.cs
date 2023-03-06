@@ -167,7 +167,7 @@ internal partial class APM_DeviceNDict_Colorants__Base : ISpecification<PdfDicti
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var Subtype = obj.Get("Subtype");
-        var parent1 = parent?.Get("1");
+        var parent1 = parent?.Get(1);
         var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Colorants>(obj, "Colorants", IndirectRequirement.Either);
         if ((((ctx.Version < 1.6m || eq(Subtype,"NChannel"))&&HasSpotColorants(parent1))) && val == null) {
             ctx.Fail<APM_DeviceNDict_Colorants>("Colorants is required when 'fn:IsRequired(fn:SinceVersion(1.6,(@Subtype==NChannel)) && fn:HasSpotColorants(parent::1))"); return;
@@ -200,7 +200,7 @@ internal partial class APM_DeviceNDict_Process__Base : ISpecification<PdfDiction
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var Subtype = obj.Get("Subtype");
-        var parent1 = parent?.Get("1");
+        var parent1 = parent?.Get(1);
         var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Process>(obj, "Process", IndirectRequirement.Either);
         if (((eq(Subtype,"NChannel")&&HasProcessColorants(parent1))) && val == null) {
             ctx.Fail<APM_DeviceNDict_Process>("Process is required when 'fn:IsRequired((@Subtype==NChannel) && fn:HasProcessColorants(parent::1))"); return;

@@ -79,7 +79,7 @@ internal partial class APM_CryptFilterMap_StdCF__Base : ISpecification<PdfDictio
     {
         var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterMap_StdCF>(obj, "StdCF", IndirectRequirement.Either);
         if (val == null) { return; }
-        var StdCFAuthEvent = obj.Get("StdCF")?.Get("AuthEvent");
+        var StdCFAuthEvent = val.Get("AuthEvent");
         if (!(eq(StdCFAuthEvent,"DocOpen"))) 
         {
             ctx.Fail<APM_CryptFilterMap_StdCF>($"Value failed special case check: fn:Eval(StdCF::@AuthEvent==DocOpen)");

@@ -320,8 +320,8 @@ internal partial class APM_OPIVersion20Dict_Size__Base : ISpecification<PdfDicti
         } else if (val == null) {
             return;
         }
-        var Size0 = obj.Get("Size")?.Get("0");
-        var Size1 = obj.Get("Size")?.Get("1");
+        var Size0 = val.Get(0);
+        var Size1 = val.Get(1);
         if (!((gt(Size0,0)&&gt(Size1,0)))) 
         {
             ctx.Fail<APM_OPIVersion20Dict_Size>($"Value failed special case check: fn:Eval((Size::@0>0) && (Size::@1>0))");
@@ -464,8 +464,8 @@ internal partial class APM_OPIVersion20Dict_IncludedImageDimensions__Base : ISpe
     {
         var val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_IncludedImageDimensions>(obj, "IncludedImageDimensions", IndirectRequirement.Either);
         if (val == null) { return; }
-        var IncludedImageDimensions0 = obj.Get("IncludedImageDimensions")?.Get("0");
-        var IncludedImageDimensions1 = obj.Get("IncludedImageDimensions")?.Get("1");
+        var IncludedImageDimensions0 = val.Get(0);
+        var IncludedImageDimensions1 = val.Get(1);
         if (!((gt(IncludedImageDimensions0,0)&&gt(IncludedImageDimensions1,0)))) 
         {
             ctx.Fail<APM_OPIVersion20Dict_IncludedImageDimensions>($"Value failed special case check: fn:Eval((IncludedImageDimensions::@0>0) && (IncludedImageDimensions::@1>0))");

@@ -114,7 +114,7 @@ internal partial class APM_Permissions_DocMDP__Base : ISpecification<PdfDictiona
     {
         var val = ctx.GetOptional<PdfDictionary, APM_Permissions_DocMDP>(obj, "DocMDP", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
-        var DocMDPReference = obj.Get("DocMDP")?.Get("Reference");
+        var DocMDPReference = val.Get("Reference");
         if (!(gte(((DocMDPReference as PdfArray)?.Count),1))) 
         {
             ctx.Fail<APM_Permissions_DocMDP>($"Value failed special case check: fn:Eval(fn:ArrayLength(DocMDP::Reference)>=1)");
@@ -145,7 +145,7 @@ internal partial class APM_Permissions_UR3__Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfDictionary, APM_Permissions_UR3>(obj, "UR3", IndirectRequirement.Either);
         if (val == null) { return; }
-        var UR3Reference0TransformMethod = obj.Get("UR3")?.Get("Reference")?.Get("0")?.Get("TransformMethod");
+        var UR3Reference0TransformMethod = val.Get("Reference")?.Get(0)?.Get("TransformMethod");
         if (!(eq(UR3Reference0TransformMethod,val))) 
         {
             ctx.Fail<APM_Permissions_UR3>($"Value failed special case check: fn:Eval(UR3::Reference::0::@TransformMethod==UR3)");

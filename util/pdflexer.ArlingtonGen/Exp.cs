@@ -103,7 +103,7 @@ internal class Exp : INode
 
     private static List<char> terms = new List<char>
     {
-        ' ', '(', '<', '>', '!', '=', // '+', '*'
+        ' ', '(', '<', '>', '!', '=', '+',
     };
 
     public List<INode> Children { get; }

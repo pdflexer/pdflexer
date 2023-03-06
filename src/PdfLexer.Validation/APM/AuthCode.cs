@@ -103,10 +103,10 @@ internal partial class APM_AuthCode_ByteRange__Base : ISpecification<PdfDictiona
         } else if (val == null) {
             return;
         }
-        var ByteRange0 = obj.Get("ByteRange")?.Get("0");
-        var ByteRange1 = obj.Get("ByteRange")?.Get("1");
-        var ByteRange2 = obj.Get("ByteRange")?.Get("2");
-        var ByteRange3 = obj.Get("ByteRange")?.Get("3");
+        var ByteRange0 = val.Get(0);
+        var ByteRange1 = val.Get(1);
+        var ByteRange2 = val.Get(2);
+        var ByteRange3 = val.Get(3);
         if (!(eq(ByteRange0,0)&&gt(ByteRange1,0)&&gt(ByteRange2,ByteRange1)&&gte(ByteRange3,0))) 
         {
             ctx.Fail<APM_AuthCode_ByteRange>($"Value failed special case check: fn:Eval((ByteRange::@0==0) && (ByteRange::@1>0) && (ByteRange::@2>ByteRange::@1) && (ByteRange::@3>=0))");

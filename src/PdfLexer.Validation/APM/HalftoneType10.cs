@@ -731,7 +731,7 @@ internal partial class APM_HalftoneType10_DL__Base : ISpecification<PdfDictionar
         var DL = obj.Get("DL");
         var Xsquare = obj.Get("Xsquare");
         var Ysquare = obj.Get("Ysquare");
-        if (!(eq(DL,(mult(Xsquare,Xsquare)+mult(Ysquare,Ysquare))))) 
+        if (!(eq(DL,plus(mult(Xsquare,Xsquare),mult(Ysquare,Ysquare))))) 
         {
             ctx.Fail<APM_HalftoneType10_DL>($"Value failed special case check: fn:Eval(@DL==((@Xsquare * @Xsquare)+(@Ysquare * @Ysquare)))");
         }

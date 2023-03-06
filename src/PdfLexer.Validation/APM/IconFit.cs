@@ -200,8 +200,8 @@ internal partial class APM_IconFit_A__Base : ISpecification<PdfDictionary>
     {
         var val = ctx.GetOptional<PdfArray, APM_IconFit_A>(obj, "A", IndirectRequirement.Either);
         if (val == null) { return; }
-        var A0 = obj.Get("A")?.Get("0");
-        var A1 = obj.Get("A")?.Get("1");
+        var A0 = val.Get(0);
+        var A1 = val.Get(1);
         if (!(gte(A0,0)&&lte(A0,1)&&gte(A1,0)&&lte(A1,1))) 
         {
             ctx.Fail<APM_IconFit_A>($"Value failed special case check: fn:Eval((A::@0>=0) && (A::@0<=1) && (A::@1>=0) && (A::@1<=1))");

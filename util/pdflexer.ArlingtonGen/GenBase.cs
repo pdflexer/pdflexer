@@ -393,12 +393,18 @@ case PdfObjectType.{{typemap[type]}}:
                 segs.RemoveAt(0);
                 trim = true;
             }
+            else if (segs[0].TrimStart('@') == Row.Key)
+            {
+                txt += "val";
+                segs.RemoveAt(0);
+                trim = true;
+            }
             else
             {
                 txt += "obj";
             }
 
-            var props = string.Join("", segs.Select(x => $"?.Get(\"{x.TrimStart('@')}\")"));
+            var props = string.Join("", segs.Select(x => int.TryParse(x.TrimStart('@'), out _) ? $"?.Get({x.TrimStart('@')})" : $"?.Get(\"{x.TrimStart('@')}\")"));
             if (trim)
             {
                 props = props.TrimStart('?');
