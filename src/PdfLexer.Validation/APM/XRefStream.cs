@@ -110,7 +110,7 @@ internal partial class APM_XRefStream__Base : ISpecification<PdfDictionary>
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Size", "Index", "Prev", "W", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "Root", "Info", "ID", "Encrypt"
+        "Type", "Size", "Index", "Prev", "W", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "Root", "Info", "ID", "Encrypt", "AuthCode"
     };
     
 

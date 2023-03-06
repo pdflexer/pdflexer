@@ -24,7 +24,12 @@ internal partial class APM_RequirementsSTEP__Base : ISpecification<PdfDictionary
         ctx.Run<APM_RequirementsSTEP_RH, PdfDictionary>(stack, obj, parent);
         ctx.Run<APM_RequirementsSTEP_Penalty, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
-        
+            case 2.0m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                {
+                    ctx.Fail<APM_RequirementsSTEP>($"Unknown field {extra} for version 2.0");
+                }
+                break;
             default:
                 break;
         }
@@ -41,6 +46,10 @@ internal partial class APM_RequirementsSTEP__Base : ISpecification<PdfDictionary
         return true;
     }
 
+    public static List<string> AllowedFields_20 { get; } = new List<string> 
+    {
+        "Type", "S", "V", "RH", "Penalty"
+    };
     
 
 

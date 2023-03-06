@@ -85,19 +85,19 @@ internal partial class APM_SigFieldLock__Base : ISpecification<PdfDictionary>
     };
     public static List<string> AllowedFields_17 { get; } = new List<string> 
     {
-        "Type", "Action", "Fields"
+        "Type", "Action", "Fields", "P"
     };
     public static List<string> AllowedFields_18 { get; } = new List<string> 
     {
-        "Type", "Action", "Fields"
+        "Type", "Action", "Fields", "P"
     };
     public static List<string> AllowedFields_19 { get; } = new List<string> 
     {
-        "Type", "Action", "Fields"
+        "Type", "Action", "Fields", "P"
     };
     public static List<string> AllowedFields_20 { get; } = new List<string> 
     {
-        "Type", "Action", "Fields"
+        "Type", "Action", "Fields", "P"
     };
     
 

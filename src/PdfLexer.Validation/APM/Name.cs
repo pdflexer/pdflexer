@@ -116,19 +116,19 @@ internal partial class APM_Name__Base : ISpecification<PdfDictionary>
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Dests", "AP", "JavaScript", "Pages", "Templates", "IDS", "URLS", "EmbeddedFiles", "AlternatePresentations", "Renditions"
+        "Dests", "AP", "JavaScript", "Pages", "Templates", "IDS", "URLS", "EmbeddedFiles", "AlternatePresentations", "Renditions", "XFAResources"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Dests", "AP", "JavaScript", "Pages", "Templates", "IDS", "URLS", "EmbeddedFiles", "AlternatePresentations", "Renditions"
+        "Dests", "AP", "JavaScript", "Pages", "Templates", "IDS", "URLS", "EmbeddedFiles", "AlternatePresentations", "Renditions", "XFAResources"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Dests", "AP", "JavaScript", "Pages", "Templates", "IDS", "URLS", "EmbeddedFiles", "AlternatePresentations", "Renditions"
+        "Dests", "AP", "JavaScript", "Pages", "Templates", "IDS", "URLS", "EmbeddedFiles", "AlternatePresentations", "Renditions", "XFAResources"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Dests", "AP", "JavaScript", "Pages", "Templates", "IDS", "URLS", "EmbeddedFiles", "Renditions"
+        "Dests", "AP", "JavaScript", "Pages", "Templates", "IDS", "URLS", "EmbeddedFiles", "Renditions", "XFAResources"
     };
     
 

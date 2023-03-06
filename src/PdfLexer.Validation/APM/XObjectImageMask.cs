@@ -129,19 +129,19 @@ internal partial class APM_XObjectImageMask__Base : ISpecification<PdfDictionary
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
+        "Type", "Subtype", "Width", "Height", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
+        "Type", "Subtype", "Width", "Height", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
+        "Type", "Subtype", "Width", "Height", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "StructParent", "ID", "Metadata", "OC", "AF", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
+        "Type", "Subtype", "Width", "Height", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "StructParent", "ID", "Metadata", "OC", "AF", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
     };
     
 

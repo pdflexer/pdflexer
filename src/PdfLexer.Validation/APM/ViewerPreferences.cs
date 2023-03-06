@@ -123,19 +123,19 @@ internal partial class APM_ViewerPreferences__Base : ISpecification<PdfDictionar
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "HideToolbar", "HideMenubar", "HideWindowUI", "FitWindow", "CenterWindow", "DisplayDocTitle", "NonFullScreenPageMode", "Direction", "ViewArea", "ViewClip", "PrintArea", "PrintClip", "PrintScaling", "Duplex", "PickTrayByPDFSize", "PrintPageRange", "NumCopies"
+        "HideToolbar", "HideMenubar", "HideWindowUI", "FitWindow", "CenterWindow", "DisplayDocTitle", "NonFullScreenPageMode", "Direction", "ViewArea", "ViewClip", "PrintArea", "PrintClip", "PrintScaling", "Duplex", "PickTrayByPDFSize", "PrintPageRange", "NumCopies", "Enforce"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "HideToolbar", "HideMenubar", "HideWindowUI", "FitWindow", "CenterWindow", "DisplayDocTitle", "NonFullScreenPageMode", "Direction", "ViewArea", "ViewClip", "PrintArea", "PrintClip", "PrintScaling", "Duplex", "PickTrayByPDFSize", "PrintPageRange", "NumCopies"
+        "HideToolbar", "HideMenubar", "HideWindowUI", "FitWindow", "CenterWindow", "DisplayDocTitle", "NonFullScreenPageMode", "Direction", "ViewArea", "ViewClip", "PrintArea", "PrintClip", "PrintScaling", "Duplex", "PickTrayByPDFSize", "PrintPageRange", "NumCopies", "Enforce"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "HideToolbar", "HideMenubar", "HideWindowUI", "FitWindow", "CenterWindow", "DisplayDocTitle", "NonFullScreenPageMode", "Direction", "ViewArea", "ViewClip", "PrintArea", "PrintClip", "PrintScaling", "Duplex", "PickTrayByPDFSize", "PrintPageRange", "NumCopies"
+        "HideToolbar", "HideMenubar", "HideWindowUI", "FitWindow", "CenterWindow", "DisplayDocTitle", "NonFullScreenPageMode", "Direction", "ViewArea", "ViewClip", "PrintArea", "PrintClip", "PrintScaling", "Duplex", "PickTrayByPDFSize", "PrintPageRange", "NumCopies", "Enforce"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "HideToolbar", "HideMenubar", "HideWindowUI", "FitWindow", "CenterWindow", "DisplayDocTitle", "NonFullScreenPageMode", "Direction", "PrintScaling", "Duplex", "PickTrayByPDFSize", "PrintPageRange", "NumCopies"
+        "HideToolbar", "HideMenubar", "HideWindowUI", "FitWindow", "CenterWindow", "DisplayDocTitle", "NonFullScreenPageMode", "Direction", "PrintScaling", "Duplex", "PickTrayByPDFSize", "PrintPageRange", "NumCopies", "Enforce"
     };
     
 

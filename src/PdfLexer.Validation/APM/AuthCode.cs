@@ -23,7 +23,12 @@ internal partial class APM_AuthCode__Base : ISpecification<PdfDictionary>
         ctx.Run<APM_AuthCode_MAC, PdfDictionary>(stack, obj, parent);
         ctx.Run<APM_AuthCode_SigObjRef, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
-        
+            case 2.0m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                {
+                    ctx.Fail<APM_AuthCode>($"Unknown field {extra} for version 2.0");
+                }
+                break;
             default:
                 break;
         }
@@ -34,6 +39,10 @@ internal partial class APM_AuthCode__Base : ISpecification<PdfDictionary>
         return false;
     }
 
+    public static List<string> AllowedFields_20 { get; } = new List<string> 
+    {
+        "MACLocation", "ByteRange", "MAC", "SigObjRef"
+    };
     
 
 

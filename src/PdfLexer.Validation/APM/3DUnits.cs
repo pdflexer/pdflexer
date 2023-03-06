@@ -28,7 +28,30 @@ internal partial class APM_3DUnits__Base : ISpecification<PdfDictionary>
         ctx.Run<APM_3DUnits_DSn, PdfDictionary>(stack, obj, parent);
         ctx.Run<APM_3DUnits_DU, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
-        
+            case 1.7m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
+                {
+                    ctx.Fail<APM_3DUnits>($"Unknown field {extra} for version 1.7");
+                }
+                break;
+            case 1.8m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
+                {
+                    ctx.Fail<APM_3DUnits>($"Unknown field {extra} for version 1.8");
+                }
+                break;
+            case 1.9m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                {
+                    ctx.Fail<APM_3DUnits>($"Unknown field {extra} for version 1.9");
+                }
+                break;
+            case 2.0m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                {
+                    ctx.Fail<APM_3DUnits>($"Unknown field {extra} for version 2.0");
+                }
+                break;
             default:
                 break;
         }
@@ -39,6 +62,22 @@ internal partial class APM_3DUnits__Base : ISpecification<PdfDictionary>
         return false;
     }
 
+    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    {
+        "TSm", "TSn", "TU", "USm", "USn", "UU", "DSm", "DSn", "DU"
+    };
+    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
+    {
+        "TSm", "TSn", "TU", "USm", "USn", "UU", "DSm", "DSn", "DU"
+    };
+    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
+    {
+        "TSm", "TSn", "TU", "USm", "USn", "UU", "DSm", "DSn", "DU"
+    };
+    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
+    {
+        "TSm", "TSn", "TU", "USm", "USn", "UU", "DSm", "DSn", "DU"
+    };
     
 
 

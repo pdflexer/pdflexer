@@ -106,47 +106,47 @@ internal partial class APM_FilterCCITTFaxDecode__Base : ISpecification<PdfDictio
 
     public static HashSet<string> AllowedFields_10 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_11 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError"
+        "K", "EndOfLine", "EncodedByteAlign", "Columns", "Rows", "EndOfBlock", "BlackIs1", "DamagedRowsBeforeError", "Blackls1"
     };
     
 

@@ -30,7 +30,30 @@ internal partial class APM_3DMeasure3DC__Base : ISpecification<PdfDictionary>
         ctx.Run<APM_3DMeasure3DC_UT, PdfDictionary>(stack, obj, parent);
         ctx.Run<APM_3DMeasure3DC_S, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
-        
+            case 1.7m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
+                {
+                    ctx.Fail<APM_3DMeasure3DC>($"Unknown field {extra} for version 1.7");
+                }
+                break;
+            case 1.8m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
+                {
+                    ctx.Fail<APM_3DMeasure3DC>($"Unknown field {extra} for version 1.8");
+                }
+                break;
+            case 1.9m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                {
+                    ctx.Fail<APM_3DMeasure3DC>($"Unknown field {extra} for version 1.9");
+                }
+                break;
+            case 2.0m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                {
+                    ctx.Fail<APM_3DMeasure3DC>($"Unknown field {extra} for version 2.0");
+                }
+                break;
             default:
                 break;
         }
@@ -47,6 +70,22 @@ internal partial class APM_3DMeasure3DC__Base : ISpecification<PdfDictionary>
         return true;
     }
 
+    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    {
+        "Type", "Subtype", "TRL", "A1", "N1", "TP", "TB", "TS", "C", "UT", "S"
+    };
+    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
+    {
+        "Type", "Subtype", "TRL", "A1", "N1", "TP", "TB", "TS", "C", "UT", "S"
+    };
+    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
+    {
+        "Type", "Subtype", "TRL", "A1", "N1", "TP", "TB", "TS", "C", "UT", "S"
+    };
+    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
+    {
+        "Type", "Subtype", "TRL", "A1", "N1", "TP", "TB", "TS", "C", "UT", "S"
+    };
     
 
 

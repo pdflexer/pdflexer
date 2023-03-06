@@ -169,7 +169,7 @@ internal partial class APM_AnnotLink__Base : ISpecification<PdfDictionary>
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "A", "Dest", "H", "PA", "QuadPoints", "BS"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "A", "Dest", "H", "PA", "QuadPoints", "BS", "Path"
     };
     
 

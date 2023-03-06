@@ -97,19 +97,19 @@ internal partial class APM_Annot3D__Base : ISpecification<PdfDictionary>
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB", "3DU"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB", "3DU"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB", "3DU"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "3DD", "3DV", "3DA", "3DI", "3DB", "GEO"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "3DD", "3DV", "3DA", "3DI", "3DB", "3DU", "GEO"
     };
     
 

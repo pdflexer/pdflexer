@@ -144,7 +144,7 @@ internal partial class APM_EncryptionStandard__Base : ISpecification<PdfDictiona
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Filter", "SubFilter", "V", "CF", "StmF", "StrF", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms", "EncryptMetadata"
+        "Filter", "SubFilter", "V", "CF", "StmF", "StrF", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms", "EncryptMetadata", "KDFSalt"
     };
     
 

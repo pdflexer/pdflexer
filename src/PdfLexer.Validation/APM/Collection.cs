@@ -69,21 +69,21 @@ internal partial class APM_Collection__Base : ISpecification<PdfDictionary>
         return true;
     }
 
-    public static List<string> AllowedFields_17 { get; } = new List<string> 
+    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "Schema", "D", "View", "Sort"
+        "Type", "Schema", "D", "View", "Navigator", "Colors", "Sort", "Folders", "Split", "Resources"
     };
-    public static List<string> AllowedFields_18 { get; } = new List<string> 
+    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "Schema", "D", "View", "Sort"
+        "Type", "Schema", "D", "View", "Navigator", "Colors", "Sort", "Folders", "Split", "Resources"
     };
-    public static List<string> AllowedFields_19 { get; } = new List<string> 
+    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "Schema", "D", "View", "Sort"
+        "Type", "Schema", "D", "View", "Navigator", "Colors", "Sort", "Folders", "Split", "Resources"
     };
-    public static List<string> AllowedFields_20 { get; } = new List<string> 
+    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Schema", "D", "View", "Sort"
+        "Type", "Schema", "D", "View", "Navigator", "Colors", "Sort", "Folders", "Split", "Resources"
     };
     
 

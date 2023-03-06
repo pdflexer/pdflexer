@@ -137,19 +137,19 @@ internal partial class APM_FileSpecification__Base : ISpecification<PdfDictionar
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "FS", "F", "UF", "DOS", "Mac", "Unix", "ID", "V", "EF", "RF", "Desc", "CI"
+        "Type", "FS", "F", "UF", "DOS", "Mac", "Unix", "ID", "V", "EF", "RF", "Desc", "CI", "Thumb"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "FS", "F", "UF", "DOS", "Mac", "Unix", "ID", "V", "EF", "RF", "Desc", "CI"
+        "Type", "FS", "F", "UF", "DOS", "Mac", "Unix", "ID", "V", "EF", "RF", "Desc", "CI", "Thumb"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "FS", "F", "UF", "DOS", "Mac", "Unix", "ID", "V", "EF", "RF", "Desc", "CI"
+        "Type", "FS", "F", "UF", "DOS", "Mac", "Unix", "ID", "V", "EF", "RF", "Desc", "CI", "Thumb"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "FS", "F", "UF", "ID", "V", "EF", "RF", "Desc", "CI", "AFRelationship", "EP"
+        "Type", "FS", "F", "UF", "ID", "V", "EF", "RF", "Desc", "CI", "Thumb", "AFRelationship", "EP"
     };
     
 

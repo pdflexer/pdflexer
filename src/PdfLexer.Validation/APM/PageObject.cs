@@ -161,23 +161,23 @@ internal partial class APM_PageObject__Base : ISpecification<PdfDictionary>
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP"
+        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "DPart"
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP"
+        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "DPart"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP"
+        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "DPart"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP"
+        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "DPart"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "AF", "OutputIntents"
+        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "AF", "OutputIntents", "DPart"
     };
     
 

@@ -56,7 +56,15 @@ internal abstract class GenBase
             // since version
             return version >= sv;
         }
-        return false;
+
+        // temp workaround
+        var exp = new Exp(row.SinceVersion);
+        var mv = exp.GetAll().Where(x => x is EValue val &&  decimal.TryParse(val.Text, out _)).Select(x => decimal.Parse((x as EValue).Text)).ToList();
+        if (mv.Any())
+        {
+            return version >= mv.Min();
+        }
+        return true; // err on caution, this is only used for finding invalid values
     }
 
     public string NullCheckRequired(string prop, string root, string key)

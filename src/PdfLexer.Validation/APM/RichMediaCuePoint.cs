@@ -24,7 +24,30 @@ internal partial class APM_RichMediaCuePoint__Base : ISpecification<PdfDictionar
         ctx.Run<APM_RichMediaCuePoint_Time, PdfDictionary>(stack, obj, parent);
         ctx.Run<APM_RichMediaCuePoint_A, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
-        
+            case 1.7m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
+                {
+                    ctx.Fail<APM_RichMediaCuePoint>($"Unknown field {extra} for version 1.7");
+                }
+                break;
+            case 1.8m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
+                {
+                    ctx.Fail<APM_RichMediaCuePoint>($"Unknown field {extra} for version 1.8");
+                }
+                break;
+            case 1.9m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                {
+                    ctx.Fail<APM_RichMediaCuePoint>($"Unknown field {extra} for version 1.9");
+                }
+                break;
+            case 2.0m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                {
+                    ctx.Fail<APM_RichMediaCuePoint>($"Unknown field {extra} for version 2.0");
+                }
+                break;
             default:
                 break;
         }
@@ -41,6 +64,22 @@ internal partial class APM_RichMediaCuePoint__Base : ISpecification<PdfDictionar
         return true;
     }
 
+    public static List<string> AllowedFields_17 { get; } = new List<string> 
+    {
+        "Type", "Subtype", "Name", "Time", "A"
+    };
+    public static List<string> AllowedFields_18 { get; } = new List<string> 
+    {
+        "Type", "Subtype", "Name", "Time", "A"
+    };
+    public static List<string> AllowedFields_19 { get; } = new List<string> 
+    {
+        "Type", "Subtype", "Name", "Time", "A"
+    };
+    public static List<string> AllowedFields_20 { get; } = new List<string> 
+    {
+        "Type", "Subtype", "Name", "Time", "A"
+    };
     
 
 

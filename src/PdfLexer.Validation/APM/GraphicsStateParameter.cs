@@ -121,39 +121,39 @@ internal partial class APM_GraphicsStateParameter__Base : ISpecification<PdfDict
 
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "Type", "OP", "BG", "UCR", "TR", "HT", "SA", "HTP"
+        "Type", "OP", "BG", "UCR", "TR", "HT", "SA", "HTP", "AAPL:AA", "AAPL:ST"
     };
     public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA"
+        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "AAPL:AA", "AAPL:ST"
     };
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK"
+        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
     };
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK"
+        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK"
+        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK"
+        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK"
+        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK"
+        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "UseBlackPtComp", "HTO"
+        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "UseBlackPtComp", "HTO", "AAPL:AA", "AAPL:ST"
     };
     
 

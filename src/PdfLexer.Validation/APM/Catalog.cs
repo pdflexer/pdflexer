@@ -159,23 +159,23 @@ internal partial class APM_Catalog__Base : ISpecification<PdfDictionary>
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Type", "Version", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "NeedsRendering"
+        "Type", "Version", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "NeedsRendering", "DPartRoot"
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "Version", "Extensions", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "Requirements", "Collection", "NeedsRendering"
+        "Type", "Version", "Extensions", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "Requirements", "Collection", "NeedsRendering", "DPartRoot"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "Version", "Extensions", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "Requirements", "Collection", "NeedsRendering"
+        "Type", "Version", "Extensions", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "Requirements", "Collection", "NeedsRendering", "DPartRoot"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "Version", "Extensions", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "Requirements", "Collection", "NeedsRendering"
+        "Type", "Version", "Extensions", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "Requirements", "Collection", "NeedsRendering", "DPartRoot"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Version", "Extensions", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "Requirements", "Collection", "DSS", "AF"
+        "Type", "Version", "Extensions", "Pages", "PageLabels", "Names", "Dests", "ViewerPreferences", "PageLayout", "PageMode", "Outlines", "Threads", "OpenAction", "AA", "URI", "AcroForm", "Metadata", "StructTreeRoot", "MarkInfo", "Lang", "SpiderInfo", "OutputIntents", "PieceInfo", "OCProperties", "Perms", "Legal", "Requirements", "Collection", "DSS", "AF", "DPartRoot"
     };
     
 

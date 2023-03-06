@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Runtime.Intrinsics.Arm;
+using System.Text;
 
 namespace pdflexer.ArlingtonGen.Expressions;
 
@@ -11,6 +12,18 @@ internal interface INode
         foreach (var part in Children)
         {
             foreach (var dep in part.GetRequiredValues())
+            {
+                yield return dep;
+            }
+        }
+    }
+
+    IEnumerable<INode> Descendants()
+    {
+        foreach (var part in Children)
+        {
+            yield return part;
+            foreach (var dep in part.Descendants())
             {
                 yield return dep;
             }

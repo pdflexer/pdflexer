@@ -119,19 +119,19 @@ internal partial class APM_XObjectFormPrinterMark__Base : ISpecification<PdfDict
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "MarkStyle", "Colorants"
+        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "MarkStyle", "Colorants"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "MarkStyle", "Colorants"
+        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "MarkStyle", "Colorants"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "MarkStyle", "Colorants"
+        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "MarkStyle", "Colorants"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OC", "AF", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "MarkStyle", "Colorants"
+        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OC", "AF", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "MarkStyle", "Colorants"
     };
     
 

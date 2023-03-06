@@ -95,19 +95,19 @@ internal partial class APM_SigFieldSeedValue__Base : ISpecification<PdfDictionar
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo"
+        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo", "LockDocument", "AppearanceFilter"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo"
+        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo", "LockDocument", "AppearanceFilter"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo"
+        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo", "LockDocument", "AppearanceFilter"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo"
+        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo", "LockDocument", "AppearanceFilter"
     };
     
 

@@ -76,27 +76,27 @@ internal partial class APM_OptContentCreatorInfo__Base : ISpecification<PdfDicti
 
     public static List<string> AllowedFields_15 { get; } = new List<string> 
     {
-        "Creator", "Subtype"
+        "Creator", "Subtype", "SubType"
     };
     public static List<string> AllowedFields_16 { get; } = new List<string> 
     {
-        "Creator", "Subtype"
+        "Creator", "Subtype", "SubType"
     };
     public static List<string> AllowedFields_17 { get; } = new List<string> 
     {
-        "Creator", "Subtype"
+        "Creator", "Subtype", "SubType"
     };
     public static List<string> AllowedFields_18 { get; } = new List<string> 
     {
-        "Creator", "Subtype"
+        "Creator", "Subtype", "SubType"
     };
     public static List<string> AllowedFields_19 { get; } = new List<string> 
     {
-        "Creator", "Subtype"
+        "Creator", "Subtype", "SubType"
     };
     public static List<string> AllowedFields_20 { get; } = new List<string> 
     {
-        "Creator", "Subtype"
+        "Creator", "Subtype", "SubType"
     };
     
 

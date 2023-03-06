@@ -74,19 +74,19 @@ internal partial class APM_3DActivation__Base : ISpecification<PdfDictionary>
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "A", "AIS", "D", "DIS", "TB", "NP"
+        "A", "AIS", "D", "DIS", "TB", "NP", "Style", "Window", "Transparent"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "A", "AIS", "D", "DIS", "TB", "NP"
+        "A", "AIS", "D", "DIS", "TB", "NP", "Style", "Window", "Transparent"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "A", "AIS", "D", "DIS", "TB", "NP"
+        "A", "AIS", "D", "DIS", "TB", "NP", "Style", "Window", "Transparent"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "A", "AIS", "D", "DIS", "TB", "NP"
+        "A", "AIS", "D", "DIS", "TB", "NP", "Style", "Window", "Transparent"
     };
     
 

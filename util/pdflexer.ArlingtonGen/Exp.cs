@@ -123,6 +123,20 @@ internal class Exp : INode
         }
     }
 
+    public IEnumerable<INode> GetAll()
+    {
+        foreach (var part in Children)
+        {
+            yield return part;
+
+            foreach (var dep in part.Descendants())
+            {
+                yield return dep;
+            }
+        }
+    }
+
+
     public string GetText()
     {
         var sb = new StringBuilder();

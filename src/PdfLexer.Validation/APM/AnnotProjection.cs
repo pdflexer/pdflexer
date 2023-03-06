@@ -47,6 +47,24 @@ internal partial class APM_AnnotProjection__Base : ISpecification<PdfDictionary>
         ctx.Run<APM_AnnotProjection_IT, PdfDictionary>(stack, obj, parent);
         ctx.Run<APM_AnnotProjection_ExData, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
+            case 1.7m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
+                {
+                    ctx.Fail<APM_AnnotProjection>($"Unknown field {extra} for version 1.7");
+                }
+                break;
+            case 1.8m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
+                {
+                    ctx.Fail<APM_AnnotProjection>($"Unknown field {extra} for version 1.8");
+                }
+                break;
+            case 1.9m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                {
+                    ctx.Fail<APM_AnnotProjection>($"Unknown field {extra} for version 1.9");
+                }
+                break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
@@ -69,9 +87,21 @@ internal partial class APM_AnnotProjection__Base : ISpecification<PdfDictionary>
         return true;
     }
 
-    public static List<string> AllowedFields_20 { get; } = new List<string> 
+    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "AF", "ca", "BM", "Lang"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "IT", "ExData"
+    };
+    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
+    {
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "IT", "ExData"
+    };
+    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
+    {
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "IT", "ExData"
+    };
+    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
+    {
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "IT", "ExData"
     };
     
 

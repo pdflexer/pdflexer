@@ -142,19 +142,19 @@ internal partial class APM_AnnotWidget__Base : ISpecification<PdfDictionary>
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "H", "MK", "A", "AA", "BS", "Parent", "Kids", "T", "TU", "TM", "Ff"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "H", "MK", "A", "AA", "BS", "Parent", "Kids", "T", "TU", "TM", "Ff", "PMD"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "H", "MK", "A", "AA", "BS", "Parent", "Kids", "T", "TU", "TM", "Ff"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "H", "MK", "A", "AA", "BS", "Parent", "Kids", "T", "TU", "TM", "Ff", "PMD"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "H", "MK", "A", "AA", "BS", "Parent", "Kids", "T", "TU", "TM", "Ff"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "H", "MK", "A", "AA", "BS", "Parent", "Kids", "T", "TU", "TM", "Ff", "PMD"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "H", "MK", "A", "AA", "BS", "Parent", "Kids", "T", "TU", "TM", "Ff"
+        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "H", "MK", "A", "AA", "BS", "Parent", "Kids", "T", "TU", "TM", "Ff", "PMD"
     };
     
 

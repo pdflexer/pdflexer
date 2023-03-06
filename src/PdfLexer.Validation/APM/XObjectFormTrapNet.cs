@@ -91,6 +91,12 @@ internal partial class APM_XObjectFormTrapNet__Base : ISpecification<PdfDictiona
                     ctx.Fail<APM_XObjectFormTrapNet>($"Unknown field {extra} for version 1.9");
                 }
                 break;
+            case 2.0m:
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                {
+                    ctx.Fail<APM_XObjectFormTrapNet>($"Unknown field {extra} for version 2.0");
+                }
+                break;
             default:
                 break;
         }
@@ -125,15 +131,19 @@ internal partial class APM_XObjectFormTrapNet__Base : ISpecification<PdfDictiona
     };
     public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "PCM", "SeparationColorNames", "TrapRegions", "TrapStyles"
+        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "PCM", "SeparationColorNames", "TrapRegions", "TrapStyles"
     };
     public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "PCM", "SeparationColorNames", "TrapRegions", "TrapStyles"
+        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "PCM", "SeparationColorNames", "TrapRegions", "TrapStyles"
     };
     public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "PCM", "SeparationColorNames", "TrapRegions", "TrapStyles"
+        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "PCM", "SeparationColorNames", "TrapRegions", "TrapStyles"
+    };
+    public static List<string> AllowedFields_20 { get; } = new List<string> 
+    {
+        "Measure", "PtData"
     };
     
 

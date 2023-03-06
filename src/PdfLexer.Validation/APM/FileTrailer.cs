@@ -145,7 +145,7 @@ internal partial class APM_FileTrailer__Base : ISpecification<PdfDictionary>
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Size", "Prev", "Root", "Encrypt", "Info", "ID", "XRefStm"
+        "Size", "Prev", "Root", "Encrypt", "Info", "ID", "XRefStm", "AuthCode"
     };
     
 
