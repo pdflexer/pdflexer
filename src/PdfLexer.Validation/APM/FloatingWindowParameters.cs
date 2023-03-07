@@ -130,7 +130,7 @@ internal partial class APM_FloatingWindowParameters_Type__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "FWParams")) 
+        if (!(val == PdfName.FWParams)) 
         {
             ctx.Fail<APM_FloatingWindowParameters_Type>($"Invalid value {val}, allowed are: [FWParams]");
         }
@@ -194,7 +194,7 @@ internal partial class APM_FloatingWindowParameters_RT__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2 || val == 3)) 
+        if (!(val == 0m || val == 1m || val == 2m || val == 3m)) 
         {
             ctx.Fail<APM_FloatingWindowParameters_RT>($"Invalid value {val}, allowed are: [0,1,2,3]");
         }
@@ -226,7 +226,7 @@ internal partial class APM_FloatingWindowParameters_P__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2 || val == 3 || val == 4 || val == 5 || val == 6 || val == 7 || val == 8)) 
+        if (!(val == 0m || val == 1m || val == 2m || val == 3m || val == 4m || val == 5m || val == 6m || val == 7m || val == 8m)) 
         {
             ctx.Fail<APM_FloatingWindowParameters_P>($"Invalid value {val}, allowed are: [0,1,2,3,4,5,6,7,8]");
         }
@@ -258,7 +258,7 @@ internal partial class APM_FloatingWindowParameters_O__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2)) 
+        if (!(val == 0m || val == 1m || val == 2m)) 
         {
             ctx.Fail<APM_FloatingWindowParameters_O>($"Invalid value {val}, allowed are: [0,1,2]");
         }
@@ -344,7 +344,7 @@ internal partial class APM_FloatingWindowParameters_R__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2)) 
+        if (!(val == 0m || val == 1m || val == 2m)) 
         {
             ctx.Fail<APM_FloatingWindowParameters_R>($"Invalid value {val}, allowed are: [0,1,2]");
         }

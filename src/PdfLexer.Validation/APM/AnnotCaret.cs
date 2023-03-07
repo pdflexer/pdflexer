@@ -94,6 +94,7 @@ internal partial class APM_AnnotCaret__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_AnnotCaret_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_AnnotCaret_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -151,7 +152,7 @@ internal partial class APM_AnnotCaret_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Annot")) 
+        if (!(val == PdfName.Annot)) 
         {
             ctx.Fail<APM_AnnotCaret_Type>($"Invalid value {val}, allowed are: [Annot]");
         }
@@ -183,7 +184,7 @@ internal partial class APM_AnnotCaret_Subtype__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "Caret")) 
+        if (!(val == PdfName.Caret)) 
         {
             ctx.Fail<APM_AnnotCaret_Subtype>($"Invalid value {val}, allowed are: [Caret]");
         }
@@ -383,7 +384,7 @@ internal partial class APM_AnnotCaret_AP__Base : ISpecification<PdfDictionary>
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotCaret_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotCaret_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;
@@ -681,7 +682,7 @@ internal partial class APM_AnnotCaret_BM__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!((ctx.Version < 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
+        if (!((ctx.Version < 1.4m && val == PdfName.Compatible) || val == PdfName.Normal || val == PdfName.Multiply || val == PdfName.Screen || val == PdfName.Difference || val == PdfName.Darken || val == PdfName.Lighten || val == PdfName.ColorDodge || val == PdfName.ColorBurn || val == PdfName.Exclusion || val == PdfName.HardLight || val == PdfName.Overlay || val == PdfName.SoftLight || val == PdfName.Luminosity || val == PdfName.Hue || val == PdfName.Saturation || val == PdfName.Color)) 
         {
             ctx.Fail<APM_AnnotCaret_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
         }
@@ -866,7 +867,7 @@ internal partial class APM_AnnotCaret_IRT__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotCaret_IRT>(obj, "IRT", IndirectRequirement.Either);
-        if ((obj.ContainsKey("RT")) && val == null) {
+        if ((obj.ContainsKey(PdfName.RT)) && val == null) {
             ctx.Fail<APM_AnnotCaret_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
         } else if (val == null) {
             return;
@@ -1009,7 +1010,7 @@ internal partial class APM_AnnotCaret_RT__Base : ISpecification<PdfDictionary>
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "R" || val == "Group")) 
+        if (!(val == PdfName.R || val == PdfName.Group)) 
         {
             ctx.Fail<APM_AnnotCaret_RT>($"Invalid value {val}, allowed are: [R,Group]");
         }
@@ -1070,7 +1071,7 @@ internal partial class APM_AnnotCaret_RD__Base : ISpecification<PdfDictionary>
         var RD2 = val.Get(2);
         var RD3 = val.Get(3);
         var Rect = obj.Get("Rect");
-        if (!(gte(RD0,0)&&gte(RD1,0)&&gte(RD2,0)&&gte(RD3,0)&&lt(plus(RD1,RD3),RectHeight(Rect))&&lt(plus(RD0,RD2),RectWidth(obj)))) 
+        if (!(gte(RD0,0)&&gte(RD1,0)&&gte(RD2,0)&&gte(RD3,0)&&lt(plus(RD1,RD3),RectHeight(Rect))&&lt(plus(RD0,RD2),RectWidth(Rect)))) 
         {
             ctx.Fail<APM_AnnotCaret_RD>($"Value failed special case check: fn:Eval((RD::@0>=0) && (RD::@1>=0) && (RD::@2>=0) && (RD::@3>=0) && ((RD::@1+RD::@3)<fn:RectHeight(Rect)) && ((RD::@0+RD::@2)<fn:RectWidth(Rect)))");
         }
@@ -1103,7 +1104,7 @@ internal partial class APM_AnnotCaret_Sy__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "P" || val == "None")) 
+        if (!(val == PdfName.P || val == PdfName.None)) 
         {
             ctx.Fail<APM_AnnotCaret_Sy>($"Invalid value {val}, allowed are: [P,None]");
         }
@@ -1137,7 +1138,7 @@ internal partial class APM_AnnotCaret_ExData__Base : ISpecification<PdfDictionar
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
         {
             ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
         } else if ((ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val))) 

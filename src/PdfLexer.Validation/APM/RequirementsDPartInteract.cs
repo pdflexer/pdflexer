@@ -76,7 +76,7 @@ internal partial class APM_RequirementsDPartInteract_Type__Base : ISpecification
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsDPartInteract_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsDPartInteract_S__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "DPartInteract")) 
+        if (!(val == PdfName.DPartInteract)) 
         {
             ctx.Fail<APM_RequirementsDPartInteract_S>($"Invalid value {val}, allowed are: [DPartInteract]");
         }

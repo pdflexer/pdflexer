@@ -41,7 +41,7 @@ internal partial class APM_IndexedColorSpace_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "Indexed")) 
+        if (!(val == PdfName.Indexed)) 
         {
             ctx.Fail<APM_IndexedColorSpace_0>($"Invalid value {val}, allowed are: [Indexed]");
         }
@@ -72,7 +72,7 @@ internal partial class APM_IndexedColorSpace_1 : ISpecification<PdfArray>
                     // no special cases
                     
                     
-                    if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceCMYK || val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_IndexedColorSpace_1>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }

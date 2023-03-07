@@ -160,7 +160,7 @@ internal partial class APM_StructElem_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "StructElem")) 
+        if (!(val == PdfName.StructElem)) 
         {
             ctx.Fail<APM_StructElem_Type>($"Invalid value {val}, allowed are: [StructElem]");
         }

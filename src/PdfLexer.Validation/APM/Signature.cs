@@ -159,7 +159,7 @@ internal partial class APM_Signature_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Sig")) 
+        if (!(val == PdfName.Sig)) 
         {
             ctx.Fail<APM_Signature_Type>($"Invalid value {val}, allowed are: [Sig]");
         }
@@ -191,7 +191,7 @@ internal partial class APM_Signature_Filter__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "Adobe.PPKLite" || val == "Entrust.PPKEF" || val == "CICI.SignIt" || val == "VeriSign.PPKVS")) 
+        if (!(val == PdfName.AdobePPKLite || val == PdfName.EntrustPPKEF || val == PdfName.CICISignIt || val == PdfName.VeriSignPPKVS)) 
         {
             ctx.Fail<APM_Signature_Filter>($"Invalid value {val}, allowed are: [Adobe.PPKLite,Entrust.PPKEF,CICI.SignIt,VeriSign.PPKVS]");
         }
@@ -223,7 +223,7 @@ internal partial class APM_Signature_SubFilter__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!((ctx.Version >= 1.3m && val == "adbe.pkcs7.detached") || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == "adbe.pkcs7.sha1")) || (ctx.Version >= 1.3m && val == "adbe.x509.rsa_sha1") || (ctx.Version >= 2.0m && val == "ETSI.CAdES.detached") || (ctx.Version >= 2.0m && val == "ETSI.RFC3161"))) 
+        if (!((ctx.Version >= 1.3m && val == PdfName.adbepkcs7detached) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == PdfName.adbepkcs7sha1)) || (ctx.Version >= 1.3m && val == PdfName.adbex509rsa_sha1) || (ctx.Version >= 2.0m && val == PdfName.ETSICAdESdetached) || (ctx.Version >= 2.0m && val == PdfName.ETSIRFC3161))) 
         {
             ctx.Fail<APM_Signature_SubFilter>($"Invalid value {val}, allowed are: [fn:SinceVersion(1.3,adbe.pkcs7.detached),fn:Deprecated(2.0,fn:SinceVersion(1.4,adbe.pkcs7.sha1)),fn:SinceVersion(1.3,adbe.x509.rsa_sha1),fn:SinceVersion(2.0,ETSI.CAdES.detached),fn:SinceVersion(2.0,ETSI.RFC3161)]");
         }
@@ -284,7 +284,7 @@ internal partial class APM_Signature_Cert__Base : ISpecification<PdfDictionary>
         var (utval, wasIR) = ctx.GetOptional<APM_Signature_Cert>(obj, "Cert", IndirectRequirement.Either);
         
         var SubFilter = obj.Get("SubFilter");
-        if ((eq(SubFilter,"adbe.x509.rsa_sha1")) && utval == null) {
+        if ((eq(SubFilter,PdfName.adbex509rsa_sha1)) && utval == null) {
             ctx.Fail<APM_Signature_Cert>("Cert is required"); return;
         } else if (utval == null) {
             return;

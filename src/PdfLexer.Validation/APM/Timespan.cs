@@ -124,7 +124,7 @@ internal partial class APM_Timespan_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Timespan")) 
+        if (!(val == PdfName.Timespan)) 
         {
             ctx.Fail<APM_Timespan_Type>($"Invalid value {val}, allowed are: [Timespan]");
         }
@@ -156,7 +156,7 @@ internal partial class APM_Timespan_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "S")) 
+        if (!(val == PdfName.S)) 
         {
             ctx.Fail<APM_Timespan_S>($"Invalid value {val}, allowed are: [S]");
         }

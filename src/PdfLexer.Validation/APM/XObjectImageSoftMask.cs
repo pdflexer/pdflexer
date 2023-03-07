@@ -90,6 +90,7 @@ internal partial class APM_XObjectImageSoftMask__Base : ISpecification<PdfDictio
     {
         var c = ctx.Clone();
         c.Run<APM_XObjectImageSoftMask_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_XObjectImageSoftMask_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -151,7 +152,7 @@ internal partial class APM_XObjectImageSoftMask_Type__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "XObject")) 
+        if (!(val == PdfName.XObject)) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_Type>($"Invalid value {val}, allowed are: [XObject]");
         }
@@ -183,7 +184,7 @@ internal partial class APM_XObjectImageSoftMask_Subtype__Base : ISpecification<P
         // no special cases
         
         
-        if (!(val == "Image")) 
+        if (!(val == PdfName.Image)) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_Subtype>($"Invalid value {val}, allowed are: [Image]");
         }
@@ -214,7 +215,7 @@ internal partial class APM_XObjectImageSoftMask_Width__Base : ISpecification<Pdf
         if (val == null) { return; }
         var Width = obj.Get("Width");
         var parentWidth = parent?.Get("Width");
-        if (!((obj.ContainsKey("Matte") && !(eq(Width,parentWidth))))) 
+        if (!((obj.ContainsKey(PdfName.Matte) && !(eq(Width,parentWidth))))) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_Width>($"Value failed special case check: fn:Eval(fn:IsPresent(Matte,(@Width==parent::@Width)))");
         }
@@ -246,7 +247,7 @@ internal partial class APM_XObjectImageSoftMask_Height__Base : ISpecification<Pd
         if (val == null) { return; }
         var Height = obj.Get("Height");
         var parentHeight = parent?.Get("Height");
-        if (!((obj.ContainsKey("Matte") && !(eq(Height,parentHeight))))) 
+        if (!((obj.ContainsKey(PdfName.Matte) && !(eq(Height,parentHeight))))) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_Height>($"Value failed special case check: fn:Eval(fn:IsPresent(Matte,(@Height==parent::@Height)))");
         }
@@ -279,7 +280,7 @@ internal partial class APM_XObjectImageSoftMask_ColorSpace__Base : ISpecificatio
         // no special cases
         
         
-        if (!(val == "DeviceGray")) 
+        if (!(val == PdfName.DeviceGray)) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_ColorSpace>($"Invalid value {val}, allowed are: [DeviceGray]");
         }
@@ -309,7 +310,7 @@ internal partial class APM_XObjectImageSoftMask_BitsPerComponent__Base : ISpecif
         var Filter = obj.Get("Filter");
         var ImageMask = obj.Get("ImageMask");
         var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageSoftMask_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
-        if ((!(Contains(Filter, "JPXDecode")||eq(ImageMask,PdfBoolean.True))) && val == null) {
+        if ((!(Contains(Filter, PdfName.JPXDecode)||eq(ImageMask,PdfBoolean.True))) && val == null) {
             ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>("BitsPerComponent is required when 'fn:IsRequired(fn:Not(fn:Contains(@Filter,JPXDecode) || (@ImageMask==true)))"); return;
         } else if (val == null) {
             return;
@@ -318,7 +319,7 @@ internal partial class APM_XObjectImageSoftMask_BitsPerComponent__Base : ISpecif
         
         
         // TODO required value checks
-        if (!(val == 2 || val == 4 || (ctx.Version >= 1.5m && val == 16))) 
+        if (!(val == 2m || val == 4m || (ctx.Version >= 1.5m && val == 16m))) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>($"Invalid value {val}, allowed are: [fn:RequiredValue((fn:Contains(@Filter,CCITTFaxDecode) || fn:Contains(@Filter,JBIG2Decode)),1),2,4,fn:RequiredValue((fn:Contains(@Filter,RunLengthDecode) || fn:Contains(@Filter,DCTDecode)),8),fn:SinceVersion(1.5,16)]");
         }
@@ -594,7 +595,7 @@ internal partial class APM_XObjectImageSoftMask_Filter__Base : ISpecification<Pd
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || val == "JBIG2Decode" || val == "DCTDecode" || (ctx.Version >= 1.5m && val == "JPXDecode") || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || val == PdfName.CCITTFaxDecode || val == PdfName.JBIG2Decode || val == PdfName.DCTDecode || (ctx.Version >= 1.5m && val == PdfName.JPXDecode) || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectImageSoftMask_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,CCITTFaxDecode,JBIG2Decode,DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -774,7 +775,7 @@ internal partial class APM_XObjectImageSoftMask_FFilter__Base : ISpecification<P
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || val == "JBIG2Decode" || val == "DCTDecode" || (ctx.Version >= 1.5m && val == "JPXDecode") || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || val == PdfName.CCITTFaxDecode || val == PdfName.JBIG2Decode || val == PdfName.DCTDecode || (ctx.Version >= 1.5m && val == PdfName.JPXDecode) || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectImageSoftMask_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,CCITTFaxDecode,JBIG2Decode,DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
                     }

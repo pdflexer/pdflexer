@@ -57,6 +57,7 @@ internal partial class APM_RichMediaAnimation__Base : ISpecification<PdfDictiona
     {
         var c = ctx.Clone();
         c.Run<APM_RichMediaAnimation_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_RichMediaAnimation_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -106,7 +107,7 @@ internal partial class APM_RichMediaAnimation_Type__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "RichMediaAnimation")) 
+        if (!(val == PdfName.RichMediaAnimation)) 
         {
             ctx.Fail<APM_RichMediaAnimation_Type>($"Invalid value {val}, allowed are: [RichMediaAnimation]");
         }
@@ -138,7 +139,7 @@ internal partial class APM_RichMediaAnimation_Subtype__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "None" || val == "Linear" || val == "Oscillating")) 
+        if (!(val == PdfName.None || val == PdfName.Linear || val == PdfName.Oscillating)) 
         {
             ctx.Fail<APM_RichMediaAnimation_Subtype>($"Invalid value {val}, allowed are: [None,Linear,Oscillating]");
         }

@@ -60,7 +60,7 @@ internal partial class APM_CollectionItem_Type__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "CollectionItem")) 
+        if (!(val == PdfName.CollectionItem)) 
         {
             ctx.Fail<APM_CollectionItem_Type>($"Invalid value {val}, allowed are: [CollectionItem]");
         }

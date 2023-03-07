@@ -80,6 +80,7 @@ internal partial class APM_AnnotProjection__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_AnnotProjection_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_AnnotProjection_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -129,7 +130,7 @@ internal partial class APM_AnnotProjection_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Annot")) 
+        if (!(val == PdfName.Annot)) 
         {
             ctx.Fail<APM_AnnotProjection_Type>($"Invalid value {val}, allowed are: [Annot]");
         }
@@ -161,7 +162,7 @@ internal partial class APM_AnnotProjection_Subtype__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "Projection")) 
+        if (!(val == PdfName.Projection)) 
         {
             ctx.Fail<APM_AnnotProjection_Subtype>($"Invalid value {val}, allowed are: [Projection]");
         }
@@ -654,7 +655,7 @@ internal partial class APM_AnnotProjection_BM__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!((ctx.Version < 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
+        if (!((ctx.Version < 1.4m && val == PdfName.Compatible) || val == PdfName.Normal || val == PdfName.Multiply || val == PdfName.Screen || val == PdfName.Difference || val == PdfName.Darken || val == PdfName.Lighten || val == PdfName.ColorDodge || val == PdfName.ColorBurn || val == PdfName.Exclusion || val == PdfName.HardLight || val == PdfName.Overlay || val == PdfName.SoftLight || val == PdfName.Luminosity || val == PdfName.Hue || val == PdfName.Saturation || val == PdfName.Color)) 
         {
             ctx.Fail<APM_AnnotProjection_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
         }
@@ -839,7 +840,7 @@ internal partial class APM_AnnotProjection_IRT__Base : ISpecification<PdfDiction
     {
         
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_IRT>(obj, "IRT", IndirectRequirement.Either);
-        if ((obj.ContainsKey("RT")) && val == null) {
+        if ((obj.ContainsKey(PdfName.RT)) && val == null) {
             ctx.Fail<APM_AnnotProjection_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
         } else if (val == null) {
             return;
@@ -982,7 +983,7 @@ internal partial class APM_AnnotProjection_RT__Base : ISpecification<PdfDictiona
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "R" || val == "Group")) 
+        if (!(val == PdfName.R || val == PdfName.Group)) 
         {
             ctx.Fail<APM_AnnotProjection_RT>($"Invalid value {val}, allowed are: [R,Group]");
         }

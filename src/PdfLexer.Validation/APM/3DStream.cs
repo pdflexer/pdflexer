@@ -73,6 +73,7 @@ internal partial class APM_3DStream__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_3DStream_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_3DStream_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -126,7 +127,7 @@ internal partial class APM_3DStream_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "3D")) 
+        if (!(val == PdfName.N3D)) 
         {
             ctx.Fail<APM_3DStream_Type>($"Invalid value {val}, allowed are: [3D]");
         }
@@ -158,7 +159,7 @@ internal partial class APM_3DStream_Subtype__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "U3D" || val == "PRC" || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_24064") && val == "STEP")))) 
+        if (!(val == PdfName.U3D || val == PdfName.PRC || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_24064) && val == PdfName.STEP)))) 
         {
             ctx.Fail<APM_3DStream_Subtype>($"Invalid value {val}, allowed are: [U3D,PRC,fn:SinceVersion(2.0,fn:Extension(ISO_TS_24064,STEP))]");
         }
@@ -247,7 +248,7 @@ internal partial class APM_3DStream_DV__Base : ISpecification<PdfDictionary>
                     // no special cases
                     
                     
-                    if (!(val == "F" || val == "L")) 
+                    if (!(val == PdfName.F || val == PdfName.L)) 
                     {
                         ctx.Fail<APM_3DStream_DV>($"Invalid value {val}, allowed are: [F,L]");
                     }
@@ -399,7 +400,7 @@ internal partial class APM_3DStream_ColorSpace__Base : ISpecification<PdfDiction
                     // no special cases
                     
                     
-                    if (!(val == "DeviceRGB")) 
+                    if (!(val == PdfName.DeviceRGB)) 
                     {
                         ctx.Fail<APM_3DStream_ColorSpace>($"Invalid value {val}, allowed are: [DeviceRGB]");
                     }
@@ -484,7 +485,7 @@ internal partial class APM_3DStream_Filter__Base : ISpecification<PdfDictionary>
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "Crypt")) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || val == PdfName.Crypt)) 
                     {
                         ctx.Fail<APM_3DStream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,Crypt]");
                     }
@@ -655,7 +656,7 @@ internal partial class APM_3DStream_FFilter__Base : ISpecification<PdfDictionary
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "Crypt")) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || val == PdfName.Crypt)) 
                     {
                         ctx.Fail<APM_3DStream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,Crypt]");
                     }

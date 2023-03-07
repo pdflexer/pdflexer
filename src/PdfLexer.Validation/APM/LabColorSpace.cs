@@ -39,7 +39,7 @@ internal partial class APM_LabColorSpace_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "Lab")) 
+        if (!(val == PdfName.Lab)) 
         {
             ctx.Fail<APM_LabColorSpace_0>($"Invalid value {val}, allowed are: [Lab]");
         }

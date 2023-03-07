@@ -91,7 +91,14 @@ internal partial class APM_FontFile2__Base : ISpecification<PdfDictionary>
 
     public static bool MatchesType(PdfValidator ctx, PdfDictionary obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        
+        c.Run<APM_FontFile2_Subtype, PdfDictionary>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
@@ -153,7 +160,7 @@ internal partial class APM_FontFile2_Length1__Base : ISpecification<PdfDictionar
     {
         var parentparentSubtype = stack.GetParent(2)?.Get("parent");
         var val = ctx.GetOptional<PdfIntNumber, APM_FontFile2_Length1>(obj, "Length1", IndirectRequirement.Either);
-        if ((eq(parentparentSubtype,"TrueType")) && val == null) {
+        if ((eq(parentparentSubtype,PdfName.TrueType)) && val == null) {
             ctx.Fail<APM_FontFile2_Length1>("Length1 is required when 'fn:IsRequired(parent::parent::@Subtype==TrueType)"); return;
         } else if (val == null) {
             return;
@@ -328,7 +335,7 @@ internal partial class APM_FontFile2_Filter__Base : ISpecification<PdfDictionary
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_FontFile2_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -499,7 +506,7 @@ internal partial class APM_FontFile2_FFilter__Base : ISpecification<PdfDictionar
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_FontFile2_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

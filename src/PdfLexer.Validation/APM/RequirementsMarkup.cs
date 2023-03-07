@@ -76,7 +76,7 @@ internal partial class APM_RequirementsMarkup_Type__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsMarkup_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsMarkup_S__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Markup")) 
+        if (!(val == PdfName.Markup)) 
         {
             ctx.Fail<APM_RequirementsMarkup_S>($"Invalid value {val}, allowed are: [Markup]");
         }

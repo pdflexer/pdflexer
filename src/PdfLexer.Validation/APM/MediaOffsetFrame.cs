@@ -124,7 +124,7 @@ internal partial class APM_MediaOffsetFrame_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "MediaOffset")) 
+        if (!(val == PdfName.MediaOffset)) 
         {
             ctx.Fail<APM_MediaOffsetFrame_Type>($"Invalid value {val}, allowed are: [MediaOffset]");
         }
@@ -156,7 +156,7 @@ internal partial class APM_MediaOffsetFrame_S__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "F")) 
+        if (!(val == PdfName.F)) 
         {
             ctx.Fail<APM_MediaOffsetFrame_S>($"Invalid value {val}, allowed are: [F]");
         }

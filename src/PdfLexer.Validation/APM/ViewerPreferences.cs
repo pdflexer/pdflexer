@@ -325,7 +325,7 @@ internal partial class APM_ViewerPreferences_NonFullScreenPageMode__Base : ISpec
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "UseNone" || val == "UseOutlines" || val == "UseThumbs" || val == "UseOC")) 
+        if (!(val == PdfName.UseNone || val == PdfName.UseOutlines || val == PdfName.UseThumbs || val == PdfName.UseOC)) 
         {
             ctx.Fail<APM_ViewerPreferences_NonFullScreenPageMode>($"Invalid value {val}, allowed are: [UseNone,UseOutlines,UseThumbs,UseOC]");
         }
@@ -357,7 +357,7 @@ internal partial class APM_ViewerPreferences_Direction__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "L2R" || val == "R2L")) 
+        if (!(val == PdfName.L2R || val == PdfName.R2L)) 
         {
             ctx.Fail<APM_ViewerPreferences_Direction>($"Invalid value {val}, allowed are: [L2R,R2L]");
         }
@@ -389,7 +389,7 @@ internal partial class APM_ViewerPreferences_ViewArea__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "MediaBox" || val == "CropBox" || val == "BleedBox" || val == "TrimBox" || val == "ArtBox")) 
+        if (!(val == PdfName.MediaBox || val == PdfName.CropBox || val == PdfName.BleedBox || val == PdfName.TrimBox || val == PdfName.ArtBox)) 
         {
             ctx.Fail<APM_ViewerPreferences_ViewArea>($"Invalid value {val}, allowed are: [MediaBox,CropBox,BleedBox,TrimBox,ArtBox]");
         }
@@ -421,7 +421,7 @@ internal partial class APM_ViewerPreferences_ViewClip__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "MediaBox" || val == "CropBox" || val == "BleedBox" || val == "TrimBox" || val == "ArtBox")) 
+        if (!(val == PdfName.MediaBox || val == PdfName.CropBox || val == PdfName.BleedBox || val == PdfName.TrimBox || val == PdfName.ArtBox)) 
         {
             ctx.Fail<APM_ViewerPreferences_ViewClip>($"Invalid value {val}, allowed are: [MediaBox,CropBox,BleedBox,TrimBox,ArtBox]");
         }
@@ -453,7 +453,7 @@ internal partial class APM_ViewerPreferences_PrintArea__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "MediaBox" || val == "CropBox" || val == "BleedBox" || val == "TrimBox" || val == "ArtBox")) 
+        if (!(val == PdfName.MediaBox || val == PdfName.CropBox || val == PdfName.BleedBox || val == PdfName.TrimBox || val == PdfName.ArtBox)) 
         {
             ctx.Fail<APM_ViewerPreferences_PrintArea>($"Invalid value {val}, allowed are: [MediaBox,CropBox,BleedBox,TrimBox,ArtBox]");
         }
@@ -485,7 +485,7 @@ internal partial class APM_ViewerPreferences_PrintClip__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "MediaBox" || val == "CropBox" || val == "BleedBox" || val == "TrimBox" || val == "ArtBox")) 
+        if (!(val == PdfName.MediaBox || val == PdfName.CropBox || val == PdfName.BleedBox || val == PdfName.TrimBox || val == PdfName.ArtBox)) 
         {
             ctx.Fail<APM_ViewerPreferences_PrintClip>($"Invalid value {val}, allowed are: [MediaBox,CropBox,BleedBox,TrimBox,ArtBox]");
         }
@@ -544,7 +544,7 @@ internal partial class APM_ViewerPreferences_Duplex__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "Simplex" || val == "DuplexFlipShortEdge" || val == "DuplexFlipLongEdge")) 
+        if (!(val == PdfName.Simplex || val == PdfName.DuplexFlipShortEdge || val == PdfName.DuplexFlipLongEdge)) 
         {
             ctx.Fail<APM_ViewerPreferences_Duplex>($"Invalid value {val}, allowed are: [Simplex,DuplexFlipShortEdge,DuplexFlipLongEdge]");
         }

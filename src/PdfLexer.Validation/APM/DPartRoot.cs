@@ -115,7 +115,7 @@ internal partial class APM_DPartRoot_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "DPartRoot")) 
+        if (!(val == PdfName.DPartRoot)) 
         {
             ctx.Fail<APM_DPartRoot_Type>($"Invalid value {val}, allowed are: [DPartRoot]");
         }
@@ -202,7 +202,7 @@ internal partial class APM_DPartRoot_NodeNameList__Base : ISpecification<PdfDict
     {
         
         var val = ctx.GetOptional<PdfArray, APM_DPartRoot_NodeNameList>(obj, "NodeNameList", IndirectRequirement.Either);
-        if (((ctx.Extensions.Contains("PDF_VT2"))) && val == null) {
+        if (((ctx.Extensions.Contains(PdfName.PDF_VT2))) && val == null) {
             ctx.Fail<APM_DPartRoot_NodeNameList>("NodeNameList is required when 'fn:IsRequired(fn:Extension(PDF_VT2))"); return;
         } else if (val == null) {
             return;

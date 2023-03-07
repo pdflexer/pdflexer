@@ -42,13 +42,13 @@ internal partial class APM_ArrayOfNamesForEnforce_x : ISpecification<PdfArray>
             var val = ctx.GetOptional<PdfName, APM_ArrayOfNamesForEnforce_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             var parentPrintScaling = parent?.Get("PrintScaling");
-            if (!(!eq(parentPrintScaling,"AppDefault"))) 
+            if (!(!eq(parentPrintScaling,PdfName.AppDefault))) 
             {
                 ctx.Fail<APM_ArrayOfNamesForEnforce_x>($"Value failed special case check: fn:Eval(parent::@PrintScaling!=AppDefault)");
             }
             
             
-            if (!(val == "PrintScaling")) 
+            if (!(val == PdfName.PrintScaling)) 
             {
                 ctx.Fail<APM_ArrayOfNamesForEnforce_x>($"Invalid value {val}, allowed are: [PrintScaling]");
             }

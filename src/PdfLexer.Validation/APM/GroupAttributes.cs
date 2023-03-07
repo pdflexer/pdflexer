@@ -136,7 +136,7 @@ internal partial class APM_GroupAttributes_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Group")) 
+        if (!(val == PdfName.Group)) 
         {
             ctx.Fail<APM_GroupAttributes_Type>($"Invalid value {val}, allowed are: [Group]");
         }
@@ -168,7 +168,7 @@ internal partial class APM_GroupAttributes_S__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Transparency")) 
+        if (!(val == PdfName.Transparency)) 
         {
             ctx.Fail<APM_GroupAttributes_S>($"Invalid value {val}, allowed are: [Transparency]");
         }
@@ -227,7 +227,7 @@ internal partial class APM_GroupAttributes_CS__Base : ISpecification<PdfDictiona
                     // no special cases
                     
                     
-                    if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceCMYK || val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_GroupAttributes_CS>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }

@@ -178,7 +178,7 @@ internal partial class APM_PageTreeNodeRoot_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Pages")) 
+        if (!(val == PdfName.Pages)) 
         {
             ctx.Fail<APM_PageTreeNodeRoot_Type>($"Invalid value {val}, allowed are: [Pages]");
         }

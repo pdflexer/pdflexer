@@ -76,7 +76,7 @@ internal partial class APM_RequirementsSTEP_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsSTEP_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsSTEP_S__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "STEP")) 
+        if (!(val == PdfName.STEP)) 
         {
             ctx.Fail<APM_RequirementsSTEP_S>($"Invalid value {val}, allowed are: [STEP]");
         }

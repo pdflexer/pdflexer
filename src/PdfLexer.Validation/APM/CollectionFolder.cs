@@ -113,7 +113,7 @@ internal partial class APM_CollectionFolder_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Folder")) 
+        if (!(val == PdfName.Folder)) 
         {
             ctx.Fail<APM_CollectionFolder_Type>($"Invalid value {val}, allowed are: [Folder]");
         }

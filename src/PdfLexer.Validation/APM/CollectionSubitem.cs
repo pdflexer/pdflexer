@@ -104,7 +104,7 @@ internal partial class APM_CollectionSubitem_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "CollectionSubitem")) 
+        if (!(val == PdfName.CollectionSubitem)) 
         {
             ctx.Fail<APM_CollectionSubitem_Type>($"Invalid value {val}, allowed are: [CollectionSubitem]");
         }

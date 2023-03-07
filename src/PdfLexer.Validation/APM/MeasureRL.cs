@@ -69,6 +69,7 @@ internal partial class APM_MeasureRL__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_MeasureRL_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_MeasureRL_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -122,7 +123,7 @@ internal partial class APM_MeasureRL_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Measure")) 
+        if (!(val == PdfName.Measure)) 
         {
             ctx.Fail<APM_MeasureRL_Type>($"Invalid value {val}, allowed are: [Measure]");
         }
@@ -154,7 +155,7 @@ internal partial class APM_MeasureRL_Subtype__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "RL")) 
+        if (!(val == PdfName.RL)) 
         {
             ctx.Fail<APM_MeasureRL_Subtype>($"Invalid value {val}, allowed are: [RL]");
         }

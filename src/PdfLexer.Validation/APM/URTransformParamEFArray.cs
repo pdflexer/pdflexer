@@ -44,7 +44,7 @@ internal partial class APM_URTransformParamEFArray_x : ISpecification<PdfArray>
             // no special cases
             
             
-            if (!(val == "Create" || val == "Delete" || val == "Modify" || val == "Import")) 
+            if (!(val == PdfName.Create || val == PdfName.Delete || val == PdfName.Modify || val == PdfName.Import)) 
             {
                 ctx.Fail<APM_URTransformParamEFArray_x>($"Invalid value {val}, allowed are: [Create,Delete,Modify,Import]");
             }

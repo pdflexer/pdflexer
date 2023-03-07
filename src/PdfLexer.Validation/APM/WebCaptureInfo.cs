@@ -127,7 +127,7 @@ internal partial class APM_WebCaptureInfo_V__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == 1)) 
+        if (!(val == 1m)) 
         {
             ctx.Fail<APM_WebCaptureInfo_V>($"Invalid value {val}, allowed are: [1]");
         }

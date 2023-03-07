@@ -8,9 +8,9 @@ namespace pdflexer.ArlingtonGen.Expressions;
 
 internal class EGroup : INode
 {
-    public EGroup(string text)
+    public EGroup(List<INode> children)
     {
-        Children = Exp.Tokenize(text);
+        Children = children;
     }
 
     public List<INode> Children { get; }
@@ -81,5 +81,17 @@ internal class EGroup : INode
             }
         }
 
+    }
+
+    public IEnumerable<string> GetRequiredValues()
+    {
+        using var es = new VarScope(VariableHandling.Either);
+        foreach (var obj in Children)
+        {
+            foreach (var val in obj.GetRequiredValues())
+            {
+                yield return val;
+            }
+        }
     }
 }

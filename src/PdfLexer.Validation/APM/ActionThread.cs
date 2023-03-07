@@ -167,7 +167,7 @@ internal partial class APM_ActionThread_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionThread_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -199,7 +199,7 @@ internal partial class APM_ActionThread_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Thread")) 
+        if (!(val == PdfName.Thread)) 
         {
             ctx.Fail<APM_ActionThread_S>($"Invalid value {val}, allowed are: [Thread]");
         }

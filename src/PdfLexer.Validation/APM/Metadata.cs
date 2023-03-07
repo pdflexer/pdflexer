@@ -79,6 +79,7 @@ internal partial class APM_Metadata__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_Metadata_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_Metadata_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -140,7 +141,7 @@ internal partial class APM_Metadata_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Metadata")) 
+        if (!(val == PdfName.Metadata)) 
         {
             ctx.Fail<APM_Metadata_Type>($"Invalid value {val}, allowed are: [Metadata]");
         }
@@ -172,7 +173,7 @@ internal partial class APM_Metadata_Subtype__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "XML")) 
+        if (!(val == PdfName.XML)) 
         {
             ctx.Fail<APM_Metadata_Subtype>($"Invalid value {val}, allowed are: [XML]");
         }
@@ -251,7 +252,7 @@ internal partial class APM_Metadata_Filter__Base : ISpecification<PdfDictionary>
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_Metadata_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -422,7 +423,7 @@ internal partial class APM_Metadata_FFilter__Base : ISpecification<PdfDictionary
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_Metadata_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

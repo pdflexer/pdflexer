@@ -68,6 +68,7 @@ internal partial class APM_SlideShow__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_SlideShow_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_SlideShow_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -125,7 +126,7 @@ internal partial class APM_SlideShow_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "SlideShow")) 
+        if (!(val == PdfName.SlideShow)) 
         {
             ctx.Fail<APM_SlideShow_Type>($"Invalid value {val}, allowed are: [SlideShow]");
         }
@@ -157,7 +158,7 @@ internal partial class APM_SlideShow_Subtype__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Embedded")) 
+        if (!(val == PdfName.Embedded)) 
         {
             ctx.Fail<APM_SlideShow_Subtype>($"Invalid value {val}, allowed are: [Embedded]");
         }

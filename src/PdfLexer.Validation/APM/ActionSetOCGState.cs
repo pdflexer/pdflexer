@@ -126,7 +126,7 @@ internal partial class APM_ActionSetOCGState_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionSetOCGState_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -158,7 +158,7 @@ internal partial class APM_ActionSetOCGState_S__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "SetOCGState")) 
+        if (!(val == PdfName.SetOCGState)) 
         {
             ctx.Fail<APM_ActionSetOCGState_S>($"Invalid value {val}, allowed are: [SetOCGState]");
         }

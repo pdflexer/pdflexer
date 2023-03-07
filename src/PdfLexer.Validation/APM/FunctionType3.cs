@@ -141,7 +141,7 @@ internal partial class APM_FunctionType3_FunctionType__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 3)) 
+        if (!(val == 3m)) 
         {
             ctx.Fail<APM_FunctionType3_FunctionType>($"Invalid value {val}, allowed are: [3]");
         }

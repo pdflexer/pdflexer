@@ -42,7 +42,7 @@ internal partial class APM_DeviceNColorSpace_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "DeviceN")) 
+        if (!(val == PdfName.DeviceN)) 
         {
             ctx.Fail<APM_DeviceNColorSpace_0>($"Invalid value {val}, allowed are: [DeviceN]");
         }
@@ -117,7 +117,7 @@ internal partial class APM_DeviceNColorSpace_2 : ISpecification<PdfArray>
                     // no special cases
                     
                     
-                    if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceCMYK || val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_DeviceNColorSpace_2>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }

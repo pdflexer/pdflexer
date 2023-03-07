@@ -57,6 +57,7 @@ internal partial class APM_RichMediaInstance__Base : ISpecification<PdfDictionar
     {
         var c = ctx.Clone();
         c.Run<APM_RichMediaInstance_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_RichMediaInstance_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -106,7 +107,7 @@ internal partial class APM_RichMediaInstance_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "RichMediaInstance")) 
+        if (!(val == PdfName.RichMediaInstance)) 
         {
             ctx.Fail<APM_RichMediaInstance_Type>($"Invalid value {val}, allowed are: [RichMediaInstance]");
         }
@@ -138,7 +139,7 @@ internal partial class APM_RichMediaInstance_Subtype__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "3D" || val == "Sound" || val == "Video" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "Flash")))) 
+        if (!(val == PdfName.N3D || val == PdfName.Sound || val == PdfName.Video || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == PdfName.Flash)))) 
         {
             ctx.Fail<APM_RichMediaInstance_Subtype>($"Invalid value {val}, allowed are: [3D,Sound,Video,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,Flash))]");
         }
@@ -195,7 +196,7 @@ internal partial class APM_RichMediaInstance_Params__Base : ISpecification<PdfDi
         var val = ctx.GetOptional<PdfDictionary, APM_RichMediaInstance_Params>(obj, "Params", IndirectRequirement.Either);
         if (val == null) { return; }
         var Subtype = obj.Get("Subtype");
-        if (!(eq(Subtype,"Flash"))) 
+        if (!(eq(Subtype,PdfName.Flash))) 
         {
             ctx.Fail<APM_RichMediaInstance_Params>($"Value failed special case check: fn:Eval(@Subtype==Flash)");
         }

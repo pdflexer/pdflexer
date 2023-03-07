@@ -103,7 +103,14 @@ internal partial class APM_FontFileType1__Base : ISpecification<PdfDictionary>
 
     public static bool MatchesType(PdfValidator ctx, PdfDictionary obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        
+        c.Run<APM_FontFileType1_Subtype, PdfDictionary>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 
     public static List<string> AllowedFields_10 { get; } = new List<string> 
@@ -343,7 +350,7 @@ internal partial class APM_FontFileType1_Filter__Base : ISpecification<PdfDictio
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_FontFileType1_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -514,7 +521,7 @@ internal partial class APM_FontFileType1_FFilter__Base : ISpecification<PdfDicti
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_FontFileType1_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

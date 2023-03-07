@@ -108,7 +108,7 @@ internal partial class APM_RichMediaActivation_Type__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "RichMediaActivation")) 
+        if (!(val == PdfName.RichMediaActivation)) 
         {
             ctx.Fail<APM_RichMediaActivation_Type>($"Invalid value {val}, allowed are: [RichMediaActivation]");
         }
@@ -140,7 +140,7 @@ internal partial class APM_RichMediaActivation_Condition__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "XA" || val == "PO" || val == "PV")) 
+        if (!(val == PdfName.XA || val == PdfName.PO || val == PdfName.PV)) 
         {
             ctx.Fail<APM_RichMediaActivation_Condition>($"Invalid value {val}, allowed are: [XA,PO,PV]");
         }

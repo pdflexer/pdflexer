@@ -116,7 +116,7 @@ internal partial class APM_Navigator_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Navigator")) 
+        if (!(val == PdfName.Navigator)) 
         {
             ctx.Fail<APM_Navigator_Type>($"Invalid value {val}, allowed are: [Navigator]");
         }
@@ -385,7 +385,7 @@ internal partial class APM_Navigator_LoadType__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "Module" || val == "Default")) 
+        if (!(val == PdfName.Module || val == PdfName.Default)) 
         {
             ctx.Fail<APM_Navigator_LoadType>($"Invalid value {val}, allowed are: [Module,Default]");
         }

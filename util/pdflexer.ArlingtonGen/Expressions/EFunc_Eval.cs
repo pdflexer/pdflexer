@@ -9,15 +9,16 @@ namespace pdflexer.ArlingtonGen.Expressions;
 
 internal class EFunc_Eval : EFunBase
 {
-    public EFunc_Eval(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_Eval(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
-        using (var es = new EvalScope())
+        VariableContext.InEval = true;
+        using var es = new EvalScope();
+        using var ev = new VarScope(VariableHandling.Either);
+        foreach (var dep in Children)
         {
-            foreach (var dep in Inputs)
-            {
-                dep.Write(sb);
-            }
+            dep.Write(sb);
         }
+        VariableContext.InEval = false;
     }
 }

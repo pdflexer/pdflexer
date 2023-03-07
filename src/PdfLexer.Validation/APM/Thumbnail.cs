@@ -108,6 +108,7 @@ internal partial class APM_Thumbnail__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_Thumbnail_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_Thumbnail_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -185,7 +186,7 @@ internal partial class APM_Thumbnail_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "XObject")) 
+        if (!(val == PdfName.XObject)) 
         {
             ctx.Fail<APM_Thumbnail_Type>($"Invalid value {val}, allowed are: [XObject]");
         }
@@ -217,7 +218,7 @@ internal partial class APM_Thumbnail_Subtype__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Image")) 
+        if (!(val == PdfName.Image)) 
         {
             ctx.Fail<APM_Thumbnail_Subtype>($"Invalid value {val}, allowed are: [Image]");
         }
@@ -318,7 +319,7 @@ internal partial class APM_Thumbnail_ColorSpace__Base : ISpecification<PdfDictio
                     // no special cases
                     
                     
-                    if (!(val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_Thumbnail_ColorSpace>($"Invalid value {val}, allowed are: [DeviceRGB,DeviceGray]");
                     }
@@ -356,7 +357,7 @@ internal partial class APM_Thumbnail_BitsPerComponent__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 1 || val == 2 || val == 4 || val == 8 || val == 16)) 
+        if (!(val == 1m || val == 2m || val == 4m || val == 8m || val == 16m)) 
         {
             ctx.Fail<APM_Thumbnail_BitsPerComponent>($"Invalid value {val}, allowed are: [1,2,4,8,16]");
         }
@@ -462,7 +463,7 @@ internal partial class APM_Thumbnail_Filter__Base : ISpecification<PdfDictionary
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version >= 1.4m && val == "JBIG2Decode") || val == "DCTDecode" || (ctx.Version >= 1.5m && val == "JPXDecode") || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || val == PdfName.CCITTFaxDecode || (ctx.Version >= 1.4m && val == PdfName.JBIG2Decode) || val == PdfName.DCTDecode || (ctx.Version >= 1.5m && val == PdfName.JPXDecode) || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_Thumbnail_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,CCITTFaxDecode,fn:SinceVersion(1.4,JBIG2Decode),DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -642,7 +643,7 @@ internal partial class APM_Thumbnail_FFilter__Base : ISpecification<PdfDictionar
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version >= 1.4m && val == "JBIG2Decode") || val == "DCTDecode" || (ctx.Version >= 1.5m && val == "JPXDecode") || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || val == PdfName.CCITTFaxDecode || (ctx.Version >= 1.4m && val == PdfName.JBIG2Decode) || val == PdfName.DCTDecode || (ctx.Version >= 1.5m && val == PdfName.JPXDecode) || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_Thumbnail_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,CCITTFaxDecode,fn:SinceVersion(1.4,JBIG2Decode),DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
                     }

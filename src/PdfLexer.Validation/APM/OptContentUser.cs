@@ -123,7 +123,7 @@ internal partial class APM_OptContentUser_Type__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "Ind" || val == "Ttl" || val == "Org")) 
+        if (!(val == PdfName.Ind || val == PdfName.Ttl || val == PdfName.Org)) 
         {
             ctx.Fail<APM_OptContentUser_Type>($"Invalid value {val}, allowed are: [Ind,Ttl,Org]");
         }

@@ -147,7 +147,7 @@ internal partial class APM_ActionMovie_Type__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionMovie_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -179,7 +179,7 @@ internal partial class APM_ActionMovie_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Movie")) 
+        if (!(val == PdfName.Movie)) 
         {
             ctx.Fail<APM_ActionMovie_S>($"Invalid value {val}, allowed are: [Movie]");
         }
@@ -382,7 +382,7 @@ internal partial class APM_ActionMovie_Operation__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Play" || val == "Stop" || val == "Pause" || val == "Resume")) 
+        if (!(val == PdfName.Play || val == PdfName.Stop || val == PdfName.Pause || val == PdfName.Resume)) 
         {
             ctx.Fail<APM_ActionMovie_Operation>($"Invalid value {val}, allowed are: [Play,Stop,Pause,Resume]");
         }

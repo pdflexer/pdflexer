@@ -205,7 +205,7 @@ internal partial class APM_PageObject_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Page" || val == "Template")) 
+        if (!(val == PdfName.Page || val == PdfName.Template)) 
         {
             ctx.Fail<APM_PageObject_Type>($"Invalid value {val}, allowed are: [Page,Template]");
         }
@@ -234,13 +234,13 @@ internal partial class APM_PageObject_Parent__Base : ISpecification<PdfDictionar
     {
         var Type = obj.Get("Type");
         var val = ctx.GetOptional<PdfDictionary, APM_PageObject_Parent>(obj, "Parent", IndirectRequirement.MustBeIndirect);
-        if ((!eq(Type,"Template")) && val == null) {
+        if ((!eq(Type,PdfName.Template)) && val == null) {
             ctx.Fail<APM_PageObject_Parent>("Parent is required when 'fn:IsRequired(@Type!=Template)"); return;
         } else if (val == null) {
             return;
         }
         
-        if (eq(Type,"Template")) 
+        if (eq(Type,PdfName.Template)) 
         {
             ctx.Fail<APM_PageObject_Parent>($"Value failed special case check: fn:Not(fn:IsPresent(@Type==Template))");
         }
@@ -279,7 +279,7 @@ internal partial class APM_PageObject_LastModified__Base : ISpecification<PdfDic
     {
         
         var val = ctx.GetOptional<PdfString, APM_PageObject_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-        if ((obj.ContainsKey("PieceInfo")) && val == null) {
+        if ((obj.ContainsKey(PdfName.PieceInfo)) && val == null) {
             ctx.Fail<APM_PageObject_LastModified>("LastModified is required when 'fn:IsRequired(fn:IsPresent(PieceInfo))"); return;
         } else if (val == null) {
             return;
@@ -635,7 +635,7 @@ internal partial class APM_PageObject_B__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfArray, APM_PageObject_B>(obj, "B", IndirectRequirement.Either);
         if (val == null) { return; }
         var Type = obj.Get("Type");
-        if (eq(Type,"Template")) 
+        if (eq(Type,PdfName.Template)) 
         {
             ctx.Fail<APM_PageObject_B>($"Value failed special case check: fn:Not(fn:IsPresent(@Type==Template))");
         }
@@ -943,7 +943,7 @@ internal partial class APM_PageObject_Tabs__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "R" || val == "C" || val == "S" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "A")) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "W")) || (ctx.Version >= 2.0m && val == "A") || (ctx.Version >= 2.0m && val == "W"))) 
+        if (!(val == PdfName.R || val == PdfName.C || val == PdfName.S || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == PdfName.A)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == PdfName.W)) || (ctx.Version >= 2.0m && val == PdfName.A) || (ctx.Version >= 2.0m && val == PdfName.W))) 
         {
             ctx.Fail<APM_PageObject_Tabs>($"Invalid value {val}, allowed are: [R,C,S,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,A)),fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,W)),fn:SinceVersion(2.0,A),fn:SinceVersion(2.0,W)]");
         }

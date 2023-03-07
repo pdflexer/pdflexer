@@ -76,7 +76,7 @@ internal partial class APM_RequirementsTransitions_Type__Base : ISpecification<P
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsTransitions_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsTransitions_S__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "Transitions")) 
+        if (!(val == PdfName.Transitions)) 
         {
             ctx.Fail<APM_RequirementsTransitions_S>($"Invalid value {val}, allowed are: [Transitions]");
         }

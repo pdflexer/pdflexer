@@ -49,7 +49,7 @@ internal partial class APM_{{Name}}__Base : ISpecification<PdfDictionary>
     public string GetMatcher(List<Row> rows)
     {
         var t = rows.FirstOrDefault(x => x.Key == "Type");
-        var st = rows.FirstOrDefault(x => x.Key == "SubType");
+        var st = rows.FirstOrDefault(x => x.Key == "Subtype");
 
         var txt = "";
         if (t != null)
@@ -63,6 +63,7 @@ c.Run<APM_{{Name}}_{{stc.Key}}, PdfDictionary>(new CallStack(), obj, null);
         {
             var stc = new DictChild(this, rows, st);
             txt += $$"""
+
 c.Run<APM_{{Name}}_{{stc.Key}}, PdfDictionary>(new CallStack(), obj, null);
 """;
         }

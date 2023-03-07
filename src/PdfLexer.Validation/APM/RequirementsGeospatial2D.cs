@@ -76,7 +76,7 @@ internal partial class APM_RequirementsGeospatial2D_Type__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsGeospatial2D_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsGeospatial2D_S__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "Geospatial2D")) 
+        if (!(val == PdfName.Geospatial2D)) 
         {
             ctx.Fail<APM_RequirementsGeospatial2D_S>($"Invalid value {val}, allowed are: [Geospatial2D]");
         }

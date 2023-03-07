@@ -113,7 +113,7 @@ internal partial class APM_PaperMetaData_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "PaperMetaData")) 
+        if (!(val == PdfName.PaperMetaData)) 
         {
             ctx.Fail<APM_PaperMetaData_Type>($"Invalid value {val}, allowed are: [PaperMetaData]");
         }
@@ -145,7 +145,7 @@ internal partial class APM_PaperMetaData_Version__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == 1)) 
+        if (!(val == 1m)) 
         {
             ctx.Fail<APM_PaperMetaData_Version>($"Invalid value {val}, allowed are: [1]");
         }
@@ -235,7 +235,7 @@ internal partial class APM_PaperMetaData_Symbology__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "PDF417" || val == "QRCode" || val == "DataMatrix")) 
+        if (!(val == PdfName.PDF417 || val == PdfName.QRCode || val == PdfName.DataMatrix)) 
         {
             ctx.Fail<APM_PaperMetaData_Symbology>($"Invalid value {val}, allowed are: [PDF417,QRCode,DataMatrix]");
         }
@@ -388,7 +388,7 @@ internal partial class APM_PaperMetaData_ECC__Base : ISpecification<PdfDictionar
     {
         var Symbology = obj.Get("Symbology");
         var val = ctx.GetOptional<PdfIntNumber, APM_PaperMetaData_ECC>(obj, "ECC", IndirectRequirement.Either);
-        if (((eq(Symbology,"PDF417")||eq(Symbology,"QRCode"))) && val == null) {
+        if (((eq(Symbology,PdfName.PDF417)||eq(Symbology,PdfName.QRCode))) && val == null) {
             ctx.Fail<APM_PaperMetaData_ECC>("ECC is required when 'fn:IsRequired((@Symbology==PDF417) || (@Symbology==QRCode))"); return;
         } else if (val == null) {
             return;
@@ -396,7 +396,7 @@ internal partial class APM_PaperMetaData_ECC__Base : ISpecification<PdfDictionar
         // no special cases
         
         var ECC = obj.Get("ECC");
-        if (!((gte(ECC,0)&&((eq(Symbology,"PDF417")&&lte(ECC,8))||(eq(Symbology,"QRCode")&&lte(ECC,3)))))) 
+        if (!((gte(ECC,0)&&((eq(Symbology,PdfName.PDF417)&&lte(ECC,8))||(eq(Symbology,PdfName.QRCode)&&lte(ECC,3)))))) 
         {
             ctx.Fail<APM_PaperMetaData_ECC>($"Invalid value {val}, allowed are: [fn:Eval((@ECC>=0) && (((@Symbology==PDF417) && (@ECC<=8)) || ((@Symbology==QRCode) && (@ECC<=3))))]");
         }

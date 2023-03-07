@@ -136,7 +136,7 @@ internal partial class APM_SoftMaskLuminosity_Type__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "Mask")) 
+        if (!(val == PdfName.Mask)) 
         {
             ctx.Fail<APM_SoftMaskLuminosity_Type>($"Invalid value {val}, allowed are: [Mask]");
         }
@@ -168,7 +168,7 @@ internal partial class APM_SoftMaskLuminosity_S__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Luminosity")) 
+        if (!(val == PdfName.Luminosity)) 
         {
             ctx.Fail<APM_SoftMaskLuminosity_S>($"Invalid value {val}, allowed are: [Luminosity]");
         }
@@ -199,7 +199,7 @@ internal partial class APM_SoftMaskLuminosity_G__Base : ISpecification<PdfDictio
         if (val == null) { return; }
         var GGroupS = val.Get("Group")?.Get("S");
         var GGroupCS = val.Get("Group")?.Get("CS");
-        if (!((eq(GGroupS,"Transparency")&&(GGroupCS != null)))) 
+        if (!((eq(GGroupS,PdfName.Transparency)&&(GGroupCS != null)))) 
         {
             ctx.Fail<APM_SoftMaskLuminosity_G>($"Value failed special case check: fn:Eval((G::Group::@S==Transparency) && fn:IsPresent(G::Group::CS))");
         }
@@ -283,7 +283,7 @@ internal partial class APM_SoftMaskLuminosity_TR__Base : ISpecification<PdfDicti
                     // no special cases
                     
                     
-                    if (!(val == "Identity")) 
+                    if (!(val == PdfName.Identity)) 
                     {
                         ctx.Fail<APM_SoftMaskLuminosity_TR>($"Invalid value {val}, allowed are: [Identity]");
                     }

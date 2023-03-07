@@ -131,7 +131,7 @@ internal partial class APM_MediaClipData_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "MediaClip")) 
+        if (!(val == PdfName.MediaClip)) 
         {
             ctx.Fail<APM_MediaClipData_Type>($"Invalid value {val}, allowed are: [MediaClip]");
         }
@@ -163,7 +163,7 @@ internal partial class APM_MediaClipData_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "MCD")) 
+        if (!(val == PdfName.MCD)) 
         {
             ctx.Fail<APM_MediaClipData_S>($"Invalid value {val}, allowed are: [MCD]");
         }

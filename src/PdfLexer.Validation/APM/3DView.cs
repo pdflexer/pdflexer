@@ -127,7 +127,7 @@ internal partial class APM_3DView_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "3DView")) 
+        if (!(val == PdfName.N3DView)) 
         {
             ctx.Fail<APM_3DView_Type>($"Invalid value {val}, allowed are: [3DView]");
         }
@@ -213,7 +213,7 @@ internal partial class APM_3DView_MS__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "M" || val == "U3D")) 
+        if (!(val == PdfName.M || val == PdfName.U3D)) 
         {
             ctx.Fail<APM_3DView_MS>($"Invalid value {val}, allowed are: [M,U3D]");
         }
@@ -269,7 +269,7 @@ internal partial class APM_3DView_C2W__Base : ISpecification<PdfDictionary>
     {
         var MS = obj.Get("MS");
         var val = ctx.GetOptional<PdfArray, APM_3DView_C2W>(obj, "C2W", IndirectRequirement.Either);
-        if ((eq(MS,"M")) && val == null) {
+        if ((eq(MS,PdfName.M)) && val == null) {
             ctx.Fail<APM_3DView_C2W>("C2W is required when 'fn:IsRequired(@MS==M)"); return;
         } else if (val == null) {
             return;
@@ -302,7 +302,7 @@ internal partial class APM_3DView_U3DPath__Base : ISpecification<PdfDictionary>
         var (utval, wasIR) = ctx.GetOptional<APM_3DView_U3DPath>(obj, "U3DPath", IndirectRequirement.Either);
         
         var MS = obj.Get("MS");
-        if ((eq(MS,"U3D")) && utval == null) {
+        if ((eq(MS,PdfName.U3D)) && utval == null) {
             ctx.Fail<APM_3DView_U3DPath>("U3DPath is required"); return;
         } else if (utval == null) {
             return;

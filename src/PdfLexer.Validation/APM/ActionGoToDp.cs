@@ -75,7 +75,7 @@ internal partial class APM_ActionGoToDp_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionGoToDp_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -107,7 +107,7 @@ internal partial class APM_ActionGoToDp_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "GoToDp")) 
+        if (!(val == PdfName.GoToDp)) 
         {
             ctx.Fail<APM_ActionGoToDp_S>($"Invalid value {val}, allowed are: [GoToDp]");
         }

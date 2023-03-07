@@ -8,46 +8,49 @@ namespace pdflexer.ArlingtonGen.Expressions;
 
 internal class EFunc_IsPresent : EFunBase
 {
-    public EFunc_IsPresent(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_IsPresent(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         using (var es = new EvalScope())
         {
-            if (Inputs.Count == 1)
+            if (Children.Count == 1)
             {
-                if ((Inputs[0] as INode).IsSingleValue())
+                if ((Children[0] as INode).IsSingleValue())
                 {
-                    AddVar(Inputs[0]);
+                    AddVar(Children[0]);
                 } else
                 {
-                    Inputs[0].Write(sb);
+                    using var ev = new VarScope(VariableHandling.Either);
+                    Children[0].Write(sb);
                 }
             }
-            if (Inputs.Count > 1)
+            if (Children.Count > 1)
             {
                 sb.Append("(");
-                AddVar(Inputs[0]);
+                AddVar(Children[0]);
                 sb.Append(" && !(");
-                Inputs[1].Write(sb);
+                Children[1].Write(sb);
                 sb.Append("))");
 
             }            
         }
 
-        void AddVar(EGroup grp)
+        void AddVar(INode grp)
         {
-            var val = (grp.Children[0] as EValue)?.Text;
+            var val = (grp as EValue)?.Text;
             if (val != null && int.TryParse(val, out var i))
             {
                 sb.Append($"(obj.Count > " + (i - 1) + ")");
             }
             else if (val?.Contains("::") ?? false)
             {
+                using var ev = new VarScope(VariableHandling.MustBeObj);
                 sb.Append($"(");
                 grp.Write(sb);
                 sb.Append($" != null)");
             } else
             {
+                using var ev = new VarScope(VariableHandling.MustBeVal);
                 sb.Append($"obj.ContainsKey(");
                 grp.Write(sb);
                 sb.Append($")");

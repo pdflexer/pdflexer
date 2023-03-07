@@ -180,7 +180,7 @@ internal partial class APM_OptContentConfig_BaseState__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "ON" || val == "OFF" || val == "Unchanged")) 
+        if (!(val == PdfName.ON || val == PdfName.OFF || val == PdfName.Unchanged)) 
         {
             ctx.Fail<APM_OptContentConfig_BaseState>($"Invalid value {val}, allowed are: [ON,OFF,Unchanged]");
         }
@@ -281,7 +281,7 @@ internal partial class APM_OptContentConfig_Intent__Base : ISpecification<PdfDic
                     // no special cases
                     
                     
-                    if (!(val == "All" || val == "Design" || val == "View")) 
+                    if (!(val == PdfName.All || val == PdfName.Design || val == PdfName.View)) 
                     {
                         ctx.Fail<APM_OptContentConfig_Intent>($"Invalid value {val}, allowed are: [All,Design,View]");
                     }
@@ -373,7 +373,7 @@ internal partial class APM_OptContentConfig_ListMode__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "AllPages" || val == "VisiblePages")) 
+        if (!(val == PdfName.AllPages || val == PdfName.VisiblePages)) 
         {
             ctx.Fail<APM_OptContentConfig_ListMode>($"Invalid value {val}, allowed are: [AllPages,VisiblePages]");
         }

@@ -139,7 +139,7 @@ internal partial class APM_IconFit_SW__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "A" || val == "B" || val == "S" || val == "N")) 
+        if (!(val == PdfName.A || val == PdfName.B || val == PdfName.S || val == PdfName.N)) 
         {
             ctx.Fail<APM_IconFit_SW>($"Invalid value {val}, allowed are: [A,B,S,N]");
         }
@@ -171,7 +171,7 @@ internal partial class APM_IconFit_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "A" || val == "P")) 
+        if (!(val == PdfName.A || val == PdfName.P)) 
         {
             ctx.Fail<APM_IconFit_S>($"Invalid value {val}, allowed are: [A,P]");
         }

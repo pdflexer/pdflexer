@@ -89,7 +89,7 @@ internal partial class APM_Dest0StructArray_1 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "Fit" || val == "FitB")) 
+        if (!(val == PdfName.Fit || val == PdfName.FitB)) 
         {
             ctx.Fail<APM_Dest0StructArray_1>($"Invalid value {val}, allowed are: [Fit,FitB]");
         }

@@ -93,6 +93,7 @@ internal partial class APM_AnnotTrapNetwork__Base : ISpecification<PdfDictionary
     {
         var c = ctx.Clone();
         c.Run<APM_AnnotTrapNetwork_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_AnnotTrapNetwork_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -154,7 +155,7 @@ internal partial class APM_AnnotTrapNetwork_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Annot")) 
+        if (!(val == PdfName.Annot)) 
         {
             ctx.Fail<APM_AnnotTrapNetwork_Type>($"Invalid value {val}, allowed are: [Annot]");
         }
@@ -186,7 +187,7 @@ internal partial class APM_AnnotTrapNetwork_Subtype__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "TrapNet")) 
+        if (!(val == PdfName.TrapNet)) 
         {
             ctx.Fail<APM_AnnotTrapNetwork_Subtype>($"Invalid value {val}, allowed are: [TrapNet]");
         }
@@ -672,7 +673,7 @@ internal partial class APM_AnnotTrapNetwork_BM__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!((ctx.Version < 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
+        if (!((ctx.Version < 1.4m && val == PdfName.Compatible) || val == PdfName.Normal || val == PdfName.Multiply || val == PdfName.Screen || val == PdfName.Difference || val == PdfName.Darken || val == PdfName.Lighten || val == PdfName.ColorDodge || val == PdfName.ColorBurn || val == PdfName.Exclusion || val == PdfName.HardLight || val == PdfName.Overlay || val == PdfName.SoftLight || val == PdfName.Luminosity || val == PdfName.Hue || val == PdfName.Saturation || val == PdfName.Color)) 
         {
             ctx.Fail<APM_AnnotTrapNetwork_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
         }
@@ -728,7 +729,7 @@ internal partial class APM_AnnotTrapNetwork_LastModified__Base : ISpecification<
     {
         
         var val = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-        if (((!obj.ContainsKey("Version")&&!obj.ContainsKey("AnnotStates"))) && val == null) {
+        if (((!obj.ContainsKey(PdfName.Version)&&!obj.ContainsKey(PdfName.AnnotStates))) && val == null) {
             ctx.Fail<APM_AnnotTrapNetwork_LastModified>("LastModified is required when 'fn:IsRequired(fn:Not(fn:IsPresent(Version)) && fn:Not(fn:IsPresent(AnnotStates)))"); return;
         } else if (val == null) {
             return;
@@ -760,7 +761,7 @@ internal partial class APM_AnnotTrapNetwork_Version__Base : ISpecification<PdfDi
     {
         
         var val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_Version>(obj, "Version", IndirectRequirement.Either);
-        if (((obj.ContainsKey("AnnotStates")&&!obj.ContainsKey(val))) && val == null) {
+        if (((obj.ContainsKey(PdfName.AnnotStates)&&!obj.ContainsKey(val))) && val == null) {
             ctx.Fail<APM_AnnotTrapNetwork_Version>("Version is required when 'fn:IsRequired(fn:IsPresent(AnnotStates) && fn:Not(fn:IsPresent(LastModified)))"); return;
         } else if (val == null) {
             return;
@@ -792,7 +793,7 @@ internal partial class APM_AnnotTrapNetwork_AnnotStates__Base : ISpecification<P
     {
         
         var val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_AnnotStates>(obj, "AnnotStates", IndirectRequirement.Either);
-        if (((obj.ContainsKey(val)&&!obj.ContainsKey("LastModified"))) && val == null) {
+        if (((obj.ContainsKey(val)&&!obj.ContainsKey(PdfName.LastModified))) && val == null) {
             ctx.Fail<APM_AnnotTrapNetwork_AnnotStates>("AnnotStates is required when 'fn:IsRequired(fn:IsPresent(Version) && fn:Not(fn:IsPresent(LastModified)))"); return;
         } else if (val == null) {
             return;

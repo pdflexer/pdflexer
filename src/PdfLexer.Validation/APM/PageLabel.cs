@@ -145,7 +145,7 @@ internal partial class APM_PageLabel_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "PageLabel")) 
+        if (!(val == PdfName.PageLabel)) 
         {
             ctx.Fail<APM_PageLabel_Type>($"Invalid value {val}, allowed are: [PageLabel]");
         }
@@ -177,7 +177,7 @@ internal partial class APM_PageLabel_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "D" || val == "R" || val == "r" || val == "A" || val == "a")) 
+        if (!(val == PdfName.D || val == PdfName.R || val == PdfName.r || val == PdfName.A || val == PdfName.a)) 
         {
             ctx.Fail<APM_PageLabel_S>($"Invalid value {val}, allowed are: [D,R,r,A,a]");
         }

@@ -165,7 +165,7 @@ internal partial class APM_Thread_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Thread")) 
+        if (!(val == PdfName.Thread)) 
         {
             ctx.Fail<APM_Thread_Type>($"Invalid value {val}, allowed are: [Thread]");
         }

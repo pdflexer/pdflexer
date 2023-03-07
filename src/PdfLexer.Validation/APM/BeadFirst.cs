@@ -167,7 +167,7 @@ internal partial class APM_BeadFirst_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Bead")) 
+        if (!(val == PdfName.Bead)) 
         {
             ctx.Fail<APM_BeadFirst_Type>($"Invalid value {val}, allowed are: [Bead]");
         }

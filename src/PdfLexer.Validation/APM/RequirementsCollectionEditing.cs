@@ -76,7 +76,7 @@ internal partial class APM_RequirementsCollectionEditing_Type__Base : ISpecifica
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsCollectionEditing_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsCollectionEditing_S__Base : ISpecificatio
         // no special cases
         
         
-        if (!(val == "CollectionEditing")) 
+        if (!(val == PdfName.CollectionEditing)) 
         {
             ctx.Fail<APM_RequirementsCollectionEditing_S>($"Invalid value {val}, allowed are: [CollectionEditing]");
         }

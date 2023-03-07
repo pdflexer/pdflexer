@@ -49,6 +49,7 @@ internal partial class APM_XObjectFormPS__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_XObjectFormPS_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_XObjectFormPS_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -90,7 +91,7 @@ internal partial class APM_XObjectFormPS_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "XObject")) 
+        if (!(val == PdfName.XObject)) 
         {
             ctx.Fail<APM_XObjectFormPS_Type>($"Invalid value {val}, allowed are: [XObject]");
         }
@@ -122,7 +123,7 @@ internal partial class APM_XObjectFormPS_Subtype__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "PS")) 
+        if (!(val == PdfName.PS)) 
         {
             ctx.Fail<APM_XObjectFormPS_Subtype>($"Invalid value {val}, allowed are: [PS]");
         }
@@ -228,7 +229,7 @@ internal partial class APM_XObjectFormPS_Filter__Base : ISpecification<PdfDictio
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version >= 1.2m && val == "FlateDecode") || val == "RunLengthDecode")) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || (ctx.Version >= 1.2m && val == PdfName.FlateDecode) || val == PdfName.RunLengthDecode)) 
                     {
                         ctx.Fail<APM_XObjectFormPS_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,fn:SinceVersion(1.2,FlateDecode),RunLengthDecode]");
                     }
@@ -399,7 +400,7 @@ internal partial class APM_XObjectFormPS_FFilter__Base : ISpecification<PdfDicti
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode")) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode)) 
                     {
                         ctx.Fail<APM_XObjectFormPS_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode]");
                     }

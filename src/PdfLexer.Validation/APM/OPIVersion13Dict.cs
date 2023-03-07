@@ -159,7 +159,7 @@ internal partial class APM_OPIVersion13Dict_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "OPI")) 
+        if (!(val == PdfName.OPI)) 
         {
             ctx.Fail<APM_OPIVersion13Dict_Type>($"Invalid value {val}, allowed are: [OPI]");
         }

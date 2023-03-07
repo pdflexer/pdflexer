@@ -44,7 +44,7 @@ internal partial class APM_URTransformParamFormArray_x : ISpecification<PdfArray
             // no special cases
             
             
-            if (!(val == "Add" || val == "Delete" || val == "FillIn" || val == "Import" || val == "Export" || val == "SubmitStandalone" || val == "SpawnTemplate" || val == "BarcodePlaintext" || val == "Online")) 
+            if (!(val == PdfName.Add || val == PdfName.Delete || val == PdfName.FillIn || val == PdfName.Import || val == PdfName.Export || val == PdfName.SubmitStandalone || val == PdfName.SpawnTemplate || val == PdfName.BarcodePlaintext || val == PdfName.Online)) 
             {
                 ctx.Fail<APM_URTransformParamFormArray_x>($"Invalid value {val}, allowed are: [Add,Delete,FillIn,Import,Export,SubmitStandalone,SpawnTemplate,BarcodePlaintext,Online]");
             }

@@ -75,7 +75,14 @@ internal static partial class MathUtil
         if (n == null) { return false; }
         return n.Value == val;
     }
-    public static bool gt(IPdfObject? obj, int val)
+    
+    public static bool eq(IPdfObject? obj, PdfName val)
+    {
+        if (obj == null) { return false; }
+        var n = obj as PdfName;
+        if (n == null) { return false; }
+        return n.Value == val;
+    }public static bool gt(IPdfObject? obj, int val)
     {
         if (obj == null) { return false; }
         var n = obj as PdfIntNumber;

@@ -128,6 +128,7 @@ internal partial class APM_XObjectImage__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_XObjectImage_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_XObjectImage_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -205,7 +206,7 @@ internal partial class APM_XObjectImage_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "XObject")) 
+        if (!(val == PdfName.XObject)) 
         {
             ctx.Fail<APM_XObjectImage_Type>($"Invalid value {val}, allowed are: [XObject]");
         }
@@ -237,7 +238,7 @@ internal partial class APM_XObjectImage_Subtype__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Image")) 
+        if (!(val == PdfName.Image)) 
         {
             ctx.Fail<APM_XObjectImage_Subtype>($"Invalid value {val}, allowed are: [Image]");
         }
@@ -322,7 +323,7 @@ internal partial class APM_XObjectImage_ColorSpace__Base : ISpecification<PdfDic
         
         var Filter = obj.Get("Filter");
         var ImageMask = obj.Get("ImageMask");
-        if ((!(Contains(Filter, "JPXDecode")||eq(ImageMask,PdfBoolean.True))) && utval == null) {
+        if ((!(Contains(Filter, PdfName.JPXDecode)||eq(ImageMask,PdfBoolean.True))) && utval == null) {
             ctx.Fail<APM_XObjectImage_ColorSpace>("ColorSpace is required"); return;
         } else if (utval == null) {
             return;
@@ -381,7 +382,7 @@ internal partial class APM_XObjectImage_ColorSpace__Base : ISpecification<PdfDic
                     }
                     
                     
-                    if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceCMYK || val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_XObjectImage_ColorSpace>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }
@@ -417,7 +418,7 @@ internal partial class APM_XObjectImage_BitsPerComponent__Base : ISpecification<
         var Filter = obj.Get("Filter");
         var ImageMask = obj.Get("ImageMask");
         var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImage_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
-        if ((!(Contains(Filter, "JPXDecode")||eq(ImageMask,PdfBoolean.True))) && val == null) {
+        if ((!(Contains(Filter, PdfName.JPXDecode)||eq(ImageMask,PdfBoolean.True))) && val == null) {
             ctx.Fail<APM_XObjectImage_BitsPerComponent>("BitsPerComponent is required when 'fn:IsRequired(fn:Not(fn:Contains(@Filter,JPXDecode) || (@ImageMask==true)))"); return;
         } else if (val == null) {
             return;
@@ -426,7 +427,7 @@ internal partial class APM_XObjectImage_BitsPerComponent__Base : ISpecification<
         
         
         // TODO required value checks
-        if (!(val == 2 || val == 4 || (ctx.Version >= 1.5m && val == 16))) 
+        if (!(val == 2m || val == 4m || (ctx.Version >= 1.5m && val == 16m))) 
         {
             ctx.Fail<APM_XObjectImage_BitsPerComponent>($"Invalid value {val}, allowed are: [fn:RequiredValue((@Filter==CCITTFaxDecode) || (@Filter==JBIG2Decode) || (@ImageMask==true),1),2,4,fn:RequiredValue((@Filter==RunLengthDecode) || (@Filter==DCTDecode),8),fn:SinceVersion(1.5,16)]");
         }
@@ -484,7 +485,7 @@ internal partial class APM_XObjectImage_ImageMask__Base : ISpecification<PdfDict
         if (val == null) { return; }
         var ImageMask = obj.Get("ImageMask");
         var BitsPerComponent = obj.Get("BitsPerComponent");
-        if (!((eq(ImageMask,PdfBoolean.True)&&eq(BitsPerComponent,1)&&!obj.ContainsKey("ColorSpace")&&!obj.ContainsKey("Mask")||eq(ImageMask,PdfBoolean.False)))) 
+        if (!((eq(ImageMask,PdfBoolean.True)&&eq(BitsPerComponent,1)&&!obj.ContainsKey(PdfName.ColorSpace)&&!obj.ContainsKey(PdfName.Mask)||eq(ImageMask,PdfBoolean.False)))) 
         {
             ctx.Fail<APM_XObjectImage_ImageMask>($"Value failed special case check: fn:Eval(((@ImageMask==true) && (@BitsPerComponent==1) && fn:Not(fn:IsPresent(ColorSpace)) && fn:Not(fn:IsPresent(Mask))) || (@ImageMask==false))");
         }
@@ -681,7 +682,7 @@ internal partial class APM_XObjectImage_SMaskInData__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2)) 
+        if (!(val == 0m || val == 1m || val == 2m)) 
         {
             ctx.Fail<APM_XObjectImage_SMaskInData>($"Invalid value {val}, allowed are: [0,1,2]");
         }
@@ -1061,7 +1062,7 @@ internal partial class APM_XObjectImage_Filter__Base : ISpecification<PdfDiction
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version >= 1.2m && val == "FlateDecode") || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version >= 1.4m && val == "JBIG2Decode") || val == "DCTDecode" || (ctx.Version >= 1.5m && val == "JPXDecode") || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || (ctx.Version >= 1.2m && val == PdfName.FlateDecode) || val == PdfName.RunLengthDecode || val == PdfName.CCITTFaxDecode || (ctx.Version >= 1.4m && val == PdfName.JBIG2Decode) || val == PdfName.DCTDecode || (ctx.Version >= 1.5m && val == PdfName.JPXDecode) || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectImage_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,fn:SinceVersion(1.2,FlateDecode),RunLengthDecode,CCITTFaxDecode,fn:SinceVersion(1.4,JBIG2Decode),DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -1251,7 +1252,7 @@ internal partial class APM_XObjectImage_FFilter__Base : ISpecification<PdfDictio
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "CCITTFaxDecode" || (ctx.Version >= 1.4m && val == "JBIG2Decode") || val == "DCTDecode" || (ctx.Version >= 1.5m && val == "JPXDecode") || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || val == PdfName.CCITTFaxDecode || (ctx.Version >= 1.4m && val == PdfName.JBIG2Decode) || val == PdfName.DCTDecode || (ctx.Version >= 1.5m && val == PdfName.JPXDecode) || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectImage_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,CCITTFaxDecode,fn:SinceVersion(1.4,JBIG2Decode),DCTDecode,fn:SinceVersion(1.5,JPXDecode),fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -1421,7 +1422,7 @@ internal partial class APM_XObjectImage_GTS_Scope__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "SingleUse" || val == "Record" || val == "File" || val == "Stream" || val == "Global" || val == "Unknown")) 
+        if (!(val == PdfName.SingleUse || val == PdfName.Record || val == PdfName.File || val == PdfName.Stream || val == PdfName.Global || val == PdfName.Unknown)) 
         {
             ctx.Fail<APM_XObjectImage_GTS_Scope>($"Invalid value {val}, allowed are: [SingleUse,Record,File,Stream,Global,Unknown]");
         }
@@ -1450,7 +1451,7 @@ internal partial class APM_XObjectImage_GTS_Env__Base : ISpecification<PdfDictio
     {
         var GTSScope = obj.Get("GTS_Scope");
         var val = ctx.GetOptional<PdfString, APM_XObjectImage_GTS_Env>(obj, "GTS_Env", IndirectRequirement.Either);
-        if (((eq(GTSScope,"Stream")||eq(GTSScope,"Global"))) && val == null) {
+        if (((eq(GTSScope,PdfName.Stream)||eq(GTSScope,PdfName.Global))) && val == null) {
             ctx.Fail<APM_XObjectImage_GTS_Env>("GTS_Env is required when 'fn:IsRequired((@GTS_Scope==Stream) || (@GTS_Scope==Global))"); return;
         } else if (val == null) {
             return;

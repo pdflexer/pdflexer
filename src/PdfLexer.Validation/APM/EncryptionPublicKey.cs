@@ -164,7 +164,7 @@ internal partial class APM_EncryptionPublicKey_Recipients__Base : ISpecification
     {
         var SubFilter = obj.Get("SubFilter");
         var val = ctx.GetOptional<PdfArray, APM_EncryptionPublicKey_Recipients>(obj, "Recipients", IndirectRequirement.Either);
-        if (((eq(SubFilter,"adbe.pkcs7.s3")||eq(SubFilter,"adbe.pkcs7.s4"))) && val == null) {
+        if (((eq(SubFilter,PdfName.adbepkcs7s3)||eq(SubFilter,PdfName.adbepkcs7s4))) && val == null) {
             ctx.Fail<APM_EncryptionPublicKey_Recipients>("Recipients is required when 'fn:IsRequired((@SubFilter==adbe.pkcs7.s3) || (@SubFilter==adbe.pkcs7.s4))"); return;
         } else if (val == null) {
             return;
@@ -230,7 +230,7 @@ internal partial class APM_EncryptionPublicKey_Filter__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "Adobe.PubSec" || val == "AdobePPKLite")) 
+        if (!(val == PdfName.AdobePubSec || val == PdfName.AdobePPKLite)) 
         {
             ctx.Fail<APM_EncryptionPublicKey_Filter>($"Invalid value {val}, allowed are: [Adobe.PubSec,AdobePPKLite]");
         }
@@ -262,7 +262,7 @@ internal partial class APM_EncryptionPublicKey_SubFilter__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "adbe.pkcs7.s3" || (ctx.Version >= 1.4m && val == "adbe.pkcs7.s4") || (ctx.Version >= 1.5m && val == "adbe.pkcs7.s5"))) 
+        if (!(val == PdfName.adbepkcs7s3 || (ctx.Version >= 1.4m && val == PdfName.adbepkcs7s4) || (ctx.Version >= 1.5m && val == PdfName.adbepkcs7s5))) 
         {
             ctx.Fail<APM_EncryptionPublicKey_SubFilter>($"Invalid value {val}, allowed are: [adbe.pkcs7.s3,fn:SinceVersion(1.4,adbe.pkcs7.s4),fn:SinceVersion(1.5,adbe.pkcs7.s5)]");
         }
@@ -294,7 +294,7 @@ internal partial class APM_EncryptionPublicKey_V__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!((ctx.Version < 1.1m && val == 0) || (ctx.Version < 2.0m && val == 1) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 2)) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 3)) || (ctx.Version < 2.0m && (ctx.Version >= 1.5m && val == 4)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == 5)) || (ctx.Version >= 2.0m && val == 5) || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32003") && val == 6)))) 
+        if (!((ctx.Version < 1.1m && val == 0m) || (ctx.Version < 2.0m && val == 1m) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 2m)) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 3m)) || (ctx.Version < 2.0m && (ctx.Version >= 1.5m && val == 4m)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5m)) || (ctx.Version >= 2.0m && val == 5m) || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 6m)))) 
         {
             ctx.Fail<APM_EncryptionPublicKey_V>($"Invalid value {val}, allowed are: [fn:Deprecated(1.1,0),fn:Deprecated(2.0,1),fn:Deprecated(2.0,fn:SinceVersion(1.4,2)),fn:Deprecated(2.0,fn:SinceVersion(1.4,3)),fn:Deprecated(2.0,fn:SinceVersion(1.5,4)),fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5)),fn:SinceVersion(2.0,5),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,6))]");
         }
@@ -394,7 +394,7 @@ internal partial class APM_EncryptionPublicKey_StmF__Base : ISpecification<PdfDi
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "Identity" || val == "DefaultCryptFilter" || val == "DefEmbeddedFile")) 
+        if (!(val == PdfName.Identity || val == PdfName.DefaultCryptFilter || val == PdfName.DefEmbeddedFile)) 
         {
             ctx.Fail<APM_EncryptionPublicKey_StmF>($"Invalid value {val}, allowed are: [Identity,DefaultCryptFilter,DefEmbeddedFile]");
         }
@@ -426,7 +426,7 @@ internal partial class APM_EncryptionPublicKey_StrF__Base : ISpecification<PdfDi
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "Identity" || val == "DefaultCryptFilter")) 
+        if (!(val == PdfName.Identity || val == PdfName.DefaultCryptFilter)) 
         {
             ctx.Fail<APM_EncryptionPublicKey_StrF>($"Invalid value {val}, allowed are: [Identity,DefaultCryptFilter]");
         }
@@ -458,7 +458,7 @@ internal partial class APM_EncryptionPublicKey_EFF__Base : ISpecification<PdfDic
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "Identity" || val == "DefaultCryptFilter" || val == "DefEmbeddedFile")) 
+        if (!(val == PdfName.Identity || val == PdfName.DefaultCryptFilter || val == PdfName.DefEmbeddedFile)) 
         {
             ctx.Fail<APM_EncryptionPublicKey_EFF>($"Invalid value {val}, allowed are: [Identity,DefaultCryptFilter,DefEmbeddedFile]");
         }
@@ -512,6 +512,7 @@ internal partial class APM_EncryptionPublicKey_KDFSalt__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfString, APM_EncryptionPublicKey_KDFSalt>(obj, "KDFSalt", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         

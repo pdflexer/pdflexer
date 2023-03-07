@@ -114,6 +114,7 @@ internal partial class APM_SignatureBuildPropDict_Filter__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_SignatureBuildPropDict_Filter>(obj, "Filter", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -141,6 +142,7 @@ internal partial class APM_SignatureBuildPropDict_PubSec__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_SignatureBuildPropDict_PubSec>(obj, "PubSec", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -168,6 +170,7 @@ internal partial class APM_SignatureBuildPropDict_App__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_SignatureBuildPropDict_App>(obj, "App", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -195,6 +198,7 @@ internal partial class APM_SignatureBuildPropDict_SigQ__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_SignatureBuildPropDict_SigQ>(obj, "SigQ", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases

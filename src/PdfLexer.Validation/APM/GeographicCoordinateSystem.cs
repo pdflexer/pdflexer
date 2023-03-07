@@ -104,7 +104,7 @@ internal partial class APM_GeographicCoordinateSystem_Type__Base : ISpecificatio
         // no special cases
         
         
-        if (!(val == "GEOGCS")) 
+        if (!(val == PdfName.GEOGCS)) 
         {
             ctx.Fail<APM_GeographicCoordinateSystem_Type>($"Invalid value {val}, allowed are: [GEOGCS]");
         }
@@ -134,7 +134,7 @@ internal partial class APM_GeographicCoordinateSystem_EPSG__Base : ISpecificatio
         var val = ctx.GetOptional<PdfIntNumber, APM_GeographicCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(!obj.ContainsKey("WKT"))) 
+        if (!(!obj.ContainsKey(PdfName.WKT))) 
         {
             ctx.Fail<APM_GeographicCoordinateSystem_EPSG>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent(WKT)))");
         }
@@ -165,7 +165,7 @@ internal partial class APM_GeographicCoordinateSystem_WKT__Base : ISpecification
         var val = ctx.GetOptional<PdfString, APM_GeographicCoordinateSystem_WKT>(obj, "WKT", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(!obj.ContainsKey("EPSG"))) 
+        if (!(!obj.ContainsKey(PdfName.EPSG))) 
         {
             ctx.Fail<APM_GeographicCoordinateSystem_WKT>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent(EPSG)))");
         }

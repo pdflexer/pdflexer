@@ -279,7 +279,7 @@ internal partial class APM_DocInfo_Trapped__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "True" || val == "False" || val == "Unknown")) 
+        if (!(val == PdfName.True || val == PdfName.False || val == PdfName.Unknown)) 
         {
             ctx.Fail<APM_DocInfo_Trapped>($"Invalid value {val}, allowed are: [True,False,Unknown]");
         }

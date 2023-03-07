@@ -125,7 +125,7 @@ internal partial class APM_MediaPlayParameters_Type__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "MediaPlayParams")) 
+        if (!(val == PdfName.MediaPlayParams)) 
         {
             ctx.Fail<APM_MediaPlayParameters_Type>($"Invalid value {val}, allowed are: [MediaPlayParams]");
         }

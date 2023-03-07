@@ -105,7 +105,7 @@ internal partial class APM_RichMediaWindow_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "RichMediaWindow")) 
+        if (!(val == PdfName.RichMediaWindow)) 
         {
             ctx.Fail<APM_RichMediaWindow_Type>($"Invalid value {val}, allowed are: [RichMediaWindow]");
         }

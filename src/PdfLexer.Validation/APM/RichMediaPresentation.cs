@@ -108,7 +108,7 @@ internal partial class APM_RichMediaPresentation_Type__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "RichMediaPresentation")) 
+        if (!(val == PdfName.RichMediaPresentation)) 
         {
             ctx.Fail<APM_RichMediaPresentation_Type>($"Invalid value {val}, allowed are: [RichMediaPresentation]");
         }
@@ -140,7 +140,7 @@ internal partial class APM_RichMediaPresentation_Style__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "Embedded" || val == "Windowed")) 
+        if (!(val == PdfName.Embedded || val == PdfName.Windowed)) 
         {
             ctx.Fail<APM_RichMediaPresentation_Style>($"Invalid value {val}, allowed are: [Embedded,Windowed]");
         }

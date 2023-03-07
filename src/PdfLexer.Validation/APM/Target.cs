@@ -110,7 +110,7 @@ internal partial class APM_Target_R__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "P" || val == "C")) 
+        if (!(val == PdfName.P || val == PdfName.C)) 
         {
             ctx.Fail<APM_Target_R>($"Invalid value {val}, allowed are: [P,C]");
         }
@@ -140,13 +140,13 @@ internal partial class APM_Target_N__Base : ISpecification<PdfDictionary>
         var R = obj.Get("R");
         var trailerCatalogNamesEmbeddedFiles = obj.Get("trailer")?.Get("Catalog")?.Get("Names")?.Get("EmbeddedFiles");
         var val = ctx.GetOptional<PdfString, APM_Target_N>(obj, "N", IndirectRequirement.Either);
-        if (((eq(R,"C")&&InNameTree(trailerCatalogNamesEmbeddedFiles))) && val == null) {
+        if (((eq(R,PdfName.C)&&InNameTree(trailerCatalogNamesEmbeddedFiles))) && val == null) {
             ctx.Fail<APM_Target_N>("N is required when 'fn:IsRequired((@R==C) && fn:InNameTree(trailer::Catalog::Names::EmbeddedFiles))"); return;
         } else if (val == null) {
             return;
         }
         
-        if (!(!(eq(R,"C")&&InNameTree(trailerCatalogNamesEmbeddedFiles)))) 
+        if (!(!(eq(R,PdfName.C)&&InNameTree(trailerCatalogNamesEmbeddedFiles)))) 
         {
             ctx.Fail<APM_Target_N>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent((@R==C) && fn:InNameTree(trailer::Catalog::Names::EmbeddedFiles))))");
         }
@@ -239,7 +239,7 @@ internal partial class APM_Target_A__Base : ISpecification<PdfDictionary>
                     
                     var A = obj.Get("A");
                     var P = obj.Get("P");
-                    if (!((gte(A,0)&&lt(A,(((P)?.GetAs<PdfDictionary>()?.Get("Annots") as PdfArray)?.Count))))) 
+                    if (!((gte(A,0)&&lt(A,(((P)?.GetAs<PdfDictionary>()?.Get(PdfName.Annots) as PdfArray)?.Count))))) 
                     {
                         ctx.Fail<APM_Target_A>($"Invalid value {val}, allowed are: [fn:Eval((@A>=0) && (@A<fn:ArrayLength(fn:PageProperty(@P,Annots))))]");
                     }
@@ -254,7 +254,7 @@ internal partial class APM_Target_A__Base : ISpecification<PdfDictionary>
                     
                     var A = obj.Get("A");
                     var P = obj.Get("P");
-                    if (!(eq(A,(P)?.GetAs<PdfDictionary>()?.Get("Annots::@NM")))) 
+                    if (!(eq(A,(P)?.GetAs<PdfDictionary>()?.Get("")))) 
                     {
                         ctx.Fail<APM_Target_A>($"Invalid value {val}, allowed are: [fn:Eval(@A==fn:PageProperty(@P,Annots::@NM))]");
                     }

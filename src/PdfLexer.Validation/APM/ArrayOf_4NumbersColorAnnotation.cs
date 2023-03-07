@@ -41,7 +41,7 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_0 : ISpecification<Pd
         // no special cases
         IPdfObject v = val;
         
-        if (!((gte(v,v)&&lte(v,1)))) 
+        if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_4NumbersColorAnnotation_0>($"Invalid value {val}, allowed are: [fn:Eval((@0>=0) && (@0<=1))]");
         }
@@ -70,7 +70,7 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_1 : ISpecification<Pd
         }
         IPdfObject v = val;
         
-        if (!((gte(v,0)&&lte(v,v)))) 
+        if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_4NumbersColorAnnotation_1>($"Invalid value {val}, allowed are: [fn:Eval((@1>=0) && (@1<=1))]");
         }

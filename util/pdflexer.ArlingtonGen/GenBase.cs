@@ -157,7 +157,7 @@ if (({{req.GetComplex()}}) && {{prop}} == null) {
             foreach (var t in PossibleValues.SplitWithFns(link.Trim('[').Trim(']')).Where(x => x.Contains(":")))
             {
                 var objName = "";
-                var exp = Exp.Tokenize(t);
+                var exp = new Exp(t);
                 var sbe = new StringBuilder();
                 using var scope = new EvalScope((w, v, a) => {
                     w.Append($"APM_");
@@ -165,7 +165,7 @@ if (({{req.GetComplex()}}) && {{prop}} == null) {
                     w.Append(v.Text);
                     w.Append($".MatchesType(ctx, {val})");
                 });
-                exp.ForEach(x => x.Write(sbe));
+                exp.Write(sbe);
                 txt += $$"""
 {{(first ? "if" : " else if")}} ({{sbe.ToString()}}) 
 {
@@ -191,7 +191,7 @@ ctx.Run<APM_{{nm}}, {{linkType}}>(stack, {{val}}, obj);
     protected string GetSingleComplexType(string key)
     {
         VariableContext.Vars[key] = "utval";
-        var ir = new IndirectRef(Row).GetIndirectRefEnum();
+        var ir = new IndirectRef(this, Row).GetIndirectRefEnum();
         return $$"""
 var (utval, wasIR) = ctx.GetOptional<APM_{{RootName}}_{{Key}}>(obj, {{key}}, {{ir}});
 {{NullCheckRequired("utval", RootName, Key)}}
@@ -215,17 +215,31 @@ switch ({{varName}}.Type)
 
     protected string GetSingleSimpleType(string key)
     {
-        var ir = new IndirectRef(Row).GetIndirectRefEnum();
+        var irh = new IndirectRef(this, Row);
+        var ir = irh.GetIndirectRefEnum();
         var req = new Required(Row);
 
         var type = GetLexerType();
 
+        VariableContext.CurrentType = Row.Type switch
+        {
+            "number" => NonEvalType.Number,
+            "integer" => NonEvalType.Number,
+            "decimal" => NonEvalType.Number,
+            "string" => NonEvalType.String,
+            "string-text" => NonEvalType.String,
+            "name" => NonEvalType.Name,
+            _ => NonEvalType.Name,
+        };
         VariableContext.Vars[key] = "val";
 
         var txt = "";
+        if (!irh.IsSimple())
+        {
+            txt += "// TODO complex IR\n";
+        }
         if (req.IsSimple())
         {
-            
             txt += req.GetSimple() ? $"""var val = ctx.GetRequired<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});"""
                 : $"""
 var val = ctx.GetOptional<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});
@@ -299,22 +313,32 @@ if (({{req.GetComplex()}}) && val == null) {
     private string GetFnType(string type)
     {
         var exp = new Exp(type);
-        var nm = exp.Children[0].Children[1].Children[0] as EValue;
+        var nm = exp.Children[0].Children[1] as EValue;
         return nm?.Text;
     }
 
     private string MultiCaseStatement(string type)
     {
+        VariableContext.CurrentType = type switch
+        {
+            "number" => NonEvalType.Number,
+            "integer" => NonEvalType.Number,
+            "decimal" => NonEvalType.Number,
+            "string" => NonEvalType.String,
+            "string-text" => NonEvalType.String,
+            "name" => NonEvalType.Name,
+            _ => NonEvalType.Name,
+        };
         var fn = type;
         var check = "";
         if (type.StartsWith("fn:")) 
         {
             // revisit if functions get more complex
             var exp = new Exp(type);
-            var nm = exp.Children[0].Children[1].Children[0] as EValue;
+            var nm = exp.Children[0].Children[1] as EValue;
             type = nm.Text;
             var func = exp.Children[0] as EFunBase;
-            func.Inputs.RemoveAt(1);
+            func.Children.RemoveAt(1);
             check += $$"""
 if (!({{exp.GetText()}})) 
 {
@@ -362,7 +386,7 @@ case PdfObjectType.{{typemap[type]}}:
         VariableContext.Vars[value] = clean;
         if (value.StartsWith("@"))
         {
-            VariableContext.Vars[value.Substring(1)] = clean;
+            // VariableContext.Vars[value.Substring(1)] = clean;
         }
         
 
@@ -421,7 +445,7 @@ case PdfObjectType.{{typemap[type]}}:
 
     private string IRCheckMulti(string type)
     {
-        var ir = new IndirectRef(Row);
+        var ir = new IndirectRef(this, Row);
 
         if (ir.TryGetSimple(type, out var val))
         {
@@ -430,12 +454,7 @@ case PdfObjectType.{{typemap[type]}}:
         }
         else
         {
-            return $$"""
-if ({{ir.GetComplex(type)}} && !wasIR) {
-    ctx.Fail<APM_{{RootName}}_{{Key}}>("{{Row.Key}} is required to be indirect when a {{type}}");
-    return;
-}
-""";
+            return ir.GetComplex(type);
         }
     }
 

@@ -40,6 +40,7 @@ internal partial class APM_ArrayOfXRefIndexIntegers_0x : ISpecification<PdfArray
         }
         void CheckSingle(int n) 
         {
+            // TODO complex IR
             var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefIndexIntegers_0x>(obj, n, IndirectRequirement.MustBeDirect);
             if (val == null) { return; }
             
@@ -71,6 +72,7 @@ internal partial class APM_ArrayOfXRefIndexIntegers_1x : ISpecification<PdfArray
         }
         void CheckSingle(int n) 
         {
+            // TODO complex IR
             var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefIndexIntegers_1x>(obj, n, IndirectRequirement.MustBeDirect);
             if (val == null) { return; }
             

@@ -66,7 +66,6 @@ internal class PossibleValues
         {
             var prev = VariableContext.VarSub;
             VariableContext.VarSub = "v";
-            VariableContext.Vars[Row.Key] = "v";
             VariableContext.Vars["@" + Row.Key] = "v";
             head = "IPdfObject v = " + prev + ";";
         }
@@ -90,11 +89,11 @@ internal class PossibleValues
         {
             VariableContext.InEval = false;
             VariableContext.Wrapper = VariableContext.ValWrapper;
-            var parts = Exp.Tokenize(nr[p]);
-            for (var i = 0; i < parts.Count; i++)
+            var exp = new Exp(nr[p]);
+            for (var i = 0; i < exp.Children.Count; i++)
             {
-                parts[i].Write(sb);
-                if (i < parts.Count - 1)
+                exp.Children[i].Write(sb);
+                if (i < exp.Children.Count - 1)
                 {
                     sb.Append(" || ");
                 }

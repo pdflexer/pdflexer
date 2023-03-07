@@ -105,7 +105,7 @@ internal partial class APM_RichMediaContent_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "RichMediaContent")) 
+        if (!(val == PdfName.RichMediaContent)) 
         {
             ctx.Fail<APM_RichMediaContent_Type>($"Invalid value {val}, allowed are: [RichMediaContent]");
         }

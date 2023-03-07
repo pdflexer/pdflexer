@@ -3,11 +3,26 @@
 namespace pdflexer.ArlingtonGen.Expressions;
 
 
+internal enum VariableHandling
+{
+    MustBeObj,
+    MustBeVal,
+    Either
+}
+
+internal enum NonEvalType
+{
+    Name,
+    String,
+    Number
+}
 
 internal static class VariableContext
 {
     public static Row? Context { get; set; }
     public static bool InEval { get; set; }
+    public static NonEvalType CurrentType { get; set; }
+    public static VariableHandling Handling { get; set; } = VariableHandling.Either;
     public static Dictionary<string,string> Vars { get; set; } = new Dictionary<string,string>();
     public static string VarName { get; set; } = "val";
     public static string VarSub { get; set; } = "val";
@@ -46,5 +61,21 @@ internal class EvalScope : IDisposable
     public void Dispose()
     {
         VariableContext.Wrapper = Orig;
+    }
+}
+
+internal class VarScope : IDisposable
+{
+    public VarScope(VariableHandling val)
+    {
+        Orig = VariableContext.Handling;
+        VariableContext.Handling = val;
+    }
+
+    public VariableHandling Orig { get; }
+
+    public void Dispose()
+    {
+        VariableContext.Handling = Orig;
     }
 }

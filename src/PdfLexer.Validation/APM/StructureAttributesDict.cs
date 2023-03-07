@@ -128,6 +128,7 @@ internal partial class APM_StructureAttributesDict__Base : ISpecification<PdfDic
     {
         var c = ctx.Clone();
         c.Run<APM_StructureAttributesDict_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_StructureAttributesDict_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -217,7 +218,7 @@ internal partial class APM_StructureAttributesDict_NS__Base : ISpecification<Pdf
     {
         var O = obj.Get("O");
         var val = ctx.GetOptional<PdfDictionary, APM_StructureAttributesDict_NS>(obj, "NS", IndirectRequirement.MustBeIndirect);
-        if ((eq(O,"NSO")) && val == null) {
+        if ((eq(O,PdfName.NSO)) && val == null) {
             ctx.Fail<APM_StructureAttributesDict_NS>("NS is required when 'fn:IsRequired(@O==NSO)"); return;
         } else if (val == null) {
             return;
@@ -250,13 +251,13 @@ internal partial class APM_StructureAttributesDict_Placement__Base : ISpecificat
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Placement>(obj, "Placement", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Placement>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "Block" || val == "Before" || val == "Start" || val == "End" || (ctx.Version > 2.0m && val == "Inline"))) 
+        if (!(val == PdfName.Block || val == PdfName.Before || val == PdfName.Start || val == PdfName.End || (ctx.Version > 2.0m && val == PdfName.Inline))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Placement>($"Invalid value {val}, allowed are: [Block,Before,Start,End,fn:BeforeVersion(2.0,Inline)]");
         }
@@ -286,13 +287,13 @@ internal partial class APM_StructureAttributesDict_WritingMode__Base : ISpecific
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_WritingMode>(obj, "WritingMode", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_WritingMode>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "LrTb" || val == "RlTb" || val == "TbRl" || (ctx.Version >= 2.0m && val == "TbLr") || (ctx.Version >= 2.0m && val == "LrBt") || (ctx.Version >= 2.0m && val == "RlBt") || (ctx.Version >= 2.0m && val == "BtRl") || (ctx.Version >= 2.0m && val == "BtLr"))) 
+        if (!(val == PdfName.LrTb || val == PdfName.RlTb || val == PdfName.TbRl || (ctx.Version >= 2.0m && val == PdfName.TbLr) || (ctx.Version >= 2.0m && val == PdfName.LrBt) || (ctx.Version >= 2.0m && val == PdfName.RlBt) || (ctx.Version >= 2.0m && val == PdfName.BtRl) || (ctx.Version >= 2.0m && val == PdfName.BtLr))) 
         {
             ctx.Fail<APM_StructureAttributesDict_WritingMode>($"Invalid value {val}, allowed are: [LrTb,RlTb,TbRl,fn:SinceVersion(2.0,TbLr),fn:SinceVersion(2.0,LrBt),fn:SinceVersion(2.0,RlBt),fn:SinceVersion(2.0,BtRl),fn:SinceVersion(2.0,BtLr)]");
         }
@@ -322,7 +323,7 @@ internal partial class APM_StructureAttributesDict_BackgroundColor__Base : ISpec
         var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_BackgroundColor>(obj, "BackgroundColor", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_BackgroundColor>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -353,7 +354,7 @@ internal partial class APM_StructureAttributesDict_BorderColor__Base : ISpecific
         var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_BorderColor>(obj, "BorderColor", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_BorderColor>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -399,7 +400,7 @@ internal partial class APM_StructureAttributesDict_BorderStyle__Base : ISpecific
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_BorderStyle>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -412,13 +413,13 @@ internal partial class APM_StructureAttributesDict_BorderStyle__Base : ISpecific
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_BorderStyle>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
                     
                     
-                    if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
+                    if (!(val == PdfName.None || val == PdfName.Hidden || val == PdfName.Dotted || val == PdfName.Dashed || val == PdfName.Solid || val == PdfName.Double || val == PdfName.Groove || val == PdfName.Ridge || val == PdfName.Inset || val == PdfName.Outset)) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_BorderStyle>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
                     }
@@ -460,7 +461,7 @@ internal partial class APM_StructureAttributesDict_BorderThickness__Base : ISpec
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_BorderThickness>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -473,7 +474,7 @@ internal partial class APM_StructureAttributesDict_BorderThickness__Base : ISpec
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_BorderThickness>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -516,7 +517,7 @@ internal partial class APM_StructureAttributesDict_Padding__Base : ISpecificatio
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_Padding>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -529,7 +530,7 @@ internal partial class APM_StructureAttributesDict_Padding__Base : ISpecificatio
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_Padding>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -566,7 +567,7 @@ internal partial class APM_StructureAttributesDict_Color__Base : ISpecification<
         var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_Color>(obj, "Color", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Color>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -597,7 +598,7 @@ internal partial class APM_StructureAttributesDict_SpaceBefore__Base : ISpecific
         var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_SpaceBefore>(obj, "SpaceBefore", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_SpaceBefore>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -628,7 +629,7 @@ internal partial class APM_StructureAttributesDict_SpaceAfter__Base : ISpecifica
         var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_SpaceAfter>(obj, "SpaceAfter", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_SpaceAfter>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -659,7 +660,7 @@ internal partial class APM_StructureAttributesDict_StartIndent__Base : ISpecific
         var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_StartIndent>(obj, "StartIndent", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_StartIndent>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -690,7 +691,7 @@ internal partial class APM_StructureAttributesDict_EndIndent__Base : ISpecificat
         var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_EndIndent>(obj, "EndIndent", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_EndIndent>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -721,7 +722,7 @@ internal partial class APM_StructureAttributesDict_TextIndent__Base : ISpecifica
         var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_TextIndent>(obj, "TextIndent", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_TextIndent>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -752,13 +753,13 @@ internal partial class APM_StructureAttributesDict_TextAlign__Base : ISpecificat
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_TextAlign>(obj, "TextAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_TextAlign>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "Start" || val == "Center" || val == "End" || val == "Justify")) 
+        if (!(val == PdfName.Start || val == PdfName.Center || val == PdfName.End || val == PdfName.Justify)) 
         {
             ctx.Fail<APM_StructureAttributesDict_TextAlign>($"Invalid value {val}, allowed are: [Start,Center,End,Justify]");
         }
@@ -788,7 +789,7 @@ internal partial class APM_StructureAttributesDict_BBox__Base : ISpecification<P
         var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_BBox>(obj, "BBox", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!(((eq(O,"Layout")||eq(O,"Artifact"))||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!(((eq(O,PdfName.Layout)||eq(O,PdfName.Artifact))||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_BBox>($"Value failed special case check: fn:Eval(((@O==Layout) || (@O==Artifact)) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -825,7 +826,7 @@ internal partial class APM_StructureAttributesDict_Width__Base : ISpecification<
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_Width>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -838,7 +839,7 @@ internal partial class APM_StructureAttributesDict_Width__Base : ISpecification<
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_Width>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -881,7 +882,7 @@ internal partial class APM_StructureAttributesDict_Height__Base : ISpecification
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_Height>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -894,7 +895,7 @@ internal partial class APM_StructureAttributesDict_Height__Base : ISpecification
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_Height>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -931,13 +932,13 @@ internal partial class APM_StructureAttributesDict_BlockAlign__Base : ISpecifica
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_BlockAlign>(obj, "BlockAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_BlockAlign>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "Before" || val == "Middle" || val == "After" || val == "Justify")) 
+        if (!(val == PdfName.Before || val == PdfName.Middle || val == PdfName.After || val == PdfName.Justify)) 
         {
             ctx.Fail<APM_StructureAttributesDict_BlockAlign>($"Invalid value {val}, allowed are: [Before,Middle,After,Justify]");
         }
@@ -967,13 +968,13 @@ internal partial class APM_StructureAttributesDict_InlineAlign__Base : ISpecific
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_InlineAlign>(obj, "InlineAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_InlineAlign>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "Start" || val == "Center" || val == "End")) 
+        if (!(val == PdfName.Start || val == PdfName.Center || val == PdfName.End)) 
         {
             ctx.Fail<APM_StructureAttributesDict_InlineAlign>($"Invalid value {val}, allowed are: [Start,Center,End]");
         }
@@ -1009,7 +1010,7 @@ internal partial class APM_StructureAttributesDict_TBorderStyle__Base : ISpecifi
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_TBorderStyle>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -1022,13 +1023,13 @@ internal partial class APM_StructureAttributesDict_TBorderStyle__Base : ISpecifi
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_TBorderStyle>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
                     
                     
-                    if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
+                    if (!(val == PdfName.None || val == PdfName.Hidden || val == PdfName.Dotted || val == PdfName.Dashed || val == PdfName.Solid || val == PdfName.Double || val == PdfName.Groove || val == PdfName.Ridge || val == PdfName.Inset || val == PdfName.Outset)) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_TBorderStyle>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
                     }
@@ -1070,7 +1071,7 @@ internal partial class APM_StructureAttributesDict_TPadding__Base : ISpecificati
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_TPadding>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -1083,7 +1084,7 @@ internal partial class APM_StructureAttributesDict_TPadding__Base : ISpecificati
                     var val =  (PdfIntNumber)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_TPadding>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -1120,7 +1121,7 @@ internal partial class APM_StructureAttributesDict_BaselineShift__Base : ISpecif
         var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_BaselineShift>(obj, "BaselineShift", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_BaselineShift>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -1157,13 +1158,13 @@ internal partial class APM_StructureAttributesDict_LineHeight__Base : ISpecifica
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_LineHeight>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
                     
                     
-                    if (!(val == "Normal" || val == "Auto")) 
+                    if (!(val == PdfName.Normal || val == PdfName.Auto)) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_LineHeight>($"Invalid value {val}, allowed are: [Normal,Auto]");
                     }
@@ -1175,7 +1176,7 @@ internal partial class APM_StructureAttributesDict_LineHeight__Base : ISpecifica
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_LineHeight>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -1212,13 +1213,13 @@ internal partial class APM_StructureAttributesDict_TextPosition__Base : ISpecifi
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_TextPosition>(obj, "TextPosition", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_TextPosition>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "Sup" || val == "Sub" || val == "Normal")) 
+        if (!(val == PdfName.Sup || val == PdfName.Sub || val == PdfName.Normal)) 
         {
             ctx.Fail<APM_StructureAttributesDict_TextPosition>($"Invalid value {val}, allowed are: [Sup,Sub,Normal]");
         }
@@ -1248,7 +1249,7 @@ internal partial class APM_StructureAttributesDict_TextDecorationColor__Base : I
         var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_TextDecorationColor>(obj, "TextDecorationColor", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_TextDecorationColor>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -1279,7 +1280,7 @@ internal partial class APM_StructureAttributesDict_TextDecorationThickness__Base
         var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_TextDecorationThickness>(obj, "TextDecorationThickness", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_TextDecorationThickness>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -1310,13 +1311,13 @@ internal partial class APM_StructureAttributesDict_TextDecorationType__Base : IS
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_TextDecorationType>(obj, "TextDecorationType", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_TextDecorationType>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "None" || val == "Underline" || val == "Overline" || val == "LineThrough")) 
+        if (!(val == PdfName.None || val == PdfName.Underline || val == PdfName.Overline || val == PdfName.LineThrough)) 
         {
             ctx.Fail<APM_StructureAttributesDict_TextDecorationType>($"Invalid value {val}, allowed are: [None,Underline,Overline,LineThrough]");
         }
@@ -1346,13 +1347,13 @@ internal partial class APM_StructureAttributesDict_RubyAlign__Base : ISpecificat
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_RubyAlign>(obj, "RubyAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_RubyAlign>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "Start" || val == "Center" || val == "End" || val == "Justify" || val == "Distribute")) 
+        if (!(val == PdfName.Start || val == PdfName.Center || val == PdfName.End || val == PdfName.Justify || val == PdfName.Distribute)) 
         {
             ctx.Fail<APM_StructureAttributesDict_RubyAlign>($"Invalid value {val}, allowed are: [Start,Center,End,Justify,Distribute]");
         }
@@ -1382,13 +1383,13 @@ internal partial class APM_StructureAttributesDict_RubyPosition__Base : ISpecifi
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_RubyPosition>(obj, "RubyPosition", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_RubyPosition>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "Before" || val == "After" || val == "Warichu" || val == "Inline")) 
+        if (!(val == PdfName.Before || val == PdfName.After || val == PdfName.Warichu || val == PdfName.Inline)) 
         {
             ctx.Fail<APM_StructureAttributesDict_RubyPosition>($"Invalid value {val}, allowed are: [Before,After,Warichu,Inline]");
         }
@@ -1424,13 +1425,13 @@ internal partial class APM_StructureAttributesDict_GlyphOrientationVertical__Bas
                     var val =  (PdfIntNumber)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_GlyphOrientationVertical>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
                     
                     
-                    if (!(val == -180 || val == -90 || val == 0 || val == 90 || val == 180 || val == 270 || val == 360)) 
+                    if (!(val == -180m || val == -90m || val == 0m || val == 90m || val == 180m || val == 270m || val == 360m)) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_GlyphOrientationVertical>($"Invalid value {val}, allowed are: [-180,-90,0,90,180,270,360]");
                     }
@@ -1442,13 +1443,13 @@ internal partial class APM_StructureAttributesDict_GlyphOrientationVertical__Bas
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_GlyphOrientationVertical>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
                     
                     
-                    if (!(val == "Auto")) 
+                    if (!(val == PdfName.Auto)) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_GlyphOrientationVertical>($"Invalid value {val}, allowed are: [Auto]");
                     }
@@ -1484,7 +1485,7 @@ internal partial class APM_StructureAttributesDict_ColumnCount__Base : ISpecific
         var val = ctx.GetOptional<PdfIntNumber, APM_StructureAttributesDict_ColumnCount>(obj, "ColumnCount", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_ColumnCount>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -1521,7 +1522,7 @@ internal partial class APM_StructureAttributesDict_ColumnGap__Base : ISpecificat
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_ColumnGap>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -1534,7 +1535,7 @@ internal partial class APM_StructureAttributesDict_ColumnGap__Base : ISpecificat
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_ColumnGap>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -1577,7 +1578,7 @@ internal partial class APM_StructureAttributesDict_ColumnWidths__Base : ISpecifi
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_ColumnWidths>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -1590,7 +1591,7 @@ internal partial class APM_StructureAttributesDict_ColumnWidths__Base : ISpecifi
                     var val =  (PdfNumber)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Layout")||!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_ColumnWidths>($"Value failed special case check: fn:Eval((@O==Layout) || ((@O!=List) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -1627,13 +1628,13 @@ internal partial class APM_StructureAttributesDict_ListNumbering__Base : ISpecif
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_ListNumbering>(obj, "ListNumbering", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"List")||!eq(O,"Layout")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.List)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_ListNumbering>($"Value failed special case check: fn:Eval((@O==List) || ((@O!=Layout) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "None" || (ctx.Version >= 2.0m && val == "Unordered") || (ctx.Version >= 2.0m && val == "Description") || val == "Disc" || val == "Circle" || val == "Square" || val == "Ordered" || val == "Decimal" || val == "UpperRoman" || val == "LowerRoman" || val == "UpperAlpha" || val == "LowerAlpha")) 
+        if (!(val == PdfName.None || (ctx.Version >= 2.0m && val == PdfName.Unordered) || (ctx.Version >= 2.0m && val == PdfName.Description) || val == PdfName.Disc || val == PdfName.Circle || val == PdfName.Square || val == PdfName.Ordered || val == PdfName.Decimal || val == PdfName.UpperRoman || val == PdfName.LowerRoman || val == PdfName.UpperAlpha || val == PdfName.LowerAlpha)) 
         {
             ctx.Fail<APM_StructureAttributesDict_ListNumbering>($"Invalid value {val}, allowed are: [None,fn:SinceVersion(2.0,Unordered),fn:SinceVersion(2.0,Description),Disc,Circle,Square,Ordered,Decimal,UpperRoman,LowerRoman,UpperAlpha,LowerAlpha]");
         }
@@ -1663,7 +1664,7 @@ internal partial class APM_StructureAttributesDict_ContinuedList__Base : ISpecif
         var val = ctx.GetOptional<PdfBoolean, APM_StructureAttributesDict_ContinuedList>(obj, "ContinuedList", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"List")||!eq(O,"Layout")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.List)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_ContinuedList>($"Value failed special case check: fn:Eval((@O==List) || ((@O!=Layout) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -1694,7 +1695,7 @@ internal partial class APM_StructureAttributesDict_ContinuedForm__Base : ISpecif
         var val = ctx.GetOptional<PdfString, APM_StructureAttributesDict_ContinuedForm>(obj, "ContinuedForm", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"List")||!eq(O,"Layout")&&!eq(O,"Table")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.List)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_ContinuedForm>($"Value failed special case check: fn:Eval((@O==List) || ((@O!=Layout) && (@O!=Table) && (@O!=PrintField) && (@O!=Table)))");
         }
@@ -1725,13 +1726,13 @@ internal partial class APM_StructureAttributesDict_Role__Base : ISpecification<P
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Role>(obj, "Role", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"PrintField")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.PrintField)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Role>($"Value failed special case check: fn:Eval((@O==PrintField) || ((@O!=Layout) && (@O!=List) && (@O!=Table) && (@O!=Artifact)))");
         }
         
         
-        if (!(val == "rb" || val == "cb" || val == "pb" || val == "tv" || val == "lb")) 
+        if (!(val == PdfName.rb || val == PdfName.cb || val == PdfName.pb || val == PdfName.tv || val == PdfName.lb)) 
         {
             ctx.Fail<APM_StructureAttributesDict_Role>($"Invalid value {val}, allowed are: [rb,cb,pb,tv,lb]");
         }
@@ -1761,13 +1762,13 @@ internal partial class APM_StructureAttributesDict_Checked__Base : ISpecificatio
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Checked>(obj, "Checked", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"PrintField")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.PrintField)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Checked>($"Value failed special case check: fn:Eval((@O==PrintField) || ((@O!=Layout) && (@O!=List) && (@O!=Table) && (@O!=Artifact)))");
         }
         
         
-        if (!(val == "on" || val == "off" || val == "neutral")) 
+        if (!(val == PdfName.on || val == PdfName.off || val == PdfName.neutral)) 
         {
             ctx.Fail<APM_StructureAttributesDict_Checked>($"Invalid value {val}, allowed are: [on,off,neutral]");
         }
@@ -1797,13 +1798,13 @@ internal partial class APM_StructureAttributesDict_checked__Base : ISpecificatio
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_checked>(obj, "checked", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"PrintField")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.PrintField)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_checked>($"Value failed special case check: fn:Eval((@O==PrintField) || ((@O!=Layout) && (@O!=List) && (@O!=Table) && (@O!=Artifact)))");
         }
         
         
-        if (!(val == "on" || val == "off" || val == "neutral")) 
+        if (!(val == PdfName.on || val == PdfName.off || val == PdfName.neutral)) 
         {
             ctx.Fail<APM_StructureAttributesDict_checked>($"Invalid value {val}, allowed are: [on,off,neutral]");
         }
@@ -1833,7 +1834,7 @@ internal partial class APM_StructureAttributesDict_Desc__Base : ISpecification<P
         var val = ctx.GetOptional<PdfString, APM_StructureAttributesDict_Desc>(obj, "Desc", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"PrintField")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"Table")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.PrintField)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Desc>($"Value failed special case check: fn:Eval((@O==PrintField) || ((@O!=Layout) && (@O!=List) && (@O!=Table) && (@O!=Artifact)))");
         }
@@ -1864,7 +1865,7 @@ internal partial class APM_StructureAttributesDict_RowSpan__Base : ISpecificatio
         var val = ctx.GetOptional<PdfIntNumber, APM_StructureAttributesDict_RowSpan>(obj, "RowSpan", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Table")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_RowSpan>($"Value failed special case check: fn:Eval((@O==Table) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Artifact)))");
         }
@@ -1895,7 +1896,7 @@ internal partial class APM_StructureAttributesDict_ColSpan__Base : ISpecificatio
         var val = ctx.GetOptional<PdfIntNumber, APM_StructureAttributesDict_ColSpan>(obj, "ColSpan", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Table")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_ColSpan>($"Value failed special case check: fn:Eval((@O==Table) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Artifact)))");
         }
@@ -1926,7 +1927,7 @@ internal partial class APM_StructureAttributesDict_Headers__Base : ISpecificatio
         var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_Headers>(obj, "Headers", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Table")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Headers>($"Value failed special case check: fn:Eval((@O==Table) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Artifact)))");
         }
@@ -1957,13 +1958,13 @@ internal partial class APM_StructureAttributesDict_Scope__Base : ISpecification<
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Scope>(obj, "Scope", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Table")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Scope>($"Value failed special case check: fn:Eval((@O==Table) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Artifact)))");
         }
         
         
-        if (!(val == "Row" || val == "Column" || val == "Both")) 
+        if (!(val == PdfName.Row || val == PdfName.Column || val == PdfName.Both)) 
         {
             ctx.Fail<APM_StructureAttributesDict_Scope>($"Invalid value {val}, allowed are: [Row,Column,Both]");
         }
@@ -1993,7 +1994,7 @@ internal partial class APM_StructureAttributesDict_Summary__Base : ISpecificatio
         var val = ctx.GetOptional<PdfString, APM_StructureAttributesDict_Summary>(obj, "Summary", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Table")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Summary>($"Value failed special case check: fn:Eval((@O==Table) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Artifact)))");
         }
@@ -2024,7 +2025,7 @@ internal partial class APM_StructureAttributesDict_Short__Base : ISpecification<
         var val = ctx.GetOptional<PdfString, APM_StructureAttributesDict_Short>(obj, "Short", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Table")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Artifact")))) 
+        if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Short>($"Value failed special case check: fn:Eval((@O==Table) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Artifact)))");
         }
@@ -2054,7 +2055,7 @@ internal partial class APM_StructureAttributesDict_P__Base : ISpecification<PdfD
     {
         var O = obj.Get("O");
         var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_P>(obj, "P", IndirectRequirement.Either);
-        if ((eq(O,"UserProperties")) && val == null) {
+        if ((eq(O,PdfName.UserProperties)) && val == null) {
             ctx.Fail<APM_StructureAttributesDict_P>("P is required when 'fn:IsRequired(@O==UserProperties)"); return;
         } else if (val == null) {
             return;
@@ -2087,13 +2088,13 @@ internal partial class APM_StructureAttributesDict_Type__Base : ISpecification<P
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Artifact")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Artifact)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Type>($"Value failed special case check: fn:Eval((@O==Artifact) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "Pagination" || val == "Layout" || val == "Page" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "BatesN")) || (ctx.Version >= 2.0m && val == "Inline"))) 
+        if (!(val == PdfName.Pagination || val == PdfName.Layout || val == PdfName.Page || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == PdfName.BatesN)) || (ctx.Version >= 2.0m && val == PdfName.Inline))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Type>($"Invalid value {val}, allowed are: [Pagination,Layout,Page,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,BatesN)),fn:SinceVersion(2.0,Inline)]");
         }
@@ -2123,13 +2124,13 @@ internal partial class APM_StructureAttributesDict_Subtype__Base : ISpecificatio
         var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
-        if (!((eq(O,"Artifact")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+        if (!((eq(O,PdfName.Artifact)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Subtype>($"Value failed special case check: fn:Eval((@O==Artifact) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Table)))");
         }
         
         
-        if (!(val == "Header" || val == "Footer" || val == "Watermark" || (ctx.Version >= 2.0m && val == "PageNum") || (ctx.Version >= 2.0m && val == "Bates") || (ctx.Version >= 2.0m && val == "LineNum") || (ctx.Version >= 2.0m && val == "Redaction"))) 
+        if (!(val == PdfName.Header || val == PdfName.Footer || val == PdfName.Watermark || (ctx.Version >= 2.0m && val == PdfName.PageNum) || (ctx.Version >= 2.0m && val == PdfName.Bates) || (ctx.Version >= 2.0m && val == PdfName.LineNum) || (ctx.Version >= 2.0m && val == PdfName.Redaction))) 
         {
             ctx.Fail<APM_StructureAttributesDict_Subtype>($"Invalid value {val}, allowed are: [Header,Footer,Watermark,fn:SinceVersion(2.0,PageNum),fn:SinceVersion(2.0,Bates),fn:SinceVersion(2.0,LineNum),fn:SinceVersion(2.0,Redaction)]");
         }
@@ -2165,7 +2166,7 @@ internal partial class APM_StructureAttributesDict_Contents__Base : ISpecificati
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Artifact")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Artifact)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_Contents>($"Value failed special case check: fn:Eval((@O==Artifact) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Table)))");
                     }
@@ -2178,7 +2179,7 @@ internal partial class APM_StructureAttributesDict_Contents__Base : ISpecificati
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
                     var O = obj.Get("O");
-                    if (!((eq(O,"Artifact")||!eq(O,"Layout")&&!eq(O,"List")&&!eq(O,"PrintField")&&!eq(O,"Table")))) 
+                    if (!((eq(O,PdfName.Artifact)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_Contents>($"Value failed special case check: fn:Eval((@O==Artifact) || ((@O!=Layout) && (@O!=List) && (@O!=PrintField) && (@O!=Table)))");
                     }

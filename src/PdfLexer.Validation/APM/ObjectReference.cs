@@ -144,7 +144,7 @@ internal partial class APM_ObjectReference_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "OBJR")) 
+        if (!(val == PdfName.OBJR)) 
         {
             ctx.Fail<APM_ObjectReference_Type>($"Invalid value {val}, allowed are: [OBJR]");
         }

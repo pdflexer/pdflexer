@@ -57,6 +57,7 @@ internal partial class APM_RichMediaCuePoint__Base : ISpecification<PdfDictionar
     {
         var c = ctx.Clone();
         c.Run<APM_RichMediaCuePoint_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_RichMediaCuePoint_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -106,7 +107,7 @@ internal partial class APM_RichMediaCuePoint_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "CuePoint")) 
+        if (!(val == PdfName.CuePoint)) 
         {
             ctx.Fail<APM_RichMediaCuePoint_Type>($"Invalid value {val}, allowed are: [CuePoint]");
         }
@@ -138,7 +139,7 @@ internal partial class APM_RichMediaCuePoint_Subtype__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "Navigation" || val == "Event")) 
+        if (!(val == PdfName.Navigation || val == PdfName.Event)) 
         {
             ctx.Fail<APM_RichMediaCuePoint_Subtype>($"Invalid value {val}, allowed are: [Navigation,Event]");
         }

@@ -136,7 +136,7 @@ internal partial class APM_SoftMaskAlpha_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "Mask")) 
+        if (!(val == PdfName.Mask)) 
         {
             ctx.Fail<APM_SoftMaskAlpha_Type>($"Invalid value {val}, allowed are: [Mask]");
         }
@@ -168,7 +168,7 @@ internal partial class APM_SoftMaskAlpha_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Alpha")) 
+        if (!(val == PdfName.Alpha)) 
         {
             ctx.Fail<APM_SoftMaskAlpha_S>($"Invalid value {val}, allowed are: [Alpha]");
         }
@@ -278,7 +278,7 @@ internal partial class APM_SoftMaskAlpha_TR__Base : ISpecification<PdfDictionary
                     // no special cases
                     
                     
-                    if (!(val == "Identity")) 
+                    if (!(val == PdfName.Identity)) 
                     {
                         ctx.Fail<APM_SoftMaskAlpha_TR>($"Invalid value {val}, allowed are: [Identity]");
                     }

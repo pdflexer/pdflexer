@@ -64,7 +64,14 @@ internal partial class APM_OptContentPrint__Base : ISpecification<PdfDictionary>
 
     public static bool MatchesType(PdfValidator ctx, PdfDictionary obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        
+        c.Run<APM_OptContentPrint_Subtype, PdfDictionary>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 
     public static List<string> AllowedFields_15 { get; } = new List<string> 
@@ -144,7 +151,7 @@ internal partial class APM_OptContentPrint_PrintState__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "ON" || val == "OFF")) 
+        if (!(val == PdfName.ON || val == PdfName.OFF)) 
         {
             ctx.Fail<APM_OptContentPrint_PrintState>($"Invalid value {val}, allowed are: [ON,OFF]");
         }

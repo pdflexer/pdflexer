@@ -129,7 +129,7 @@ internal partial class APM_RenditionMedia_Type__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "Rendition")) 
+        if (!(val == PdfName.Rendition)) 
         {
             ctx.Fail<APM_RenditionMedia_Type>($"Invalid value {val}, allowed are: [Rendition]");
         }
@@ -161,7 +161,7 @@ internal partial class APM_RenditionMedia_S__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "MR")) 
+        if (!(val == PdfName.MR)) 
         {
             ctx.Fail<APM_RenditionMedia_S>($"Invalid value {val}, allowed are: [MR]");
         }

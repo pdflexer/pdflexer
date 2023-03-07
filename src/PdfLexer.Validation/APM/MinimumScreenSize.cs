@@ -124,7 +124,7 @@ internal partial class APM_MinimumScreenSize_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "MinScreenSize")) 
+        if (!(val == PdfName.MinScreenSize)) 
         {
             ctx.Fail<APM_MinimumScreenSize_Type>($"Invalid value {val}, allowed are: [MinScreenSize]");
         }
@@ -183,7 +183,7 @@ internal partial class APM_MinimumScreenSize_M__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2 || val == 3 || val == 4 || val == 5 || val == 6)) 
+        if (!(val == 0m || val == 1m || val == 2m || val == 3m || val == 4m || val == 5m || val == 6m)) 
         {
             ctx.Fail<APM_MinimumScreenSize_M>($"Invalid value {val}, allowed are: [0,1,2,3,4,5,6]");
         }

@@ -1,11 +1,12 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using pdflexer.ArlingtonGen;
+using pdflexer.ArlingtonGen.Expressions;
 using PdfLexer;
 
 Directory.CreateDirectory("C:\\source\\github\\pdflexer\\src\\pdflexer.Validation\\APM");
 
 var files = Directory.GetFiles($"C:\\source\\github\\arlington-pdf-model\\tsv\\latest", "*.tsv");
-// var files = new List<string> { $"C:\\source\\github\\arlington-pdf-model\\tsv\\latest\\" + "3DActivation.tsv" };
+// var files = new List<string> { $"C:\\source\\github\\arlington-pdf-model\\tsv\\latest\\" + "XRefStream.tsv" };
 
 var children = new Dictionary<string, List<GenBase>>();
 
@@ -185,6 +186,13 @@ public static {{rt}} {{t}}(IPdfObject? obj, string? val)
     return n.Value {{o}} val;
 }
 
+public static {{rt}} {{t}}(IPdfObject? obj, PdfName val)
+{
+    if (obj == null) { return false; }
+    var n = obj as PdfName;
+    if (n == null) { return false; }
+    return n.Value {{o}} val;
+}
 """;
     }
 }
@@ -212,4 +220,9 @@ sw2.WriteLine("}");
         contents = contents.Replace("plus(1,(LastChar-FirstChar))", "1 + ((LastChar?.GetAs<PdfIntNumber>()?.Value ?? 0) - (FirstChar?.GetAs<PdfIntNumber>()?.Value ?? 0))");
         File.WriteAllText(f, contents);
     }
+}
+
+foreach (var val in EValue.PdfNames.OrderBy(x=>x))
+{
+    Console.WriteLine(val);
 }

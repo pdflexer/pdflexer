@@ -156,7 +156,7 @@ internal partial class APM_ActionHide_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionHide_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -188,7 +188,7 @@ internal partial class APM_ActionHide_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Hide")) 
+        if (!(val == PdfName.Hide)) 
         {
             ctx.Fail<APM_ActionHide_S>($"Invalid value {val}, allowed are: [Hide]");
         }
@@ -446,7 +446,7 @@ internal partial class APM_ActionHide_T__Base : ISpecification<PdfDictionary>
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
                     var T = obj.Get("T");
-                    if (!(IsFieldName(T))) 
+                    if (!(IsFieldName(val))) 
                     {
                         ctx.Fail<APM_ActionHide_T>($"Value failed special case check: fn:Eval(fn:IsFieldName(@T))");
                     }

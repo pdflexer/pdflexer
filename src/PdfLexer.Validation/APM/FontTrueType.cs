@@ -104,6 +104,7 @@ internal partial class APM_FontTrueType__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_FontTrueType_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_FontTrueType_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -181,7 +182,7 @@ internal partial class APM_FontTrueType_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Font")) 
+        if (!(val == PdfName.Font)) 
         {
             ctx.Fail<APM_FontTrueType_Type>($"Invalid value {val}, allowed are: [Font]");
         }
@@ -213,7 +214,7 @@ internal partial class APM_FontTrueType_Subtype__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "TrueType")) 
+        if (!(val == PdfName.TrueType)) 
         {
             ctx.Fail<APM_FontTrueType_Subtype>($"Invalid value {val}, allowed are: [TrueType]");
         }
@@ -447,7 +448,7 @@ internal partial class APM_FontTrueType_Encoding__Base : ISpecification<PdfDicti
                     // no special cases
                     
                     
-                    if (!(val == "MacRomanEncoding" || val == "MacExpertEncoding" || val == "WinAnsiEncoding")) 
+                    if (!(val == PdfName.MacRomanEncoding || val == PdfName.MacExpertEncoding || val == PdfName.WinAnsiEncoding)) 
                     {
                         ctx.Fail<APM_FontTrueType_Encoding>($"Invalid value {val}, allowed are: [MacRomanEncoding,MacExpertEncoding,WinAnsiEncoding]");
                     }

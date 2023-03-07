@@ -37,6 +37,7 @@ internal partial class APM_EncryptedPayload__Base : ISpecification<PdfDictionary
     {
         var c = ctx.Clone();
         c.Run<APM_EncryptedPayload_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_EncryptedPayload_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -74,7 +75,7 @@ internal partial class APM_EncryptedPayload_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "EncryptedPayload")) 
+        if (!(val == PdfName.EncryptedPayload)) 
         {
             ctx.Fail<APM_EncryptedPayload_Type>($"Invalid value {val}, allowed are: [EncryptedPayload]");
         }

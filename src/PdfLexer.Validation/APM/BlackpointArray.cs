@@ -40,7 +40,7 @@ internal partial class APM_BlackpointArray_0 : ISpecification<PdfArray>
         // no special cases
         IPdfObject v = val;
         
-        if (!(gte(v,v))) 
+        if (!(gte(v,0))) 
         {
             ctx.Fail<APM_BlackpointArray_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>=0)]");
         }

@@ -104,7 +104,7 @@ internal partial class APM_RequirementsHandler_Type__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "ReqHandler")) 
+        if (!(val == PdfName.ReqHandler)) 
         {
             ctx.Fail<APM_RequirementsHandler_Type>($"Invalid value {val}, allowed are: [ReqHandler]");
         }
@@ -136,7 +136,7 @@ internal partial class APM_RequirementsHandler_S__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "JS" || val == "NoOp")) 
+        if (!(val == PdfName.JS || val == PdfName.NoOp)) 
         {
             ctx.Fail<APM_RequirementsHandler_S>($"Invalid value {val}, allowed are: [JS,NoOp]");
         }

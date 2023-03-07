@@ -128,7 +128,7 @@ internal partial class APM_ActionRendition_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionRendition_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -160,7 +160,7 @@ internal partial class APM_ActionRendition_S__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Rendition")) 
+        if (!(val == PdfName.Rendition)) 
         {
             ctx.Fail<APM_ActionRendition_S>($"Invalid value {val}, allowed are: [Rendition]");
         }

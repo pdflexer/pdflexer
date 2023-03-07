@@ -66,7 +66,7 @@ internal partial class APM_ActionSetState_Type__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionSetState_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -98,7 +98,7 @@ internal partial class APM_ActionSetState_S__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "SetState")) 
+        if (!(val == PdfName.SetState)) 
         {
             ctx.Fail<APM_ActionSetState_S>($"Invalid value {val}, allowed are: [SetState]");
         }

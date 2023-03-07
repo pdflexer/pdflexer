@@ -76,7 +76,7 @@ internal partial class APM_DSS_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "DSS")) 
+        if (!(val == PdfName.DSS)) 
         {
             ctx.Fail<APM_DSS_Type>($"Invalid value {val}, allowed are: [DSS]");
         }

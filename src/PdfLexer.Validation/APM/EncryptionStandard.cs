@@ -172,7 +172,7 @@ internal partial class APM_EncryptionStandard_Filter__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "Standard")) 
+        if (!(val == PdfName.Standard)) 
         {
             ctx.Fail<APM_EncryptionStandard_Filter>($"Invalid value {val}, allowed are: [Standard]");
         }
@@ -231,7 +231,7 @@ internal partial class APM_EncryptionStandard_V__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!((ctx.Version < 1.1m && val == 0) || (ctx.Version < 2.0m && val == 1) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 2)) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 3)) || (ctx.Version < 2.0m && (ctx.Version >= 1.5m && val == 4)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == 5)) || (ctx.Version >= 2.0m && val == 5) || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32003") && val == 6)))) 
+        if (!((ctx.Version < 1.1m && val == 0m) || (ctx.Version < 2.0m && val == 1m) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 2m)) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 3m)) || (ctx.Version < 2.0m && (ctx.Version >= 1.5m && val == 4m)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5m)) || (ctx.Version >= 2.0m && val == 5m) || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 6m)))) 
         {
             ctx.Fail<APM_EncryptionStandard_V>($"Invalid value {val}, allowed are: [fn:Deprecated(1.1,0),fn:Deprecated(2.0,1),fn:Deprecated(2.0,fn:SinceVersion(1.4,2)),fn:Deprecated(2.0,fn:SinceVersion(1.4,3)),fn:Deprecated(2.0,fn:SinceVersion(1.5,4)),fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5)),fn:SinceVersion(2.0,5),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,6))]");
         }
@@ -263,7 +263,7 @@ internal partial class APM_EncryptionStandard_Length__Base : ISpecification<PdfD
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         var Length = obj.Get("Length");
-        if (!(gte(Length,40)&&(lte(Length,128)||(ctx.Extensions.Contains("ADBE_Extn3") && lte(Length,256)))&&eq(mod(Length,8),0))) 
+        if (!(gte(Length,40)&&(lte(Length,128)||(ctx.Extensions.Contains(PdfName.ADBE_Extn3) && lte(Length,256)))&&eq(mod(Length,8),0))) 
         {
             ctx.Fail<APM_EncryptionStandard_Length>($"Invalid value {val}, allowed are: [fn:Eval((@Length>=40) && ((@Length<=128) || fn:Extension(ADBE_Extn3,(@Length<=256))) && ((@Length mod 8)==0))]");
         }
@@ -404,7 +404,7 @@ internal partial class APM_EncryptionStandard_R__Base : ISpecification<PdfDictio
         
         var V = obj.Get("V");
         // TODO required value checks
-        if (!((ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == 5))) || (ctx.Version < 2.0m && (ctx.Version >= 2.0m && val == 5)) || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32003") && val == 7)))) 
+        if (!((ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5m))) || (ctx.Version < 2.0m && (ctx.Version >= 2.0m && val == 5m)) || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 7m)))) 
         {
             ctx.Fail<APM_EncryptionStandard_R>($"Invalid value {val}, allowed are: [fn:Deprecated(2.0,fn:RequiredValue(@V<2,2)),fn:Deprecated(2.0,fn:RequiredValue((@V==2) || (@V==3),3)),fn:Deprecated(2.0,fn:RequiredValue(@V==4,4)),fn:Deprecated(2.0,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5))),fn:Deprecated(2.0,fn:SinceVersion(2.0,5)),fn:SinceVersion(2.0,fn:RequiredValue(@V==5,6)),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,7))]");
         }
@@ -434,7 +434,8 @@ internal partial class APM_EncryptionStandard_O__Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfString, APM_EncryptionStandard_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         var R = obj.Get("R");
-        if (!((AlwaysUnencrypted(obj)&&((lte(R,4)&&eq(StringLength(obj),32))||((eq(R,5)||eq(R,6))&&eq(StringLength(obj),48)))))) 
+        var O = obj.Get("O");
+        if (!((AlwaysUnencrypted(obj)&&((lte(R,4)&&eq(StringLength(O),32))||((eq(R,5)||eq(R,6))&&eq(StringLength(O),48)))))) 
         {
             ctx.Fail<APM_EncryptionStandard_O>($"Value failed special case check: fn:Eval(fn:AlwaysUnencrypted() && (((@R<=4) && (fn:StringLength(O)==32)) || (((@R==5) || (@R==6)) && (fn:StringLength(O)==48))))");
         }
@@ -465,7 +466,8 @@ internal partial class APM_EncryptionStandard_U__Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfString, APM_EncryptionStandard_U>(obj, "U", IndirectRequirement.Either);
         if (val == null) { return; }
         var R = obj.Get("R");
-        if (!((AlwaysUnencrypted(obj)&&((lte(R,4)&&eq(StringLength(obj),32))||((eq(R,5)||eq(R,6))&&eq(StringLength(obj),48)))))) 
+        var U = obj.Get("U");
+        if (!((AlwaysUnencrypted(obj)&&((lte(R,4)&&eq(StringLength(U),32))||((eq(R,5)||eq(R,6))&&eq(StringLength(U),48)))))) 
         {
             ctx.Fail<APM_EncryptionStandard_U>($"Value failed special case check: fn:Eval(fn:AlwaysUnencrypted() && (((@R<=4) && (fn:StringLength(U)==32)) || (((@R==5) || (@R==6)) && (fn:StringLength(U)==48))))");
         }
@@ -500,8 +502,8 @@ internal partial class APM_EncryptionStandard_OE__Base : ISpecification<PdfDicti
         } else if (val == null) {
             return;
         }
-        
-        if (!((AlwaysUnencrypted(obj)&&eq(StringLength(obj),32)))) 
+        var OE = obj.Get("OE");
+        if (!((AlwaysUnencrypted(obj)&&eq(StringLength(OE),32)))) 
         {
             ctx.Fail<APM_EncryptionStandard_OE>($"Value failed special case check: fn:Eval(fn:AlwaysUnencrypted() && (fn:StringLength(OE)==32))");
         }
@@ -568,7 +570,7 @@ internal partial class APM_EncryptionStandard_P__Base : ISpecification<PdfDictio
         var val = ctx.GetRequired<PdfIntNumber, APM_EncryptionStandard_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(val,0b00000000000000000000000000000011)&&BitsSet(val,0b00000000000000000000000011000000)&&(ctx.Version < 2.0m || BitsSet(val,0b00000000000000000000001000000000))&&((ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32004") && BitsSet(val,0b11111111111111111110000000000000)))||BitsSet(val,0b11111111111111111111000000000000)))) 
+        if (!(BitsClear(val,0b00000000000000000000000000000011)&&BitsSet(val,0b00000000000000000000000011000000)&&(ctx.Version >= 2.0m && BitsSet(val,0b00000000000000000000001000000000))&&((ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32004) && BitsSet(val,0b11111111111111111110000000000000)))||BitsSet(val,0b11111111111111111111000000000000)))) 
         {
             ctx.Fail<APM_EncryptionStandard_P>($"Value failed special case check: fn:Eval(fn:BitsClear(1,2) && fn:BitsSet(7,8) && fn:SinceVersion(2.0,fn:BitSet(10)) && (fn:SinceVersion(2.0,fn:Extension(ISO_TS_32004,fn:BitsSet(14,32))) || fn:BitsSet(13,32)))");
         }
@@ -659,6 +661,7 @@ internal partial class APM_EncryptionStandard_KDFSalt__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfString, APM_EncryptionStandard_KDFSalt>(obj, "KDFSalt", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         

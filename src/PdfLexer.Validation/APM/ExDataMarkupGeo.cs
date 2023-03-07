@@ -54,6 +54,7 @@ internal partial class APM_ExDataMarkupGeo__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_ExDataMarkupGeo_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_ExDataMarkupGeo_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -103,7 +104,7 @@ internal partial class APM_ExDataMarkupGeo_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "ExData")) 
+        if (!(val == PdfName.ExData)) 
         {
             ctx.Fail<APM_ExDataMarkupGeo_Type>($"Invalid value {val}, allowed are: [ExData]");
         }
@@ -135,7 +136,7 @@ internal partial class APM_ExDataMarkupGeo_Subtype__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "MarkupGeo")) 
+        if (!(val == PdfName.MarkupGeo)) 
         {
             ctx.Fail<APM_ExDataMarkupGeo_Subtype>($"Invalid value {val}, allowed are: [MarkupGeo]");
         }

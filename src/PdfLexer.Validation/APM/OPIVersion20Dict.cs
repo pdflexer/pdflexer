@@ -152,7 +152,7 @@ internal partial class APM_OPIVersion20Dict_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "OPI")) 
+        if (!(val == PdfName.OPI)) 
         {
             ctx.Fail<APM_OPIVersion20Dict_Type>($"Invalid value {val}, allowed are: [OPI]");
         }
@@ -315,7 +315,7 @@ internal partial class APM_OPIVersion20Dict_Size__Base : ISpecification<PdfDicti
     {
         
         var val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_Size>(obj, "Size", IndirectRequirement.Either);
-        if ((obj.ContainsKey("CropRect")) && val == null) {
+        if ((obj.ContainsKey(PdfName.CropRect)) && val == null) {
             ctx.Fail<APM_OPIVersion20Dict_Size>("Size is required when 'fn:IsRequired(fn:IsPresent(CropRect))"); return;
         } else if (val == null) {
             return;
@@ -429,7 +429,7 @@ internal partial class APM_OPIVersion20Dict_Inks__Base : ISpecification<PdfDicti
                     // no special cases
                     
                     
-                    if (!(val == "full_color" || val == "registration")) 
+                    if (!(val == PdfName.full_color || val == PdfName.registration)) 
                     {
                         ctx.Fail<APM_OPIVersion20Dict_Inks>($"Invalid value {val}, allowed are: [full_color,registration]");
                     }
@@ -499,7 +499,7 @@ internal partial class APM_OPIVersion20Dict_IncludedImageQuality__Base : ISpecif
         // no special cases
         
         
-        if (!(val == 1 || val == 2 || val == 3)) 
+        if (!(val == 1m || val == 2m || val == 3m)) 
         {
             ctx.Fail<APM_OPIVersion20Dict_IncludedImageQuality>($"Invalid value {val}, allowed are: [1,2,3]");
         }

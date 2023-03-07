@@ -166,7 +166,7 @@ internal partial class APM_ActionURI_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionURI_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -198,7 +198,7 @@ internal partial class APM_ActionURI_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "URI")) 
+        if (!(val == PdfName.URI)) 
         {
             ctx.Fail<APM_ActionURI_S>($"Invalid value {val}, allowed are: [URI]");
         }

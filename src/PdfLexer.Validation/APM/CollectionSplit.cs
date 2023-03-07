@@ -104,7 +104,7 @@ internal partial class APM_CollectionSplit_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "CollectionSplit")) 
+        if (!(val == PdfName.CollectionSplit)) 
         {
             ctx.Fail<APM_CollectionSplit_Type>($"Invalid value {val}, allowed are: [CollectionSplit]");
         }
@@ -136,7 +136,7 @@ internal partial class APM_CollectionSplit_Direction__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "H" || val == "V" || val == "N")) 
+        if (!(val == PdfName.H || val == PdfName.V || val == PdfName.N)) 
         {
             ctx.Fail<APM_CollectionSplit_Direction>($"Invalid value {val}, allowed are: [H,V,N]");
         }

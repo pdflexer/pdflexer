@@ -127,7 +127,7 @@ internal partial class APM_NavNode_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "NavNode")) 
+        if (!(val == PdfName.NavNode)) 
         {
             ctx.Fail<APM_NavNode_Type>($"Invalid value {val}, allowed are: [NavNode]");
         }

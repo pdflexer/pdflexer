@@ -56,6 +56,7 @@ internal partial class APM_3DAnimationStyle__Base : ISpecification<PdfDictionary
     {
         var c = ctx.Clone();
         c.Run<APM_3DAnimationStyle_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_3DAnimationStyle_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -105,7 +106,7 @@ internal partial class APM_3DAnimationStyle_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "3DAnimationStyle")) 
+        if (!(val == PdfName.N3DAnimationStyle)) 
         {
             ctx.Fail<APM_3DAnimationStyle_Type>($"Invalid value {val}, allowed are: [3DAnimationStyle]");
         }
@@ -137,7 +138,7 @@ internal partial class APM_3DAnimationStyle_Subtype__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "None" || val == "Linear" || val == "Oscillating")) 
+        if (!(val == PdfName.None || val == PdfName.Linear || val == PdfName.Oscillating)) 
         {
             ctx.Fail<APM_3DAnimationStyle_Subtype>($"Invalid value {val}, allowed are: [None,Linear,Oscillating]");
         }

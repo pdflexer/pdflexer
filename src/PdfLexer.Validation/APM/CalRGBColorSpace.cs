@@ -39,7 +39,7 @@ internal partial class APM_CalRGBColorSpace_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "CalRGB")) 
+        if (!(val == PdfName.CalRGB)) 
         {
             ctx.Fail<APM_CalRGBColorSpace_0>($"Invalid value {val}, allowed are: [CalRGB]");
         }

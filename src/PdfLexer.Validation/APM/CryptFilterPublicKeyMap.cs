@@ -53,7 +53,7 @@ internal partial class APM_CryptFilterPublicKeyMap_DefaultCryptFilter__Base : IS
         var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_DefaultCryptFilter>(obj, "DefaultCryptFilter", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(!obj.ContainsKey("StdCF"))) 
+        if (!(!obj.ContainsKey(PdfName.StdCF))) 
         {
             ctx.Fail<APM_CryptFilterPublicKeyMap_DefaultCryptFilter>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent(StdCF)))");
         }
@@ -84,7 +84,7 @@ internal partial class APM_CryptFilterPublicKeyMap_DefEmbeddedFile__Base : ISpec
         var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_DefEmbeddedFile>(obj, "DefEmbeddedFile", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(!obj.ContainsKey("StdCF"))) 
+        if (!(!obj.ContainsKey(PdfName.StdCF))) 
         {
             ctx.Fail<APM_CryptFilterPublicKeyMap_DefEmbeddedFile>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent(StdCF)))");
         }

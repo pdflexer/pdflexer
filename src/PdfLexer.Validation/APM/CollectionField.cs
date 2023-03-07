@@ -58,6 +58,7 @@ internal partial class APM_CollectionField__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_CollectionField_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_CollectionField_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -107,7 +108,7 @@ internal partial class APM_CollectionField_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "CollectionField")) 
+        if (!(val == PdfName.CollectionField)) 
         {
             ctx.Fail<APM_CollectionField_Type>($"Invalid value {val}, allowed are: [CollectionField]");
         }
@@ -139,7 +140,7 @@ internal partial class APM_CollectionField_Subtype__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "S" || val == "D" || val == "N" || val == "F" || val == "Desc" || val == "ModDate" || val == "CreationDate" || val == "Size" || (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "CompressedSize")) || (ctx.Version >= 2.0m && val == "CompressedSize"))) 
+        if (!(val == PdfName.S || val == PdfName.D || val == PdfName.N || val == PdfName.F || val == PdfName.Desc || val == PdfName.ModDate || val == PdfName.CreationDate || val == PdfName.Size || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == PdfName.CompressedSize)) || (ctx.Version >= 2.0m && val == PdfName.CompressedSize))) 
         {
             ctx.Fail<APM_CollectionField_Subtype>($"Invalid value {val}, allowed are: [S,D,N,F,Desc,ModDate,CreationDate,Size,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,CompressedSize)),fn:SinceVersion(2.0,CompressedSize)]");
         }

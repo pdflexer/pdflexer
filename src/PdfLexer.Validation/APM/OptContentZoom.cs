@@ -114,7 +114,7 @@ internal partial class APM_OptContentZoom_min__Base : ISpecification<PdfDictiona
     {
         
         var val = ctx.GetOptional<PdfNumber, APM_OptContentZoom_min>(obj, "min", IndirectRequirement.Either);
-        if ((!obj.ContainsKey("max")) && val == null) {
+        if ((!obj.ContainsKey(PdfName.max)) && val == null) {
             ctx.Fail<APM_OptContentZoom_min>("min is required when 'fn:IsRequired(fn:Not(fn:IsPresent(max)))"); return;
         } else if (val == null) {
             return;

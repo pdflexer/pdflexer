@@ -63,7 +63,14 @@ internal partial class APM_OptContentPageElement__Base : ISpecification<PdfDicti
 
     public static bool MatchesType(PdfValidator ctx, PdfDictionary obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        
+        c.Run<APM_OptContentPageElement_Subtype, PdfDictionary>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 
     public static List<string> AllowedFields_15 { get; } = new List<string> 
@@ -116,7 +123,7 @@ internal partial class APM_OptContentPageElement_Subtype__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "HF" || val == "FG" || val == "BG" || val == "L")) 
+        if (!(val == PdfName.HF || val == PdfName.FG || val == PdfName.BG || val == PdfName.L)) 
         {
             ctx.Fail<APM_OptContentPageElement_Subtype>($"Invalid value {val}, allowed are: [HF,FG,BG,L]");
         }

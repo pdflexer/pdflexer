@@ -57,7 +57,7 @@ internal partial class APM_DestXYZArray_0 : ISpecification<PdfArray>
                     // no special cases
                     IPdfObject v = val;
                     
-                    if (!(gte(v,v))) 
+                    if (!(gte(v,0))) 
                     {
                         ctx.Fail<APM_DestXYZArray_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>=0)]");
                     }
@@ -88,7 +88,7 @@ internal partial class APM_DestXYZArray_1 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "XYZ")) 
+        if (!(val == PdfName.XYZ)) 
         {
             ctx.Fail<APM_DestXYZArray_1>($"Invalid value {val}, allowed are: [XYZ]");
         }

@@ -149,7 +149,7 @@ internal partial class APM_WebCaptureImageSet_Type__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "SpiderContentSet")) 
+        if (!(val == PdfName.SpiderContentSet)) 
         {
             ctx.Fail<APM_WebCaptureImageSet_Type>($"Invalid value {val}, allowed are: [SpiderContentSet]");
         }
@@ -181,7 +181,7 @@ internal partial class APM_WebCaptureImageSet_S__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "SIS")) 
+        if (!(val == PdfName.SIS)) 
         {
             ctx.Fail<APM_WebCaptureImageSet_S>($"Invalid value {val}, allowed are: [SIS]");
         }

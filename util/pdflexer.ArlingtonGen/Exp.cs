@@ -7,9 +7,14 @@ internal class Exp : INode
 {
     public Exp(string text)
     {
-        Children = Tokenize(text);
+        var n = Tokenize(text);
+        Children = new List<INode> { };
+        if (n != null)
+        {
+            Children.Add(n);
+        }
     }
-    internal static List<INode> Tokenize(string text)
+    internal static INode? Tokenize(string text)
     {
         var parts = new List<INode>();
         int i = 0;
@@ -63,7 +68,7 @@ internal class Exp : INode
                         break;
                     }
                 }
-                parts.Add(new EGroup(text.Substring(s, i - s)));
+                parts.Add(new Exp(text.Substring(s, i - s)));
                 i++;
                 continue;
             }
@@ -90,7 +95,14 @@ internal class Exp : INode
             }
 
         }
-        return parts;
+        if (parts.Count == 1)
+        {
+            return parts[0];
+        } else if (parts.Count == 0)
+        {
+            return null;
+        }
+        return new EGroup(parts);
     }
 
     public void Write(StringBuilder sb)

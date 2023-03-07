@@ -106,7 +106,7 @@ internal partial class APM_RichMediaPosition_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "RichMediaPosition")) 
+        if (!(val == PdfName.RichMediaPosition)) 
         {
             ctx.Fail<APM_RichMediaPosition_Type>($"Invalid value {val}, allowed are: [RichMediaPosition]");
         }
@@ -138,7 +138,7 @@ internal partial class APM_RichMediaPosition_HAlign__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "Near" || val == "Center" || val == "Far")) 
+        if (!(val == PdfName.Near || val == PdfName.Center || val == PdfName.Far)) 
         {
             ctx.Fail<APM_RichMediaPosition_HAlign>($"Invalid value {val}, allowed are: [Near,Center,Far]");
         }
@@ -170,7 +170,7 @@ internal partial class APM_RichMediaPosition_VAlign__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "Near" || val == "Center" || val == "Far")) 
+        if (!(val == PdfName.Near || val == PdfName.Center || val == PdfName.Far)) 
         {
             ctx.Fail<APM_RichMediaPosition_VAlign>($"Invalid value {val}, allowed are: [Near,Center,Far]");
         }

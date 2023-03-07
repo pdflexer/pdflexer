@@ -160,7 +160,7 @@ internal partial class APM_DocTimeStamp_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "DocTimeStamp")) 
+        if (!(val == PdfName.DocTimeStamp)) 
         {
             ctx.Fail<APM_DocTimeStamp_Type>($"Invalid value {val}, allowed are: [DocTimeStamp]");
         }
@@ -219,7 +219,7 @@ internal partial class APM_DocTimeStamp_SubFilter__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "ETSI.RFC3161")) 
+        if (!(val == PdfName.ETSIRFC3161)) 
         {
             ctx.Fail<APM_DocTimeStamp_SubFilter>($"Invalid value {val}, allowed are: [ETSI.RFC3161]");
         }

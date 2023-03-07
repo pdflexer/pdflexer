@@ -63,7 +63,7 @@ internal partial class APM_HalftoneType5_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "Halftone")) 
+        if (!(val == PdfName.Halftone)) 
         {
             ctx.Fail<APM_HalftoneType5_Type>($"Invalid value {val}, allowed are: [Halftone]");
         }
@@ -95,7 +95,7 @@ internal partial class APM_HalftoneType5_HalftoneType__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 5)) 
+        if (!(val == 5m)) 
         {
             ctx.Fail<APM_HalftoneType5_HalftoneType>($"Invalid value {val}, allowed are: [5]");
         }

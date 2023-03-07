@@ -107,7 +107,7 @@ internal partial class APM_RichMediaParams_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "RichMediaParams")) 
+        if (!(val == PdfName.RichMediaParams)) 
         {
             ctx.Fail<APM_RichMediaParams_Type>($"Invalid value {val}, allowed are: [RichMediaParams]");
         }
@@ -187,7 +187,7 @@ internal partial class APM_RichMediaParams_Binding__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "None" || val == "Foreground" || val == "Background" || val == "Material")) 
+        if (!(val == PdfName.None || val == PdfName.Foreground || val == PdfName.Background || val == PdfName.Material)) 
         {
             ctx.Fail<APM_RichMediaParams_Binding>($"Invalid value {val}, allowed are: [None,Foreground,Background,Material]");
         }
@@ -216,7 +216,7 @@ internal partial class APM_RichMediaParams_BindingMaterial__Base : ISpecificatio
     {
         var Binding = obj.Get("Binding");
         var val = ctx.GetOptional<PdfString, APM_RichMediaParams_BindingMaterial>(obj, "BindingMaterial", IndirectRequirement.Either);
-        if ((eq(Binding,"Material")) && val == null) {
+        if ((eq(Binding,PdfName.Material)) && val == null) {
             ctx.Fail<APM_RichMediaParams_BindingMaterial>("BindingMaterial is required when 'fn:IsRequired(@Binding==Material)"); return;
         } else if (val == null) {
             return;

@@ -77,7 +77,7 @@ internal partial class APM_RequirementsDigSigValidation_Type__Base : ISpecificat
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsDigSigValidation_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -109,7 +109,7 @@ internal partial class APM_RequirementsDigSigValidation_S__Base : ISpecification
         // no special cases
         
         
-        if (!(val == "DigSigValidation")) 
+        if (!(val == PdfName.DigSigValidation)) 
         {
             ctx.Fail<APM_RequirementsDigSigValidation_S>($"Invalid value {val}, allowed are: [DigSigValidation]");
         }

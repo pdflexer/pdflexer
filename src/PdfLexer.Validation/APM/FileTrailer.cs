@@ -168,6 +168,7 @@ internal partial class APM_FileTrailer_Size__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_FileTrailer_Size>(obj, "Size", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -200,6 +201,7 @@ internal partial class APM_FileTrailer_Prev__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfIntNumber, APM_FileTrailer_Prev>(obj, "Prev", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -295,6 +297,7 @@ internal partial class APM_FileTrailer_Info__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_FileTrailer_Info>(obj, "Info", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
@@ -322,9 +325,10 @@ internal partial class APM_FileTrailer_ID__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         
         var val = ctx.GetOptional<PdfArray, APM_FileTrailer_ID>(obj, "ID", IndirectRequirement.Either);
-        if (((ctx.Version >= 2.0m||obj.ContainsKey("Encrypt"))) && val == null) {
+        if (((ctx.Version >= 2.0m||obj.ContainsKey(PdfName.Encrypt))) && val == null) {
             ctx.Fail<APM_FileTrailer_ID>("ID is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:IsPresent(Encrypt))"); return;
         } else if (val == null) {
             return;
@@ -391,6 +395,7 @@ internal partial class APM_FileTrailer_AuthCode__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_FileTrailer_AuthCode>(obj, "AuthCode", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         var EncryptV = obj.Get("Encrypt")?.Get("V");

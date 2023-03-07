@@ -125,6 +125,7 @@ internal partial class APM_XObjectFormType1__Base : ISpecification<PdfDictionary
     {
         var c = ctx.Clone();
         c.Run<APM_XObjectFormType1_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_XObjectFormType1_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -202,7 +203,7 @@ internal partial class APM_XObjectFormType1_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "XObject")) 
+        if (!(val == PdfName.XObject)) 
         {
             ctx.Fail<APM_XObjectFormType1_Type>($"Invalid value {val}, allowed are: [XObject]");
         }
@@ -234,7 +235,7 @@ internal partial class APM_XObjectFormType1_Subtype__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "Form")) 
+        if (!(val == PdfName.Form)) 
         {
             ctx.Fail<APM_XObjectFormType1_Subtype>($"Invalid value {val}, allowed are: [Form]");
         }
@@ -271,7 +272,7 @@ internal partial class APM_XObjectFormType1_FormType__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == 1)) 
+        if (!(val == 1m)) 
         {
             ctx.Fail<APM_XObjectFormType1_FormType>($"Invalid value {val}, allowed are: [1]");
         }
@@ -527,7 +528,7 @@ internal partial class APM_XObjectFormType1_StructParent__Base : ISpecification<
         var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_StructParent>(obj, "StructParent", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (obj.ContainsKey("StructParents")) 
+        if (obj.ContainsKey(PdfName.StructParents)) 
         {
             ctx.Fail<APM_XObjectFormType1_StructParent>($"Value failed special case check: fn:Not(fn:IsPresent(StructParents))");
         }
@@ -558,7 +559,7 @@ internal partial class APM_XObjectFormType1_StructParents__Base : ISpecification
         var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_StructParents>(obj, "StructParents", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (obj.ContainsKey("StructParent")) 
+        if (obj.ContainsKey(PdfName.StructParent)) 
         {
             ctx.Fail<APM_XObjectFormType1_StructParents>($"Value failed special case check: fn:Not(fn:IsPresent(StructParent))");
         }
@@ -853,7 +854,7 @@ internal partial class APM_XObjectFormType1_Filter__Base : ISpecification<PdfDic
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version >= 1.2m && val == "FlateDecode") || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || (ctx.Version >= 1.2m && val == PdfName.FlateDecode) || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectFormType1_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,fn:SinceVersion(1.2,FlateDecode),RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -1024,7 +1025,7 @@ internal partial class APM_XObjectFormType1_FFilter__Base : ISpecification<PdfDi
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectFormType1_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -1212,7 +1213,7 @@ internal partial class APM_XObjectFormType1_GTS_Scope__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "SingleUse" || val == "Record" || val == "File" || val == "Stream" || val == "Global" || val == "Unknown")) 
+        if (!(val == PdfName.SingleUse || val == PdfName.Record || val == PdfName.File || val == PdfName.Stream || val == PdfName.Global || val == PdfName.Unknown)) 
         {
             ctx.Fail<APM_XObjectFormType1_GTS_Scope>($"Invalid value {val}, allowed are: [SingleUse,Record,File,Stream,Global,Unknown]");
         }
@@ -1241,7 +1242,7 @@ internal partial class APM_XObjectFormType1_GTS_Env__Base : ISpecification<PdfDi
     {
         var GTSScope = obj.Get("GTS_Scope");
         var val = ctx.GetOptional<PdfString, APM_XObjectFormType1_GTS_Env>(obj, "GTS_Env", IndirectRequirement.Either);
-        if (((eq(GTSScope,"Stream")||eq(GTSScope,"Global"))) && val == null) {
+        if (((eq(GTSScope,PdfName.Stream)||eq(GTSScope,PdfName.Global))) && val == null) {
             ctx.Fail<APM_XObjectFormType1_GTS_Env>("GTS_Env is required when 'fn:IsRequired((@GTS_Scope==Stream) || (@GTS_Scope==Global))"); return;
         } else if (val == null) {
             return;

@@ -35,12 +35,13 @@ internal partial class APM_ArrayOfXRefWIntegers_0 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefWIntegers_0>(obj, 0, IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
         
-        if (!(gte(v,v))) 
+        if (!(gte(v,0))) 
         {
             ctx.Fail<APM_ArrayOfXRefWIntegers_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>=0)]");
         }
@@ -60,6 +61,7 @@ internal partial class APM_ArrayOfXRefWIntegers_1 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefWIntegers_1>(obj, 1, IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -85,6 +87,7 @@ internal partial class APM_ArrayOfXRefWIntegers_2 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefWIntegers_2>(obj, 2, IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases

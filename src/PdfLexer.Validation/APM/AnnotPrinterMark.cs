@@ -90,6 +90,7 @@ internal partial class APM_AnnotPrinterMark__Base : ISpecification<PdfDictionary
     {
         var c = ctx.Clone();
         c.Run<APM_AnnotPrinterMark_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_AnnotPrinterMark_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -151,7 +152,7 @@ internal partial class APM_AnnotPrinterMark_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Annot")) 
+        if (!(val == PdfName.Annot)) 
         {
             ctx.Fail<APM_AnnotPrinterMark_Type>($"Invalid value {val}, allowed are: [Annot]");
         }
@@ -183,7 +184,7 @@ internal partial class APM_AnnotPrinterMark_Subtype__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "PrinterMark")) 
+        if (!(val == PdfName.PrinterMark)) 
         {
             ctx.Fail<APM_AnnotPrinterMark_Subtype>($"Invalid value {val}, allowed are: [PrinterMark]");
         }
@@ -383,7 +384,7 @@ internal partial class APM_AnnotPrinterMark_AP__Base : ISpecification<PdfDiction
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotPrinterMark_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotPrinterMark_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;
@@ -681,7 +682,7 @@ internal partial class APM_AnnotPrinterMark_BM__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!((ctx.Version < 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
+        if (!((ctx.Version < 1.4m && val == PdfName.Compatible) || val == PdfName.Normal || val == PdfName.Multiply || val == PdfName.Screen || val == PdfName.Difference || val == PdfName.Darken || val == PdfName.Lighten || val == PdfName.ColorDodge || val == PdfName.ColorBurn || val == PdfName.Exclusion || val == PdfName.HardLight || val == PdfName.Overlay || val == PdfName.SoftLight || val == PdfName.Luminosity || val == PdfName.Hue || val == PdfName.Saturation || val == PdfName.Color)) 
         {
             ctx.Fail<APM_AnnotPrinterMark_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
         }

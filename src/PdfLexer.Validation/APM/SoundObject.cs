@@ -165,7 +165,7 @@ internal partial class APM_SoundObject_Type__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "Sound")) 
+        if (!(val == PdfName.Sound)) 
         {
             ctx.Fail<APM_SoundObject_Type>($"Invalid value {val}, allowed are: [Sound]");
         }
@@ -293,7 +293,7 @@ internal partial class APM_SoundObject_E__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Raw" || val == "Signed" || val == "muLaw" || val == "ALaw")) 
+        if (!(val == PdfName.Raw || val == PdfName.Signed || val == PdfName.muLaw || val == PdfName.ALaw)) 
         {
             ctx.Fail<APM_SoundObject_E>($"Invalid value {val}, allowed are: [Raw,Signed,muLaw,ALaw]");
         }
@@ -456,7 +456,7 @@ internal partial class APM_SoundObject_Filter__Base : ISpecification<PdfDictiona
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_SoundObject_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -627,7 +627,7 @@ internal partial class APM_SoundObject_FFilter__Base : ISpecification<PdfDiction
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_SoundObject_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

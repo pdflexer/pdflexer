@@ -124,7 +124,7 @@ internal partial class APM_MediaDuration_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "MediaDuration")) 
+        if (!(val == PdfName.MediaDuration)) 
         {
             ctx.Fail<APM_MediaDuration_Type>($"Invalid value {val}, allowed are: [MediaDuration]");
         }
@@ -156,7 +156,7 @@ internal partial class APM_MediaDuration_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "I" || val == "F" || val == "T")) 
+        if (!(val == PdfName.I || val == PdfName.F || val == PdfName.T)) 
         {
             ctx.Fail<APM_MediaDuration_S>($"Invalid value {val}, allowed are: [I,F,T]");
         }
@@ -185,7 +185,7 @@ internal partial class APM_MediaDuration_T__Base : ISpecification<PdfDictionary>
     {
         var S = obj.Get("S");
         var val = ctx.GetOptional<PdfDictionary, APM_MediaDuration_T>(obj, "T", IndirectRequirement.Either);
-        if ((eq(S,"T")) && val == null) {
+        if ((eq(S,PdfName.T)) && val == null) {
             ctx.Fail<APM_MediaDuration_T>("T is required when 'fn:IsRequired(@S==T)"); return;
         } else if (val == null) {
             return;

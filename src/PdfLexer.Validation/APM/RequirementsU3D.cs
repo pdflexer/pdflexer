@@ -76,7 +76,7 @@ internal partial class APM_RequirementsU3D_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsU3D_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsU3D_S__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "U3D")) 
+        if (!(val == PdfName.U3D)) 
         {
             ctx.Fail<APM_RequirementsU3D_S>($"Invalid value {val}, allowed are: [U3D]");
         }

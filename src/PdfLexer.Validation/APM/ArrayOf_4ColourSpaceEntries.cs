@@ -41,7 +41,7 @@ internal partial class APM_ArrayOf_4ColourSpaceEntries_0 : ISpecification<PdfArr
         // no special cases
         
         
-        if (!(val == "DeviceRGB")) 
+        if (!(val == PdfName.DeviceRGB)) 
         {
             ctx.Fail<APM_ArrayOf_4ColourSpaceEntries_0>($"Invalid value {val}, allowed are: [DeviceRGB]");
         }
@@ -66,7 +66,7 @@ internal partial class APM_ArrayOf_4ColourSpaceEntries_1 : ISpecification<PdfArr
         // no special cases
         IPdfObject v = val;
         
-        if (!((gte(v,0)&&lte(v,v)))) 
+        if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_4ColourSpaceEntries_1>($"Invalid value {val}, allowed are: [fn:Eval((@1>=0) && (@1<=1))]");
         }

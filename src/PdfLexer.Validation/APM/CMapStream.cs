@@ -163,7 +163,7 @@ internal partial class APM_CMapStream_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "CMap")) 
+        if (!(val == PdfName.CMap)) 
         {
             ctx.Fail<APM_CMapStream_Type>($"Invalid value {val}, allowed are: [CMap]");
         }
@@ -249,7 +249,7 @@ internal partial class APM_CMapStream_WMode__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == 1 || val == 0)) 
+        if (!(val == 1m || val == 0m)) 
         {
             ctx.Fail<APM_CMapStream_WMode>($"Invalid value {val}, allowed are: [1,0]");
         }
@@ -287,7 +287,7 @@ internal partial class APM_CMapStream_UseCMap__Base : ISpecification<PdfDictiona
                     // no special cases
                     
                     
-                    if (!(val == "GB-EUC-H" || val == "GB-EUC-V" || val == "GBpc-EUC-H" || val == "GBpc-EUC-V" || val == "GBK-EUC-H" || val == "GBK-EUC-V" || val == "GBKp-EUC-H" || val == "GBKp-EUC-V" || val == "GBK2K-H" || val == "GBK2K-V" || val == "UniGB-UCS2-H" || val == "UniGB-UCS2-V" || val == "UniGB-UTF16-H" || val == "UniGB-UTF16-V" || val == "B5pc-H" || val == "B5pc-V" || val == "HKscs-B5-H" || val == "HKscs-B5-V" || val == "ETen-B5-H" || val == "ETen-B5-V" || val == "ETenms-B5-H" || val == "ETenms-B5-V" || val == "CNS-EUC-H" || val == "CNS-EUC-V" || val == "UniCNS-UCS2-H" || val == "UniCNS-UCS2-V" || val == "UniCNS-UTF16-H" || val == "UniCNS-UTF16-V" || val == "83pv-RKSJ-H" || val == "90ms-RKSJ-H" || val == "90ms-RKSJ-V" || val == "90msp-RKSJ-H" || val == "90msp-RKSJ-V" || val == "90pv-RKSJ-H" || val == "Add-RKSJ-H" || val == "Add-RKSJ-V" || val == "EUC-H" || val == "EUC-V" || val == "Ext-RKSJ-H" || val == "Ext-RKSJ-V" || val == "H" || val == "V" || val == "UniJIS-UCS2-H" || val == "UniJIS-UCS2-V" || val == "UniJIS-UCS2-HW-H" || val == "UniJIS-UCS2-HW-V" || val == "UniJIS-UTF16-H" || val == "UniJIS-UTF16-V" || val == "KSC-EUC-H" || val == "KSC-EUC-V" || val == "KSCms-UHC-H" || val == "KSCms-UHC-V" || val == "KSCms-UHC-HW-H" || val == "KSCms-UHC-HW-V" || val == "KSCpc-EUC-H" || val == "UniKS-UCS2-H" || val == "UniKS-UCS2-V" || val == "UniKS-UTF16-H" || val == "UniKS-UTF16-V" || val == "Identity-H" || val == "Identity-V")) 
+                    if (!(val == PdfName.GBEUCH || val == PdfName.GBEUCV || val == PdfName.GBpcEUCH || val == PdfName.GBpcEUCV || val == PdfName.GBKEUCH || val == PdfName.GBKEUCV || val == PdfName.GBKpEUCH || val == PdfName.GBKpEUCV || val == PdfName.GBK2KH || val == PdfName.GBK2KV || val == PdfName.UniGBUCS2H || val == PdfName.UniGBUCS2V || val == PdfName.UniGBUTF16H || val == PdfName.UniGBUTF16V || val == PdfName.B5pcH || val == PdfName.B5pcV || val == PdfName.HKscsB5H || val == PdfName.HKscsB5V || val == PdfName.ETenB5H || val == PdfName.ETenB5V || val == PdfName.ETenmsB5H || val == PdfName.ETenmsB5V || val == PdfName.CNSEUCH || val == PdfName.CNSEUCV || val == PdfName.UniCNSUCS2H || val == PdfName.UniCNSUCS2V || val == PdfName.UniCNSUTF16H || val == PdfName.UniCNSUTF16V || val == PdfName.N83pvRKSJH || val == PdfName.N90msRKSJH || val == PdfName.N90msRKSJV || val == PdfName.N90mspRKSJH || val == PdfName.N90mspRKSJV || val == PdfName.N90pvRKSJH || val == PdfName.AddRKSJH || val == PdfName.AddRKSJV || val == PdfName.EUCH || val == PdfName.EUCV || val == PdfName.ExtRKSJH || val == PdfName.ExtRKSJV || val == PdfName.H || val == PdfName.V || val == PdfName.UniJISUCS2H || val == PdfName.UniJISUCS2V || val == PdfName.UniJISUCS2HWH || val == PdfName.UniJISUCS2HWV || val == PdfName.UniJISUTF16H || val == PdfName.UniJISUTF16V || val == PdfName.KSCEUCH || val == PdfName.KSCEUCV || val == PdfName.KSCmsUHCH || val == PdfName.KSCmsUHCV || val == PdfName.KSCmsUHCHWH || val == PdfName.KSCmsUHCHWV || val == PdfName.KSCpcEUCH || val == PdfName.UniKSUCS2H || val == PdfName.UniKSUCS2V || val == PdfName.UniKSUTF16H || val == PdfName.UniKSUTF16V || val == PdfName.IdentityH || val == PdfName.IdentityV)) 
                     {
                         ctx.Fail<APM_CMapStream_UseCMap>($"Invalid value {val}, allowed are: [GB-EUC-H,GB-EUC-V,GBpc-EUC-H,GBpc-EUC-V,GBK-EUC-H,GBK-EUC-V,GBKp-EUC-H,GBKp-EUC-V,GBK2K-H,GBK2K-V,UniGB-UCS2-H,UniGB-UCS2-V,UniGB-UTF16-H,UniGB-UTF16-V,B5pc-H,B5pc-V,HKscs-B5-H,HKscs-B5-V,ETen-B5-H,ETen-B5-V,ETenms-B5-H,ETenms-B5-V,CNS-EUC-H,CNS-EUC-V,UniCNS-UCS2-H,UniCNS-UCS2-V,UniCNS-UTF16-H,UniCNS-UTF16-V,83pv-RKSJ-H,90ms-RKSJ-H,90ms-RKSJ-V,90msp-RKSJ-H,90msp-RKSJ-V,90pv-RKSJ-H,Add-RKSJ-H,Add-RKSJ-V,EUC-H,EUC-V,Ext-RKSJ-H,Ext-RKSJ-V,H,V,UniJIS-UCS2-H,UniJIS-UCS2-V,UniJIS-UCS2-HW-H,UniJIS-UCS2-HW-V,UniJIS-UTF16-H,UniJIS-UTF16-V,KSC-EUC-H,KSC-EUC-V,KSCms-UHC-H,KSCms-UHC-V,KSCms-UHC-HW-H,KSCms-UHC-HW-V,KSCpc-EUC-H,UniKS-UCS2-H,UniKS-UCS2-V,UniKS-UTF16-H,UniKS-UTF16-V,Identity-H,Identity-V]");
                     }
@@ -381,7 +381,7 @@ internal partial class APM_CMapStream_Filter__Base : ISpecification<PdfDictionar
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_CMapStream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -552,7 +552,7 @@ internal partial class APM_CMapStream_FFilter__Base : ISpecification<PdfDictiona
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_CMapStream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

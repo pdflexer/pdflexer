@@ -120,7 +120,7 @@ internal partial class APM_URTransformParameters_Type__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "TransformParams")) 
+        if (!(val == PdfName.TransformParams)) 
         {
             ctx.Fail<APM_URTransformParameters_Type>($"Invalid value {val}, allowed are: [TransformParams]");
         }

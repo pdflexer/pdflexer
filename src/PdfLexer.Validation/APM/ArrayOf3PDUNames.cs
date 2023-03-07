@@ -40,7 +40,7 @@ internal partial class APM_ArrayOf3PDUNames_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "M" || val == "KM" || val == "FT" || val == "USFT" || val == "MI" || val == "NM" || val == "SQM" || val == "HA" || val == "SQKM" || val == "SQFT" || val == "A" || val == "SQMI" || val == "DEG" || val == "GRD")) 
+        if (!(val == PdfName.M || val == PdfName.KM || val == PdfName.FT || val == PdfName.USFT || val == PdfName.MI || val == PdfName.NM || val == PdfName.SQM || val == PdfName.HA || val == PdfName.SQKM || val == PdfName.SQFT || val == PdfName.A || val == PdfName.SQMI || val == PdfName.DEG || val == PdfName.GRD)) 
         {
             ctx.Fail<APM_ArrayOf3PDUNames_0>($"Invalid value {val}, allowed are: [M,KM,FT,USFT,MI,NM,SQM,HA,SQKM,SQFT,A,SQMI,DEG,GRD]");
         }
@@ -65,7 +65,7 @@ internal partial class APM_ArrayOf3PDUNames_1 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "M" || val == "KM" || val == "FT" || val == "USFT" || val == "MI" || val == "NM" || val == "SQM" || val == "HA" || val == "SQKM" || val == "SQFT" || val == "A" || val == "SQMI" || val == "DEG" || val == "GRD")) 
+        if (!(val == PdfName.M || val == PdfName.KM || val == PdfName.FT || val == PdfName.USFT || val == PdfName.MI || val == PdfName.NM || val == PdfName.SQM || val == PdfName.HA || val == PdfName.SQKM || val == PdfName.SQFT || val == PdfName.A || val == PdfName.SQMI || val == PdfName.DEG || val == PdfName.GRD)) 
         {
             ctx.Fail<APM_ArrayOf3PDUNames_1>($"Invalid value {val}, allowed are: [M,KM,FT,USFT,MI,NM,SQM,HA,SQKM,SQFT,A,SQMI,DEG,GRD]");
         }
@@ -90,7 +90,7 @@ internal partial class APM_ArrayOf3PDUNames_2 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "M" || val == "KM" || val == "FT" || val == "USFT" || val == "MI" || val == "NM" || val == "SQM" || val == "HA" || val == "SQKM" || val == "SQFT" || val == "A" || val == "SQMI" || val == "DEG" || val == "GRD")) 
+        if (!(val == PdfName.M || val == PdfName.KM || val == PdfName.FT || val == PdfName.USFT || val == PdfName.MI || val == PdfName.NM || val == PdfName.SQM || val == PdfName.HA || val == PdfName.SQKM || val == PdfName.SQFT || val == PdfName.A || val == PdfName.SQMI || val == PdfName.DEG || val == PdfName.GRD)) 
         {
             ctx.Fail<APM_ArrayOf3PDUNames_2>($"Invalid value {val}, allowed are: [M,KM,FT,USFT,MI,NM,SQM,HA,SQKM,SQFT,A,SQMI,DEG,GRD]");
         }

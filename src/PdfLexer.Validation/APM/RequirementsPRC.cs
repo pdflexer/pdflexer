@@ -76,7 +76,7 @@ internal partial class APM_RequirementsPRC_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsPRC_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsPRC_S__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "PRC")) 
+        if (!(val == PdfName.PRC)) 
         {
             ctx.Fail<APM_RequirementsPRC_S>($"Invalid value {val}, allowed are: [PRC]");
         }

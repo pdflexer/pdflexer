@@ -379,7 +379,7 @@ internal partial class APM_OutlineItem_Dest__Base : ISpecification<PdfDictionary
                     var val =  (PdfArray)utval;
                     // no indirect obj reqs
                     
-                    if (obj.ContainsKey("A")) 
+                    if (obj.ContainsKey(PdfName.A)) 
                     {
                         ctx.Fail<APM_OutlineItem_Dest>($"Value failed special case check: fn:Not(fn:IsPresent(A))");
                     }
@@ -407,7 +407,7 @@ internal partial class APM_OutlineItem_Dest__Base : ISpecification<PdfDictionary
                     var val =  (PdfName)utval;
                     // no indirect obj reqs
                     
-                    if (obj.ContainsKey("A")) 
+                    if (obj.ContainsKey(PdfName.A)) 
                     {
                         ctx.Fail<APM_OutlineItem_Dest>($"Value failed special case check: fn:Not(fn:IsPresent(A))");
                     }
@@ -420,7 +420,7 @@ internal partial class APM_OutlineItem_Dest__Base : ISpecification<PdfDictionary
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
                     
-                    if (obj.ContainsKey("A")) 
+                    if (obj.ContainsKey(PdfName.A)) 
                     {
                         ctx.Fail<APM_OutlineItem_Dest>($"Value failed special case check: fn:Not(fn:IsPresent(A))");
                     }
@@ -457,7 +457,7 @@ internal partial class APM_OutlineItem_A__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfDictionary, APM_OutlineItem_A>(obj, "A", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (obj.ContainsKey("Dest")) 
+        if (obj.ContainsKey(PdfName.Dest)) 
         {
             ctx.Fail<APM_OutlineItem_A>($"Value failed special case check: fn:Not(fn:IsPresent(Dest))");
         }

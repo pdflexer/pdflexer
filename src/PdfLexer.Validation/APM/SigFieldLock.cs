@@ -125,7 +125,7 @@ internal partial class APM_SigFieldLock_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "SigFieldLock")) 
+        if (!(val == PdfName.SigFieldLock)) 
         {
             ctx.Fail<APM_SigFieldLock_Type>($"Invalid value {val}, allowed are: [SigFieldLock]");
         }
@@ -157,7 +157,7 @@ internal partial class APM_SigFieldLock_Action__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "All" || val == "Include" || val == "Exclude")) 
+        if (!(val == PdfName.All || val == PdfName.Include || val == PdfName.Exclude)) 
         {
             ctx.Fail<APM_SigFieldLock_Action>($"Invalid value {val}, allowed are: [All,Include,Exclude]");
         }
@@ -186,7 +186,7 @@ internal partial class APM_SigFieldLock_Fields__Base : ISpecification<PdfDiction
     {
         var Action = obj.Get("Action");
         var val = ctx.GetOptional<PdfArray, APM_SigFieldLock_Fields>(obj, "Fields", IndirectRequirement.Either);
-        if (((eq(Action,"Include")||eq(Action,"Exclude"))) && val == null) {
+        if (((eq(Action,PdfName.Include)||eq(Action,PdfName.Exclude))) && val == null) {
             ctx.Fail<APM_SigFieldLock_Fields>("Fields is required when 'fn:IsRequired((@Action==Include) || (@Action==Exclude))"); return;
         } else if (val == null) {
             return;
@@ -221,7 +221,7 @@ internal partial class APM_SigFieldLock_P__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == 1 || val == 2 || val == 3)) 
+        if (!(val == 1m || val == 2m || val == 3m)) 
         {
             ctx.Fail<APM_SigFieldLock_P>($"Invalid value {val}, allowed are: [1,2,3]");
         }

@@ -44,8 +44,8 @@ internal class Required
     {
         var sb = new StringBuilder();
         using var a = new EvalScope();
-        var parts = Exp.Tokenize(Row.Required);
-        foreach (var c in parts[0].Children)
+        var exp = new Exp(Row.Required);
+        foreach (var c in exp.Children)
         {
             c.Write(sb);
         }
@@ -54,8 +54,8 @@ internal class Required
 
     public List<string> GetComplexVars()
     {
-        var parts = Exp.Tokenize(Row.Required);
-        var vals = parts[0].GetRequiredValues().ToList();
+        var exp = new Exp(Row.Required);
+        var vals =  exp.GetRequiredValues().ToList();
         return vals;
     }
 

@@ -104,6 +104,7 @@ internal partial class APM_FontType1__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_FontType1_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_FontType1_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -181,7 +182,7 @@ internal partial class APM_FontType1_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Font")) 
+        if (!(val == PdfName.Font)) 
         {
             ctx.Fail<APM_FontType1_Type>($"Invalid value {val}, allowed are: [Font]");
         }
@@ -213,7 +214,7 @@ internal partial class APM_FontType1_Subtype__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Type1")) 
+        if (!(val == PdfName.Type1)) 
         {
             ctx.Fail<APM_FontType1_Subtype>($"Invalid value {val}, allowed are: [Type1]");
         }
@@ -401,6 +402,7 @@ internal partial class APM_FontType1_FontDescriptor__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         
         var val = ctx.GetOptional<PdfDictionary, APM_FontType1_FontDescriptor>(obj, "FontDescriptor", IndirectRequirement.Either);
         if (((ctx.Version >= 2.0m||NotStandard14Font(obj))) && val == null) {
@@ -453,7 +455,7 @@ internal partial class APM_FontType1_Encoding__Base : ISpecification<PdfDictiona
                     // no special cases
                     
                     
-                    if (!(val == "MacRomanEncoding" || val == "MacExpertEncoding" || val == "WinAnsiEncoding")) 
+                    if (!(val == PdfName.MacRomanEncoding || val == PdfName.MacExpertEncoding || val == PdfName.WinAnsiEncoding)) 
                     {
                         ctx.Fail<APM_FontType1_Encoding>($"Invalid value {val}, allowed are: [MacRomanEncoding,MacExpertEncoding,WinAnsiEncoding]");
                     }

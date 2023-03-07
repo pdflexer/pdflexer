@@ -64,7 +64,7 @@ void CheckSingle(int n)
 """;
         }
         var n = int.Parse(Row.Key.TrimEnd('*'));
-        VariableContext.Vars[Row.Key] = "val";
+        // VariableContext.Vars[Row.Key] = "val";
         VariableContext.Vars["@" + Row.Key] = "val";
         var t = All.Count;
 

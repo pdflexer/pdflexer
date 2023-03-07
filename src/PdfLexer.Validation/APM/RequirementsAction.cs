@@ -76,7 +76,7 @@ internal partial class APM_RequirementsAction_Type__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsAction_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsAction_S__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_RequirementsAction_S>($"Invalid value {val}, allowed are: [Action]");
         }

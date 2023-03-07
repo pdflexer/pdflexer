@@ -124,7 +124,7 @@ internal partial class APM_DocMDPTransformParameters_Type__Base : ISpecification
         // no special cases
         
         
-        if (!(val == "TransformParams")) 
+        if (!(val == PdfName.TransformParams)) 
         {
             ctx.Fail<APM_DocMDPTransformParameters_Type>($"Invalid value {val}, allowed are: [TransformParams]");
         }
@@ -156,7 +156,7 @@ internal partial class APM_DocMDPTransformParameters_P__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == 1 || val == 2 || val == 3)) 
+        if (!(val == 1m || val == 2m || val == 3m)) 
         {
             ctx.Fail<APM_DocMDPTransformParameters_P>($"Invalid value {val}, allowed are: [1,2,3]");
         }
@@ -188,7 +188,7 @@ internal partial class APM_DocMDPTransformParameters_V__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "1.2")) 
+        if (!(val == PdfName.N12)) 
         {
             ctx.Fail<APM_DocMDPTransformParameters_V>($"Invalid value {val}, allowed are: [1.2]");
         }

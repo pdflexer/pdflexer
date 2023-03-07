@@ -104,7 +104,7 @@ internal partial class APM_CollectionSort_Type__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "CollectionSort")) 
+        if (!(val == PdfName.CollectionSort)) 
         {
             ctx.Fail<APM_CollectionSort_Type>($"Invalid value {val}, allowed are: [CollectionSort]");
         }

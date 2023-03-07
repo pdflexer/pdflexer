@@ -132,7 +132,7 @@ internal partial class APM_ObjectStream_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "ObjStm")) 
+        if (!(val == PdfName.ObjStm)) 
         {
             ctx.Fail<APM_ObjectStream_Type>($"Invalid value {val}, allowed are: [ObjStm]");
         }
@@ -302,7 +302,7 @@ internal partial class APM_ObjectStream_Filter__Base : ISpecification<PdfDiction
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "Crypt")) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || val == PdfName.Crypt)) 
                     {
                         ctx.Fail<APM_ObjectStream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,Crypt]");
                     }
@@ -473,7 +473,7 @@ internal partial class APM_ObjectStream_FFilter__Base : ISpecification<PdfDictio
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || val == "Crypt")) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || val == PdfName.Crypt)) 
                     {
                         ctx.Fail<APM_ObjectStream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,Crypt]");
                     }

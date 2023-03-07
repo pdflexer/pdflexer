@@ -77,7 +77,7 @@ internal partial class APM_VRI_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "VRI")) 
+        if (!(val == PdfName.VRI)) 
         {
             ctx.Fail<APM_VRI_Type>($"Invalid value {val}, allowed are: [VRI]");
         }

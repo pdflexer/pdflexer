@@ -146,7 +146,7 @@ internal partial class APM_PatternType2_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Pattern")) 
+        if (!(val == PdfName.Pattern)) 
         {
             ctx.Fail<APM_PatternType2_Type>($"Invalid value {val}, allowed are: [Pattern]");
         }
@@ -178,7 +178,7 @@ internal partial class APM_PatternType2_PatternType__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == 2)) 
+        if (!(val == 2m)) 
         {
             ctx.Fail<APM_PatternType2_PatternType>($"Invalid value {val}, allowed are: [2]");
         }

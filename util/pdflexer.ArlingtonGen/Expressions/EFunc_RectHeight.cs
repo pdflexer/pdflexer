@@ -4,16 +4,14 @@ namespace pdflexer.ArlingtonGen.Expressions;
 
 internal class EFunc_RectHeight : EFunBase, INode
 {
-    public EFunc_RectHeight(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_RectHeight(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         sb.Append("RectHeight(");
-        using (var es = new EvalScope())
+        using var vs = new VarScope(VariableHandling.MustBeObj);
+        foreach (var dep in Children)
         {
-            foreach (var dep in Inputs)
-            {
-                dep.Write(sb);
-            }
+            dep.Write(sb);
         }
         sb.Append(")");
     }
@@ -22,7 +20,7 @@ internal class EFunc_RectHeight : EFunBase, INode
     {
         var prev = VariableContext.InEval;
         VariableContext.InEval = true;
-        foreach (var item in Inputs.Cast<INode>().SelectMany(x=> x.GetRequiredValues()))
+        foreach (var item in Children.Cast<INode>().SelectMany(x=> x.GetRequiredValues()))
         {
             yield return item;
         }

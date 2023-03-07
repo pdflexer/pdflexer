@@ -117,7 +117,7 @@ internal partial class APM_BorderEffect_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "C" || val == "S")) 
+        if (!(val == PdfName.C || val == PdfName.S)) 
         {
             ctx.Fail<APM_BorderEffect_S>($"Invalid value {val}, allowed are: [C,S]");
         }

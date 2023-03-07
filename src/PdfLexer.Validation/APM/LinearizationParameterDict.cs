@@ -148,6 +148,7 @@ internal partial class APM_LinearizationParameterDict_Linearized__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfNumber, APM_LinearizationParameterDict_Linearized>(obj, "Linearized", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -180,6 +181,7 @@ internal partial class APM_LinearizationParameterDict_L__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_L>(obj, "L", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -212,6 +214,7 @@ internal partial class APM_LinearizationParameterDict_H__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfArray, APM_LinearizationParameterDict_H>(obj, "H", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -248,6 +251,7 @@ internal partial class APM_LinearizationParameterDict_O__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_O>(obj, "O", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -280,6 +284,7 @@ internal partial class APM_LinearizationParameterDict_E__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_E>(obj, "E", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -313,6 +318,7 @@ internal partial class APM_LinearizationParameterDict_N__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_N>(obj, "N", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -345,6 +351,7 @@ internal partial class APM_LinearizationParameterDict_T__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_LinearizationParameterDict_T>(obj, "T", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -377,6 +384,7 @@ internal partial class APM_LinearizationParameterDict_P__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfIntNumber, APM_LinearizationParameterDict_P>(obj, "P", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases

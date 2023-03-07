@@ -132,7 +132,7 @@ internal partial class APM_MediaCriteria_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "MediaCriteria")) 
+        if (!(val == PdfName.MediaCriteria)) 
         {
             ctx.Fail<APM_MediaCriteria_Type>($"Invalid value {val}, allowed are: [MediaCriteria]");
         }

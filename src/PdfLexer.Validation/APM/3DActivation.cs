@@ -114,7 +114,7 @@ internal partial class APM_3DActivation_A__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "PO" || val == "PV" || val == "XA")) 
+        if (!(val == PdfName.PO || val == PdfName.PV || val == PdfName.XA)) 
         {
             ctx.Fail<APM_3DActivation_A>($"Invalid value {val}, allowed are: [PO,PV,XA]");
         }
@@ -146,7 +146,7 @@ internal partial class APM_3DActivation_AIS__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "I" || val == "L")) 
+        if (!(val == PdfName.I || val == PdfName.L)) 
         {
             ctx.Fail<APM_3DActivation_AIS>($"Invalid value {val}, allowed are: [I,L]");
         }
@@ -178,7 +178,7 @@ internal partial class APM_3DActivation_D__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "PC" || val == "PI" || val == "XD")) 
+        if (!(val == PdfName.PC || val == PdfName.PI || val == PdfName.XD)) 
         {
             ctx.Fail<APM_3DActivation_D>($"Invalid value {val}, allowed are: [PC,PI,XD]");
         }
@@ -210,7 +210,7 @@ internal partial class APM_3DActivation_DIS__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "U" || val == "I" || val == "L")) 
+        if (!(val == PdfName.U || val == PdfName.I || val == PdfName.L)) 
         {
             ctx.Fail<APM_3DActivation_DIS>($"Invalid value {val}, allowed are: [U,I,L]");
         }
@@ -296,7 +296,7 @@ internal partial class APM_3DActivation_Style__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "Embedded" || val == "Windowed")) 
+        if (!(val == PdfName.Embedded || val == PdfName.Windowed)) 
         {
             ctx.Fail<APM_3DActivation_Style>($"Invalid value {val}, allowed are: [Embedded,Windowed]");
         }

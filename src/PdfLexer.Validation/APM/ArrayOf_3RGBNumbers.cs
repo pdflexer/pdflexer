@@ -40,7 +40,7 @@ internal partial class APM_ArrayOf_3RGBNumbers_0 : ISpecification<PdfArray>
         // no special cases
         IPdfObject v = val;
         
-        if (!((gte(v,v)&&lte(v,1)))) 
+        if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_3RGBNumbers_0>($"Invalid value {val}, allowed are: [fn:Eval((@0>=0) && (@0<=1))]");
         }
@@ -65,7 +65,7 @@ internal partial class APM_ArrayOf_3RGBNumbers_1 : ISpecification<PdfArray>
         // no special cases
         IPdfObject v = val;
         
-        if (!((gte(v,0)&&lte(v,v)))) 
+        if (!((gte(v,0)&&lte(v,1)))) 
         {
             ctx.Fail<APM_ArrayOf_3RGBNumbers_1>($"Invalid value {val}, allowed are: [fn:Eval((@1>=0) && (@1<=1))]");
         }

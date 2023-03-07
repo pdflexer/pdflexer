@@ -300,7 +300,7 @@ internal partial class APM_ShadingType3_ShadingType__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == 3)) 
+        if (!(val == 3m)) 
         {
             ctx.Fail<APM_ShadingType3_ShadingType>($"Invalid value {val}, allowed are: [3]");
         }
@@ -371,7 +371,7 @@ internal partial class APM_ShadingType3_ColorSpace__Base : ISpecification<PdfDic
                     // no special cases
                     
                     
-                    if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceCMYK || val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_ShadingType3_ColorSpace>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }

@@ -174,7 +174,7 @@ internal partial class APM_FileSpecification_Type__Base : ISpecification<PdfDict
     {
         
         var val = ctx.GetOptional<PdfName, APM_FileSpecification_Type>(obj, "Type", IndirectRequirement.Either);
-        if ((obj.ContainsKey("EF")||obj.ContainsKey("EP")||obj.ContainsKey("RF")) && val == null) {
+        if ((obj.ContainsKey(PdfName.EF)||obj.ContainsKey(PdfName.EP)||obj.ContainsKey(PdfName.RF)) && val == null) {
             ctx.Fail<APM_FileSpecification_Type>("Type is required when 'fn:IsRequired(fn:IsPresent(EF) || fn:IsPresent(EP) || fn:IsPresent(RF))"); return;
         } else if (val == null) {
             return;
@@ -182,7 +182,7 @@ internal partial class APM_FileSpecification_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "Filespec")) 
+        if (!(val == PdfName.Filespec)) 
         {
             ctx.Fail<APM_FileSpecification_Type>($"Invalid value {val}, allowed are: [Filespec]");
         }
@@ -238,7 +238,7 @@ internal partial class APM_FileSpecification_F__Base : ISpecification<PdfDiction
     {
         
         var val = ctx.GetOptional<PdfString, APM_FileSpecification_F>(obj, "F", IndirectRequirement.Either);
-        if ((!obj.ContainsKey("DOS")&&!obj.ContainsKey("Mac")&&!obj.ContainsKey("Unix")) && val == null) {
+        if ((!obj.ContainsKey(PdfName.DOS)&&!obj.ContainsKey(PdfName.Mac)&&!obj.ContainsKey(PdfName.Unix)) && val == null) {
             ctx.Fail<APM_FileSpecification_F>("F is required when 'fn:IsRequired(fn:Not(fn:IsPresent(DOS)) && fn:Not(fn:IsPresent(Mac)) && fn:Not(fn:IsPresent(Unix)))"); return;
         } else if (val == null) {
             return;
@@ -432,7 +432,7 @@ internal partial class APM_FileSpecification_EF__Base : ISpecification<PdfDictio
     {
         
         var val = ctx.GetOptional<PdfDictionary, APM_FileSpecification_EF>(obj, "EF", IndirectRequirement.Either);
-        if ((obj.ContainsKey("RF")) && val == null) {
+        if ((obj.ContainsKey(PdfName.RF)) && val == null) {
             ctx.Fail<APM_FileSpecification_EF>("EF is required when 'fn:IsRequired(fn:IsPresent(RF))"); return;
         } else if (val == null) {
             return;
@@ -575,7 +575,7 @@ internal partial class APM_FileSpecification_AFRelationship__Base : ISpecificati
         // no special cases
         
         
-        if (!(val == "Source" || val == "Data" || val == "Alternative" || val == "Supplement" || val == "EncryptedPayload" || val == "FormData" || val == "Schema" || val == "Unspecified")) 
+        if (!(val == PdfName.Source || val == PdfName.Data || val == PdfName.Alternative || val == PdfName.Supplement || val == PdfName.EncryptedPayload || val == PdfName.FormData || val == PdfName.Schema || val == PdfName.Unspecified)) 
         {
             ctx.Fail<APM_FileSpecification_AFRelationship>($"Invalid value {val}, allowed are: [Source,Data,Alternative,Supplement,EncryptedPayload,FormData,Schema,Unspecified]");
         }

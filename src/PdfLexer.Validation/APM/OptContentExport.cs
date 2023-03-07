@@ -116,7 +116,7 @@ internal partial class APM_OptContentExport_ExportState__Base : ISpecification<P
         // no special cases
         
         
-        if (!(val == "ON" || val == "OFF")) 
+        if (!(val == PdfName.ON || val == PdfName.OFF)) 
         {
             ctx.Fail<APM_OptContentExport_ExportState>($"Invalid value {val}, allowed are: [ON,OFF]");
         }

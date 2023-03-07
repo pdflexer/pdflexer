@@ -174,7 +174,7 @@ internal partial class APM_Encoding_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Encoding")) 
+        if (!(val == PdfName.Encoding)) 
         {
             ctx.Fail<APM_Encoding_Type>($"Invalid value {val}, allowed are: [Encoding]");
         }
@@ -206,7 +206,7 @@ internal partial class APM_Encoding_BaseEncoding__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "MacRomanEncoding" || val == "MacExpertEncoding" || val == "WinAnsiEncoding")) 
+        if (!(val == PdfName.MacRomanEncoding || val == PdfName.MacExpertEncoding || val == PdfName.WinAnsiEncoding)) 
         {
             ctx.Fail<APM_Encoding_BaseEncoding>($"Invalid value {val}, allowed are: [MacRomanEncoding,MacExpertEncoding,WinAnsiEncoding]");
         }

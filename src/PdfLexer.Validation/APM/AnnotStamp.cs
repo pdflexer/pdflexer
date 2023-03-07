@@ -105,6 +105,7 @@ internal partial class APM_AnnotStamp__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_AnnotStamp_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_AnnotStamp_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -170,7 +171,7 @@ internal partial class APM_AnnotStamp_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Annot")) 
+        if (!(val == PdfName.Annot)) 
         {
             ctx.Fail<APM_AnnotStamp_Type>($"Invalid value {val}, allowed are: [Annot]");
         }
@@ -202,7 +203,7 @@ internal partial class APM_AnnotStamp_Subtype__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "Stamp")) 
+        if (!(val == PdfName.Stamp)) 
         {
             ctx.Fail<APM_AnnotStamp_Subtype>($"Invalid value {val}, allowed are: [Stamp]");
         }
@@ -402,7 +403,7 @@ internal partial class APM_AnnotStamp_AP__Base : ISpecification<PdfDictionary>
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotStamp_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotStamp_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;
@@ -700,7 +701,7 @@ internal partial class APM_AnnotStamp_BM__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!((ctx.Version < 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
+        if (!((ctx.Version < 1.4m && val == PdfName.Compatible) || val == PdfName.Normal || val == PdfName.Multiply || val == PdfName.Screen || val == PdfName.Difference || val == PdfName.Darken || val == PdfName.Lighten || val == PdfName.ColorDodge || val == PdfName.ColorBurn || val == PdfName.Exclusion || val == PdfName.HardLight || val == PdfName.Overlay || val == PdfName.SoftLight || val == PdfName.Luminosity || val == PdfName.Hue || val == PdfName.Saturation || val == PdfName.Color)) 
         {
             ctx.Fail<APM_AnnotStamp_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
         }
@@ -885,7 +886,7 @@ internal partial class APM_AnnotStamp_IRT__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotStamp_IRT>(obj, "IRT", IndirectRequirement.Either);
-        if ((obj.ContainsKey("RT")) && val == null) {
+        if ((obj.ContainsKey(PdfName.RT)) && val == null) {
             ctx.Fail<APM_AnnotStamp_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
         } else if (val == null) {
             return;
@@ -1028,7 +1029,7 @@ internal partial class APM_AnnotStamp_RT__Base : ISpecification<PdfDictionary>
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "R" || val == "Group")) 
+        if (!(val == PdfName.R || val == PdfName.Group)) 
         {
             ctx.Fail<APM_AnnotStamp_RT>($"Invalid value {val}, allowed are: [R,Group]");
         }
@@ -1058,7 +1059,7 @@ internal partial class APM_AnnotStamp_Name__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfName, APM_AnnotStamp_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         var IT = obj.Get("IT");
-        if ((obj.ContainsKey(IT)&&(ctx.Version < 2.0m || !eq(IT,"Stamp")))) 
+        if ((obj.ContainsKey(PdfName.IT)&&(ctx.Version < 2.0m || !eq(IT,PdfName.Stamp)))) 
         {
             ctx.Fail<APM_AnnotStamp_Name>($"Value failed special case check: fn:Not(fn:IsRequired(fn:IsPresent(IT) && fn:SinceVersion(2.0,(@IT!=Stamp))))");
         }
@@ -1091,7 +1092,7 @@ internal partial class APM_AnnotStamp_IT__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "StampSnapshot" || val == "StampImage" || val == "Stamp")) 
+        if (!(val == PdfName.StampSnapshot || val == PdfName.StampImage || val == PdfName.Stamp)) 
         {
             ctx.Fail<APM_AnnotStamp_IT>($"Invalid value {val}, allowed are: [StampSnapshot,StampImage,Stamp]");
         }
@@ -1125,7 +1126,7 @@ internal partial class APM_AnnotStamp_ExData__Base : ISpecification<PdfDictionar
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
         {
             ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
         } else if ((ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val))) 

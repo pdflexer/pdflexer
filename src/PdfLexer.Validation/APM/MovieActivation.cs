@@ -169,8 +169,8 @@ internal partial class APM_MovieActivation_Start__Base : ISpecification<PdfDicti
                 {
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
-                    
-                    if (!(eq(StringLength(obj),8))) 
+                    var Start = obj.Get("Start");
+                    if (!(eq(StringLength(Start),8))) 
                     {
                         ctx.Fail<APM_MovieActivation_Start>($"Value failed special case check: fn:Eval(fn:StringLength(Start)==8)");
                     }
@@ -234,8 +234,8 @@ internal partial class APM_MovieActivation_Duration__Base : ISpecification<PdfDi
                 {
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
-                    
-                    if (!(eq(StringLength(obj),8))) 
+                    var Duration = obj.Get("Duration");
+                    if (!(eq(StringLength(Duration),8))) 
                     {
                         ctx.Fail<APM_MovieActivation_Duration>($"Value failed special case check: fn:Eval(fn:StringLength(Duration)==8)");
                     }
@@ -360,7 +360,7 @@ internal partial class APM_MovieActivation_Mode__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Once" || val == "Open" || val == "Repeat" || val == "Palindrome")) 
+        if (!(val == PdfName.Once || val == PdfName.Open || val == PdfName.Repeat || val == PdfName.Palindrome)) 
         {
             ctx.Fail<APM_MovieActivation_Mode>($"Invalid value {val}, allowed are: [Once,Open,Repeat,Palindrome]");
         }

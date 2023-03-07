@@ -166,7 +166,7 @@ internal partial class APM_FilterDCTDecode_ColorTransform__Base : ISpecification
         // no special cases
         
         
-        if (!(val == 0 || val == 1)) 
+        if (!(val == 0m || val == 1m)) 
         {
             ctx.Fail<APM_FilterDCTDecode_ColorTransform>($"Invalid value {val}, allowed are: [0,1]");
         }

@@ -10,9 +10,12 @@ internal class IndirectRef
 {
     Row Row;
 
-    public IndirectRef(Row row)
+    public GenBase GenBase { get; }
+
+    public IndirectRef(GenBase gen, Row row)
     {
         Row = row;
+        GenBase = gen;
     }
 
     public string GetIndirectRefEnum()
@@ -30,6 +33,18 @@ internal class IndirectRef
         }
     }
 
+
+    public bool IsSimple()
+    {
+        switch (Row.IndirectReference)
+        {
+            case "FALSE":
+            case "TRUE":
+                return true;
+            default:
+                return false;
+        }
+    }
 
     public bool TryGetSimple(string type, out bool val)
     {
@@ -55,6 +70,44 @@ internal class IndirectRef
 
     public string GetComplex(string type)
     {
-        return "false";
+        var types = Row.Type.Split(';').ToList();
+        var irs = Row.IndirectReference.Split(";");
+        var requiresIndirect = irs.Length == 1 ? irs[0] : irs[types.FindIndex(x => x.Contains(type))];
+
+        if (requiresIndirect == "fn:MustBeDirect()")
+        {
+            return $$"""
+if (wasIR) {
+    ctx.Fail<APM_{{GenBase.RootName}}_{{GenBase.Key}}>("{{Row.Key}} is required to be direct when a {{type}}");
+    return;
+}
+""";
+        }
+
+        bool mustBeDirect = false;
+        if (requiresIndirect.StartsWith("fn:MustBeDirect"))
+        {
+            requiresIndirect = requiresIndirect[15..^1];
+            mustBeDirect = true;
+        } else if (requiresIndirect.StartsWith("fn:MustBeIndirect"))
+        {
+            requiresIndirect = requiresIndirect[18..^1];
+            mustBeDirect = false;
+        } else
+        {
+            throw new ApplicationException("Unkonwn IR: " + requiresIndirect);
+        }
+
+        var exp = new Exp(requiresIndirect);
+        var vars = exp.GetRequiredValues().Distinct();
+        var defs = string.Join('\n', vars.Select(v => GenBase.GetSetter(v, type, "val")));
+
+        return $$"""
+{{defs}}
+if ({{exp.GetText()}} && {{(mustBeDirect ? "wasIr" : "!wasIr")}}) {
+    ctx.Fail<APM_{{GenBase.RootName}}_{{GenBase.Key}}>("{{Row.Key}} is required to be {{(mustBeDirect ? "direct" : "indirect")}} when a {{type}}");
+    return;
+}
+""";
     }
 }

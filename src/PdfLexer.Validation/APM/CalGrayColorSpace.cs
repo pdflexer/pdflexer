@@ -39,7 +39,7 @@ internal partial class APM_CalGrayColorSpace_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "CalGray")) 
+        if (!(val == PdfName.CalGray)) 
         {
             ctx.Fail<APM_CalGrayColorSpace_0>($"Invalid value {val}, allowed are: [CalGray]");
         }

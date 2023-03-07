@@ -76,7 +76,7 @@ internal partial class APM_Requirements3DMarkup_Type__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_Requirements3DMarkup_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_Requirements3DMarkup_S__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "3DMarkup")) 
+        if (!(val == PdfName.N3DMarkup)) 
         {
             ctx.Fail<APM_Requirements3DMarkup_S>($"Invalid value {val}, allowed are: [3DMarkup]");
         }

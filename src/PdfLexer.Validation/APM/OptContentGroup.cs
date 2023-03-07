@@ -125,7 +125,7 @@ internal partial class APM_OptContentGroup_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "OCG")) 
+        if (!(val == PdfName.OCG)) 
         {
             ctx.Fail<APM_OptContentGroup_Type>($"Invalid value {val}, allowed are: [OCG]");
         }

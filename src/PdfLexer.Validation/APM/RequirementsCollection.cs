@@ -76,7 +76,7 @@ internal partial class APM_RequirementsCollection_Type__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsCollection_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsCollection_S__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "Collection")) 
+        if (!(val == PdfName.Collection)) 
         {
             ctx.Fail<APM_RequirementsCollection_S>($"Invalid value {val}, allowed are: [Collection]");
         }

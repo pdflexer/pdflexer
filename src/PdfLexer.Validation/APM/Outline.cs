@@ -175,7 +175,7 @@ internal partial class APM_Outline_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Outlines")) 
+        if (!(val == PdfName.Outlines)) 
         {
             ctx.Fail<APM_Outline_Type>($"Invalid value {val}, allowed are: [Outlines]");
         }

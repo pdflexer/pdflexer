@@ -40,7 +40,7 @@ internal partial class APM_WhitepointArray_0 : ISpecification<PdfArray>
         // no special cases
         IPdfObject v = val;
         
-        if (!(gt(v,v))) 
+        if (!(gt(v,0))) 
         {
             ctx.Fail<APM_WhitepointArray_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>0)]");
         }
@@ -65,7 +65,7 @@ internal partial class APM_WhitepointArray_1 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == val)) 
+        if (!(val == 1m)) 
         {
             ctx.Fail<APM_WhitepointArray_1>($"Invalid value {val}, allowed are: [1]");
         }

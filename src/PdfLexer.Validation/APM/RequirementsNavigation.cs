@@ -76,7 +76,7 @@ internal partial class APM_RequirementsNavigation_Type__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsNavigation_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsNavigation_S__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "Navigation")) 
+        if (!(val == PdfName.Navigation)) 
         {
             ctx.Fail<APM_RequirementsNavigation_S>($"Invalid value {val}, allowed are: [Navigation]");
         }

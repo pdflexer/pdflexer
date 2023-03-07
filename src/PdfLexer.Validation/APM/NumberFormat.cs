@@ -122,7 +122,7 @@ internal partial class APM_NumberFormat_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "NumberFormat")) 
+        if (!(val == PdfName.NumberFormat)) 
         {
             ctx.Fail<APM_NumberFormat_Type>($"Invalid value {val}, allowed are: [NumberFormat]");
         }
@@ -208,7 +208,7 @@ internal partial class APM_NumberFormat_F__Base : ISpecification<PdfDictionary>
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "D" || val == "F" || val == "R" || val == "T")) 
+        if (!(val == PdfName.D || val == PdfName.F || val == PdfName.R || val == PdfName.T)) 
         {
             ctx.Fail<APM_NumberFormat_F>($"Invalid value {val}, allowed are: [D,F,R,T]");
         }
@@ -407,7 +407,7 @@ internal partial class APM_NumberFormat_O__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "S" || val == "P")) 
+        if (!(val == PdfName.S || val == PdfName.P)) 
         {
             ctx.Fail<APM_NumberFormat_O>($"Invalid value {val}, allowed are: [S,P]");
         }

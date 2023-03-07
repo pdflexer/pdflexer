@@ -9,15 +9,16 @@ namespace pdflexer.ArlingtonGen.Expressions;
 
 internal class EFunc_PageProperty : EFunBase, INode
 {
-    public EFunc_PageProperty(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_PageProperty(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         using (var es = new EvalScope())
         {
             sb.Append($"(");
-            Inputs[0].Write(sb);
+            Children[0].Write(sb);
             sb.Append(")?.GetAs<PdfDictionary>()?.Get(");
-            Inputs[1].Write(sb);
+            using var vs = new VarScope(VariableHandling.MustBeVal);
+            Children[1].Write(sb);
             sb.Append(")");
         }
 
@@ -25,7 +26,7 @@ internal class EFunc_PageProperty : EFunBase, INode
 
     IEnumerable<string> INode.GetRequiredValues()
     {
-        var val = (Inputs[0].Children[0] as EValue)?.Text;
+        var val = (Children[0] as EValue)?.Text;
         if (val != null)
         {
             yield return val;

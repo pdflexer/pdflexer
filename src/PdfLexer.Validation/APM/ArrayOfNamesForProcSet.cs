@@ -44,7 +44,7 @@ internal partial class APM_ArrayOfNamesForProcSet_x : ISpecification<PdfArray>
             // no special cases
             
             
-            if (!(val == "PDF" || val == "Text" || val == "ImageB" || val == "ImageC" || val == "ImageI")) 
+            if (!(val == PdfName.PDF || val == PdfName.Text || val == PdfName.ImageB || val == PdfName.ImageC || val == PdfName.ImageI)) 
             {
                 ctx.Fail<APM_ArrayOfNamesForProcSet_x>($"Invalid value {val}, allowed are: [PDF,Text,ImageB,ImageC,ImageI]");
             }

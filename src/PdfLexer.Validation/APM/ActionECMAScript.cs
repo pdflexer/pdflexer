@@ -145,7 +145,7 @@ internal partial class APM_ActionECMAScript_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionECMAScript_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -177,7 +177,7 @@ internal partial class APM_ActionECMAScript_S__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "JavaScript")) 
+        if (!(val == PdfName.JavaScript)) 
         {
             ctx.Fail<APM_ActionECMAScript_S>($"Invalid value {val}, allowed are: [JavaScript]");
         }

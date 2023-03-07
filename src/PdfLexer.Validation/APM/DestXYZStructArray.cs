@@ -92,7 +92,7 @@ internal partial class APM_DestXYZStructArray_1 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "XYZ")) 
+        if (!(val == PdfName.XYZ)) 
         {
             ctx.Fail<APM_DestXYZStructArray_1>($"Invalid value {val}, allowed are: [XYZ]");
         }

@@ -54,6 +54,7 @@ internal partial class APM_3DLightingScheme__Base : ISpecification<PdfDictionary
     {
         var c = ctx.Clone();
         c.Run<APM_3DLightingScheme_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_3DLightingScheme_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -103,7 +104,7 @@ internal partial class APM_3DLightingScheme_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "3DLightingScheme")) 
+        if (!(val == PdfName.N3DLightingScheme)) 
         {
             ctx.Fail<APM_3DLightingScheme_Type>($"Invalid value {val}, allowed are: [3DLightingScheme]");
         }
@@ -135,7 +136,7 @@ internal partial class APM_3DLightingScheme_Subtype__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "Artwork" || val == "None" || val == "White" || val == "Day" || val == "Night" || val == "Hard" || val == "Primary" || val == "Blue" || val == "Red" || val == "Cube" || val == "CAD" || val == "Headlamp")) 
+        if (!(val == PdfName.Artwork || val == PdfName.None || val == PdfName.White || val == PdfName.Day || val == PdfName.Night || val == PdfName.Hard || val == PdfName.Primary || val == PdfName.Blue || val == PdfName.Red || val == PdfName.Cube || val == PdfName.CAD || val == PdfName.Headlamp)) 
         {
             ctx.Fail<APM_3DLightingScheme_Subtype>($"Invalid value {val}, allowed are: [Artwork,None,White,Day,Night,Hard,Primary,Blue,Red,Cube,CAD,Headlamp]");
         }

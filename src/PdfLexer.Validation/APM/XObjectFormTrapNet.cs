@@ -106,6 +106,7 @@ internal partial class APM_XObjectFormTrapNet__Base : ISpecification<PdfDictiona
     {
         var c = ctx.Clone();
         c.Run<APM_XObjectFormTrapNet_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_XObjectFormTrapNet_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -171,7 +172,7 @@ internal partial class APM_XObjectFormTrapNet_Type__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "XObject")) 
+        if (!(val == PdfName.XObject)) 
         {
             ctx.Fail<APM_XObjectFormTrapNet_Type>($"Invalid value {val}, allowed are: [XObject]");
         }
@@ -203,7 +204,7 @@ internal partial class APM_XObjectFormTrapNet_Subtype__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "Form")) 
+        if (!(val == PdfName.Form)) 
         {
             ctx.Fail<APM_XObjectFormTrapNet_Subtype>($"Invalid value {val}, allowed are: [Form]");
         }
@@ -235,7 +236,7 @@ internal partial class APM_XObjectFormTrapNet_FormType__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == 1)) 
+        if (!(val == 1m)) 
         {
             ctx.Fail<APM_XObjectFormTrapNet_FormType>($"Invalid value {val}, allowed are: [1]");
         }
@@ -790,7 +791,7 @@ internal partial class APM_XObjectFormTrapNet_Filter__Base : ISpecification<PdfD
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectFormTrapNet_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -961,7 +962,7 @@ internal partial class APM_XObjectFormTrapNet_FFilter__Base : ISpecification<Pdf
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectFormTrapNet_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -1095,7 +1096,7 @@ internal partial class APM_XObjectFormTrapNet_PCM__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "DeviceGray" || val == "DeviceRGB" || val == "DeviceCMYK" || val == "DeviceCMY" || val == "DeviceRGBK" || val == "DeviceN")) 
+        if (!(val == PdfName.DeviceGray || val == PdfName.DeviceRGB || val == PdfName.DeviceCMYK || val == PdfName.DeviceCMY || val == PdfName.DeviceRGBK || val == PdfName.DeviceN)) 
         {
             ctx.Fail<APM_XObjectFormTrapNet_PCM>($"Invalid value {val}, allowed are: [DeviceGray,DeviceRGB,DeviceCMYK,DeviceCMY,DeviceRGBK,DeviceN]");
         }

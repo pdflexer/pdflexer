@@ -128,7 +128,7 @@ internal partial class APM_MediaClipSection_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "MediaClip")) 
+        if (!(val == PdfName.MediaClip)) 
         {
             ctx.Fail<APM_MediaClipSection_Type>($"Invalid value {val}, allowed are: [MediaClip]");
         }
@@ -160,7 +160,7 @@ internal partial class APM_MediaClipSection_S__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "MCS")) 
+        if (!(val == PdfName.MCS)) 
         {
             ctx.Fail<APM_MediaClipSection_S>($"Invalid value {val}, allowed are: [MCS]");
         }

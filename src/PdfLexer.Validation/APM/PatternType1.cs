@@ -168,7 +168,7 @@ internal partial class APM_PatternType1_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Pattern")) 
+        if (!(val == PdfName.Pattern)) 
         {
             ctx.Fail<APM_PatternType1_Type>($"Invalid value {val}, allowed are: [Pattern]");
         }
@@ -200,7 +200,7 @@ internal partial class APM_PatternType1_PatternType__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == 1)) 
+        if (!(val == 1m)) 
         {
             ctx.Fail<APM_PatternType1_PatternType>($"Invalid value {val}, allowed are: [1]");
         }
@@ -232,7 +232,7 @@ internal partial class APM_PatternType1_PaintType__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == 1 || val == 2)) 
+        if (!(val == 1m || val == 2m)) 
         {
             ctx.Fail<APM_PatternType1_PaintType>($"Invalid value {val}, allowed are: [1,2]");
         }
@@ -264,7 +264,7 @@ internal partial class APM_PatternType1_TilingType__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == 1 || val == 2 || val == 3)) 
+        if (!(val == 1m || val == 2m || val == 3m)) 
         {
             ctx.Fail<APM_PatternType1_TilingType>($"Invalid value {val}, allowed are: [1,2,3]");
         }
@@ -478,7 +478,7 @@ internal partial class APM_PatternType1_Filter__Base : ISpecification<PdfDiction
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_PatternType1_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -649,7 +649,7 @@ internal partial class APM_PatternType1_FFilter__Base : ISpecification<PdfDictio
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_PatternType1_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

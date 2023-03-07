@@ -255,8 +255,8 @@ internal partial class APM_EmbeddedFileParameter_CheckSum__Base : ISpecification
     {
         var val = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_CheckSum>(obj, "CheckSum", IndirectRequirement.Either);
         if (val == null) { return; }
-        
-        if (!(eq(StringLength(obj),16))) 
+        var CheckSum = obj.Get("CheckSum");
+        if (!(eq(StringLength(CheckSum),16))) 
         {
             ctx.Fail<APM_EmbeddedFileParameter_CheckSum>($"Value failed special case check: fn:Eval(fn:StringLength(CheckSum)==16)");
         }

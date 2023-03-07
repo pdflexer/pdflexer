@@ -103,7 +103,7 @@ internal partial class APM_RichMediaDeactivation_Type__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "RichMediaDeactivation")) 
+        if (!(val == PdfName.RichMediaDeactivation)) 
         {
             ctx.Fail<APM_RichMediaDeactivation_Type>($"Invalid value {val}, allowed are: [RichMediaDeactivation]");
         }
@@ -135,7 +135,7 @@ internal partial class APM_RichMediaDeactivation_Condition__Base : ISpecificatio
         // no special cases
         
         
-        if (!(val == "XD" || val == "PC" || val == "PI")) 
+        if (!(val == PdfName.XD || val == PdfName.PC || val == PdfName.PI)) 
         {
             ctx.Fail<APM_RichMediaDeactivation_Condition>($"Invalid value {val}, allowed are: [XD,PC,PI]");
         }

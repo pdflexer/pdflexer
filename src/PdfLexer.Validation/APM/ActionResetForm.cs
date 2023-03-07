@@ -156,7 +156,7 @@ internal partial class APM_ActionResetForm_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionResetForm_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -188,7 +188,7 @@ internal partial class APM_ActionResetForm_S__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "ResetForm")) 
+        if (!(val == PdfName.ResetForm)) 
         {
             ctx.Fail<APM_ActionResetForm_S>($"Invalid value {val}, allowed are: [ResetForm]");
         }

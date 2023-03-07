@@ -39,7 +39,7 @@ internal partial class APM_PatternColorSpace_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "Pattern")) 
+        if (!(val == PdfName.Pattern)) 
         {
             ctx.Fail<APM_PatternColorSpace_0>($"Invalid value {val}, allowed are: [Pattern]");
         }
@@ -103,7 +103,7 @@ internal partial class APM_PatternColorSpace_1 : ISpecification<PdfArray>
                     // no special cases
                     
                     
-                    if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceCMYK || val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_PatternColorSpace_1>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }

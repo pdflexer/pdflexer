@@ -203,7 +203,7 @@ internal partial class APM_Catalog_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Catalog")) 
+        if (!(val == PdfName.Catalog)) 
         {
             ctx.Fail<APM_Catalog_Type>($"Invalid value {val}, allowed are: [Catalog]");
         }
@@ -235,7 +235,7 @@ internal partial class APM_Catalog_Version__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "1.0" || val == "1.1" || val == "1.2" || val == "1.3" || val == "1.4" || val == "1.5" || val == "1.6" || val == "1.7" || val == "2.0")) 
+        if (!(val == PdfName.N10 || val == PdfName.N11 || val == PdfName.N12 || val == PdfName.N13 || val == PdfName.N14 || val == PdfName.N15 || val == PdfName.N16 || val == PdfName.N17 || val == PdfName.N20)) 
         {
             ctx.Fail<APM_Catalog_Version>($"Invalid value {val}, allowed are: [1.0,1.1,1.2,1.3,1.4,1.5,1.6,1.7,2.0]");
         }
@@ -262,6 +262,7 @@ internal partial class APM_Catalog_Extensions__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_Catalog_Extensions>(obj, "Extensions", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -370,6 +371,7 @@ internal partial class APM_Catalog_Dests__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_Catalog_Dests>(obj, "Dests", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
@@ -429,7 +431,7 @@ internal partial class APM_Catalog_PageLayout__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "SinglePage" || val == "OneColumn" || val == "TwoColumnLeft" || val == "TwoColumnRight" || val == "TwoPageLeft" || val == "TwoPageRight")) 
+        if (!(val == PdfName.SinglePage || val == PdfName.OneColumn || val == PdfName.TwoColumnLeft || val == PdfName.TwoColumnRight || val == PdfName.TwoPageLeft || val == PdfName.TwoPageRight)) 
         {
             ctx.Fail<APM_Catalog_PageLayout>($"Invalid value {val}, allowed are: [SinglePage,OneColumn,TwoColumnLeft,TwoColumnRight,TwoPageLeft,TwoPageRight]");
         }
@@ -461,7 +463,7 @@ internal partial class APM_Catalog_PageMode__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "UseNone" || val == "UseOutlines" || val == "UseThumbs" || val == "FullScreen" || val == "UseOC" || val == "UseAttachments")) 
+        if (!(val == PdfName.UseNone || val == PdfName.UseOutlines || val == PdfName.UseThumbs || val == PdfName.FullScreen || val == PdfName.UseOC || val == PdfName.UseAttachments)) 
         {
             ctx.Fail<APM_Catalog_PageMode>($"Invalid value {val}, allowed are: [UseNone,UseOutlines,UseThumbs,FullScreen,UseOC,UseAttachments]");
         }
@@ -488,6 +490,7 @@ internal partial class APM_Catalog_Outlines__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_Catalog_Outlines>(obj, "Outlines", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
@@ -515,6 +518,7 @@ internal partial class APM_Catalog_Threads__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfArray, APM_Catalog_Threads>(obj, "Threads", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases

@@ -183,7 +183,7 @@ internal partial class APM_BoxStyle_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "S" || val == "D")) 
+        if (!(val == PdfName.S || val == PdfName.D)) 
         {
             ctx.Fail<APM_BoxStyle_S>($"Invalid value {val}, allowed are: [S,D]");
         }

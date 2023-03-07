@@ -213,7 +213,7 @@ internal static partial class MathUtil
         return false;
     }
 
-    public static bool ArraySortAscending(IPdfObject? obj)
+    public static bool ArraySortAscending(IPdfObject? obj, int i)
     {
         return false;
     }

@@ -78,7 +78,14 @@ internal partial class APM_DeviceNDict__Base : ISpecification<PdfDictionary>
 
     public static bool MatchesType(PdfValidator ctx, PdfDictionary obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        
+        c.Run<APM_DeviceNDict_Subtype, PdfDictionary>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 
     public static List<string> AllowedFields_13 { get; } = new List<string> 
@@ -139,7 +146,7 @@ internal partial class APM_DeviceNDict_Subtype__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "DeviceN" || val == "NChannel")) 
+        if (!(val == PdfName.DeviceN || val == PdfName.NChannel)) 
         {
             ctx.Fail<APM_DeviceNDict_Subtype>($"Invalid value {val}, allowed are: [DeviceN,NChannel]");
         }
@@ -169,7 +176,7 @@ internal partial class APM_DeviceNDict_Colorants__Base : ISpecification<PdfDicti
         var Subtype = obj.Get("Subtype");
         var parent1 = parent?.Get(1);
         var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Colorants>(obj, "Colorants", IndirectRequirement.Either);
-        if ((((ctx.Version < 1.6m || eq(Subtype,"NChannel"))&&HasSpotColorants(parent1))) && val == null) {
+        if ((((ctx.Version < 1.6m || eq(Subtype,PdfName.NChannel))&&HasSpotColorants(parent1))) && val == null) {
             ctx.Fail<APM_DeviceNDict_Colorants>("Colorants is required when 'fn:IsRequired(fn:SinceVersion(1.6,(@Subtype==NChannel)) && fn:HasSpotColorants(parent::1))"); return;
         } else if (val == null) {
             return;
@@ -202,7 +209,7 @@ internal partial class APM_DeviceNDict_Process__Base : ISpecification<PdfDiction
         var Subtype = obj.Get("Subtype");
         var parent1 = parent?.Get(1);
         var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Process>(obj, "Process", IndirectRequirement.Either);
-        if (((eq(Subtype,"NChannel")&&HasProcessColorants(parent1))) && val == null) {
+        if (((eq(Subtype,PdfName.NChannel)&&HasProcessColorants(parent1))) && val == null) {
             ctx.Fail<APM_DeviceNDict_Process>("Process is required when 'fn:IsRequired((@Subtype==NChannel) && fn:HasProcessColorants(parent::1))"); return;
         } else if (val == null) {
             return;

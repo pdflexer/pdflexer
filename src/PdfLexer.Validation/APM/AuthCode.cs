@@ -64,12 +64,13 @@ internal partial class APM_AuthCode_MACLocation__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfName, APM_AuthCode_MACLocation>(obj, "MACLocation", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
         
         
-        if (!(val == "Standalone" || val == "AttachedToSig")) 
+        if (!(val == PdfName.Standalone || val == PdfName.AttachedToSig)) 
         {
             ctx.Fail<APM_AuthCode_MACLocation>($"Invalid value {val}, allowed are: [Standalone,AttachedToSig]");
         }
@@ -96,9 +97,10 @@ internal partial class APM_AuthCode_ByteRange__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var MACLocation = obj.Get("MACLocation");
         var val = ctx.GetOptional<PdfArray, APM_AuthCode_ByteRange>(obj, "ByteRange", IndirectRequirement.MustBeDirect);
-        if ((eq(MACLocation,"Standalone")) && val == null) {
+        if ((eq(MACLocation,PdfName.Standalone)) && val == null) {
             ctx.Fail<APM_AuthCode_ByteRange>("ByteRange is required when 'fn:IsRequired(@MACLocation==Standalone)"); return;
         } else if (val == null) {
             return;
@@ -135,9 +137,10 @@ internal partial class APM_AuthCode_MAC__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var MACLocation = obj.Get("MACLocation");
         var val = ctx.GetOptional<PdfString, APM_AuthCode_MAC>(obj, "MAC", IndirectRequirement.MustBeDirect);
-        if ((eq(MACLocation,"Standalone")) && val == null) {
+        if ((eq(MACLocation,PdfName.Standalone)) && val == null) {
             ctx.Fail<APM_AuthCode_MAC>("MAC is required when 'fn:IsRequired(@MACLocation==Standalone)"); return;
         } else if (val == null) {
             return;
@@ -169,7 +172,7 @@ internal partial class APM_AuthCode_SigObjRef__Base : ISpecification<PdfDictiona
     {
         var MACLocation = obj.Get("MACLocation");
         var val = ctx.GetOptional<PdfDictionary, APM_AuthCode_SigObjRef>(obj, "SigObjRef", IndirectRequirement.MustBeIndirect);
-        if ((eq(MACLocation,"AttachedToSig")) && val == null) {
+        if ((eq(MACLocation,PdfName.AttachedToSig)) && val == null) {
             ctx.Fail<APM_AuthCode_SigObjRef>("SigObjRef is required when 'fn:IsRequired(@MACLocation==AttachedToSig)"); return;
         } else if (val == null) {
             return;

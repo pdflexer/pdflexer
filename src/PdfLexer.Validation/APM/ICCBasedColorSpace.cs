@@ -39,7 +39,7 @@ internal partial class APM_ICCBasedColorSpace_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "ICCBased")) 
+        if (!(val == PdfName.ICCBased)) 
         {
             ctx.Fail<APM_ICCBasedColorSpace_0>($"Invalid value {val}, allowed are: [ICCBased]");
         }

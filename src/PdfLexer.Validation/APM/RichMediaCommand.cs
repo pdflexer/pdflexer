@@ -104,7 +104,7 @@ internal partial class APM_RichMediaCommand_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "RichMediaCommand")) 
+        if (!(val == PdfName.RichMediaCommand)) 
         {
             ctx.Fail<APM_RichMediaCommand_Type>($"Invalid value {val}, allowed are: [RichMediaCommand]");
         }

@@ -125,7 +125,7 @@ internal partial class APM_MediaPlayerInfo_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "MediaPlayerInfo")) 
+        if (!(val == PdfName.MediaPlayerInfo)) 
         {
             ctx.Fail<APM_MediaPlayerInfo_Type>($"Invalid value {val}, allowed are: [MediaPlayerInfo]");
         }

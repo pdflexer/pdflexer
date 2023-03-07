@@ -64,7 +64,7 @@ internal partial class APM_ActionNOP_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionNOP_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -96,7 +96,7 @@ internal partial class APM_ActionNOP_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "NOP")) 
+        if (!(val == PdfName.NOP)) 
         {
             ctx.Fail<APM_ActionNOP_S>($"Invalid value {val}, allowed are: [NOP]");
         }

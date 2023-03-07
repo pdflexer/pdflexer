@@ -66,7 +66,8 @@ internal partial class APM_OptContentCreatorInfo__Base : ISpecification<PdfDicti
     public static bool MatchesType(PdfValidator ctx, PdfDictionary obj) 
     {
         var c = ctx.Clone();
-        c.Run<APM_OptContentCreatorInfo_SubType, PdfDictionary>(new CallStack(), obj, null);
+        
+        c.Run<APM_OptContentCreatorInfo_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;

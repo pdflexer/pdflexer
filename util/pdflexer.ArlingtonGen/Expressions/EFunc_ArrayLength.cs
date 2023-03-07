@@ -8,21 +8,18 @@ namespace pdflexer.ArlingtonGen.Expressions;
 
 internal class EFunc_ArrayLength : EFunBase, INode
 {
-    public EFunc_ArrayLength(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_ArrayLength(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
+        using var es = new VarScope(VariableHandling.MustBeObj);
         sb.Append($"((");
-        Inputs[0].Write(sb);
+        Children[0].Write(sb);
         sb.Append($" as PdfArray)?.Count)");
-        // using (var es = new EvalScope(ExpValueWrapper.GetFromObj))
-        // {
-        // 
-        // }
     }
 
     IEnumerable<string> INode.GetRequiredValues()
     {
-        var val = (Inputs[0].Children[0] as EValue)?.Text;
+        var val = (Children[0] as EValue)?.Text;
         if (val != null && val != "*" && !int.TryParse(val, out _))
         {
             yield return val;

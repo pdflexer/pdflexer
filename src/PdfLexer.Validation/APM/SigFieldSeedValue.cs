@@ -135,7 +135,7 @@ internal partial class APM_SigFieldSeedValue_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "SV")) 
+        if (!(val == PdfName.SV)) 
         {
             ctx.Fail<APM_SigFieldSeedValue_Type>($"Invalid value {val}, allowed are: [SV]");
         }
@@ -279,7 +279,7 @@ internal partial class APM_SigFieldSeedValue_V__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2 || val == 3)) 
+        if (!(val == 0m || val == 1m || val == 2m || val == 3m)) 
         {
             ctx.Fail<APM_SigFieldSeedValue_V>($"Invalid value {val}, allowed are: [0,1,2,3]");
         }
@@ -473,7 +473,7 @@ internal partial class APM_SigFieldSeedValue_LockDocument__Base : ISpecification
         // no special cases
         
         
-        if (!(val == "true" || val == "false" || val == "auto")) 
+        if (!(val == "true" || val == "false" || val == PdfName.auto)) 
         {
             ctx.Fail<APM_SigFieldSeedValue_LockDocument>($"Invalid value {val}, allowed are: [true,false,auto]");
         }

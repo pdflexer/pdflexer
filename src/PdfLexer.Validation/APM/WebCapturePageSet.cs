@@ -150,7 +150,7 @@ internal partial class APM_WebCapturePageSet_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "SpiderContentSet")) 
+        if (!(val == PdfName.SpiderContentSet)) 
         {
             ctx.Fail<APM_WebCapturePageSet_Type>($"Invalid value {val}, allowed are: [SpiderContentSet]");
         }
@@ -182,7 +182,7 @@ internal partial class APM_WebCapturePageSet_S__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "SPS")) 
+        if (!(val == PdfName.SPS)) 
         {
             ctx.Fail<APM_WebCapturePageSet_S>($"Invalid value {val}, allowed are: [SPS]");
         }

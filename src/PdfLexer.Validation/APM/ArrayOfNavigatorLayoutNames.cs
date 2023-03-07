@@ -44,7 +44,7 @@ internal partial class APM_ArrayOfNavigatorLayoutNames_x : ISpecification<PdfArr
             // no special cases
             
             
-            if (!(val == "D" || val == "T" || val == "H" || val == "FilmStrip" || val == "FreeForm" || val == "Linear" || val == "Tree")) 
+            if (!(val == PdfName.D || val == PdfName.T || val == PdfName.H || val == PdfName.FilmStrip || val == PdfName.FreeForm || val == PdfName.Linear || val == PdfName.Tree)) 
             {
                 ctx.Fail<APM_ArrayOfNavigatorLayoutNames_x>($"Invalid value {val}, allowed are: [D,T,H,FilmStrip,FreeForm,Linear,Tree]");
             }

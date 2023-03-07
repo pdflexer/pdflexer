@@ -111,7 +111,7 @@ internal partial class APM_3DCrossSection_Type__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "3DCrossSection")) 
+        if (!(val == PdfName.N3DCrossSection)) 
         {
             ctx.Fail<APM_3DCrossSection_Type>($"Invalid value {val}, allowed are: [3DCrossSection]");
         }

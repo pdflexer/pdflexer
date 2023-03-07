@@ -126,7 +126,7 @@ internal partial class APM_SignatureReferenceDocMDP_Type__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "SigRef")) 
+        if (!(val == PdfName.SigRef)) 
         {
             ctx.Fail<APM_SignatureReferenceDocMDP_Type>($"Invalid value {val}, allowed are: [SigRef]");
         }
@@ -158,7 +158,7 @@ internal partial class APM_SignatureReferenceDocMDP_TransformMethod__Base : ISpe
         // no special cases
         
         
-        if (!(val == "DocMDP")) 
+        if (!(val == PdfName.DocMDP)) 
         {
             ctx.Fail<APM_SignatureReferenceDocMDP_TransformMethod>($"Invalid value {val}, allowed are: [DocMDP]");
         }
@@ -310,7 +310,7 @@ internal partial class APM_SignatureReferenceDocMDP_DigestMethod__Base : ISpecif
         // no special cases
         
         
-        if (!((ctx.Version < 2.0m && val == "MD5") || (ctx.Version < 2.0m && val == "SHA1") || (ctx.Version >= 2.0m && val == "SHA256") || (ctx.Version >= 2.0m && val == "SHA384") || (ctx.Version >= 2.0m && val == "SHA512") || (ctx.Version >= 2.0m && val == "RIPEMD160") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-256") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-384") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHA3-512") || (ctx.Extensions.Contains("ISO_TS_32001") && val == "SHAKE256"))) 
+        if (!((ctx.Version < 2.0m && val == PdfName.MD5) || (ctx.Version < 2.0m && val == PdfName.SHA1) || (ctx.Version >= 2.0m && val == PdfName.SHA256) || (ctx.Version >= 2.0m && val == PdfName.SHA384) || (ctx.Version >= 2.0m && val == PdfName.SHA512) || (ctx.Version >= 2.0m && val == PdfName.RIPEMD160) || (ctx.Extensions.Contains(PdfName.ISO_TS_32001) && val == PdfName.SHA3256) || (ctx.Extensions.Contains(PdfName.ISO_TS_32001) && val == PdfName.SHA3384) || (ctx.Extensions.Contains(PdfName.ISO_TS_32001) && val == PdfName.SHA3512) || (ctx.Extensions.Contains(PdfName.ISO_TS_32001) && val == PdfName.SHAKE256))) 
         {
             ctx.Fail<APM_SignatureReferenceDocMDP_DigestMethod>($"Invalid value {val}, allowed are: [fn:Deprecated(2.0,MD5),fn:Deprecated(2.0,SHA1),fn:SinceVersion(2.0,SHA256),fn:SinceVersion(2.0,SHA384),fn:SinceVersion(2.0,SHA512),fn:SinceVersion(2.0,RIPEMD160),fn:Extension(ISO_TS_32001,SHA3-256),fn:Extension(ISO_TS_32001,SHA3-384),fn:Extension(ISO_TS_32001,SHA3-512),fn:Extension(ISO_TS_32001,SHAKE256)]");
         }

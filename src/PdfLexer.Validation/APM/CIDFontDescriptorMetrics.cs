@@ -167,7 +167,7 @@ internal partial class APM_CIDFontDescriptorMetrics_Type__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "FontDescriptor")) 
+        if (!(val == PdfName.FontDescriptor)) 
         {
             ctx.Fail<APM_CIDFontDescriptorMetrics_Type>($"Invalid value {val}, allowed are: [FontDescriptor]");
         }

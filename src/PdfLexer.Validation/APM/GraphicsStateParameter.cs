@@ -181,7 +181,7 @@ internal partial class APM_GraphicsStateParameter_Type__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "ExtGState")) 
+        if (!(val == PdfName.ExtGState)) 
         {
             ctx.Fail<APM_GraphicsStateParameter_Type>($"Invalid value {val}, allowed are: [ExtGState]");
         }
@@ -368,7 +368,7 @@ internal partial class APM_GraphicsStateParameter_RI__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "AbsoluteColorimetric" || val == "RelativeColorimetric" || val == "Saturation" || val == "Perceptual")) 
+        if (!(val == PdfName.AbsoluteColorimetric || val == PdfName.RelativeColorimetric || val == PdfName.Saturation || val == PdfName.Perceptual)) 
         {
             ctx.Fail<APM_GraphicsStateParameter_RI>($"Invalid value {val}, allowed are: [AbsoluteColorimetric,RelativeColorimetric,Saturation,Perceptual]");
         }
@@ -1150,7 +1150,7 @@ internal partial class APM_GraphicsStateParameter_BM__Base : ISpecification<PdfD
                     // no special cases
                     
                     
-                    if (!((ctx.Version < 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
+                    if (!((ctx.Version < 1.4m && val == PdfName.Compatible) || val == PdfName.Normal || val == PdfName.Multiply || val == PdfName.Screen || val == PdfName.Difference || val == PdfName.Darken || val == PdfName.Lighten || val == PdfName.ColorDodge || val == PdfName.ColorBurn || val == PdfName.Exclusion || val == PdfName.HardLight || val == PdfName.Overlay || val == PdfName.SoftLight || val == PdfName.Luminosity || val == PdfName.Hue || val == PdfName.Saturation || val == PdfName.Color)) 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
                     }
@@ -1225,7 +1225,7 @@ internal partial class APM_GraphicsStateParameter_SMask__Base : ISpecification<P
                     // no special cases
                     
                     
-                    if (!(val == "None")) 
+                    if (!(val == PdfName.None)) 
                     {
                         ctx.Fail<APM_GraphicsStateParameter_SMask>($"Invalid value {val}, allowed are: [None]");
                     }
@@ -1381,7 +1381,7 @@ internal partial class APM_GraphicsStateParameter_UseBlackPtComp__Base : ISpecif
         // no special cases
         
         
-        if (!(val == "OFF" || val == "ON" || val == "Default")) 
+        if (!(val == PdfName.OFF || val == PdfName.ON || val == PdfName.Default)) 
         {
             ctx.Fail<APM_GraphicsStateParameter_UseBlackPtComp>($"Invalid value {val}, allowed are: [OFF,ON,Default]");
         }

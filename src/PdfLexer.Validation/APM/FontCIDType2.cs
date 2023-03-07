@@ -93,6 +93,7 @@ internal partial class APM_FontCIDType2__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_FontCIDType2_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_FontCIDType2_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -162,7 +163,7 @@ internal partial class APM_FontCIDType2_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Font")) 
+        if (!(val == PdfName.Font)) 
         {
             ctx.Fail<APM_FontCIDType2_Type>($"Invalid value {val}, allowed are: [Font]");
         }
@@ -194,7 +195,7 @@ internal partial class APM_FontCIDType2_Subtype__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "CIDFontType2")) 
+        if (!(val == PdfName.CIDFontType2)) 
         {
             ctx.Fail<APM_FontCIDType2_Subtype>($"Invalid value {val}, allowed are: [CIDFontType2]");
         }
@@ -275,6 +276,7 @@ internal partial class APM_FontCIDType2_FontDescriptor__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfDictionary, APM_FontCIDType2_FontDescriptor>(obj, "FontDescriptor", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
@@ -428,7 +430,7 @@ internal partial class APM_FontCIDType2_CIDToGIDMap__Base : ISpecification<PdfDi
                     // no special cases
                     
                     
-                    if (!(val == "Identity")) 
+                    if (!(val == PdfName.Identity)) 
                     {
                         ctx.Fail<APM_FontCIDType2_CIDToGIDMap>($"Invalid value {val}, allowed are: [Identity]");
                     }

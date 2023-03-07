@@ -125,7 +125,7 @@ internal partial class APM_OptContentMembership_Type__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "OCMD")) 
+        if (!(val == PdfName.OCMD)) 
         {
             ctx.Fail<APM_OptContentMembership_Type>($"Invalid value {val}, allowed are: [OCMD]");
         }
@@ -214,7 +214,7 @@ internal partial class APM_OptContentMembership_P__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "AllOn" || val == "AnyOn" || val == "AnyOff" || val == "AllOff")) 
+        if (!(val == PdfName.AllOn || val == PdfName.AnyOn || val == PdfName.AnyOff || val == PdfName.AllOff)) 
         {
             ctx.Fail<APM_OptContentMembership_P>($"Invalid value {val}, allowed are: [AllOn,AnyOn,AnyOff,AllOff]");
         }

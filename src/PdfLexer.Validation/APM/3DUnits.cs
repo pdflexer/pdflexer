@@ -155,7 +155,7 @@ internal partial class APM_3DUnits_TU__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfString, APM_3DUnits_TU>(obj, "TU", IndirectRequirement.Either);
-        if (((obj.ContainsKey("TSm")||obj.ContainsKey(val))) && val == null) {
+        if (((obj.ContainsKey(PdfName.TSm)||obj.ContainsKey(val))) && val == null) {
             ctx.Fail<APM_3DUnits_TU>("TU is required when 'fn:IsRequired(fn:IsPresent(TSm) || fn:IsPresent(TSn))"); return;
         } else if (val == null) {
             return;
@@ -241,7 +241,7 @@ internal partial class APM_3DUnits_UU__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfString, APM_3DUnits_UU>(obj, "UU", IndirectRequirement.Either);
-        if (((obj.ContainsKey("USm")||obj.ContainsKey(val))) && val == null) {
+        if (((obj.ContainsKey(PdfName.USm)||obj.ContainsKey(val))) && val == null) {
             ctx.Fail<APM_3DUnits_UU>("UU is required when 'fn:IsRequired(fn:IsPresent(USm) || fn:IsPresent(USn))"); return;
         } else if (val == null) {
             return;
@@ -327,7 +327,7 @@ internal partial class APM_3DUnits_DU__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfString, APM_3DUnits_DU>(obj, "DU", IndirectRequirement.Either);
-        if (((obj.ContainsKey("DSm")||obj.ContainsKey(val))) && val == null) {
+        if (((obj.ContainsKey(PdfName.DSm)||obj.ContainsKey(val))) && val == null) {
             ctx.Fail<APM_3DUnits_DU>("DU is required when 'fn:IsRequired(fn:IsPresent(DSm) || fn:IsPresent(DSn))"); return;
         } else if (val == null) {
             return;

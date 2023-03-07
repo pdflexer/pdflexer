@@ -55,6 +55,7 @@ internal partial class APM_ExDataProjection__Base : ISpecification<PdfDictionary
     {
         var c = ctx.Clone();
         c.Run<APM_ExDataProjection_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_ExDataProjection_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -104,7 +105,7 @@ internal partial class APM_ExDataProjection_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "ExData")) 
+        if (!(val == PdfName.ExData)) 
         {
             ctx.Fail<APM_ExDataProjection_Type>($"Invalid value {val}, allowed are: [ExData]");
         }
@@ -136,7 +137,7 @@ internal partial class APM_ExDataProjection_Subtype__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "3DM")) 
+        if (!(val == PdfName.N3DM)) 
         {
             ctx.Fail<APM_ExDataProjection_Subtype>($"Invalid value {val}, allowed are: [3DM]");
         }

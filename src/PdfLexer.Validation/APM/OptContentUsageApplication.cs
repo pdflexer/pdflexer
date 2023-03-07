@@ -118,7 +118,7 @@ internal partial class APM_OptContentUsageApplication_Event__Base : ISpecificati
         // no special cases
         
         
-        if (!(val == "View" || val == "Print" || val == "Export")) 
+        if (!(val == PdfName.View || val == PdfName.Print || val == PdfName.Export)) 
         {
             ctx.Fail<APM_OptContentUsageApplication_Event>($"Invalid value {val}, allowed are: [View,Print,Export]");
         }

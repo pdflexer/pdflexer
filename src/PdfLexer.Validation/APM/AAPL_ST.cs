@@ -88,6 +88,7 @@ internal partial class APM_AAPL_ST__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_AAPL_ST_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_AAPL_ST_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -157,7 +158,7 @@ internal partial class APM_AAPL_ST_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Style")) 
+        if (!(val == PdfName.Style)) 
         {
             ctx.Fail<APM_AAPL_ST_Type>($"Invalid value {val}, allowed are: [Style]");
         }
@@ -189,7 +190,7 @@ internal partial class APM_AAPL_ST_Subtype__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Shadow")) 
+        if (!(val == PdfName.Shadow)) 
         {
             ctx.Fail<APM_AAPL_ST_Subtype>($"Invalid value {val}, allowed are: [Shadow]");
         }
@@ -312,7 +313,7 @@ internal partial class APM_AAPL_ST_ColorSpace__Base : ISpecification<PdfDictiona
                     // no special cases
                     
                     
-                    if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceCMYK || val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_AAPL_ST_ColorSpace>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }

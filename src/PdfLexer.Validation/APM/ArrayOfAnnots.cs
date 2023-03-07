@@ -121,13 +121,13 @@ internal partial class APM_ArrayOfAnnots_x : ISpecification<PdfArray>
             } else if ((ctx.Version >= 1.7m && APM_AnnotRedact.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotRedact, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_AnnotProjection.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && APM_AnnotProjection.MatchesType(ctx, val)))) 
             {
                 ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
             } else if ((ctx.Version >= 2.0m && APM_AnnotProjection.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_AnnotProjection, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && APM_AnnotRichMedia.MatchesType(ctx, val)))) 
             {
                 ctx.Run<APM_AnnotRichMedia, PdfDictionary>(stack, val, obj);
             } else if ((ctx.Version >= 2.0m && APM_AnnotRichMedia.MatchesType(ctx, val))) 

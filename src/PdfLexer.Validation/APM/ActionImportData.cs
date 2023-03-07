@@ -155,7 +155,7 @@ internal partial class APM_ActionImportData_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionImportData_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -187,7 +187,7 @@ internal partial class APM_ActionImportData_S__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "ImportData")) 
+        if (!(val == PdfName.ImportData)) 
         {
             ctx.Fail<APM_ActionImportData_S>($"Invalid value {val}, allowed are: [ImportData]");
         }

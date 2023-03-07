@@ -40,7 +40,7 @@ internal partial class APM_VisibilityExpressionArray_0 : ISpecification<PdfArray
         // no special cases
         
         
-        if (!(val == "And" || val == "Not" || val == "Or")) 
+        if (!(val == PdfName.And || val == PdfName.Not || val == PdfName.Or)) 
         {
             ctx.Fail<APM_VisibilityExpressionArray_0>($"Invalid value {val}, allowed are: [And,Not,Or]");
         }

@@ -119,7 +119,7 @@ internal partial class APM_3DViewAddEntries_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "3DView")) 
+        if (!(val == PdfName.N3DView)) 
         {
             ctx.Fail<APM_3DViewAddEntries_Type>($"Invalid value {val}, allowed are: [3DView]");
         }
@@ -256,7 +256,7 @@ internal partial class APM_3DViewAddEntries_C2W__Base : ISpecification<PdfDictio
     {
         var MS = obj.Get("MS");
         var val = ctx.GetOptional<PdfArray, APM_3DViewAddEntries_C2W>(obj, "C2W", IndirectRequirement.Either);
-        if ((eq(MS,"M")) && val == null) {
+        if ((eq(MS,PdfName.M)) && val == null) {
             ctx.Fail<APM_3DViewAddEntries_C2W>("C2W is required when 'fn:IsRequired(@MS==M)"); return;
         } else if (val == null) {
             return;
@@ -289,7 +289,7 @@ internal partial class APM_3DViewAddEntries_U3DPath__Base : ISpecification<PdfDi
         var (utval, wasIR) = ctx.GetOptional<APM_3DViewAddEntries_U3DPath>(obj, "U3DPath", IndirectRequirement.Either);
         
         var MS = obj.Get("MS");
-        if ((eq(MS,"U3D")) && utval == null) {
+        if ((eq(MS,PdfName.U3D)) && utval == null) {
             ctx.Fail<APM_3DViewAddEntries_U3DPath>("U3DPath is required"); return;
         } else if (utval == null) {
             return;

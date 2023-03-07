@@ -112,6 +112,7 @@ internal partial class APM_AnnotFreeText__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_AnnotFreeText_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_AnnotFreeText_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -177,7 +178,7 @@ internal partial class APM_AnnotFreeText_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "Annot")) 
+        if (!(val == PdfName.Annot)) 
         {
             ctx.Fail<APM_AnnotFreeText_Type>($"Invalid value {val}, allowed are: [Annot]");
         }
@@ -209,7 +210,7 @@ internal partial class APM_AnnotFreeText_Subtype__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "FreeText")) 
+        if (!(val == PdfName.FreeText)) 
         {
             ctx.Fail<APM_AnnotFreeText_Subtype>($"Invalid value {val}, allowed are: [FreeText]");
         }
@@ -409,7 +410,7 @@ internal partial class APM_AnnotFreeText_AP__Base : ISpecification<PdfDictionary
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotFreeText_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotFreeText_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;
@@ -707,7 +708,7 @@ internal partial class APM_AnnotFreeText_BM__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!((ctx.Version < 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
+        if (!((ctx.Version < 1.4m && val == PdfName.Compatible) || val == PdfName.Normal || val == PdfName.Multiply || val == PdfName.Screen || val == PdfName.Difference || val == PdfName.Darken || val == PdfName.Lighten || val == PdfName.ColorDodge || val == PdfName.ColorBurn || val == PdfName.Exclusion || val == PdfName.HardLight || val == PdfName.Overlay || val == PdfName.SoftLight || val == PdfName.Luminosity || val == PdfName.Hue || val == PdfName.Saturation || val == PdfName.Color)) 
         {
             ctx.Fail<APM_AnnotFreeText_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
         }
@@ -892,7 +893,7 @@ internal partial class APM_AnnotFreeText_IRT__Base : ISpecification<PdfDictionar
     {
         
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotFreeText_IRT>(obj, "IRT", IndirectRequirement.Either);
-        if ((obj.ContainsKey("RT")) && val == null) {
+        if ((obj.ContainsKey(PdfName.RT)) && val == null) {
             ctx.Fail<APM_AnnotFreeText_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
         } else if (val == null) {
             return;
@@ -1035,7 +1036,7 @@ internal partial class APM_AnnotFreeText_RT__Base : ISpecification<PdfDictionary
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "R" || val == "Group")) 
+        if (!(val == PdfName.R || val == PdfName.Group)) 
         {
             ctx.Fail<APM_AnnotFreeText_RT>($"Invalid value {val}, allowed are: [R,Group]");
         }
@@ -1094,7 +1095,7 @@ internal partial class APM_AnnotFreeText_Q__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2)) 
+        if (!(val == 0m || val == 1m || val == 2m)) 
         {
             ctx.Fail<APM_AnnotFreeText_Q>($"Invalid value {val}, allowed are: [0,1,2]");
         }
@@ -1180,7 +1181,7 @@ internal partial class APM_AnnotFreeText_IT__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "FreeText" || val == "FreeTextCallout" || val == "FreeTextTypeWriter")) 
+        if (!(val == PdfName.FreeText || val == PdfName.FreeTextCallout || val == PdfName.FreeTextTypeWriter)) 
         {
             ctx.Fail<APM_AnnotFreeText_IT>($"Invalid value {val}, allowed are: [FreeText,FreeTextCallout,FreeTextTypeWriter]");
         }
@@ -1241,7 +1242,7 @@ internal partial class APM_AnnotFreeText_RD__Base : ISpecification<PdfDictionary
         var RD2 = val.Get(2);
         var RD3 = val.Get(3);
         var Rect = obj.Get("Rect");
-        if (!(gte(RD0,0)&&gte(RD1,0)&&gte(RD2,0)&&gte(RD3,0)&&lt(plus(RD1,RD3),RectHeight(Rect))&&lt(plus(RD0,RD2),RectWidth(obj)))) 
+        if (!(gte(RD0,0)&&gte(RD1,0)&&gte(RD2,0)&&gte(RD3,0)&&lt(plus(RD1,RD3),RectHeight(Rect))&&lt(plus(RD0,RD2),RectWidth(Rect)))) 
         {
             ctx.Fail<APM_AnnotFreeText_RD>($"Value failed special case check: fn:Eval((RD::@0>=0) && (RD::@1>=0) && (RD::@2>=0) && (RD::@3>=0) && ((RD::@1+RD::@3)<fn:RectHeight(Rect)) && ((RD::@0+RD::@2)<fn:RectWidth(Rect)))");
         }
@@ -1301,7 +1302,7 @@ internal partial class APM_AnnotFreeText_LE__Base : ISpecification<PdfDictionary
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "Square" || val == "Circle" || val == "Diamond" || val == "OpenArrow" || val == "ClosedArrow" || val == "None" || val == "Butt" || val == "ROpenArrow" || val == "RClosedArrow" || val == "Slash")) 
+        if (!(val == PdfName.Square || val == PdfName.Circle || val == PdfName.Diamond || val == PdfName.OpenArrow || val == PdfName.ClosedArrow || val == PdfName.None || val == PdfName.Butt || val == PdfName.ROpenArrow || val == PdfName.RClosedArrow || val == PdfName.Slash)) 
         {
             ctx.Fail<APM_AnnotFreeText_LE>($"Invalid value {val}, allowed are: [Square,Circle,Diamond,OpenArrow,ClosedArrow,None,Butt,ROpenArrow,RClosedArrow,Slash]");
         }
@@ -1335,7 +1336,7 @@ internal partial class APM_AnnotFreeText_ExData__Base : ISpecification<PdfDictio
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
         {
             ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
         } else if ((ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val))) 

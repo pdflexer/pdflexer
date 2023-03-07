@@ -44,7 +44,7 @@ internal partial class APM_URTransformParamSignatureArray_x : ISpecification<Pdf
             // no special cases
             
             
-            if (!(val == "Modify")) 
+            if (!(val == PdfName.Modify)) 
             {
                 ctx.Fail<APM_URTransformParamSignatureArray_x>($"Invalid value {val}, allowed are: [Modify]");
             }

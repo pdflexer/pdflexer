@@ -54,6 +54,7 @@ internal partial class APM_XObjectFormPSpassthrough__Base : ISpecification<PdfDi
     {
         var c = ctx.Clone();
         c.Run<APM_XObjectFormPSpassthrough_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_XObjectFormPSpassthrough_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -95,7 +96,7 @@ internal partial class APM_XObjectFormPSpassthrough_Type__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "XObject")) 
+        if (!(val == PdfName.XObject)) 
         {
             ctx.Fail<APM_XObjectFormPSpassthrough_Type>($"Invalid value {val}, allowed are: [XObject]");
         }
@@ -127,7 +128,7 @@ internal partial class APM_XObjectFormPSpassthrough_Subtype__Base : ISpecificati
         // no special cases
         
         
-        if (!(val == "PS")) 
+        if (!(val == PdfName.PS)) 
         {
             ctx.Fail<APM_XObjectFormPSpassthrough_Subtype>($"Invalid value {val}, allowed are: [PS]");
         }
@@ -159,7 +160,7 @@ internal partial class APM_XObjectFormPSpassthrough_Subtype2__Base : ISpecificat
         // no special cases
         
         
-        if (!(val == "PS")) 
+        if (!(val == PdfName.PS)) 
         {
             ctx.Fail<APM_XObjectFormPSpassthrough_Subtype2>($"Invalid value {val}, allowed are: [PS]");
         }
@@ -250,7 +251,7 @@ internal partial class APM_XObjectFormPSpassthrough_FormType__Base : ISpecificat
         // no special cases
         
         
-        if (!(val == 1)) 
+        if (!(val == 1m)) 
         {
             ctx.Fail<APM_XObjectFormPSpassthrough_FormType>($"Invalid value {val}, allowed are: [1]");
         }
@@ -388,7 +389,7 @@ internal partial class APM_XObjectFormPSpassthrough_Filter__Base : ISpecificatio
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || (ctx.Version >= 1.2m && val == "FlateDecode") || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || (ctx.Version >= 1.2m && val == PdfName.FlateDecode) || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectFormPSpassthrough_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,fn:SinceVersion(1.2,FlateDecode),RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -559,7 +560,7 @@ internal partial class APM_XObjectFormPSpassthrough_FFilter__Base : ISpecificati
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectFormPSpassthrough_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

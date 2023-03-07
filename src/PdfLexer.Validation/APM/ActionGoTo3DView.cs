@@ -116,7 +116,7 @@ internal partial class APM_ActionGoTo3DView_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionGoTo3DView_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -148,7 +148,7 @@ internal partial class APM_ActionGoTo3DView_S__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "GoTo3DView")) 
+        if (!(val == PdfName.GoTo3DView)) 
         {
             ctx.Fail<APM_ActionGoTo3DView_S>($"Invalid value {val}, allowed are: [GoTo3DView]");
         }

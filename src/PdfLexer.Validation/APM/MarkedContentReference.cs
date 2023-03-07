@@ -146,7 +146,7 @@ internal partial class APM_MarkedContentReference_Type__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "MCR")) 
+        if (!(val == PdfName.MCR)) 
         {
             ctx.Fail<APM_MarkedContentReference_Type>($"Invalid value {val}, allowed are: [MCR]");
         }

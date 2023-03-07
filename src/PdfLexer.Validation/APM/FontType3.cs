@@ -107,6 +107,7 @@ internal partial class APM_FontType3__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_FontType3_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_FontType3_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -184,7 +185,7 @@ internal partial class APM_FontType3_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Font")) 
+        if (!(val == PdfName.Font)) 
         {
             ctx.Fail<APM_FontType3_Type>($"Invalid value {val}, allowed are: [Font]");
         }
@@ -216,7 +217,7 @@ internal partial class APM_FontType3_Subtype__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Type3")) 
+        if (!(val == PdfName.Type3)) 
         {
             ctx.Fail<APM_FontType3_Subtype>($"Invalid value {val}, allowed are: [Type3]");
         }
@@ -470,6 +471,7 @@ internal partial class APM_FontType3_FontDescriptor__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         
         var val = ctx.GetOptional<PdfDictionary, APM_FontType3_FontDescriptor>(obj, "FontDescriptor", IndirectRequirement.Either);
         if ((IsPDFTagged(obj)) && val == null) {

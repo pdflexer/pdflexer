@@ -141,7 +141,7 @@ internal partial class APM_FunctionType2_FunctionType__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 2)) 
+        if (!(val == 2m)) 
         {
             ctx.Fail<APM_FunctionType2_FunctionType>($"Invalid value {val}, allowed are: [2]");
         }

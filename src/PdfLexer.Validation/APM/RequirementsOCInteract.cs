@@ -76,7 +76,7 @@ internal partial class APM_RequirementsOCInteract_Type__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsOCInteract_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsOCInteract_S__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "OCInteract")) 
+        if (!(val == PdfName.OCInteract)) 
         {
             ctx.Fail<APM_RequirementsOCInteract_S>($"Invalid value {val}, allowed are: [OCInteract]");
         }

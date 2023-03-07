@@ -123,7 +123,7 @@ internal partial class APM_MediaPermissions_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "MediaPermissions")) 
+        if (!(val == PdfName.MediaPermissions)) 
         {
             ctx.Fail<APM_MediaPermissions_Type>($"Invalid value {val}, allowed are: [MediaPermissions]");
         }

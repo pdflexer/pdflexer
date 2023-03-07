@@ -63,6 +63,7 @@ internal partial class APM_3DBackground__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_3DBackground_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_3DBackground_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -116,7 +117,7 @@ internal partial class APM_3DBackground_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "3DBG")) 
+        if (!(val == PdfName.N3DBG)) 
         {
             ctx.Fail<APM_3DBackground_Type>($"Invalid value {val}, allowed are: [3DBG]");
         }
@@ -148,7 +149,7 @@ internal partial class APM_3DBackground_Subtype__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "SC")) 
+        if (!(val == PdfName.SC)) 
         {
             ctx.Fail<APM_3DBackground_Subtype>($"Invalid value {val}, allowed are: [SC]");
         }
@@ -180,7 +181,7 @@ internal partial class APM_3DBackground_CS__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "DeviceRGB")) 
+        if (!(val == PdfName.DeviceRGB)) 
         {
             ctx.Fail<APM_3DBackground_CS>($"Invalid value {val}, allowed are: [DeviceRGB]");
         }

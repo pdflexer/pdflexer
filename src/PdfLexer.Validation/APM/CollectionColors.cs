@@ -107,7 +107,7 @@ internal partial class APM_CollectionColors_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "CollectionColors")) 
+        if (!(val == PdfName.CollectionColors)) 
         {
             ctx.Fail<APM_CollectionColors_Type>($"Invalid value {val}, allowed are: [CollectionColors]");
         }

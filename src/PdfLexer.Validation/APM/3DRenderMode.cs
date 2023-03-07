@@ -58,6 +58,7 @@ internal partial class APM_3DRenderMode__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_3DRenderMode_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_3DRenderMode_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -107,7 +108,7 @@ internal partial class APM_3DRenderMode_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "3DRenderMode")) 
+        if (!(val == PdfName.N3DRenderMode)) 
         {
             ctx.Fail<APM_3DRenderMode_Type>($"Invalid value {val}, allowed are: [3DRenderMode]");
         }
@@ -139,7 +140,7 @@ internal partial class APM_3DRenderMode_Subtype__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "Solid" || val == "SolidWireframe" || val == "Transparent" || val == "TransparentWireframe" || val == "BoundingBox" || val == "TransparentBoundingBox" || val == "TransparentBoundingBoxOutline" || val == "Wireframe" || val == "ShadedWireframe" || val == "HiddenWireframe" || val == "Vertices" || val == "ShadedVertices" || val == "Illustration" || val == "SolidOutline" || val == "ShadedIllustration")) 
+        if (!(val == PdfName.Solid || val == PdfName.SolidWireframe || val == PdfName.Transparent || val == PdfName.TransparentWireframe || val == PdfName.BoundingBox || val == PdfName.TransparentBoundingBox || val == PdfName.TransparentBoundingBoxOutline || val == PdfName.Wireframe || val == PdfName.ShadedWireframe || val == PdfName.HiddenWireframe || val == PdfName.Vertices || val == PdfName.ShadedVertices || val == PdfName.Illustration || val == PdfName.SolidOutline || val == PdfName.ShadedIllustration)) 
         {
             ctx.Fail<APM_3DRenderMode_Subtype>($"Invalid value {val}, allowed are: [Solid,SolidWireframe,Transparent,TransparentWireframe,BoundingBox,TransparentBoundingBox,TransparentBoundingBoxOutline,Wireframe,ShadedWireframe,HiddenWireframe,Vertices,ShadedVertices,Illustration,SolidOutline,ShadedIllustration]");
         }
@@ -213,7 +214,7 @@ internal partial class APM_3DRenderMode_FC__Base : ISpecification<PdfDictionary>
                     // no special cases
                     
                     
-                    if (!(val == "BG")) 
+                    if (!(val == PdfName.BG)) 
                     {
                         ctx.Fail<APM_3DRenderMode_FC>($"Invalid value {val}, allowed are: [BG]");
                     }

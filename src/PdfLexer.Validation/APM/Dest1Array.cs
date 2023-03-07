@@ -55,7 +55,7 @@ internal partial class APM_Dest1Array_0 : ISpecification<PdfArray>
                     // no special cases
                     IPdfObject v = val;
                     
-                    if (!(gte(v,v))) 
+                    if (!(gte(v,0))) 
                     {
                         ctx.Fail<APM_Dest1Array_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>=0)]");
                     }
@@ -86,7 +86,7 @@ internal partial class APM_Dest1Array_1 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "FitH" || val == "FitV" || (ctx.Version >= 1.1m && val == "FitBH") || (ctx.Version >= 1.1m && val == "FitBV"))) 
+        if (!(val == PdfName.FitH || val == PdfName.FitV || (ctx.Version >= 1.1m && val == PdfName.FitBH) || (ctx.Version >= 1.1m && val == PdfName.FitBV))) 
         {
             ctx.Fail<APM_Dest1Array_1>($"Invalid value {val}, allowed are: [FitH,FitV,fn:SinceVersion(1.1,FitBH),fn:SinceVersion(1.1,FitBV)]");
         }

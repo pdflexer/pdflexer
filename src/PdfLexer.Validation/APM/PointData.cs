@@ -56,6 +56,7 @@ internal partial class APM_PointData__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_PointData_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_PointData_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -105,7 +106,7 @@ internal partial class APM_PointData_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "PtData")) 
+        if (!(val == PdfName.PtData)) 
         {
             ctx.Fail<APM_PointData_Type>($"Invalid value {val}, allowed are: [PtData]");
         }
@@ -137,7 +138,7 @@ internal partial class APM_PointData_Subtype__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Cloud")) 
+        if (!(val == PdfName.Cloud)) 
         {
             ctx.Fail<APM_PointData_Subtype>($"Invalid value {val}, allowed are: [Cloud]");
         }

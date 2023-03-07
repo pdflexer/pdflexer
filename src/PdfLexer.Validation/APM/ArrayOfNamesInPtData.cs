@@ -44,7 +44,7 @@ internal partial class APM_ArrayOfNamesInPtData_x : ISpecification<PdfArray>
             // no special cases
             
             
-            if (!(val == "LAT" || val == "LON" || val == "ALT")) 
+            if (!(val == PdfName.LAT || val == PdfName.LON || val == PdfName.ALT)) 
             {
                 ctx.Fail<APM_ArrayOfNamesInPtData_x>($"Invalid value {val}, allowed are: [LAT,LON,ALT]");
             }

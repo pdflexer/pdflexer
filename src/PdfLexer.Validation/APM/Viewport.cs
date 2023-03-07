@@ -116,7 +116,7 @@ internal partial class APM_Viewport_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Viewport")) 
+        if (!(val == PdfName.Viewport)) 
         {
             ctx.Fail<APM_Viewport_Type>($"Invalid value {val}, allowed are: [Viewport]");
         }

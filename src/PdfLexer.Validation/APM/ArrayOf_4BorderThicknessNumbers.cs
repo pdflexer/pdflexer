@@ -56,7 +56,7 @@ internal partial class APM_ArrayOf_4BorderThicknessNumbers_0 : ISpecification<Pd
                     // no special cases
                     IPdfObject v = val;
                     
-                    if (!(gte(v,v))) 
+                    if (!(gte(v,0))) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderThicknessNumbers_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>=0)]");
                     }

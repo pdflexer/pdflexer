@@ -151,7 +151,7 @@ internal partial class APM_StructTreeRoot_Type__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "StructTreeRoot")) 
+        if (!(val == PdfName.StructTreeRoot)) 
         {
             ctx.Fail<APM_StructTreeRoot_Type>($"Invalid value {val}, allowed are: [StructTreeRoot]");
         }

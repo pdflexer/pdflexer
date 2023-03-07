@@ -59,7 +59,7 @@ internal partial class APM_ArrayOfOCGState_x : ISpecification<PdfArray>
                         // no special cases
                         
                         
-                        if (!(val == "ON" || val == "OFF" || val == "Toggle")) 
+                        if (!(val == PdfName.ON || val == PdfName.OFF || val == PdfName.Toggle)) 
                         {
                             ctx.Fail<APM_ArrayOfOCGState_x>($"Invalid value {val}, allowed are: [ON,OFF,Toggle]");
                         }

@@ -93,7 +93,7 @@ internal partial class APM_Dest4StructArray_1 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "FitR")) 
+        if (!(val == PdfName.FitR)) 
         {
             ctx.Fail<APM_Dest4StructArray_1>($"Invalid value {val}, allowed are: [FitR]");
         }

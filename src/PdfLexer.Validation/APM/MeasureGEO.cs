@@ -61,6 +61,7 @@ internal partial class APM_MeasureGEO__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_MeasureGEO_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_MeasureGEO_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -110,7 +111,7 @@ internal partial class APM_MeasureGEO_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Measure")) 
+        if (!(val == PdfName.Measure)) 
         {
             ctx.Fail<APM_MeasureGEO_Type>($"Invalid value {val}, allowed are: [Measure]");
         }
@@ -142,7 +143,7 @@ internal partial class APM_MeasureGEO_Subtype__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "GEO")) 
+        if (!(val == PdfName.GEO)) 
         {
             ctx.Fail<APM_MeasureGEO_Subtype>($"Invalid value {val}, allowed are: [GEO]");
         }

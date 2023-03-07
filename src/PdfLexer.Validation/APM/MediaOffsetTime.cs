@@ -124,7 +124,7 @@ internal partial class APM_MediaOffsetTime_Type__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "MediaOffset")) 
+        if (!(val == PdfName.MediaOffset)) 
         {
             ctx.Fail<APM_MediaOffsetTime_Type>($"Invalid value {val}, allowed are: [MediaOffset]");
         }
@@ -156,7 +156,7 @@ internal partial class APM_MediaOffsetTime_S__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "T")) 
+        if (!(val == PdfName.T)) 
         {
             ctx.Fail<APM_MediaOffsetTime_S>($"Invalid value {val}, allowed are: [T]");
         }

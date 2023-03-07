@@ -123,7 +123,7 @@ internal partial class APM_FilterCrypt_Type__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "CryptFilterDecodeParms")) 
+        if (!(val == PdfName.CryptFilterDecodeParms)) 
         {
             ctx.Fail<APM_FilterCrypt_Type>($"Invalid value {val}, allowed are: [CryptFilterDecodeParms]");
         }

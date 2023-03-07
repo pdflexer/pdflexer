@@ -74,6 +74,7 @@ internal partial class APM_3DMeasureRD3__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_3DMeasureRD3_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_3DMeasureRD3_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -123,7 +124,7 @@ internal partial class APM_3DMeasureRD3_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "3DMeasure")) 
+        if (!(val == PdfName.N3DMeasure)) 
         {
             ctx.Fail<APM_3DMeasureRD3_Type>($"Invalid value {val}, allowed are: [3DMeasure]");
         }
@@ -155,7 +156,7 @@ internal partial class APM_3DMeasureRD3_Subtype__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!(val == "RD3")) 
+        if (!(val == PdfName.RD3)) 
         {
             ctx.Fail<APM_3DMeasureRD3_Subtype>($"Invalid value {val}, allowed are: [RD3]");
         }

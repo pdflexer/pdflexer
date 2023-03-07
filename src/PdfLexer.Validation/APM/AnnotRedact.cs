@@ -87,6 +87,7 @@ internal partial class APM_AnnotRedact__Base : ISpecification<PdfDictionary>
     {
         var c = ctx.Clone();
         c.Run<APM_AnnotRedact_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_AnnotRedact_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -136,7 +137,7 @@ internal partial class APM_AnnotRedact_Type__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "Annot")) 
+        if (!(val == PdfName.Annot)) 
         {
             ctx.Fail<APM_AnnotRedact_Type>($"Invalid value {val}, allowed are: [Annot]");
         }
@@ -168,7 +169,7 @@ internal partial class APM_AnnotRedact_Subtype__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "Redact")) 
+        if (!(val == PdfName.Redact)) 
         {
             ctx.Fail<APM_AnnotRedact_Subtype>($"Invalid value {val}, allowed are: [Redact]");
         }
@@ -368,7 +369,7 @@ internal partial class APM_AnnotRedact_AP__Base : ISpecification<PdfDictionary>
     {
         var Rect = obj.Get("Rect");
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotRedact_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (gt(RectWidth(obj),0)||gt(RectHeight(Rect),0)))) && val == null) {
+        if (((ctx.Version < 2.0m || (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotRedact_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;
@@ -666,7 +667,7 @@ internal partial class APM_AnnotRedact_BM__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!((ctx.Version < 1.4m && val == "Compatible") || val == "Normal" || val == "Multiply" || val == "Screen" || val == "Difference" || val == "Darken" || val == "Lighten" || val == "ColorDodge" || val == "ColorBurn" || val == "Exclusion" || val == "HardLight" || val == "Overlay" || val == "SoftLight" || val == "Luminosity" || val == "Hue" || val == "Saturation" || val == "Color")) 
+        if (!((ctx.Version < 1.4m && val == PdfName.Compatible) || val == PdfName.Normal || val == PdfName.Multiply || val == PdfName.Screen || val == PdfName.Difference || val == PdfName.Darken || val == PdfName.Lighten || val == PdfName.ColorDodge || val == PdfName.ColorBurn || val == PdfName.Exclusion || val == PdfName.HardLight || val == PdfName.Overlay || val == PdfName.SoftLight || val == PdfName.Luminosity || val == PdfName.Hue || val == PdfName.Saturation || val == PdfName.Color)) 
         {
             ctx.Fail<APM_AnnotRedact_BM>($"Invalid value {val}, allowed are: [fn:Deprecated(1.4,Compatible),Normal,Multiply,Screen,Difference,Darken,Lighten,ColorDodge,ColorBurn,Exclusion,HardLight,Overlay,SoftLight,Luminosity,Hue,Saturation,Color]");
         }
@@ -851,7 +852,7 @@ internal partial class APM_AnnotRedact_IRT__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfDictionary, APM_AnnotRedact_IRT>(obj, "IRT", IndirectRequirement.Either);
-        if ((obj.ContainsKey("RT")) && val == null) {
+        if ((obj.ContainsKey(PdfName.RT)) && val == null) {
             ctx.Fail<APM_AnnotRedact_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
         } else if (val == null) {
             return;
@@ -994,7 +995,7 @@ internal partial class APM_AnnotRedact_RT__Base : ISpecification<PdfDictionary>
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "R" || val == "Group")) 
+        if (!(val == PdfName.R || val == PdfName.Group)) 
         {
             ctx.Fail<APM_AnnotRedact_RT>($"Invalid value {val}, allowed are: [R,Group]");
         }
@@ -1215,7 +1216,7 @@ internal partial class APM_AnnotRedact_Q__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2)) 
+        if (!(val == 0m || val == 1m || val == 2m)) 
         {
             ctx.Fail<APM_AnnotRedact_Q>($"Invalid value {val}, allowed are: [0,1,2]");
         }
@@ -1249,7 +1250,7 @@ internal partial class APM_AnnotRedact_ExData__Base : ISpecification<PdfDictiona
         if (APM_ExData3DMarkup.MatchesType(ctx, val)) 
         {
             ctx.Run<APM_ExData3DMarkup, PdfDictionary>(stack, val, obj);
-        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
+        } else if ((ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && APM_ExDataMarkupGeo.MatchesType(ctx, val)))) 
         {
             ctx.Run<APM_ExDataMarkupGeo, PdfDictionary>(stack, val, obj);
         } else if ((ctx.Version >= 2.0m && APM_ExDataMarkupGeo.MatchesType(ctx, val))) 

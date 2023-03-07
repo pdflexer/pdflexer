@@ -45,7 +45,7 @@ internal partial class APM_ArrayOfDuration_0 : ISpecification<PdfArray>
                     // no special cases
                     IPdfObject v = val;
                     
-                    if (!(gt(v,v))) 
+                    if (!(gt(v,0))) 
                     {
                         ctx.Fail<APM_ArrayOfDuration_0>($"Invalid value {val}, allowed are: [fn:Eval(@0>0)]");
                     }

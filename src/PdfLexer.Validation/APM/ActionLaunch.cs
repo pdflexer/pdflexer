@@ -169,7 +169,7 @@ internal partial class APM_ActionLaunch_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionLaunch_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -201,7 +201,7 @@ internal partial class APM_ActionLaunch_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Launch")) 
+        if (!(val == PdfName.Launch)) 
         {
             ctx.Fail<APM_ActionLaunch_S>($"Invalid value {val}, allowed are: [Launch]");
         }
@@ -348,7 +348,7 @@ internal partial class APM_ActionLaunch_F__Base : ISpecification<PdfDictionary>
         var (utval, wasIR) = ctx.GetOptional<APM_ActionLaunch_F>(obj, "F", IndirectRequirement.Either);
         
         
-        if ((!obj.ContainsKey("Win")||obj.ContainsKey("Mac")||obj.ContainsKey("Unix")) && utval == null) {
+        if ((!obj.ContainsKey(PdfName.Win)||obj.ContainsKey(PdfName.Mac)||obj.ContainsKey(PdfName.Unix)) && utval == null) {
             ctx.Fail<APM_ActionLaunch_F>("F is required"); return;
         } else if (utval == null) {
             return;

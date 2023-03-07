@@ -44,7 +44,7 @@ internal partial class APM_URTransformParamAnnotsArray_x : ISpecification<PdfArr
             // no special cases
             
             
-            if (!(val == "Create" || val == "Delete" || val == "Modify" || val == "Copy" || val == "Import" || val == "Export" || val == "Online" || val == "SummaryView")) 
+            if (!(val == PdfName.Create || val == PdfName.Delete || val == PdfName.Modify || val == PdfName.Copy || val == PdfName.Import || val == PdfName.Export || val == PdfName.Online || val == PdfName.SummaryView)) 
             {
                 ctx.Fail<APM_URTransformParamAnnotsArray_x>($"Invalid value {val}, allowed are: [Create,Delete,Modify,Copy,Import,Export,Online,SummaryView]");
             }

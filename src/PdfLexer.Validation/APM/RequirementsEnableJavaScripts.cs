@@ -106,7 +106,7 @@ internal partial class APM_RequirementsEnableJavaScripts_Type__Base : ISpecifica
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsEnableJavaScripts_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -138,7 +138,7 @@ internal partial class APM_RequirementsEnableJavaScripts_S__Base : ISpecificatio
         // no special cases
         
         
-        if (!(val == "EnableJavaScripts")) 
+        if (!(val == PdfName.EnableJavaScripts)) 
         {
             ctx.Fail<APM_RequirementsEnableJavaScripts_S>($"Invalid value {val}, allowed are: [EnableJavaScripts]");
         }

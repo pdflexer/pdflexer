@@ -134,7 +134,7 @@ internal partial class APM_CertSeedValue_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "SVCert")) 
+        if (!(val == PdfName.SVCert)) 
         {
             ctx.Fail<APM_CertSeedValue_Type>($"Invalid value {val}, allowed are: [SVCert]");
         }
@@ -278,7 +278,7 @@ internal partial class APM_CertSeedValue_SignaturePolicyHashAlgorithm__Base : IS
         // no special cases
         
         
-        if (!(val == "adbe.pkcs7.detached" || (ctx.Version < 2.0m && val == "adbe.pkcs7.sha1") || val == "adbe.x509.rsa_sha1" || val == "ETSI.CAdES.detached" || val == "ETSI.RFC3161")) 
+        if (!(val == PdfName.adbepkcs7detached || (ctx.Version < 2.0m && val == PdfName.adbepkcs7sha1) || val == PdfName.adbex509rsa_sha1 || val == PdfName.ETSICAdESdetached || val == PdfName.ETSIRFC3161)) 
         {
             ctx.Fail<APM_CertSeedValue_SignaturePolicyHashAlgorithm>($"Invalid value {val}, allowed are: [adbe.pkcs7.detached,fn:Deprecated(2.0,adbe.pkcs7.sha1),adbe.x509.rsa_sha1,ETSI.CAdES.detached,ETSI.RFC3161]");
         }

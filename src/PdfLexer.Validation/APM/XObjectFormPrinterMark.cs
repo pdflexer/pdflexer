@@ -98,6 +98,7 @@ internal partial class APM_XObjectFormPrinterMark__Base : ISpecification<PdfDict
     {
         var c = ctx.Clone();
         c.Run<APM_XObjectFormPrinterMark_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_XObjectFormPrinterMark_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -159,7 +160,7 @@ internal partial class APM_XObjectFormPrinterMark_Type__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "XObject")) 
+        if (!(val == PdfName.XObject)) 
         {
             ctx.Fail<APM_XObjectFormPrinterMark_Type>($"Invalid value {val}, allowed are: [XObject]");
         }
@@ -191,7 +192,7 @@ internal partial class APM_XObjectFormPrinterMark_Subtype__Base : ISpecification
         // no special cases
         
         
-        if (!(val == "Form")) 
+        if (!(val == PdfName.Form)) 
         {
             ctx.Fail<APM_XObjectFormPrinterMark_Subtype>($"Invalid value {val}, allowed are: [Form]");
         }
@@ -223,7 +224,7 @@ internal partial class APM_XObjectFormPrinterMark_FormType__Base : ISpecificatio
         // no special cases
         
         
-        if (!(val == 1)) 
+        if (!(val == 1m)) 
         {
             ctx.Fail<APM_XObjectFormPrinterMark_FormType>($"Invalid value {val}, allowed are: [1]");
         }
@@ -787,7 +788,7 @@ internal partial class APM_XObjectFormPrinterMark_Filter__Base : ISpecification<
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectFormPrinterMark_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -958,7 +959,7 @@ internal partial class APM_XObjectFormPrinterMark_FFilter__Base : ISpecification
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_XObjectFormPrinterMark_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

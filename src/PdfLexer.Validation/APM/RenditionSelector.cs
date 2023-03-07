@@ -127,7 +127,7 @@ internal partial class APM_RenditionSelector_Type__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == "Rendition")) 
+        if (!(val == PdfName.Rendition)) 
         {
             ctx.Fail<APM_RenditionSelector_Type>($"Invalid value {val}, allowed are: [Rendition]");
         }
@@ -159,7 +159,7 @@ internal partial class APM_RenditionSelector_S__Base : ISpecification<PdfDiction
         // no special cases
         
         
-        if (!(val == "SR")) 
+        if (!(val == PdfName.SR)) 
         {
             ctx.Fail<APM_RenditionSelector_S>($"Invalid value {val}, allowed are: [SR]");
         }

@@ -47,7 +47,7 @@ internal partial class APM_ArrayOf_4BorderStyleNames_0 : ISpecification<PdfArray
                     // no special cases
                     
                     
-                    if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
+                    if (!(val == PdfName.None || val == PdfName.Hidden || val == PdfName.Dotted || val == PdfName.Dashed || val == PdfName.Solid || val == PdfName.Double || val == PdfName.Groove || val == PdfName.Ridge || val == PdfName.Inset || val == PdfName.Outset)) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderStyleNames_0>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
                     }
@@ -93,7 +93,7 @@ internal partial class APM_ArrayOf_4BorderStyleNames_1 : ISpecification<PdfArray
                     // no special cases
                     
                     
-                    if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
+                    if (!(val == PdfName.None || val == PdfName.Hidden || val == PdfName.Dotted || val == PdfName.Dashed || val == PdfName.Solid || val == PdfName.Double || val == PdfName.Groove || val == PdfName.Ridge || val == PdfName.Inset || val == PdfName.Outset)) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderStyleNames_1>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
                     }
@@ -139,7 +139,7 @@ internal partial class APM_ArrayOf_4BorderStyleNames_2 : ISpecification<PdfArray
                     // no special cases
                     
                     
-                    if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
+                    if (!(val == PdfName.None || val == PdfName.Hidden || val == PdfName.Dotted || val == PdfName.Dashed || val == PdfName.Solid || val == PdfName.Double || val == PdfName.Groove || val == PdfName.Ridge || val == PdfName.Inset || val == PdfName.Outset)) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderStyleNames_2>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
                     }
@@ -185,7 +185,7 @@ internal partial class APM_ArrayOf_4BorderStyleNames_3 : ISpecification<PdfArray
                     // no special cases
                     
                     
-                    if (!(val == "None" || val == "Hidden" || val == "Dotted" || val == "Dashed" || val == "Solid" || val == "Double" || val == "Groove" || val == "Ridge" || val == "Inset" || val == "Outset")) 
+                    if (!(val == PdfName.None || val == PdfName.Hidden || val == PdfName.Dotted || val == PdfName.Dashed || val == PdfName.Solid || val == PdfName.Double || val == PdfName.Groove || val == PdfName.Ridge || val == PdfName.Inset || val == PdfName.Outset)) 
                     {
                         ctx.Fail<APM_ArrayOf_4BorderStyleNames_3>($"Invalid value {val}, allowed are: [None,Hidden,Dotted,Dashed,Solid,Double,Groove,Ridge,Inset,Outset]");
                     }

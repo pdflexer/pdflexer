@@ -169,7 +169,7 @@ internal partial class APM_Transition_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Trans")) 
+        if (!(val == PdfName.Trans)) 
         {
             ctx.Fail<APM_Transition_Type>($"Invalid value {val}, allowed are: [Trans]");
         }
@@ -201,7 +201,7 @@ internal partial class APM_Transition_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Split" || val == "Blinds" || val == "Box" || val == "Wipe" || val == "Dissolve" || val == "Glitter" || val == "R" || val == "Fly" || val == "Push" || val == "Cover" || val == "Uncover" || val == "Fade")) 
+        if (!(val == PdfName.Split || val == PdfName.Blinds || val == PdfName.Box || val == PdfName.Wipe || val == PdfName.Dissolve || val == PdfName.Glitter || val == PdfName.R || val == PdfName.Fly || val == PdfName.Push || val == PdfName.Cover || val == PdfName.Uncover || val == PdfName.Fade)) 
         {
             ctx.Fail<APM_Transition_S>($"Invalid value {val}, allowed are: [Split,Blinds,Box,Wipe,Dissolve,Glitter,R,Fly,Push,Cover,Uncover,Fade]");
         }
@@ -265,7 +265,7 @@ internal partial class APM_Transition_Dm__Base : ISpecification<PdfDictionary>
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "H" || val == "V")) 
+        if (!(val == PdfName.H || val == PdfName.V)) 
         {
             ctx.Fail<APM_Transition_Dm>($"Invalid value {val}, allowed are: [H,V]");
         }
@@ -297,7 +297,7 @@ internal partial class APM_Transition_M__Base : ISpecification<PdfDictionary>
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "I" || val == "O")) 
+        if (!(val == PdfName.I || val == PdfName.O)) 
         {
             ctx.Fail<APM_Transition_M>($"Invalid value {val}, allowed are: [I,O]");
         }
@@ -334,13 +334,13 @@ internal partial class APM_Transition_Di__Base : ISpecification<PdfDictionary>
                     // no indirect obj reqs
                     var Di = obj.Get("Di");
                     var S = obj.Get("S");
-                    if (!((((eq(Di,90)||eq(Di,180))&&eq(S,"Wipe"))||(eq(Di,315)&&eq(S,"Glitter"))))) 
+                    if (!((((eq(Di,90)||eq(Di,180))&&eq(S,PdfName.Wipe))||(eq(Di,315)&&eq(S,PdfName.Glitter))))) 
                     {
                         ctx.Fail<APM_Transition_Di>($"Value failed special case check: fn:Eval((((@Di==90) || (@Di==180)) && (@S==Wipe)) || ((@Di==315) && (@S==Glitter)))");
                     }
                     
                     
-                    if (!(val == 0 || val == 90 || val == 180 || val == 270 || val == 315)) 
+                    if (!(val == 0m || val == 90m || val == 180m || val == 270m || val == 315m)) 
                     {
                         ctx.Fail<APM_Transition_Di>($"Invalid value {val}, allowed are: [0,90,180,270,315]");
                     }
@@ -354,13 +354,13 @@ internal partial class APM_Transition_Di__Base : ISpecification<PdfDictionary>
                     var Di = obj.Get("Di");
                     var S = obj.Get("S");
                     var SS = obj.Get("SS");
-                    if (!(eq(Di,"None")&&eq(S,"Fly")&&(ctx.Version < 1.5m || !eq(SS,1.0m)))) 
+                    if (!(eq(Di,PdfName.None)&&eq(S,PdfName.Fly)&&(ctx.Version < 1.5m || !eq(SS,1.0m)))) 
                     {
                         ctx.Fail<APM_Transition_Di>($"Value failed special case check: fn:Eval(((@Di==None) && (@S==Fly) && fn:SinceVersion(1.5,(@SS!=1.0))))");
                     }
                     
                     
-                    if (!(val == "None")) 
+                    if (!(val == PdfName.None)) 
                     {
                         ctx.Fail<APM_Transition_Di>($"Invalid value {val}, allowed are: [None]");
                     }

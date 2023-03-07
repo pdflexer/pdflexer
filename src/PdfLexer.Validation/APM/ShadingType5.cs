@@ -152,7 +152,7 @@ internal partial class APM_ShadingType5_BitsPerCoordinate__Base : ISpecification
         // no special cases
         
         
-        if (!(val == 1 || val == 2 || val == 4 || val == 8 || val == 12 || val == 16 || val == 24 || val == 32)) 
+        if (!(val == 1m || val == 2m || val == 4m || val == 8m || val == 12m || val == 16m || val == 24m || val == 32m)) 
         {
             ctx.Fail<APM_ShadingType5_BitsPerCoordinate>($"Invalid value {val}, allowed are: [1,2,4,8,12,16,24,32]");
         }
@@ -184,7 +184,7 @@ internal partial class APM_ShadingType5_BitsPerComponent__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == 1 || val == 2 || val == 4 || val == 8 || val == 12 || val == 16)) 
+        if (!(val == 1m || val == 2m || val == 4m || val == 8m || val == 12m || val == 16m)) 
         {
             ctx.Fail<APM_ShadingType5_BitsPerComponent>($"Invalid value {val}, allowed are: [1,2,4,8,12,16]");
         }
@@ -350,7 +350,7 @@ internal partial class APM_ShadingType5_ShadingType__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == 5)) 
+        if (!(val == 5m)) 
         {
             ctx.Fail<APM_ShadingType5_ShadingType>($"Invalid value {val}, allowed are: [5]");
         }
@@ -421,7 +421,7 @@ internal partial class APM_ShadingType5_ColorSpace__Base : ISpecification<PdfDic
                     // no special cases
                     
                     
-                    if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceCMYK || val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_ShadingType5_ColorSpace>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }
@@ -587,7 +587,7 @@ internal partial class APM_ShadingType5_Filter__Base : ISpecification<PdfDiction
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_ShadingType5_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -758,7 +758,7 @@ internal partial class APM_ShadingType5_FFilter__Base : ISpecification<PdfDictio
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_ShadingType5_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

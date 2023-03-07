@@ -8,13 +8,13 @@ namespace pdflexer.ArlingtonGen.Expressions;
 
 internal class EFunc_Not : EFunBase
 {
-    public EFunc_Not(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_Not(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         sb.Append("!");
         using (var es = new EvalScope())
         {
-            foreach (var dep in Inputs)
+            foreach (var dep in Children)
             {
                 dep.Write(sb);
             }

@@ -143,8 +143,8 @@ internal partial class APM_StyleDict_Panose__Base : ISpecification<PdfDictionary
     {
         var val = ctx.GetOptional<PdfString, APM_StyleDict_Panose>(obj, "Panose", IndirectRequirement.Either);
         if (val == null) { return; }
-        
-        if (!(eq(StringLength(obj),12))) 
+        var Panose = obj.Get("Panose");
+        if (!(eq(StringLength(Panose),12))) 
         {
             ctx.Fail<APM_StyleDict_Panose>($"Value failed special case check: fn:Eval(fn:StringLength(Panose)==12)");
         }

@@ -41,7 +41,7 @@ internal partial class APM_SeparationColorSpace_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "Separation")) 
+        if (!(val == PdfName.Separation)) 
         {
             ctx.Fail<APM_SeparationColorSpace_0>($"Invalid value {val}, allowed are: [Separation]");
         }
@@ -116,7 +116,7 @@ internal partial class APM_SeparationColorSpace_2 : ISpecification<PdfArray>
                     // no special cases
                     
                     
-                    if (!(val == "DeviceCMYK" || val == "DeviceRGB" || val == "DeviceGray")) 
+                    if (!(val == PdfName.DeviceCMYK || val == PdfName.DeviceRGB || val == PdfName.DeviceGray)) 
                     {
                         ctx.Fail<APM_SeparationColorSpace_2>($"Invalid value {val}, allowed are: [DeviceCMYK,DeviceRGB,DeviceGray]");
                     }

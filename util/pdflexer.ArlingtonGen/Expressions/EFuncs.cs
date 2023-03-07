@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ internal class EFunction : INode
 {
     public static INode Create(string type, string contents)
     {
-        var parts = SplitWithFns(contents).Select(x => new EGroup(x)).ToList();
+        var parts = SplitWithFns(contents).SelectMany(x => new Exp(x).Children).ToList();
         switch (type)
         {
             case "IsPDFVersion":
@@ -57,33 +58,61 @@ internal class EFunction : INode
     public EFunction(string type, string contents)
     {
         Type = type;
-        Parts = SplitWithFns(contents).Select(x => new EGroup(x)).ToList();
+        Children = SplitWithFns(contents).SelectMany(x => new Exp(x).Children).ToList();
     }
 
-    public List<EGroup> Parts { get; }
-
-    public List<INode> Children { get => Parts.Cast<INode>().ToList(); }
+    public List<INode> Children { get; }
 
     public void Write(StringBuilder sw)
     {
+        using var vs = new VarScope(VariableHandling.MustBeObj);
         sw.Append(Type);
         sw.Append('(');
-        if (Children.SelectMany(x=>x.GetRequiredValues()).Any())
+        if (Children.Count == 1)
         {
-            for (var i = 0; i < Parts.Count; i++)
+            using var es = new VarScope(VariableHandling.MustBeObj);
+            Children[0].Write(sw);
+        }
+        else if (Children.Count == 2)
+        {
             {
-                Parts[i].Write(sw);
-                if (i < Parts.Count - 1)
-                {
-                    sw.Append(", ");
-                }
+                using var es = new VarScope(VariableHandling.MustBeObj);
+                Children[0].Write(sw);
             }
+            sw.Append(", ");
+            using var es2 = new VarScope(VariableHandling.MustBeVal);
+            Children[1].Write(sw);
         } else
         {
             sw.Append("obj");
         }
-
         sw.Append(')');
+    }
+
+    public IEnumerable<string> GetRequiredValues()
+    {
+        if (Children.Count == 1)
+        {
+            using var es = new VarScope(VariableHandling.MustBeObj);
+            foreach (var obj in Children[0].GetRequiredValues())
+            {
+                yield return obj;
+            }
+        } else if (Children.Count == 2)
+        {
+            {
+                using var es = new VarScope(VariableHandling.MustBeObj);
+                foreach (var obj in Children[0].GetRequiredValues())
+                {
+                    yield return obj;
+                }
+            }
+            using var es2 = new VarScope(VariableHandling.MustBeVal);
+            foreach (var obj in Children[1].GetRequiredValues())
+            {
+                yield return obj;
+            }
+        }
     }
 
     private static List<string> SplitWithFns(string text)
@@ -115,11 +144,10 @@ internal class EFunction : INode
 
 internal abstract class EFunBase : INode
 {
-    public List<EGroup> Inputs { get; }
-    public List<INode> Children { get => Inputs.Cast<INode>().ToList(); }
-    public EFunBase(List<EGroup> inputs)
+    public List<INode> Children { get; }
+    public EFunBase(List<INode> inputs)
     {
-        Inputs = inputs;
+        Children = inputs;
     }
 
     public abstract void Write(StringBuilder sb);
@@ -130,18 +158,18 @@ internal abstract class EFunBase : INode
 
 internal class EFunc_IsPDFVersion : EFunBase
 {
-    public EFunc_IsPDFVersion(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_IsPDFVersion(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         sb.Append($"(ctx.Version == ");
         using (var es = new EvalScope())
         {
-            Inputs[0].Write(sb);
+            Children[0].Write(sb);
         }
-        if (Inputs.Count > 1)
+        if (Children.Count > 1)
         {
             sb.Append(" && ");
-            Inputs[1].Write(sb);
+            Children[1].Write(sb);
         }
         sb.Append(")");
     }
@@ -149,7 +177,7 @@ internal class EFunc_IsPDFVersion : EFunBase
 
 internal class EFunc_NumPages : EFunBase
 {
-    public EFunc_NumPages(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_NumPages(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         sb.Append($"ctx.NumberOfPages");
@@ -158,7 +186,7 @@ internal class EFunc_NumPages : EFunBase
 
 internal class EFunc_FileSize : EFunBase
 {
-    public EFunc_FileSize(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_FileSize(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         sb.Append($"ctx.FileSize");
@@ -167,19 +195,19 @@ internal class EFunc_FileSize : EFunBase
 
 internal class EFunc_Deprecated : EFunBase
 {
-    public EFunc_Deprecated(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_Deprecated(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         using (var es = new EvalScope())
         {
             sb.Append($"(ctx.Version < ");
-            Inputs[0].Write(sb);
+            Children[0].Write(sb);
         }
 
-        if (Inputs.Count > 1)
+        if (Children.Count > 1)
         {
             sb.Append(" && ");
-            Inputs[1].Write(sb);
+            Children[1].Write(sb);
         }
         sb.Append($")");
     }
@@ -189,44 +217,44 @@ internal class EFunc_Deprecated : EFunBase
 
 internal class EFunc_RequiredValue : EFunBase
 {
-    public EFunc_RequiredValue(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_RequiredValue(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         sb.Append($"(ctx.Version == ");
         using (var es = new EvalScope())
         {
-            Inputs[0].Write(sb);
+            Children[0].Write(sb);
         }
         sb.Append(" && ");
-        Inputs[1].Write(sb);
+        Children[1].Write(sb);
         sb.Append(")");
     }
 }
 
 internal class EFunc_Extension : EFunBase, INode
 {
-    public EFunc_Extension(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_Extension(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
         sb.Append($"(ctx.Extensions.Contains(");
         using (var es = new EvalScope())
         {
-            Inputs[0].Write(sb);
+            Children[0].Write(sb);
         }
         sb.Append(")");
-        if (Inputs.Count > 1)
+        if (Children.Count > 1)
         {
             sb.Append(" && ");
-            Inputs[1].Write(sb);
+            Children[1].Write(sb);
         }
         sb.Append(")");
     }
 
     IEnumerable<string> INode.GetRequiredValues()
     {
-        if (Inputs.Count > 1)
+        if (Children.Count > 1)
         {
-            foreach (var item in ((INode)Inputs[1]).GetRequiredValues())
+            foreach (var item in ((INode)Children[1]).GetRequiredValues())
             {
                 yield return item;
             }
@@ -237,36 +265,36 @@ internal class EFunc_Extension : EFunBase, INode
 
 internal class EFunc_SinceVersion : EFunBase, INode
 {
-    public EFunc_SinceVersion(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_SinceVersion(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
-        if (Inputs.Count == 1)
+        if (Children.Count == 1)
         {
             using var es = new EvalScope();
             sb.Append("ctx.Version >= ");
-            Inputs[0].Write(sb);
+            Children[0].Write(sb);
         } else
         {
-            if ((Inputs[1] as INode).IsSingleValue())
+            if ((Children[1] as INode).IsSingleValue())
             {
                 using (var es = new EvalScope())
                 {
                     sb.Append("(ctx.Version >= ");
-                    Inputs[0].Write(sb);
+                    Children[0].Write(sb);
                 }
                 sb.Append(" && ");
-                Inputs[1].Write(sb);
+                Children[1].Write(sb);
                 sb.Append(")");
             } else
             {
                 using (var es = new EvalScope())
                 {
                     sb.Append("(ctx.Version < ");
-                    Inputs[0].Write(sb);
+                    Children[0].Write(sb);
                     sb.Append(" || ");
                 }
 
-                Inputs[1].Write(sb);
+                Children[1].Write(sb);
                 sb.Append(")");
             }
         }
@@ -274,9 +302,9 @@ internal class EFunc_SinceVersion : EFunBase, INode
 
     IEnumerable<string> INode.GetRequiredValues()
     {
-        if (Inputs.Count > 1)
+        if (Children.Count > 1)
         {
-            foreach (var item in ((INode)Inputs[1]).GetRequiredValues())
+            foreach (var item in ((INode)Children[1]).GetRequiredValues())
             {
                 yield return item;
             }
@@ -286,26 +314,26 @@ internal class EFunc_SinceVersion : EFunBase, INode
 
 internal class EFunc_BeforeVersion : EFunBase, INode
 {
-    public EFunc_BeforeVersion(List<EGroup> inputs) : base(inputs) { }
+    public EFunc_BeforeVersion(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
     {
-        if (Inputs.Count == 1)
+        if (Children.Count == 1)
         {
             using var es = new EvalScope();
             sb.Append("ctx.Version < ");
-            Inputs[0].Write(sb);
+            Children[0].Write(sb);
         }
         else
         {
-            if ((Inputs[1] as INode).IsSingleValue())
+            if ((Children[1] as INode).IsSingleValue())
             {
                 using (var es = new EvalScope())
                 {
                     sb.Append("(ctx.Version > ");
-                    Inputs[0].Write(sb);
+                    Children[0].Write(sb);
                 }
                 sb.Append(" && ");
-                Inputs[1].Write(sb);
+                Children[1].Write(sb);
                 sb.Append(")");
             }
             else
@@ -313,11 +341,11 @@ internal class EFunc_BeforeVersion : EFunBase, INode
                 using (var es = new EvalScope())
                 {
                     sb.Append("(ctx.Version >= ");
-                    Inputs[0].Write(sb);
+                    Children[0].Write(sb);
                     sb.Append(" || ");
                 }
 
-                Inputs[1].Write(sb);
+                Children[1].Write(sb);
                 sb.Append(")");
             }
         }
@@ -325,9 +353,9 @@ internal class EFunc_BeforeVersion : EFunBase, INode
 
     IEnumerable<string> INode.GetRequiredValues()
     {
-        if (Inputs.Count > 1)
+        if (Children.Count > 1)
         {
-            foreach (var item in ((INode)Inputs[1]).GetRequiredValues())
+            foreach (var item in ((INode)Children[1]).GetRequiredValues())
             {
                 yield return item;
             }

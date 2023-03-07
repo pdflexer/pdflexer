@@ -104,7 +104,7 @@ internal partial class APM_ProjectedCoordinateSystem_Type__Base : ISpecification
         // no special cases
         
         
-        if (!(val == "PROJCS")) 
+        if (!(val == PdfName.PROJCS)) 
         {
             ctx.Fail<APM_ProjectedCoordinateSystem_Type>($"Invalid value {val}, allowed are: [PROJCS]");
         }
@@ -133,7 +133,7 @@ internal partial class APM_ProjectedCoordinateSystem_EPSG__Base : ISpecification
     {
         
         var val = ctx.GetOptional<PdfIntNumber, APM_ProjectedCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
-        if ((!obj.ContainsKey("WKT")) && val == null) {
+        if ((!obj.ContainsKey(PdfName.WKT)) && val == null) {
             ctx.Fail<APM_ProjectedCoordinateSystem_EPSG>("EPSG is required when 'fn:IsRequired(fn:Not(fn:IsPresent(WKT)))"); return;
         } else if (val == null) {
             return;

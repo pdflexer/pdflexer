@@ -141,7 +141,7 @@ internal partial class APM_OutputIntents_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "OutputIntent")) 
+        if (!(val == PdfName.OutputIntent)) 
         {
             ctx.Fail<APM_OutputIntents_Type>($"Invalid value {val}, allowed are: [OutputIntent]");
         }
@@ -173,7 +173,7 @@ internal partial class APM_OutputIntents_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "GTS_PDFX" || val == "GTS_PDFA1" || val == "ISO_PDFE1")) 
+        if (!(val == PdfName.GTS_PDFX || val == PdfName.GTS_PDFA1 || val == PdfName.ISO_PDFE1)) 
         {
             ctx.Fail<APM_OutputIntents_S>($"Invalid value {val}, allowed are: [GTS_PDFX,GTS_PDFA1,ISO_PDFE1]");
         }

@@ -113,7 +113,7 @@ internal partial class APM_3DReference_Type__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "3DRef")) 
+        if (!(val == PdfName.N3DRef)) 
         {
             ctx.Fail<APM_3DReference_Type>($"Invalid value {val}, allowed are: [3DRef]");
         }

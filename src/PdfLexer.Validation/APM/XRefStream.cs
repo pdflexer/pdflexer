@@ -133,12 +133,13 @@ internal partial class APM_XRefStream_Type__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfName, APM_XRefStream_Type>(obj, "Type", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
         
         
-        if (!(val == "XRef")) 
+        if (!(val == PdfName.XRef)) 
         {
             ctx.Fail<APM_XRefStream_Type>($"Invalid value {val}, allowed are: [XRef]");
         }
@@ -165,6 +166,7 @@ internal partial class APM_XRefStream_Size__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfIntNumber, APM_XRefStream_Size>(obj, "Size", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -197,10 +199,11 @@ internal partial class APM_XRefStream_Index__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfArray, APM_XRefStream_Index>(obj, "Index", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         var Index = obj.Get("Index");
-        if (!((eq(mod(((Index as PdfArray)?.Count),2),0)&&ArraySortAscending(obj)))) 
+        if (!((eq(mod(((Index as PdfArray)?.Count),2),0)&&ArraySortAscending(Index, 2)))) 
         {
             ctx.Fail<APM_XRefStream_Index>($"Value failed special case check: fn:Eval(((fn:ArrayLength(Index) mod 2)==0) && fn:ArraySortAscending(Index,2))");
         }
@@ -228,6 +231,7 @@ internal partial class APM_XRefStream_Prev__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfIntNumber, APM_XRefStream_Prev>(obj, "Prev", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -260,6 +264,7 @@ internal partial class APM_XRefStream_W__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetRequired<PdfArray, APM_XRefStream_W>(obj, "W", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         // no special cases
@@ -326,14 +331,14 @@ internal partial class APM_XRefStream_Filter__Base : ISpecification<PdfDictionar
             case PdfObjectType.ArrayObj:
                 {
                     var val =  (PdfArray)utval;
-                    if (false && !wasIR) {
-                        ctx.Fail<APM_XRefStream_Filter>("Filter is required to be indirect when a array");
+                    if (wasIR) {
+                        ctx.Fail<APM_XRefStream_Filter>("Filter is required to be direct when a array");
                         return;
                     }
                     var DecodeParms = obj.Get("DecodeParms");
                     var Filter = obj.Get("Filter");
                     var Filter2 = obj.Get("Filter");
-                    if (!((eq(((DecodeParms as PdfArray)?.Count),((Filter2 as PdfArray)?.Count))&&!Contains(Filter2, "Crypt")))) 
+                    if (!((eq(((DecodeParms as PdfArray)?.Count),((Filter as PdfArray)?.Count))&&!Contains(val, PdfName.Crypt)))) 
                     {
                         ctx.Fail<APM_XRefStream_Filter>($"Value failed special case check: fn:Eval((fn:ArrayLength(DecodeParms)==fn:ArrayLength(Filter)) && (fn:Not(fn:Contains(@Filter,Crypt))))");
                     }
@@ -344,14 +349,14 @@ internal partial class APM_XRefStream_Filter__Base : ISpecification<PdfDictionar
             case PdfObjectType.NameObj:
                 {
                     var val =  (PdfName)utval;
-                    if (false && !wasIR) {
-                        ctx.Fail<APM_XRefStream_Filter>("Filter is required to be indirect when a name");
+                    if (wasIR) {
+                        ctx.Fail<APM_XRefStream_Filter>("Filter is required to be direct when a name");
                         return;
                     }
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode")) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode)) 
                     {
                         ctx.Fail<APM_XRefStream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode]");
                     }
@@ -391,8 +396,8 @@ internal partial class APM_XRefStream_DecodeParms__Base : ISpecification<PdfDict
             case PdfObjectType.ArrayObj:
                 {
                     var val =  (PdfArray)utval;
-                    if (false && !wasIR) {
-                        ctx.Fail<APM_XRefStream_DecodeParms>("DecodeParms is required to be indirect when a array");
+                    if (wasIR) {
+                        ctx.Fail<APM_XRefStream_DecodeParms>("DecodeParms is required to be direct when a array");
                         return;
                     }
                     var DecodeParms = obj.Get("DecodeParms");
@@ -408,8 +413,8 @@ internal partial class APM_XRefStream_DecodeParms__Base : ISpecification<PdfDict
             case PdfObjectType.DictionaryObj:
                 {
                     var val =  (PdfDictionary)utval;
-                    if (false && !wasIR) {
-                        ctx.Fail<APM_XRefStream_DecodeParms>("DecodeParms is required to be indirect when a dictionary");
+                    if (wasIR) {
+                        ctx.Fail<APM_XRefStream_DecodeParms>("DecodeParms is required to be direct when a dictionary");
                         return;
                     }
                     // no special cases
@@ -529,7 +534,7 @@ internal partial class APM_XRefStream_FFilter__Base : ISpecification<PdfDictiona
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode")) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode)) 
                     {
                         ctx.Fail<APM_XRefStream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode]");
                     }
@@ -687,6 +692,7 @@ internal partial class APM_XRefStream_Info__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_XRefStream_Info>(obj, "Info", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
@@ -714,9 +720,10 @@ internal partial class APM_XRefStream_ID__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         
         var val = ctx.GetOptional<PdfArray, APM_XRefStream_ID>(obj, "ID", IndirectRequirement.Either);
-        if (((ctx.Version >= 2.0m||obj.ContainsKey("Encrypt"))) && val == null) {
+        if (((ctx.Version >= 2.0m||obj.ContainsKey(PdfName.Encrypt))) && val == null) {
             ctx.Fail<APM_XRefStream_ID>("ID is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:IsPresent(Encrypt))"); return;
         } else if (val == null) {
             return;
@@ -787,6 +794,7 @@ internal partial class APM_XRefStream_AuthCode__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
+        // TODO complex IR
         var val = ctx.GetOptional<PdfDictionary, APM_XRefStream_AuthCode>(obj, "AuthCode", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
         var EncryptV = obj.Get("Encrypt")?.Get("V");

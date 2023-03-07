@@ -107,7 +107,7 @@ internal partial class APM_ActionRichMediaExecute_Type__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionRichMediaExecute_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -139,7 +139,7 @@ internal partial class APM_ActionRichMediaExecute_S__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "RichMediaExecute")) 
+        if (!(val == PdfName.RichMediaExecute)) 
         {
             ctx.Fail<APM_ActionRichMediaExecute_S>($"Invalid value {val}, allowed are: [RichMediaExecute]");
         }

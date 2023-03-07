@@ -76,7 +76,7 @@ internal partial class APM_RequirementsSeparationSimulation_Type__Base : ISpecif
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsSeparationSimulation_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsSeparationSimulation_S__Base : ISpecifica
         // no special cases
         
         
-        if (!(val == "SeparationSimulation")) 
+        if (!(val == PdfName.SeparationSimulation)) 
         {
             ctx.Fail<APM_RequirementsSeparationSimulation_S>($"Invalid value {val}, allowed are: [SeparationSimulation]");
         }

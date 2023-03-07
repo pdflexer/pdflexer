@@ -56,6 +56,7 @@ internal partial class APM_RichMediaConfiguration__Base : ISpecification<PdfDict
     {
         var c = ctx.Clone();
         c.Run<APM_RichMediaConfiguration_Type, PdfDictionary>(new CallStack(), obj, null);
+        c.Run<APM_RichMediaConfiguration_Subtype, PdfDictionary>(new CallStack(), obj, null);
         if (c.Errors.Any())
         {
             return false;
@@ -105,7 +106,7 @@ internal partial class APM_RichMediaConfiguration_Type__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == "RichMediaConfiguration")) 
+        if (!(val == PdfName.RichMediaConfiguration)) 
         {
             ctx.Fail<APM_RichMediaConfiguration_Type>($"Invalid value {val}, allowed are: [RichMediaConfiguration]");
         }
@@ -137,7 +138,7 @@ internal partial class APM_RichMediaConfiguration_Subtype__Base : ISpecification
         // no special cases
         
         
-        if (!(val == "3D" || val == "Sound" || val == "Video")) 
+        if (!(val == PdfName.N3D || val == PdfName.Sound || val == PdfName.Video)) 
         {
             ctx.Fail<APM_RichMediaConfiguration_Subtype>($"Invalid value {val}, allowed are: [3D,Sound,Video]");
         }

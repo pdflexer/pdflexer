@@ -75,7 +75,7 @@ internal partial class APM_Namespace_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Namespace")) 
+        if (!(val == PdfName.Namespace)) 
         {
             ctx.Fail<APM_Namespace_Type>($"Invalid value {val}, allowed are: [Namespace]");
         }

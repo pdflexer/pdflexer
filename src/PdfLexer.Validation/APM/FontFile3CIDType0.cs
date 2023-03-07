@@ -91,7 +91,14 @@ internal partial class APM_FontFile3CIDType0__Base : ISpecification<PdfDictionar
 
     public static bool MatchesType(PdfValidator ctx, PdfDictionary obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        
+        c.Run<APM_FontFile3CIDType0_Subtype, PdfDictionary>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
@@ -249,7 +256,7 @@ internal partial class APM_FontFile3CIDType0_Subtype__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == "CIDFontType0C")) 
+        if (!(val == PdfName.CIDFontType0C)) 
         {
             ctx.Fail<APM_FontFile3CIDType0_Subtype>($"Invalid value {val}, allowed are: [CIDFontType0C]");
         }
@@ -328,7 +335,7 @@ internal partial class APM_FontFile3CIDType0_Filter__Base : ISpecification<PdfDi
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_FontFile3CIDType0_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -499,7 +506,7 @@ internal partial class APM_FontFile3CIDType0_FFilter__Base : ISpecification<PdfD
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_FontFile3CIDType0_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

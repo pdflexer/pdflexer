@@ -76,7 +76,7 @@ internal partial class APM_RequirementsAcroFormInteract_Type__Base : ISpecificat
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsAcroFormInteract_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsAcroFormInteract_S__Base : ISpecification
         // no special cases
         
         
-        if (!(val == "AcroFormInteract")) 
+        if (!(val == PdfName.AcroFormInteract)) 
         {
             ctx.Fail<APM_RequirementsAcroFormInteract_S>($"Invalid value {val}, allowed are: [AcroFormInteract]");
         }

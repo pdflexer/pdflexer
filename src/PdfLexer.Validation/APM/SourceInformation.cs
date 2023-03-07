@@ -240,13 +240,13 @@ internal partial class APM_SourceInformation_S__Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfIntNumber, APM_SourceInformation_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         var parentS = parent?.Get("S");
-        if (!(eq(parentS,"SPS"))) 
+        if (!(eq(parentS,PdfName.SPS))) 
         {
             ctx.Fail<APM_SourceInformation_S>($"Value failed special case check: fn:Eval(parent::@S==SPS)");
         }
         
         
-        if (!(val == 0 || val == 1 || val == 2)) 
+        if (!(val == 0m || val == 1m || val == 2m)) 
         {
             ctx.Fail<APM_SourceInformation_S>($"Invalid value {val}, allowed are: [0,1,2]");
         }
@@ -276,7 +276,7 @@ internal partial class APM_SourceInformation_C__Base : ISpecification<PdfDiction
         var val = ctx.GetOptional<PdfDictionary, APM_SourceInformation_C>(obj, "C", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         var parentS = parent?.Get("S");
-        if (!(eq(parentS,"SPS"))) 
+        if (!(eq(parentS,PdfName.SPS))) 
         {
             ctx.Fail<APM_SourceInformation_C>($"Value failed special case check: fn:Eval(parent::@S==SPS)");
         }

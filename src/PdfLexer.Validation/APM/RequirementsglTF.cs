@@ -76,7 +76,7 @@ internal partial class APM_RequirementsglTF_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsglTF_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsglTF_S__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "glTF")) 
+        if (!(val == PdfName.glTF)) 
         {
             ctx.Fail<APM_RequirementsglTF_S>($"Invalid value {val}, allowed are: [glTF]");
         }
@@ -140,7 +140,7 @@ internal partial class APM_RequirementsglTF_V__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "2.0")) 
+        if (!(val == PdfName.N20)) 
         {
             ctx.Fail<APM_RequirementsglTF_V>($"Invalid value {val}, allowed are: [2.0]");
         }

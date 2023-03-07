@@ -150,7 +150,7 @@ internal partial class APM_ActionSubmitForm_S__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "SubmitForm")) 
+        if (!(val == PdfName.SubmitForm)) 
         {
             ctx.Fail<APM_ActionSubmitForm_S>($"Invalid value {val}, allowed are: [SubmitForm]");
         }

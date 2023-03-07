@@ -147,7 +147,7 @@ internal partial class APM_ICCProfileStream_N__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == 1 || val == 3 || val == 4)) 
+        if (!(val == 1m || val == 3m || val == 4m)) 
         {
             ctx.Fail<APM_ICCProfileStream_N>($"Invalid value {val}, allowed are: [1,3,4]");
         }
@@ -215,7 +215,7 @@ internal partial class APM_ICCProfileStream_Alternate__Base : ISpecification<Pdf
                     // no special cases
                     
                     
-                    if (!(val == "DeviceGray" || val == "DeviceRGB" || val == "DeviceCMYK")) 
+                    if (!(val == PdfName.DeviceGray || val == PdfName.DeviceRGB || val == PdfName.DeviceCMYK)) 
                     {
                         ctx.Fail<APM_ICCProfileStream_Alternate>($"Invalid value {val}, allowed are: [DeviceGray,DeviceRGB,DeviceCMYK]");
                     }
@@ -359,7 +359,7 @@ internal partial class APM_ICCProfileStream_Filter__Base : ISpecification<PdfDic
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_ICCProfileStream_Filter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }
@@ -590,7 +590,7 @@ internal partial class APM_ICCProfileStream_FFilter__Base : ISpecification<PdfDi
                     // no special cases
                     
                     
-                    if (!(val == "ASCIIHexDecode" || val == "ASCII85Decode" || val == "LZWDecode" || val == "FlateDecode" || val == "RunLengthDecode" || (ctx.Version >= 1.5m && val == "Crypt"))) 
+                    if (!(val == PdfName.ASCIIHexDecode || val == PdfName.ASCII85Decode || val == PdfName.LZWDecode || val == PdfName.FlateDecode || val == PdfName.RunLengthDecode || (ctx.Version >= 1.5m && val == PdfName.Crypt))) 
                     {
                         ctx.Fail<APM_ICCProfileStream_FFilter>($"Invalid value {val}, allowed are: [ASCIIHexDecode,ASCII85Decode,LZWDecode,FlateDecode,RunLengthDecode,fn:SinceVersion(1.5,Crypt)]");
                     }

@@ -118,7 +118,7 @@ internal partial class APM_ActionGoToE_Type__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionGoToE_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -150,7 +150,7 @@ internal partial class APM_ActionGoToE_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "GoToE")) 
+        if (!(val == PdfName.GoToE)) 
         {
             ctx.Fail<APM_ActionGoToE_S>($"Invalid value {val}, allowed are: [GoToE]");
         }
@@ -437,7 +437,7 @@ internal partial class APM_ActionGoToE_T__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfDictionary, APM_ActionGoToE_T>(obj, "T", IndirectRequirement.Either);
-        if ((!obj.ContainsKey("F")) && val == null) {
+        if ((!obj.ContainsKey(PdfName.F)) && val == null) {
             ctx.Fail<APM_ActionGoToE_T>("T is required when 'fn:IsRequired(fn:Not(fn:IsPresent(F)))"); return;
         } else if (val == null) {
             return;

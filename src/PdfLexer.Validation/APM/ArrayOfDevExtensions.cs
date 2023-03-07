@@ -39,6 +39,7 @@ internal partial class APM_ArrayOfDevExtensions_x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
+            // TODO complex IR
             var val = ctx.GetOptional<PdfDictionary, APM_ArrayOfDevExtensions_x>(obj, n, IndirectRequirement.MustBeDirect);
             if (val == null) { return; }
             // no special cases

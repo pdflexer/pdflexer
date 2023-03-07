@@ -44,7 +44,7 @@ internal partial class APM_URTransformParamDocumentArray_x : ISpecification<PdfA
             // no special cases
             
             
-            if (!(val == "FullSave")) 
+            if (!(val == PdfName.FullSave)) 
             {
                 ctx.Fail<APM_URTransformParamDocumentArray_x>($"Invalid value {val}, allowed are: [FullSave]");
             }

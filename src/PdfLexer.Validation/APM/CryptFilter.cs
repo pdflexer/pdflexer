@@ -125,7 +125,7 @@ internal partial class APM_CryptFilter_Type__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "CryptFilter")) 
+        if (!(val == PdfName.CryptFilter)) 
         {
             ctx.Fail<APM_CryptFilter_Type>($"Invalid value {val}, allowed are: [CryptFilter]");
         }
@@ -157,7 +157,7 @@ internal partial class APM_CryptFilter_CFM__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "None" || (ctx.Version < 2.0m && val == "V2") || (ctx.Version < 2.0m && (ctx.Version >= 1.6m && val == "AESV2")) || (ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains("ADBE_Extn3") && val == "AESV3"))) || (ctx.Version >= 2.0m && val == "AESV3") || (ctx.Version < 2.0m || (ctx.Extensions.Contains("ISO_TS_32003") && val == "AESV4")))) 
+        if (!(val == PdfName.None || (ctx.Version < 2.0m && val == PdfName.V2) || (ctx.Version < 2.0m && (ctx.Version >= 1.6m && val == PdfName.AESV2)) || (ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == PdfName.AESV3))) || (ctx.Version >= 2.0m && val == PdfName.AESV3) || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == PdfName.AESV4)))) 
         {
             ctx.Fail<APM_CryptFilter_CFM>($"Invalid value {val}, allowed are: [None,fn:Deprecated(2.0,V2),fn:Deprecated(2.0,fn:SinceVersion(1.6,AESV2)),fn:Deprecated(2.0,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,AESV3))),fn:SinceVersion(2.0,AESV3),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,AESV4))]");
         }
@@ -189,7 +189,7 @@ internal partial class APM_CryptFilter_AuthEvent__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "DocOpen" || val == "EFOpen")) 
+        if (!(val == PdfName.DocOpen || val == PdfName.EFOpen)) 
         {
             ctx.Fail<APM_CryptFilter_AuthEvent>($"Invalid value {val}, allowed are: [DocOpen,EFOpen]");
         }

@@ -128,7 +128,7 @@ internal partial class APM_SoftwareIdentifier_Type__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "SoftwareIdentifier")) 
+        if (!(val == PdfName.SoftwareIdentifier)) 
         {
             ctx.Fail<APM_SoftwareIdentifier_Type>($"Invalid value {val}, allowed are: [SoftwareIdentifier]");
         }

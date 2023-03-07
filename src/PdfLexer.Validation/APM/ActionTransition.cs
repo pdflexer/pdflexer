@@ -125,7 +125,7 @@ internal partial class APM_ActionTransition_Type__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionTransition_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -157,7 +157,7 @@ internal partial class APM_ActionTransition_S__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "Trans")) 
+        if (!(val == PdfName.Trans)) 
         {
             ctx.Fail<APM_ActionTransition_S>($"Invalid value {val}, allowed are: [Trans]");
         }

@@ -125,7 +125,7 @@ internal partial class APM_FieldMDPTransformParameters_Type__Base : ISpecificati
         // no special cases
         
         
-        if (!(val == "TransformParams")) 
+        if (!(val == PdfName.TransformParams)) 
         {
             ctx.Fail<APM_FieldMDPTransformParameters_Type>($"Invalid value {val}, allowed are: [TransformParams]");
         }
@@ -157,7 +157,7 @@ internal partial class APM_FieldMDPTransformParameters_Action__Base : ISpecifica
         // no special cases
         
         
-        if (!(val == "All" || val == "Include" || val == "Exclude")) 
+        if (!(val == PdfName.All || val == PdfName.Include || val == PdfName.Exclude)) 
         {
             ctx.Fail<APM_FieldMDPTransformParameters_Action>($"Invalid value {val}, allowed are: [All,Include,Exclude]");
         }
@@ -186,7 +186,7 @@ internal partial class APM_FieldMDPTransformParameters_Fields__Base : ISpecifica
     {
         var Action = obj.Get("Action");
         var val = ctx.GetOptional<PdfArray, APM_FieldMDPTransformParameters_Fields>(obj, "Fields", IndirectRequirement.Either);
-        if (((eq(Action,"Include")||eq(Action,"Exclude"))) && val == null) {
+        if (((eq(Action,PdfName.Include)||eq(Action,PdfName.Exclude))) && val == null) {
             ctx.Fail<APM_FieldMDPTransformParameters_Fields>("Fields is required when 'fn:IsRequired((@Action==Include) || (@Action==Exclude))"); return;
         } else if (val == null) {
             return;
@@ -221,7 +221,7 @@ internal partial class APM_FieldMDPTransformParameters_V__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "1.2")) 
+        if (!(val == PdfName.N12)) 
         {
             ctx.Fail<APM_FieldMDPTransformParameters_V>($"Invalid value {val}, allowed are: [1.2]");
         }

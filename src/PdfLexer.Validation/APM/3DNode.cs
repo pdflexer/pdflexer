@@ -109,7 +109,7 @@ internal partial class APM_3DNode_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "3DNode")) 
+        if (!(val == PdfName.N3DNode)) 
         {
             ctx.Fail<APM_3DNode_Type>($"Invalid value {val}, allowed are: [3DNode]");
         }

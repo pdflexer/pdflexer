@@ -119,7 +119,7 @@ internal partial class APM_DPart_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "DPart")) 
+        if (!(val == PdfName.DPart)) 
         {
             ctx.Fail<APM_DPart_Type>($"Invalid value {val}, allowed are: [DPart]");
         }
@@ -184,7 +184,7 @@ internal partial class APM_DPart_DParts__Base : ISpecification<PdfDictionary>
     {
         
         var val = ctx.GetOptional<PdfArray, APM_DPart_DParts>(obj, "DParts", IndirectRequirement.Either);
-        if ((!obj.ContainsKey("Start")) && val == null) {
+        if ((!obj.ContainsKey(PdfName.Start)) && val == null) {
             ctx.Fail<APM_DPart_DParts>("DParts is required when 'fn:IsRequired(fn:Not(fn:IsPresent(Start)))"); return;
         } else if (val == null) {
             return;

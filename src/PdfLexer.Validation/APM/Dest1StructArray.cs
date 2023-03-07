@@ -90,7 +90,7 @@ internal partial class APM_Dest1StructArray_1 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "FitH" || val == "FitV" || val == "FitBH" || val == "FitBV")) 
+        if (!(val == PdfName.FitH || val == PdfName.FitV || val == PdfName.FitBH || val == PdfName.FitBV)) 
         {
             ctx.Fail<APM_Dest1StructArray_1>($"Invalid value {val}, allowed are: [FitH,FitV,FitBH,FitBV]");
         }

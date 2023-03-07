@@ -124,7 +124,7 @@ internal partial class APM_MediaScreenParameters_Type__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "MediaScreenParams")) 
+        if (!(val == PdfName.MediaScreenParams)) 
         {
             ctx.Fail<APM_MediaScreenParameters_Type>($"Invalid value {val}, allowed are: [MediaScreenParams]");
         }

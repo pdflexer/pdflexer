@@ -144,7 +144,7 @@ internal partial class APM_OptContentLanguage_Preferred__Base : ISpecification<P
         // no special cases
         
         
-        if (!(val == "ON" || val == "OFF")) 
+        if (!(val == PdfName.ON || val == PdfName.OFF)) 
         {
             ctx.Fail<APM_OptContentLanguage_Preferred>($"Invalid value {val}, allowed are: [ON,OFF]");
         }

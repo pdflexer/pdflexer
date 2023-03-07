@@ -40,7 +40,7 @@ internal partial class APM_ArrayOfOPI2Inks_0 : ISpecification<PdfArray>
         // no special cases
         
         
-        if (!(val == "monochrome")) 
+        if (!(val == PdfName.monochrome)) 
         {
             ctx.Fail<APM_ArrayOfOPI2Inks_0>($"Invalid value {val}, allowed are: [monochrome]");
         }

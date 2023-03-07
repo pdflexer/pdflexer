@@ -76,7 +76,7 @@ internal partial class APM_RequirementsAttachmentEditing_Type__Base : ISpecifica
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsAttachmentEditing_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsAttachmentEditing_S__Base : ISpecificatio
         // no special cases
         
         
-        if (!(val == "AttachmentEditing")) 
+        if (!(val == PdfName.AttachmentEditing)) 
         {
             ctx.Fail<APM_RequirementsAttachmentEditing_S>($"Invalid value {val}, allowed are: [AttachmentEditing]");
         }

@@ -179,7 +179,7 @@ internal partial class APM_PageTreeNode_Type__Base : ISpecification<PdfDictionar
         // no special cases
         
         
-        if (!(val == "Pages")) 
+        if (!(val == PdfName.Pages)) 
         {
             ctx.Fail<APM_PageTreeNode_Type>($"Invalid value {val}, allowed are: [Pages]");
         }

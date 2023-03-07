@@ -159,7 +159,7 @@ internal partial class APM_HalftoneType1_Type__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "Halftone")) 
+        if (!(val == PdfName.Halftone)) 
         {
             ctx.Fail<APM_HalftoneType1_Type>($"Invalid value {val}, allowed are: [Halftone]");
         }
@@ -191,7 +191,7 @@ internal partial class APM_HalftoneType1_HalftoneType__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 1)) 
+        if (!(val == 1m)) 
         {
             ctx.Fail<APM_HalftoneType1_HalftoneType>($"Invalid value {val}, allowed are: [1]");
         }
@@ -324,7 +324,7 @@ internal partial class APM_HalftoneType1_SpotFunction__Base : ISpecification<Pdf
                     // no special cases
                     
                     
-                    if (!(val == "SimpleDot" || val == "InvertedSimpleDot" || val == "DoubleDot" || val == "InvertedDoubleDot" || val == "CosineDot" || val == "Double" || val == "InvertedDouble" || val == "Line" || val == "LineX" || val == "LineY" || val == "Round" || val == "Ellipse" || val == "EllipseA" || val == "InvertedEllipseA" || val == "EllipseB" || val == "EllipseC" || val == "InvertedEllipseC" || val == "Square" || val == "Cross" || val == "Rhomboid" || val == "Diamond")) 
+                    if (!(val == PdfName.SimpleDot || val == PdfName.InvertedSimpleDot || val == PdfName.DoubleDot || val == PdfName.InvertedDoubleDot || val == PdfName.CosineDot || val == PdfName.Double || val == PdfName.InvertedDouble || val == PdfName.Line || val == PdfName.LineX || val == PdfName.LineY || val == PdfName.Round || val == PdfName.Ellipse || val == PdfName.EllipseA || val == PdfName.InvertedEllipseA || val == PdfName.EllipseB || val == PdfName.EllipseC || val == PdfName.InvertedEllipseC || val == PdfName.Square || val == PdfName.Cross || val == PdfName.Rhomboid || val == PdfName.Diamond)) 
                     {
                         ctx.Fail<APM_HalftoneType1_SpotFunction>($"Invalid value {val}, allowed are: [SimpleDot,InvertedSimpleDot,DoubleDot,InvertedDoubleDot,CosineDot,Double,InvertedDouble,Line,LineX,LineY,Round,Ellipse,EllipseA,InvertedEllipseA,EllipseB,EllipseC,InvertedEllipseC,Square,Cross,Rhomboid,Diamond]");
                     }
@@ -442,7 +442,7 @@ internal partial class APM_HalftoneType1_TransferFunction__Base : ISpecification
                     // no special cases
                     
                     
-                    if (!(val == "Identity")) 
+                    if (!(val == PdfName.Identity)) 
                     {
                         ctx.Fail<APM_HalftoneType1_TransferFunction>($"Invalid value {val}, allowed are: [Identity]");
                     }

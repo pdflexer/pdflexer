@@ -71,7 +71,14 @@ internal partial class APM_Mac__Base : ISpecification<PdfDictionary>
 
     public static bool MatchesType(PdfValidator ctx, PdfDictionary obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        
+        c.Run<APM_Mac_Subtype, PdfDictionary>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 
     public static List<string> AllowedFields_13 { get; } = new List<string> 

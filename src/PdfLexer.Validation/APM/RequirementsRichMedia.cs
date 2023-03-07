@@ -76,7 +76,7 @@ internal partial class APM_RequirementsRichMedia_Type__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsRichMedia_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsRichMedia_S__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == "RichMedia")) 
+        if (!(val == PdfName.RichMedia)) 
         {
             ctx.Fail<APM_RequirementsRichMedia_S>($"Invalid value {val}, allowed are: [RichMedia]");
         }

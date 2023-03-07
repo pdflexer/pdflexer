@@ -155,7 +155,7 @@ internal partial class APM_ActionNamed_Type__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "Action")) 
+        if (!(val == PdfName.Action)) 
         {
             ctx.Fail<APM_ActionNamed_Type>($"Invalid value {val}, allowed are: [Action]");
         }
@@ -187,7 +187,7 @@ internal partial class APM_ActionNamed_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Named")) 
+        if (!(val == PdfName.Named)) 
         {
             ctx.Fail<APM_ActionNamed_S>($"Invalid value {val}, allowed are: [Named]");
         }

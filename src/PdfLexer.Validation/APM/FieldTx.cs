@@ -160,7 +160,7 @@ internal partial class APM_FieldTx_FT__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "Tx")) 
+        if (!(val == PdfName.Tx)) 
         {
             ctx.Fail<APM_FieldTx_FT>($"Invalid value {val}, allowed are: [Tx]");
         }
@@ -349,7 +349,7 @@ internal partial class APM_FieldTx_Ff__Base : ISpecification<PdfDictionary>
         var val = ctx.GetOptional<PdfIntNumber, APM_FieldTx_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(val,0b00000000000011111100000000000000)&&(ctx.Version >= 1.4m || BitsClear(val,0b00000000000100000000000000000000))&&BitsClear(val,0b00000000001000000000000000000000)&&(ctx.Version >= 1.4m || BitsClear(val,0b00000000110000000000000000000000))&&(ctx.Version >= 1.5m || BitsClear(val,0b00000011000000000000000000000000))&&BitsClear(val,0b11111100000000000000000000000000))) 
+        if (!(BitsClear(val,0b00000000000011111100000000000000)&&(ctx.Version > 1.4m && BitsClear(val,0b00000000000100000000000000000000))&&BitsClear(val,0b00000000001000000000000000000000)&&(ctx.Version >= 1.4m || BitsClear(val,0b00000000110000000000000000000000))&&(ctx.Version >= 1.5m || BitsClear(val,0b00000011000000000000000000000000))&&BitsClear(val,0b11111100000000000000000000000000))) 
         {
             ctx.Fail<APM_FieldTx_Ff>($"Value failed special case check: fn:Eval(fn:BitsClear(15,20) && fn:BeforeVersion(1.4,fn:BitClear(21)) && fn:BitClear(22) && fn:BeforeVersion(1.4,fn:BitsClear(23,24)) && fn:BeforeVersion(1.5,fn:BitsClear(25,26)) && fn:BitsClear(27,32))");
         }
@@ -532,7 +532,7 @@ internal partial class APM_FieldTx_Q__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == 0 || val == 1 || val == 2)) 
+        if (!(val == 0m || val == 1m || val == 2m)) 
         {
             ctx.Fail<APM_FieldTx_Q>($"Invalid value {val}, allowed are: [0,1,2]");
         }

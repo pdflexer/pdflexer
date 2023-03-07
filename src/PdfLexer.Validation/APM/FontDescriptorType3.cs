@@ -189,7 +189,7 @@ internal partial class APM_FontDescriptorType3_Type__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "FontDescriptor")) 
+        if (!(val == PdfName.FontDescriptor)) 
         {
             ctx.Fail<APM_FontDescriptorType3_Type>($"Invalid value {val}, allowed are: [FontDescriptor]");
         }
@@ -280,7 +280,7 @@ internal partial class APM_FontDescriptorType3_FontStretch__Base : ISpecificatio
         // no special cases
         
         
-        if (!(val == "UltraCondensed" || val == "ExtraCondensed" || val == "Condensed" || val == "SemiCondensed" || val == "Normal" || val == "SemiExpanded" || val == "Expanded" || val == "ExtraExpanded" || val == "UltraExpanded")) 
+        if (!(val == PdfName.UltraCondensed || val == PdfName.ExtraCondensed || val == PdfName.Condensed || val == PdfName.SemiCondensed || val == PdfName.Normal || val == PdfName.SemiExpanded || val == PdfName.Expanded || val == PdfName.ExtraExpanded || val == PdfName.UltraExpanded)) 
         {
             ctx.Fail<APM_FontDescriptorType3_FontStretch>($"Invalid value {val}, allowed are: [UltraCondensed,ExtraCondensed,Condensed,SemiCondensed,Normal,SemiExpanded,Expanded,ExtraExpanded,UltraExpanded]");
         }
@@ -312,7 +312,7 @@ internal partial class APM_FontDescriptorType3_FontWeight__Base : ISpecification
         // no special cases
         
         
-        if (!(val == 100 || val == 200 || val == 300 || val == 400 || val == 500 || val == 600 || val == 700 || val == 800 || val == 900)) 
+        if (!(val == 100m || val == 200m || val == 300m || val == 400m || val == 500m || val == 600m || val == 700m || val == 800m || val == 900m)) 
         {
             ctx.Fail<APM_FontDescriptorType3_FontWeight>($"Invalid value {val}, allowed are: [100,200,300,400,500,600,700,800,900]");
         }

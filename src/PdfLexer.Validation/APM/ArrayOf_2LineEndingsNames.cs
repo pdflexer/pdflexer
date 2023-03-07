@@ -39,7 +39,7 @@ internal partial class APM_ArrayOf_2LineEndingsNames_0 : ISpecification<PdfArray
         // no special cases
         
         
-        if (!(val == "Square" || val == "Circle" || val == "Diamond" || val == "OpenArrow" || val == "ClosedArrow" || val == "None" || val == "Butt" || val == "ROpenArrow" || val == "RClosedArrow" || val == "Slash")) 
+        if (!(val == PdfName.Square || val == PdfName.Circle || val == PdfName.Diamond || val == PdfName.OpenArrow || val == PdfName.ClosedArrow || val == PdfName.None || val == PdfName.Butt || val == PdfName.ROpenArrow || val == PdfName.RClosedArrow || val == PdfName.Slash)) 
         {
             ctx.Fail<APM_ArrayOf_2LineEndingsNames_0>($"Invalid value {val}, allowed are: [Square,Circle,Diamond,OpenArrow,ClosedArrow,None,Butt,ROpenArrow,RClosedArrow,Slash]");
         }
@@ -64,7 +64,7 @@ internal partial class APM_ArrayOf_2LineEndingsNames_1 : ISpecification<PdfArray
         // no special cases
         
         
-        if (!(val == "Square" || val == "Circle" || val == "Diamond" || val == "OpenArrow" || val == "ClosedArrow" || val == "None" || val == "Butt" || val == "ROpenArrow" || val == "RClosedArrow" || val == "Slash")) 
+        if (!(val == PdfName.Square || val == PdfName.Circle || val == PdfName.Diamond || val == PdfName.OpenArrow || val == PdfName.ClosedArrow || val == PdfName.None || val == PdfName.Butt || val == PdfName.ROpenArrow || val == PdfName.RClosedArrow || val == PdfName.Slash)) 
         {
             ctx.Fail<APM_ArrayOf_2LineEndingsNames_1>($"Invalid value {val}, allowed are: [Square,Circle,Diamond,OpenArrow,ClosedArrow,None,Butt,ROpenArrow,RClosedArrow,Slash]");
         }

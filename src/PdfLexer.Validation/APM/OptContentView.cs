@@ -116,7 +116,7 @@ internal partial class APM_OptContentView_ViewState__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == "ON" || val == "OFF")) 
+        if (!(val == PdfName.ON || val == PdfName.OFF)) 
         {
             ctx.Fail<APM_OptContentView_ViewState>($"Invalid value {val}, allowed are: [ON,OFF]");
         }

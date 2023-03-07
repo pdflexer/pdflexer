@@ -115,7 +115,7 @@ internal partial class APM_FixedPrint_Type__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "FixedPrint")) 
+        if (!(val == PdfName.FixedPrint)) 
         {
             ctx.Fail<APM_FixedPrint_Type>($"Invalid value {val}, allowed are: [FixedPrint]");
         }

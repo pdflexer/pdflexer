@@ -64,7 +64,14 @@ internal partial class APM_Projection__Base : ISpecification<PdfDictionary>
 
     public static bool MatchesType(PdfValidator ctx, PdfDictionary obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        
+        c.Run<APM_Projection_Subtype, PdfDictionary>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
@@ -113,7 +120,7 @@ internal partial class APM_Projection_Subtype__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == "O" || val == "P")) 
+        if (!(val == PdfName.O || val == PdfName.P)) 
         {
             ctx.Fail<APM_Projection_Subtype>($"Invalid value {val}, allowed are: [O,P]");
         }
@@ -145,7 +152,7 @@ internal partial class APM_Projection_CS__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "XNF" || val == "ANF")) 
+        if (!(val == PdfName.XNF || val == PdfName.ANF)) 
         {
             ctx.Fail<APM_Projection_CS>($"Invalid value {val}, allowed are: [XNF,ANF]");
         }
@@ -201,7 +208,7 @@ internal partial class APM_Projection_N__Base : ISpecification<PdfDictionary>
     {
         var Subtype = obj.Get("Subtype");
         var val = ctx.GetOptional<PdfNumber, APM_Projection_N>(obj, "N", IndirectRequirement.Either);
-        if ((eq(Subtype,"P")) && val == null) {
+        if ((eq(Subtype,PdfName.P)) && val == null) {
             ctx.Fail<APM_Projection_N>("N is required when 'fn:IsRequired(@Subtype==P)"); return;
         } else if (val == null) {
             return;
@@ -209,7 +216,7 @@ internal partial class APM_Projection_N__Base : ISpecification<PdfDictionary>
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         var N = obj.Get("N");
-        if (!(((eq(Subtype,"P")&&gt(N,0))||(eq(Subtype,"O")&&gte(N,0))))) 
+        if (!(((eq(Subtype,PdfName.P)&&gt(N,0))||(eq(Subtype,PdfName.O)&&gte(N,0))))) 
         {
             ctx.Fail<APM_Projection_N>($"Invalid value {val}, allowed are: [fn:Eval(((@Subtype==P) && (@N>0)) || ((@Subtype==O) && (@N>=0)))]");
         }
@@ -358,7 +365,7 @@ internal partial class APM_Projection_OB__Base : ISpecification<PdfDictionary>
         // special case is an fn:IsMeaningful, not pertinent to validation
         
         
-        if (!(val == "W" || val == "H" || val == "Min" || val == "Max" || val == "Absolute")) 
+        if (!(val == PdfName.W || val == PdfName.H || val == PdfName.Min || val == PdfName.Max || val == PdfName.Absolute)) 
         {
             ctx.Fail<APM_Projection_OB>($"Invalid value {val}, allowed are: [W,H,Min,Max,Absolute]");
         }

@@ -76,7 +76,7 @@ internal partial class APM_RequirementsOCAutoStates_Type__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == "Requirement")) 
+        if (!(val == PdfName.Requirement)) 
         {
             ctx.Fail<APM_RequirementsOCAutoStates_Type>($"Invalid value {val}, allowed are: [Requirement]");
         }
@@ -108,7 +108,7 @@ internal partial class APM_RequirementsOCAutoStates_S__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == "OCAutoStates")) 
+        if (!(val == PdfName.OCAutoStates)) 
         {
             ctx.Fail<APM_RequirementsOCAutoStates_S>($"Invalid value {val}, allowed are: [OCAutoStates]");
         }

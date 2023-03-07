@@ -155,7 +155,7 @@ internal partial class APM_BorderStyle_Type__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == "Border")) 
+        if (!(val == PdfName.Border)) 
         {
             ctx.Fail<APM_BorderStyle_Type>($"Invalid value {val}, allowed are: [Border]");
         }
@@ -219,7 +219,7 @@ internal partial class APM_BorderStyle_S__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == "S" || val == "B" || val == "D" || val == "I" || val == "U")) 
+        if (!(val == PdfName.S || val == PdfName.B || val == PdfName.D || val == PdfName.I || val == PdfName.U)) 
         {
             ctx.Fail<APM_BorderStyle_S>($"Invalid value {val}, allowed are: [S,B,D,I,U]");
         }
