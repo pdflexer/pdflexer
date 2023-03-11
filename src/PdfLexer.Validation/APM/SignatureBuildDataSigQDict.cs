@@ -119,7 +119,7 @@ internal partial class APM_SignatureBuildDataSigQDict_Name__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SignatureBuildDataSigQDict_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SignatureBuildDataSigQDict_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -146,7 +146,7 @@ internal partial class APM_SignatureBuildDataSigQDict_Date__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_SignatureBuildDataSigQDict_Date>(obj, "Date", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_SignatureBuildDataSigQDict_Date>(obj, "Date", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -173,7 +173,7 @@ internal partial class APM_SignatureBuildDataSigQDict_R__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_SignatureBuildDataSigQDict_R>(obj, "R", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_SignatureBuildDataSigQDict_R>(obj, "R", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -200,7 +200,7 @@ internal partial class APM_SignatureBuildDataSigQDict_PreRelease__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_SignatureBuildDataSigQDict_PreRelease>(obj, "PreRelease", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_SignatureBuildDataSigQDict_PreRelease>(obj, "PreRelease", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -227,7 +227,7 @@ internal partial class APM_SignatureBuildDataSigQDict_OS__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_SignatureBuildDataSigQDict_OS>(obj, "OS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_SignatureBuildDataSigQDict_OS>(obj, "OS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -254,7 +254,7 @@ internal partial class APM_SignatureBuildDataSigQDict_NonEFontNoWarn__Base : ISp
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_SignatureBuildDataSigQDict_NonEFontNoWarn>(obj, "NonEFontNoWarn", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_SignatureBuildDataSigQDict_NonEFontNoWarn>(obj, "NonEFontNoWarn", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -281,7 +281,7 @@ internal partial class APM_SignatureBuildDataSigQDict_TrustedMode__Base : ISpeci
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_SignatureBuildDataSigQDict_TrustedMode>(obj, "TrustedMode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_SignatureBuildDataSigQDict_TrustedMode>(obj, "TrustedMode", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -308,7 +308,7 @@ internal partial class APM_SignatureBuildDataSigQDict_V__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m && version < 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_SignatureBuildDataSigQDict_V>(obj, "V", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_SignatureBuildDataSigQDict_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -335,7 +335,7 @@ internal partial class APM_SignatureBuildDataSigQDict_Preview__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_SignatureBuildDataSigQDict_Preview>(obj, "Preview", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_SignatureBuildDataSigQDict_Preview>(obj, "Preview", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

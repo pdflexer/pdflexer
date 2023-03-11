@@ -104,7 +104,7 @@ internal partial class APM_3DNode_Type__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_3DNode_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_3DNode_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -136,7 +136,7 @@ internal partial class APM_3DNode_N__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_3DNode_N>(obj, "N", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_3DNode_N>(obj, "N", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -163,7 +163,7 @@ internal partial class APM_3DNode_O__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DNode_O>(obj, "O", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DNode_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -195,7 +195,7 @@ internal partial class APM_3DNode_V__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_3DNode_V>(obj, "V", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_3DNode_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -222,7 +222,7 @@ internal partial class APM_3DNode_M__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_3DNode_M>(obj, "M", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_3DNode_M>(obj, "M", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -249,7 +249,7 @@ internal partial class APM_3DNode_Instance__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_3DNode_Instance>(obj, "Instance", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_3DNode_Instance>(obj, "Instance", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -324,7 +324,7 @@ internal partial class APM_3DNode_RM__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_3DNode_RM>(obj, "RM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_3DNode_RM>(obj, "RM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

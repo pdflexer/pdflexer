@@ -1,4 +1,6 @@
-﻿namespace PdfLexer.Validation;
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace PdfLexer.Validation;
 
 internal static partial class MathUtil
 {
@@ -31,6 +33,52 @@ internal static partial class MathUtil
             return arr.Get(index);
         }
         return null;
+    }
+
+    public static bool IsKeyIR(this IPdfObject? obj, PdfName nm)
+    {
+        if (obj == null) return false;
+        if (obj is PdfDictionary dict)
+        {
+            if (!dict.TryGetValue(nm, out var val))
+            {
+                return true; // TODO revisit to ensure correct
+            }
+
+            if (val.Type == PdfObjectType.IndirectRefObj)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static bool IsDate(PdfString str)
+    {
+        return true;
+    }
+
+    public static bool IsAscii(PdfString str)
+    {
+        return true;
+    }
+
+    public static bool IsKeyIR(this IPdfObject? obj, int val)
+    {
+        if (obj == null) return false;
+        if (obj is PdfArray arr)
+        {
+            if (val >= arr.Count)
+            {
+                return true; // TODO revisit to ensure correct
+            }
+
+            if (arr[val].Type == PdfObjectType.IndirectRefObj)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static bool ContainsKey(this PdfDictionary dict, IPdfObject? obj)
@@ -210,7 +258,7 @@ internal static partial class MathUtil
 
     public static bool AlwaysUnencrypted(IPdfObject? obj)
     {
-        return false;
+        return true;
     }
 
     public static bool ArraySortAscending(IPdfObject? obj, int i)

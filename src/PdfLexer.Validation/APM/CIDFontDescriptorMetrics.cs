@@ -162,7 +162,7 @@ internal partial class APM_CIDFontDescriptorMetrics_Type__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_CIDFontDescriptorMetrics_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_CIDFontDescriptorMetrics_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -194,7 +194,7 @@ internal partial class APM_CIDFontDescriptorMetrics_FontName__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_CIDFontDescriptorMetrics_FontName>(obj, "FontName", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_CIDFontDescriptorMetrics_FontName>(obj, "FontName", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -221,7 +221,7 @@ internal partial class APM_CIDFontDescriptorMetrics_Flags__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_CIDFontDescriptorMetrics_Flags>(obj, "Flags", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_CIDFontDescriptorMetrics_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(BitsClear(val,0b00000000000000000000000000010000)&&BitsClear(val,0b00000000000000001111111110000000)&&BitsClear(val,0b11111111111110000000000000000000))) 
@@ -252,7 +252,7 @@ internal partial class APM_CIDFontDescriptorMetrics_FontBBox__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_CIDFontDescriptorMetrics_FontBBox>(obj, "FontBBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_CIDFontDescriptorMetrics_FontBBox>(obj, "FontBBox", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -279,7 +279,7 @@ internal partial class APM_CIDFontDescriptorMetrics_ItalicAngle__Base : ISpecifi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_CIDFontDescriptorMetrics_ItalicAngle>(obj, "ItalicAngle", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_CIDFontDescriptorMetrics_ItalicAngle>(obj, "ItalicAngle", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -306,7 +306,7 @@ internal partial class APM_CIDFontDescriptorMetrics_Ascent__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_CIDFontDescriptorMetrics_Ascent>(obj, "Ascent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_CIDFontDescriptorMetrics_Ascent>(obj, "Ascent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -333,7 +333,7 @@ internal partial class APM_CIDFontDescriptorMetrics_Descent__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_CIDFontDescriptorMetrics_Descent>(obj, "Descent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_CIDFontDescriptorMetrics_Descent>(obj, "Descent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -365,7 +365,7 @@ internal partial class APM_CIDFontDescriptorMetrics_Leading__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_Leading>(obj, "Leading", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_Leading>(obj, "Leading", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -392,7 +392,7 @@ internal partial class APM_CIDFontDescriptorMetrics_CapHeight__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_CapHeight>(obj, "CapHeight", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_CapHeight>(obj, "CapHeight", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -419,7 +419,7 @@ internal partial class APM_CIDFontDescriptorMetrics_XHeight__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_XHeight>(obj, "XHeight", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_XHeight>(obj, "XHeight", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -446,7 +446,7 @@ internal partial class APM_CIDFontDescriptorMetrics_StemV__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_CIDFontDescriptorMetrics_StemV>(obj, "StemV", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_CIDFontDescriptorMetrics_StemV>(obj, "StemV", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -473,7 +473,7 @@ internal partial class APM_CIDFontDescriptorMetrics_StemH__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_StemH>(obj, "StemH", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_StemH>(obj, "StemH", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -500,7 +500,7 @@ internal partial class APM_CIDFontDescriptorMetrics_AvgWidth__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_AvgWidth>(obj, "AvgWidth", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_AvgWidth>(obj, "AvgWidth", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -527,7 +527,7 @@ internal partial class APM_CIDFontDescriptorMetrics_MaxWidth__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_MaxWidth>(obj, "MaxWidth", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_MaxWidth>(obj, "MaxWidth", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -554,7 +554,7 @@ internal partial class APM_CIDFontDescriptorMetrics_MissingWidth__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_MissingWidth>(obj, "MissingWidth", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_CIDFontDescriptorMetrics_MissingWidth>(obj, "MissingWidth", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -581,7 +581,7 @@ internal partial class APM_CIDFontDescriptorMetrics_CharSet__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_CIDFontDescriptorMetrics_CharSet>(obj, "CharSet", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_CIDFontDescriptorMetrics_CharSet>(obj, "CharSet", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

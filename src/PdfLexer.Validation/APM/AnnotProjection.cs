@@ -125,7 +125,7 @@ internal partial class APM_AnnotProjection_Type__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotProjection_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotProjection_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -157,7 +157,7 @@ internal partial class APM_AnnotProjection_Subtype__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_AnnotProjection_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_AnnotProjection_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -189,7 +189,7 @@ internal partial class APM_AnnotProjection_Rect__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_AnnotProjection_Rect>(obj, "Rect", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_AnnotProjection_Rect>(obj, "Rect", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -216,7 +216,7 @@ internal partial class APM_AnnotProjection_Contents__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotProjection_Contents>(obj, "Contents", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotProjection_Contents>(obj, "Contents", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -243,7 +243,7 @@ internal partial class APM_AnnotProjection_P__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_P>(obj, "P", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_P>(obj, "P", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -270,7 +270,7 @@ internal partial class APM_AnnotProjection_NM__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotProjection_NM>(obj, "NM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotProjection_NM>(obj, "NM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -301,8 +301,29 @@ internal partial class APM_AnnotProjection_M__Base : ISpecification<PdfDictionar
         if (utval == null) { return; }
         switch (utval.Type) 
         {
+            case PdfObjectType.StringObj:
+                {
             
-            // TODO MC date;string-text
+                    // TODO MC date;string-text
+            
+                    var val =  (PdfString)utval;
+                    if (IsDate(val)) 
+                    {
+                        // date
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    } else if (true) 
+                    {
+                        // string-text
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    }
+                    return;
+                }
             
             default:
                 ctx.Fail<APM_AnnotProjection_M>("M is required to one of 'date;string-text', was " + utval.Type);
@@ -329,7 +350,7 @@ internal partial class APM_AnnotProjection_F__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_AnnotProjection_F>(obj, "F", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_AnnotProjection_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(BitsClear(val,0b11111111111111111111110000000000))) 
@@ -360,7 +381,7 @@ internal partial class APM_AnnotProjection_AP__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_AP>(obj, "AP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_AP>(obj, "AP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -390,7 +411,7 @@ internal partial class APM_AnnotProjection_AS__Base : ISpecification<PdfDictiona
         var APN = obj.Get("AP")?.Get("N");
         var APR = obj.Get("AP")?.Get("R");
         var APD = obj.Get("AP")?.Get("D");
-        var val = ctx.GetOptional<PdfName, APM_AnnotProjection_AS>(obj, "AS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotProjection_AS>(obj, "AS", IndirectRequirement.Either);
         if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
             ctx.Fail<APM_AnnotProjection_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
         } else if (val == null) {
@@ -421,7 +442,7 @@ internal partial class APM_AnnotProjection_Border__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_AnnotProjection_Border>(obj, "Border", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotProjection_Border>(obj, "Border", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -448,7 +469,7 @@ internal partial class APM_AnnotProjection_C__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_AnnotProjection_C>(obj, "C", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotProjection_C>(obj, "C", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -475,7 +496,7 @@ internal partial class APM_AnnotProjection_StructParent__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_AnnotProjection_StructParent>(obj, "StructParent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_AnnotProjection_StructParent>(obj, "StructParent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -502,7 +523,7 @@ internal partial class APM_AnnotProjection_OC__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_OC>(obj, "OC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_OC>(obj, "OC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -586,7 +607,7 @@ internal partial class APM_AnnotProjection_ca__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_AnnotProjection_ca>(obj, "ca", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_AnnotProjection_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -618,7 +639,7 @@ internal partial class APM_AnnotProjection_CA__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_AnnotProjection_CA>(obj, "CA", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_AnnotProjection_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -650,7 +671,7 @@ internal partial class APM_AnnotProjection_BM__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotProjection_BM>(obj, "BM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotProjection_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -682,7 +703,7 @@ internal partial class APM_AnnotProjection_Lang__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotProjection_Lang>(obj, "Lang", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotProjection_Lang>(obj, "Lang", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -709,7 +730,7 @@ internal partial class APM_AnnotProjection_T__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotProjection_T>(obj, "T", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotProjection_T>(obj, "T", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -736,7 +757,7 @@ internal partial class APM_AnnotProjection_Popup__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_Popup>(obj, "Popup", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_Popup>(obj, "Popup", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -811,7 +832,7 @@ internal partial class APM_AnnotProjection_CreationDate__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotProjection_CreationDate>(obj, "CreationDate", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotProjection_CreationDate>(obj, "CreationDate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -839,7 +860,7 @@ internal partial class APM_AnnotProjection_IRT__Base : ISpecification<PdfDiction
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_IRT>(obj, "IRT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_IRT>(obj, "IRT", IndirectRequirement.Either);
         if ((obj.ContainsKey(PdfName.RT)) && val == null) {
             ctx.Fail<APM_AnnotProjection_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
         } else if (val == null) {
@@ -951,7 +972,7 @@ internal partial class APM_AnnotProjection_Subj__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotProjection_Subj>(obj, "Subj", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotProjection_Subj>(obj, "Subj", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -978,7 +999,7 @@ internal partial class APM_AnnotProjection_RT__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotProjection_RT>(obj, "RT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotProjection_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         
@@ -1010,7 +1031,7 @@ internal partial class APM_AnnotProjection_IT__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotProjection_IT>(obj, "IT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotProjection_IT>(obj, "IT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1037,7 +1058,7 @@ internal partial class APM_AnnotProjection_ExData__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_ExData>(obj, "ExData", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotProjection_ExData>(obj, "ExData", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

@@ -153,7 +153,7 @@ internal partial class APM_CalGrayDict_WhitePoint__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_CalGrayDict_WhitePoint>(obj, "WhitePoint", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_CalGrayDict_WhitePoint>(obj, "WhitePoint", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -180,7 +180,7 @@ internal partial class APM_CalGrayDict_BlackPoint__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_CalGrayDict_BlackPoint>(obj, "BlackPoint", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_CalGrayDict_BlackPoint>(obj, "BlackPoint", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -207,7 +207,7 @@ internal partial class APM_CalGrayDict_Gamma__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_CalGrayDict_Gamma>(obj, "Gamma", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_CalGrayDict_Gamma>(obj, "Gamma", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

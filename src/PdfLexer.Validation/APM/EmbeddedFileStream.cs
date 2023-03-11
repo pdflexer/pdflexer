@@ -147,7 +147,7 @@ internal partial class APM_EmbeddedFileStream_Type__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_EmbeddedFileStream_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_EmbeddedFileStream_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -180,7 +180,7 @@ internal partial class APM_EmbeddedFileStream_Subtype__Base : ISpecification<Pdf
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfName, APM_EmbeddedFileStream_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_EmbeddedFileStream_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (((ctx.Version < 2.0m || IsAssociatedFile(obj))) && val == null) {
             ctx.Fail<APM_EmbeddedFileStream_Subtype>("Subtype is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsAssociatedFile()))"); return;
         } else if (val == null) {
@@ -212,7 +212,7 @@ internal partial class APM_EmbeddedFileStream_Params__Base : ISpecification<PdfD
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfDictionary, APM_EmbeddedFileStream_Params>(obj, "Params", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_EmbeddedFileStream_Params>(obj, "Params", IndirectRequirement.Either);
         if (((ctx.Version < 2.0m || IsAssociatedFile(obj))) && val == null) {
             ctx.Fail<APM_EmbeddedFileStream_Params>("Params is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsAssociatedFile()))"); return;
         } else if (val == null) {
@@ -243,7 +243,7 @@ internal partial class APM_EmbeddedFileStream_Length__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_EmbeddedFileStream_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_EmbeddedFileStream_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -582,7 +582,7 @@ internal partial class APM_EmbeddedFileStream_DL__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_EmbeddedFileStream_DL>(obj, "DL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_EmbeddedFileStream_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
         var DL = obj.Get("DL");
         if (!(gte(DL,0))) 

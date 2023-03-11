@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfSignatureReferences_x : ISpecification<PdfArra
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfDictionary, APM_ArrayOfSignatureReferences_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_ArrayOfSignatureReferences_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

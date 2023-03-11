@@ -86,7 +86,7 @@ internal partial class APM_XObjectFormPS_Type__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectFormPS_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectFormPS_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -118,7 +118,7 @@ internal partial class APM_XObjectFormPS_Subtype__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_XObjectFormPS_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_XObjectFormPS_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -150,7 +150,7 @@ internal partial class APM_XObjectFormPS_Level1__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_XObjectFormPS_Level1>(obj, "Level1", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_XObjectFormPS_Level1>(obj, "Level1", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -177,7 +177,7 @@ internal partial class APM_XObjectFormPS_Length__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectFormPS_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectFormPS_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

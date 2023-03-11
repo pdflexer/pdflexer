@@ -35,7 +35,7 @@ internal partial class APM_ArrayOfOPI2Inks_0 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_ArrayOfOPI2Inks_0>(obj, 0, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_ArrayOfOPI2Inks_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -66,7 +66,7 @@ internal partial class APM_ArrayOfOPI2Inks_1x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfString, APM_ArrayOfOPI2Inks_1x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfString, APM_ArrayOfOPI2Inks_1x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -93,7 +93,7 @@ internal partial class APM_ArrayOfOPI2Inks_2x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI2Inks_2x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI2Inks_2x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             IPdfObject v = val;

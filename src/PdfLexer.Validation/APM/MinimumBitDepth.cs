@@ -119,7 +119,7 @@ internal partial class APM_MinimumBitDepth_Type__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_MinimumBitDepth_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_MinimumBitDepth_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -151,7 +151,7 @@ internal partial class APM_MinimumBitDepth_V__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_MinimumBitDepth_V>(obj, "V", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_MinimumBitDepth_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         var V = obj.Get("V");
         if (!(gt(V,0))) 
@@ -182,7 +182,7 @@ internal partial class APM_MinimumBitDepth_M__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_MinimumBitDepth_M>(obj, "M", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_MinimumBitDepth_M>(obj, "M", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

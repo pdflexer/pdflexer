@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfPages_x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfDictionary, APM_ArrayOfPages_x>(obj, n, IndirectRequirement.MustBeIndirect);
+            var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_ArrayOfPages_x>(obj, n, IndirectRequirement.MustBeIndirect);
             if (val == null) { return; }
             var SeparationInfo = val.Get("SeparationInfo");
             if (!((SeparationInfo != null))) 

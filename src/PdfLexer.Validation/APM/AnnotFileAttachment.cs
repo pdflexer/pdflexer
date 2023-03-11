@@ -167,7 +167,7 @@ internal partial class APM_AnnotFileAttachment_Type__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -199,7 +199,7 @@ internal partial class APM_AnnotFileAttachment_Subtype__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_AnnotFileAttachment_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_AnnotFileAttachment_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -231,7 +231,7 @@ internal partial class APM_AnnotFileAttachment_Rect__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_AnnotFileAttachment_Rect>(obj, "Rect", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_AnnotFileAttachment_Rect>(obj, "Rect", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -258,7 +258,7 @@ internal partial class APM_AnnotFileAttachment_Contents__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_Contents>(obj, "Contents", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_Contents>(obj, "Contents", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -285,7 +285,7 @@ internal partial class APM_AnnotFileAttachment_P__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_P>(obj, "P", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_P>(obj, "P", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -312,7 +312,7 @@ internal partial class APM_AnnotFileAttachment_NM__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_NM>(obj, "NM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_NM>(obj, "NM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -343,8 +343,29 @@ internal partial class APM_AnnotFileAttachment_M__Base : ISpecification<PdfDicti
         if (utval == null) { return; }
         switch (utval.Type) 
         {
+            case PdfObjectType.StringObj:
+                {
             
-            // TODO MC date;string-text
+                    // TODO MC date;string-text
+            
+                    var val =  (PdfString)utval;
+                    if (IsDate(val)) 
+                    {
+                        // date
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    } else if (true) 
+                    {
+                        // string-text
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    }
+                    return;
+                }
             
             default:
                 ctx.Fail<APM_AnnotFileAttachment_M>("M is required to one of 'date;string-text', was " + utval.Type);
@@ -371,7 +392,7 @@ internal partial class APM_AnnotFileAttachment_F__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_AnnotFileAttachment_F>(obj, "F", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_AnnotFileAttachment_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!((ctx.Version >= 1.4m || BitsClear(val,0b11111111111111111111111110000000))&&(ctx.Version >= 1.5m || BitsClear(val,0b11111111111111111111111100000000))&&(ctx.Version >= 1.6m || BitsClear(val,0b11111111111111111111111000000000))&&(ctx.Version < 1.7m || BitsClear(val,0b11111111111111111111110000000000)))) 
@@ -403,7 +424,7 @@ internal partial class APM_AnnotFileAttachment_AP__Base : ISpecification<PdfDict
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var Rect = obj.Get("Rect");
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_AP>(obj, "AP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_AP>(obj, "AP", IndirectRequirement.Either);
         if (((ctx.Version < 2.0m || (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotFileAttachment_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
@@ -437,7 +458,7 @@ internal partial class APM_AnnotFileAttachment_AS__Base : ISpecification<PdfDict
         var APN = obj.Get("AP")?.Get("N");
         var APR = obj.Get("AP")?.Get("R");
         var APD = obj.Get("AP")?.Get("D");
-        var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_AS>(obj, "AS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_AS>(obj, "AS", IndirectRequirement.Either);
         if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
             ctx.Fail<APM_AnnotFileAttachment_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
         } else if (val == null) {
@@ -468,7 +489,7 @@ internal partial class APM_AnnotFileAttachment_Border__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_AnnotFileAttachment_Border>(obj, "Border", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotFileAttachment_Border>(obj, "Border", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -495,7 +516,7 @@ internal partial class APM_AnnotFileAttachment_C__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_AnnotFileAttachment_C>(obj, "C", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotFileAttachment_C>(obj, "C", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -522,7 +543,7 @@ internal partial class APM_AnnotFileAttachment_StructParent__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_AnnotFileAttachment_StructParent>(obj, "StructParent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_AnnotFileAttachment_StructParent>(obj, "StructParent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -549,7 +570,7 @@ internal partial class APM_AnnotFileAttachment_OC__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_OC>(obj, "OC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_OC>(obj, "OC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -633,7 +654,7 @@ internal partial class APM_AnnotFileAttachment_ca__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_AnnotFileAttachment_ca>(obj, "ca", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_AnnotFileAttachment_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -665,7 +686,7 @@ internal partial class APM_AnnotFileAttachment_CA__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_AnnotFileAttachment_CA>(obj, "CA", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_AnnotFileAttachment_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -697,7 +718,7 @@ internal partial class APM_AnnotFileAttachment_BM__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_BM>(obj, "BM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -729,7 +750,7 @@ internal partial class APM_AnnotFileAttachment_Lang__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_Lang>(obj, "Lang", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_Lang>(obj, "Lang", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -756,7 +777,7 @@ internal partial class APM_AnnotFileAttachment_T__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_T>(obj, "T", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_T>(obj, "T", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -783,7 +804,7 @@ internal partial class APM_AnnotFileAttachment_Popup__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_Popup>(obj, "Popup", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_Popup>(obj, "Popup", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -858,7 +879,7 @@ internal partial class APM_AnnotFileAttachment_CreationDate__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_CreationDate>(obj, "CreationDate", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_CreationDate>(obj, "CreationDate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -886,7 +907,7 @@ internal partial class APM_AnnotFileAttachment_IRT__Base : ISpecification<PdfDic
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_IRT>(obj, "IRT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_IRT>(obj, "IRT", IndirectRequirement.Either);
         if ((obj.ContainsKey(PdfName.RT)) && val == null) {
             ctx.Fail<APM_AnnotFileAttachment_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
         } else if (val == null) {
@@ -998,7 +1019,7 @@ internal partial class APM_AnnotFileAttachment_Subj__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_Subj>(obj, "Subj", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotFileAttachment_Subj>(obj, "Subj", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1025,7 +1046,7 @@ internal partial class APM_AnnotFileAttachment_RT__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_RT>(obj, "RT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         
@@ -1057,7 +1078,7 @@ internal partial class APM_AnnotFileAttachment_IT__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_IT>(obj, "IT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_IT>(obj, "IT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1132,7 +1153,7 @@ internal partial class APM_AnnotFileAttachment_Name__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotFileAttachment_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restictions
@@ -1159,7 +1180,7 @@ internal partial class APM_AnnotFileAttachment_ExData__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_ExData>(obj, "ExData", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotFileAttachment_ExData>(obj, "ExData", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

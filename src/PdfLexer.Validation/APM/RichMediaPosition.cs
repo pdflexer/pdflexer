@@ -101,7 +101,7 @@ internal partial class APM_RichMediaPosition_Type__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaPosition_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaPosition_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -133,7 +133,7 @@ internal partial class APM_RichMediaPosition_HAlign__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaPosition_HAlign>(obj, "HAlign", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaPosition_HAlign>(obj, "HAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -165,7 +165,7 @@ internal partial class APM_RichMediaPosition_VAlign__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaPosition_VAlign>(obj, "VAlign", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaPosition_VAlign>(obj, "VAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -197,7 +197,7 @@ internal partial class APM_RichMediaPosition_HOffset__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_RichMediaPosition_HOffset>(obj, "HOffset", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_RichMediaPosition_HOffset>(obj, "HOffset", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -224,7 +224,7 @@ internal partial class APM_RichMediaPosition_VOffset__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_RichMediaPosition_VOffset>(obj, "VOffset", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_RichMediaPosition_VOffset>(obj, "VOffset", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

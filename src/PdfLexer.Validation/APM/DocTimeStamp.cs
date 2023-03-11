@@ -155,7 +155,7 @@ internal partial class APM_DocTimeStamp_Type__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_DocTimeStamp_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_DocTimeStamp_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -187,7 +187,7 @@ internal partial class APM_DocTimeStamp_Filter__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_DocTimeStamp_Filter>(obj, "Filter", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_DocTimeStamp_Filter>(obj, "Filter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -214,7 +214,7 @@ internal partial class APM_DocTimeStamp_SubFilter__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_DocTimeStamp_SubFilter>(obj, "SubFilter", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_DocTimeStamp_SubFilter>(obj, "SubFilter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -246,7 +246,7 @@ internal partial class APM_DocTimeStamp_Contents__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_DocTimeStamp_Contents>(obj, "Contents", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_DocTimeStamp_Contents>(obj, "Contents", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -321,7 +321,7 @@ internal partial class APM_DocTimeStamp_ByteRange__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_DocTimeStamp_ByteRange>(obj, "ByteRange", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_DocTimeStamp_ByteRange>(obj, "ByteRange", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -348,7 +348,7 @@ internal partial class APM_DocTimeStamp_Reference__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_DocTimeStamp_Reference>(obj, "Reference", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_DocTimeStamp_Reference>(obj, "Reference", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -375,7 +375,7 @@ internal partial class APM_DocTimeStamp_Changes__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_DocTimeStamp_Changes>(obj, "Changes", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_DocTimeStamp_Changes>(obj, "Changes", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -402,7 +402,7 @@ internal partial class APM_DocTimeStamp_Name__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DocTimeStamp_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DocTimeStamp_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -429,7 +429,7 @@ internal partial class APM_DocTimeStamp_M__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DocTimeStamp_M>(obj, "M", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DocTimeStamp_M>(obj, "M", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -456,7 +456,7 @@ internal partial class APM_DocTimeStamp_Location__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DocTimeStamp_Location>(obj, "Location", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DocTimeStamp_Location>(obj, "Location", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -483,7 +483,7 @@ internal partial class APM_DocTimeStamp_Reason__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DocTimeStamp_Reason>(obj, "Reason", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DocTimeStamp_Reason>(obj, "Reason", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -510,7 +510,7 @@ internal partial class APM_DocTimeStamp_ContactInfo__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DocTimeStamp_ContactInfo>(obj, "ContactInfo", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DocTimeStamp_ContactInfo>(obj, "ContactInfo", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -537,7 +537,7 @@ internal partial class APM_DocTimeStamp_R__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_DocTimeStamp_R>(obj, "R", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_DocTimeStamp_R>(obj, "R", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -564,7 +564,7 @@ internal partial class APM_DocTimeStamp_V__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_DocTimeStamp_V>(obj, "V", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_DocTimeStamp_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -591,7 +591,7 @@ internal partial class APM_DocTimeStamp_Prop_Build__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_DocTimeStamp_Prop_Build>(obj, "Prop_Build", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_DocTimeStamp_Prop_Build>(obj, "Prop_Build", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -618,7 +618,7 @@ internal partial class APM_DocTimeStamp_Prop_AuthTime__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_DocTimeStamp_Prop_AuthTime>(obj, "Prop_AuthTime", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_DocTimeStamp_Prop_AuthTime>(obj, "Prop_AuthTime", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -645,7 +645,7 @@ internal partial class APM_DocTimeStamp_Prop_AuthType__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_DocTimeStamp_Prop_AuthType>(obj, "Prop_AuthType", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_DocTimeStamp_Prop_AuthType>(obj, "Prop_AuthType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -672,7 +672,7 @@ internal partial class APM_DocTimeStamp_ADBE_Build__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DocTimeStamp_ADBE_Build>(obj, "ADBE_Build", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DocTimeStamp_ADBE_Build>(obj, "ADBE_Build", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

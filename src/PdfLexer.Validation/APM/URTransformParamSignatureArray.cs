@@ -39,7 +39,7 @@ internal partial class APM_URTransformParamSignatureArray_x : ISpecification<Pdf
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfName, APM_URTransformParamSignatureArray_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfName, APM_URTransformParamSignatureArray_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             

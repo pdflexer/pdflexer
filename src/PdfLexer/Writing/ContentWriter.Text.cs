@@ -10,7 +10,7 @@ public partial class ContentWriter
         EnsureInTextState();
         var nm = AddFont(font);
         currentFont = font;
-        Tf_Op.WriteLn(nm, (decimal)size, Stream);
+        Tf_Op.WriteLn(nm, (decimal)size, StreamWriter.Stream);
         return this;
     }
 
@@ -68,22 +68,22 @@ public partial class ContentWriter
         var b = new byte[2];
         Span<byte> buf = new byte[text.Length];
         int os = 0;
-        Stream.Stream.WriteByte((byte)'[');
+        StreamWriter.Stream.WriteByte((byte)'[');
         foreach (var c in currentFont.ConvertFromUnicode(text, 0, text.Length, b))
         {
             if (c.PrevKern != 0)
             {
-                StringSerializer.WriteToStream(buf.Slice(0, os), Stream);
-                PdfOperator.Writedecimal((decimal)c.PrevKern, Stream);
+                StringSerializer.WriteToStream(buf.Slice(0, os), StreamWriter.Stream);
+                PdfOperator.Writedecimal((decimal)c.PrevKern, StreamWriter.Stream);
                 os = 0;
             }
             buf[os++] = b[0];
         }
-        StringSerializer.WriteToStream(buf.Slice(0, os), Stream);
-        Stream.Stream.WriteByte((byte)']');
-        Stream.Stream.WriteByte((byte)' ');
-        Stream.Stream.Write(TJ_Op.OpData);
-        Stream.Stream.WriteByte((byte)'\n');
+        StringSerializer.WriteToStream(buf.Slice(0, os), StreamWriter.Stream);
+        StreamWriter.Stream.WriteByte((byte)']');
+        StreamWriter.Stream.WriteByte((byte)' ');
+        StreamWriter.Stream.Write(TJ_Op.OpData);
+        StreamWriter.Stream.WriteByte((byte)'\n');
 
         return this;
     }
@@ -91,21 +91,21 @@ public partial class ContentWriter
     public ContentWriter TextMove(double x, double y)
     {
         EnsureInTextState();
-        Td_Op.WriteLn((decimal)x, (decimal)y, Stream);
+        Td_Op.WriteLn((decimal)x, (decimal)y, StreamWriter.Stream);
         return this;
     }
 
     public ContentWriter EndText()
     {
         State = PageState.Page;
-        ET_Op.WriteLn(Stream);
+        ET_Op.WriteLn(StreamWriter.Stream);
         return this;
     }
 
     public ContentWriter BeginText()
     {
         State = PageState.Text;
-        BT_Op.WriteLn(Stream);
+        BT_Op.WriteLn(StreamWriter.Stream);
         return this;
     }
 

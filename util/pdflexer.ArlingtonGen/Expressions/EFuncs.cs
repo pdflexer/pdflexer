@@ -50,6 +50,8 @@ internal class EFunction : INode
                 return new EFunc_BitSet(parts);
             case "BitsSet":
                 return new EFunc_BitsSet(parts);
+            case "MustBeDirect":
+                return new EFunc_MustBeDirect(parts);
             default:
                 return new EFunction(type, contents);
         }

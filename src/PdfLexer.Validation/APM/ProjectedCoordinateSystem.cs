@@ -99,7 +99,7 @@ internal partial class APM_ProjectedCoordinateSystem_Type__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_ProjectedCoordinateSystem_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_ProjectedCoordinateSystem_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -132,7 +132,7 @@ internal partial class APM_ProjectedCoordinateSystem_EPSG__Base : ISpecification
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfIntNumber, APM_ProjectedCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_ProjectedCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
         if ((!obj.ContainsKey(PdfName.WKT)) && val == null) {
             ctx.Fail<APM_ProjectedCoordinateSystem_EPSG>("EPSG is required when 'fn:IsRequired(fn:Not(fn:IsPresent(WKT)))"); return;
         } else if (val == null) {
@@ -164,8 +164,8 @@ internal partial class APM_ProjectedCoordinateSystem_WKT__Base : ISpecification<
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfString, APM_ProjectedCoordinateSystem_WKT>(obj, "WKT", IndirectRequirement.Either);
-        if ((!obj.ContainsKey(val)) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_ProjectedCoordinateSystem_WKT>(obj, "WKT", IndirectRequirement.Either);
+        if ((!obj.ContainsKey(PdfName.EPSG)) && val == null) {
             ctx.Fail<APM_ProjectedCoordinateSystem_WKT>("WKT is required when 'fn:IsRequired(fn:Not(fn:IsPresent(EPSG)))"); return;
         } else if (val == null) {
             return;

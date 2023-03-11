@@ -145,7 +145,7 @@ internal partial class APM_ActionSubmitForm_S__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_ActionSubmitForm_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_ActionSubmitForm_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -225,7 +225,7 @@ internal partial class APM_ActionSubmitForm_Fields__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_ActionSubmitForm_Fields>(obj, "Fields", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ActionSubmitForm_Fields>(obj, "Fields", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -252,7 +252,7 @@ internal partial class APM_ActionSubmitForm_Flags__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_ActionSubmitForm_Flags>(obj, "Flags", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_ActionSubmitForm_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!((BitsClear(val,0b00000000000000000001000000000000)&&BitsClear(val,0b11111111111111111100000000000000)))) 
@@ -283,7 +283,7 @@ internal partial class APM_ActionSubmitForm_CharSet__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_ActionSubmitForm_CharSet>(obj, "CharSet", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_ActionSubmitForm_CharSet>(obj, "CharSet", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // TODO value checks string

@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfNamesForEnforce_x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfName, APM_ArrayOfNamesForEnforce_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfName, APM_ArrayOfNamesForEnforce_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             var parentPrintScaling = parent?.Get("PrintScaling");
             if (!(!eq(parentPrintScaling,PdfName.AppDefault))) 

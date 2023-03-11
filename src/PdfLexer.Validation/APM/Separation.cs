@@ -133,7 +133,7 @@ internal partial class APM_Separation_Pages__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_Separation_Pages>(obj, "Pages", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_Separation_Pages>(obj, "Pages", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -208,7 +208,7 @@ internal partial class APM_Separation_ColorSpace__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_Separation_ColorSpace>(obj, "ColorSpace", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_Separation_ColorSpace>(obj, "ColorSpace", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

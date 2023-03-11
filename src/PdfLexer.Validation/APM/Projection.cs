@@ -115,7 +115,7 @@ internal partial class APM_Projection_Subtype__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_Projection_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_Projection_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -147,7 +147,7 @@ internal partial class APM_Projection_CS__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_Projection_CS>(obj, "CS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_Projection_CS>(obj, "CS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -179,7 +179,7 @@ internal partial class APM_Projection_F__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_Projection_F>(obj, "F", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_Projection_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
@@ -207,7 +207,7 @@ internal partial class APM_Projection_N__Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var Subtype = obj.Get("Subtype");
-        var val = ctx.GetOptional<PdfNumber, APM_Projection_N>(obj, "N", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_Projection_N>(obj, "N", IndirectRequirement.Either);
         if ((eq(Subtype,PdfName.P)) && val == null) {
             ctx.Fail<APM_Projection_N>("N is required when 'fn:IsRequired(@Subtype==P)"); return;
         } else if (val == null) {
@@ -243,7 +243,7 @@ internal partial class APM_Projection_FOV__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_Projection_FOV>(obj, "FOV", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_Projection_FOV>(obj, "FOV", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         
@@ -328,7 +328,7 @@ internal partial class APM_Projection_OS__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_Projection_OS>(obj, "OS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_Projection_OS>(obj, "OS", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         
@@ -360,7 +360,7 @@ internal partial class APM_Projection_OB__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_Projection_OB>(obj, "OB", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_Projection_OB>(obj, "OB", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         

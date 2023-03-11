@@ -133,7 +133,7 @@ internal partial class APM_AlternateImage_Image__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfStream, APM_AlternateImage_Image>(obj, "Image", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetRequired<PdfStream, APM_AlternateImage_Image>(obj, "Image", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -160,7 +160,7 @@ internal partial class APM_AlternateImage_DefaultForPrinting__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_AlternateImage_DefaultForPrinting>(obj, "DefaultForPrinting", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_AlternateImage_DefaultForPrinting>(obj, "DefaultForPrinting", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -187,7 +187,7 @@ internal partial class APM_AlternateImage_OC__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AlternateImage_OC>(obj, "OC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AlternateImage_OC>(obj, "OC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

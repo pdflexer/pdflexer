@@ -37,7 +37,7 @@ internal partial class APM_ArrayOfOPI13Color_0 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_0>(obj, 0, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -62,7 +62,7 @@ internal partial class APM_ArrayOfOPI13Color_1 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_1>(obj, 1, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -87,7 +87,7 @@ internal partial class APM_ArrayOfOPI13Color_2 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_2>(obj, 2, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -112,7 +112,7 @@ internal partial class APM_ArrayOfOPI13Color_3 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_3>(obj, 3, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfOPI13Color_3>(obj, 3, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -137,7 +137,7 @@ internal partial class APM_ArrayOfOPI13Color_4 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_ArrayOfOPI13Color_4>(obj, 4, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_ArrayOfOPI13Color_4>(obj, 4, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

@@ -121,7 +121,7 @@ internal partial class APM_SignatureReferenceDocMDP_Type__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SignatureReferenceDocMDP_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SignatureReferenceDocMDP_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -153,7 +153,7 @@ internal partial class APM_SignatureReferenceDocMDP_TransformMethod__Base : ISpe
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_SignatureReferenceDocMDP_TransformMethod>(obj, "TransformMethod", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_SignatureReferenceDocMDP_TransformMethod>(obj, "TransformMethod", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -185,7 +185,7 @@ internal partial class APM_SignatureReferenceDocMDP_TransformParams__Base : ISpe
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_SignatureReferenceDocMDP_TransformParams>(obj, "TransformParams", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_SignatureReferenceDocMDP_TransformParams>(obj, "TransformParams", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -305,7 +305,7 @@ internal partial class APM_SignatureReferenceDocMDP_DigestMethod__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SignatureReferenceDocMDP_DigestMethod>(obj, "DigestMethod", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SignatureReferenceDocMDP_DigestMethod>(obj, "DigestMethod", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

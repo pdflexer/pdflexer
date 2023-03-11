@@ -109,7 +109,7 @@ internal partial class APM_3DActivation_A__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_3DActivation_A>(obj, "A", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_3DActivation_A>(obj, "A", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -141,7 +141,7 @@ internal partial class APM_3DActivation_AIS__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_3DActivation_AIS>(obj, "AIS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_3DActivation_AIS>(obj, "AIS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -173,7 +173,7 @@ internal partial class APM_3DActivation_D__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_3DActivation_D>(obj, "D", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_3DActivation_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -205,7 +205,7 @@ internal partial class APM_3DActivation_DIS__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_3DActivation_DIS>(obj, "DIS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_3DActivation_DIS>(obj, "DIS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -237,7 +237,7 @@ internal partial class APM_3DActivation_TB__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_3DActivation_TB>(obj, "TB", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_3DActivation_TB>(obj, "TB", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -264,7 +264,7 @@ internal partial class APM_3DActivation_NP__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_3DActivation_NP>(obj, "NP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_3DActivation_NP>(obj, "NP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -291,7 +291,7 @@ internal partial class APM_3DActivation_Style__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_3DActivation_Style>(obj, "Style", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_3DActivation_Style>(obj, "Style", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -323,7 +323,7 @@ internal partial class APM_3DActivation_Window__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_3DActivation_Window>(obj, "Window", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_3DActivation_Window>(obj, "Window", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -350,7 +350,7 @@ internal partial class APM_3DActivation_Transparent__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_3DActivation_Transparent>(obj, "Transparent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_3DActivation_Transparent>(obj, "Transparent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

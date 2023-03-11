@@ -167,7 +167,7 @@ internal partial class APM_DeviceNProcess_Components__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_DeviceNProcess_Components>(obj, "Components", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_DeviceNProcess_Components>(obj, "Components", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

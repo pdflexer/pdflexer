@@ -186,7 +186,7 @@ internal partial class APM_FontDescriptorTrueType_Type__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_FontDescriptorTrueType_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_FontDescriptorTrueType_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -218,7 +218,7 @@ internal partial class APM_FontDescriptorTrueType_FontName__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_FontDescriptorTrueType_FontName>(obj, "FontName", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_FontDescriptorTrueType_FontName>(obj, "FontName", IndirectRequirement.Either);
         if (val == null) { return; }
         var FontName = obj.Get("FontName");
         var parentBaseFont = parent?.Get("BaseFont");
@@ -250,7 +250,7 @@ internal partial class APM_FontDescriptorTrueType_FontFamily__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_FontDescriptorTrueType_FontFamily>(obj, "FontFamily", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_FontDescriptorTrueType_FontFamily>(obj, "FontFamily", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -277,7 +277,7 @@ internal partial class APM_FontDescriptorTrueType_FontStretch__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_FontDescriptorTrueType_FontStretch>(obj, "FontStretch", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_FontDescriptorTrueType_FontStretch>(obj, "FontStretch", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -309,7 +309,7 @@ internal partial class APM_FontDescriptorTrueType_FontWeight__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FontDescriptorTrueType_FontWeight>(obj, "FontWeight", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FontDescriptorTrueType_FontWeight>(obj, "FontWeight", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -341,7 +341,7 @@ internal partial class APM_FontDescriptorTrueType_Flags__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_FontDescriptorTrueType_Flags>(obj, "Flags", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_FontDescriptorTrueType_Flags>(obj, "Flags", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(BitsClear(val,0b00000000000000000000000000010000)&&BitsClear(val,0b00000000000000001111111110000000)&&BitsClear(val,0b11111111111110000000000000000000))) 
@@ -372,7 +372,7 @@ internal partial class APM_FontDescriptorTrueType_FontBBox__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_FontDescriptorTrueType_FontBBox>(obj, "FontBBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_FontDescriptorTrueType_FontBBox>(obj, "FontBBox", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -399,7 +399,7 @@ internal partial class APM_FontDescriptorTrueType_ItalicAngle__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_FontDescriptorTrueType_ItalicAngle>(obj, "ItalicAngle", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_FontDescriptorTrueType_ItalicAngle>(obj, "ItalicAngle", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -426,7 +426,7 @@ internal partial class APM_FontDescriptorTrueType_Ascent__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_FontDescriptorTrueType_Ascent>(obj, "Ascent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_FontDescriptorTrueType_Ascent>(obj, "Ascent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -453,7 +453,7 @@ internal partial class APM_FontDescriptorTrueType_Descent__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_FontDescriptorTrueType_Descent>(obj, "Descent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_FontDescriptorTrueType_Descent>(obj, "Descent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -485,7 +485,7 @@ internal partial class APM_FontDescriptorTrueType_Leading__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_Leading>(obj, "Leading", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_Leading>(obj, "Leading", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -513,7 +513,7 @@ internal partial class APM_FontDescriptorTrueType_CapHeight__Base : ISpecificati
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_CapHeight>(obj, "CapHeight", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_CapHeight>(obj, "CapHeight", IndirectRequirement.Either);
         if ((FontHasLatinChars(obj)) && val == null) {
             ctx.Fail<APM_FontDescriptorTrueType_CapHeight>("CapHeight is required when 'fn:IsRequired(fn:FontHasLatinChars())"); return;
         } else if (val == null) {
@@ -544,7 +544,7 @@ internal partial class APM_FontDescriptorTrueType_XHeight__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_XHeight>(obj, "XHeight", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_XHeight>(obj, "XHeight", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -571,7 +571,7 @@ internal partial class APM_FontDescriptorTrueType_StemV__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_FontDescriptorTrueType_StemV>(obj, "StemV", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_FontDescriptorTrueType_StemV>(obj, "StemV", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -598,7 +598,7 @@ internal partial class APM_FontDescriptorTrueType_StemH__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_StemH>(obj, "StemH", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_StemH>(obj, "StemH", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -625,7 +625,7 @@ internal partial class APM_FontDescriptorTrueType_AvgWidth__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_AvgWidth>(obj, "AvgWidth", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_AvgWidth>(obj, "AvgWidth", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -652,7 +652,7 @@ internal partial class APM_FontDescriptorTrueType_MaxWidth__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_MaxWidth>(obj, "MaxWidth", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_MaxWidth>(obj, "MaxWidth", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -679,7 +679,7 @@ internal partial class APM_FontDescriptorTrueType_MissingWidth__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_MissingWidth>(obj, "MissingWidth", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_FontDescriptorTrueType_MissingWidth>(obj, "MissingWidth", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -706,7 +706,7 @@ internal partial class APM_FontDescriptorTrueType_FontFile__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_FontDescriptorTrueType_FontFile>(obj, "FontFile", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_FontDescriptorTrueType_FontFile>(obj, "FontFile", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         
         if (!(!obj.ContainsKey(PdfName.FontFile2))) 
@@ -737,7 +737,7 @@ internal partial class APM_FontDescriptorTrueType_FontFile2__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_FontDescriptorTrueType_FontFile2>(obj, "FontFile2", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_FontDescriptorTrueType_FontFile2>(obj, "FontFile2", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         
         if (!(!obj.ContainsKey(PdfName.FontFile))) 

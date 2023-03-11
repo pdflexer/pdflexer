@@ -102,7 +102,7 @@ internal partial class APM_RichMediaParams_Type__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaParams_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaParams_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -182,7 +182,7 @@ internal partial class APM_RichMediaParams_Binding__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaParams_Binding>(obj, "Binding", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaParams_Binding>(obj, "Binding", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -215,7 +215,7 @@ internal partial class APM_RichMediaParams_BindingMaterial__Base : ISpecificatio
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var Binding = obj.Get("Binding");
-        var val = ctx.GetOptional<PdfString, APM_RichMediaParams_BindingMaterial>(obj, "BindingMaterial", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_RichMediaParams_BindingMaterial>(obj, "BindingMaterial", IndirectRequirement.Either);
         if ((eq(Binding,PdfName.Material)) && val == null) {
             ctx.Fail<APM_RichMediaParams_BindingMaterial>("BindingMaterial is required when 'fn:IsRequired(@Binding==Material)"); return;
         } else if (val == null) {
@@ -246,7 +246,7 @@ internal partial class APM_RichMediaParams_CuePoints__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_RichMediaParams_CuePoints>(obj, "CuePoints", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_RichMediaParams_CuePoints>(obj, "CuePoints", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

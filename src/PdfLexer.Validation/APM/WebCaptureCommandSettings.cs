@@ -132,7 +132,7 @@ internal partial class APM_WebCaptureCommandSettings_G__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_WebCaptureCommandSettings_G>(obj, "G", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_WebCaptureCommandSettings_G>(obj, "G", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -159,7 +159,7 @@ internal partial class APM_WebCaptureCommandSettings_C__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_WebCaptureCommandSettings_C>(obj, "C", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_WebCaptureCommandSettings_C>(obj, "C", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

@@ -158,7 +158,7 @@ internal partial class APM_ViewerPreferences_HideToolbar__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_HideToolbar>(obj, "HideToolbar", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_HideToolbar>(obj, "HideToolbar", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -185,7 +185,7 @@ internal partial class APM_ViewerPreferences_HideMenubar__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_HideMenubar>(obj, "HideMenubar", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_HideMenubar>(obj, "HideMenubar", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -212,7 +212,7 @@ internal partial class APM_ViewerPreferences_HideWindowUI__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_HideWindowUI>(obj, "HideWindowUI", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_HideWindowUI>(obj, "HideWindowUI", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -239,7 +239,7 @@ internal partial class APM_ViewerPreferences_FitWindow__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_FitWindow>(obj, "FitWindow", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_FitWindow>(obj, "FitWindow", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -266,7 +266,7 @@ internal partial class APM_ViewerPreferences_CenterWindow__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_CenterWindow>(obj, "CenterWindow", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_CenterWindow>(obj, "CenterWindow", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -293,7 +293,7 @@ internal partial class APM_ViewerPreferences_DisplayDocTitle__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_DisplayDocTitle>(obj, "DisplayDocTitle", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_DisplayDocTitle>(obj, "DisplayDocTitle", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -320,7 +320,7 @@ internal partial class APM_ViewerPreferences_NonFullScreenPageMode__Base : ISpec
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_NonFullScreenPageMode>(obj, "NonFullScreenPageMode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ViewerPreferences_NonFullScreenPageMode>(obj, "NonFullScreenPageMode", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         
@@ -352,7 +352,7 @@ internal partial class APM_ViewerPreferences_Direction__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_Direction>(obj, "Direction", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ViewerPreferences_Direction>(obj, "Direction", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -384,7 +384,7 @@ internal partial class APM_ViewerPreferences_ViewArea__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_ViewArea>(obj, "ViewArea", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ViewerPreferences_ViewArea>(obj, "ViewArea", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -416,7 +416,7 @@ internal partial class APM_ViewerPreferences_ViewClip__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_ViewClip>(obj, "ViewClip", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ViewerPreferences_ViewClip>(obj, "ViewClip", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -448,7 +448,7 @@ internal partial class APM_ViewerPreferences_PrintArea__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_PrintArea>(obj, "PrintArea", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ViewerPreferences_PrintArea>(obj, "PrintArea", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -480,7 +480,7 @@ internal partial class APM_ViewerPreferences_PrintClip__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_PrintClip>(obj, "PrintClip", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ViewerPreferences_PrintClip>(obj, "PrintClip", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -512,7 +512,7 @@ internal partial class APM_ViewerPreferences_PrintScaling__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_PrintScaling>(obj, "PrintScaling", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ViewerPreferences_PrintScaling>(obj, "PrintScaling", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restictions
@@ -539,7 +539,7 @@ internal partial class APM_ViewerPreferences_Duplex__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ViewerPreferences_Duplex>(obj, "Duplex", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ViewerPreferences_Duplex>(obj, "Duplex", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -571,7 +571,7 @@ internal partial class APM_ViewerPreferences_PickTrayByPDFSize__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_PickTrayByPDFSize>(obj, "PickTrayByPDFSize", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_ViewerPreferences_PickTrayByPDFSize>(obj, "PickTrayByPDFSize", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -598,7 +598,7 @@ internal partial class APM_ViewerPreferences_PrintPageRange__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_ViewerPreferences_PrintPageRange>(obj, "PrintPageRange", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ViewerPreferences_PrintPageRange>(obj, "PrintPageRange", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -625,7 +625,7 @@ internal partial class APM_ViewerPreferences_NumCopies__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_ViewerPreferences_NumCopies>(obj, "NumCopies", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_ViewerPreferences_NumCopies>(obj, "NumCopies", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -657,7 +657,7 @@ internal partial class APM_ViewerPreferences_Enforce__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_ViewerPreferences_Enforce>(obj, "Enforce", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ViewerPreferences_Enforce>(obj, "Enforce", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

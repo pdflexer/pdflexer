@@ -40,7 +40,7 @@ internal partial class APM_RelatedFilesArray_0x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfString, APM_RelatedFilesArray_0x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfString, APM_RelatedFilesArray_0x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -67,7 +67,7 @@ internal partial class APM_RelatedFilesArray_1x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfStream, APM_RelatedFilesArray_1x>(obj, n, IndirectRequirement.MustBeIndirect);
+            var (val, wasIR) = ctx.GetRequired<PdfStream, APM_RelatedFilesArray_1x>(obj, n, IndirectRequirement.MustBeIndirect);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

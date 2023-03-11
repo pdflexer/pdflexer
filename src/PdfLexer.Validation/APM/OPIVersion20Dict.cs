@@ -147,7 +147,7 @@ internal partial class APM_OPIVersion20Dict_Type__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_OPIVersion20Dict_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_OPIVersion20Dict_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -179,7 +179,7 @@ internal partial class APM_OPIVersion20Dict_Version__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_OPIVersion20Dict_Version>(obj, "Version", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_OPIVersion20Dict_Version>(obj, "Version", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -259,7 +259,7 @@ internal partial class APM_OPIVersion20Dict_MainImage__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_OPIVersion20Dict_MainImage>(obj, "MainImage", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_OPIVersion20Dict_MainImage>(obj, "MainImage", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -286,7 +286,7 @@ internal partial class APM_OPIVersion20Dict_Tags__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_Tags>(obj, "Tags", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_Tags>(obj, "Tags", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -314,7 +314,7 @@ internal partial class APM_OPIVersion20Dict_Size__Base : ISpecification<PdfDicti
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_Size>(obj, "Size", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_Size>(obj, "Size", IndirectRequirement.Either);
         if ((obj.ContainsKey(PdfName.CropRect)) && val == null) {
             ctx.Fail<APM_OPIVersion20Dict_Size>("Size is required when 'fn:IsRequired(fn:IsPresent(CropRect))"); return;
         } else if (val == null) {
@@ -351,8 +351,8 @@ internal partial class APM_OPIVersion20Dict_CropRect__Base : ISpecification<PdfD
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_CropRect>(obj, "CropRect", IndirectRequirement.Either);
-        if ((obj.ContainsKey(val)) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_CropRect>(obj, "CropRect", IndirectRequirement.Either);
+        if ((obj.ContainsKey(PdfName.Size)) && val == null) {
             ctx.Fail<APM_OPIVersion20Dict_CropRect>("CropRect is required when 'fn:IsRequired(fn:IsPresent(Size))"); return;
         } else if (val == null) {
             return;
@@ -382,7 +382,7 @@ internal partial class APM_OPIVersion20Dict_Overprint__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_OPIVersion20Dict_Overprint>(obj, "Overprint", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_OPIVersion20Dict_Overprint>(obj, "Overprint", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -462,7 +462,7 @@ internal partial class APM_OPIVersion20Dict_IncludedImageDimensions__Base : ISpe
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_IncludedImageDimensions>(obj, "IncludedImageDimensions", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OPIVersion20Dict_IncludedImageDimensions>(obj, "IncludedImageDimensions", IndirectRequirement.Either);
         if (val == null) { return; }
         var IncludedImageDimensions0 = val.Get(0);
         var IncludedImageDimensions1 = val.Get(1);
@@ -494,7 +494,7 @@ internal partial class APM_OPIVersion20Dict_IncludedImageQuality__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_OPIVersion20Dict_IncludedImageQuality>(obj, "IncludedImageQuality", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_OPIVersion20Dict_IncludedImageQuality>(obj, "IncludedImageQuality", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

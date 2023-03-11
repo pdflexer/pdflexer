@@ -176,7 +176,7 @@ internal partial class APM_GraphicsStateParameter_Type__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_GraphicsStateParameter_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_GraphicsStateParameter_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -208,7 +208,7 @@ internal partial class APM_GraphicsStateParameter_LW__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_LW>(obj, "LW", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_LW>(obj, "LW", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -240,7 +240,7 @@ internal partial class APM_GraphicsStateParameter_LC__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_GraphicsStateParameter_LC>(obj, "LC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_GraphicsStateParameter_LC>(obj, "LC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -272,7 +272,7 @@ internal partial class APM_GraphicsStateParameter_LJ__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_GraphicsStateParameter_LJ>(obj, "LJ", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_GraphicsStateParameter_LJ>(obj, "LJ", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -304,7 +304,7 @@ internal partial class APM_GraphicsStateParameter_ML__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_ML>(obj, "ML", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_ML>(obj, "ML", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -336,7 +336,7 @@ internal partial class APM_GraphicsStateParameter_D__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_GraphicsStateParameter_D>(obj, "D", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_GraphicsStateParameter_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -363,7 +363,7 @@ internal partial class APM_GraphicsStateParameter_RI__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_GraphicsStateParameter_RI>(obj, "RI", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_GraphicsStateParameter_RI>(obj, "RI", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -395,7 +395,7 @@ internal partial class APM_GraphicsStateParameter_OP__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_OP>(obj, "OP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_OP>(obj, "OP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -422,7 +422,7 @@ internal partial class APM_GraphicsStateParameter_op__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_op>(obj, "op", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_op>(obj, "op", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -449,7 +449,7 @@ internal partial class APM_GraphicsStateParameter_OPM__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_GraphicsStateParameter_OPM>(obj, "OPM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_GraphicsStateParameter_OPM>(obj, "OPM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -481,7 +481,7 @@ internal partial class APM_GraphicsStateParameter_Font__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_GraphicsStateParameter_Font>(obj, "Font", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_GraphicsStateParameter_Font>(obj, "Font", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1048,7 +1048,7 @@ internal partial class APM_GraphicsStateParameter_FL__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_FL>(obj, "FL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_FL>(obj, "FL", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -1080,7 +1080,7 @@ internal partial class APM_GraphicsStateParameter_SM__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_SM>(obj, "SM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_SM>(obj, "SM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -1112,7 +1112,7 @@ internal partial class APM_GraphicsStateParameter_SA__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_SA>(obj, "SA", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_SA>(obj, "SA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1258,7 +1258,7 @@ internal partial class APM_GraphicsStateParameter_CA__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_CA>(obj, "CA", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -1290,7 +1290,7 @@ internal partial class APM_GraphicsStateParameter_ca__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_ca>(obj, "ca", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_GraphicsStateParameter_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -1322,7 +1322,7 @@ internal partial class APM_GraphicsStateParameter_AIS__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_AIS>(obj, "AIS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_AIS>(obj, "AIS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1349,7 +1349,7 @@ internal partial class APM_GraphicsStateParameter_TK__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_TK>(obj, "TK", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_GraphicsStateParameter_TK>(obj, "TK", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1376,7 +1376,7 @@ internal partial class APM_GraphicsStateParameter_UseBlackPtComp__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_GraphicsStateParameter_UseBlackPtComp>(obj, "UseBlackPtComp", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_GraphicsStateParameter_UseBlackPtComp>(obj, "UseBlackPtComp", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -1408,7 +1408,7 @@ internal partial class APM_GraphicsStateParameter_HTO__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_GraphicsStateParameter_HTO>(obj, "HTO", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_GraphicsStateParameter_HTO>(obj, "HTO", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1435,7 +1435,7 @@ internal partial class APM_GraphicsStateParameter_HTP__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_GraphicsStateParameter_HTP>(obj, "HTP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_GraphicsStateParameter_HTP>(obj, "HTP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

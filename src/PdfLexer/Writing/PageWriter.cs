@@ -46,7 +46,7 @@ public sealed class PageWriter : ContentWriter, IDisposable
                     {
                         // can't make form without rewritting to single stream so just write
                         // with Q q
-                        var fw = new FlateWriter();
+                        var fw = new ZLibLexerStream();
                         q_Op.WriteLn(fw);
                         foreach (var existing in Page.Contents)
                         {

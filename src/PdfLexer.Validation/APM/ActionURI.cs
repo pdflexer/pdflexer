@@ -161,7 +161,7 @@ internal partial class APM_ActionURI_Type__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ActionURI_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ActionURI_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -193,7 +193,7 @@ internal partial class APM_ActionURI_S__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_ActionURI_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_ActionURI_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -342,7 +342,7 @@ internal partial class APM_ActionURI_URI__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_ActionURI_URI>(obj, "URI", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_ActionURI_URI>(obj, "URI", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -369,7 +369,7 @@ internal partial class APM_ActionURI_IsMap__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_ActionURI_IsMap>(obj, "IsMap", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_ActionURI_IsMap>(obj, "IsMap", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

@@ -72,7 +72,7 @@ internal partial class APM_RequirementsEncryption_Type__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RequirementsEncryption_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RequirementsEncryption_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -104,7 +104,7 @@ internal partial class APM_RequirementsEncryption_S__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_RequirementsEncryption_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_RequirementsEncryption_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -232,7 +232,7 @@ internal partial class APM_RequirementsEncryption_Penalty__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_RequirementsEncryption_Penalty>(obj, "Penalty", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_RequirementsEncryption_Penalty>(obj, "Penalty", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -264,7 +264,7 @@ internal partial class APM_RequirementsEncryption_Encrypt__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_RequirementsEncryption_Encrypt>(obj, "Encrypt", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_RequirementsEncryption_Encrypt>(obj, "Encrypt", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

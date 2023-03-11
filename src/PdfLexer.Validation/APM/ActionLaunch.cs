@@ -164,7 +164,7 @@ internal partial class APM_ActionLaunch_Type__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ActionLaunch_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ActionLaunch_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -196,7 +196,7 @@ internal partial class APM_ActionLaunch_S__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_ActionLaunch_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_ActionLaunch_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -400,7 +400,7 @@ internal partial class APM_ActionLaunch_Win__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_ActionLaunch_Win>(obj, "Win", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_ActionLaunch_Win>(obj, "Win", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -427,7 +427,7 @@ internal partial class APM_ActionLaunch_Mac__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNull, APM_ActionLaunch_Mac>(obj, "Mac", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNull, APM_ActionLaunch_Mac>(obj, "Mac", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -454,7 +454,7 @@ internal partial class APM_ActionLaunch_Unix__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNull, APM_ActionLaunch_Unix>(obj, "Unix", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNull, APM_ActionLaunch_Unix>(obj, "Unix", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -481,7 +481,7 @@ internal partial class APM_ActionLaunch_NewWindow__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_ActionLaunch_NewWindow>(obj, "NewWindow", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_ActionLaunch_NewWindow>(obj, "NewWindow", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

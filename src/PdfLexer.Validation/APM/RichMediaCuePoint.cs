@@ -102,7 +102,7 @@ internal partial class APM_RichMediaCuePoint_Type__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaCuePoint_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaCuePoint_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -134,7 +134,7 @@ internal partial class APM_RichMediaCuePoint_Subtype__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaCuePoint_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaCuePoint_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -166,7 +166,7 @@ internal partial class APM_RichMediaCuePoint_Name__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_RichMediaCuePoint_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_RichMediaCuePoint_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -193,7 +193,7 @@ internal partial class APM_RichMediaCuePoint_Time__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_RichMediaCuePoint_Time>(obj, "Time", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_RichMediaCuePoint_Time>(obj, "Time", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -220,7 +220,7 @@ internal partial class APM_RichMediaCuePoint_A__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfDictionary, APM_RichMediaCuePoint_A>(obj, "A", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfDictionary, APM_RichMediaCuePoint_A>(obj, "A", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

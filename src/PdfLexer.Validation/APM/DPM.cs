@@ -50,7 +50,7 @@ internal partial class APM_DPM_GTS_Managed__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_DPM_GTS_Managed>(obj, "GTS_Managed", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_DPM_GTS_Managed>(obj, "GTS_Managed", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -77,7 +77,7 @@ internal partial class APM_DPM_GTS_Suspect__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_DPM_GTS_Suspect>(obj, "GTS_Suspect", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_DPM_GTS_Suspect>(obj, "GTS_Suspect", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -132,8 +132,29 @@ internal partial class APM_DPM_CatchAll__Base : ISpecification<PdfDictionary>
                         // no linked objects
                         return;
                     }
+                case PdfObjectType.StringObj:
+                    {
                 
-                // TODO MC array;boolean;date;dictionary;integer;name;number;string-text
+                        // TODO MC date;string-text
+                
+                        var val =  (PdfString)utval;
+                        if (IsDate(val)) 
+                        {
+                            // date
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        } else if (true) 
+                        {
+                            // string-text
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        }
+                        return;
+                    }
                 case PdfObjectType.DictionaryObj:
                     {
                         var val =  (PdfDictionary)utval;
@@ -143,8 +164,29 @@ internal partial class APM_DPM_CatchAll__Base : ISpecification<PdfDictionary>
                         ctx.Run<APM__UniversalDictionary, PdfDictionary>(stack, val, obj);
                         return;
                     }
+                case PdfObjectType.NumericObj:
+                    {
                 
-                // TODO MC array;boolean;date;dictionary;integer;name;number;string-text
+                        // TODO MC integer;number
+                
+                        var val =  (PdfNumber)utval;
+                        if (val is PdfIntNumber) 
+                        {
+                            // integer
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        } else if (true) 
+                        {
+                            // number
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        }
+                        return;
+                    }
                 case PdfObjectType.NameObj:
                     {
                         var val =  (PdfName)utval;

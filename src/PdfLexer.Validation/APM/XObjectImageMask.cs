@@ -165,7 +165,7 @@ internal partial class APM_XObjectImageMask_Type__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectImageMask_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectImageMask_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -197,7 +197,7 @@ internal partial class APM_XObjectImageMask_Subtype__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_XObjectImageMask_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_XObjectImageMask_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -229,7 +229,7 @@ internal partial class APM_XObjectImageMask_Width__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectImageMask_Width>(obj, "Width", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectImageMask_Width>(obj, "Width", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -256,7 +256,7 @@ internal partial class APM_XObjectImageMask_Height__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectImageMask_Height>(obj, "Height", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectImageMask_Height>(obj, "Height", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -283,7 +283,7 @@ internal partial class APM_XObjectImageMask_BitsPerComponent__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageMask_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectImageMask_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -315,7 +315,7 @@ internal partial class APM_XObjectImageMask_Intent__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectImageMask_Intent>(obj, "Intent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectImageMask_Intent>(obj, "Intent", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
@@ -342,7 +342,7 @@ internal partial class APM_XObjectImageMask_ImageMask__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfBoolean, APM_XObjectImageMask_ImageMask>(obj, "ImageMask", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfBoolean, APM_XObjectImageMask_ImageMask>(obj, "ImageMask", IndirectRequirement.Either);
         if (val == null) { return; }
         var ImageMask = obj.Get("ImageMask");
         var BitsPerComponent = obj.Get("BitsPerComponent");
@@ -374,7 +374,7 @@ internal partial class APM_XObjectImageMask_Decode__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_XObjectImageMask_Decode>(obj, "Decode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_XObjectImageMask_Decode>(obj, "Decode", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // TODO value checks array
@@ -401,7 +401,7 @@ internal partial class APM_XObjectImageMask_Interpolate__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_XObjectImageMask_Interpolate>(obj, "Interpolate", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_XObjectImageMask_Interpolate>(obj, "Interpolate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -428,7 +428,7 @@ internal partial class APM_XObjectImageMask_Alternates__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_XObjectImageMask_Alternates>(obj, "Alternates", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_XObjectImageMask_Alternates>(obj, "Alternates", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -455,7 +455,7 @@ internal partial class APM_XObjectImageMask_SMask__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_XObjectImageMask_SMask>(obj, "SMask", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_XObjectImageMask_SMask>(obj, "SMask", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -482,7 +482,7 @@ internal partial class APM_XObjectImageMask_SMaskInData__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageMask_SMaskInData>(obj, "SMaskInData", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectImageMask_SMaskInData>(obj, "SMaskInData", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -509,7 +509,7 @@ internal partial class APM_XObjectImageMask_Name__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectImageMask_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectImageMask_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -537,7 +537,7 @@ internal partial class APM_XObjectImageMask_StructParent__Base : ISpecification<
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageMask_StructParent>(obj, "StructParent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectImageMask_StructParent>(obj, "StructParent", IndirectRequirement.Either);
         if ((ImageIsStructContentItem(obj)) && val == null) {
             ctx.Fail<APM_XObjectImageMask_StructParent>("StructParent is required when 'fn:IsRequired(fn:ImageIsStructContentItem())"); return;
         } else if (val == null) {
@@ -568,7 +568,7 @@ internal partial class APM_XObjectImageMask_ID__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_XObjectImageMask_ID>(obj, "ID", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_XObjectImageMask_ID>(obj, "ID", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -595,7 +595,7 @@ internal partial class APM_XObjectImageMask_OPI__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectImageMask_OPI>(obj, "OPI", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectImageMask_OPI>(obj, "OPI", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
@@ -631,7 +631,7 @@ internal partial class APM_XObjectImageMask_Metadata__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_XObjectImageMask_Metadata>(obj, "Metadata", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_XObjectImageMask_Metadata>(obj, "Metadata", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -658,7 +658,7 @@ internal partial class APM_XObjectImageMask_OC__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectImageMask_OC>(obj, "OC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectImageMask_OC>(obj, "OC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -742,7 +742,7 @@ internal partial class APM_XObjectImageMask_Measure__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectImageMask_Measure>(obj, "Measure", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectImageMask_Measure>(obj, "Measure", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -778,7 +778,7 @@ internal partial class APM_XObjectImageMask_PtData__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectImageMask_PtData>(obj, "PtData", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectImageMask_PtData>(obj, "PtData", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -805,7 +805,7 @@ internal partial class APM_XObjectImageMask_Length__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectImageMask_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectImageMask_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1144,7 +1144,7 @@ internal partial class APM_XObjectImageMask_DL__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageMask_DL>(obj, "DL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectImageMask_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
         var DL = obj.Get("DL");
         if (!(gte(DL,0))) 

@@ -10,13 +10,13 @@ public partial class ContentWriter
 {
     public ContentWriter ClosePath()
     {
-        h_Op.WriteLn(Stream);
+        h_Op.WriteLn(StreamWriter.Stream);
         return this;
     }
 
     public ContentWriter Stroke()
     {
-        S_Op.WriteLn(Stream);
+        S_Op.WriteLn(StreamWriter.Stream);
         return this;
     }
 
@@ -24,11 +24,11 @@ public partial class ContentWriter
     {
         if (evenOdd)
         {
-            f_Star_Op.WriteLn(Stream);
+            f_Star_Op.WriteLn(StreamWriter.Stream);
         }
         else
         {
-            f_Op.WriteLn(Stream);
+            f_Op.WriteLn(StreamWriter.Stream);
         }
         return this;
     }
@@ -37,11 +37,11 @@ public partial class ContentWriter
     {
         if (evenOdd)
         {
-            B_Star_Op.WriteLn(Stream);
+            B_Star_Op.WriteLn(StreamWriter.Stream);
         }
         else
         {
-            B_Op.WriteLn(Stream);
+            B_Op.WriteLn(StreamWriter.Stream);
         }
 
         return this;
@@ -51,11 +51,11 @@ public partial class ContentWriter
     {
         if (evenOdd)
         {
-            b_Star_Op.WriteLn(Stream);
+            b_Star_Op.WriteLn(StreamWriter.Stream);
         }
         else
         {
-            b_Op.WriteLn(Stream);
+            b_Op.WriteLn(StreamWriter.Stream);
         }
 
         return this;
@@ -65,18 +65,18 @@ public partial class ContentWriter
     {
         if (evenOdd)
         {
-            W_Star_Op.WriteLn(Stream);
+            W_Star_Op.WriteLn(StreamWriter.Stream);
         }
         else
         {
-            W_Op.WriteLn(Stream);
+            W_Op.WriteLn(StreamWriter.Stream);
         }
         return this;
     }
 
     public ContentWriter EndPathNoOp()
     {
-        n_Op.WriteLn(Stream);
+        n_Op.WriteLn(StreamWriter.Stream);
         return this;
     }
 
@@ -106,35 +106,35 @@ public partial class ContentWriter
     public ContentWriter MoveTo(decimal x, decimal y)
     {
         if (scale != 1) { x *= (decimal)scale; y *= (decimal)scale; }
-        m_Op.WriteLn(x, y, Stream);
+        m_Op.WriteLn(x, y, StreamWriter.Stream);
         return this;
     }
 
     public ContentWriter LineTo(decimal x, decimal y)
     {
         if (scale != 1) { x *= (decimal)scale; y *= (decimal)scale; }
-        l_Op.WriteLn(x, y, Stream);
+        l_Op.WriteLn(x, y, StreamWriter.Stream);
         return this;
     }
 
     public ContentWriter BezierCurveTo(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3)
     {
         if (scale != 1) { var s = (decimal)scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; x3 *= s; y3 *= s; }
-        c_Op.WriteLn(x1, y1, x2, y2, x3, y3, Stream);
+        c_Op.WriteLn(x1, y1, x2, y2, x3, y3, StreamWriter.Stream);
         return this;
     }
 
     public ContentWriter QuadraticCurveTo(decimal x1, decimal y1, decimal x2, decimal y2)
     {
         if (scale != 1) { var s = (decimal)scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; }
-        v_Op.WriteLn(x1, y1, x2, y2, Stream);
+        v_Op.WriteLn(x1, y1, x2, y2, StreamWriter.Stream);
         return this;
     }
 
     public ContentWriter Rect(decimal x, decimal y, decimal w, decimal h)
     {
         if (scale != 1) { var s = (decimal)scale; x *= s; y *= s; w *= s; h *= s; }
-        re_Op.WriteLn(x, y, w, h, Stream);
+        re_Op.WriteLn(x, y, w, h, StreamWriter.Stream);
         return this;
     }
     public ContentWriter RoundedRect(decimal x, decimal y, decimal w, decimal h, decimal r)

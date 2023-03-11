@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfNonNegativeIntegersGeneral_x : ISpecification<
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfIntNumber, APM_ArrayOfNonNegativeIntegersGeneral_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_ArrayOfNonNegativeIntegersGeneral_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             
             if (!(gte(val,0))) 

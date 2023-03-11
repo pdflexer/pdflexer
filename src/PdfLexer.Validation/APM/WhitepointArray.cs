@@ -35,7 +35,7 @@ internal partial class APM_WhitepointArray_0 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_WhitepointArray_0>(obj, 0, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_WhitepointArray_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -60,7 +60,7 @@ internal partial class APM_WhitepointArray_1 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_WhitepointArray_1>(obj, 1, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_WhitepointArray_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -85,7 +85,7 @@ internal partial class APM_WhitepointArray_2 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_WhitepointArray_2>(obj, 2, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_WhitepointArray_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;

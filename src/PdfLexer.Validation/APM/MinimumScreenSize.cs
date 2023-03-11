@@ -119,7 +119,7 @@ internal partial class APM_MinimumScreenSize_Type__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_MinimumScreenSize_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_MinimumScreenSize_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -151,7 +151,7 @@ internal partial class APM_MinimumScreenSize_V__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_MinimumScreenSize_V>(obj, "V", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_MinimumScreenSize_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -178,7 +178,7 @@ internal partial class APM_MinimumScreenSize_M__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_MinimumScreenSize_M>(obj, "M", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_MinimumScreenSize_M>(obj, "M", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

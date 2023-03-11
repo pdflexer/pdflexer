@@ -55,9 +55,9 @@ internal partial class APM_Extensions_Type__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        // TODO complex IR
-        var val = ctx.GetOptional<PdfName, APM_Extensions_Type>(obj, "Type", IndirectRequirement.MustBeDirect);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_Extensions_Type>(obj, "Type", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
+        
         // no special cases
         
         
@@ -101,10 +101,8 @@ internal partial class APM_Extensions_CatchAll__Base : ISpecification<PdfDiction
                 case PdfObjectType.DictionaryObj:
                     {
                         var val =  (PdfDictionary)utval;
-                        if (wasIR) {
-                            ctx.Fail<APM_Extensions_CatchAll>("* is required to be direct when a dictionary");
-                            return;
-                        }
+                        
+                        
                         // no special cases
                         // no value restrictions
                         ctx.Run<APM_DevExtensions, PdfDictionary>(stack, val, obj);
@@ -117,10 +115,8 @@ internal partial class APM_Extensions_CatchAll__Base : ISpecification<PdfDiction
                             ctx.Fail<APM_Extensions_CatchAll>("* was type array but not allowed for current conditions: 'fn:SinceVersion(2.0,array)'");
                         }
                         var val =  (PdfArray)utval;
-                        if (wasIR) {
-                            ctx.Fail<APM_Extensions_CatchAll>("* is required to be direct when a array");
-                            return;
-                        }
+                        
+                        
                         // no special cases
                         // no value restrictions
                         if ((ctx.Version >= 2.0m && APM_ArrayOfDevExtensions.MatchesType(ctx, val))) 

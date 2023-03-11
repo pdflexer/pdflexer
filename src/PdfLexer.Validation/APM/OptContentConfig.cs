@@ -121,7 +121,7 @@ internal partial class APM_OptContentConfig_Name__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_OptContentConfig_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_OptContentConfig_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -148,7 +148,7 @@ internal partial class APM_OptContentConfig_Creator__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_OptContentConfig_Creator>(obj, "Creator", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_OptContentConfig_Creator>(obj, "Creator", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -175,7 +175,7 @@ internal partial class APM_OptContentConfig_BaseState__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_OptContentConfig_BaseState>(obj, "BaseState", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_OptContentConfig_BaseState>(obj, "BaseState", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -207,7 +207,7 @@ internal partial class APM_OptContentConfig_ON__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_OptContentConfig_ON>(obj, "ON", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OptContentConfig_ON>(obj, "ON", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -234,7 +234,7 @@ internal partial class APM_OptContentConfig_OFF__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_OptContentConfig_OFF>(obj, "OFF", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OptContentConfig_OFF>(obj, "OFF", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -314,7 +314,7 @@ internal partial class APM_OptContentConfig_AS__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_OptContentConfig_AS>(obj, "AS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OptContentConfig_AS>(obj, "AS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -341,7 +341,7 @@ internal partial class APM_OptContentConfig_Order__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_OptContentConfig_Order>(obj, "Order", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OptContentConfig_Order>(obj, "Order", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -368,7 +368,7 @@ internal partial class APM_OptContentConfig_ListMode__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_OptContentConfig_ListMode>(obj, "ListMode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_OptContentConfig_ListMode>(obj, "ListMode", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -400,7 +400,7 @@ internal partial class APM_OptContentConfig_RBGroups__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_OptContentConfig_RBGroups>(obj, "RBGroups", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OptContentConfig_RBGroups>(obj, "RBGroups", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -427,7 +427,7 @@ internal partial class APM_OptContentConfig_Locked__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_OptContentConfig_Locked>(obj, "Locked", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OptContentConfig_Locked>(obj, "Locked", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

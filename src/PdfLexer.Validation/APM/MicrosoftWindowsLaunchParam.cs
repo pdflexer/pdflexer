@@ -144,7 +144,7 @@ internal partial class APM_MicrosoftWindowsLaunchParam_F__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_MicrosoftWindowsLaunchParam_F>(obj, "F", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_MicrosoftWindowsLaunchParam_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -171,7 +171,7 @@ internal partial class APM_MicrosoftWindowsLaunchParam_D__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_MicrosoftWindowsLaunchParam_D>(obj, "D", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_MicrosoftWindowsLaunchParam_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -198,7 +198,7 @@ internal partial class APM_MicrosoftWindowsLaunchParam_O__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_MicrosoftWindowsLaunchParam_O>(obj, "O", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_MicrosoftWindowsLaunchParam_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // TODO value checks string-ascii
@@ -225,7 +225,7 @@ internal partial class APM_MicrosoftWindowsLaunchParam_P__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_MicrosoftWindowsLaunchParam_P>(obj, "P", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_MicrosoftWindowsLaunchParam_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

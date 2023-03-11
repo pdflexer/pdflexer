@@ -113,7 +113,7 @@ internal partial class APM_OptContentProperties_OCGs__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_OptContentProperties_OCGs>(obj, "OCGs", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_OptContentProperties_OCGs>(obj, "OCGs", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -140,7 +140,7 @@ internal partial class APM_OptContentProperties_D__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfDictionary, APM_OptContentProperties_D>(obj, "D", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfDictionary, APM_OptContentProperties_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -167,7 +167,7 @@ internal partial class APM_OptContentProperties_Configs__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_OptContentProperties_Configs>(obj, "Configs", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_OptContentProperties_Configs>(obj, "Configs", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

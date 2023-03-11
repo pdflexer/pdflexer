@@ -169,7 +169,7 @@ internal partial class APM_FilterCCITTFaxDecode_K__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_K>(obj, "K", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_K>(obj, "K", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -196,7 +196,7 @@ internal partial class APM_FilterCCITTFaxDecode_EndOfLine__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_EndOfLine>(obj, "EndOfLine", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_EndOfLine>(obj, "EndOfLine", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -223,7 +223,7 @@ internal partial class APM_FilterCCITTFaxDecode_EncodedByteAlign__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_EncodedByteAlign>(obj, "EncodedByteAlign", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_EncodedByteAlign>(obj, "EncodedByteAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -250,7 +250,7 @@ internal partial class APM_FilterCCITTFaxDecode_Columns__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_Columns>(obj, "Columns", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_Columns>(obj, "Columns", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -282,7 +282,7 @@ internal partial class APM_FilterCCITTFaxDecode_Rows__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_Rows>(obj, "Rows", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_Rows>(obj, "Rows", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -314,7 +314,7 @@ internal partial class APM_FilterCCITTFaxDecode_EndOfBlock__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_EndOfBlock>(obj, "EndOfBlock", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_EndOfBlock>(obj, "EndOfBlock", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -341,7 +341,7 @@ internal partial class APM_FilterCCITTFaxDecode_BlackIs1__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_BlackIs1>(obj, "BlackIs1", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_BlackIs1>(obj, "BlackIs1", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -368,7 +368,7 @@ internal partial class APM_FilterCCITTFaxDecode_DamagedRowsBeforeError__Base : I
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_DamagedRowsBeforeError>(obj, "DamagedRowsBeforeError", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterCCITTFaxDecode_DamagedRowsBeforeError>(obj, "DamagedRowsBeforeError", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         
@@ -400,7 +400,7 @@ internal partial class APM_FilterCCITTFaxDecode_Blackls1__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_Blackls1>(obj, "Blackls1", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_FilterCCITTFaxDecode_Blackls1>(obj, "Blackls1", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

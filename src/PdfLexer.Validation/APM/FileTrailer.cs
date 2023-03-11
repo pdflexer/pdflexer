@@ -168,9 +168,9 @@ internal partial class APM_FileTrailer_Size__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        // TODO complex IR
-        var val = ctx.GetRequired<PdfIntNumber, APM_FileTrailer_Size>(obj, "Size", IndirectRequirement.MustBeDirect);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_FileTrailer_Size>(obj, "Size", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
+        
         // no special cases
         
         var Size = obj.Get("Size");
@@ -201,9 +201,9 @@ internal partial class APM_FileTrailer_Prev__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        // TODO complex IR
-        var val = ctx.GetOptional<PdfIntNumber, APM_FileTrailer_Prev>(obj, "Prev", IndirectRequirement.MustBeDirect);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FileTrailer_Prev>(obj, "Prev", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
+        
         // no special cases
         
         var Prev = obj.Get("Prev");
@@ -234,7 +234,7 @@ internal partial class APM_FileTrailer_Root__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfDictionary, APM_FileTrailer_Root>(obj, "Root", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetRequired<PdfDictionary, APM_FileTrailer_Root>(obj, "Root", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -261,7 +261,7 @@ internal partial class APM_FileTrailer_Encrypt__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_FileTrailer_Encrypt>(obj, "Encrypt", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_FileTrailer_Encrypt>(obj, "Encrypt", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -297,10 +297,13 @@ internal partial class APM_FileTrailer_Info__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        // TODO complex IR
-        var val = ctx.GetOptional<PdfDictionary, APM_FileTrailer_Info>(obj, "Info", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_FileTrailer_Info>(obj, "Info", IndirectRequirement.Either);
         if (val == null) { return; }
-        // no special cases
+        
+        if (ctx.Version < 2.0m && !wasIR) {
+            ctx.Fail<APM_FileTrailer_Info>("Info is required to be indirect for (fn:BeforeVersion(2.0))");
+            return;
+        }// no special cases
         // no value restrictions
         ctx.Run<APM_DocInfo, PdfDictionary>(stack, val, obj);
         
@@ -325,17 +328,19 @@ internal partial class APM_FileTrailer_ID__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        // TODO complex IR
         
-        var val = ctx.GetOptional<PdfArray, APM_FileTrailer_ID>(obj, "ID", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_FileTrailer_ID>(obj, "ID", IndirectRequirement.Either);
         if (((ctx.Version >= 2.0m||obj.ContainsKey(PdfName.Encrypt))) && val == null) {
             ctx.Fail<APM_FileTrailer_ID>("ID is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:IsPresent(Encrypt))"); return;
         } else if (val == null) {
             return;
         }
-        var ID0 = val.Get(0);
-        var ID1 = val.Get(1);
-        if (!((MustBeDirect(ID0)&&MustBeDirect(ID1)))) 
+        
+        if (obj.ContainsKey(PdfName.Encrypt) && wasIR) {
+            ctx.Fail<APM_FileTrailer_ID>("ID is required to be direct for ((fn:IsPresent(Encrypt))");
+            return;
+        }
+        if (!(((!val.IsKeyIR(0))&&(!val.IsKeyIR(1))))) 
         {
             ctx.Fail<APM_FileTrailer_ID>($"Value failed special case check: fn:Eval(fn:MustBeDirect(ID::0) && fn:MustBeDirect(ID::1))");
         }
@@ -363,7 +368,7 @@ internal partial class APM_FileTrailer_XRefStm__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FileTrailer_XRefStm>(obj, "XRefStm", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FileTrailer_XRefStm>(obj, "XRefStm", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -395,9 +400,9 @@ internal partial class APM_FileTrailer_AuthCode__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        // TODO complex IR
-        var val = ctx.GetOptional<PdfDictionary, APM_FileTrailer_AuthCode>(obj, "AuthCode", IndirectRequirement.MustBeDirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_FileTrailer_AuthCode>(obj, "AuthCode", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
+        
         var EncryptV = obj.Get("Encrypt")?.Get("V");
         if (!(gte(EncryptV,5))) 
         {

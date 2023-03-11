@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfRequirementsHandlers_x : ISpecification<PdfArr
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfDictionary, APM_ArrayOfRequirementsHandlers_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_ArrayOfRequirementsHandlers_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

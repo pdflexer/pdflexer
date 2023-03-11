@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfIndirectFileSpecifications_x : ISpecification<
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfDictionary, APM_ArrayOfIndirectFileSpecifications_x>(obj, n, IndirectRequirement.MustBeIndirect);
+            var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_ArrayOfIndirectFileSpecifications_x>(obj, n, IndirectRequirement.MustBeIndirect);
             if (val == null) { return; }
             // TODO special case: fn:InNameTree(parent::RichMediaContent::Assets)
             // no value restrictions

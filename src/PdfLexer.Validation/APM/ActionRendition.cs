@@ -123,7 +123,7 @@ internal partial class APM_ActionRendition_Type__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ActionRendition_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ActionRendition_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -155,7 +155,7 @@ internal partial class APM_ActionRendition_S__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_ActionRendition_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_ActionRendition_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -299,7 +299,7 @@ internal partial class APM_ActionRendition_R__Base : ISpecification<PdfDictionar
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var OP = obj.Get("OP");
-        var val = ctx.GetOptional<PdfDictionary, APM_ActionRendition_R>(obj, "R", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_ActionRendition_R>(obj, "R", IndirectRequirement.Either);
         if (((eq(OP,0)||eq(OP,4))) && val == null) {
             ctx.Fail<APM_ActionRendition_R>("R is required when 'fn:IsRequired((@OP==0) || (@OP==4))"); return;
         } else if (val == null) {
@@ -340,7 +340,7 @@ internal partial class APM_ActionRendition_AN__Base : ISpecification<PdfDictiona
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var OP = obj.Get("OP");
-        var val = ctx.GetOptional<PdfDictionary, APM_ActionRendition_AN>(obj, "AN", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_ActionRendition_AN>(obj, "AN", IndirectRequirement.MustBeIndirect);
         if (((gte(OP,0)&&lte(OP,4))) && val == null) {
             ctx.Fail<APM_ActionRendition_AN>("AN is required when 'fn:IsRequired((@OP>=0) && (@OP<=4))"); return;
         } else if (val == null) {
@@ -371,7 +371,7 @@ internal partial class APM_ActionRendition_OP__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_ActionRendition_OP>(obj, "OP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_ActionRendition_OP>(obj, "OP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

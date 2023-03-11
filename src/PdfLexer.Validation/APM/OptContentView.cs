@@ -111,7 +111,7 @@ internal partial class APM_OptContentView_ViewState__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_OptContentView_ViewState>(obj, "ViewState", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_OptContentView_ViewState>(obj, "ViewState", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

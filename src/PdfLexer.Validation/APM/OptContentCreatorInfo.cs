@@ -120,7 +120,7 @@ internal partial class APM_OptContentCreatorInfo_Creator__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_OptContentCreatorInfo_Creator>(obj, "Creator", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_OptContentCreatorInfo_Creator>(obj, "Creator", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -147,7 +147,7 @@ internal partial class APM_OptContentCreatorInfo_Subtype__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_OptContentCreatorInfo_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_OptContentCreatorInfo_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restictions
@@ -174,7 +174,7 @@ internal partial class APM_OptContentCreatorInfo_SubType__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_OptContentCreatorInfo_SubType>(obj, "SubType", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_OptContentCreatorInfo_SubType>(obj, "SubType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restictions

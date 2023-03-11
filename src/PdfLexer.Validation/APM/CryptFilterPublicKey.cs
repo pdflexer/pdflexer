@@ -170,7 +170,7 @@ internal partial class APM_CryptFilterPublicKey_EncryptMetadata__Base : ISpecifi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_CryptFilterPublicKey_EncryptMetadata>(obj, "EncryptMetadata", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_CryptFilterPublicKey_EncryptMetadata>(obj, "EncryptMetadata", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -197,7 +197,7 @@ internal partial class APM_CryptFilterPublicKey_Type__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_CryptFilterPublicKey_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_CryptFilterPublicKey_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -229,7 +229,7 @@ internal partial class APM_CryptFilterPublicKey_CFM__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_CryptFilterPublicKey_CFM>(obj, "CFM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_CryptFilterPublicKey_CFM>(obj, "CFM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -261,7 +261,7 @@ internal partial class APM_CryptFilterPublicKey_AuthEvent__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_CryptFilterPublicKey_AuthEvent>(obj, "AuthEvent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_CryptFilterPublicKey_AuthEvent>(obj, "AuthEvent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -293,7 +293,7 @@ internal partial class APM_CryptFilterPublicKey_Length__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_CryptFilterPublicKey_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_CryptFilterPublicKey_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

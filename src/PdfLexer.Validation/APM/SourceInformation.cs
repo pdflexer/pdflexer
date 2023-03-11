@@ -183,7 +183,7 @@ internal partial class APM_SourceInformation_TS__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_SourceInformation_TS>(obj, "TS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_SourceInformation_TS>(obj, "TS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -210,7 +210,7 @@ internal partial class APM_SourceInformation_E__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_SourceInformation_E>(obj, "E", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_SourceInformation_E>(obj, "E", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -237,7 +237,7 @@ internal partial class APM_SourceInformation_S__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_SourceInformation_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_SourceInformation_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         var parentS = parent?.Get("S");
         if (!(eq(parentS,PdfName.SPS))) 
@@ -273,7 +273,7 @@ internal partial class APM_SourceInformation_C__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_SourceInformation_C>(obj, "C", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_SourceInformation_C>(obj, "C", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         var parentS = parent?.Get("S");
         if (!(eq(parentS,PdfName.SPS))) 

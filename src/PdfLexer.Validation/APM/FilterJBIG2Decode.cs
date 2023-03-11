@@ -121,7 +121,7 @@ internal partial class APM_FilterJBIG2Decode_JBIG2Globals__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_FilterJBIG2Decode_JBIG2Globals>(obj, "JBIG2Globals", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_FilterJBIG2Decode_JBIG2Globals>(obj, "JBIG2Globals", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

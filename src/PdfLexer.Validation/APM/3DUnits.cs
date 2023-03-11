@@ -99,7 +99,7 @@ internal partial class APM_3DUnits_TSm__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DUnits_TSm>(obj, "TSm", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DUnits_TSm>(obj, "TSm", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -126,7 +126,7 @@ internal partial class APM_3DUnits_TSn__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DUnits_TSn>(obj, "TSn", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DUnits_TSn>(obj, "TSn", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -154,8 +154,8 @@ internal partial class APM_3DUnits_TU__Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfString, APM_3DUnits_TU>(obj, "TU", IndirectRequirement.Either);
-        if (((obj.ContainsKey(PdfName.TSm)||obj.ContainsKey(val))) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_3DUnits_TU>(obj, "TU", IndirectRequirement.Either);
+        if (((obj.ContainsKey(PdfName.TSm)||obj.ContainsKey(PdfName.TSn))) && val == null) {
             ctx.Fail<APM_3DUnits_TU>("TU is required when 'fn:IsRequired(fn:IsPresent(TSm) || fn:IsPresent(TSn))"); return;
         } else if (val == null) {
             return;
@@ -185,7 +185,7 @@ internal partial class APM_3DUnits_USm__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DUnits_USm>(obj, "USm", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DUnits_USm>(obj, "USm", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -212,7 +212,7 @@ internal partial class APM_3DUnits_USn__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DUnits_USn>(obj, "USn", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DUnits_USn>(obj, "USn", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -240,8 +240,8 @@ internal partial class APM_3DUnits_UU__Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfString, APM_3DUnits_UU>(obj, "UU", IndirectRequirement.Either);
-        if (((obj.ContainsKey(PdfName.USm)||obj.ContainsKey(val))) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_3DUnits_UU>(obj, "UU", IndirectRequirement.Either);
+        if (((obj.ContainsKey(PdfName.USm)||obj.ContainsKey(PdfName.USn))) && val == null) {
             ctx.Fail<APM_3DUnits_UU>("UU is required when 'fn:IsRequired(fn:IsPresent(USm) || fn:IsPresent(USn))"); return;
         } else if (val == null) {
             return;
@@ -271,7 +271,7 @@ internal partial class APM_3DUnits_DSm__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DUnits_DSm>(obj, "DSm", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DUnits_DSm>(obj, "DSm", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -298,7 +298,7 @@ internal partial class APM_3DUnits_DSn__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DUnits_DSn>(obj, "DSn", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DUnits_DSn>(obj, "DSn", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -326,8 +326,8 @@ internal partial class APM_3DUnits_DU__Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfString, APM_3DUnits_DU>(obj, "DU", IndirectRequirement.Either);
-        if (((obj.ContainsKey(PdfName.DSm)||obj.ContainsKey(val))) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_3DUnits_DU>(obj, "DU", IndirectRequirement.Either);
+        if (((obj.ContainsKey(PdfName.DSm)||obj.ContainsKey(PdfName.DSn))) && val == null) {
             ctx.Fail<APM_3DUnits_DU>("DU is required when 'fn:IsRequired(fn:IsPresent(DSm) || fn:IsPresent(DSn))"); return;
         } else if (val == null) {
             return;

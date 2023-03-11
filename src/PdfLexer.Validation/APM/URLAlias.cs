@@ -132,7 +132,7 @@ internal partial class APM_URLAlias_U__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_URLAlias_U>(obj, "U", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_URLAlias_U>(obj, "U", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -159,7 +159,7 @@ internal partial class APM_URLAlias_C__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_URLAlias_C>(obj, "C", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_URLAlias_C>(obj, "C", IndirectRequirement.Either);
         if (val == null) { return; }
         var C = obj.Get("C");
         if (!(gte(((C as PdfArray)?.Count),1))) 

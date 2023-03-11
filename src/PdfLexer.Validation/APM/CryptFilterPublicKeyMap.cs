@@ -50,7 +50,7 @@ internal partial class APM_CryptFilterPublicKeyMap_DefaultCryptFilter__Base : IS
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_DefaultCryptFilter>(obj, "DefaultCryptFilter", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_DefaultCryptFilter>(obj, "DefaultCryptFilter", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(!obj.ContainsKey(PdfName.StdCF))) 
@@ -81,7 +81,7 @@ internal partial class APM_CryptFilterPublicKeyMap_DefEmbeddedFile__Base : ISpec
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_DefEmbeddedFile>(obj, "DefEmbeddedFile", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_DefEmbeddedFile>(obj, "DefEmbeddedFile", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(!obj.ContainsKey(PdfName.StdCF))) 
@@ -118,7 +118,7 @@ internal partial class APM_CryptFilterPublicKeyMap_CatchAll__Base : ISpecificati
             if (AllVals.Contains(key)) { continue; }
             
             
-            var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_CatchAll>(obj, key, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_CryptFilterPublicKeyMap_CatchAll>(obj, key, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

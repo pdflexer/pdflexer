@@ -105,7 +105,7 @@ internal partial class APM_Target_R__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_Target_R>(obj, "R", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_Target_R>(obj, "R", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -138,8 +138,8 @@ internal partial class APM_Target_N__Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var R = obj.Get("R");
-        var trailerCatalogNamesEmbeddedFiles = obj.Get("trailer")?.Get("Catalog")?.Get("Names")?.Get("EmbeddedFiles");
-        var val = ctx.GetOptional<PdfString, APM_Target_N>(obj, "N", IndirectRequirement.Either);
+        var trailerCatalogNamesEmbeddedFiles = ctx.Trailer.Get("Catalog")?.Get("Names")?.Get("EmbeddedFiles");
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_Target_N>(obj, "N", IndirectRequirement.Either);
         if (((eq(R,PdfName.C)&&InNameTree(trailerCatalogNamesEmbeddedFiles))) && val == null) {
             ctx.Fail<APM_Target_N>("N is required when 'fn:IsRequired((@R==C) && fn:InNameTree(trailer::Catalog::Names::EmbeddedFiles))"); return;
         } else if (val == null) {
@@ -239,7 +239,7 @@ internal partial class APM_Target_A__Base : ISpecification<PdfDictionary>
                     
                     var A = obj.Get("A");
                     var P = obj.Get("P");
-                    if (!((gte(A,0)&&lt(A,(((P)?.GetAs<PdfDictionary>()?.Get(PdfName.Annots) as PdfArray)?.Count))))) 
+                    if (!((gte(A,0)&&lt(A,((ctx.GetPage(P)?.Get(PdfName.Annots) as PdfArray)?.Count))))) 
                     {
                         ctx.Fail<APM_Target_A>($"Invalid value {val}, allowed are: [fn:Eval((@A>=0) && (@A<fn:ArrayLength(fn:PageProperty(@P,Annots))))]");
                     }
@@ -254,7 +254,7 @@ internal partial class APM_Target_A__Base : ISpecification<PdfDictionary>
                     
                     var A = obj.Get("A");
                     var P = obj.Get("P");
-                    if (!(eq(A,(P)?.GetAs<PdfDictionary>()?.Get("")))) 
+                    if (false) 
                     {
                         ctx.Fail<APM_Target_A>($"Invalid value {val}, allowed are: [fn:Eval(@A==fn:PageProperty(@P,Annots::@NM))]");
                     }
@@ -287,7 +287,7 @@ internal partial class APM_Target_T__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_Target_T>(obj, "T", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Target_T>(obj, "T", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

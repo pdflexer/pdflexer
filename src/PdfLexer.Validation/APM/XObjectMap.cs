@@ -54,7 +54,7 @@ internal partial class APM_XObjectMap_CatchAll__Base : ISpecification<PdfDiction
             if (AllVals.Contains(key)) { continue; }
             
             
-            var val = ctx.GetOptional<PdfStream, APM_XObjectMap_CatchAll>(obj, key, IndirectRequirement.MustBeIndirect);
+            var (val, wasIR) = ctx.GetOptional<PdfStream, APM_XObjectMap_CatchAll>(obj, key, IndirectRequirement.MustBeIndirect);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

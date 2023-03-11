@@ -54,7 +54,7 @@ internal partial class APM_ColorantsDict_CatchAll__Base : ISpecification<PdfDict
             if (AllVals.Contains(key)) { continue; }
             
             
-            var val = ctx.GetOptional<PdfArray, APM_ColorantsDict_CatchAll>(obj, key, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ColorantsDict_CatchAll>(obj, key, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

@@ -177,7 +177,7 @@ internal partial class APM_FontTrueType_Type__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_FontTrueType_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_FontTrueType_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -209,7 +209,7 @@ internal partial class APM_FontTrueType_Subtype__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_FontTrueType_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_FontTrueType_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -242,7 +242,7 @@ internal partial class APM_FontTrueType_Name__Base : ISpecification<PdfDictionar
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfName, APM_FontTrueType_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_FontTrueType_Name>(obj, "Name", IndirectRequirement.Either);
         if (((ctx.Version == 1.0m)) && val == null) {
             ctx.Fail<APM_FontTrueType_Name>("Name is required when 'fn:IsRequired(fn:IsPDFVersion(1.0))"); return;
         } else if (val == null) {
@@ -273,7 +273,7 @@ internal partial class APM_FontTrueType_BaseFont__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_FontTrueType_BaseFont>(obj, "BaseFont", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_FontTrueType_BaseFont>(obj, "BaseFont", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -301,7 +301,7 @@ internal partial class APM_FontTrueType_FirstChar__Base : ISpecification<PdfDict
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfIntNumber, APM_FontTrueType_FirstChar>(obj, "FirstChar", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FontTrueType_FirstChar>(obj, "FirstChar", IndirectRequirement.Either);
         if (((ctx.Version >= 2.0m||NotStandard14Font(obj))) && val == null) {
             ctx.Fail<APM_FontTrueType_FirstChar>("FirstChar is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:NotStandard14Font())"); return;
         } else if (val == null) {
@@ -333,7 +333,7 @@ internal partial class APM_FontTrueType_LastChar__Base : ISpecification<PdfDicti
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfIntNumber, APM_FontTrueType_LastChar>(obj, "LastChar", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FontTrueType_LastChar>(obj, "LastChar", IndirectRequirement.Either);
         if (((ctx.Version >= 2.0m||NotStandard14Font(obj))) && val == null) {
             ctx.Fail<APM_FontTrueType_LastChar>("LastChar is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:NotStandard14Font())"); return;
         } else if (val == null) {
@@ -365,7 +365,7 @@ internal partial class APM_FontTrueType_Widths__Base : ISpecification<PdfDiction
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfArray, APM_FontTrueType_Widths>(obj, "Widths", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_FontTrueType_Widths>(obj, "Widths", IndirectRequirement.Either);
         if (((ctx.Version >= 2.0m||NotStandard14Font(obj))) && val == null) {
             ctx.Fail<APM_FontTrueType_Widths>("Widths is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:NotStandard14Font())"); return;
         } else if (val == null) {
@@ -397,7 +397,7 @@ internal partial class APM_FontTrueType_FontDescriptor__Base : ISpecification<Pd
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfDictionary, APM_FontTrueType_FontDescriptor>(obj, "FontDescriptor", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_FontTrueType_FontDescriptor>(obj, "FontDescriptor", IndirectRequirement.MustBeIndirect);
         if (((ctx.Version >= 2.0m||NotStandard14Font(obj))) && val == null) {
             ctx.Fail<APM_FontTrueType_FontDescriptor>("FontDescriptor is required when 'fn:IsRequired(fn:SinceVersion(2.0) || fn:NotStandard14Font())"); return;
         } else if (val == null) {
@@ -481,7 +481,7 @@ internal partial class APM_FontTrueType_ToUnicode__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_FontTrueType_ToUnicode>(obj, "ToUnicode", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_FontTrueType_ToUnicode>(obj, "ToUnicode", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

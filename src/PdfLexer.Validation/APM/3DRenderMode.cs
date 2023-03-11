@@ -103,7 +103,7 @@ internal partial class APM_3DRenderMode_Type__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_3DRenderMode_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_3DRenderMode_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -135,7 +135,7 @@ internal partial class APM_3DRenderMode_Subtype__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_3DRenderMode_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_3DRenderMode_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -167,7 +167,7 @@ internal partial class APM_3DRenderMode_AC__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_3DRenderMode_AC>(obj, "AC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_3DRenderMode_AC>(obj, "AC", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
@@ -247,7 +247,7 @@ internal partial class APM_3DRenderMode_O__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DRenderMode_O>(obj, "O", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DRenderMode_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -279,7 +279,7 @@ internal partial class APM_3DRenderMode_CV__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DRenderMode_CV>(obj, "CV", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DRenderMode_CV>(obj, "CV", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

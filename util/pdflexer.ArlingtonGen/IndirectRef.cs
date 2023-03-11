@@ -74,14 +74,20 @@ internal class IndirectRef
         var irs = Row.IndirectReference.Split(";");
         var requiresIndirect = irs.Length == 1 ? irs[0] : irs[types.FindIndex(x => x.Contains(type))];
 
+        return GetComplexInternal(requiresIndirect, type);
+    }
+
+    public string GetComplex()
+    {
+        return GetComplexInternal(Row.IndirectReference, null);
+    }
+
+    private string GetComplexInternal(string requiresIndirect, string? type)
+    {
         if (requiresIndirect == "fn:MustBeDirect()")
         {
-            return $$"""
-if (wasIR) {
-    ctx.Fail<APM_{{GenBase.RootName}}_{{GenBase.Key}}>("{{Row.Key}} is required to be direct when a {{type}}");
-    return;
-}
-""";
+            // covered by lookups
+            return "\n";
         }
 
         bool mustBeDirect = false;
@@ -89,23 +95,26 @@ if (wasIR) {
         {
             requiresIndirect = requiresIndirect[15..^1];
             mustBeDirect = true;
-        } else if (requiresIndirect.StartsWith("fn:MustBeIndirect"))
+        }
+        else if (requiresIndirect.StartsWith("fn:MustBeIndirect"))
         {
             requiresIndirect = requiresIndirect[18..^1];
             mustBeDirect = false;
-        } else
+        }
+        else
         {
             throw new ApplicationException("Unkonwn IR: " + requiresIndirect);
         }
 
         var exp = new Exp(requiresIndirect);
         var vars = exp.GetRequiredValues().Distinct();
-        var defs = string.Join('\n', vars.Select(v => GenBase.GetSetter(v, type, "val")));
+        var defs = type == null ? string.Join('\n', vars.Select(v => GenBase.GetSetter(v, "n/a", "val")))
+            : string.Join('\n', vars.Select(v => GenBase.GetSetter(v, type, "val")));
 
         return $$"""
 {{defs}}
-if ({{exp.GetText()}} && {{(mustBeDirect ? "wasIr" : "!wasIr")}}) {
-    ctx.Fail<APM_{{GenBase.RootName}}_{{GenBase.Key}}>("{{Row.Key}} is required to be {{(mustBeDirect ? "direct" : "indirect")}} when a {{type}}");
+if ({{exp.GetText()}} && {{(mustBeDirect ? "wasIR" : "!wasIR")}}) {
+    ctx.Fail<APM_{{GenBase.RootName}}_{{GenBase.Key}}>("{{Row.Key}} is required to be {{(mustBeDirect ? "direct" : "indirect")}} for ({{requiresIndirect}}){{(type == null ? "" : " when a " + type)}}");
     return;
 }
 """;

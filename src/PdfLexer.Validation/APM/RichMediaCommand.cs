@@ -99,7 +99,7 @@ internal partial class APM_RichMediaCommand_Type__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaCommand_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaCommand_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -131,7 +131,7 @@ internal partial class APM_RichMediaCommand_C__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_RichMediaCommand_C>(obj, "C", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_RichMediaCommand_C>(obj, "C", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -180,8 +180,29 @@ internal partial class APM_RichMediaCommand_A__Base : ISpecification<PdfDictiona
                     // no linked objects
                     return;
                 }
+            case PdfObjectType.NumericObj:
+                {
             
-            // TODO MC array;boolean;integer;number;string-text
+                    // TODO MC integer;number
+            
+                    var val =  (PdfNumber)utval;
+                    if (val is PdfIntNumber) 
+                    {
+                        // integer
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    } else if (true) 
+                    {
+                        // number
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    }
+                    return;
+                }
             case PdfObjectType.StringObj:
                 {
                     var val =  (PdfString)utval;

@@ -380,7 +380,7 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
     }
 
     page = page.NativeObject.CloneShallow();
-    var fl = new FlateWriter();
+    var fl = new ZLibLexerStream();
     ms.Seek(0, SeekOrigin.Begin);
     ms.CopyTo(fl);
 

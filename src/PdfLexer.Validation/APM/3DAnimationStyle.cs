@@ -101,7 +101,7 @@ internal partial class APM_3DAnimationStyle_Type__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_3DAnimationStyle_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_3DAnimationStyle_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -133,7 +133,7 @@ internal partial class APM_3DAnimationStyle_Subtype__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_3DAnimationStyle_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_3DAnimationStyle_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -165,7 +165,7 @@ internal partial class APM_3DAnimationStyle_PC__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_3DAnimationStyle_PC>(obj, "PC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_3DAnimationStyle_PC>(obj, "PC", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
@@ -192,7 +192,7 @@ internal partial class APM_3DAnimationStyle_TM__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_3DAnimationStyle_TM>(obj, "TM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_3DAnimationStyle_TM>(obj, "TM", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         

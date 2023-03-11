@@ -103,7 +103,7 @@ internal partial class APM_DeviceNMixingHints_Solidities__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_DeviceNMixingHints_Solidities>(obj, "Solidities", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_DeviceNMixingHints_Solidities>(obj, "Solidities", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -131,8 +131,8 @@ internal partial class APM_DeviceNMixingHints_PrintingOrder__Base : ISpecificati
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfArray, APM_DeviceNMixingHints_PrintingOrder>(obj, "PrintingOrder", IndirectRequirement.Either);
-        if ((obj.ContainsKey(val)) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_DeviceNMixingHints_PrintingOrder>(obj, "PrintingOrder", IndirectRequirement.Either);
+        if ((obj.ContainsKey(PdfName.Solidities)) && val == null) {
             ctx.Fail<APM_DeviceNMixingHints_PrintingOrder>("PrintingOrder is required when 'fn:IsRequired(fn:IsPresent(Solidities))"); return;
         } else if (val == null) {
             return;
@@ -162,7 +162,7 @@ internal partial class APM_DeviceNMixingHints_DotGain__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_DeviceNMixingHints_DotGain>(obj, "DotGain", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_DeviceNMixingHints_DotGain>(obj, "DotGain", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

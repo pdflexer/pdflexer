@@ -67,7 +67,7 @@ internal class Serializers
                 var str = (PdfStream)obj;
                 if (str.Contents.IsEncrypted)
                 {
-                    var copied = new FlateWriter();
+                    var copied = new ZLibLexerStream();
                     using var ds = str.Contents.GetDecodedStream();
                     ds.CopyTo(copied);
                     var dict = str.Dictionary.CloneShallow();

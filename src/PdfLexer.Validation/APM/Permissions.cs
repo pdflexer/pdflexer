@@ -112,7 +112,7 @@ internal partial class APM_Permissions_DocMDP__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_Permissions_DocMDP>(obj, "DocMDP", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Permissions_DocMDP>(obj, "DocMDP", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         var DocMDPReference = val.Get("Reference");
         if (!(gte(((DocMDPReference as PdfArray)?.Count),1))) 
@@ -143,7 +143,7 @@ internal partial class APM_Permissions_UR3__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_Permissions_UR3>(obj, "UR3", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Permissions_UR3>(obj, "UR3", IndirectRequirement.Either);
         if (val == null) { return; }
         var UR3Reference0TransformMethod = val.Get("Reference")?.Get(0)?.Get("TransformMethod");
         if (!(eq(UR3Reference0TransformMethod,val))) 

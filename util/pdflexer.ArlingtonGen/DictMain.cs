@@ -1,4 +1,5 @@
 ﻿
+using pdflexer.ArlingtonGen.Expressions;
 using System.Security.Cryptography.X509Certificates;
 
 namespace pdflexer.ArlingtonGen;
@@ -14,6 +15,9 @@ internal class DictMain
 
     public string CreateClass(List<Row> rows)
     {
+        VariableContext.VarSub = "var";
+        VariableContext.VarName = "var";
+        VariableContext.Vars.Clear();
         var code = $$"""
 using System.Linq;
 

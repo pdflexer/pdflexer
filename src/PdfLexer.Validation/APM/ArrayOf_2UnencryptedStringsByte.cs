@@ -34,7 +34,7 @@ internal partial class APM_ArrayOf_2UnencryptedStringsByte_0 : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_ArrayOf_2UnencryptedStringsByte_0>(obj, 0, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_ArrayOf_2UnencryptedStringsByte_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(AlwaysUnencrypted(obj))) 
@@ -58,7 +58,7 @@ internal partial class APM_ArrayOf_2UnencryptedStringsByte_1 : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_ArrayOf_2UnencryptedStringsByte_1>(obj, 1, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_ArrayOf_2UnencryptedStringsByte_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(AlwaysUnencrypted(obj))) 

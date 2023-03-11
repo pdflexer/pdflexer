@@ -6,7 +6,7 @@ using PdfLexer;
 Directory.CreateDirectory("C:\\source\\github\\pdflexer\\src\\pdflexer.Validation\\APM");
 
 var files = Directory.GetFiles($"C:\\source\\github\\arlington-pdf-model\\tsv\\latest", "*.tsv");
-// var files = new List<string> { $"C:\\source\\github\\arlington-pdf-model\\tsv\\latest\\" + "XRefStream.tsv" };
+// var files = new List<string> { $"C:\\source\\github\\arlington-pdf-model\\tsv\\latest\\" + "AnnotText.tsv" };
 
 var children = new Dictionary<string, List<GenBase>>();
 

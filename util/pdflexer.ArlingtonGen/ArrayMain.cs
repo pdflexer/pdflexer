@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pdflexer.ArlingtonGen.Expressions;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -18,6 +19,9 @@ internal class ArrayMain
 
     public string CreateClass(List<Row> rows)
     {
+        VariableContext.VarSub = "var";
+        VariableContext.VarName = "var";
+        VariableContext.Vars.Clear();
         var code = $$"""
 internal partial class APM_{{Name}} : ISpecification<PdfArray>
 {

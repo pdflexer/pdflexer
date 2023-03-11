@@ -141,7 +141,7 @@ internal partial class APM_StyleDict_Panose__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_StyleDict_Panose>(obj, "Panose", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_StyleDict_Panose>(obj, "Panose", IndirectRequirement.Either);
         if (val == null) { return; }
         var Panose = obj.Get("Panose");
         if (!(eq(StringLength(Panose),12))) 

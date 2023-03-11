@@ -80,7 +80,7 @@ internal partial class APM_SignatureReferenceIdentity_Type__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m && version < 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SignatureReferenceIdentity_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SignatureReferenceIdentity_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -112,7 +112,7 @@ internal partial class APM_SignatureReferenceIdentity_TransformMethod__Base : IS
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m && version < 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_SignatureReferenceIdentity_TransformMethod>(obj, "TransformMethod", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_SignatureReferenceIdentity_TransformMethod>(obj, "TransformMethod", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -237,7 +237,7 @@ internal partial class APM_SignatureReferenceIdentity_DigestMethod__Base : ISpec
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m && version < 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SignatureReferenceIdentity_DigestMethod>(obj, "DigestMethod", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SignatureReferenceIdentity_DigestMethod>(obj, "DigestMethod", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

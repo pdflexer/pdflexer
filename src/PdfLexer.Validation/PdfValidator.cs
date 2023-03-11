@@ -8,20 +8,24 @@ namespace PdfLexer.Validation;
 /// </summary>
 public class PdfValidator
 {
-    public PdfValidator(PdfDictionary root)
+    public PdfValidator(PdfDocument doc, long fileSize)
     {
-        DocRoot = root;
+        Document = doc;
+        FileSize = fileSize;
+        Current = null!;
     }
-    public PdfDictionary DocRoot { get; set; }
-    public decimal Version { get; set; }
-    public long FileSize { get; set; }
-    public int NumberOfPages { get; set; }
+    internal PdfDictionary Trailer { get => Document.Trailer; }
+    internal decimal Version { get => Document.PdfVersion; }
+    internal long FileSize { get; set; }
+    internal int NumberOfPages { get => Document.Pages.Count; }
+    internal PdfDocument Document { get; set; }
     public List<string> Errors { get; set; } = new List<string>();
     public List<string> Extensions { get; set; } = new List<string>();
+    public List<string> Passed { get; } = new List<string>();
 
     public void Run()
     {
-        Run<APM_FileTrailer, PdfDictionary>(new CallStack(), DocRoot, null);
+        Run<APM_FileTrailer, PdfDictionary>(new CallStack(), Trailer, null);
     }
 
     internal void Fail<T>(string msg) where T : ISpecification
@@ -29,14 +33,24 @@ public class PdfValidator
         Errors.Add($"[{T.Name}] " + msg + "\n(" + string.Join(" -> ", Current.Stack) + ")");
     }
 
-    public PdfValidator Clone()
+    internal PdfDictionary? GetPage(IPdfObject? lookup)
     {
-        return new PdfValidator(DocRoot)
+        if (lookup == null)
         {
-            Version = Version,
+            return null;
+        }
+        if (lookup is PdfIntNumber num)
+        {
+
+        }
+        return null;
+    }
+
+    internal PdfValidator Clone()
+    {
+        return new PdfValidator(Document, FileSize)
+        {
             Extensions = Extensions,
-            NumberOfPages = NumberOfPages,
-            FileSize = FileSize,
         };
     }
 
@@ -105,18 +119,18 @@ public class PdfValidator
         }
     }
 
-    public List<string> Passed { get; } = new List<string>();
+    
 
-    internal T? GetOptional<T, TSpec>(PdfDictionary obj, string name, IndirectRequirement req) where T : class, IPdfObject where TSpec : ISpecification
+    internal (T? Obj, bool WasIndirect) GetOptional<T, TSpec>(PdfDictionary obj, string name, IndirectRequirement req) where T : class, IPdfObject where TSpec : ISpecification
     {
-        var (val, _) = GetOptional<TSpec>(obj, name, req);
-        if (val == null) { return default(T); }
+        var (val, wasIr) = GetOptional<TSpec>(obj, name, req);
+        if (val == null) { return (default(T), wasIr); }
         if (val is T typed)
         {
-            return typed;
+            return (typed, wasIr);
         }
         Fail<TSpec>(name + $" entry is was of type {val.GetPdfObjType()} not {typeof(T).Name}");
-        return default(T);
+        return (default(T), wasIr);
     }
 
     internal (IPdfObject? Obj, bool WasIndirect) GetOptional<TSpec>(PdfDictionary obj, string name, IndirectRequirement req) where TSpec : ISpecification
@@ -168,20 +182,20 @@ public class PdfValidator
         return (val, ir);
     }
 
-    internal T? GetRequired<T, TSpec>(PdfDictionary obj, string name, IndirectRequirement req) where T : class, IPdfObject where TSpec : ISpecification
+    internal (T? Obj, bool WasIndirect) GetRequired<T, TSpec>(PdfDictionary obj, string name, IndirectRequirement req) where T : class, IPdfObject where TSpec : ISpecification
     {
-        var (val, _) = GetOptional<TSpec>(obj, name, req);
+        var (val, wasIr) = GetOptional<TSpec>(obj, name, req);
         if (val == null)
         {
             Fail<TSpec>(name + " entry is missing");
-            return default(T);
+            return (default(T), wasIr);
         }
         if (val is T typed)
         {
-            return typed;
+            return (typed, wasIr);
         }
         Fail<TSpec>(name + $" entry is was of type {val.GetPdfObjType()} not {typeof(T).Name}");
-        return default(T);
+        return (default(T), wasIr);
     }
 
     internal (IPdfObject? Obj, bool WasIndirect) GetOptional<TSpec>(PdfArray obj, int i, IndirectRequirement req) where TSpec : ISpecification
@@ -234,32 +248,32 @@ public class PdfValidator
         return (val, ir);
 
     }
-    internal T? GetOptional<T, TSpec>(PdfArray obj, int i, IndirectRequirement req) where T : class, IPdfObject where TSpec : ISpecification
+    internal (T? Obj, bool WasIndirect) GetOptional<T, TSpec>(PdfArray obj, int i, IndirectRequirement req) where T : class, IPdfObject where TSpec : ISpecification
     {
-        var (val, _) = GetOptional<TSpec>(obj, i, req);
-        if (val == null) { return default(T); }
+        var (val, wasIr) = GetOptional<TSpec>(obj, i, req);
+        if (val == null) { return (default(T), wasIr); }
         if (val is T typed)
         {
-            return typed;
+            return (typed, wasIr);
         }
         Fail<TSpec>(i.ToString() + $" entry is was of type {val.GetPdfObjType()} not {typeof(T).Name}");
-        return default(T);
+        return (default(T), wasIr);
 
     }
 
-    internal T? GetRequired<T, TSpec>(PdfArray obj, int i, IndirectRequirement req) where T : class, IPdfObject where TSpec : ISpecification
+    internal (T? Obj, bool WasIndirect) GetRequired<T, TSpec>(PdfArray obj, int i, IndirectRequirement req) where T : class, IPdfObject where TSpec : ISpecification
     {
-        var (val, _) = GetOptional<TSpec>(obj, i, req);
+        var (val, wasIr) = GetOptional<TSpec>(obj, i, req);
         if (val == null)
         {
             Fail<TSpec>(i.ToString() + " entry is missing");
-            return default(T);
+            return (default(T), wasIr);
         }
         if (val is T typed)
         {
-            return typed;
+            return (typed, wasIr);
         }
         Fail<TSpec>(i.ToString() + $" entry is was of type {val.GetPdfObjType()} not {typeof(T).Name}");
-        return default(T);
+        return (default(T), wasIr);
     }
 }

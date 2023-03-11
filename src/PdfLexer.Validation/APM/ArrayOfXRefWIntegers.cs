@@ -35,9 +35,9 @@ internal partial class APM_ArrayOfXRefWIntegers_0 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        // TODO complex IR
-        var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefWIntegers_0>(obj, 0, IndirectRequirement.MustBeDirect);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefWIntegers_0>(obj, 0, IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
+        
         // no special cases
         IPdfObject v = val;
         
@@ -61,9 +61,9 @@ internal partial class APM_ArrayOfXRefWIntegers_1 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        // TODO complex IR
-        var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefWIntegers_1>(obj, 1, IndirectRequirement.MustBeDirect);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefWIntegers_1>(obj, 1, IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
+        
         // no special cases
         IPdfObject v = val;
         
@@ -87,9 +87,9 @@ internal partial class APM_ArrayOfXRefWIntegers_2 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        // TODO complex IR
-        var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefWIntegers_2>(obj, 2, IndirectRequirement.MustBeDirect);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_ArrayOfXRefWIntegers_2>(obj, 2, IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
+        
         // no special cases
         IPdfObject v = val;
         

@@ -115,7 +115,7 @@ internal partial class APM_MediaScreenParametersMHBE_W__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_MediaScreenParametersMHBE_W>(obj, "W", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_MediaScreenParametersMHBE_W>(obj, "W", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -147,7 +147,7 @@ internal partial class APM_MediaScreenParametersMHBE_B__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_MediaScreenParametersMHBE_B>(obj, "B", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_MediaScreenParametersMHBE_B>(obj, "B", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -174,7 +174,7 @@ internal partial class APM_MediaScreenParametersMHBE_O__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_MediaScreenParametersMHBE_O>(obj, "O", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_MediaScreenParametersMHBE_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -206,7 +206,7 @@ internal partial class APM_MediaScreenParametersMHBE_M__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_MediaScreenParametersMHBE_M>(obj, "M", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_MediaScreenParametersMHBE_M>(obj, "M", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -238,7 +238,7 @@ internal partial class APM_MediaScreenParametersMHBE_F__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_MediaScreenParametersMHBE_F>(obj, "F", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_MediaScreenParametersMHBE_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

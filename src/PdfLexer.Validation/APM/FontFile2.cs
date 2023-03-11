@@ -159,7 +159,7 @@ internal partial class APM_FontFile2_Length1__Base : ISpecification<PdfDictionar
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var parentparentSubtype = stack.GetParent(2)?.Get("parent");
-        var val = ctx.GetOptional<PdfIntNumber, APM_FontFile2_Length1>(obj, "Length1", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FontFile2_Length1>(obj, "Length1", IndirectRequirement.Either);
         if ((eq(parentparentSubtype,PdfName.TrueType)) && val == null) {
             ctx.Fail<APM_FontFile2_Length1>("Length1 is required when 'fn:IsRequired(parent::parent::@Subtype==TrueType)"); return;
         } else if (val == null) {
@@ -194,7 +194,7 @@ internal partial class APM_FontFile2_Length2__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FontFile2_Length2>(obj, "Length2", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FontFile2_Length2>(obj, "Length2", IndirectRequirement.Either);
         if (val == null) { return; }
         var Length2 = obj.Get("Length2");
         if (!(gte(Length2,0))) 
@@ -225,7 +225,7 @@ internal partial class APM_FontFile2_Length3__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FontFile2_Length3>(obj, "Length3", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FontFile2_Length3>(obj, "Length3", IndirectRequirement.Either);
         if (val == null) { return; }
         var Length3 = obj.Get("Length3");
         if (!(gte(Length3,0))) 
@@ -256,7 +256,7 @@ internal partial class APM_FontFile2_Subtype__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_FontFile2_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_FontFile2_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -283,7 +283,7 @@ internal partial class APM_FontFile2_Length__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_FontFile2_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_FontFile2_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -604,7 +604,7 @@ internal partial class APM_FontFile2_DL__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FontFile2_DL>(obj, "DL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FontFile2_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
         var DL = obj.Get("DL");
         if (!(gte(DL,0))) 

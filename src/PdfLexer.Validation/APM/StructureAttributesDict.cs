@@ -189,7 +189,7 @@ internal partial class APM_StructureAttributesDict_O__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_StructureAttributesDict_O>(obj, "O", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_StructureAttributesDict_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restictions
@@ -217,7 +217,7 @@ internal partial class APM_StructureAttributesDict_NS__Base : ISpecification<Pdf
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var O = obj.Get("O");
-        var val = ctx.GetOptional<PdfDictionary, APM_StructureAttributesDict_NS>(obj, "NS", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_StructureAttributesDict_NS>(obj, "NS", IndirectRequirement.MustBeIndirect);
         if ((eq(O,PdfName.NSO)) && val == null) {
             ctx.Fail<APM_StructureAttributesDict_NS>("NS is required when 'fn:IsRequired(@O==NSO)"); return;
         } else if (val == null) {
@@ -248,7 +248,7 @@ internal partial class APM_StructureAttributesDict_Placement__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Placement>(obj, "Placement", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Placement>(obj, "Placement", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -284,7 +284,7 @@ internal partial class APM_StructureAttributesDict_WritingMode__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_WritingMode>(obj, "WritingMode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_WritingMode>(obj, "WritingMode", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -320,7 +320,7 @@ internal partial class APM_StructureAttributesDict_BackgroundColor__Base : ISpec
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_BackgroundColor>(obj, "BackgroundColor", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_BackgroundColor>(obj, "BackgroundColor", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -351,7 +351,7 @@ internal partial class APM_StructureAttributesDict_BorderColor__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_BorderColor>(obj, "BorderColor", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_BorderColor>(obj, "BorderColor", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -564,7 +564,7 @@ internal partial class APM_StructureAttributesDict_Color__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_Color>(obj, "Color", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_Color>(obj, "Color", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -595,7 +595,7 @@ internal partial class APM_StructureAttributesDict_SpaceBefore__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_SpaceBefore>(obj, "SpaceBefore", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_SpaceBefore>(obj, "SpaceBefore", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -626,7 +626,7 @@ internal partial class APM_StructureAttributesDict_SpaceAfter__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_SpaceAfter>(obj, "SpaceAfter", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_SpaceAfter>(obj, "SpaceAfter", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -657,7 +657,7 @@ internal partial class APM_StructureAttributesDict_StartIndent__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_StartIndent>(obj, "StartIndent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_StartIndent>(obj, "StartIndent", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -688,7 +688,7 @@ internal partial class APM_StructureAttributesDict_EndIndent__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_EndIndent>(obj, "EndIndent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_EndIndent>(obj, "EndIndent", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -719,7 +719,7 @@ internal partial class APM_StructureAttributesDict_TextIndent__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_TextIndent>(obj, "TextIndent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_TextIndent>(obj, "TextIndent", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -750,7 +750,7 @@ internal partial class APM_StructureAttributesDict_TextAlign__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_TextAlign>(obj, "TextAlign", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_TextAlign>(obj, "TextAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -786,7 +786,7 @@ internal partial class APM_StructureAttributesDict_BBox__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_BBox>(obj, "BBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_BBox>(obj, "BBox", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!(((eq(O,PdfName.Layout)||eq(O,PdfName.Artifact))||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -929,7 +929,7 @@ internal partial class APM_StructureAttributesDict_BlockAlign__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_BlockAlign>(obj, "BlockAlign", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_BlockAlign>(obj, "BlockAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -965,7 +965,7 @@ internal partial class APM_StructureAttributesDict_InlineAlign__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_InlineAlign>(obj, "InlineAlign", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_InlineAlign>(obj, "InlineAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1118,7 +1118,7 @@ internal partial class APM_StructureAttributesDict_BaselineShift__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_BaselineShift>(obj, "BaselineShift", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_BaselineShift>(obj, "BaselineShift", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1210,7 +1210,7 @@ internal partial class APM_StructureAttributesDict_TextPosition__Base : ISpecifi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_TextPosition>(obj, "TextPosition", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_TextPosition>(obj, "TextPosition", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1246,7 +1246,7 @@ internal partial class APM_StructureAttributesDict_TextDecorationColor__Base : I
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_TextDecorationColor>(obj, "TextDecorationColor", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_TextDecorationColor>(obj, "TextDecorationColor", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1277,7 +1277,7 @@ internal partial class APM_StructureAttributesDict_TextDecorationThickness__Base
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_TextDecorationThickness>(obj, "TextDecorationThickness", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_StructureAttributesDict_TextDecorationThickness>(obj, "TextDecorationThickness", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1308,7 +1308,7 @@ internal partial class APM_StructureAttributesDict_TextDecorationType__Base : IS
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_TextDecorationType>(obj, "TextDecorationType", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_TextDecorationType>(obj, "TextDecorationType", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1344,7 +1344,7 @@ internal partial class APM_StructureAttributesDict_RubyAlign__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_RubyAlign>(obj, "RubyAlign", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_RubyAlign>(obj, "RubyAlign", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1380,7 +1380,7 @@ internal partial class APM_StructureAttributesDict_RubyPosition__Base : ISpecifi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_RubyPosition>(obj, "RubyPosition", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_RubyPosition>(obj, "RubyPosition", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1482,7 +1482,7 @@ internal partial class APM_StructureAttributesDict_ColumnCount__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_StructureAttributesDict_ColumnCount>(obj, "ColumnCount", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_StructureAttributesDict_ColumnCount>(obj, "ColumnCount", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Layout)||!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1625,7 +1625,7 @@ internal partial class APM_StructureAttributesDict_ListNumbering__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_ListNumbering>(obj, "ListNumbering", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_ListNumbering>(obj, "ListNumbering", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.List)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1661,7 +1661,7 @@ internal partial class APM_StructureAttributesDict_ContinuedList__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_StructureAttributesDict_ContinuedList>(obj, "ContinuedList", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_StructureAttributesDict_ContinuedList>(obj, "ContinuedList", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.List)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1692,7 +1692,7 @@ internal partial class APM_StructureAttributesDict_ContinuedForm__Base : ISpecif
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_StructureAttributesDict_ContinuedForm>(obj, "ContinuedForm", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_StructureAttributesDict_ContinuedForm>(obj, "ContinuedForm", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.List)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -1723,7 +1723,7 @@ internal partial class APM_StructureAttributesDict_Role__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Role>(obj, "Role", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Role>(obj, "Role", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.PrintField)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.Artifact)))) 
@@ -1759,7 +1759,7 @@ internal partial class APM_StructureAttributesDict_Checked__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Checked>(obj, "Checked", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Checked>(obj, "Checked", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.PrintField)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.Artifact)))) 
@@ -1795,7 +1795,7 @@ internal partial class APM_StructureAttributesDict_checked__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_checked>(obj, "checked", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_checked>(obj, "checked", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.PrintField)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.Artifact)))) 
@@ -1831,7 +1831,7 @@ internal partial class APM_StructureAttributesDict_Desc__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_StructureAttributesDict_Desc>(obj, "Desc", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_StructureAttributesDict_Desc>(obj, "Desc", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.PrintField)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.Table)&&!eq(O,PdfName.Artifact)))) 
@@ -1862,7 +1862,7 @@ internal partial class APM_StructureAttributesDict_RowSpan__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_StructureAttributesDict_RowSpan>(obj, "RowSpan", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_StructureAttributesDict_RowSpan>(obj, "RowSpan", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
@@ -1893,7 +1893,7 @@ internal partial class APM_StructureAttributesDict_ColSpan__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_StructureAttributesDict_ColSpan>(obj, "ColSpan", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_StructureAttributesDict_ColSpan>(obj, "ColSpan", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
@@ -1924,7 +1924,7 @@ internal partial class APM_StructureAttributesDict_Headers__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_Headers>(obj, "Headers", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_Headers>(obj, "Headers", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
@@ -1955,7 +1955,7 @@ internal partial class APM_StructureAttributesDict_Scope__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Scope>(obj, "Scope", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Scope>(obj, "Scope", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
@@ -1991,7 +1991,7 @@ internal partial class APM_StructureAttributesDict_Summary__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_StructureAttributesDict_Summary>(obj, "Summary", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_StructureAttributesDict_Summary>(obj, "Summary", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
@@ -2022,7 +2022,7 @@ internal partial class APM_StructureAttributesDict_Short__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_StructureAttributesDict_Short>(obj, "Short", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_StructureAttributesDict_Short>(obj, "Short", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Table)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Artifact)))) 
@@ -2054,7 +2054,7 @@ internal partial class APM_StructureAttributesDict_P__Base : ISpecification<PdfD
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var O = obj.Get("O");
-        var val = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_P>(obj, "P", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_StructureAttributesDict_P>(obj, "P", IndirectRequirement.Either);
         if ((eq(O,PdfName.UserProperties)) && val == null) {
             ctx.Fail<APM_StructureAttributesDict_P>("P is required when 'fn:IsRequired(@O==UserProperties)"); return;
         } else if (val == null) {
@@ -2085,7 +2085,7 @@ internal partial class APM_StructureAttributesDict_Type__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Artifact)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 
@@ -2121,7 +2121,7 @@ internal partial class APM_StructureAttributesDict_Subtype__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_StructureAttributesDict_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         var O = obj.Get("O");
         if (!((eq(O,PdfName.Artifact)||!eq(O,PdfName.Layout)&&!eq(O,PdfName.List)&&!eq(O,PdfName.PrintField)&&!eq(O,PdfName.Table)))) 

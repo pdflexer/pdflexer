@@ -55,7 +55,7 @@ internal partial class APM_CollectionItem_Type__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_CollectionItem_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_CollectionItem_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -97,8 +97,29 @@ internal partial class APM_CollectionItem_CatchAll__Base : ISpecification<PdfDic
             if (utval == null) { return; }
             switch (utval.Type) 
             {
+                case PdfObjectType.StringObj:
+                    {
                 
-                // TODO MC date;dictionary;number;string-text
+                        // TODO MC date;string-text
+                
+                        var val =  (PdfString)utval;
+                        if (IsDate(val)) 
+                        {
+                            // date
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        } else if (true) 
+                        {
+                            // string-text
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        }
+                        return;
+                    }
                 case PdfObjectType.DictionaryObj:
                     {
                         var val =  (PdfDictionary)utval;

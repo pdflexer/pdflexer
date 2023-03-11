@@ -40,7 +40,7 @@ internal partial class APM_ArrayOfClassNamesRevisions_0x : ISpecification<PdfArr
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfName, APM_ArrayOfClassNamesRevisions_0x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfName, APM_ArrayOfClassNamesRevisions_0x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -67,7 +67,7 @@ internal partial class APM_ArrayOfClassNamesRevisions_1x : ISpecification<PdfArr
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfIntNumber, APM_ArrayOfClassNamesRevisions_1x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_ArrayOfClassNamesRevisions_1x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             IPdfObject v = val;

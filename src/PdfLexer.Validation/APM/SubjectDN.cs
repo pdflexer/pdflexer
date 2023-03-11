@@ -54,7 +54,7 @@ internal partial class APM_SubjectDN_CatchAll__Base : ISpecification<PdfDictiona
             if (AllVals.Contains(key)) { continue; }
             
             
-            var val = ctx.GetOptional<PdfString, APM_SubjectDN_CatchAll>(obj, key, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfString, APM_SubjectDN_CatchAll>(obj, key, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

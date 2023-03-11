@@ -132,7 +132,7 @@ internal partial class APM_FileSpecRF_F__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_FileSpecRF_F>(obj, "F", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_FileSpecRF_F>(obj, "F", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         var F = obj.Get("F");
         if (!(eq(mod(((F as PdfArray)?.Count),2),0))) 
@@ -163,7 +163,7 @@ internal partial class APM_FileSpecRF_UF__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_FileSpecRF_UF>(obj, "UF", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_FileSpecRF_UF>(obj, "UF", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         var UF = obj.Get("UF");
         if (!(eq(mod(((UF as PdfArray)?.Count),2),0))) 

@@ -125,7 +125,7 @@ internal partial class APM_FloatingWindowParameters_Type__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_FloatingWindowParameters_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_FloatingWindowParameters_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -157,7 +157,7 @@ internal partial class APM_FloatingWindowParameters_D__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_FloatingWindowParameters_D>(obj, "D", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_FloatingWindowParameters_D>(obj, "D", IndirectRequirement.Either);
         if (val == null) { return; }
         var D0 = val.Get(0);
         var D1 = val.Get(1);
@@ -189,7 +189,7 @@ internal partial class APM_FloatingWindowParameters_RT__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FloatingWindowParameters_RT>(obj, "RT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FloatingWindowParameters_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -221,7 +221,7 @@ internal partial class APM_FloatingWindowParameters_P__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FloatingWindowParameters_P>(obj, "P", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FloatingWindowParameters_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -253,7 +253,7 @@ internal partial class APM_FloatingWindowParameters_O__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FloatingWindowParameters_O>(obj, "O", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FloatingWindowParameters_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -285,7 +285,7 @@ internal partial class APM_FloatingWindowParameters_T__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_FloatingWindowParameters_T>(obj, "T", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_FloatingWindowParameters_T>(obj, "T", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -312,7 +312,7 @@ internal partial class APM_FloatingWindowParameters_UC__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_FloatingWindowParameters_UC>(obj, "UC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_FloatingWindowParameters_UC>(obj, "UC", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
@@ -339,7 +339,7 @@ internal partial class APM_FloatingWindowParameters_R__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FloatingWindowParameters_R>(obj, "R", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FloatingWindowParameters_R>(obj, "R", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -371,7 +371,7 @@ internal partial class APM_FloatingWindowParameters_TT__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_FloatingWindowParameters_TT>(obj, "TT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_FloatingWindowParameters_TT>(obj, "TT", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions

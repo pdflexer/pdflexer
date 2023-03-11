@@ -141,7 +141,7 @@ internal partial class APM_DeviceNDict_Subtype__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_DeviceNDict_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_DeviceNDict_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -175,7 +175,7 @@ internal partial class APM_DeviceNDict_Colorants__Base : ISpecification<PdfDicti
     {
         var Subtype = obj.Get("Subtype");
         var parent1 = parent?.Get(1);
-        var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Colorants>(obj, "Colorants", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Colorants>(obj, "Colorants", IndirectRequirement.Either);
         if ((((ctx.Version < 1.6m || eq(Subtype,PdfName.NChannel))&&HasSpotColorants(parent1))) && val == null) {
             ctx.Fail<APM_DeviceNDict_Colorants>("Colorants is required when 'fn:IsRequired(fn:SinceVersion(1.6,(@Subtype==NChannel)) && fn:HasSpotColorants(parent::1))"); return;
         } else if (val == null) {
@@ -208,7 +208,7 @@ internal partial class APM_DeviceNDict_Process__Base : ISpecification<PdfDiction
     {
         var Subtype = obj.Get("Subtype");
         var parent1 = parent?.Get(1);
-        var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Process>(obj, "Process", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_Process>(obj, "Process", IndirectRequirement.Either);
         if (((eq(Subtype,PdfName.NChannel)&&HasProcessColorants(parent1))) && val == null) {
             ctx.Fail<APM_DeviceNDict_Process>("Process is required when 'fn:IsRequired((@Subtype==NChannel) && fn:HasProcessColorants(parent::1))"); return;
         } else if (val == null) {
@@ -239,7 +239,7 @@ internal partial class APM_DeviceNDict_MixingHints__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_MixingHints>(obj, "MixingHints", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_DeviceNDict_MixingHints>(obj, "MixingHints", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

@@ -231,7 +231,9 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName DPart = new("DPart", false);
     public static readonly PdfName DPartInteract = new("DPartInteract", false);
     public static readonly PdfName DPartRoot = new("DPartRoot", false);
+    public static readonly PdfName DParts = new("DParts", false);
     public static readonly PdfName DSm = new("DSm", false);
+    public static readonly PdfName DSn = new("DSn", false);
     public static readonly PdfName DSS = new("DSS", false);
     public static readonly PdfName DuplexFlipLongEdge = new("DuplexFlipLongEdge", false);
     public static readonly PdfName DuplexFlipShortEdge = new("DuplexFlipShortEdge", false);
@@ -458,6 +460,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Metadata = new("Metadata", false);
     public static readonly PdfName MI = new("MI", false);
     public static readonly PdfName Middle = new("Middle", false);
+    public static readonly PdfName min = new("min", false);
     public static readonly PdfName Min = new("Min", false);
     public static readonly PdfName MinBitDepth = new("MinBitDepth", false);
     public static readonly PdfName MinScreenSize = new("MinScreenSize", false);
@@ -472,7 +475,8 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Multimedia = new("Multimedia", false);
     public static readonly PdfName Multiply = new("Multiply", false);
     public static readonly PdfName N = new("N", false);
-
+    public static readonly PdfName N0 = new("0", false);
+    public static readonly PdfName N1 = new("1", false);
     public static readonly PdfName N10 = new("1.0", false);
     public static readonly PdfName N11 = new("1.1", false);
     public static readonly PdfName N12 = new("1.2", false);
@@ -672,6 +676,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName SoftLight = new("SoftLight", false);
     public static readonly PdfName SoftwareIdentifier = new("SoftwareIdentifier", false);
     public static readonly PdfName Solid = new("Solid", false);
+    public static readonly PdfName Solidities = new("Solidities", false);
     public static readonly PdfName SolidOutline = new("SolidOutline", false);
     public static readonly PdfName SolidWireframe = new("SolidWireframe", false);
     public static readonly PdfName Sound = new("Sound", false);
@@ -693,6 +698,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Standalone = new("Standalone", false);
     public static readonly PdfName Standard = new("Standard", false);
     public static readonly PdfName Start = new("Start", false);
+    public static readonly PdfName State = new("State", false);
     public static readonly PdfName StdCF = new("StdCF", false);
     public static readonly PdfName STEP = new("STEP", false);
     public static readonly PdfName Stop = new("Stop", false);
@@ -735,6 +741,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName True = new("True", false);
     public static readonly PdfName TrueType = new("TrueType", false);
     public static readonly PdfName TSm = new("TSm", false);
+    public static readonly PdfName TSn = new("TSn", false);
     public static readonly PdfName Ttl = new("Ttl", false);
     public static readonly PdfName tv = new("tv", false);
     public static readonly PdfName TwoColumnLeft = new("TwoColumnLeft", false);
@@ -788,6 +795,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName UseThumbs = new("UseThumbs", false);
     public static readonly PdfName USFT = new("USFT", false);
     public static readonly PdfName USm = new("USm", false);
+    public static readonly PdfName USn = new("USn", false);
     public static readonly PdfName V = new("V", false);
     public static readonly PdfName V2 = new("V2", false);
     public static readonly PdfName VeriSignPPKVS = new("VeriSign.PPKVS", false);

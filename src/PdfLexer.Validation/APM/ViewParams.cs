@@ -92,7 +92,7 @@ internal partial class APM_ViewParams_Instance__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfDictionary, APM_ViewParams_Instance>(obj, "Instance", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfDictionary, APM_ViewParams_Instance>(obj, "Instance", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

@@ -166,7 +166,7 @@ internal partial class APM_AnnotUnderline_Type__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotUnderline_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotUnderline_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -198,7 +198,7 @@ internal partial class APM_AnnotUnderline_Subtype__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_AnnotUnderline_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_AnnotUnderline_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -230,7 +230,7 @@ internal partial class APM_AnnotUnderline_Rect__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_AnnotUnderline_Rect>(obj, "Rect", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_AnnotUnderline_Rect>(obj, "Rect", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -257,7 +257,7 @@ internal partial class APM_AnnotUnderline_Contents__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotUnderline_Contents>(obj, "Contents", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotUnderline_Contents>(obj, "Contents", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -284,7 +284,7 @@ internal partial class APM_AnnotUnderline_P__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_P>(obj, "P", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_P>(obj, "P", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -311,7 +311,7 @@ internal partial class APM_AnnotUnderline_NM__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotUnderline_NM>(obj, "NM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotUnderline_NM>(obj, "NM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -342,8 +342,29 @@ internal partial class APM_AnnotUnderline_M__Base : ISpecification<PdfDictionary
         if (utval == null) { return; }
         switch (utval.Type) 
         {
+            case PdfObjectType.StringObj:
+                {
             
-            // TODO MC date;string-text
+                    // TODO MC date;string-text
+            
+                    var val =  (PdfString)utval;
+                    if (IsDate(val)) 
+                    {
+                        // date
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    } else if (true) 
+                    {
+                        // string-text
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    }
+                    return;
+                }
             
             default:
                 ctx.Fail<APM_AnnotUnderline_M>("M is required to one of 'date;string-text', was " + utval.Type);
@@ -370,7 +391,7 @@ internal partial class APM_AnnotUnderline_F__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_AnnotUnderline_F>(obj, "F", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_AnnotUnderline_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!((ctx.Version >= 1.4m || BitsClear(val,0b11111111111111111111111110000000))&&(ctx.Version >= 1.5m || BitsClear(val,0b11111111111111111111111100000000))&&(ctx.Version >= 1.6m || BitsClear(val,0b11111111111111111111111000000000))&&(ctx.Version < 1.7m || BitsClear(val,0b11111111111111111111110000000000)))) 
@@ -402,7 +423,7 @@ internal partial class APM_AnnotUnderline_AP__Base : ISpecification<PdfDictionar
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var Rect = obj.Get("Rect");
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_AP>(obj, "AP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_AP>(obj, "AP", IndirectRequirement.Either);
         if (((ctx.Version < 2.0m || (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotUnderline_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
@@ -436,7 +457,7 @@ internal partial class APM_AnnotUnderline_AS__Base : ISpecification<PdfDictionar
         var APN = obj.Get("AP")?.Get("N");
         var APR = obj.Get("AP")?.Get("R");
         var APD = obj.Get("AP")?.Get("D");
-        var val = ctx.GetOptional<PdfName, APM_AnnotUnderline_AS>(obj, "AS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotUnderline_AS>(obj, "AS", IndirectRequirement.Either);
         if (((APN != null)||(APR != null)||(APD != null)) && val == null) {
             ctx.Fail<APM_AnnotUnderline_AS>("AS is required when 'fn:IsRequired(fn:IsPresent(AP::N::*) || fn:IsPresent(AP::R::*) || fn:IsPresent(AP::D::*))"); return;
         } else if (val == null) {
@@ -467,7 +488,7 @@ internal partial class APM_AnnotUnderline_Border__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_AnnotUnderline_Border>(obj, "Border", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotUnderline_Border>(obj, "Border", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -494,7 +515,7 @@ internal partial class APM_AnnotUnderline_C__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_AnnotUnderline_C>(obj, "C", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotUnderline_C>(obj, "C", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -521,7 +542,7 @@ internal partial class APM_AnnotUnderline_StructParent__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_AnnotUnderline_StructParent>(obj, "StructParent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_AnnotUnderline_StructParent>(obj, "StructParent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -548,7 +569,7 @@ internal partial class APM_AnnotUnderline_OC__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_OC>(obj, "OC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_OC>(obj, "OC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -632,7 +653,7 @@ internal partial class APM_AnnotUnderline_ca__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_AnnotUnderline_ca>(obj, "ca", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_AnnotUnderline_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -664,7 +685,7 @@ internal partial class APM_AnnotUnderline_CA__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_AnnotUnderline_CA>(obj, "CA", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_AnnotUnderline_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -696,7 +717,7 @@ internal partial class APM_AnnotUnderline_BM__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotUnderline_BM>(obj, "BM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotUnderline_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -728,7 +749,7 @@ internal partial class APM_AnnotUnderline_Lang__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotUnderline_Lang>(obj, "Lang", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotUnderline_Lang>(obj, "Lang", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -755,7 +776,7 @@ internal partial class APM_AnnotUnderline_T__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotUnderline_T>(obj, "T", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotUnderline_T>(obj, "T", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -782,7 +803,7 @@ internal partial class APM_AnnotUnderline_Popup__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_Popup>(obj, "Popup", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_Popup>(obj, "Popup", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -857,7 +878,7 @@ internal partial class APM_AnnotUnderline_CreationDate__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotUnderline_CreationDate>(obj, "CreationDate", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotUnderline_CreationDate>(obj, "CreationDate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -885,7 +906,7 @@ internal partial class APM_AnnotUnderline_IRT__Base : ISpecification<PdfDictiona
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_IRT>(obj, "IRT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_IRT>(obj, "IRT", IndirectRequirement.Either);
         if ((obj.ContainsKey(PdfName.RT)) && val == null) {
             ctx.Fail<APM_AnnotUnderline_IRT>("IRT is required when 'fn:IsRequired(fn:IsPresent(RT))"); return;
         } else if (val == null) {
@@ -997,7 +1018,7 @@ internal partial class APM_AnnotUnderline_Subj__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotUnderline_Subj>(obj, "Subj", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotUnderline_Subj>(obj, "Subj", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1024,7 +1045,7 @@ internal partial class APM_AnnotUnderline_RT__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotUnderline_RT>(obj, "RT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotUnderline_RT>(obj, "RT", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         
@@ -1056,7 +1077,7 @@ internal partial class APM_AnnotUnderline_IT__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotUnderline_IT>(obj, "IT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotUnderline_IT>(obj, "IT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1083,7 +1104,7 @@ internal partial class APM_AnnotUnderline_QuadPoints__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_AnnotUnderline_QuadPoints>(obj, "QuadPoints", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_AnnotUnderline_QuadPoints>(obj, "QuadPoints", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1110,7 +1131,7 @@ internal partial class APM_AnnotUnderline_ExData__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_ExData>(obj, "ExData", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotUnderline_ExData>(obj, "ExData", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

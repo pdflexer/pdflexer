@@ -106,7 +106,7 @@ internal partial class APM_Collection_Type__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_Collection_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_Collection_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -138,7 +138,7 @@ internal partial class APM_Collection_Schema__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_Collection_Schema>(obj, "Schema", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Collection_Schema>(obj, "Schema", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -166,7 +166,7 @@ internal partial class APM_Collection_D__Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfString, APM_Collection_D>(obj, "D", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_Collection_D>(obj, "D", IndirectRequirement.Either);
         if (((ctx.Version < 2.0m || IsEncryptedWrapper(obj))) && val == null) {
             ctx.Fail<APM_Collection_D>("D is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsEncryptedWrapper()))"); return;
         } else if (val == null) {
@@ -198,7 +198,7 @@ internal partial class APM_Collection_View__Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfName, APM_Collection_View>(obj, "View", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_Collection_View>(obj, "View", IndirectRequirement.Either);
         if (((ctx.Version < 2.0m || IsEncryptedWrapper(obj))) && val == null) {
             ctx.Fail<APM_Collection_View>("View is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsEncryptedWrapper()))"); return;
         } else if (val == null) {
@@ -239,7 +239,7 @@ internal partial class APM_Collection_Navigator__Base : ISpecification<PdfDictio
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var View = obj.Get("View");
-        var val = ctx.GetOptional<PdfDictionary, APM_Collection_Navigator>(obj, "Navigator", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Collection_Navigator>(obj, "Navigator", IndirectRequirement.MustBeIndirect);
         if ((eq(View,PdfName.C)) && val == null) {
             ctx.Fail<APM_Collection_Navigator>("Navigator is required when 'fn:IsRequired(@View==C)"); return;
         } else if (val == null) {
@@ -270,7 +270,7 @@ internal partial class APM_Collection_Colors__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_Collection_Colors>(obj, "Colors", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Collection_Colors>(obj, "Colors", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -297,7 +297,7 @@ internal partial class APM_Collection_Sort__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_Collection_Sort>(obj, "Sort", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Collection_Sort>(obj, "Sort", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -324,7 +324,7 @@ internal partial class APM_Collection_Folders__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_Collection_Folders>(obj, "Folders", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Collection_Folders>(obj, "Folders", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -351,7 +351,7 @@ internal partial class APM_Collection_Split__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_Collection_Split>(obj, "Split", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Collection_Split>(obj, "Split", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -378,7 +378,7 @@ internal partial class APM_Collection_Resources__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_Collection_Resources>(obj, "Resources", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_Collection_Resources>(obj, "Resources", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

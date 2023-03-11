@@ -91,7 +91,7 @@ internal partial class APM_XObjectFormPSpassthrough_Type__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectFormPSpassthrough_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectFormPSpassthrough_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -123,7 +123,7 @@ internal partial class APM_XObjectFormPSpassthrough_Subtype__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_XObjectFormPSpassthrough_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_XObjectFormPSpassthrough_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -155,7 +155,7 @@ internal partial class APM_XObjectFormPSpassthrough_Subtype2__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_XObjectFormPSpassthrough_Subtype2>(obj, "Subtype2", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_XObjectFormPSpassthrough_Subtype2>(obj, "Subtype2", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -187,7 +187,7 @@ internal partial class APM_XObjectFormPSpassthrough_Level1__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_XObjectFormPSpassthrough_Level1>(obj, "Level1", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_XObjectFormPSpassthrough_Level1>(obj, "Level1", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -214,7 +214,7 @@ internal partial class APM_XObjectFormPSpassthrough_PS__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfStream, APM_XObjectFormPSpassthrough_PS>(obj, "PS", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetRequired<PdfStream, APM_XObjectFormPSpassthrough_PS>(obj, "PS", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -242,7 +242,7 @@ internal partial class APM_XObjectFormPSpassthrough_FormType__Base : ISpecificat
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPSpassthrough_FormType>(obj, "FormType", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPSpassthrough_FormType>(obj, "FormType", IndirectRequirement.Either);
         if ((ctx.Version < 1.3m) && val == null) {
             ctx.Fail<APM_XObjectFormPSpassthrough_FormType>("FormType is required when 'fn:IsRequired(fn:BeforeVersion(1.3))"); return;
         } else if (val == null) {
@@ -278,7 +278,7 @@ internal partial class APM_XObjectFormPSpassthrough_BBox__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_XObjectFormPSpassthrough_BBox>(obj, "BBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_XObjectFormPSpassthrough_BBox>(obj, "BBox", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -306,7 +306,7 @@ internal partial class APM_XObjectFormPSpassthrough_Matrix__Base : ISpecificatio
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfArray, APM_XObjectFormPSpassthrough_Matrix>(obj, "Matrix", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_XObjectFormPSpassthrough_Matrix>(obj, "Matrix", IndirectRequirement.Either);
         if ((ctx.Version < 1.3m) && val == null) {
             ctx.Fail<APM_XObjectFormPSpassthrough_Matrix>("Matrix is required when 'fn:IsRequired(fn:BeforeVersion(1.3))"); return;
         } else if (val == null) {
@@ -337,7 +337,7 @@ internal partial class APM_XObjectFormPSpassthrough_Length__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectFormPSpassthrough_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectFormPSpassthrough_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

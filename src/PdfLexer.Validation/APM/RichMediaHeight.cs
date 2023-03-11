@@ -93,7 +93,7 @@ internal partial class APM_RichMediaHeight_Default__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaHeight_Default>(obj, "Default", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_RichMediaHeight_Default>(obj, "Default", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -125,7 +125,7 @@ internal partial class APM_RichMediaHeight_Max__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaHeight_Max>(obj, "Max", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_RichMediaHeight_Max>(obj, "Max", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -157,7 +157,7 @@ internal partial class APM_RichMediaHeight_Min__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_RichMediaHeight_Min>(obj, "Min", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_RichMediaHeight_Min>(obj, "Min", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

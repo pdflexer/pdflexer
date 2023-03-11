@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace pdflexer.ArlingtonGen.Expressions;
 
-internal class EFunc_IsPresent : EFunBase
+internal class EFunc_IsPresent : EFunBase, INode
 {
     public EFunc_IsPresent(List<INode> inputs) : base(inputs) { }
     public override void Write(StringBuilder sb)
@@ -54,6 +54,33 @@ internal class EFunc_IsPresent : EFunBase
                 sb.Append($"obj.ContainsKey(");
                 grp.Write(sb);
                 sb.Append($")");
+            }
+        }
+    }
+
+
+    IEnumerable<string> INode.GetRequiredValues()
+    {
+        var val = (Children[0] as EValue)?.Text;
+        if (val != null && !val.Contains("*") && !val.Contains("::") && !int.TryParse(val, out _))
+        {
+            // first value is key
+            if (Children.Count > 1)
+            {
+                foreach (var var in Children[1].GetRequiredValues())
+                {
+                    yield return var;
+                }
+            }
+        }
+        else
+        {
+            foreach (var item in Children)
+            {
+                foreach (var var in item.GetRequiredValues())
+                {
+                    yield return var;
+                }
             }
         }
     }

@@ -165,7 +165,7 @@ internal partial class APM_FilterLZWDecode_Predictor__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_Predictor>(obj, "Predictor", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_Predictor>(obj, "Predictor", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -197,7 +197,7 @@ internal partial class APM_FilterLZWDecode_Colors__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_Colors>(obj, "Colors", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_Colors>(obj, "Colors", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         
@@ -229,7 +229,7 @@ internal partial class APM_FilterLZWDecode_BitsPerComponent__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         
@@ -261,7 +261,7 @@ internal partial class APM_FilterLZWDecode_Columns__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_Columns>(obj, "Columns", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_Columns>(obj, "Columns", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
@@ -288,7 +288,7 @@ internal partial class APM_FilterLZWDecode_EarlyChange__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_EarlyChange>(obj, "EarlyChange", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterLZWDecode_EarlyChange>(obj, "EarlyChange", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

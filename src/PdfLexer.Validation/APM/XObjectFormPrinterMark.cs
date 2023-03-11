@@ -155,7 +155,7 @@ internal partial class APM_XObjectFormPrinterMark_Type__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectFormPrinterMark_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectFormPrinterMark_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -187,7 +187,7 @@ internal partial class APM_XObjectFormPrinterMark_Subtype__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_XObjectFormPrinterMark_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_XObjectFormPrinterMark_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -219,7 +219,7 @@ internal partial class APM_XObjectFormPrinterMark_FormType__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_FormType>(obj, "FormType", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_FormType>(obj, "FormType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -251,7 +251,7 @@ internal partial class APM_XObjectFormPrinterMark_BBox__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_XObjectFormPrinterMark_BBox>(obj, "BBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_XObjectFormPrinterMark_BBox>(obj, "BBox", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -278,7 +278,7 @@ internal partial class APM_XObjectFormPrinterMark_Matrix__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_XObjectFormPrinterMark_Matrix>(obj, "Matrix", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_XObjectFormPrinterMark_Matrix>(obj, "Matrix", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -305,7 +305,7 @@ internal partial class APM_XObjectFormPrinterMark_Resources__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Resources>(obj, "Resources", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Resources>(obj, "Resources", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -332,7 +332,7 @@ internal partial class APM_XObjectFormPrinterMark_Group__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Group>(obj, "Group", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Group>(obj, "Group", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -359,7 +359,7 @@ internal partial class APM_XObjectFormPrinterMark_Ref__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Ref>(obj, "Ref", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Ref>(obj, "Ref", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -386,7 +386,7 @@ internal partial class APM_XObjectFormPrinterMark_Metadata__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_XObjectFormPrinterMark_Metadata>(obj, "Metadata", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_XObjectFormPrinterMark_Metadata>(obj, "Metadata", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -413,7 +413,7 @@ internal partial class APM_XObjectFormPrinterMark_PieceInfo__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_PieceInfo>(obj, "PieceInfo", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_PieceInfo>(obj, "PieceInfo", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -441,8 +441,8 @@ internal partial class APM_XObjectFormPrinterMark_LastModified__Base : ISpecific
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfString, APM_XObjectFormPrinterMark_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-        if ((obj.ContainsKey(val)) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_XObjectFormPrinterMark_LastModified>(obj, "LastModified", IndirectRequirement.Either);
+        if ((obj.ContainsKey(PdfName.PieceInfo)) && val == null) {
             ctx.Fail<APM_XObjectFormPrinterMark_LastModified>("LastModified is required when 'fn:IsRequired(fn:IsPresent(PieceInfo))"); return;
         } else if (val == null) {
             return;
@@ -472,7 +472,7 @@ internal partial class APM_XObjectFormPrinterMark_StructParent__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_StructParent>(obj, "StructParent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_StructParent>(obj, "StructParent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -499,7 +499,7 @@ internal partial class APM_XObjectFormPrinterMark_StructParents__Base : ISpecifi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_StructParents>(obj, "StructParents", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_StructParents>(obj, "StructParents", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -526,7 +526,7 @@ internal partial class APM_XObjectFormPrinterMark_OPI__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_OPI>(obj, "OPI", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_OPI>(obj, "OPI", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -562,7 +562,7 @@ internal partial class APM_XObjectFormPrinterMark_OC__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_OC>(obj, "OC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_OC>(obj, "OC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -598,7 +598,7 @@ internal partial class APM_XObjectFormPrinterMark_Name__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectFormPrinterMark_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectFormPrinterMark_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -673,7 +673,7 @@ internal partial class APM_XObjectFormPrinterMark_Measure__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Measure>(obj, "Measure", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Measure>(obj, "Measure", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -709,7 +709,7 @@ internal partial class APM_XObjectFormPrinterMark_PtData__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_PtData>(obj, "PtData", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_PtData>(obj, "PtData", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -736,7 +736,7 @@ internal partial class APM_XObjectFormPrinterMark_Length__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectFormPrinterMark_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectFormPrinterMark_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1057,7 +1057,7 @@ internal partial class APM_XObjectFormPrinterMark_DL__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_DL>(obj, "DL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectFormPrinterMark_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
         var DL = obj.Get("DL");
         if (!(gte(DL,0))) 
@@ -1088,7 +1088,7 @@ internal partial class APM_XObjectFormPrinterMark_MarkStyle__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_XObjectFormPrinterMark_MarkStyle>(obj, "MarkStyle", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_XObjectFormPrinterMark_MarkStyle>(obj, "MarkStyle", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1115,7 +1115,7 @@ internal partial class APM_XObjectFormPrinterMark_Colorants__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Colorants>(obj, "Colorants", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormPrinterMark_Colorants>(obj, "Colorants", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

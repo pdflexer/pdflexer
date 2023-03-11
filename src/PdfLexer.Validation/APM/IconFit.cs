@@ -134,7 +134,7 @@ internal partial class APM_IconFit_SW__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_IconFit_SW>(obj, "SW", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_IconFit_SW>(obj, "SW", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -166,7 +166,7 @@ internal partial class APM_IconFit_S__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_IconFit_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_IconFit_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -198,7 +198,7 @@ internal partial class APM_IconFit_A__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_IconFit_A>(obj, "A", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_IconFit_A>(obj, "A", IndirectRequirement.Either);
         if (val == null) { return; }
         var A0 = val.Get(0);
         var A1 = val.Get(1);
@@ -230,7 +230,7 @@ internal partial class APM_IconFit_FB__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_IconFit_FB>(obj, "FB", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_IconFit_FB>(obj, "FB", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

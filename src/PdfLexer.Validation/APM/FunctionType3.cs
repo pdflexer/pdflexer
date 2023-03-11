@@ -136,7 +136,7 @@ internal partial class APM_FunctionType3_FunctionType__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_FunctionType3_FunctionType>(obj, "FunctionType", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_FunctionType3_FunctionType>(obj, "FunctionType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -168,7 +168,7 @@ internal partial class APM_FunctionType3_Domain__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_FunctionType3_Domain>(obj, "Domain", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_FunctionType3_Domain>(obj, "Domain", IndirectRequirement.Either);
         if (val == null) { return; }
         var Domain = obj.Get("Domain");
         if (!(eq(mod(((Domain as PdfArray)?.Count),2),0))) 
@@ -199,7 +199,7 @@ internal partial class APM_FunctionType3_Range__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_FunctionType3_Range>(obj, "Range", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_FunctionType3_Range>(obj, "Range", IndirectRequirement.Either);
         if (val == null) { return; }
         var Range = obj.Get("Range");
         if (!(eq(mod(((Range as PdfArray)?.Count),2),0))) 
@@ -230,7 +230,7 @@ internal partial class APM_FunctionType3_Functions__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_FunctionType3_Functions>(obj, "Functions", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_FunctionType3_Functions>(obj, "Functions", IndirectRequirement.Either);
         if (val == null) { return; }
         var Functions = obj.Get("Functions");
         var Bounds = obj.Get("Bounds");
@@ -262,7 +262,7 @@ internal partial class APM_FunctionType3_Bounds__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_FunctionType3_Bounds>(obj, "Bounds", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_FunctionType3_Bounds>(obj, "Bounds", IndirectRequirement.Either);
         if (val == null) { return; }
         var Bounds = obj.Get("Bounds");
         var Functions = obj.Get("Functions");
@@ -294,7 +294,7 @@ internal partial class APM_FunctionType3_Encode__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_FunctionType3_Encode>(obj, "Encode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_FunctionType3_Encode>(obj, "Encode", IndirectRequirement.Either);
         if (val == null) { return; }
         var Encode = obj.Get("Encode");
         if (!(eq(mod(((Encode as PdfArray)?.Count),2),0))) 

@@ -14,9 +14,9 @@ internal class EFunc_PageProperty : EFunBase, INode
     {
         using (var es = new EvalScope())
         {
-            sb.Append($"(");
+            sb.Append($"ctx.GetPage(");
             Children[0].Write(sb);
-            sb.Append(")?.GetAs<PdfDictionary>()?.Get(");
+            sb.Append(")?.Get(");
             using var vs = new VarScope(VariableHandling.MustBeVal);
             Children[1].Write(sb);
             sb.Append(")");

@@ -36,7 +36,7 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_0 : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_0>(obj, 0, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -61,7 +61,7 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_1 : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_1>(obj, 1, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!((obj.Count > 1))) 
@@ -90,7 +90,7 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_2 : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_2>(obj, 2, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -115,7 +115,7 @@ internal partial class APM_ArrayOf_4NumbersColorAnnotation_3 : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_3>(obj, 3, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_ArrayOf_4NumbersColorAnnotation_3>(obj, 3, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;

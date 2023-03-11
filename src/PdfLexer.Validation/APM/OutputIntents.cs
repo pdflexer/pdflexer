@@ -136,7 +136,7 @@ internal partial class APM_OutputIntents_Type__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_OutputIntents_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_OutputIntents_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -168,7 +168,7 @@ internal partial class APM_OutputIntents_S__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_OutputIntents_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_OutputIntents_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -200,7 +200,7 @@ internal partial class APM_OutputIntents_OutputCondition__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_OutputIntents_OutputCondition>(obj, "OutputCondition", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_OutputIntents_OutputCondition>(obj, "OutputCondition", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -227,7 +227,7 @@ internal partial class APM_OutputIntents_OutputConditionIdentifier__Base : ISpec
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_OutputIntents_OutputConditionIdentifier>(obj, "OutputConditionIdentifier", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_OutputIntents_OutputConditionIdentifier>(obj, "OutputConditionIdentifier", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -254,7 +254,7 @@ internal partial class APM_OutputIntents_RegistryName__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_OutputIntents_RegistryName>(obj, "RegistryName", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_OutputIntents_RegistryName>(obj, "RegistryName", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -281,7 +281,7 @@ internal partial class APM_OutputIntents_Info__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_OutputIntents_Info>(obj, "Info", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_OutputIntents_Info>(obj, "Info", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -308,7 +308,7 @@ internal partial class APM_OutputIntents_DestOutputProfile__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_OutputIntents_DestOutputProfile>(obj, "DestOutputProfile", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_OutputIntents_DestOutputProfile>(obj, "DestOutputProfile", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -335,7 +335,7 @@ internal partial class APM_OutputIntents_DestOutputProfileRef__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_OutputIntents_DestOutputProfileRef>(obj, "DestOutputProfileRef", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_OutputIntents_DestOutputProfileRef>(obj, "DestOutputProfileRef", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -362,7 +362,7 @@ internal partial class APM_OutputIntents_MixingHints__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_OutputIntents_MixingHints>(obj, "MixingHints", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_OutputIntents_MixingHints>(obj, "MixingHints", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -389,7 +389,7 @@ internal partial class APM_OutputIntents_SpectralData__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_OutputIntents_SpectralData>(obj, "SpectralData", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_OutputIntents_SpectralData>(obj, "SpectralData", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

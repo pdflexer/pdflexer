@@ -72,7 +72,7 @@ internal partial class APM_VRI_Type__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_VRI_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_VRI_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -104,7 +104,7 @@ internal partial class APM_VRI_Cert__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_VRI_Cert>(obj, "Cert", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_VRI_Cert>(obj, "Cert", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -132,7 +132,7 @@ internal partial class APM_VRI_CRL__Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var parentCRLs = parent?.Get("CRLs");
-        var val = ctx.GetOptional<PdfArray, APM_VRI_CRL>(obj, "CRL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_VRI_CRL>(obj, "CRL", IndirectRequirement.Either);
         if ((gt(((parentCRLs as PdfArray)?.Count),0)) && val == null) {
             ctx.Fail<APM_VRI_CRL>("CRL is required when 'fn:IsRequired(fn:ArrayLength(parent::CRLs)>0)"); return;
         } else if (val == null) {
@@ -164,7 +164,7 @@ internal partial class APM_VRI_OCSP__Base : ISpecification<PdfDictionary>
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var parentOCSPs = parent?.Get("OCSPs");
-        var val = ctx.GetOptional<PdfArray, APM_VRI_OCSP>(obj, "OCSP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_VRI_OCSP>(obj, "OCSP", IndirectRequirement.Either);
         if ((gt(((parentOCSPs as PdfArray)?.Count),0)) && val == null) {
             ctx.Fail<APM_VRI_OCSP>("OCSP is required when 'fn:IsRequired(fn:ArrayLength(parent::OCSPs)>0)"); return;
         } else if (val == null) {
@@ -195,7 +195,7 @@ internal partial class APM_VRI_TU__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_VRI_TU>(obj, "TU", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_VRI_TU>(obj, "TU", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -222,7 +222,7 @@ internal partial class APM_VRI_TS__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_VRI_TS>(obj, "TS", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_VRI_TS>(obj, "TS", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

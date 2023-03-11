@@ -98,7 +98,7 @@ internal partial class APM_RichMediaDeactivation_Type__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaDeactivation_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaDeactivation_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -130,7 +130,7 @@ internal partial class APM_RichMediaDeactivation_Condition__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaDeactivation_Condition>(obj, "Condition", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaDeactivation_Condition>(obj, "Condition", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

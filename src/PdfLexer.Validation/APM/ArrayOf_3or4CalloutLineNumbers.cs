@@ -38,7 +38,7 @@ internal partial class APM_ArrayOf_3or4CalloutLineNumbers_0 : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_0>(obj, 0, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -58,7 +58,7 @@ internal partial class APM_ArrayOf_3or4CalloutLineNumbers_1 : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_1>(obj, 1, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -78,7 +78,7 @@ internal partial class APM_ArrayOf_3or4CalloutLineNumbers_2 : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_2>(obj, 2, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -98,7 +98,7 @@ internal partial class APM_ArrayOf_3or4CalloutLineNumbers_3 : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_3>(obj, 3, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_3>(obj, 3, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -118,7 +118,7 @@ internal partial class APM_ArrayOf_3or4CalloutLineNumbers_4 : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_4>(obj, 4, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_4>(obj, 4, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -138,7 +138,7 @@ internal partial class APM_ArrayOf_3or4CalloutLineNumbers_5 : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_5>(obj, 5, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_ArrayOf_3or4CalloutLineNumbers_5>(obj, 5, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

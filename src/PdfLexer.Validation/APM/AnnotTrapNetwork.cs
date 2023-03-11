@@ -150,7 +150,7 @@ internal partial class APM_AnnotTrapNetwork_Type__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotTrapNetwork_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotTrapNetwork_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -182,7 +182,7 @@ internal partial class APM_AnnotTrapNetwork_Subtype__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_AnnotTrapNetwork_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_AnnotTrapNetwork_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -214,7 +214,7 @@ internal partial class APM_AnnotTrapNetwork_Rect__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_AnnotTrapNetwork_Rect>(obj, "Rect", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_AnnotTrapNetwork_Rect>(obj, "Rect", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -241,7 +241,7 @@ internal partial class APM_AnnotTrapNetwork_Contents__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_Contents>(obj, "Contents", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_Contents>(obj, "Contents", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -268,7 +268,7 @@ internal partial class APM_AnnotTrapNetwork_P__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotTrapNetwork_P>(obj, "P", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotTrapNetwork_P>(obj, "P", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -295,7 +295,7 @@ internal partial class APM_AnnotTrapNetwork_NM__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_NM>(obj, "NM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_NM>(obj, "NM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -326,8 +326,29 @@ internal partial class APM_AnnotTrapNetwork_M__Base : ISpecification<PdfDictiona
         if (utval == null) { return; }
         switch (utval.Type) 
         {
+            case PdfObjectType.StringObj:
+                {
             
-            // TODO MC date;string
+                    // TODO MC date;string
+            
+                    var val =  (PdfString)utval;
+                    if (IsDate(val)) 
+                    {
+                        // date
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    } else if (true) 
+                    {
+                        // string
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    }
+                    return;
+                }
             
             default:
                 ctx.Fail<APM_AnnotTrapNetwork_M>("M is required to one of 'date;string', was " + utval.Type);
@@ -354,7 +375,7 @@ internal partial class APM_AnnotTrapNetwork_F__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_AnnotTrapNetwork_F>(obj, "F", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_AnnotTrapNetwork_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(BitsClear(val,0b00000000000000000000000000000011)&&BitsSet(val,0b00000000000000000000000000000100)&&BitsClear(val,0b00000000000000000000000000111000)&&BitsSet(val,0b00000000000000000000000001000000)&&BitsClear(val,0b11111111111111111111111110000000))) 
@@ -385,7 +406,7 @@ internal partial class APM_AnnotTrapNetwork_AP__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfDictionary, APM_AnnotTrapNetwork_AP>(obj, "AP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfDictionary, APM_AnnotTrapNetwork_AP>(obj, "AP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -412,7 +433,7 @@ internal partial class APM_AnnotTrapNetwork_AS__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_AnnotTrapNetwork_AS>(obj, "AS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_AnnotTrapNetwork_AS>(obj, "AS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -439,7 +460,7 @@ internal partial class APM_AnnotTrapNetwork_Border__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_Border>(obj, "Border", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_Border>(obj, "Border", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -466,7 +487,7 @@ internal partial class APM_AnnotTrapNetwork_C__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_C>(obj, "C", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_C>(obj, "C", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -493,7 +514,7 @@ internal partial class APM_AnnotTrapNetwork_StructParent__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_AnnotTrapNetwork_StructParent>(obj, "StructParent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_AnnotTrapNetwork_StructParent>(obj, "StructParent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -520,7 +541,7 @@ internal partial class APM_AnnotTrapNetwork_OC__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_AnnotTrapNetwork_OC>(obj, "OC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotTrapNetwork_OC>(obj, "OC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -604,7 +625,7 @@ internal partial class APM_AnnotTrapNetwork_ca__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_AnnotTrapNetwork_ca>(obj, "ca", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_AnnotTrapNetwork_ca>(obj, "ca", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -636,7 +657,7 @@ internal partial class APM_AnnotTrapNetwork_CA__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_AnnotTrapNetwork_CA>(obj, "CA", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_AnnotTrapNetwork_CA>(obj, "CA", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -668,7 +689,7 @@ internal partial class APM_AnnotTrapNetwork_BM__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_AnnotTrapNetwork_BM>(obj, "BM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotTrapNetwork_BM>(obj, "BM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -700,7 +721,7 @@ internal partial class APM_AnnotTrapNetwork_Lang__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_Lang>(obj, "Lang", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_Lang>(obj, "Lang", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -728,7 +749,7 @@ internal partial class APM_AnnotTrapNetwork_LastModified__Base : ISpecification<
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_LastModified>(obj, "LastModified", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_AnnotTrapNetwork_LastModified>(obj, "LastModified", IndirectRequirement.Either);
         if (((!obj.ContainsKey(PdfName.Version)&&!obj.ContainsKey(PdfName.AnnotStates))) && val == null) {
             ctx.Fail<APM_AnnotTrapNetwork_LastModified>("LastModified is required when 'fn:IsRequired(fn:Not(fn:IsPresent(Version)) && fn:Not(fn:IsPresent(AnnotStates)))"); return;
         } else if (val == null) {
@@ -760,8 +781,8 @@ internal partial class APM_AnnotTrapNetwork_Version__Base : ISpecification<PdfDi
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_Version>(obj, "Version", IndirectRequirement.Either);
-        if (((obj.ContainsKey(PdfName.AnnotStates)&&!obj.ContainsKey(val))) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_Version>(obj, "Version", IndirectRequirement.Either);
+        if (((obj.ContainsKey(PdfName.AnnotStates)&&!obj.ContainsKey(PdfName.LastModified))) && val == null) {
             ctx.Fail<APM_AnnotTrapNetwork_Version>("Version is required when 'fn:IsRequired(fn:IsPresent(AnnotStates) && fn:Not(fn:IsPresent(LastModified)))"); return;
         } else if (val == null) {
             return;
@@ -792,8 +813,8 @@ internal partial class APM_AnnotTrapNetwork_AnnotStates__Base : ISpecification<P
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_AnnotStates>(obj, "AnnotStates", IndirectRequirement.Either);
-        if (((obj.ContainsKey(val)&&!obj.ContainsKey(PdfName.LastModified))) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_AnnotStates>(obj, "AnnotStates", IndirectRequirement.Either);
+        if (((obj.ContainsKey(PdfName.Version)&&!obj.ContainsKey(PdfName.LastModified))) && val == null) {
             ctx.Fail<APM_AnnotTrapNetwork_AnnotStates>("AnnotStates is required when 'fn:IsRequired(fn:IsPresent(Version) && fn:Not(fn:IsPresent(LastModified)))"); return;
         } else if (val == null) {
             return;
@@ -823,7 +844,7 @@ internal partial class APM_AnnotTrapNetwork_FontFauxing__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_FontFauxing>(obj, "FontFauxing", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_AnnotTrapNetwork_FontFauxing>(obj, "FontFauxing", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

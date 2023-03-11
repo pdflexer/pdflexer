@@ -113,7 +113,7 @@ internal partial class APM_OptContentZoom_min__Base : ISpecification<PdfDictiona
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfNumber, APM_OptContentZoom_min>(obj, "min", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_OptContentZoom_min>(obj, "min", IndirectRequirement.Either);
         if ((!obj.ContainsKey(PdfName.max)) && val == null) {
             ctx.Fail<APM_OptContentZoom_min>("min is required when 'fn:IsRequired(fn:Not(fn:IsPresent(max)))"); return;
         } else if (val == null) {
@@ -151,8 +151,8 @@ internal partial class APM_OptContentZoom_max__Base : ISpecification<PdfDictiona
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfNumber, APM_OptContentZoom_max>(obj, "max", IndirectRequirement.Either);
-        if ((!obj.ContainsKey(val)) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_OptContentZoom_max>(obj, "max", IndirectRequirement.Either);
+        if ((!obj.ContainsKey(PdfName.min)) && val == null) {
             ctx.Fail<APM_OptContentZoom_max>("max is required when 'fn:IsRequired(fn:Not(fn:IsPresent(min)))"); return;
         } else if (val == null) {
             return;

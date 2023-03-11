@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfArraysRBGroups_x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfArray, APM_ArrayOfArraysRBGroups_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ArrayOfArraysRBGroups_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             
             if (!(gt(((val as PdfArray)?.Count),0))) 

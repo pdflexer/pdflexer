@@ -52,8 +52,29 @@ internal partial class APM_RichMediaCommandArray_x : ISpecification<PdfArray>
                         // no linked objects
                         return;
                     }
+                case PdfObjectType.NumericObj:
+                    {
                 
-                // TODO MC boolean;integer;number;string-text
+                        // TODO MC integer;number
+                
+                        var val =  (PdfNumber)utval;
+                        if (val is PdfIntNumber) 
+                        {
+                            // integer
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        } else if (true) 
+                        {
+                            // number
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        }
+                        return;
+                    }
                 case PdfObjectType.StringObj:
                     {
                         var val =  (PdfString)utval;

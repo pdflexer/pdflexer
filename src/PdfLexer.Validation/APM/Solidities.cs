@@ -49,7 +49,7 @@ internal partial class APM_Solidities_Default__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_Solidities_Default>(obj, "Default", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_Solidities_Default>(obj, "Default", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -87,7 +87,7 @@ internal partial class APM_Solidities_CatchAll__Base : ISpecification<PdfDiction
             if (AllVals.Contains(key)) { continue; }
             
             
-            IPdfObject? val = ctx.GetOptional<PdfNumber, APM_Solidities_CatchAll>(obj, key, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<APM_Solidities_CatchAll>(obj, key, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             

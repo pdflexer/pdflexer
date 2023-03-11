@@ -111,7 +111,7 @@ internal partial class APM_MediaClipDataMHBE_BU__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_MediaClipDataMHBE_BU>(obj, "BU", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_MediaClipDataMHBE_BU>(obj, "BU", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

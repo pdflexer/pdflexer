@@ -112,7 +112,7 @@ internal partial class APM_OptContentLanguage_Lang__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_OptContentLanguage_Lang>(obj, "Lang", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_OptContentLanguage_Lang>(obj, "Lang", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -139,7 +139,7 @@ internal partial class APM_OptContentLanguage_Preferred__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_OptContentLanguage_Preferred>(obj, "Preferred", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_OptContentLanguage_Preferred>(obj, "Preferred", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

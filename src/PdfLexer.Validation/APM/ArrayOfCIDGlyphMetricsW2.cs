@@ -56,8 +56,29 @@ internal partial class APM_ArrayOfCIDGlyphMetricsW2_x : ISpecification<PdfArray>
                         ctx.Run<APM_ArrayOfNumbersGeneral, PdfArray>(stack, val, obj);
                         return;
                     }
+                case PdfObjectType.NumericObj:
+                    {
                 
-                // TODO MC array;integer;number
+                        // TODO MC integer;number
+                
+                        var val =  (PdfNumber)utval;
+                        if (val is PdfIntNumber) 
+                        {
+                            // integer
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        } else if (true) 
+                        {
+                            // number
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        }
+                        return;
+                    }
                 
                 default:
                     ctx.Fail<APM_ArrayOfCIDGlyphMetricsW2_x>("* is required to one of 'array;integer;number', was " + utval.Type);

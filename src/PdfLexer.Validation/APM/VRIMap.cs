@@ -54,7 +54,7 @@ internal partial class APM_VRIMap_CatchAll__Base : ISpecification<PdfDictionary>
             if (AllVals.Contains(key)) { continue; }
             
             
-            var val = ctx.GetOptional<PdfDictionary, APM_VRIMap_CatchAll>(obj, key, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_VRIMap_CatchAll>(obj, key, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

@@ -147,7 +147,7 @@ internal partial class APM_XObjectImageSoftMask_Type__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectImageSoftMask_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectImageSoftMask_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -179,7 +179,7 @@ internal partial class APM_XObjectImageSoftMask_Subtype__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_XObjectImageSoftMask_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_XObjectImageSoftMask_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -211,7 +211,7 @@ internal partial class APM_XObjectImageSoftMask_Width__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectImageSoftMask_Width>(obj, "Width", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectImageSoftMask_Width>(obj, "Width", IndirectRequirement.Either);
         if (val == null) { return; }
         var Width = obj.Get("Width");
         var parentWidth = parent?.Get("Width");
@@ -243,7 +243,7 @@ internal partial class APM_XObjectImageSoftMask_Height__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectImageSoftMask_Height>(obj, "Height", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectImageSoftMask_Height>(obj, "Height", IndirectRequirement.Either);
         if (val == null) { return; }
         var Height = obj.Get("Height");
         var parentHeight = parent?.Get("Height");
@@ -275,7 +275,7 @@ internal partial class APM_XObjectImageSoftMask_ColorSpace__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_XObjectImageSoftMask_ColorSpace>(obj, "ColorSpace", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_XObjectImageSoftMask_ColorSpace>(obj, "ColorSpace", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -309,7 +309,7 @@ internal partial class APM_XObjectImageSoftMask_BitsPerComponent__Base : ISpecif
     {
         var Filter = obj.Get("Filter");
         var ImageMask = obj.Get("ImageMask");
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageSoftMask_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectImageSoftMask_BitsPerComponent>(obj, "BitsPerComponent", IndirectRequirement.Either);
         if ((!(Contains(Filter, PdfName.JPXDecode)||eq(ImageMask,PdfBoolean.True))) && val == null) {
             ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>("BitsPerComponent is required when 'fn:IsRequired(fn:Not(fn:Contains(@Filter,JPXDecode) || (@ImageMask==true)))"); return;
         } else if (val == null) {
@@ -346,7 +346,7 @@ internal partial class APM_XObjectImageSoftMask_Intent__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectImageSoftMask_Intent>(obj, "Intent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectImageSoftMask_Intent>(obj, "Intent", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:Ignore, not pertinent to validation
         // no value restrictions
@@ -373,7 +373,7 @@ internal partial class APM_XObjectImageSoftMask_ImageMask__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_XObjectImageSoftMask_ImageMask>(obj, "ImageMask", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_XObjectImageSoftMask_ImageMask>(obj, "ImageMask", IndirectRequirement.Either);
         if (val == null) { return; }
         var ImageMask = obj.Get("ImageMask");
         if (!(eq(ImageMask,PdfBoolean.False))) 
@@ -404,7 +404,7 @@ internal partial class APM_XObjectImageSoftMask_Name__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectImageSoftMask_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectImageSoftMask_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -431,7 +431,7 @@ internal partial class APM_XObjectImageSoftMask_Decode__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_XObjectImageSoftMask_Decode>(obj, "Decode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_XObjectImageSoftMask_Decode>(obj, "Decode", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -458,7 +458,7 @@ internal partial class APM_XObjectImageSoftMask_Interpolate__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_XObjectImageSoftMask_Interpolate>(obj, "Interpolate", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_XObjectImageSoftMask_Interpolate>(obj, "Interpolate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -485,7 +485,7 @@ internal partial class APM_XObjectImageSoftMask_Matte__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_XObjectImageSoftMask_Matte>(obj, "Matte", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_XObjectImageSoftMask_Matte>(obj, "Matte", IndirectRequirement.Either);
         if (val == null) { return; }
         var Matte = obj.Get("Matte");
         if (!(gt(((Matte as PdfArray)?.Count),0))) 
@@ -516,7 +516,7 @@ internal partial class APM_XObjectImageSoftMask_Metadata__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_XObjectImageSoftMask_Metadata>(obj, "Metadata", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_XObjectImageSoftMask_Metadata>(obj, "Metadata", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -543,7 +543,7 @@ internal partial class APM_XObjectImageSoftMask_Length__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectImageSoftMask_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectImageSoftMask_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -882,7 +882,7 @@ internal partial class APM_XObjectImageSoftMask_DL__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectImageSoftMask_DL>(obj, "DL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectImageSoftMask_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
         var DL = obj.Get("DL");
         if (!(gte(DL,0))) 

@@ -50,7 +50,7 @@ internal partial class APM_CryptFilterMap_Identity__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterMap_Identity>(obj, "Identity", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_CryptFilterMap_Identity>(obj, "Identity", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -77,7 +77,7 @@ internal partial class APM_CryptFilterMap_StdCF__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterMap_StdCF>(obj, "StdCF", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_CryptFilterMap_StdCF>(obj, "StdCF", IndirectRequirement.Either);
         if (val == null) { return; }
         var StdCFAuthEvent = val.Get("AuthEvent");
         if (!(eq(StdCFAuthEvent,PdfName.DocOpen))) 
@@ -114,7 +114,7 @@ internal partial class APM_CryptFilterMap_CatchAll__Base : ISpecification<PdfDic
             if (AllVals.Contains(key)) { continue; }
             
             
-            var val = ctx.GetOptional<PdfDictionary, APM_CryptFilterMap_CatchAll>(obj, key, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_CryptFilterMap_CatchAll>(obj, key, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

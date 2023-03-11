@@ -143,7 +143,7 @@ internal partial class APM_CIDSystemInfo_Registry__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_CIDSystemInfo_Registry>(obj, "Registry", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_CIDSystemInfo_Registry>(obj, "Registry", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -170,7 +170,7 @@ internal partial class APM_CIDSystemInfo_Ordering__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_CIDSystemInfo_Ordering>(obj, "Ordering", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_CIDSystemInfo_Ordering>(obj, "Ordering", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -197,7 +197,7 @@ internal partial class APM_CIDSystemInfo_Supplement__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_CIDSystemInfo_Supplement>(obj, "Supplement", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_CIDSystemInfo_Supplement>(obj, "Supplement", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

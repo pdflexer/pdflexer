@@ -224,7 +224,7 @@ internal partial class APM_Reference_ID__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_Reference_ID>(obj, "ID", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_Reference_ID>(obj, "ID", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

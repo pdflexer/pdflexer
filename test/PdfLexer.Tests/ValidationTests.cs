@@ -1,10 +1,5 @@
 ﻿using PdfLexer.Validation;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PdfLexer.Tests;
@@ -20,8 +15,7 @@ public class ValidationTests
         var pdfFile = Path.Combine(pdfRoot, "issue1002.pdf");
         using var doc = PdfDocument.Open(pdfFile);
         doc.Trailer["Bad"] = new PdfString("Value");
-        var val = new PdfValidator(doc.Trailer);
-        val.Version = doc.PdfVersion;
+        var val = new PdfValidator(doc, 0);
         val.Run();
     }
 }

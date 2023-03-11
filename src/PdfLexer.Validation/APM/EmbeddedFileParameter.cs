@@ -135,7 +135,7 @@ internal partial class APM_EmbeddedFileParameter_Size__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_EmbeddedFileParameter_Size>(obj, "Size", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_EmbeddedFileParameter_Size>(obj, "Size", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -167,7 +167,7 @@ internal partial class APM_EmbeddedFileParameter_CreationDate__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_CreationDate>(obj, "CreationDate", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_CreationDate>(obj, "CreationDate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -195,7 +195,7 @@ internal partial class APM_EmbeddedFileParameter_ModDate__Base : ISpecification<
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_ModDate>(obj, "ModDate", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_ModDate>(obj, "ModDate", IndirectRequirement.Either);
         if (((ctx.Version < 2.0m || IsAssociatedFile(obj))) && val == null) {
             ctx.Fail<APM_EmbeddedFileParameter_ModDate>("ModDate is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsAssociatedFile()))"); return;
         } else if (val == null) {
@@ -226,7 +226,7 @@ internal partial class APM_EmbeddedFileParameter_Mac__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_EmbeddedFileParameter_Mac>(obj, "Mac", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_EmbeddedFileParameter_Mac>(obj, "Mac", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -253,7 +253,7 @@ internal partial class APM_EmbeddedFileParameter_CheckSum__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_CheckSum>(obj, "CheckSum", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_CheckSum>(obj, "CheckSum", IndirectRequirement.Either);
         if (val == null) { return; }
         var CheckSum = obj.Get("CheckSum");
         if (!(eq(StringLength(CheckSum),16))) 

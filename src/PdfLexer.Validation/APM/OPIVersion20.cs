@@ -131,7 +131,7 @@ internal partial class APM_OPIVersion20_2_0__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_OPIVersion20_2_0>(obj, "2_0", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_OPIVersion20_2_0>(obj, "2_0", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

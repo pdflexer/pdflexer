@@ -151,7 +151,7 @@ internal partial class APM_HalftoneType16_Type__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_HalftoneType16_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_HalftoneType16_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -183,7 +183,7 @@ internal partial class APM_HalftoneType16_HalftoneType__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_HalftoneType16_HalftoneType>(obj, "HalftoneType", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_HalftoneType16_HalftoneType>(obj, "HalftoneType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -215,7 +215,7 @@ internal partial class APM_HalftoneType16_HalftoneName__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_HalftoneType16_HalftoneName>(obj, "HalftoneName", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_HalftoneType16_HalftoneName>(obj, "HalftoneName", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -242,7 +242,7 @@ internal partial class APM_HalftoneType16_Width__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_HalftoneType16_Width>(obj, "Width", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_HalftoneType16_Width>(obj, "Width", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -274,7 +274,7 @@ internal partial class APM_HalftoneType16_Height__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_HalftoneType16_Height>(obj, "Height", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_HalftoneType16_Height>(obj, "Height", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -306,7 +306,7 @@ internal partial class APM_HalftoneType16_Width2__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_HalftoneType16_Width2>(obj, "Width2", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_HalftoneType16_Width2>(obj, "Width2", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -338,7 +338,7 @@ internal partial class APM_HalftoneType16_Height2__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_HalftoneType16_Height2>(obj, "Height2", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_HalftoneType16_Height2>(obj, "Height2", IndirectRequirement.Either);
         if (val == null) { return; }
         // TODO special case: fn:IsPresent(Width2)
         
@@ -457,7 +457,7 @@ internal partial class APM_HalftoneType16_Length__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_HalftoneType16_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_HalftoneType16_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -778,7 +778,7 @@ internal partial class APM_HalftoneType16_DL__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_HalftoneType16_DL>(obj, "DL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_HalftoneType16_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
         var DL = obj.Get("DL");
         var Width = obj.Get("Width");

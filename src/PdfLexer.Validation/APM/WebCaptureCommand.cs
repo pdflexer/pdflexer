@@ -137,7 +137,7 @@ internal partial class APM_WebCaptureCommand_URL__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_WebCaptureCommand_URL>(obj, "URL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_WebCaptureCommand_URL>(obj, "URL", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -164,7 +164,7 @@ internal partial class APM_WebCaptureCommand_L__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_WebCaptureCommand_L>(obj, "L", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_WebCaptureCommand_L>(obj, "L", IndirectRequirement.Either);
         if (val == null) { return; }
         var L = obj.Get("L");
         if (!(gte(L,1))) 
@@ -195,7 +195,7 @@ internal partial class APM_WebCaptureCommand_F__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_WebCaptureCommand_F>(obj, "F", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_WebCaptureCommand_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(BitsClear(val,0b11111111111111111111111111111000))) 
@@ -274,7 +274,7 @@ internal partial class APM_WebCaptureCommand_CT__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_WebCaptureCommand_CT>(obj, "CT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_WebCaptureCommand_CT>(obj, "CT", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -301,7 +301,7 @@ internal partial class APM_WebCaptureCommand_H__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_WebCaptureCommand_H>(obj, "H", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_WebCaptureCommand_H>(obj, "H", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -328,7 +328,7 @@ internal partial class APM_WebCaptureCommand_S__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_WebCaptureCommand_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_WebCaptureCommand_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

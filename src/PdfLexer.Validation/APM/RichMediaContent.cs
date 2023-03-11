@@ -100,7 +100,7 @@ internal partial class APM_RichMediaContent_Type__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaContent_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaContent_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -132,7 +132,7 @@ internal partial class APM_RichMediaContent_Assets__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_RichMediaContent_Assets>(obj, "Assets", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_RichMediaContent_Assets>(obj, "Assets", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -159,7 +159,7 @@ internal partial class APM_RichMediaContent_Configurations__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_RichMediaContent_Configurations>(obj, "Configurations", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_RichMediaContent_Configurations>(obj, "Configurations", IndirectRequirement.Either);
         if (val == null) { return; }
         var Configurations = obj.Get("Configurations");
         if (!(gt(((Configurations as PdfArray)?.Count),0))) 
@@ -190,7 +190,7 @@ internal partial class APM_RichMediaContent_Views__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_RichMediaContent_Views>(obj, "Views", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_RichMediaContent_Views>(obj, "Views", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

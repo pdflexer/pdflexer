@@ -99,7 +99,7 @@ internal partial class APM_RichMediaSettings_Type__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaSettings_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaSettings_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -131,7 +131,7 @@ internal partial class APM_RichMediaSettings_Activation__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_RichMediaSettings_Activation>(obj, "Activation", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_RichMediaSettings_Activation>(obj, "Activation", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -158,7 +158,7 @@ internal partial class APM_RichMediaSettings_Deactivation__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_RichMediaSettings_Deactivation>(obj, "Deactivation", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_RichMediaSettings_Deactivation>(obj, "Deactivation", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

@@ -27,8 +27,8 @@ public static class ImageSharpExts
         {
             byte[] buff = new byte[3];
             var rgb = img.CloneAs<Rgba32>();
-            var writer = new FlateWriter();
-            var mask = new FlateWriter();
+            var writer = new ZLibLexerStream();
+            var mask = new ZLibLexerStream();
             rgb.ProcessPixelRows(pa =>
             {
                 for (var i = 0; i < pa.Height; i++)
@@ -63,7 +63,7 @@ public static class ImageSharpExts
         } else
         {
             var rgb = img.CloneAs<Rgb24>();
-            var writer = new FlateWriter();
+            var writer = new ZLibLexerStream();
             rgb.ProcessPixelRows(pa =>
             {
                 for (var i = 0; i < pa.Height; i++)

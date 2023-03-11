@@ -102,7 +102,7 @@ internal partial class APM_TimeStampDict_URL__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_TimeStampDict_URL>(obj, "URL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_TimeStampDict_URL>(obj, "URL", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -129,7 +129,7 @@ internal partial class APM_TimeStampDict_Ff__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_TimeStampDict_Ff>(obj, "Ff", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_TimeStampDict_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

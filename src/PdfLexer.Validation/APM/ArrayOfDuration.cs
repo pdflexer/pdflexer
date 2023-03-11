@@ -80,7 +80,7 @@ internal partial class APM_ArrayOfDuration_1 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_ArrayOfDuration_1>(obj, 1, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_ArrayOfDuration_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;

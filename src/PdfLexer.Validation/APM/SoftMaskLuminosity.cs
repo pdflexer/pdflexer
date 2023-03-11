@@ -131,7 +131,7 @@ internal partial class APM_SoftMaskLuminosity_Type__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SoftMaskLuminosity_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SoftMaskLuminosity_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -163,7 +163,7 @@ internal partial class APM_SoftMaskLuminosity_S__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_SoftMaskLuminosity_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_SoftMaskLuminosity_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -195,7 +195,7 @@ internal partial class APM_SoftMaskLuminosity_G__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfStream, APM_SoftMaskLuminosity_G>(obj, "G", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetRequired<PdfStream, APM_SoftMaskLuminosity_G>(obj, "G", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         var GGroupS = val.Get("Group")?.Get("S");
         var GGroupCS = val.Get("Group")?.Get("CS");
@@ -227,7 +227,7 @@ internal partial class APM_SoftMaskLuminosity_BC__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_SoftMaskLuminosity_BC>(obj, "BC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_SoftMaskLuminosity_BC>(obj, "BC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

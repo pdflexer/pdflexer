@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfStreamsGeneral_x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfStream, APM_ArrayOfStreamsGeneral_x>(obj, n, IndirectRequirement.MustBeIndirect);
+            var (val, wasIR) = ctx.GetOptional<PdfStream, APM_ArrayOfStreamsGeneral_x>(obj, n, IndirectRequirement.MustBeIndirect);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

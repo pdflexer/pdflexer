@@ -162,7 +162,7 @@ internal partial class APM_ActionThread_Type__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_ActionThread_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_ActionThread_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -194,7 +194,7 @@ internal partial class APM_ActionThread_S__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_ActionThread_S>(obj, "S", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_ActionThread_S>(obj, "S", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -411,7 +411,7 @@ internal partial class APM_ActionThread_D__Base : ISpecification<PdfDictionary>
                     // no special cases
                     
                     var D = obj.Get("D");
-                    var trailerCatalogThreads = obj.Get("trailer")?.Get("Catalog")?.Get("Threads");
+                    var trailerCatalogThreads = ctx.Trailer.Get("Catalog")?.Get("Threads");
                     if (!((gte(D,0)&&lt(D,((trailerCatalogThreads as PdfArray)?.Count))))) 
                     {
                         ctx.Fail<APM_ActionThread_D>($"Invalid value {val}, allowed are: [fn:Eval((@D>=0) && (@D<fn:ArrayLength(trailer::Catalog::Threads)))]");

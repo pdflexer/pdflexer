@@ -36,7 +36,7 @@ internal partial class APM_ArrayOf_4AnnotBorderCharacteristics_0 : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_4AnnotBorderCharacteristics_0>(obj, 0, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOf_4AnnotBorderCharacteristics_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -61,7 +61,7 @@ internal partial class APM_ArrayOf_4AnnotBorderCharacteristics_1 : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_4AnnotBorderCharacteristics_1>(obj, 1, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOf_4AnnotBorderCharacteristics_1>(obj, 1, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -86,7 +86,7 @@ internal partial class APM_ArrayOf_4AnnotBorderCharacteristics_2 : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_ArrayOf_4AnnotBorderCharacteristics_2>(obj, 2, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOf_4AnnotBorderCharacteristics_2>(obj, 2, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         IPdfObject v = val;
@@ -111,7 +111,7 @@ internal partial class APM_ArrayOf_4AnnotBorderCharacteristics_3 : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_ArrayOf_4AnnotBorderCharacteristics_3>(obj, 3, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ArrayOf_4AnnotBorderCharacteristics_3>(obj, 3, IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

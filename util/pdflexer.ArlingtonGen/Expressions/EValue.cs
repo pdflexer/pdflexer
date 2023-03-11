@@ -33,7 +33,7 @@ internal class EValue : INode
         }
         else if (VariableContext.Handling == VariableHandling.MustBeVal)
         {
-            WriteVal(Text);
+            WriteVal(sw, Text);
         } else
         {
             if (Text[0] == '@' || Text.Contains("::"))
@@ -46,7 +46,7 @@ internal class EValue : INode
                 WriteObj(Text);
             } else
             {
-                WriteVal(Text);
+                WriteVal(sw, Text);
             }
         }
 
@@ -74,86 +74,91 @@ internal class EValue : INode
             }
         }
 
-        void WriteVal(string val)
+
+    }
+
+    public static void WriteVal(StringBuilder sw, string val)
+    {
+        if (!VariableContext.InEval)
         {
-            if (!VariableContext.InEval)
+            switch (VariableContext.CurrentType)
             {
-                switch (VariableContext.CurrentType)
-                {
-                    case NonEvalType.String:
-                        val = val.Trim('\'');
-                        sw.Append("\"" + val + "\"");
-                        return;
-                    case NonEvalType.Name:
-                        if (val == "true") { sw.Append("\"true\""); return; }
-                        if (val == "false") { sw.Append("\"false\""); return; }
-                        var nm = val.Replace("-", "").Replace(".", "");
-                        if (char.IsNumber(nm[0]))
-                        {
-                            nm = "N" + nm;
-                        }
-                        sw.Append("PdfName." + nm);
-                        PdfNames.Add($"public static readonly PdfName {nm} = new (\"{val}\", false);");
-                        return;
-                    case NonEvalType.Number:
-                        if (decimal.TryParse(val, out _))
-                        {
-                            sw.Append(val + "m");
-                        } else
-                        {
-                            sw.Append(val);
-                        }
-                        break;
-                }
-                return;
-            }
-            if (int.TryParse(val, out _))
-            {
-                sw.Append(val);
-            }
-            else if (decimal.TryParse(val, out _))
-            {
-                if (!VariableContext.InEval)
-                {
+                case NonEvalType.String:
+                    val = val.Trim('\'');
                     sw.Append("\"" + val + "\"");
-                } else
-                {
-                    sw.Append(val + "m");
-                }
-                
-            }
-            else if (val[0] == '\'')
-            {
-                sw.Append("\"" + val.Trim('\'') + "\"");
-            }
-            else if (val == VariableContext.VarName)
-            {
-                sw.Append(VariableContext.VarSub);
-            }
-            else if (val == "true")
-            {
-                sw.Append("PdfBoolean.True");
-            }
-            else if (val == "false")
-            {
-                sw.Append("PdfBoolean.False");
-            }
-            else
-            {
-                if (val == "true") { sw.Append("\"true\""); return; }
-                if (val == "false") { sw.Append("\"false\""); return; }
-                var nm = val.Replace("-", "").Replace(".", "");
-                if (char.IsNumber(nm[0]))
-                {
-                    nm = "N" + nm;
-                }
-                sw.Append("PdfName." + nm);
-                PdfNames.Add($"public static readonly PdfName {nm} = new (\"{val}\", false);");
-                // sw.Append("\"" +     z + "\"");
+                    return;
+                case NonEvalType.Name:
+                    if (val == "true") { sw.Append("\"true\""); return; }
+                    if (val == "false") { sw.Append("\"false\""); return; }
+                    var nm = val.Replace("-", "").Replace(".", "");
+                    if (char.IsNumber(nm[0]))
+                    {
+                        nm = "N" + nm;
+                    }
+                    sw.Append("PdfName." + nm);
+                    PdfNames.Add($"public static readonly PdfName {nm} = new (\"{val}\", false);");
+                    return;
+                case NonEvalType.Number:
+                    if (decimal.TryParse(val, out _))
+                    {
+                        sw.Append(val + "m");
+                    }
+                    else
+                    {
+                        sw.Append(val);
+                    }
+                    break;
             }
             return;
         }
+        if (int.TryParse(val, out _))
+        {
+            sw.Append(val);
+        }
+        else if (decimal.TryParse(val, out _))
+        {
+            if (!VariableContext.InEval)
+            {
+                sw.Append("\"" + val + "\"");
+            }
+            else
+            {
+                sw.Append(val + "m");
+            }
+
+        }
+        else if (val[0] == '\'')
+        {
+            sw.Append("\"" + val.Trim('\'') + "\"");
+        }
+        else if (val == VariableContext.VarName)
+        {
+            sw.Append(VariableContext.VarSub);
+        }
+        else if (val == "true")
+        {
+            sw.Append("PdfBoolean.True");
+        }
+        else if (val == "false")
+        {
+            sw.Append("PdfBoolean.False");
+        }
+        else
+        {
+            if (val == "true") { sw.Append("\"true\""); return; }
+            if (val == "false") { sw.Append("\"false\""); return; }
+            var nm = val.Replace("-", "").Replace(".", "");
+            if (char.IsNumber(nm[0]))
+            {
+                nm = "N" + nm;
+            }
+            sw.Append("PdfName." + nm);
+            PdfNames.Add($"public static readonly PdfName {nm} = new (\"{val}\", false);");
+            // sw.Append("\"" +     z + "\"");
+        }
+        return;
     }
+
     public static HashSet<string> PdfNames = new HashSet<string>();
     public IEnumerable<string> GetRequiredValues()
     {

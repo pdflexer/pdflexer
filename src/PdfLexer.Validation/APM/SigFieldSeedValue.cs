@@ -130,7 +130,7 @@ internal partial class APM_SigFieldSeedValue_Type__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SigFieldSeedValue_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SigFieldSeedValue_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -162,7 +162,7 @@ internal partial class APM_SigFieldSeedValue_Ff__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_SigFieldSeedValue_Ff>(obj, "Ff", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_SigFieldSeedValue_Ff>(obj, "Ff", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(((ctx.Version >= 2.0m || BitsClear(val,0b11111111111111111111111110000000))&&BitsClear(val,0b11111111111111111111111000000000)))) 
@@ -193,7 +193,7 @@ internal partial class APM_SigFieldSeedValue_Filter__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SigFieldSeedValue_Filter>(obj, "Filter", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SigFieldSeedValue_Filter>(obj, "Filter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -220,7 +220,7 @@ internal partial class APM_SigFieldSeedValue_SubFilter__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_SigFieldSeedValue_SubFilter>(obj, "SubFilter", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_SigFieldSeedValue_SubFilter>(obj, "SubFilter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -247,7 +247,7 @@ internal partial class APM_SigFieldSeedValue_DigestMethod__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_SigFieldSeedValue_DigestMethod>(obj, "DigestMethod", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_SigFieldSeedValue_DigestMethod>(obj, "DigestMethod", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -274,7 +274,7 @@ internal partial class APM_SigFieldSeedValue_V__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_SigFieldSeedValue_V>(obj, "V", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_SigFieldSeedValue_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -306,7 +306,7 @@ internal partial class APM_SigFieldSeedValue_Cert__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_SigFieldSeedValue_Cert>(obj, "Cert", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_SigFieldSeedValue_Cert>(obj, "Cert", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -333,7 +333,7 @@ internal partial class APM_SigFieldSeedValue_Reasons__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_SigFieldSeedValue_Reasons>(obj, "Reasons", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_SigFieldSeedValue_Reasons>(obj, "Reasons", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -360,7 +360,7 @@ internal partial class APM_SigFieldSeedValue_MDP__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_SigFieldSeedValue_MDP>(obj, "MDP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_SigFieldSeedValue_MDP>(obj, "MDP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -387,7 +387,7 @@ internal partial class APM_SigFieldSeedValue_TimeStamp__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_SigFieldSeedValue_TimeStamp>(obj, "TimeStamp", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_SigFieldSeedValue_TimeStamp>(obj, "TimeStamp", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -414,7 +414,7 @@ internal partial class APM_SigFieldSeedValue_LegalAttestation__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_SigFieldSeedValue_LegalAttestation>(obj, "LegalAttestation", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_SigFieldSeedValue_LegalAttestation>(obj, "LegalAttestation", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -441,7 +441,7 @@ internal partial class APM_SigFieldSeedValue_AddRevInfo__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.7m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_SigFieldSeedValue_AddRevInfo>(obj, "AddRevInfo", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_SigFieldSeedValue_AddRevInfo>(obj, "AddRevInfo", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -468,7 +468,7 @@ internal partial class APM_SigFieldSeedValue_LockDocument__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SigFieldSeedValue_LockDocument>(obj, "LockDocument", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SigFieldSeedValue_LockDocument>(obj, "LockDocument", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -500,7 +500,7 @@ internal partial class APM_SigFieldSeedValue_AppearanceFilter__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_SigFieldSeedValue_AppearanceFilter>(obj, "AppearanceFilter", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_SigFieldSeedValue_AppearanceFilter>(obj, "AppearanceFilter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

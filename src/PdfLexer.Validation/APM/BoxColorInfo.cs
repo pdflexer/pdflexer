@@ -124,7 +124,7 @@ internal partial class APM_BoxColorInfo_CropBox__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_BoxColorInfo_CropBox>(obj, "CropBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_BoxColorInfo_CropBox>(obj, "CropBox", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -151,7 +151,7 @@ internal partial class APM_BoxColorInfo_BleedBox__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_BoxColorInfo_BleedBox>(obj, "BleedBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_BoxColorInfo_BleedBox>(obj, "BleedBox", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -178,7 +178,7 @@ internal partial class APM_BoxColorInfo_TrimBox__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_BoxColorInfo_TrimBox>(obj, "TrimBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_BoxColorInfo_TrimBox>(obj, "TrimBox", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -205,7 +205,7 @@ internal partial class APM_BoxColorInfo_ArtBox__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_BoxColorInfo_ArtBox>(obj, "ArtBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_BoxColorInfo_ArtBox>(obj, "ArtBox", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

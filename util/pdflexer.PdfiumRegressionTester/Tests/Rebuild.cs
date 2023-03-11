@@ -29,7 +29,7 @@ internal class Rebuild : ITest
     {
         var scanner = new PageContentScanner2(doc.Context, page);
         var ms = new MemoryStream();
-        var fl = new FlateWriter();
+        var fl = new ZLibLexerStream();
 
         while (scanner.Advance())
         {

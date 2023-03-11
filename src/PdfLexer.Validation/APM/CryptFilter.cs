@@ -120,7 +120,7 @@ internal partial class APM_CryptFilter_Type__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_CryptFilter_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_CryptFilter_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -152,7 +152,7 @@ internal partial class APM_CryptFilter_CFM__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_CryptFilter_CFM>(obj, "CFM", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_CryptFilter_CFM>(obj, "CFM", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -184,7 +184,7 @@ internal partial class APM_CryptFilter_AuthEvent__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_CryptFilter_AuthEvent>(obj, "AuthEvent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_CryptFilter_AuthEvent>(obj, "AuthEvent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -216,7 +216,7 @@ internal partial class APM_CryptFilter_Length__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_CryptFilter_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_CryptFilter_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

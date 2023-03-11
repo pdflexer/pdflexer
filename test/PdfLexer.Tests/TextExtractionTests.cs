@@ -176,7 +176,7 @@ namespace PdfLexer.Tests
                 using var writer = pg.GetWriter();
 
                 writer.Font(ContentWriter.Base14.Courier, 10)
-                      .CustomOp(new gs_Op("GSName"))
+                      .Raw(new gs_Op("GSName"))
                       .Text("Hello world");
                 // writer.Complete();
             }

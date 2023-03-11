@@ -163,7 +163,7 @@ internal partial class APM_EncryptionPublicKey_Recipients__Base : ISpecification
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var SubFilter = obj.Get("SubFilter");
-        var val = ctx.GetOptional<PdfArray, APM_EncryptionPublicKey_Recipients>(obj, "Recipients", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_EncryptionPublicKey_Recipients>(obj, "Recipients", IndirectRequirement.Either);
         if (((eq(SubFilter,PdfName.adbepkcs7s3)||eq(SubFilter,PdfName.adbepkcs7s4))) && val == null) {
             ctx.Fail<APM_EncryptionPublicKey_Recipients>("Recipients is required when 'fn:IsRequired((@SubFilter==adbe.pkcs7.s3) || (@SubFilter==adbe.pkcs7.s4))"); return;
         } else if (val == null) {
@@ -194,7 +194,7 @@ internal partial class APM_EncryptionPublicKey_P__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_EncryptionPublicKey_P>(obj, "P", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_EncryptionPublicKey_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(BitsClear(val,0b11111111111111111111000000000000))) 
@@ -225,7 +225,7 @@ internal partial class APM_EncryptionPublicKey_Filter__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_EncryptionPublicKey_Filter>(obj, "Filter", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_EncryptionPublicKey_Filter>(obj, "Filter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -257,7 +257,7 @@ internal partial class APM_EncryptionPublicKey_SubFilter__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_SubFilter>(obj, "SubFilter", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_SubFilter>(obj, "SubFilter", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -289,7 +289,7 @@ internal partial class APM_EncryptionPublicKey_V__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_EncryptionPublicKey_V>(obj, "V", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_EncryptionPublicKey_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -321,7 +321,7 @@ internal partial class APM_EncryptionPublicKey_Length__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_EncryptionPublicKey_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_EncryptionPublicKey_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -353,7 +353,7 @@ internal partial class APM_EncryptionPublicKey_CF__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_EncryptionPublicKey_CF>(obj, "CF", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_EncryptionPublicKey_CF>(obj, "CF", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
@@ -389,7 +389,7 @@ internal partial class APM_EncryptionPublicKey_StmF__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_StmF>(obj, "StmF", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_StmF>(obj, "StmF", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         
@@ -421,7 +421,7 @@ internal partial class APM_EncryptionPublicKey_StrF__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_StrF>(obj, "StrF", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_StrF>(obj, "StrF", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         
@@ -453,7 +453,7 @@ internal partial class APM_EncryptionPublicKey_EFF__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_EFF>(obj, "EFF", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_EncryptionPublicKey_EFF>(obj, "EFF", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         
@@ -485,7 +485,7 @@ internal partial class APM_EncryptionPublicKey_EncryptMetadata__Base : ISpecific
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_EncryptionPublicKey_EncryptMetadata>(obj, "EncryptMetadata", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_EncryptionPublicKey_EncryptMetadata>(obj, "EncryptMetadata", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -512,9 +512,9 @@ internal partial class APM_EncryptionPublicKey_KDFSalt__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        // TODO complex IR
-        var val = ctx.GetOptional<PdfString, APM_EncryptionPublicKey_KDFSalt>(obj, "KDFSalt", IndirectRequirement.MustBeDirect);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_EncryptionPublicKey_KDFSalt>(obj, "KDFSalt", IndirectRequirement.MustBeDirect);
         if (val == null) { return; }
+        
         
         if (!(AlwaysUnencrypted(obj))) 
         {

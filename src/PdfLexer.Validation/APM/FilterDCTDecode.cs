@@ -161,7 +161,7 @@ internal partial class APM_FilterDCTDecode_ColorTransform__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FilterDCTDecode_ColorTransform>(obj, "ColorTransform", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FilterDCTDecode_ColorTransform>(obj, "ColorTransform", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

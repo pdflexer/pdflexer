@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfIntegersGeneral_x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfIntNumber, APM_ArrayOfIntegersGeneral_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_ArrayOfIntegersGeneral_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

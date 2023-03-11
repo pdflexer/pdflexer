@@ -110,7 +110,7 @@ internal partial class APM_DPartRoot_Type__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_DPartRoot_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_DPartRoot_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -142,7 +142,7 @@ internal partial class APM_DPartRoot_DPartRootNode__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfDictionary, APM_DPartRoot_DPartRootNode>(obj, "DPartRootNode", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetRequired<PdfDictionary, APM_DPartRoot_DPartRootNode>(obj, "DPartRootNode", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -169,7 +169,7 @@ internal partial class APM_DPartRoot_RecordLevel__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_DPartRoot_RecordLevel>(obj, "RecordLevel", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_DPartRoot_RecordLevel>(obj, "RecordLevel", IndirectRequirement.Either);
         if (val == null) { return; }
         var RecordLevel = obj.Get("RecordLevel");
         if (!(gte(RecordLevel,0))) 
@@ -201,7 +201,7 @@ internal partial class APM_DPartRoot_NodeNameList__Base : ISpecification<PdfDict
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfArray, APM_DPartRoot_NodeNameList>(obj, "NodeNameList", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_DPartRoot_NodeNameList>(obj, "NodeNameList", IndirectRequirement.Either);
         if (((ctx.Extensions.Contains(PdfName.PDF_VT2))) && val == null) {
             ctx.Fail<APM_DPartRoot_NodeNameList>("NodeNameList is required when 'fn:IsRequired(fn:Extension(PDF_VT2))"); return;
         } else if (val == null) {

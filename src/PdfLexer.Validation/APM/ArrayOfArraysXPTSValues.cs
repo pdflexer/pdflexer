@@ -39,7 +39,7 @@ internal partial class APM_ArrayOfArraysXPTSValues_x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfArray, APM_ArrayOfArraysXPTSValues_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ArrayOfArraysXPTSValues_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             var parentNames = parent?.Get("Names");
             if (!(eq(((val as PdfArray)?.Count),((parentNames as PdfArray)?.Count)))) 

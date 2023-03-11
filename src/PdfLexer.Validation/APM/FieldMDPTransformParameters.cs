@@ -120,7 +120,7 @@ internal partial class APM_FieldMDPTransformParameters_Type__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_FieldMDPTransformParameters_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_FieldMDPTransformParameters_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -152,7 +152,7 @@ internal partial class APM_FieldMDPTransformParameters_Action__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_FieldMDPTransformParameters_Action>(obj, "Action", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_FieldMDPTransformParameters_Action>(obj, "Action", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -185,7 +185,7 @@ internal partial class APM_FieldMDPTransformParameters_Fields__Base : ISpecifica
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var Action = obj.Get("Action");
-        var val = ctx.GetOptional<PdfArray, APM_FieldMDPTransformParameters_Fields>(obj, "Fields", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_FieldMDPTransformParameters_Fields>(obj, "Fields", IndirectRequirement.Either);
         if (((eq(Action,PdfName.Include)||eq(Action,PdfName.Exclude))) && val == null) {
             ctx.Fail<APM_FieldMDPTransformParameters_Fields>("Fields is required when 'fn:IsRequired((@Action==Include) || (@Action==Exclude))"); return;
         } else if (val == null) {
@@ -216,7 +216,7 @@ internal partial class APM_FieldMDPTransformParameters_V__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_FieldMDPTransformParameters_V>(obj, "V", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_FieldMDPTransformParameters_V>(obj, "V", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

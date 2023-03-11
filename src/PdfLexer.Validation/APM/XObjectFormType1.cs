@@ -198,7 +198,7 @@ internal partial class APM_XObjectFormType1_Type__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectFormType1_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectFormType1_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -230,7 +230,7 @@ internal partial class APM_XObjectFormType1_Subtype__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_XObjectFormType1_Subtype>(obj, "Subtype", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_XObjectFormType1_Subtype>(obj, "Subtype", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -263,7 +263,7 @@ internal partial class APM_XObjectFormType1_FormType__Base : ISpecification<PdfD
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_FormType>(obj, "FormType", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_FormType>(obj, "FormType", IndirectRequirement.Either);
         if ((ctx.Version < 1.3m) && val == null) {
             ctx.Fail<APM_XObjectFormType1_FormType>("FormType is required when 'fn:IsRequired(fn:BeforeVersion(1.3))"); return;
         } else if (val == null) {
@@ -299,7 +299,7 @@ internal partial class APM_XObjectFormType1_BBox__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_XObjectFormType1_BBox>(obj, "BBox", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_XObjectFormType1_BBox>(obj, "BBox", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -327,7 +327,7 @@ internal partial class APM_XObjectFormType1_Matrix__Base : ISpecification<PdfDic
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfArray, APM_XObjectFormType1_Matrix>(obj, "Matrix", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_XObjectFormType1_Matrix>(obj, "Matrix", IndirectRequirement.Either);
         if ((ctx.Version < 1.3m) && val == null) {
             ctx.Fail<APM_XObjectFormType1_Matrix>("Matrix is required when 'fn:IsRequired(fn:BeforeVersion(1.3))"); return;
         } else if (val == null) {
@@ -358,7 +358,7 @@ internal partial class APM_XObjectFormType1_Resources__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfDictionary, APM_XObjectFormType1_Resources>(obj, "Resources", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfDictionary, APM_XObjectFormType1_Resources>(obj, "Resources", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -385,7 +385,7 @@ internal partial class APM_XObjectFormType1_Group__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_Group>(obj, "Group", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_Group>(obj, "Group", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -412,7 +412,7 @@ internal partial class APM_XObjectFormType1_Ref__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_Ref>(obj, "Ref", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_Ref>(obj, "Ref", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -439,7 +439,7 @@ internal partial class APM_XObjectFormType1_Metadata__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.4m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfStream, APM_XObjectFormType1_Metadata>(obj, "Metadata", IndirectRequirement.MustBeIndirect);
+        var (val, wasIR) = ctx.GetOptional<PdfStream, APM_XObjectFormType1_Metadata>(obj, "Metadata", IndirectRequirement.MustBeIndirect);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -466,7 +466,7 @@ internal partial class APM_XObjectFormType1_PieceInfo__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_PieceInfo>(obj, "PieceInfo", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_PieceInfo>(obj, "PieceInfo", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -494,8 +494,8 @@ internal partial class APM_XObjectFormType1_LastModified__Base : ISpecification<
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfString, APM_XObjectFormType1_LastModified>(obj, "LastModified", IndirectRequirement.Either);
-        if ((obj.ContainsKey(val)) && val == null) {
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_XObjectFormType1_LastModified>(obj, "LastModified", IndirectRequirement.Either);
+        if ((obj.ContainsKey(PdfName.PieceInfo)) && val == null) {
             ctx.Fail<APM_XObjectFormType1_LastModified>("LastModified is required when 'fn:IsRequired(fn:IsPresent(PieceInfo))"); return;
         } else if (val == null) {
             return;
@@ -525,7 +525,7 @@ internal partial class APM_XObjectFormType1_StructParent__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_StructParent>(obj, "StructParent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_StructParent>(obj, "StructParent", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (obj.ContainsKey(PdfName.StructParents)) 
@@ -556,7 +556,7 @@ internal partial class APM_XObjectFormType1_StructParents__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_StructParents>(obj, "StructParents", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_StructParents>(obj, "StructParents", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (obj.ContainsKey(PdfName.StructParent)) 
@@ -587,7 +587,7 @@ internal partial class APM_XObjectFormType1_OPI__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_OPI>(obj, "OPI", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_OPI>(obj, "OPI", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -623,7 +623,7 @@ internal partial class APM_XObjectFormType1_OC__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_OC>(obj, "OC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_OC>(obj, "OC", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -660,7 +660,7 @@ internal partial class APM_XObjectFormType1_Name__Base : ISpecification<PdfDicti
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         
-        var val = ctx.GetOptional<PdfName, APM_XObjectFormType1_Name>(obj, "Name", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectFormType1_Name>(obj, "Name", IndirectRequirement.Either);
         if ((ctx.Version < 1.3m) && val == null) {
             ctx.Fail<APM_XObjectFormType1_Name>("Name is required when 'fn:IsRequired(fn:BeforeVersion(1.3))"); return;
         } else if (val == null) {
@@ -739,7 +739,7 @@ internal partial class APM_XObjectFormType1_Measure__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_Measure>(obj, "Measure", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_Measure>(obj, "Measure", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -775,7 +775,7 @@ internal partial class APM_XObjectFormType1_PtData__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_PtData>(obj, "PtData", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_XObjectFormType1_PtData>(obj, "PtData", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -802,7 +802,7 @@ internal partial class APM_XObjectFormType1_Length__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_XObjectFormType1_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_XObjectFormType1_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1123,7 +1123,7 @@ internal partial class APM_XObjectFormType1_DL__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_DL>(obj, "DL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_XObjectFormType1_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
         var DL = obj.Get("DL");
         if (!(gte(DL,0))) 
@@ -1154,7 +1154,7 @@ internal partial class APM_XObjectFormType1_XUID__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.0m && version < 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_XObjectFormType1_XUID>(obj, "XUID", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_XObjectFormType1_XUID>(obj, "XUID", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1181,7 +1181,7 @@ internal partial class APM_XObjectFormType1_GTS_XID__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_XObjectFormType1_GTS_XID>(obj, "GTS_XID", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_XObjectFormType1_GTS_XID>(obj, "GTS_XID", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -1208,7 +1208,7 @@ internal partial class APM_XObjectFormType1_GTS_Scope__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_XObjectFormType1_GTS_Scope>(obj, "GTS_Scope", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_XObjectFormType1_GTS_Scope>(obj, "GTS_Scope", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -1241,7 +1241,7 @@ internal partial class APM_XObjectFormType1_GTS_Env__Base : ISpecification<PdfDi
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var GTSScope = obj.Get("GTS_Scope");
-        var val = ctx.GetOptional<PdfString, APM_XObjectFormType1_GTS_Env>(obj, "GTS_Env", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_XObjectFormType1_GTS_Env>(obj, "GTS_Env", IndirectRequirement.Either);
         if (((eq(GTSScope,PdfName.Stream)||eq(GTSScope,PdfName.Global))) && val == null) {
             ctx.Fail<APM_XObjectFormType1_GTS_Env>("GTS_Env is required when 'fn:IsRequired((@GTS_Scope==Stream) || (@GTS_Scope==Global))"); return;
         } else if (val == null) {
@@ -1272,7 +1272,7 @@ internal partial class APM_XObjectFormType1_GTS_Encapsulated__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_XObjectFormType1_GTS_Encapsulated>(obj, "GTS_Encapsulated", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_XObjectFormType1_GTS_Encapsulated>(obj, "GTS_Encapsulated", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

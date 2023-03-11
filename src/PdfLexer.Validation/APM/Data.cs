@@ -50,7 +50,7 @@ internal partial class APM_Data_LastModified__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_Data_LastModified>(obj, "LastModified", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_Data_LastModified>(obj, "LastModified", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -108,8 +108,29 @@ internal partial class APM_Data_Private__Base : ISpecification<PdfDictionary>
                     ctx.Run<APM__UniversalDictionary, PdfDictionary>(stack, val, obj);
                     return;
                 }
+            case PdfObjectType.NumericObj:
+                {
             
-            // TODO MC array;boolean;dictionary;integer;name;number;stream;string
+                    // TODO MC integer;number
+            
+                    var val =  (PdfNumber)utval;
+                    if (val is PdfIntNumber) 
+                    {
+                        // integer
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    } else if (true) 
+                    {
+                        // number
+                        // no indirect obj reqs
+                        // no special cases
+                        // no value restrictions
+                        // no linked objects
+                    }
+                    return;
+                }
             case PdfObjectType.NameObj:
                 {
                     var val =  (PdfName)utval;
@@ -200,8 +221,29 @@ internal partial class APM_Data_CatchAll__Base : ISpecification<PdfDictionary>
                         ctx.Run<APM__UniversalDictionary, PdfDictionary>(stack, val, obj);
                         return;
                     }
+                case PdfObjectType.NumericObj:
+                    {
                 
-                // TODO MC array;boolean;dictionary;integer;name;number;stream;string
+                        // TODO MC integer;number
+                
+                        var val =  (PdfNumber)utval;
+                        if (val is PdfIntNumber) 
+                        {
+                            // integer
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        } else if (true) 
+                        {
+                            // number
+                            // no indirect obj reqs
+                            // no special cases
+                            // no value restrictions
+                            // no linked objects
+                        }
+                        return;
+                    }
                 case PdfObjectType.NameObj:
                     {
                         var val =  (PdfName)utval;

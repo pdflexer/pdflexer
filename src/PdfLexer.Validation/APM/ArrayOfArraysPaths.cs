@@ -34,7 +34,7 @@ internal partial class APM_ArrayOfArraysPaths_0 : ISpecification<PdfArray>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfArray obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_ArrayOfArraysPaths_0>(obj, 0, IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_ArrayOfArraysPaths_0>(obj, 0, IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(eq(((val as PdfArray)?.Count),2))) 
@@ -64,7 +64,7 @@ internal partial class APM_ArrayOfArraysPaths_x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfArray, APM_ArrayOfArraysPaths_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ArrayOfArraysPaths_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             
             if (!((eq(((val as PdfArray)?.Count),2)||eq(((val as PdfArray)?.Count),6)))) 

@@ -19,6 +19,8 @@ internal class ArrayChild : GenBase
 
     public override string CreateClass()
     {
+        VariableContext.VarSub = "var";
+        VariableContext.VarName = "var";
         VariableContext.Vars.Clear();
         var code = $$"""
 /// <summary>

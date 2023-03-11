@@ -269,7 +269,7 @@ internal partial class APM_MovieActivation_Rate__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_MovieActivation_Rate>(obj, "Rate", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_MovieActivation_Rate>(obj, "Rate", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -296,7 +296,7 @@ internal partial class APM_MovieActivation_Volume__Base : ISpecification<PdfDict
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_MovieActivation_Volume>(obj, "Volume", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_MovieActivation_Volume>(obj, "Volume", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -328,7 +328,7 @@ internal partial class APM_MovieActivation_ShowControls__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_MovieActivation_ShowControls>(obj, "ShowControls", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_MovieActivation_ShowControls>(obj, "ShowControls", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -355,7 +355,7 @@ internal partial class APM_MovieActivation_Mode__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_MovieActivation_Mode>(obj, "Mode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_MovieActivation_Mode>(obj, "Mode", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -387,7 +387,7 @@ internal partial class APM_MovieActivation_Synchronous__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_MovieActivation_Synchronous>(obj, "Synchronous", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_MovieActivation_Synchronous>(obj, "Synchronous", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -414,7 +414,7 @@ internal partial class APM_MovieActivation_FWScale__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_MovieActivation_FWScale>(obj, "FWScale", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_MovieActivation_FWScale>(obj, "FWScale", IndirectRequirement.Either);
         if (val == null) { return; }
         var FWScale0 = val.Get(0);
         var FWScale1 = val.Get(1);
@@ -446,7 +446,7 @@ internal partial class APM_MovieActivation_FWPosition__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_MovieActivation_FWPosition>(obj, "FWPosition", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_MovieActivation_FWPosition>(obj, "FWPosition", IndirectRequirement.Either);
         if (val == null) { return; }
         var FWPosition0 = val.Get(0);
         var FWPosition1 = val.Get(1);

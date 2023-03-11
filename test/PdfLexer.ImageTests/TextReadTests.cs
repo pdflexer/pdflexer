@@ -42,7 +42,7 @@ namespace PdfLexer.ImageTests
         public void Test()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var output = Path.Combine(tp, "results", "txt");
+            var output = Path.Combine(tp, "results");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             using var doc = PdfDocument.Create();
             var pg = doc.AddPage();

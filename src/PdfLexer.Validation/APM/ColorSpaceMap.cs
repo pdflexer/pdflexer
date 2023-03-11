@@ -51,7 +51,7 @@ internal partial class APM_ColorSpaceMap_DefaultRGB__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_ColorSpaceMap_DefaultRGB>(obj, "DefaultRGB", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ColorSpaceMap_DefaultRGB>(obj, "DefaultRGB", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -90,7 +90,7 @@ internal partial class APM_ColorSpaceMap_DefaultCMYK__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_ColorSpaceMap_DefaultCMYK>(obj, "DefaultCMYK", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ColorSpaceMap_DefaultCMYK>(obj, "DefaultCMYK", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -126,7 +126,7 @@ internal partial class APM_ColorSpaceMap_DefaultGray__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_ColorSpaceMap_DefaultGray>(obj, "DefaultGray", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_ColorSpaceMap_DefaultGray>(obj, "DefaultGray", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

@@ -120,7 +120,7 @@ internal partial class APM_SigFieldLock_Type__Base : ISpecification<PdfDictionar
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_SigFieldLock_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_SigFieldLock_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -152,7 +152,7 @@ internal partial class APM_SigFieldLock_Action__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_SigFieldLock_Action>(obj, "Action", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_SigFieldLock_Action>(obj, "Action", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -185,7 +185,7 @@ internal partial class APM_SigFieldLock_Fields__Base : ISpecification<PdfDiction
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var Action = obj.Get("Action");
-        var val = ctx.GetOptional<PdfArray, APM_SigFieldLock_Fields>(obj, "Fields", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_SigFieldLock_Fields>(obj, "Fields", IndirectRequirement.Either);
         if (((eq(Action,PdfName.Include)||eq(Action,PdfName.Exclude))) && val == null) {
             ctx.Fail<APM_SigFieldLock_Fields>("Fields is required when 'fn:IsRequired((@Action==Include) || (@Action==Exclude))"); return;
         } else if (val == null) {
@@ -216,7 +216,7 @@ internal partial class APM_SigFieldLock_P__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_SigFieldLock_P>(obj, "P", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_SigFieldLock_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

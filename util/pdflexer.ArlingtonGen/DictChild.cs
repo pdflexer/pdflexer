@@ -20,6 +20,8 @@ internal class DictChild : GenBase
 
     public override string CreateClass()
     {
+        VariableContext.VarSub = "var";
+        VariableContext.VarName = "var";
         VariableContext.Vars.Clear();
         var key = "\"" + Key + "\"";
         var code = $$"""
@@ -80,27 +82,6 @@ foreach (var key in obj.Keys)
 
 """;
     }
-
-    private string SimpleRepeat()
-    {
-        return $$"""
-var wasIR = kvp.Value.Type == PdfObjectType.IndirectRefObj;
-var val = kvp.Value.Resolve();
-
-if (!(val is {{typeDomMap[Row.Type]}})) { ctx.Fail<APM_{{RootName}}_{{Key}}>("Extra values are required to be '{{Row.Type}}', was " + kvp.Value.Type); }
-{{GetSingleSimpleTypeChecks("val")}}
-""";
-    }
-    private string MultiRepeat()
-    {
-        return $$"""
-var wasIR = kvp.Value.Type == PdfObjectType.IndirectRefObj;
-var utval = kvp.Value.Resolve();
-{{GetSingleComplexTypeChecks("utval")}}
-""";
-    }
-
-
 
 
 }

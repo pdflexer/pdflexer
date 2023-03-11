@@ -122,7 +122,7 @@ internal partial class APM_TrapRegion_TP__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_TrapRegion_TP>(obj, "TP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_TrapRegion_TP>(obj, "TP", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -149,7 +149,7 @@ internal partial class APM_TrapRegion_TZ__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m && version < 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_TrapRegion_TZ>(obj, "TZ", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_TrapRegion_TZ>(obj, "TZ", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

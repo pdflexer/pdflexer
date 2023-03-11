@@ -46,7 +46,7 @@ internal partial class APM_ArrayOfQuadPoints_0x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_0x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_0x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -73,7 +73,7 @@ internal partial class APM_ArrayOfQuadPoints_1x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_1x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_1x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -100,7 +100,7 @@ internal partial class APM_ArrayOfQuadPoints_2x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_2x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_2x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -127,7 +127,7 @@ internal partial class APM_ArrayOfQuadPoints_3x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_3x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_3x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -154,7 +154,7 @@ internal partial class APM_ArrayOfQuadPoints_4x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_4x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_4x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -181,7 +181,7 @@ internal partial class APM_ArrayOfQuadPoints_5x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_5x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_5x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -208,7 +208,7 @@ internal partial class APM_ArrayOfQuadPoints_6x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_6x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_6x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions
@@ -235,7 +235,7 @@ internal partial class APM_ArrayOfQuadPoints_7x : ISpecification<PdfArray>
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_7x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_ArrayOfQuadPoints_7x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             // no value restrictions

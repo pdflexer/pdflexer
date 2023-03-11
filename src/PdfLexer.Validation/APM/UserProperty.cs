@@ -104,9 +104,9 @@ internal partial class APM_UserProperty_N__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfString, APM_UserProperty_N>(obj, "N", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfString, APM_UserProperty_N>(obj, "N", IndirectRequirement.Either);
         if (val == null) { return; }
-        var trailerCatalogMarkInfoUserProperties = obj.Get("trailer")?.Get("Catalog")?.Get("MarkInfo")?.Get("UserProperties");
+        var trailerCatalogMarkInfoUserProperties = ctx.Trailer.Get("Catalog")?.Get("MarkInfo")?.Get("UserProperties");
         if (!(eq(trailerCatalogMarkInfoUserProperties,PdfBoolean.True))) 
         {
             ctx.Fail<APM_UserProperty_N>($"Value failed special case check: fn:Eval(trailer::Catalog::MarkInfo::@UserProperties==true)");
@@ -237,7 +237,7 @@ internal partial class APM_UserProperty_F__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_UserProperty_F>(obj, "F", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_UserProperty_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -264,7 +264,7 @@ internal partial class APM_UserProperty_H__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.6m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_UserProperty_H>(obj, "H", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_UserProperty_H>(obj, "H", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

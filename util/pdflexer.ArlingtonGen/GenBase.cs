@@ -234,15 +234,12 @@ switch ({{varName}}.Type)
         VariableContext.Vars[key] = "val";
 
         var txt = "";
-        if (!irh.IsSimple())
-        {
-            txt += "// TODO complex IR\n";
-        }
+
         if (req.IsSimple())
         {
-            txt += req.GetSimple() ? $"""var val = ctx.GetRequired<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});"""
+            txt += req.GetSimple() ? $"""var (val, wasIR) = ctx.GetRequired<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});"""
                 : $"""
-var val = ctx.GetOptional<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});
+var (val, wasIR) = ctx.GetOptional<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});
 """;
             txt += "\nif (val == null) { return; }\n";
         }
@@ -250,7 +247,7 @@ var val = ctx.GetOptional<{type}, APM_{RootName}_{Key}>(obj, {key}, {ir});
         {
             txt += $$"""
 {{string.Join('\n', req.GetComplexVars().Distinct().Select(x=> GetSetter(x, "array", "val")))}}
-var val = ctx.GetOptional<{{type}}, APM_{{RootName}}_{{Key}}>(obj, {{key}}, {{ir}});
+var (val, wasIR) = ctx.GetOptional<{{type}}, APM_{{RootName}}_{{Key}}>(obj, {{key}}, {{ir}});
 if (({{req.GetComplex()}}) && val == null) {
     ctx.Fail<APM_{{RootName}}_{{Key}}>("{{Key}} is required when '{{Row.Required}}"); return;
 } else if (val == null) {
@@ -259,6 +256,12 @@ if (({{req.GetComplex()}}) && val == null) {
 
 """;
         }
+
+        if (!irh.IsSimple())
+        {
+            txt += irh.GetComplex();
+        }
+
         txt += GetSingleSimpleTypeChecks(key);
         return txt;
     }
@@ -289,7 +292,7 @@ if (({{req.GetComplex()}}) && val == null) {
             }
             else
             {
-                txt += "\n// TODO MC " + string.Join(";", types) + "\n";
+                txt += MultiCaseAndTypeStatement(vals[0], vals);
             }
         }
 
@@ -303,7 +306,7 @@ if (({{req.GetComplex()}}) && val == null) {
             }
             else
             {
-                txt += "\n// TODO MC " + string.Join(";", types) + "\n";
+                txt += MultiCaseAndTypeStatement(vals[0], vals);
             }
         }
 
@@ -363,6 +366,72 @@ case PdfObjectType.{{typemap[type]}}:
 """;
     }
 
+    private string MultiCaseAndTypeStatement(string type, List<string> types)
+    {
+        VariableContext.CurrentType = type switch
+        {
+            "number" => NonEvalType.Number,
+            "integer" => NonEvalType.Number,
+            "decimal" => NonEvalType.Number,
+            "string" => NonEvalType.String,
+            "string-text" => NonEvalType.String,
+            "name" => NonEvalType.Name,
+            _ => NonEvalType.Name,
+        };
+
+        return $$"""
+case PdfObjectType.{{typemap[type]}}:
+    {
+{{("\n        // TODO MC " + string.Join(";", types) + "\n")}}
+{{Ident(8, $"var val =  ({typeDomBaseMap[type]})utval;")}}
+{{Ident(8, GetSingleTypeForMulti(types))}}
+        return;
+    }
+
+""";
+    }
+
+
+    private string GetSingleTypeForMulti(List<string> types)
+    {
+        var sc = new SpecialCase(this, Row);
+        var pv = new PossibleValues(this);
+        var txt = "";
+        for (var i=0; i < types.Count;i++)
+        {
+            var type = types[i];
+            if (i==0)
+            {
+                txt += "if ";
+            }
+            txt += $$"""
+({{specialTypesCheck[type]}}) 
+{
+    // {{type}}
+{{Ident(4, IRCheckMulti(type))}}
+{{Ident(4, sc.GetSpecialCase(type))}}
+{{Ident(4, pv.GetPossibleValueCheck(type))}}
+{{Ident(4, GetLink(type, Key))}}
+}
+""";
+            if (i < types.Count-1)
+            {
+                txt += " else if ";
+            }
+        }
+        return txt;
+    }
+
+    private static Dictionary<string, string> specialTypesCheck = new Dictionary<string, string>
+    { 
+        ["date"] = "IsDate(val)",
+        ["string-ascii"] = "IsAscii(val)",
+        ["string-text"] = "true",
+        ["string-byte"] = "true",
+        ["string"] = "true",
+        ["integer"] = "val is PdfIntNumber",
+        ["number"] = "true",
+    };
 
     private static Regex badVar = new Regex("@[0-9\\*]+");
 
@@ -410,6 +479,12 @@ case PdfObjectType.{{typemap[type]}}:
                 txt += "parent";
                 segs.RemoveAt(0);
                 trim = false;
+            }
+            else if (segs[0] == "trailer")
+            {
+                txt += "ctx.Trailer";
+                segs.RemoveAt(0);
+                trim = true;
             }
             else if (segs[0] == "*")
             {
@@ -504,6 +579,28 @@ case PdfObjectType.{{typemap[type]}}:
         {"date", "PdfString" },
         {"dictionary", "PdfDictionary" },
         {"integer", "PdfIntNumber" },
+        {"matrix", "PdfArray" },
+        {"name", "PdfName" },
+        {"name-tree", "PdfDictionary" },
+        {"null", "PdfNull" },
+        {"number", "PdfNumber" },
+        {"number-tree", "PdfDictionary" },
+        {"rectangle", "PdfArray" },
+        {"stream", "PdfStream" },
+        {"string", "PdfString" },
+        {"string-ascii", "PdfString" },
+        {"string-byte", "PdfString" },
+        {"string-text", "PdfString" },
+    };
+
+    protected static Dictionary<string, string> typeDomBaseMap = new Dictionary<string, string>
+    {
+        {"array", "PdfArray" },
+        {"bitmask", "PdfNumber" },
+        {"boolean", "PdfBoolean" },
+        {"date", "PdfString" },
+        {"dictionary", "PdfDictionary" },
+        {"integer", "PdfNumber" },
         {"matrix", "PdfArray" },
         {"name", "PdfName" },
         {"name-tree", "PdfDictionary" },

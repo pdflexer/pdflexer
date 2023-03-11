@@ -108,7 +108,7 @@ internal partial class APM_PaperMetaData_Type__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_PaperMetaData_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_PaperMetaData_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -140,7 +140,7 @@ internal partial class APM_PaperMetaData_Version__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_PaperMetaData_Version>(obj, "Version", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_PaperMetaData_Version>(obj, "Version", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -172,7 +172,7 @@ internal partial class APM_PaperMetaData_Resolution__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_PaperMetaData_Resolution>(obj, "Resolution", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_PaperMetaData_Resolution>(obj, "Resolution", IndirectRequirement.Either);
         if (val == null) { return; }
         var Resolution = obj.Get("Resolution");
         if (!(gt(Resolution,0))) 
@@ -203,7 +203,7 @@ internal partial class APM_PaperMetaData_Caption__Base : ISpecification<PdfDicti
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_PaperMetaData_Caption>(obj, "Caption", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_PaperMetaData_Caption>(obj, "Caption", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -230,7 +230,7 @@ internal partial class APM_PaperMetaData_Symbology__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_PaperMetaData_Symbology>(obj, "Symbology", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_PaperMetaData_Symbology>(obj, "Symbology", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -262,7 +262,7 @@ internal partial class APM_PaperMetaData_Width__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_PaperMetaData_Width>(obj, "Width", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_PaperMetaData_Width>(obj, "Width", IndirectRequirement.Either);
         if (val == null) { return; }
         var Width = obj.Get("Width");
         if (!(gt(Width,0))) 
@@ -293,7 +293,7 @@ internal partial class APM_PaperMetaData_Height__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfNumber, APM_PaperMetaData_Height>(obj, "Height", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfNumber, APM_PaperMetaData_Height>(obj, "Height", IndirectRequirement.Either);
         if (val == null) { return; }
         var Height = obj.Get("Height");
         if (!(gt(Height,0))) 
@@ -324,7 +324,7 @@ internal partial class APM_PaperMetaData_XSymWidth__Base : ISpecification<PdfDic
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_PaperMetaData_XSymWidth>(obj, "XSymWidth", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_PaperMetaData_XSymWidth>(obj, "XSymWidth", IndirectRequirement.Either);
         if (val == null) { return; }
         var XSymWidth = obj.Get("XSymWidth");
         if (!(gt(XSymWidth,0))) 
@@ -355,7 +355,7 @@ internal partial class APM_PaperMetaData_YSymHeight__Base : ISpecification<PdfDi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_PaperMetaData_YSymHeight>(obj, "YSymHeight", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_PaperMetaData_YSymHeight>(obj, "YSymHeight", IndirectRequirement.Either);
         if (val == null) { return; }
         var YSymHeight = obj.Get("YSymHeight");
         if (!(gt(YSymHeight,0))) 
@@ -387,7 +387,7 @@ internal partial class APM_PaperMetaData_ECC__Base : ISpecification<PdfDictionar
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
         var Symbology = obj.Get("Symbology");
-        var val = ctx.GetOptional<PdfIntNumber, APM_PaperMetaData_ECC>(obj, "ECC", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_PaperMetaData_ECC>(obj, "ECC", IndirectRequirement.Either);
         if (((eq(Symbology,PdfName.PDF417)||eq(Symbology,PdfName.QRCode))) && val == null) {
             ctx.Fail<APM_PaperMetaData_ECC>("ECC is required when 'fn:IsRequired((@Symbology==PDF417) || (@Symbology==QRCode))"); return;
         } else if (val == null) {
@@ -423,7 +423,7 @@ internal partial class APM_PaperMetaData_nCodeWordRow__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_PaperMetaData_nCodeWordRow>(obj, "nCodeWordRow", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_PaperMetaData_nCodeWordRow>(obj, "nCodeWordRow", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions
@@ -450,7 +450,7 @@ internal partial class APM_PaperMetaData_nCodeWordCol__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfNumber, APM_PaperMetaData_nCodeWordCol>(obj, "nCodeWordCol", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfNumber, APM_PaperMetaData_nCodeWordCol>(obj, "nCodeWordCol", IndirectRequirement.Either);
         if (val == null) { return; }
         // special case is an fn:IsMeaningful, not pertinent to validation
         // no value restrictions

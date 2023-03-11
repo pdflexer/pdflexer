@@ -132,7 +132,7 @@ internal partial class APM_LegalAttestation_JavaScriptActions__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_JavaScriptActions>(obj, "JavaScriptActions", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_JavaScriptActions>(obj, "JavaScriptActions", IndirectRequirement.Either);
         if (val == null) { return; }
         var JavaScriptActions = obj.Get("JavaScriptActions");
         if (!(gte(JavaScriptActions,0))) 
@@ -163,7 +163,7 @@ internal partial class APM_LegalAttestation_LaunchActions__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_LaunchActions>(obj, "LaunchActions", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_LaunchActions>(obj, "LaunchActions", IndirectRequirement.Either);
         if (val == null) { return; }
         var LaunchActions = obj.Get("LaunchActions");
         if (!(gte(LaunchActions,0))) 
@@ -194,7 +194,7 @@ internal partial class APM_LegalAttestation_URIActions__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_URIActions>(obj, "URIActions", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_URIActions>(obj, "URIActions", IndirectRequirement.Either);
         if (val == null) { return; }
         var URIActions = obj.Get("URIActions");
         if (!(gte(URIActions,0))) 
@@ -225,7 +225,7 @@ internal partial class APM_LegalAttestation_MovieActions__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_MovieActions>(obj, "MovieActions", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_MovieActions>(obj, "MovieActions", IndirectRequirement.Either);
         if (val == null) { return; }
         var MovieActions = obj.Get("MovieActions");
         if (!(gte(MovieActions,0))) 
@@ -256,7 +256,7 @@ internal partial class APM_LegalAttestation_SoundActions__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_SoundActions>(obj, "SoundActions", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_SoundActions>(obj, "SoundActions", IndirectRequirement.Either);
         if (val == null) { return; }
         var SoundActions = obj.Get("SoundActions");
         if (!(gte(SoundActions,0))) 
@@ -287,7 +287,7 @@ internal partial class APM_LegalAttestation_HideAnnotationActions__Base : ISpeci
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_HideAnnotationActions>(obj, "HideAnnotationActions", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_HideAnnotationActions>(obj, "HideAnnotationActions", IndirectRequirement.Either);
         if (val == null) { return; }
         var HideAnnotationActions = obj.Get("HideAnnotationActions");
         if (!(gte(HideAnnotationActions,0))) 
@@ -318,7 +318,7 @@ internal partial class APM_LegalAttestation_GoToRemoteActions__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_GoToRemoteActions>(obj, "GoToRemoteActions", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_GoToRemoteActions>(obj, "GoToRemoteActions", IndirectRequirement.Either);
         if (val == null) { return; }
         var GoToRemoteActions = obj.Get("GoToRemoteActions");
         if (!(gte(GoToRemoteActions,0))) 
@@ -349,7 +349,7 @@ internal partial class APM_LegalAttestation_AlternateImages__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_AlternateImages>(obj, "AlternateImages", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_AlternateImages>(obj, "AlternateImages", IndirectRequirement.Either);
         if (val == null) { return; }
         var AlternateImages = obj.Get("AlternateImages");
         if (!(gte(AlternateImages,0))) 
@@ -380,7 +380,7 @@ internal partial class APM_LegalAttestation_ExternalStreams__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_ExternalStreams>(obj, "ExternalStreams", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_ExternalStreams>(obj, "ExternalStreams", IndirectRequirement.Either);
         if (val == null) { return; }
         var ExternalStreams = obj.Get("ExternalStreams");
         if (!(gte(ExternalStreams,0))) 
@@ -411,7 +411,7 @@ internal partial class APM_LegalAttestation_TrueTypeFonts__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_TrueTypeFonts>(obj, "TrueTypeFonts", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_TrueTypeFonts>(obj, "TrueTypeFonts", IndirectRequirement.Either);
         if (val == null) { return; }
         var TrueTypeFonts = obj.Get("TrueTypeFonts");
         if (!(gte(TrueTypeFonts,0))) 
@@ -442,7 +442,7 @@ internal partial class APM_LegalAttestation_ExternalRefXobjects__Base : ISpecifi
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_ExternalRefXobjects>(obj, "ExternalRefXobjects", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_ExternalRefXobjects>(obj, "ExternalRefXobjects", IndirectRequirement.Either);
         if (val == null) { return; }
         var ExternalRefXobjects = obj.Get("ExternalRefXobjects");
         if (!(gte(ExternalRefXobjects,0))) 
@@ -473,7 +473,7 @@ internal partial class APM_LegalAttestation_ExternalOPIdicts__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_ExternalOPIdicts>(obj, "ExternalOPIdicts", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_ExternalOPIdicts>(obj, "ExternalOPIdicts", IndirectRequirement.Either);
         if (val == null) { return; }
         var ExternalOPIdicts = obj.Get("ExternalOPIdicts");
         if (!(gte(ExternalOPIdicts,0))) 
@@ -504,7 +504,7 @@ internal partial class APM_LegalAttestation_NonEmbeddedFonts__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_NonEmbeddedFonts>(obj, "NonEmbeddedFonts", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_NonEmbeddedFonts>(obj, "NonEmbeddedFonts", IndirectRequirement.Either);
         if (val == null) { return; }
         var NonEmbeddedFonts = obj.Get("NonEmbeddedFonts");
         if (!(gte(NonEmbeddedFonts,0))) 
@@ -535,7 +535,7 @@ internal partial class APM_LegalAttestation_DevDepGS_OP__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_OP>(obj, "DevDepGS_OP", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_OP>(obj, "DevDepGS_OP", IndirectRequirement.Either);
         if (val == null) { return; }
         var DevDepGSOP = obj.Get("DevDepGS_OP");
         if (!(gte(DevDepGSOP,0))) 
@@ -566,7 +566,7 @@ internal partial class APM_LegalAttestation_DevDepGS_HT__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_HT>(obj, "DevDepGS_HT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_HT>(obj, "DevDepGS_HT", IndirectRequirement.Either);
         if (val == null) { return; }
         var DevDepGSHT = obj.Get("DevDepGS_HT");
         if (!(gte(DevDepGSHT,0))) 
@@ -597,7 +597,7 @@ internal partial class APM_LegalAttestation_DevDepGS_TR__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_TR>(obj, "DevDepGS_TR", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_TR>(obj, "DevDepGS_TR", IndirectRequirement.Either);
         if (val == null) { return; }
         var DevDepGSTR = obj.Get("DevDepGS_TR");
         if (!(gte(DevDepGSTR,0))) 
@@ -628,7 +628,7 @@ internal partial class APM_LegalAttestation_DevDepGS_UCR__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_UCR>(obj, "DevDepGS_UCR", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_UCR>(obj, "DevDepGS_UCR", IndirectRequirement.Either);
         if (val == null) { return; }
         var DevDepGSUCR = obj.Get("DevDepGS_UCR");
         if (!(gte(DevDepGSUCR,0))) 
@@ -659,7 +659,7 @@ internal partial class APM_LegalAttestation_DevDepGS_BG__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_BG>(obj, "DevDepGS_BG", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_BG>(obj, "DevDepGS_BG", IndirectRequirement.Either);
         if (val == null) { return; }
         var DevDepGSBG = obj.Get("DevDepGS_BG");
         if (!(gte(DevDepGSBG,0))) 
@@ -690,7 +690,7 @@ internal partial class APM_LegalAttestation_DevDepGS_FL__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_FL>(obj, "DevDepGS_FL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_DevDepGS_FL>(obj, "DevDepGS_FL", IndirectRequirement.Either);
         if (val == null) { return; }
         var DevDepGSFL = obj.Get("DevDepGS_FL");
         if (!(gte(DevDepGSFL,0))) 
@@ -721,7 +721,7 @@ internal partial class APM_LegalAttestation_Annotations__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_Annotations>(obj, "Annotations", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_LegalAttestation_Annotations>(obj, "Annotations", IndirectRequirement.Either);
         if (val == null) { return; }
         var Annotations = obj.Get("Annotations");
         if (!(gte(Annotations,0))) 
@@ -752,7 +752,7 @@ internal partial class APM_LegalAttestation_OptionalContent__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_LegalAttestation_OptionalContent>(obj, "OptionalContent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_LegalAttestation_OptionalContent>(obj, "OptionalContent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -779,7 +779,7 @@ internal partial class APM_LegalAttestation_Attestation__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_LegalAttestation_Attestation>(obj, "Attestation", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_LegalAttestation_Attestation>(obj, "Attestation", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

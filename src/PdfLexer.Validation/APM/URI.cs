@@ -151,7 +151,7 @@ internal partial class APM_URI_Base__Base : ISpecification<PdfDictionary>
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.1m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_URI_Base>(obj, "Base", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_URI_Base>(obj, "Base", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

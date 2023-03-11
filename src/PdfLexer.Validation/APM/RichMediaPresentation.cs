@@ -103,7 +103,7 @@ internal partial class APM_RichMediaPresentation_Type__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaPresentation_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaPresentation_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -135,7 +135,7 @@ internal partial class APM_RichMediaPresentation_Style__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfName, APM_RichMediaPresentation_Style>(obj, "Style", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfName, APM_RichMediaPresentation_Style>(obj, "Style", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -167,7 +167,7 @@ internal partial class APM_RichMediaPresentation_Window__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfDictionary, APM_RichMediaPresentation_Window>(obj, "Window", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_RichMediaPresentation_Window>(obj, "Window", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -194,7 +194,7 @@ internal partial class APM_RichMediaPresentation_Transparent__Base : ISpecificat
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_RichMediaPresentation_Transparent>(obj, "Transparent", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_RichMediaPresentation_Transparent>(obj, "Transparent", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -221,7 +221,7 @@ internal partial class APM_RichMediaPresentation_NavigationPane__Base : ISpecifi
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_RichMediaPresentation_NavigationPane>(obj, "NavigationPane", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_RichMediaPresentation_NavigationPane>(obj, "NavigationPane", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -248,7 +248,7 @@ internal partial class APM_RichMediaPresentation_Toolbar__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_RichMediaPresentation_Toolbar>(obj, "Toolbar", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_RichMediaPresentation_Toolbar>(obj, "Toolbar", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -275,7 +275,7 @@ internal partial class APM_RichMediaPresentation_PassContextClick__Base : ISpeci
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfBoolean, APM_RichMediaPresentation_PassContextClick>(obj, "PassContextClick", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfBoolean, APM_RichMediaPresentation_PassContextClick>(obj, "PassContextClick", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions

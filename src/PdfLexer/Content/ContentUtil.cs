@@ -10,7 +10,7 @@ public class ContentUtil
 
     private static PdfStreamContents RunSingle(ParsingContext ctx, PdfDictionary xobjs, PdfStream str)
     {
-        var fw = new FlateWriter();
+        var fw = new ZLibLexerStream();
         var last = 0;
         using var buff = str.Contents.GetDecodedBuffer();
         var scanner = new ContentStreamScanner(ctx, buff.GetData());

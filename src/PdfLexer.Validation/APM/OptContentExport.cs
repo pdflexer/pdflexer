@@ -111,7 +111,7 @@ internal partial class APM_OptContentExport_ExportState__Base : ISpecification<P
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_OptContentExport_ExportState>(obj, "ExportState", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_OptContentExport_ExportState>(obj, "ExportState", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         

@@ -155,7 +155,7 @@ internal partial class APM_FunctionType0_FunctionType__Base : ISpecification<Pdf
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_FunctionType0_FunctionType>(obj, "FunctionType", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_FunctionType0_FunctionType>(obj, "FunctionType", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -187,7 +187,7 @@ internal partial class APM_FunctionType0_Domain__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_FunctionType0_Domain>(obj, "Domain", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_FunctionType0_Domain>(obj, "Domain", IndirectRequirement.Either);
         if (val == null) { return; }
         var Domain = obj.Get("Domain");
         if (!(eq(mod(((Domain as PdfArray)?.Count),2),0))) 
@@ -218,7 +218,7 @@ internal partial class APM_FunctionType0_Range__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_FunctionType0_Range>(obj, "Range", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_FunctionType0_Range>(obj, "Range", IndirectRequirement.Either);
         if (val == null) { return; }
         var Range = obj.Get("Range");
         if (!(eq(mod(((Range as PdfArray)?.Count),2),0))) 
@@ -249,7 +249,7 @@ internal partial class APM_FunctionType0_Size__Base : ISpecification<PdfDictiona
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfArray, APM_FunctionType0_Size>(obj, "Size", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfArray, APM_FunctionType0_Size>(obj, "Size", IndirectRequirement.Either);
         if (val == null) { return; }
         var Domain = obj.Get("Domain");
         var Size = obj.Get("Size");
@@ -281,7 +281,7 @@ internal partial class APM_FunctionType0_BitsPerSample__Base : ISpecification<Pd
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_FunctionType0_BitsPerSample>(obj, "BitsPerSample", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_FunctionType0_BitsPerSample>(obj, "BitsPerSample", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -313,7 +313,7 @@ internal partial class APM_FunctionType0_Order__Base : ISpecification<PdfDiction
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FunctionType0_Order>(obj, "Order", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FunctionType0_Order>(obj, "Order", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -345,7 +345,7 @@ internal partial class APM_FunctionType0_Encode__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_FunctionType0_Encode>(obj, "Encode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_FunctionType0_Encode>(obj, "Encode", IndirectRequirement.Either);
         if (val == null) { return; }
         var Encode = obj.Get("Encode");
         var Size = obj.Get("Size");
@@ -377,7 +377,7 @@ internal partial class APM_FunctionType0_Decode__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.2m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_FunctionType0_Decode>(obj, "Decode", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_FunctionType0_Decode>(obj, "Decode", IndirectRequirement.Either);
         if (val == null) { return; }
         var Decode = obj.Get("Decode");
         var Range = obj.Get("Range");
@@ -409,7 +409,7 @@ internal partial class APM_FunctionType0_Length__Base : ISpecification<PdfDictio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.3m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfIntNumber, APM_FunctionType0_Length>(obj, "Length", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_FunctionType0_Length>(obj, "Length", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -730,7 +730,7 @@ internal partial class APM_FunctionType0_DL__Base : ISpecification<PdfDictionary
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 1.5m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_FunctionType0_DL>(obj, "DL", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_FunctionType0_DL>(obj, "DL", IndirectRequirement.Either);
         if (val == null) { return; }
         var DL = obj.Get("DL");
         if (!(gte(DL,0))) 

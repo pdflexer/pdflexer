@@ -66,7 +66,7 @@ internal partial class APM_DestOutputProfileRef_CheckSum__Base : ISpecification<
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DestOutputProfileRef_CheckSum>(obj, "CheckSum", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DestOutputProfileRef_CheckSum>(obj, "CheckSum", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -93,7 +93,7 @@ internal partial class APM_DestOutputProfileRef_ColorantTable__Base : ISpecifica
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_DestOutputProfileRef_ColorantTable>(obj, "ColorantTable", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_DestOutputProfileRef_ColorantTable>(obj, "ColorantTable", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -120,7 +120,7 @@ internal partial class APM_DestOutputProfileRef_ICCVersion__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DestOutputProfileRef_ICCVersion>(obj, "ICCVersion", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DestOutputProfileRef_ICCVersion>(obj, "ICCVersion", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -147,7 +147,7 @@ internal partial class APM_DestOutputProfileRef_ProfileCS__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DestOutputProfileRef_ProfileCS>(obj, "ProfileCS", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DestOutputProfileRef_ProfileCS>(obj, "ProfileCS", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -174,7 +174,7 @@ internal partial class APM_DestOutputProfileRef_ProfileName__Base : ISpecificati
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_DestOutputProfileRef_ProfileName>(obj, "ProfileName", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_DestOutputProfileRef_ProfileName>(obj, "ProfileName", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         // no value restrictions
@@ -201,7 +201,7 @@ internal partial class APM_DestOutputProfileRef_URLs__Base : ISpecification<PdfD
     public static bool AppliesTo(decimal version, List<string> extensions) { return version >= 2.0m; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfArray, APM_DestOutputProfileRef_URLs>(obj, "URLs", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfArray, APM_DestOutputProfileRef_URLs>(obj, "URLs", IndirectRequirement.Either);
         if (val == null) { return; }
         var URLs = obj.Get("URLs");
         if (!(gt(((URLs as PdfArray)?.Count),0))) 

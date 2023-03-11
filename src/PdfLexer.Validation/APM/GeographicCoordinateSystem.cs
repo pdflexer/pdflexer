@@ -99,7 +99,7 @@ internal partial class APM_GeographicCoordinateSystem_Type__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetRequired<PdfName, APM_GeographicCoordinateSystem_Type>(obj, "Type", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetRequired<PdfName, APM_GeographicCoordinateSystem_Type>(obj, "Type", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
         
@@ -131,7 +131,7 @@ internal partial class APM_GeographicCoordinateSystem_EPSG__Base : ISpecificatio
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfIntNumber, APM_GeographicCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_GeographicCoordinateSystem_EPSG>(obj, "EPSG", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(!obj.ContainsKey(PdfName.WKT))) 
@@ -162,7 +162,7 @@ internal partial class APM_GeographicCoordinateSystem_WKT__Base : ISpecification
     public static bool AppliesTo(decimal version, List<string> extensions) { return false; }
     public static void Validate(PdfValidator ctx, CallStack stack, PdfDictionary obj, IPdfObject? parent)
     {
-        var val = ctx.GetOptional<PdfString, APM_GeographicCoordinateSystem_WKT>(obj, "WKT", IndirectRequirement.Either);
+        var (val, wasIR) = ctx.GetOptional<PdfString, APM_GeographicCoordinateSystem_WKT>(obj, "WKT", IndirectRequirement.Either);
         if (val == null) { return; }
         
         if (!(!obj.ContainsKey(PdfName.EPSG))) 

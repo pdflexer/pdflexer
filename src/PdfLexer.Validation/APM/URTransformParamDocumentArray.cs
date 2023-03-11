@@ -39,7 +39,7 @@ internal partial class APM_URTransformParamDocumentArray_x : ISpecification<PdfA
         }
         void CheckSingle(int n) 
         {
-            var val = ctx.GetOptional<PdfName, APM_URTransformParamDocumentArray_x>(obj, n, IndirectRequirement.Either);
+            var (val, wasIR) = ctx.GetOptional<PdfName, APM_URTransformParamDocumentArray_x>(obj, n, IndirectRequirement.Either);
             if (val == null) { return; }
             // no special cases
             
