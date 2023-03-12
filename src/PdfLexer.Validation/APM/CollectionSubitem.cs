@@ -137,9 +137,6 @@ internal partial class APM_CollectionSubitem_D__Base : ISpecification<PdfDiction
         {
             case PdfObjectType.StringObj:
                 {
-            
-                    // TODO MC date;string-text
-            
                     var val =  (PdfString)utval;
                     if (IsDate(val)) 
                     {

@@ -443,7 +443,7 @@ internal partial class APM_FontType3_Widths__Base : ISpecification<PdfDictionary
         var Widths = obj.Get("Widths");
         var LastChar = obj.Get("LastChar");
         var FirstChar = obj.Get("FirstChar");
-        if (!(eq(((Widths as PdfArray)?.Count),1 + ((LastChar?.GetAs<PdfIntNumber>()?.Value ?? 0) - (FirstChar?.GetAs<PdfIntNumber>()?.Value ?? 0))))) 
+        if (!(eq(((Widths as PdfArray)?.Count),plus(1,minus(LastChar,FirstChar))))) 
         {
             ctx.Fail<APM_FontType3_Widths>($"Value failed special case check: fn:Eval(fn:ArrayLength(Widths)==(1+(@LastChar - @FirstChar)))");
         }

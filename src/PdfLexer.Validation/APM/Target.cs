@@ -140,13 +140,13 @@ internal partial class APM_Target_N__Base : ISpecification<PdfDictionary>
         var R = obj.Get("R");
         var trailerCatalogNamesEmbeddedFiles = ctx.Trailer.Get("Catalog")?.Get("Names")?.Get("EmbeddedFiles");
         var (val, wasIR) = ctx.GetOptional<PdfString, APM_Target_N>(obj, "N", IndirectRequirement.Either);
-        if (((eq(R,PdfName.C)&&InNameTree(trailerCatalogNamesEmbeddedFiles))) && val == null) {
+        if (((eq(R,PdfName.C)&&InNameTree(val,trailerCatalogNamesEmbeddedFiles))) && val == null) {
             ctx.Fail<APM_Target_N>("N is required when 'fn:IsRequired((@R==C) && fn:InNameTree(trailer::Catalog::Names::EmbeddedFiles))"); return;
         } else if (val == null) {
             return;
         }
         
-        if (!(!(eq(R,PdfName.C)&&InNameTree(trailerCatalogNamesEmbeddedFiles)))) 
+        if (!(!(eq(R,PdfName.C)&&InNameTree(val,trailerCatalogNamesEmbeddedFiles)))) 
         {
             ctx.Fail<APM_Target_N>($"Value failed special case check: fn:Eval(fn:Not(fn:IsPresent((@R==C) && fn:InNameTree(trailer::Catalog::Names::EmbeddedFiles))))");
         }
@@ -197,7 +197,12 @@ internal partial class APM_Target_P__Base : ISpecification<PdfDictionary>
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
                     // no special cases
-                    // TODO value checks string-byte
+                    
+                    var trailerCatalogNamesDests = ctx.Trailer.Get("Catalog")?.Get("Names")?.Get("Dests");
+                    if (!(InNameTree(val.Value,trailerCatalogNamesDests))) 
+                    {
+                        ctx.Fail<APM_Target_P>($"Invalid value {val}, allowed are: [fn:InNameTree(trailer::Catalog::Names::Dests)]");
+                    }
                     // no linked objects
                     return;
                 }

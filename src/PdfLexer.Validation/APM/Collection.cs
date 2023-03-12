@@ -167,7 +167,7 @@ internal partial class APM_Collection_D__Base : ISpecification<PdfDictionary>
     {
         
         var (val, wasIR) = ctx.GetOptional<PdfString, APM_Collection_D>(obj, "D", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || IsEncryptedWrapper(obj))) && val == null) {
+        if (((ctx.Version >= 2.0m && IsEncryptedWrapper(obj))) && val == null) {
             ctx.Fail<APM_Collection_D>("D is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsEncryptedWrapper()))"); return;
         } else if (val == null) {
             return;
@@ -199,13 +199,13 @@ internal partial class APM_Collection_View__Base : ISpecification<PdfDictionary>
     {
         
         var (val, wasIR) = ctx.GetOptional<PdfName, APM_Collection_View>(obj, "View", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || IsEncryptedWrapper(obj))) && val == null) {
+        if (((ctx.Version >= 2.0m && IsEncryptedWrapper(obj))) && val == null) {
             ctx.Fail<APM_Collection_View>("View is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsEncryptedWrapper()))"); return;
         } else if (val == null) {
             return;
         }
         var View = obj.Get("View");
-        if (!((ctx.Version < 2.0m || (IsEncryptedWrapper(obj)&&eq(View,PdfName.H))||(obj.ContainsKey(PdfName.Navigator)&&eq(View,PdfName.C))||!eq(View,PdfName.C)))) 
+        if (!((ctx.Version >= 2.0m && (IsEncryptedWrapper(obj)&&eq(View,PdfName.H))||(obj.ContainsKey(PdfName.Navigator)&&eq(View,PdfName.C))||!eq(View,PdfName.C)))) 
         {
             ctx.Fail<APM_Collection_View>($"Value failed special case check: fn:Eval(fn:SinceVersion(2.0,((fn:IsEncryptedWrapper() && (@View==H)) || (fn:IsPresent(Navigator) && (@View==C)) || (@View!=C))))");
         }

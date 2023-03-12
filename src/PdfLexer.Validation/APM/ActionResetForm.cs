@@ -366,7 +366,12 @@ internal partial class APM_ActionResetForm_Flags__Base : ISpecification<PdfDicti
         {
             ctx.Fail<APM_ActionResetForm_Flags>($"Value failed special case check: fn:Eval(fn:BitsClear(2,32))");
         }
-        // TODO value checks bitmask
+        
+        
+        if (!(val == 0 || val == 1)) 
+        {
+            ctx.Fail<APM_ActionResetForm_Flags>($"Invalid value {val}, allowed are: [0,1]");
+        }
         // no linked objects
         
     }

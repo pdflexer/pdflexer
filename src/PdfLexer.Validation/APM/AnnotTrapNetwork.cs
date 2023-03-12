@@ -328,9 +328,6 @@ internal partial class APM_AnnotTrapNetwork_M__Base : ISpecification<PdfDictiona
         {
             case PdfObjectType.StringObj:
                 {
-            
-                    // TODO MC date;string
-            
                     var val =  (PdfString)utval;
                     if (IsDate(val)) 
                     {

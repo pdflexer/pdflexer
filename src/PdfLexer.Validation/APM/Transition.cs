@@ -340,7 +340,7 @@ internal partial class APM_Transition_Di__Base : ISpecification<PdfDictionary>
                     }
                     
                     
-                    if (!(val == 0m || val == 90m || val == 180m || val == 270m || val == 315m)) 
+                    if (!(val == 0 || val == 90 || val == 180 || val == 270 || val == 315)) 
                     {
                         ctx.Fail<APM_Transition_Di>($"Invalid value {val}, allowed are: [0,90,180,270,315]");
                     }
@@ -354,7 +354,7 @@ internal partial class APM_Transition_Di__Base : ISpecification<PdfDictionary>
                     var Di = obj.Get("Di");
                     var S = obj.Get("S");
                     var SS = obj.Get("SS");
-                    if (!(eq(Di,PdfName.None)&&eq(S,PdfName.Fly)&&(ctx.Version < 1.5m || !eq(SS,1.0m)))) 
+                    if (!(eq(Di,PdfName.None)&&eq(S,PdfName.Fly)&&(ctx.Version >= 1.5m && !eq(SS,1.0m)))) 
                     {
                         ctx.Fail<APM_Transition_Di>($"Value failed special case check: fn:Eval(((@Di==None) && (@S==Fly) && fn:SinceVersion(1.5,(@SS!=1.0))))");
                     }

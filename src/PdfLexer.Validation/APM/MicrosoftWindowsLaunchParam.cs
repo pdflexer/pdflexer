@@ -201,7 +201,12 @@ internal partial class APM_MicrosoftWindowsLaunchParam_O__Base : ISpecification<
         var (val, wasIR) = ctx.GetOptional<PdfString, APM_MicrosoftWindowsLaunchParam_O>(obj, "O", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        // TODO value checks string-ascii
+        
+        
+        if (!(val.Value == "open" || val.Value == "print")) 
+        {
+            ctx.Fail<APM_MicrosoftWindowsLaunchParam_O>($"Invalid value {val}, allowed are: ['open','print']");
+        }
         // no linked objects
         
     }

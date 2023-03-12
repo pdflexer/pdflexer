@@ -973,7 +973,7 @@ internal partial class APM_PageObject_TemplateInstantiated__Base : ISpecificatio
         var trailerCatalogNamesPages = ctx.Trailer.Get("Catalog")?.Get("Names")?.Get("Pages");
         var trailerCatalogNamesTemplates = ctx.Trailer.Get("Catalog")?.Get("Names")?.Get("Templates");
         var (val, wasIR) = ctx.GetOptional<PdfName, APM_PageObject_TemplateInstantiated>(obj, "TemplateInstantiated", IndirectRequirement.Either);
-        if (((InNameTree(trailerCatalogNamesPages)||InNameTree(trailerCatalogNamesTemplates))) && val == null) {
+        if (((InNameTree(val,trailerCatalogNamesPages)||InNameTree(val,trailerCatalogNamesTemplates))) && val == null) {
             ctx.Fail<APM_PageObject_TemplateInstantiated>("TemplateInstantiated is required when 'fn:IsRequired(fn:InNameTree(trailer::Catalog::Names::Pages) || fn:InNameTree(trailer::Catalog::Names::Templates))"); return;
         } else if (val == null) {
             return;

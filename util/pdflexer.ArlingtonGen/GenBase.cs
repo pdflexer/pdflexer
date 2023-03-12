@@ -190,6 +190,7 @@ ctx.Run<APM_{{nm}}, {{linkType}}>(stack, {{val}}, obj);
 
     protected string GetSingleComplexType(string key)
     {
+        VariableContext.InitType(Row.Type);
         VariableContext.Vars[key] = "utval";
         var ir = new IndirectRef(this, Row).GetIndirectRefEnum();
         return $$"""
@@ -228,6 +229,8 @@ switch ({{varName}}.Type)
             "decimal" => NonEvalType.Number,
             "string" => NonEvalType.String,
             "string-text" => NonEvalType.String,
+            "string-ascii" => NonEvalType.String,
+            "string-byte" => NonEvalType.String,
             "name" => NonEvalType.Name,
             _ => NonEvalType.Name,
         };
@@ -284,6 +287,7 @@ if (({{req.GetComplex()}}) && val == null) {
         var orig = VariableContext.Vars.ToDictionary(x => x.Key, x => x.Value);
         foreach (var type in types.Where(x => !x.Contains("fn:")).GroupBy(x => typemap[x]))
         {
+            
             VariableContext.Vars = orig.ToDictionary(x => x.Key, x => x.Value);
             var vals = type.ToList();
             if (vals.Count == 1)
@@ -322,16 +326,7 @@ if (({{req.GetComplex()}}) && val == null) {
 
     private string MultiCaseStatement(string type)
     {
-        VariableContext.CurrentType = type switch
-        {
-            "number" => NonEvalType.Number,
-            "integer" => NonEvalType.Number,
-            "decimal" => NonEvalType.Number,
-            "string" => NonEvalType.String,
-            "string-text" => NonEvalType.String,
-            "name" => NonEvalType.Name,
-            _ => NonEvalType.Name,
-        };
+        VariableContext.InitType(type);
         var fn = type;
         var check = "";
         if (type.StartsWith("fn:")) 
@@ -368,21 +363,11 @@ case PdfObjectType.{{typemap[type]}}:
 
     private string MultiCaseAndTypeStatement(string type, List<string> types)
     {
-        VariableContext.CurrentType = type switch
-        {
-            "number" => NonEvalType.Number,
-            "integer" => NonEvalType.Number,
-            "decimal" => NonEvalType.Number,
-            "string" => NonEvalType.String,
-            "string-text" => NonEvalType.String,
-            "name" => NonEvalType.Name,
-            _ => NonEvalType.Name,
-        };
+        VariableContext.InitType(type);
 
         return $$"""
 case PdfObjectType.{{typemap[type]}}:
     {
-{{("\n        // TODO MC " + string.Join(";", types) + "\n")}}
 {{Ident(8, $"var val =  ({typeDomBaseMap[type]})utval;")}}
 {{Ident(8, GetSingleTypeForMulti(types))}}
         return;

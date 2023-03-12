@@ -286,7 +286,12 @@ internal partial class APM_ActionSubmitForm_CharSet__Base : ISpecification<PdfDi
         var (val, wasIR) = ctx.GetOptional<PdfString, APM_ActionSubmitForm_CharSet>(obj, "CharSet", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        // TODO value checks string
+        
+        
+        if (!(val.Value == "utf-8" || val.Value == "utf-16" || val.Value == "Shift-JIS" || val.Value == "BigFive" || val.Value == "GBK" || val.Value == "UHC")) 
+        {
+            ctx.Fail<APM_ActionSubmitForm_CharSet>($"Invalid value {val}, allowed are: ['utf-8','utf-16','Shift-JIS','BigFive','GBK','UHC']");
+        }
         // no linked objects
         
     }

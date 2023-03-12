@@ -99,9 +99,6 @@ internal partial class APM_CollectionItem_CatchAll__Base : ISpecification<PdfDic
             {
                 case PdfObjectType.StringObj:
                     {
-                
-                        // TODO MC date;string-text
-                
                         var val =  (PdfString)utval;
                         if (IsDate(val)) 
                         {

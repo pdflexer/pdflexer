@@ -153,7 +153,12 @@ internal partial class APM_MediaPermissions_TF__Base : ISpecification<PdfDiction
         var (val, wasIR) = ctx.GetOptional<PdfString, APM_MediaPermissions_TF>(obj, "TF", IndirectRequirement.Either);
         if (val == null) { return; }
         // no special cases
-        // TODO value checks string-ascii
+        
+        
+        if (!(val.Value == "TEMPNEVER" || val.Value == "TEMPALWAYS" || val.Value == "TEMPEXTRACT" || val.Value == "TEMPACCESS")) 
+        {
+            ctx.Fail<APM_MediaPermissions_TF>($"Invalid value {val}, allowed are: ['TEMPNEVER','TEMPALWAYS','TEMPEXTRACT','TEMPACCESS']");
+        }
         // no linked objects
         
     }

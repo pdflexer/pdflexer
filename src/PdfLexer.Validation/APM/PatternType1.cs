@@ -200,7 +200,7 @@ internal partial class APM_PatternType1_PatternType__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == 1m)) 
+        if (!(val == 1)) 
         {
             ctx.Fail<APM_PatternType1_PatternType>($"Invalid value {val}, allowed are: [1]");
         }
@@ -232,7 +232,7 @@ internal partial class APM_PatternType1_PaintType__Base : ISpecification<PdfDict
         // no special cases
         
         
-        if (!(val == 1m || val == 2m)) 
+        if (!(val == 1 || val == 2)) 
         {
             ctx.Fail<APM_PatternType1_PaintType>($"Invalid value {val}, allowed are: [1,2]");
         }
@@ -264,7 +264,7 @@ internal partial class APM_PatternType1_TilingType__Base : ISpecification<PdfDic
         // no special cases
         
         
-        if (!(val == 1m || val == 2m || val == 3m)) 
+        if (!(val == 1 || val == 2 || val == 3)) 
         {
             ctx.Fail<APM_PatternType1_TilingType>($"Invalid value {val}, allowed are: [1,2,3]");
         }

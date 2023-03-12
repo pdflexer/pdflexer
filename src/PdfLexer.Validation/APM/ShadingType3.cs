@@ -300,7 +300,7 @@ internal partial class APM_ShadingType3_ShadingType__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == 3m)) 
+        if (!(val == 3)) 
         {
             ctx.Fail<APM_ShadingType3_ShadingType>($"Invalid value {val}, allowed are: [3]");
         }

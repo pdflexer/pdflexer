@@ -426,8 +426,17 @@ internal partial class APM_XObjectImage_BitsPerComponent__Base : ISpecification<
         // no special cases
         
         
-        // TODO required value checks
-        if (!(val == 2m || val == 4m || (ctx.Version >= 1.5m && val == 16m))) 
+        if ((eq(Filter,PdfName.CCITTFaxDecode)||eq(Filter,PdfName.JBIG2Decode)||eq(ImageMask,PdfBoolean.True) && !(val == 1))) 
+        {
+            ctx.Fail<APM_XObjectImage_BitsPerComponent>($"Invalid value {val}, required value condition met: fn:RequiredValue((@Filter==CCITTFaxDecode) || (@Filter==JBIG2Decode) || (@ImageMask==true),1)");
+        }
+        
+        if (((eq(Filter,PdfName.RunLengthDecode)||eq(Filter,PdfName.DCTDecode)) && !(val == 8))) 
+        {
+            ctx.Fail<APM_XObjectImage_BitsPerComponent>($"Invalid value {val}, required value condition met: fn:RequiredValue((@Filter==RunLengthDecode) || (@Filter==DCTDecode),8)");
+        }
+        
+        if (!(val == 2 || val == 4 || (ctx.Version >= 1.5m && val == 16))) 
         {
             ctx.Fail<APM_XObjectImage_BitsPerComponent>($"Invalid value {val}, allowed are: [fn:RequiredValue((@Filter==CCITTFaxDecode) || (@Filter==JBIG2Decode) || (@ImageMask==true),1),2,4,fn:RequiredValue((@Filter==RunLengthDecode) || (@Filter==DCTDecode),8),fn:SinceVersion(1.5,16)]");
         }
@@ -682,7 +691,7 @@ internal partial class APM_XObjectImage_SMaskInData__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == 0m || val == 1m || val == 2m)) 
+        if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_XObjectImage_SMaskInData>($"Invalid value {val}, allowed are: [0,1,2]");
         }

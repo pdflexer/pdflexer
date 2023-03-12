@@ -149,7 +149,7 @@ internal partial class APM_FilterFlateDecode_Predictor__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == 1m || val == 2m || val == 10m || val == 11m || val == 12m || val == 13m || val == 14m || val == 15m)) 
+        if (!(val == 1 || val == 2 || val == 10 || val == 11 || val == 12 || val == 13 || val == 14 || val == 15)) 
         {
             ctx.Fail<APM_FilterFlateDecode_Predictor>($"Invalid value {val}, allowed are: [1,2,10,11,12,13,14,15]");
         }
@@ -213,7 +213,7 @@ internal partial class APM_FilterFlateDecode_BitsPerComponent__Base : ISpecifica
         // special case is an fn:Ignore, not pertinent to validation
         
         
-        if (!(val == 1m || val == 2m || val == 4m || val == 8m || (ctx.Version >= 1.5m && val == 16m))) 
+        if (!(val == 1 || val == 2 || val == 4 || val == 8 || (ctx.Version >= 1.5m && val == 16))) 
         {
             ctx.Fail<APM_FilterFlateDecode_BitsPerComponent>($"Invalid value {val}, allowed are: [1,2,4,8,fn:SinceVersion(1.5,16)]");
         }

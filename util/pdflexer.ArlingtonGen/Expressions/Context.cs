@@ -14,11 +14,37 @@ internal enum NonEvalType
 {
     Name,
     String,
-    Number
+    Number,
+    Integer
 }
 
 internal static class VariableContext
 {
+    public static void InitType(string type)
+    {
+        InEval = false;
+        CurrentType = type switch
+        {
+            "name" => NonEvalType.Name,
+            "number" => NonEvalType.Number,
+            "integer" => NonEvalType.Integer,
+            "bitmask" => NonEvalType.Integer,
+            "string" => NonEvalType.String,
+            "string-text" => NonEvalType.String,
+            "string-byte" => NonEvalType.String,
+            "string-ascii" => NonEvalType.String,
+            _ => NonEvalType.String,
+        };
+        VarSub = type switch
+        {
+            "string" => "val.Value",
+            "string-text" => "val.Value",
+            "string-byte" => "val.Value",
+            "string-ascii" => "val.Value",
+            _ => "val"
+        };
+        Wrapper = ValWrapper;
+    }
     public static Row? Context { get; set; }
     public static bool InEval { get; set; }
     public static NonEvalType CurrentType { get; set; }
@@ -77,5 +103,21 @@ internal class VarScope : IDisposable
     public void Dispose()
     {
         VariableContext.Handling = Orig;
+    }
+}
+
+internal class VarType : IDisposable
+{
+    public VarType(NonEvalType val)
+    {
+        Orig = VariableContext.CurrentType;
+        VariableContext.CurrentType = val;
+    }
+
+    public NonEvalType Orig { get; }
+
+    public void Dispose()
+    {
+        VariableContext.CurrentType = Orig;
     }
 }

@@ -298,7 +298,7 @@ internal partial class APM_FontDescriptorCIDType2_FontWeight__Base : ISpecificat
         // no special cases
         
         
-        if (!(val == 100m || val == 200m || val == 300m || val == 400m || val == 500m || val == 600m || val == 700m || val == 800m || val == 900m)) 
+        if (!(val == 100 || val == 200 || val == 300 || val == 400 || val == 500 || val == 600 || val == 700 || val == 800 || val == 900)) 
         {
             ctx.Fail<APM_FontDescriptorCIDType2_FontWeight>($"Invalid value {val}, allowed are: [100,200,300,400,500,600,700,800,900]");
         }

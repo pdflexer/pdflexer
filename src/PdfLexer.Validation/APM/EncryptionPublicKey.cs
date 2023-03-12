@@ -294,7 +294,7 @@ internal partial class APM_EncryptionPublicKey_V__Base : ISpecification<PdfDicti
         // no special cases
         
         
-        if (!((ctx.Version < 1.1m && val == 0m) || (ctx.Version < 2.0m && val == 1m) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 2m)) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 3m)) || (ctx.Version < 2.0m && (ctx.Version >= 1.5m && val == 4m)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5m)) || (ctx.Version >= 2.0m && val == 5m) || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 6m)))) 
+        if (!((ctx.Version < 1.1m && val == 0) || (ctx.Version < 2.0m && val == 1) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 2)) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 3)) || (ctx.Version < 2.0m && (ctx.Version >= 1.5m && val == 4)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5)) || (ctx.Version >= 2.0m && val == 5) || (ctx.Version >= 2.0m && (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 6)))) 
         {
             ctx.Fail<APM_EncryptionPublicKey_V>($"Invalid value {val}, allowed are: [fn:Deprecated(1.1,0),fn:Deprecated(2.0,1),fn:Deprecated(2.0,fn:SinceVersion(1.4,2)),fn:Deprecated(2.0,fn:SinceVersion(1.4,3)),fn:Deprecated(2.0,fn:SinceVersion(1.5,4)),fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5)),fn:SinceVersion(2.0,5),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,6))]");
         }

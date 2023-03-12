@@ -288,7 +288,7 @@ internal partial class APM_XObjectImageMask_BitsPerComponent__Base : ISpecificat
         // no special cases
         
         
-        if (!(val == 1m)) 
+        if (!(val == 1)) 
         {
             ctx.Fail<APM_XObjectImageMask_BitsPerComponent>($"Invalid value {val}, allowed are: [1]");
         }

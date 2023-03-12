@@ -231,7 +231,7 @@ internal partial class APM_EncryptionStandard_V__Base : ISpecification<PdfDictio
         // no special cases
         
         
-        if (!((ctx.Version < 1.1m && val == 0m) || (ctx.Version < 2.0m && val == 1m) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 2m)) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 3m)) || (ctx.Version < 2.0m && (ctx.Version >= 1.5m && val == 4m)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5m)) || (ctx.Version >= 2.0m && val == 5m) || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 6m)))) 
+        if (!((ctx.Version < 1.1m && val == 0) || (ctx.Version < 2.0m && val == 1) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 2)) || (ctx.Version < 2.0m && (ctx.Version >= 1.4m && val == 3)) || (ctx.Version < 2.0m && (ctx.Version >= 1.5m && val == 4)) || (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5)) || (ctx.Version >= 2.0m && val == 5) || (ctx.Version >= 2.0m && (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 6)))) 
         {
             ctx.Fail<APM_EncryptionStandard_V>($"Invalid value {val}, allowed are: [fn:Deprecated(1.1,0),fn:Deprecated(2.0,1),fn:Deprecated(2.0,fn:SinceVersion(1.4,2)),fn:Deprecated(2.0,fn:SinceVersion(1.4,3)),fn:Deprecated(2.0,fn:SinceVersion(1.5,4)),fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5)),fn:SinceVersion(2.0,5),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,6))]");
         }
@@ -403,8 +403,27 @@ internal partial class APM_EncryptionStandard_R__Base : ISpecification<PdfDictio
         // no special cases
         
         var V = obj.Get("V");
-        // TODO required value checks
-        if (!((ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5m))) || (ctx.Version < 2.0m && (ctx.Version >= 2.0m && val == 5m)) || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 7m)))) 
+        if ((ctx.Version < 2.0m && (lt(V,2) && !(val == 2)))) 
+        {
+            ctx.Fail<APM_EncryptionStandard_R>($"Invalid value {val}, required value condition met: fn:Deprecated(2.0,fn:RequiredValue(@V<2,2))");
+        }
+        
+        if ((ctx.Version < 2.0m && ((eq(V,2)||eq(V,3)) && !(val == 3)))) 
+        {
+            ctx.Fail<APM_EncryptionStandard_R>($"Invalid value {val}, required value condition met: fn:Deprecated(2.0,fn:RequiredValue((@V==2) || (@V==3),3))");
+        }
+        
+        if ((ctx.Version < 2.0m && (eq(V,4) && !(val == 4)))) 
+        {
+            ctx.Fail<APM_EncryptionStandard_R>($"Invalid value {val}, required value condition met: fn:Deprecated(2.0,fn:RequiredValue(@V==4,4))");
+        }
+        
+        if ((ctx.Version >= 2.0m && (eq(V,5) && !(val == 6)))) 
+        {
+            ctx.Fail<APM_EncryptionStandard_R>($"Invalid value {val}, required value condition met: fn:SinceVersion(2.0,fn:RequiredValue(@V==5,6))");
+        }
+        
+        if (!((ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5))) || (ctx.Version < 2.0m && (ctx.Version >= 2.0m && val == 5)) || (ctx.Version >= 2.0m && (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 7)))) 
         {
             ctx.Fail<APM_EncryptionStandard_R>($"Invalid value {val}, allowed are: [fn:Deprecated(2.0,fn:RequiredValue(@V<2,2)),fn:Deprecated(2.0,fn:RequiredValue((@V==2) || (@V==3),3)),fn:Deprecated(2.0,fn:RequiredValue(@V==4,4)),fn:Deprecated(2.0,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5))),fn:Deprecated(2.0,fn:SinceVersion(2.0,5)),fn:SinceVersion(2.0,fn:RequiredValue(@V==5,6)),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,7))]");
         }
@@ -570,7 +589,7 @@ internal partial class APM_EncryptionStandard_P__Base : ISpecification<PdfDictio
         var (val, wasIR) = ctx.GetRequired<PdfIntNumber, APM_EncryptionStandard_P>(obj, "P", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!(BitsClear(val,0b00000000000000000000000000000011)&&BitsSet(val,0b00000000000000000000000011000000)&&(ctx.Version >= 2.0m && BitsSet(val,0b00000000000000000000001000000000))&&((ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32004) && BitsSet(val,0b11111111111111111110000000000000)))||BitsSet(val,0b11111111111111111111000000000000)))) 
+        if (!(BitsClear(val,0b00000000000000000000000000000011)&&BitsSet(val,0b00000000000000000000000011000000)&&(ctx.Version >= 2.0m && BitsSet(val,0b00000000000000000000001000000000))&&((ctx.Version >= 2.0m && (ctx.Extensions.Contains(PdfName.ISO_TS_32004) && BitsSet(val,0b11111111111111111110000000000000)))||BitsSet(val,0b11111111111111111111000000000000)))) 
         {
             ctx.Fail<APM_EncryptionStandard_P>($"Value failed special case check: fn:Eval(fn:BitsClear(1,2) && fn:BitsSet(7,8) && fn:SinceVersion(2.0,fn:BitSet(10)) && (fn:SinceVersion(2.0,fn:Extension(ISO_TS_32004,fn:BitsSet(14,32))) || fn:BitsSet(13,32)))");
         }

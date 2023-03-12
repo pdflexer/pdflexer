@@ -249,7 +249,7 @@ internal partial class APM_CMapStream_WMode__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == 1m || val == 0m)) 
+        if (!(val == 1 || val == 0)) 
         {
             ctx.Fail<APM_CMapStream_WMode>($"Invalid value {val}, allowed are: [1,0]");
         }

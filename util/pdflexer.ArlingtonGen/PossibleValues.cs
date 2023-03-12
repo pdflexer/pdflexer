@@ -78,17 +78,26 @@ internal class PossibleValues
 
         var defs = string.Join('\n', vars.Select(v => Gen.GetSetter(v, type, "val")));
 
+        VariableContext.InitType(type);
+
         var sb = new StringBuilder();
         var rv = values.Where(v => v.Contains("RequiredValue")).ToList();
-        if (rv.Any())
+        foreach (var r in rv)
         {
-            defs += "\n// TODO required value checks";
+            var exp = new Exp(r);
+            defs += $$"""
+
+if ({{exp.GetText()}}) 
+{
+    ctx.Fail<APM_{{Gen.RootName}}_{{Gen.Key}}>($"Invalid value {{{VarName}}}, required value condition met: {{r}}");
+}
+
+""";
         }
         var nr = values.Where(v => !v.Contains("RequiredValue")).ToList();
         for (var p = 0; p < nr.Count; p++)
         {
-            VariableContext.InEval = false;
-            VariableContext.Wrapper = VariableContext.ValWrapper;
+
             var exp = new Exp(nr[p]);
             for (var i = 0; i < exp.Children.Count; i++)
             {
@@ -108,7 +117,8 @@ internal class PossibleValues
 
         var checks = sb.ToString();
         //var checks = string.Join(" || ", values.Select(x => Unwrap(x)));
-        if (type == "name" || type == "number" || type == "integer" || type == "string-text")
+        if (type == "name" || type == "number" || type == "integer" || type == "string-text" 
+            || type == "string-byte" || type == "string-ascii" || type == "bitmask" || type == "string")
         {
 
             return $$"""

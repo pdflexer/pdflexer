@@ -121,7 +121,7 @@ internal partial class APM_ArrayOfRequirements_x : ISpecification<PdfArray>
             } else if ((ctx.Version >= 2.0m && APM_RequirementsEncryption.MatchesType(ctx, val))) 
             {
                 ctx.Run<APM_RequirementsEncryption, PdfDictionary>(stack, val, obj);
-            } else if ((ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_24064) && APM_RequirementsSTEP.MatchesType(ctx, val)))) 
+            } else if ((ctx.Version >= 2.0m && (ctx.Extensions.Contains(PdfName.ISO_TS_24064) && APM_RequirementsSTEP.MatchesType(ctx, val)))) 
             {
                 ctx.Run<APM_RequirementsSTEP, PdfDictionary>(stack, val, obj);
             } else if ((ctx.Version >= 2.0m && APM_RequirementsglTF.MatchesType(ctx, val))) 

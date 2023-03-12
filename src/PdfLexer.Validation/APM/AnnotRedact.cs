@@ -310,9 +310,6 @@ internal partial class APM_AnnotRedact_M__Base : ISpecification<PdfDictionary>
         {
             case PdfObjectType.StringObj:
                 {
-            
-                    // TODO MC date;string-text
-            
                     var val =  (PdfString)utval;
                     if (IsDate(val)) 
                     {
@@ -390,7 +387,7 @@ internal partial class APM_AnnotRedact_AP__Base : ISpecification<PdfDictionary>
     {
         var Rect = obj.Get("Rect");
         var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotRedact_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
+        if (((ctx.Version >= 2.0m && (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotRedact_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;
@@ -1237,7 +1234,7 @@ internal partial class APM_AnnotRedact_Q__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == 0m || val == 1m || val == 2m)) 
+        if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_AnnotRedact_Q>($"Invalid value {val}, allowed are: [0,1,2]");
         }

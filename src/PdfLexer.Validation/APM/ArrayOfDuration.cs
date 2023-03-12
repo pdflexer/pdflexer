@@ -57,7 +57,12 @@ internal partial class APM_ArrayOfDuration_0 : ISpecification<PdfArray>
                     var val =  (PdfString)utval;
                     // no indirect obj reqs
                     // no special cases
-                    // TODO value checks string-byte
+                    
+                    
+                    if (!(eq(StringLength(utval),8))) 
+                    {
+                        ctx.Fail<APM_ArrayOfDuration_0>($"Invalid value {val}, allowed are: [fn:Eval(fn:StringLength(0)==8)]");
+                    }
                     // no linked objects
                     return;
                 }

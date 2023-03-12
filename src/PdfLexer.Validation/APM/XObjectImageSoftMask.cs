@@ -318,8 +318,17 @@ internal partial class APM_XObjectImageSoftMask_BitsPerComponent__Base : ISpecif
         // no special cases
         
         
-        // TODO required value checks
-        if (!(val == 2m || val == 4m || (ctx.Version >= 1.5m && val == 16m))) 
+        if (((Contains(Filter, PdfName.CCITTFaxDecode)||Contains(Filter, PdfName.JBIG2Decode)) && !(val == 1))) 
+        {
+            ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>($"Invalid value {val}, required value condition met: fn:RequiredValue((fn:Contains(@Filter,CCITTFaxDecode) || fn:Contains(@Filter,JBIG2Decode)),1)");
+        }
+        
+        if (((Contains(Filter, PdfName.RunLengthDecode)||Contains(Filter, PdfName.DCTDecode)) && !(val == 8))) 
+        {
+            ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>($"Invalid value {val}, required value condition met: fn:RequiredValue((fn:Contains(@Filter,RunLengthDecode) || fn:Contains(@Filter,DCTDecode)),8)");
+        }
+        
+        if (!(val == 2 || val == 4 || (ctx.Version >= 1.5m && val == 16))) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>($"Invalid value {val}, allowed are: [fn:RequiredValue((fn:Contains(@Filter,CCITTFaxDecode) || fn:Contains(@Filter,JBIG2Decode)),1),2,4,fn:RequiredValue((fn:Contains(@Filter,RunLengthDecode) || fn:Contains(@Filter,DCTDecode)),8),fn:SinceVersion(1.5,16)]");
         }

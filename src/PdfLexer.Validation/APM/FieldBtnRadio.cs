@@ -436,7 +436,7 @@ internal partial class APM_FieldBtnRadio_Q__Base : ISpecification<PdfDictionary>
         // no special cases
         
         
-        if (!(val == 0m || val == 1m || val == 2m)) 
+        if (!(val == 0 || val == 1 || val == 2)) 
         {
             ctx.Fail<APM_FieldBtnRadio_Q>($"Invalid value {val}, allowed are: [0,1,2]");
         }

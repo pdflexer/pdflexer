@@ -196,7 +196,7 @@ internal partial class APM_HalftoneType6_HalftoneType__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 6m)) 
+        if (!(val == 6)) 
         {
             ctx.Fail<APM_HalftoneType6_HalftoneType>($"Invalid value {val}, allowed are: [6]");
         }

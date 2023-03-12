@@ -134,7 +134,7 @@ internal partial class APM_TimeStampDict_Ff__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == 0m || val == 1m)) 
+        if (!(val == 0 || val == 1)) 
         {
             ctx.Fail<APM_TimeStampDict_Ff>($"Invalid value {val}, allowed are: [0,1]");
         }

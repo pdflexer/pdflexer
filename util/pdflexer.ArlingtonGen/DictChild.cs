@@ -20,8 +20,8 @@ internal class DictChild : GenBase
 
     public override string CreateClass()
     {
-        VariableContext.VarSub = "var";
-        VariableContext.VarName = "var";
+        VariableContext.VarSub = "val";
+        VariableContext.VarName = "val";
         VariableContext.Vars.Clear();
         var key = "\"" + Key + "\"";
         var code = $$"""

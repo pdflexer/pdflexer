@@ -1431,7 +1431,7 @@ internal partial class APM_StructureAttributesDict_GlyphOrientationVertical__Bas
                     }
                     
                     
-                    if (!(val == -180m || val == -90m || val == 0m || val == 90m || val == 180m || val == 270m || val == 360m)) 
+                    if (!(val == -180 || val == -90 || val == 0 || val == 90 || val == 180 || val == 270 || val == 360)) 
                     {
                         ctx.Fail<APM_StructureAttributesDict_GlyphOrientationVertical>($"Invalid value {val}, allowed are: [-180,-90,0,90,180,270,360]");
                     }

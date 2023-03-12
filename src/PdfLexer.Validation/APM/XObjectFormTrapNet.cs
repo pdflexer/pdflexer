@@ -236,7 +236,7 @@ internal partial class APM_XObjectFormTrapNet_FormType__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == 1m)) 
+        if (!(val == 1)) 
         {
             ctx.Fail<APM_XObjectFormTrapNet_FormType>($"Invalid value {val}, allowed are: [1]");
         }

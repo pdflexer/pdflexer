@@ -156,7 +156,7 @@ internal partial class APM_DocMDPTransformParameters_P__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == 1m || val == 2m || val == 3m)) 
+        if (!(val == 1 || val == 2 || val == 3)) 
         {
             ctx.Fail<APM_DocMDPTransformParameters_P>($"Invalid value {val}, allowed are: [1,2,3]");
         }

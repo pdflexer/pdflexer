@@ -188,7 +188,7 @@ internal partial class APM_HalftoneType16_HalftoneType__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == 16m)) 
+        if (!(val == 16)) 
         {
             ctx.Fail<APM_HalftoneType16_HalftoneType>($"Invalid value {val}, allowed are: [16]");
         }

@@ -196,7 +196,7 @@ internal partial class APM_EmbeddedFileParameter_ModDate__Base : ISpecification<
     {
         
         var (val, wasIR) = ctx.GetOptional<PdfString, APM_EmbeddedFileParameter_ModDate>(obj, "ModDate", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || IsAssociatedFile(obj))) && val == null) {
+        if (((ctx.Version >= 2.0m && IsAssociatedFile(obj))) && val == null) {
             ctx.Fail<APM_EmbeddedFileParameter_ModDate>("ModDate is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsAssociatedFile()))"); return;
         } else if (val == null) {
             return;

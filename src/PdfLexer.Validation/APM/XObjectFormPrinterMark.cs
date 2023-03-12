@@ -224,7 +224,7 @@ internal partial class APM_XObjectFormPrinterMark_FormType__Base : ISpecificatio
         // no special cases
         
         
-        if (!(val == 1m)) 
+        if (!(val == 1)) 
         {
             ctx.Fail<APM_XObjectFormPrinterMark_FormType>($"Invalid value {val}, allowed are: [1]");
         }

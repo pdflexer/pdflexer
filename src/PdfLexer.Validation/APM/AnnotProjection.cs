@@ -303,9 +303,6 @@ internal partial class APM_AnnotProjection_M__Base : ISpecification<PdfDictionar
         {
             case PdfObjectType.StringObj:
                 {
-            
-                    // TODO MC date;string-text
-            
                     var val =  (PdfString)utval;
                     if (IsDate(val)) 
                     {

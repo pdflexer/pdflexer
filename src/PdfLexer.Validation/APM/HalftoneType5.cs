@@ -95,7 +95,7 @@ internal partial class APM_HalftoneType5_HalftoneType__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 5m)) 
+        if (!(val == 5)) 
         {
             ctx.Fail<APM_HalftoneType5_HalftoneType>($"Invalid value {val}, allowed are: [5]");
         }

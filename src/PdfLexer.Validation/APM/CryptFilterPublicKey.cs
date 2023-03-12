@@ -234,7 +234,7 @@ internal partial class APM_CryptFilterPublicKey_CFM__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == PdfName.None || (ctx.Version < 2.0m && val == PdfName.V2) || (ctx.Version < 2.0m && (ctx.Version >= 1.6m && val == PdfName.AESV2)) || (ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == PdfName.AESV3))) || (ctx.Version >= 2.0m && val == PdfName.AESV3) || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == PdfName.AESV4)))) 
+        if (!(val == PdfName.None || (ctx.Version < 2.0m && val == PdfName.V2) || (ctx.Version < 2.0m && (ctx.Version >= 1.6m && val == PdfName.AESV2)) || (ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == PdfName.AESV3))) || (ctx.Version >= 2.0m && val == PdfName.AESV3) || (ctx.Version >= 2.0m && (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == PdfName.AESV4)))) 
         {
             ctx.Fail<APM_CryptFilterPublicKey_CFM>($"Invalid value {val}, allowed are: [None,fn:Deprecated(2.0,V2),fn:Deprecated(2.0,fn:SinceVersion(1.6,AESV2)),fn:Deprecated(2.0,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,AESV3))),fn:SinceVersion(2.0,AESV3),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,AESV4))]");
         }
@@ -299,7 +299,16 @@ internal partial class APM_CryptFilterPublicKey_Length__Base : ISpecification<Pd
         
         var CFM = obj.Get("CFM");
         var Length = obj.Get("Length");
-        // TODO required value checks
+        if ((eq(CFM,PdfName.AESV2) && !(val == 128))) 
+        {
+            ctx.Fail<APM_CryptFilterPublicKey_Length>($"Invalid value {val}, required value condition met: fn:RequiredValue(@CFM==AESV2,128)");
+        }
+        
+        if ((eq(CFM,PdfName.AESV3) && !(val == 256))) 
+        {
+            ctx.Fail<APM_CryptFilterPublicKey_Length>($"Invalid value {val}, required value condition met: fn:RequiredValue(@CFM==AESV3,256)");
+        }
+        
         if (!(gte(Length,40)&&lte(Length,128)&&eq(mod(Length,8),0))) 
         {
             ctx.Fail<APM_CryptFilterPublicKey_Length>($"Invalid value {val}, allowed are: [fn:RequiredValue(@CFM==AESV2,128),fn:RequiredValue(@CFM==AESV3,256),fn:Eval((@Length>=40) && (@Length<=128) && ((@Length mod 8)==0))]");

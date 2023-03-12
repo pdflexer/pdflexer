@@ -52,6 +52,10 @@ internal class EFunction : INode
                 return new EFunc_BitsSet(parts);
             case "MustBeDirect":
                 return new EFunc_MustBeDirect(parts);
+            case "RequiredValue":
+                return new EFunc_RequiredValue(parts);
+            case "InNameTree":
+                return new EFunc_InNameTree(parts);
             default:
                 return new EFunction(type, contents);
         }
@@ -216,23 +220,6 @@ internal class EFunc_Deprecated : EFunBase
 }
 
 
-
-internal class EFunc_RequiredValue : EFunBase
-{
-    public EFunc_RequiredValue(List<INode> inputs) : base(inputs) { }
-    public override void Write(StringBuilder sb)
-    {
-        sb.Append($"(ctx.Version == ");
-        using (var es = new EvalScope())
-        {
-            Children[0].Write(sb);
-        }
-        sb.Append(" && ");
-        Children[1].Write(sb);
-        sb.Append(")");
-    }
-}
-
 internal class EFunc_Extension : EFunBase, INode
 {
     public EFunc_Extension(List<INode> inputs) : base(inputs) { }
@@ -241,6 +228,7 @@ internal class EFunc_Extension : EFunBase, INode
         sb.Append($"(ctx.Extensions.Contains(");
         using (var es = new EvalScope())
         {
+            using var vs = new VarType(NonEvalType.String);
             Children[0].Write(sb);
         }
         sb.Append(")");
@@ -277,28 +265,37 @@ internal class EFunc_SinceVersion : EFunBase, INode
             Children[0].Write(sb);
         } else
         {
-            if ((Children[1] as INode).IsSingleValue())
+            using (var es = new EvalScope())
             {
-                using (var es = new EvalScope())
-                {
-                    sb.Append("(ctx.Version >= ");
-                    Children[0].Write(sb);
-                }
-                sb.Append(" && ");
-                Children[1].Write(sb);
-                sb.Append(")");
-            } else
-            {
-                using (var es = new EvalScope())
-                {
-                    sb.Append("(ctx.Version < ");
-                    Children[0].Write(sb);
-                    sb.Append(" || ");
-                }
-
-                Children[1].Write(sb);
-                sb.Append(")");
+                sb.Append("(ctx.Version >= ");
+                Children[0].Write(sb);
             }
+            sb.Append(" && ");
+            Children[1].Write(sb);
+            sb.Append(")");
+
+            // if ((Children[1] as INode).IsSingleValue())
+            // {
+            //     using (var es = new EvalScope())
+            //     {
+            //         sb.Append("(ctx.Version >= ");
+            //         Children[0].Write(sb);
+            //     }
+            //     sb.Append(" && ");
+            //     Children[1].Write(sb);
+            //     sb.Append(")");
+            // } else
+            // {
+            //     using (var es = new EvalScope())
+            //     {
+            //         sb.Append("(ctx.Version < ");
+            //         Children[0].Write(sb);
+            //         sb.Append(" || ");
+            //     }
+            // 
+            //     Children[1].Write(sb);
+            //     sb.Append(")");
+            // }
         }
     }
 

@@ -181,7 +181,7 @@ internal partial class APM_EmbeddedFileStream_Subtype__Base : ISpecification<Pdf
     {
         
         var (val, wasIR) = ctx.GetOptional<PdfName, APM_EmbeddedFileStream_Subtype>(obj, "Subtype", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || IsAssociatedFile(obj))) && val == null) {
+        if (((ctx.Version >= 2.0m && IsAssociatedFile(obj))) && val == null) {
             ctx.Fail<APM_EmbeddedFileStream_Subtype>("Subtype is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsAssociatedFile()))"); return;
         } else if (val == null) {
             return;
@@ -213,7 +213,7 @@ internal partial class APM_EmbeddedFileStream_Params__Base : ISpecification<PdfD
     {
         
         var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_EmbeddedFileStream_Params>(obj, "Params", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || IsAssociatedFile(obj))) && val == null) {
+        if (((ctx.Version >= 2.0m && IsAssociatedFile(obj))) && val == null) {
             ctx.Fail<APM_EmbeddedFileStream_Params>("Params is required when 'fn:IsRequired(fn:SinceVersion(2.0,fn:IsAssociatedFile()))"); return;
         } else if (val == null) {
             return;

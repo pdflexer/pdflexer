@@ -55,6 +55,10 @@ internal class EGroup : INode
             {
                 sw.Append("mult");
             }
+            else if (op.Text == "-")
+            {
+                sw.Append("minus");
+            }
             else
             {
                 sw.Append("(");

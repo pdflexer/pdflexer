@@ -108,6 +108,9 @@ internal class EValue : INode
                         sw.Append(val);
                     }
                     break;
+                case NonEvalType.Integer:
+                    sw.Append(val);
+                    break;
             }
             return;
         }

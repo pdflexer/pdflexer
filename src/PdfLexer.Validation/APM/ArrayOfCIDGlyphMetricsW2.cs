@@ -58,9 +58,6 @@ internal partial class APM_ArrayOfCIDGlyphMetricsW2_x : ISpecification<PdfArray>
                     }
                 case PdfObjectType.NumericObj:
                     {
-                
-                        // TODO MC integer;number
-                
                         var val =  (PdfNumber)utval;
                         if (val is PdfIntNumber) 
                         {

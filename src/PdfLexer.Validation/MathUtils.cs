@@ -392,6 +392,68 @@ internal static partial class MathUtil
         if (val == null) { return 0m; }
         return val.Value + val2;
     }
+    public static decimal minus(IPdfObject? obj, int val)
+    {
+        if (obj == null) { return 0m; }
+        var n = obj as PdfIntNumber;
+        if (n == null) { return 0m; }
+        return minus(n, val);
+    }
+    // public static decimal minus(PdfNumber obj, int val) 
+    // {
+    //     if (obj.NumberType == PdfNumberType.Integer) 
+    //     {
+    //         return minus((PdfIntNumber)obj, val);
+    //     }
+    //     return minus(obj, (decimal)val);
+    // }
+    public static decimal minus(PdfIntNumber obj, int val) 
+    {
+        return (int)obj - val;
+    }
+    public static decimal minus(IPdfObject? obj, IPdfObject? val)
+    {
+        if (obj == null || val == null) { return 0m; } // custom for arlington eval to fail
+        if (obj.Type != val.Type) { return 0m; }
+    
+        var n = obj as PdfNumber;
+        if (n == null) { return 0m; }
+        var n2 = val as PdfNumber;
+        if (n2 == null) { return 0m; }
+        return n - n2;
+    }
+    
+    public static decimal minus(IPdfObject? obj, int? val)
+    {
+        if (val == null) return 0m;
+        return minus(obj, val.Value);
+    }
+    public static decimal minus(int val, IPdfObject? obj) => minus(obj, val);
+    public static decimal minus(int val, int val2) => val - val2;
+    public static decimal minus(int? val, int val2)
+    {
+        if (val == null) { return 0m; }
+        return val.Value - val2;
+    }
+    public static decimal minus(IPdfObject? obj, decimal val)
+    {
+        if (obj == null) { return 0m; }
+        var n = obj as PdfNumber;
+        if (n == null) { return 0m; }
+        return  (decimal)n - val;
+    }
+    public static decimal minus(IPdfObject? obj, decimal? val)
+    {
+        if (val == null) return 0m;
+        return minus(obj, val.Value);
+    }
+    public static decimal minus(decimal val, IPdfObject? obj) => minus(obj, val);
+    public static decimal minus(decimal val, decimal val2) => val - val2;
+    public static decimal minus(decimal? val, decimal val2)
+    {
+        if (val == null) { return 0m; }
+        return val.Value - val2;
+    }
     public static decimal mult(IPdfObject? obj, int val)
     {
         if (obj == null) { return 0m; }

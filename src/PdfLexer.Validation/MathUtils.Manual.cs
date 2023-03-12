@@ -53,15 +53,7 @@ internal static partial class MathUtil
         return false;
     }
 
-    public static bool IsDate(PdfString str)
-    {
-        return true;
-    }
 
-    public static bool IsAscii(PdfString str)
-    {
-        return true;
-    }
 
     public static bool IsKeyIR(this IPdfObject? obj, int val)
     {
@@ -106,10 +98,7 @@ internal static partial class MathUtil
         return false;
     }
 
-    public static bool IsAssociatedFile(IPdfObject? obj)
-    {
-        throw new NotImplementedException("IsAssociatedFile");
-    }
+
 
     private static HashSet<string> Base14Names = new HashSet<string>
     {
@@ -246,55 +235,80 @@ internal static partial class MathUtil
         return null;
     }
 
-    public static bool IsFieldName(IPdfObject? obj)
+    public static bool IsDate(PdfString str)
     {
-        return false;
+        return true; // TODO
     }
 
-    public static bool MustBeDirect(IPdfObject? obj)
+    public static bool IsAscii(PdfString str)
     {
-        return false;
+        return true; // TODO
+    }
+
+    public static bool IsAssociatedFile(IPdfObject? obj)
+    {
+        return true; // TODO
+    }
+
+    public static bool IsFieldName(IPdfObject? obj)
+    {
+        return true; // TODO
     }
 
     public static bool AlwaysUnencrypted(IPdfObject? obj)
     {
-        return true;
+        return true; // TODO
     }
 
     public static bool ArraySortAscending(IPdfObject? obj, int i)
     {
-        return false;
+        return true; // TODO
     }
 
 
     public static bool FontHasLatinChars(IPdfObject? obj)
     {
-        throw new NotImplementedException("FontHasLatinChars");
+        return false; // TODO
     }
 
     public static bool IsPDFTagged(IPdfObject? obj)
     {
-        throw new NotImplementedException("IsPDFTagged");
+        return false; // TODO
     }
 
     public static bool IsEncryptedWrapper(IPdfObject? obj)
     {
-        throw new NotImplementedException("IsEncryptedWrapper");
+        return false; // TODO
     }
 
     public static bool ImageIsStructContentItem(IPdfObject? obj)
     {
-        throw new NotImplementedException("ImageIsStructContentItem");
+        return false; // TODO
     }
 
     public static bool HasProcessColorants(IPdfObject? obj)
     {
-        throw new NotImplementedException("HasProcessColorants");
+        return false; // TODO
     }
 
     public static bool HasSpotColorants(IPdfObject? obj)
     {
-        throw new NotImplementedException("HasProcessColorants");
+        return false; // TODO
+    }
+
+    public static bool PageContainsStructContentItems(IPdfObject? obj)
+    {
+        return false; // TODO
+    }
+
+    public static bool InNameTree(IPdfObject val, IPdfObject? tree)
+    {
+        return true; // TODO
+    }
+
+    public static bool InNameTree(PdfName val, IPdfObject? tree)
+    {
+        return true; // TODO
     }
 
     public static decimal RectWidth(IPdfObject? obj)
@@ -333,16 +347,7 @@ internal static partial class MathUtil
         return 0;
     }
 
-    public static bool PageContainsStructContentItems(IPdfObject? obj)
-    {
-        return false; // TODO
-        // throw new NotImplementedException("PageContainsStructContentItems");
-    }
-
-    public static bool InNameTree(IPdfObject? val)
-    {
-        throw new NotImplementedException("InNameTree");
-    }
+    public static bool InNameTree(string val, IPdfObject? tree) => InNameTree(new PdfName(val), tree);
 
     public static bool Contains(IPdfObject? obj, string val)
     {

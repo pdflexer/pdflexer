@@ -152,7 +152,7 @@ internal partial class APM_ShadingType5_BitsPerCoordinate__Base : ISpecification
         // no special cases
         
         
-        if (!(val == 1m || val == 2m || val == 4m || val == 8m || val == 12m || val == 16m || val == 24m || val == 32m)) 
+        if (!(val == 1 || val == 2 || val == 4 || val == 8 || val == 12 || val == 16 || val == 24 || val == 32)) 
         {
             ctx.Fail<APM_ShadingType5_BitsPerCoordinate>($"Invalid value {val}, allowed are: [1,2,4,8,12,16,24,32]");
         }
@@ -184,7 +184,7 @@ internal partial class APM_ShadingType5_BitsPerComponent__Base : ISpecification<
         // no special cases
         
         
-        if (!(val == 1m || val == 2m || val == 4m || val == 8m || val == 12m || val == 16m)) 
+        if (!(val == 1 || val == 2 || val == 4 || val == 8 || val == 12 || val == 16)) 
         {
             ctx.Fail<APM_ShadingType5_BitsPerComponent>($"Invalid value {val}, allowed are: [1,2,4,8,12,16]");
         }
@@ -350,7 +350,7 @@ internal partial class APM_ShadingType5_ShadingType__Base : ISpecification<PdfDi
         // no special cases
         
         
-        if (!(val == 5m)) 
+        if (!(val == 5)) 
         {
             ctx.Fail<APM_ShadingType5_ShadingType>($"Invalid value {val}, allowed are: [5]");
         }

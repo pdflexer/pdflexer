@@ -357,7 +357,7 @@ internal partial class APM_Thumbnail_BitsPerComponent__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 1m || val == 2m || val == 4m || val == 8m || val == 16m)) 
+        if (!(val == 1 || val == 2 || val == 4 || val == 8 || val == 16)) 
         {
             ctx.Fail<APM_Thumbnail_BitsPerComponent>($"Invalid value {val}, allowed are: [1,2,4,8,16]");
         }

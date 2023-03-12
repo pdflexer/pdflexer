@@ -141,7 +141,7 @@ internal partial class APM_FunctionType3_FunctionType__Base : ISpecification<Pdf
         // no special cases
         
         
-        if (!(val == 3m)) 
+        if (!(val == 3)) 
         {
             ctx.Fail<APM_FunctionType3_FunctionType>($"Invalid value {val}, allowed are: [3]");
         }
@@ -266,7 +266,7 @@ internal partial class APM_FunctionType3_Bounds__Base : ISpecification<PdfDictio
         if (val == null) { return; }
         var Bounds = obj.Get("Bounds");
         var Functions = obj.Get("Functions");
-        if (!(eq(((Bounds as PdfArray)?.Count),(((Functions as PdfArray)?.Count)-1)))) 
+        if (!(eq(((Bounds as PdfArray)?.Count),minus(((Functions as PdfArray)?.Count),1)))) 
         {
             ctx.Fail<APM_FunctionType3_Bounds>($"Value failed special case check: fn:Eval(fn:ArrayLength(Bounds)==(fn:ArrayLength(Functions) - 1))");
         }

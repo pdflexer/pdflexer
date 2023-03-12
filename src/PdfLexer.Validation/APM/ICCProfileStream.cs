@@ -147,7 +147,7 @@ internal partial class APM_ICCProfileStream_N__Base : ISpecification<PdfDictiona
         // no special cases
         
         
-        if (!(val == 1m || val == 3m || val == 4m)) 
+        if (!(val == 1 || val == 3 || val == 4)) 
         {
             ctx.Fail<APM_ICCProfileStream_N>($"Invalid value {val}, allowed are: [1,3,4]");
         }

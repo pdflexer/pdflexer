@@ -110,9 +110,6 @@ internal partial class APM_Data_Private__Base : ISpecification<PdfDictionary>
                 }
             case PdfObjectType.NumericObj:
                 {
-            
-                    // TODO MC integer;number
-            
                     var val =  (PdfNumber)utval;
                     if (val is PdfIntNumber) 
                     {
@@ -223,9 +220,6 @@ internal partial class APM_Data_CatchAll__Base : ISpecification<PdfDictionary>
                     }
                 case PdfObjectType.NumericObj:
                     {
-                
-                        // TODO MC integer;number
-                
                         var val =  (PdfNumber)utval;
                         if (val is PdfIntNumber) 
                         {

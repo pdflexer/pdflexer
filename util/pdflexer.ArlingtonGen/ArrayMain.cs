@@ -19,8 +19,8 @@ internal class ArrayMain
 
     public string CreateClass(List<Row> rows)
     {
-        VariableContext.VarSub = "var";
-        VariableContext.VarName = "var";
+        VariableContext.VarSub = "val";
+        VariableContext.VarName = "val";
         VariableContext.Vars.Clear();
         var code = $$"""
 internal partial class APM_{{Name}} : ISpecification<PdfArray>

@@ -272,7 +272,7 @@ internal partial class APM_XObjectFormType1_FormType__Base : ISpecification<PdfD
         // no special cases
         
         
-        if (!(val == 1m)) 
+        if (!(val == 1)) 
         {
             ctx.Fail<APM_XObjectFormType1_FormType>($"Invalid value {val}, allowed are: [1]");
         }

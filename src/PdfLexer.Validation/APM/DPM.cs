@@ -134,9 +134,6 @@ internal partial class APM_DPM_CatchAll__Base : ISpecification<PdfDictionary>
                     }
                 case PdfObjectType.StringObj:
                     {
-                
-                        // TODO MC date;string-text
-                
                         var val =  (PdfString)utval;
                         if (IsDate(val)) 
                         {
@@ -166,9 +163,6 @@ internal partial class APM_DPM_CatchAll__Base : ISpecification<PdfDictionary>
                     }
                 case PdfObjectType.NumericObj:
                     {
-                
-                        // TODO MC integer;number
-                
                         var val =  (PdfNumber)utval;
                         if (val is PdfIntNumber) 
                         {

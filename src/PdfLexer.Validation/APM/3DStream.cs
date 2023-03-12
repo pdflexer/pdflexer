@@ -159,7 +159,7 @@ internal partial class APM_3DStream_Subtype__Base : ISpecification<PdfDictionary
         // no special cases
         
         
-        if (!(val == PdfName.U3D || val == PdfName.PRC || (ctx.Version < 2.0m || (ctx.Extensions.Contains(PdfName.ISO_TS_24064) && val == PdfName.STEP)))) 
+        if (!(val == PdfName.U3D || val == PdfName.PRC || (ctx.Version >= 2.0m && (ctx.Extensions.Contains(PdfName.ISO_TS_24064) && val == PdfName.STEP)))) 
         {
             ctx.Fail<APM_3DStream_Subtype>($"Invalid value {val}, allowed are: [U3D,PRC,fn:SinceVersion(2.0,fn:Extension(ISO_TS_24064,STEP))]");
         }

@@ -182,9 +182,6 @@ internal partial class APM_RichMediaCommand_A__Base : ISpecification<PdfDictiona
                 }
             case PdfObjectType.NumericObj:
                 {
-            
-                    // TODO MC integer;number
-            
                     var val =  (PdfNumber)utval;
                     if (val is PdfIntNumber) 
                     {

@@ -251,7 +251,7 @@ internal partial class APM_XObjectFormPSpassthrough_FormType__Base : ISpecificat
         // no special cases
         
         
-        if (!(val == 1m)) 
+        if (!(val == 1)) 
         {
             ctx.Fail<APM_XObjectFormPSpassthrough_FormType>($"Invalid value {val}, allowed are: [1]");
         }

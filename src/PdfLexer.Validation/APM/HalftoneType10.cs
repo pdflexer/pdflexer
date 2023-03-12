@@ -196,7 +196,7 @@ internal partial class APM_HalftoneType10_HalftoneType__Base : ISpecification<Pd
         // no special cases
         
         
-        if (!(val == 10m)) 
+        if (!(val == 10)) 
         {
             ctx.Fail<APM_HalftoneType10_HalftoneType>($"Invalid value {val}, allowed are: [10]");
         }

@@ -344,9 +344,6 @@ internal partial class APM_AnnotStamp_M__Base : ISpecification<PdfDictionary>
         {
             case PdfObjectType.StringObj:
                 {
-            
-                    // TODO MC date;string-text
-            
                     var val =  (PdfString)utval;
                     if (IsDate(val)) 
                     {
@@ -394,7 +391,7 @@ internal partial class APM_AnnotStamp_F__Base : ISpecification<PdfDictionary>
         var (val, wasIR) = ctx.GetOptional<PdfIntNumber, APM_AnnotStamp_F>(obj, "F", IndirectRequirement.Either);
         if (val == null) { return; }
         
-        if (!((ctx.Version >= 1.4m || BitsClear(val,0b11111111111111111111111110000000))&&(ctx.Version >= 1.5m || BitsClear(val,0b11111111111111111111111100000000))&&(ctx.Version >= 1.6m || BitsClear(val,0b11111111111111111111111000000000))&&(ctx.Version < 1.7m || BitsClear(val,0b11111111111111111111110000000000)))) 
+        if (!((ctx.Version >= 1.4m || BitsClear(val,0b11111111111111111111111110000000))&&(ctx.Version >= 1.5m || BitsClear(val,0b11111111111111111111111100000000))&&(ctx.Version >= 1.6m || BitsClear(val,0b11111111111111111111111000000000))&&(ctx.Version >= 1.7m && BitsClear(val,0b11111111111111111111110000000000)))) 
         {
             ctx.Fail<APM_AnnotStamp_F>($"Value failed special case check: fn:Eval(fn:BeforeVersion(1.4,fn:BitsClear(8,32)) && fn:BeforeVersion(1.5,fn:BitsClear(9,32)) && fn:BeforeVersion(1.6,fn:BitsClear(10,32)) && fn:SinceVersion(1.7,fn:BitsClear(11,32)))");
         }
@@ -424,7 +421,7 @@ internal partial class APM_AnnotStamp_AP__Base : ISpecification<PdfDictionary>
     {
         var Rect = obj.Get("Rect");
         var (val, wasIR) = ctx.GetOptional<PdfDictionary, APM_AnnotStamp_AP>(obj, "AP", IndirectRequirement.Either);
-        if (((ctx.Version < 2.0m || (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
+        if (((ctx.Version >= 2.0m && (gt(RectWidth(Rect),0)||gt(RectHeight(Rect),0)))) && val == null) {
             ctx.Fail<APM_AnnotStamp_AP>("AP is required when 'fn:IsRequired(fn:SinceVersion(2.0,(fn:RectWidth(Rect)>0) || (fn:RectHeight(Rect)>0)))"); return;
         } else if (val == null) {
             return;
@@ -1080,7 +1077,7 @@ internal partial class APM_AnnotStamp_Name__Base : ISpecification<PdfDictionary>
         var (val, wasIR) = ctx.GetOptional<PdfName, APM_AnnotStamp_Name>(obj, "Name", IndirectRequirement.Either);
         if (val == null) { return; }
         var IT = obj.Get("IT");
-        if ((obj.ContainsKey(PdfName.IT)&&(ctx.Version < 2.0m || !eq(IT,PdfName.Stamp)))) 
+        if ((obj.ContainsKey(PdfName.IT)&&(ctx.Version >= 2.0m && !eq(IT,PdfName.Stamp)))) 
         {
             ctx.Fail<APM_AnnotStamp_Name>($"Value failed special case check: fn:Not(fn:IsRequired(fn:IsPresent(IT) && fn:SinceVersion(2.0,(@IT!=Stamp))))");
         }
