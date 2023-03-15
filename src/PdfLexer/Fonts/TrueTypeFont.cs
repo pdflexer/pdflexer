@@ -32,7 +32,7 @@ namespace PdfLexer.Fonts
 
             float mw = t1.FontDescriptor?.MissingWidth ?? 0;
             mw = (float)(mw / 1000.0);
-            var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, 0m }, Undefined = true };
+            var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, (decimal)mw }, Undefined = true };
 
             // grab encoding / diffs if exist
             var (hadBase, encoding, diffs) = GetDiffedEncoding(t1);
@@ -376,7 +376,8 @@ namespace PdfLexer.Fonts
                     glyph.w0 = ws[lup];
                     if (bbox != null)
                     {
-                        glyph.BBox = new decimal[] { 0, 0, (decimal)glyph.w0, bbox.URy / 1000.0m };
+                        var x = bbox.LLx / 1000.0m;
+                        glyph.BBox = new decimal[] { x, bbox.LLy / 1000.0m, x + (decimal)glyph.w0, bbox.URy / 1000.0m };
                     }
                 }
                 else

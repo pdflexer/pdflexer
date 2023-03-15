@@ -33,7 +33,7 @@ internal partial class Type1Font
             mw = 0.278m;
         }
 
-        var notdef = new Glyph { Char = '\u0000', w0 = (float)mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, mw, 0m } };
+        var notdef = new Glyph { Char = '\u0000', w0 = (float)mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, mw, mw } };
         notdef.Undefined = true;
 
         if (t1.Encoding != null)
@@ -250,7 +250,8 @@ internal partial class Type1Font
                     encoding[cp] = g;
                     if (bbox != null && g.BBox == null)
                     {
-                        g.BBox = new decimal[] { 0, 0, (decimal)g.w0, bbox.URy / 1000.0m };
+                        var x = bbox.LLx / 1000m;
+                        g.BBox = new decimal[] { x, bbox.LLy / 1000.0m, x+(decimal)g.w0, bbox.URy / 1000.0m };
                     }
                 }
             }

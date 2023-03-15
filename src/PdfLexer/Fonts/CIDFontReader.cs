@@ -67,22 +67,30 @@ internal class Type0Font
 
         var mw = (t0.DescendantFont?.DW ?? 1000f) / 1000f;
         var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
-        decimal bbx = 0, bby = 0;
+        decimal bbx = 0, bby = 0, bbx2 = 0, bby2 = 0;
         if (bbox != null)
         {
             bbx = (decimal)bbox.LLx / 1000m;
             bby = (decimal)bbox.LLy / 1000m;
+            bbx2 = (decimal)bbox.URx / 1000m;
+            bby2 = (decimal)bbox.URy / 1000m;
         }
         Glyph notdef;
         if (vertical)
         {
             var (dx, dy) = GetDW2(t0);
             notdef = new Glyph { Char = '\u0000', w0 = mw, w1 = dy, IsWordSpace = false, Undefined = true,
-                BBox = new decimal[] { bbx, 0m, bbx + (decimal)dx, (decimal)dy } };
+                BBox = bbox == null ? 
+                    new decimal[] { 0, 0m, (decimal)dx, (decimal)dy } :
+                    new decimal[] { bbx, 0m, bbx2, (decimal)dy }
+                    };
         } else
         {
             notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, Undefined = true,
-                BBox = new decimal[] { 0m, bby, (decimal)mw, bby + (bbox?.URy ?? 0) / 1000.0m } };
+                BBox = bbox == null ?
+                    new decimal[] { 0m, 0, (decimal)mw, (decimal)mw } :
+                    new decimal[] { bbx, bby, bbx+(decimal)mw, bby2 }
+            };
         }
 
         var gs = new GlyphSet(b1g, all, notdef);
@@ -485,11 +493,13 @@ internal class Type0Font
     internal static void SetDefaultWidths(FontType0 t0, Dictionary<uint, Glyph> glyphs)
     {
         var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
-        decimal bbx = 0, bby = 0;
+        decimal bbx = 0, bby = 0, bbx2 = 0, bby2 = 0;
         if (bbox != null)
         {
             bbx = (decimal)bbox.LLx / 1000m;
             bby = (decimal)bbox.LLy / 1000m;
+            bbx2 = (decimal)bbox.URx / 1000m;
+            bby2 = (decimal)bbox.URy / 1000m;
         }
         var mw = (t0.DescendantFont?.DW ?? 1000f) / 1000f;
         foreach (var glyph in glyphs.Values)
@@ -502,7 +512,9 @@ internal class Type0Font
             {
                 glyph.w0 = 0;
             }
-            glyph.BBox = new decimal[] { 0, bby, 0 + (decimal)glyph.w0, bby + (bbox?.URy ?? 0) / 1000.0m };
+            glyph.BBox = bbox == null ? 
+                new decimal[] { 0, 0, (decimal)glyph.w0, (decimal)glyph.w0 } :
+                new decimal[] { bbx, bby, bbx2, bby2 };
         }
     }
 
@@ -533,11 +545,13 @@ internal class Type0Font
     internal static void SetDefaultHeights(FontType0 t0, Dictionary<uint, Glyph> glyphs)
     {
         var bbox = t0.DescendantFont?.FontDescriptor?.FontBBox;
-        decimal bbx = 0, bby = 0;
+        decimal bbx = 0, bby = 0, bbx2 = 0, bby2 = 0;
         if (bbox != null)
         {
-            bbx = (decimal)bbox.LLx/1000m;
-            bby = (decimal)bbox.LLy/1000m;
+            bbx = (decimal)bbox.LLx / 1000m;
+            bby = (decimal)bbox.LLy / 1000m;
+            bbx2 = (decimal)bbox.URx / 1000m;
+            bby2 = (decimal)bbox.URy / 1000m;
         }
         var (dx, dy) = GetDW2(t0);
         foreach (var glyph in glyphs.Values)
@@ -552,6 +566,9 @@ internal class Type0Font
                 glyph.w1 = dy;
             }
             glyph.BBox = new decimal[] { bbx, 0, bbx + (decimal)dx, 0 + (decimal)glyph.w1 };
+            glyph.BBox = bbox == null ?
+                new decimal[] { 0, 0, (decimal)dx, (decimal)glyph.w1 } :
+                new decimal[] { bbx, bby, bbx2, bby + (decimal)glyph.w1 };
         }
     }
 

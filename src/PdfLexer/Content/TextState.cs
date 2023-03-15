@@ -332,10 +332,6 @@ public class TextState
     public void Apply(Tf_Op op)
     {
         GS.FontSize = (float)op.size;
-        if (GS.Font != null && GS.FontResourceName == op.font)
-        {
-            return;
-        }
         GS.FontResourceName = op.font;
         var obj = GetFontObj(GS.FontResourceName);
         if (obj == null)
