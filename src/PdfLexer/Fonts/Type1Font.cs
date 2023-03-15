@@ -250,7 +250,8 @@ internal partial class Type1Font
                     encoding[cp] = g;
                     if (bbox != null && g.BBox == null)
                     {
-                        g.BBox = new decimal[] { 0, 0, (decimal)g.w0, bbox.URy / 1000.0m };
+                        var x = bbox.LLx / 1000m;
+                        g.BBox = new decimal[] { x, bbox.LLy / 1000.0m, x+(decimal)g.w0, bbox.URy / 1000.0m };
                     }
                 }
             }
