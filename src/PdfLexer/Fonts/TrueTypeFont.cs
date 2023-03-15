@@ -32,7 +32,7 @@ namespace PdfLexer.Fonts
 
             float mw = t1.FontDescriptor?.MissingWidth ?? 0;
             mw = (float)(mw / 1000.0);
-            var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, (decimal)mw }, Undefined = true };
+            var notdef = new Glyph { Char = '\u0000', w0 = mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, (decimal)mw, 0m}, Undefined = true };
 
             // grab encoding / diffs if exist
             var (hadBase, encoding, diffs) = GetDiffedEncoding(t1);

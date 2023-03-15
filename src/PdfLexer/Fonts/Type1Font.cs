@@ -33,7 +33,7 @@ internal partial class Type1Font
             mw = 0.278m;
         }
 
-        var notdef = new Glyph { Char = '\u0000', w0 = (float)mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, mw, mw } };
+        var notdef = new Glyph { Char = '\u0000', w0 = (float)mw, IsWordSpace = false, BBox = new decimal[] { 0m, 0m, mw, 0m } };
         notdef.Undefined = true;
 
         if (t1.Encoding != null)
