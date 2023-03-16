@@ -48,31 +48,21 @@ internal partial class APM_Annot3D__Base : ISpecification<PdfDictionary>
             case 1.6m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
                 {
-                    ctx.Fail<APM_Annot3D>($"Unknown field {extra} for version 1.6");
+                    ctx.Fail<APM_Annot3D>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_Annot3D>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_Annot3D>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_Annot3D>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_Annot3D>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_Annot3D>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_Annot3D>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -94,23 +84,15 @@ internal partial class APM_Annot3D__Base : ISpecification<PdfDictionary>
 
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB"
+        "3DA", "3DB", "3DD", "3DI", "3DV", "AP", "AS", "Border", "C", "Contents", "F", "M", "NM", "OC", "P", "Rect", "StructParent", "Subtype", "Type"
     };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB", "3DU"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB", "3DU"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "3DD", "3DV", "3DA", "3DI", "3DB", "3DU"
+        "3DA", "3DB", "3DD", "3DI", "3DU", "3DV", "AP", "AS", "Border", "C", "Contents", "F", "M", "NM", "OC", "P", "Rect", "StructParent", "Subtype", "Type"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "3DD", "3DV", "3DA", "3DI", "3DB", "3DU", "GEO"
+        "3DA", "3DB", "3DD", "3DI", "3DU", "3DV", "AF", "AP", "AS", "BM", "Border", "C", "ca", "CA", "Contents", "F", "GEO", "Lang", "M", "NM", "OC", "P", "Rect", "StructParent", "Subtype", "Type"
     };
     
 

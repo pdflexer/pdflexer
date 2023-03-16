@@ -56,67 +56,52 @@ internal partial class APM_PageObject__Base : ISpecification<PdfDictionary>
             case 1.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_10.Contains(x)))
                 {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.0");
+                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.1m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_11.Contains(x)))
                 {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.1");
+                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.2m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
                 {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.3m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
                 {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.3");
+                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.4m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
                 {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.4");
+                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.5m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
                 {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.5");
+                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_PageObject>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -137,47 +122,35 @@ internal partial class APM_PageObject__Base : ISpecification<PdfDictionary>
 
     public static HashSet<string> AllowedFields_10 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "Resources", "MediaBox", "CropBox", "Contents", "Rotate", "Thumb", "Annots"
+        "Annots", "Contents", "CropBox", "MediaBox", "Parent", "Resources", "Rotate", "Thumb", "Type"
     };
     public static HashSet<string> AllowedFields_11 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "Resources", "MediaBox", "CropBox", "Contents", "Rotate", "Thumb", "B", "Dur", "Trans", "Annots", "Hid"
+        "Annots", "B", "Contents", "CropBox", "Dur", "Hid", "MediaBox", "Parent", "Resources", "Rotate", "Thumb", "Trans", "Type"
     };
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "Resources", "MediaBox", "CropBox", "Contents", "Rotate", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Hid"
+        "AA", "Annots", "B", "Contents", "CropBox", "Dur", "Hid", "MediaBox", "Parent", "Resources", "Rotate", "Thumb", "Trans", "Type"
     };
     public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "Contents", "Rotate", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo"
+        "AA", "Annots", "ArtBox", "B", "BleedBox", "Contents", "CropBox", "Dur", "ID", "LastModified", "MediaBox", "Parent", "PieceInfo", "PZ", "Resources", "Rotate", "SeparationInfo", "StructParents", "Thumb", "Trans", "TrimBox", "Type"
     };
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo"
+        "AA", "Annots", "ArtBox", "B", "BleedBox", "BoxColorInfo", "Contents", "CropBox", "Dur", "Group", "ID", "LastModified", "MediaBox", "Metadata", "Parent", "PieceInfo", "PZ", "Resources", "Rotate", "SeparationInfo", "StructParents", "Thumb", "Trans", "TrimBox", "Type"
     };
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps"
+        "AA", "Annots", "ArtBox", "B", "BleedBox", "BoxColorInfo", "Contents", "CropBox", "Dur", "Group", "ID", "LastModified", "MediaBox", "Metadata", "Parent", "PieceInfo", "PresSteps", "PZ", "Resources", "Rotate", "SeparationInfo", "StructParents", "Tabs", "TemplateInstantiated", "Thumb", "Trans", "TrimBox", "Type"
     };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_16_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "DPart"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "DPart"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "DPart"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "DPart"
+        "AA", "Annots", "ArtBox", "B", "BleedBox", "BoxColorInfo", "Contents", "CropBox", "DPart", "Dur", "Group", "ID", "LastModified", "MediaBox", "Metadata", "Parent", "PieceInfo", "PresSteps", "PZ", "Resources", "Rotate", "SeparationInfo", "StructParents", "Tabs", "TemplateInstantiated", "Thumb", "Trans", "TrimBox", "Type", "UserUnit", "VP"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Parent", "LastModified", "Resources", "MediaBox", "CropBox", "BleedBox", "TrimBox", "ArtBox", "BoxColorInfo", "Contents", "Rotate", "Group", "Thumb", "B", "Dur", "Trans", "Annots", "AA", "Metadata", "PieceInfo", "StructParents", "ID", "PZ", "SeparationInfo", "Tabs", "TemplateInstantiated", "PresSteps", "UserUnit", "VP", "AF", "OutputIntents", "DPart"
+        "AA", "AF", "Annots", "ArtBox", "B", "BleedBox", "BoxColorInfo", "Contents", "CropBox", "DPart", "Dur", "Group", "ID", "LastModified", "MediaBox", "Metadata", "OutputIntents", "Parent", "PieceInfo", "PresSteps", "PZ", "Resources", "Rotate", "SeparationInfo", "StructParents", "Tabs", "TemplateInstantiated", "Thumb", "Trans", "TrimBox", "Type", "UserUnit", "VP"
     };
     
 

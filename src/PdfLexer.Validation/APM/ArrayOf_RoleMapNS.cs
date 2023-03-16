@@ -19,7 +19,13 @@ internal partial class APM_ArrayOf_RoleMapNS : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        c.Run<APM_ArrayOf_RoleMapNS_0, PdfArray>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 }
 

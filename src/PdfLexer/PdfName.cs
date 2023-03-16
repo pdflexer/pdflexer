@@ -919,9 +919,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName SubFilter = new("SubFilter", false);
     public static readonly PdfName EncryptMetadata = new("EncryptMetadata", false);
     public static readonly PdfName ID = new("ID", false);
-
-
-
+    public static readonly PdfName Limits = new("Limits", false);
 
     [return: NotNullIfNotNull("name")]
     public static implicit operator PdfName?(string? name)
@@ -945,6 +943,4 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     {
         return Value;
     }
-
-
 }

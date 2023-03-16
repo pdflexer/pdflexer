@@ -19,7 +19,13 @@ internal partial class APM_PatternColorSpace : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        c.Run<APM_PatternColorSpace_0, PdfArray>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 }
 

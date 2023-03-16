@@ -52,55 +52,30 @@ internal partial class APM_GraphicsStateParameter__Base : ISpecification<PdfDict
             case 1.2m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
                 {
-                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.3m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
                 {
-                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version 1.3");
+                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.4m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
-                {
-                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version 1.4");
-                }
-                break;
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14_15_16_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_GraphicsStateParameter>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -121,39 +96,19 @@ internal partial class APM_GraphicsStateParameter__Base : ISpecification<PdfDict
 
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "Type", "OP", "BG", "UCR", "TR", "HT", "SA", "HTP", "AAPL:AA", "AAPL:ST"
+        "AAPL:AA", "AAPL:ST", "BG", "HT", "HTP", "OP", "SA", "TR", "Type", "UCR"
     };
     public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "AAPL:AA", "AAPL:ST"
+        "AAPL:AA", "AAPL:ST", "BG", "BG2", "D", "FL", "Font", "HT", "LC", "LJ", "LW", "ML", "op", "OP", "OPM", "RI", "SA", "SM", "TR", "TR2", "Type", "UCR", "UCR2"
     };
-    public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_14_15_16_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
-    };
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
-    {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "TR", "TR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "AAPL:AA", "AAPL:ST"
+        "AAPL:AA", "AAPL:ST", "AIS", "BG", "BG2", "BM", "ca", "CA", "D", "FL", "Font", "HT", "LC", "LJ", "LW", "ML", "op", "OP", "OPM", "RI", "SA", "SM", "SMask", "TK", "TR", "TR2", "Type", "UCR", "UCR2"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "LW", "LC", "LJ", "ML", "D", "RI", "OP", "op", "OPM", "Font", "BG", "BG2", "UCR", "UCR2", "HT", "FL", "SM", "SA", "BM", "SMask", "CA", "ca", "AIS", "TK", "UseBlackPtComp", "HTO", "AAPL:AA", "AAPL:ST"
+        "AAPL:AA", "AAPL:ST", "AIS", "BG", "BG2", "BM", "ca", "CA", "D", "FL", "Font", "HT", "HTO", "LC", "LJ", "LW", "ML", "op", "OP", "OPM", "RI", "SA", "SM", "SMask", "TK", "Type", "UCR", "UCR2", "UseBlackPtComp"
     };
     
 

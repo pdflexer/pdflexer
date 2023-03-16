@@ -14,6 +14,11 @@ internal class Exp : INode
             Children.Add(n);
         }
     }
+    public Exp(INode v)
+    {
+        Children = new List<INode> { v };
+    }
+
     internal static INode? Tokenize(string text)
     {
         var parts = new List<INode>();

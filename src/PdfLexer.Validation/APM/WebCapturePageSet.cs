@@ -29,51 +29,16 @@ internal partial class APM_WebCapturePageSet__Base : ISpecification<PdfDictionar
         ctx.Run<APM_WebCapturePageSet_TID, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.3m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
-                {
-                    ctx.Fail<APM_WebCapturePageSet>($"Unknown field {extra} for version 1.3");
-                }
-                break;
             case 1.4m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
-                {
-                    ctx.Fail<APM_WebCapturePageSet>($"Unknown field {extra} for version 1.4");
-                }
-                break;
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_WebCapturePageSet>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_WebCapturePageSet>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_WebCapturePageSet>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_WebCapturePageSet>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
-                {
-                    ctx.Fail<APM_WebCapturePageSet>($"Unknown field {extra} for version 1.9");
-                }
-                break;
             case 2.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13_14_15_16_17_18_19_20.Contains(x)))
                 {
-                    ctx.Fail<APM_WebCapturePageSet>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_WebCapturePageSet>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -92,37 +57,9 @@ internal partial class APM_WebCapturePageSet__Base : ISpecification<PdfDictionar
         return true;
     }
 
-    public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_13_14_15_16_17_18_19_20 { get; } = new HashSet<string> 
     {
-        "Type", "S", "ID", "O", "SI", "CT", "TS", "T", "TID"
-    };
-    public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "ID", "O", "SI", "CT", "TS", "T", "TID"
-    };
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "ID", "O", "SI", "CT", "TS", "T", "TID"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "ID", "O", "SI", "CT", "TS", "T", "TID"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "ID", "O", "SI", "CT", "TS", "T", "TID"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "ID", "O", "SI", "CT", "TS", "T", "TID"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "ID", "O", "SI", "CT", "TS", "T", "TID"
-    };
-    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "ID", "O", "SI", "CT", "TS", "T", "TID"
+        "CT", "ID", "O", "S", "SI", "T", "TID", "TS", "Type"
     };
     
 

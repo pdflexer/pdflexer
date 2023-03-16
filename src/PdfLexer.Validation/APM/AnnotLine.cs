@@ -61,49 +61,39 @@ internal partial class APM_AnnotLine__Base : ISpecification<PdfDictionary>
             case 1.3m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version 1.3");
+                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.4m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version 1.4");
+                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.5m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version 1.5");
+                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.6m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version 1.6");
+                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_AnnotLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -125,35 +115,27 @@ internal partial class APM_AnnotLine__Base : ISpecification<PdfDictionary>
 
     public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "M", "F", "AP", "AS", "Border", "C", "StructParent", "T", "Popup", "L", "BS"
+        "AP", "AS", "Border", "BS", "C", "Contents", "F", "L", "M", "P", "Popup", "Rect", "StructParent", "Subtype", "T", "Type"
     };
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "CA", "T", "Popup", "L", "BS", "LE", "IC"
+        "AP", "AS", "Border", "BS", "C", "CA", "Contents", "F", "IC", "L", "LE", "M", "NM", "P", "Popup", "Rect", "StructParent", "Subtype", "T", "Type"
     };
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "L", "BS", "LE", "IC"
+        "AP", "AS", "Border", "BS", "C", "CA", "Contents", "CreationDate", "F", "IC", "IRT", "L", "LE", "M", "NM", "OC", "P", "Popup", "RC", "Rect", "StructParent", "Subj", "Subtype", "T", "Type"
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "L", "BS", "LE", "IC", "LL", "LLE", "Cap", "IT"
+        "AP", "AS", "Border", "BS", "C", "CA", "Cap", "Contents", "CreationDate", "F", "IC", "IRT", "IT", "L", "LE", "LL", "LLE", "M", "NM", "OC", "P", "Popup", "RC", "Rect", "RT", "StructParent", "Subj", "Subtype", "T", "Type"
     };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "L", "BS", "LE", "IC", "LL", "LLE", "Cap", "IT", "LLO", "CP", "Measure", "CO", "ExData"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "L", "BS", "LE", "IC", "LL", "LLE", "Cap", "IT", "LLO", "CP", "Measure", "CO", "ExData"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "L", "BS", "LE", "IC", "LL", "LLE", "Cap", "IT", "LLO", "CP", "Measure", "CO", "ExData"
+        "AP", "AS", "Border", "BS", "C", "CA", "Cap", "CO", "Contents", "CP", "CreationDate", "ExData", "F", "IC", "IRT", "IT", "L", "LE", "LL", "LLE", "LLO", "M", "Measure", "NM", "OC", "P", "Popup", "RC", "Rect", "RT", "StructParent", "Subj", "Subtype", "T", "Type"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "L", "BS", "LE", "IC", "LL", "LLE", "Cap", "IT", "LLO", "CP", "Measure", "CO", "ExData"
+        "AF", "AP", "AS", "BM", "Border", "BS", "C", "ca", "CA", "Cap", "CO", "Contents", "CP", "CreationDate", "ExData", "F", "IC", "IRT", "IT", "L", "Lang", "LE", "LL", "LLE", "LLO", "M", "Measure", "NM", "OC", "P", "Popup", "RC", "Rect", "RT", "StructParent", "Subj", "Subtype", "T", "Type"
     };
     
 

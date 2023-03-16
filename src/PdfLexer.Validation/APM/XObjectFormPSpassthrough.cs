@@ -36,13 +36,13 @@ internal partial class APM_XObjectFormPSpassthrough__Base : ISpecification<PdfDi
             case 1.1m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_11.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormPSpassthrough>($"Unknown field {extra} for version 1.1");
+                    ctx.Fail<APM_XObjectFormPSpassthrough>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.2m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormPSpassthrough>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_XObjectFormPSpassthrough>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -64,11 +64,11 @@ internal partial class APM_XObjectFormPSpassthrough__Base : ISpecification<PdfDi
 
     public static HashSet<string> AllowedFields_11 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Subtype2", "Level1", "PS", "FormType", "BBox", "Matrix", "Length", "Filter", "DecodeParms", "F"
+        "BBox", "DecodeParms", "F", "Filter", "FormType", "Length", "Level1", "Matrix", "PS", "Subtype", "Subtype2", "Type"
     };
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Subtype2", "Level1", "PS", "FormType", "BBox", "Matrix", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms"
+        "BBox", "DecodeParms", "F", "FDecodeParms", "FFilter", "Filter", "FormType", "Length", "Level1", "Matrix", "PS", "Subtype", "Subtype2", "Type"
     };
     
 

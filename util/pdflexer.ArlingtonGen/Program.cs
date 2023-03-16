@@ -113,9 +113,9 @@ foreach (var op in ops)
 public static {{rt}} {{t}}(IPdfObject? obj, int val)
 {
     if (obj == null) { return {{dv}}; }
-    var n = obj as PdfIntNumber;
+    var n = obj as PdfNumber;
     if (n == null) { return {{dv}}; }
-    return {{t}}(n, val);
+    return {{t}}((decimal)n, val);
 }
 // public static {{rt}} {{t}}(PdfNumber obj, int val) 
 // {

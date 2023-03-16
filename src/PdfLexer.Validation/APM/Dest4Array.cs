@@ -23,7 +23,13 @@ internal partial class APM_Dest4Array : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        c.Run<APM_Dest4Array_1, PdfArray>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 }
 

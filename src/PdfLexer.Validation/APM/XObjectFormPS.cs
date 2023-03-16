@@ -31,13 +31,13 @@ internal partial class APM_XObjectFormPS__Base : ISpecification<PdfDictionary>
             case 1.1m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_11.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormPS>($"Unknown field {extra} for version 1.1");
+                    ctx.Fail<APM_XObjectFormPS>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.2m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormPS>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_XObjectFormPS>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -59,11 +59,11 @@ internal partial class APM_XObjectFormPS__Base : ISpecification<PdfDictionary>
 
     public static HashSet<string> AllowedFields_11 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Level1", "Length", "Filter", "DecodeParms", "F"
+        "DecodeParms", "F", "Filter", "Length", "Level1", "Subtype", "Type"
     };
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Level1", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms"
+        "DecodeParms", "F", "FDecodeParms", "FFilter", "Filter", "Length", "Level1", "Subtype", "Type"
     };
     
 

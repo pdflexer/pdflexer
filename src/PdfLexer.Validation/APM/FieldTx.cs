@@ -37,55 +37,25 @@ internal partial class APM_FieldTx__Base : ISpecification<PdfDictionary>
             case 1.2m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
                 {
-                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.3m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
-                {
-                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version 1.3");
-                }
-                break;
             case 1.4m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13_14.Contains(x)))
                 {
-                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version 1.4");
+                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
-                {
-                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version 1.9");
-                }
-                break;
             case 2.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15_16_17_18_19_20.Contains(x)))
                 {
-                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_FieldTx>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -100,39 +70,15 @@ internal partial class APM_FieldTx__Base : ISpecification<PdfDictionary>
 
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "FT", "Parent", "Kids", "T", "Ff", "V", "DV", "DA", "Q", "MaxLen"
+        "DA", "DV", "Ff", "FT", "Kids", "MaxLen", "Parent", "Q", "T", "V"
     };
-    public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_13_14 { get; } = new HashSet<string> 
     {
-        "FT", "Parent", "Kids", "T", "TU", "TM", "Ff", "V", "DV", "AA", "DA", "Q", "MaxLen"
+        "AA", "DA", "DV", "Ff", "FT", "Kids", "MaxLen", "Parent", "Q", "T", "TM", "TU", "V"
     };
-    public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_15_16_17_18_19_20 { get; } = new HashSet<string> 
     {
-        "FT", "Parent", "Kids", "T", "TU", "TM", "Ff", "V", "DV", "AA", "DA", "Q", "MaxLen"
-    };
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
-    {
-        "FT", "Parent", "Kids", "T", "TU", "TM", "Ff", "V", "DV", "AA", "DA", "Q", "DS", "RV", "MaxLen"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "FT", "Parent", "Kids", "T", "TU", "TM", "Ff", "V", "DV", "AA", "DA", "Q", "DS", "RV", "MaxLen"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "FT", "Parent", "Kids", "T", "TU", "TM", "Ff", "V", "DV", "AA", "DA", "Q", "DS", "RV", "MaxLen"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "FT", "Parent", "Kids", "T", "TU", "TM", "Ff", "V", "DV", "AA", "DA", "Q", "DS", "RV", "MaxLen"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "FT", "Parent", "Kids", "T", "TU", "TM", "Ff", "V", "DV", "AA", "DA", "Q", "DS", "RV", "MaxLen"
-    };
-    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
-    {
-        "FT", "Parent", "Kids", "T", "TU", "TM", "Ff", "V", "DV", "AA", "DA", "Q", "DS", "RV", "MaxLen"
+        "AA", "DA", "DS", "DV", "Ff", "FT", "Kids", "MaxLen", "Parent", "Q", "RV", "T", "TM", "TU", "V"
     };
     
 

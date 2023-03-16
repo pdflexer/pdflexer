@@ -27,39 +27,14 @@ internal partial class APM_MediaClipSection__Base : ISpecification<PdfDictionary
         ctx.Run<APM_MediaClipSection_BE, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_MediaClipSection>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_MediaClipSection>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_MediaClipSection>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_MediaClipSection>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
-                {
-                    ctx.Fail<APM_MediaClipSection>($"Unknown field {extra} for version 1.9");
-                }
-                break;
             case 2.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15_16_17_18_19_20.Contains(x)))
                 {
-                    ctx.Fail<APM_MediaClipSection>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_MediaClipSection>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -78,29 +53,9 @@ internal partial class APM_MediaClipSection__Base : ISpecification<PdfDictionary
         return true;
     }
 
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_15_16_17_18_19_20 { get; } = new HashSet<string> 
     {
-        "Type", "S", "N", "D", "Alt", "MH", "BE"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "N", "D", "Alt", "MH", "BE"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "N", "D", "Alt", "MH", "BE"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "N", "D", "Alt", "MH", "BE"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "N", "D", "Alt", "MH", "BE"
-    };
-    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "N", "D", "Alt", "MH", "BE"
+        "Alt", "BE", "D", "MH", "N", "S", "Type"
     };
     
 

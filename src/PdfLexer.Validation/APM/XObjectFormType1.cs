@@ -51,69 +51,54 @@ internal partial class APM_XObjectFormType1__Base : ISpecification<PdfDictionary
         ctx.Run<APM_XObjectFormType1_GTS_Encapsulated, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_10.Contains(x)))
-                {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.0");
-                }
-                break;
             case 1.1m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_11.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_10_11.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.1");
+                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.2m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.3m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.3");
+                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.4m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.4");
+                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.5m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.5");
+                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.6m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.6");
+                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_XObjectFormType1>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -133,49 +118,37 @@ internal partial class APM_XObjectFormType1__Base : ISpecification<PdfDictionary
         return true;
     }
 
-    public static HashSet<string> AllowedFields_10 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_10_11 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Name", "Length", "Filter", "DecodeParms", "XUID"
-    };
-    public static HashSet<string> AllowedFields_11 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Name", "Length", "Filter", "DecodeParms", "XUID"
+        "BBox", "DecodeParms", "Filter", "FormType", "Length", "Matrix", "Name", "Subtype", "Type", "XUID"
     };
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "OPI", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "XUID"
+        "BBox", "DecodeParms", "F", "FDecodeParms", "FFilter", "Filter", "FormType", "Length", "Matrix", "Name", "OPI", "Resources", "Subtype", "Type", "XUID"
     };
     public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms"
+        "BBox", "DecodeParms", "F", "FDecodeParms", "FFilter", "Filter", "FormType", "LastModified", "Length", "Matrix", "Name", "OPI", "PieceInfo", "Resources", "StructParent", "StructParents", "Subtype", "Type"
     };
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms"
+        "BBox", "DecodeParms", "F", "FDecodeParms", "FFilter", "Filter", "FormType", "Group", "LastModified", "Length", "Matrix", "Metadata", "Name", "OPI", "PieceInfo", "Ref", "Resources", "StructParent", "StructParents", "Subtype", "Type"
     };
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
+        "BBox", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "FormType", "Group", "LastModified", "Length", "Matrix", "Metadata", "Name", "OC", "OPI", "PieceInfo", "Ref", "Resources", "StructParent", "StructParents", "Subtype", "Type"
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
+        "BBox", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "FormType", "Group", "GTS_Encapsulated", "GTS_Env", "GTS_Scope", "GTS_XID", "LastModified", "Length", "Matrix", "Metadata", "Name", "OC", "OPI", "PieceInfo", "Ref", "Resources", "StructParent", "StructParents", "Subtype", "Type"
     };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OPI", "OC", "Name", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
+        "BBox", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "FormType", "Group", "GTS_Encapsulated", "GTS_Env", "GTS_Scope", "GTS_XID", "LastModified", "Length", "Matrix", "Measure", "Metadata", "Name", "OC", "OPI", "PieceInfo", "PtData", "Ref", "Resources", "StructParent", "StructParents", "Subtype", "Type"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "FormType", "BBox", "Matrix", "Resources", "Group", "Ref", "Metadata", "PieceInfo", "LastModified", "StructParent", "StructParents", "OC", "AF", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
+        "AF", "BBox", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "FormType", "Group", "GTS_Encapsulated", "GTS_Env", "GTS_Scope", "GTS_XID", "LastModified", "Length", "Matrix", "Measure", "Metadata", "OC", "PieceInfo", "PtData", "Ref", "Resources", "StructParent", "StructParents", "Subtype", "Type"
     };
     
 

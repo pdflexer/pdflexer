@@ -31,37 +31,22 @@ internal partial class APM_SignatureBuildDataAppDict__Base : ISpecification<PdfD
             case 1.5m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
                 {
-                    ctx.Fail<APM_SignatureBuildDataAppDict>($"Unknown field {extra} for version 1.5");
+                    ctx.Fail<APM_SignatureBuildDataAppDict>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.6m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
                 {
-                    ctx.Fail<APM_SignatureBuildDataAppDict>($"Unknown field {extra} for version 1.6");
+                    ctx.Fail<APM_SignatureBuildDataAppDict>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_SignatureBuildDataAppDict>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_SignatureBuildDataAppDict>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
-                {
-                    ctx.Fail<APM_SignatureBuildDataAppDict>($"Unknown field {extra} for version 1.9");
-                }
-                break;
             case 2.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17_18_19_20.Contains(x)))
                 {
-                    ctx.Fail<APM_SignatureBuildDataAppDict>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_SignatureBuildDataAppDict>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -76,27 +61,15 @@ internal partial class APM_SignatureBuildDataAppDict__Base : ISpecification<PdfD
 
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "Name", "Date", "R", "PreRelease", "OS", "NonEFontNoWarn", "TrustedMode", "V"
+        "Date", "Name", "NonEFontNoWarn", "OS", "PreRelease", "R", "TrustedMode", "V"
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Name", "Date", "R", "PreRelease", "OS", "NonEFontNoWarn", "TrustedMode", "V", "REx"
+        "Date", "Name", "NonEFontNoWarn", "OS", "PreRelease", "R", "REx", "TrustedMode", "V"
     };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_17_18_19_20 { get; } = new HashSet<string> 
     {
-        "Name", "Date", "R", "PreRelease", "OS", "NonEFontNoWarn", "TrustedMode", "REx"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Name", "Date", "R", "PreRelease", "OS", "NonEFontNoWarn", "TrustedMode", "REx"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Name", "Date", "R", "PreRelease", "OS", "NonEFontNoWarn", "TrustedMode", "REx"
-    };
-    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
-    {
-        "Name", "Date", "R", "PreRelease", "OS", "NonEFontNoWarn", "TrustedMode", "REx"
+        "Date", "Name", "NonEFontNoWarn", "OS", "PreRelease", "R", "REx", "TrustedMode"
     };
     
 

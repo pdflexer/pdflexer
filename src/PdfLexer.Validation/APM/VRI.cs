@@ -28,7 +28,7 @@ internal partial class APM_VRI__Base : ISpecification<PdfDictionary>
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_VRI>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_VRI>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -49,7 +49,7 @@ internal partial class APM_VRI__Base : ISpecification<PdfDictionary>
 
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Cert", "CRL", "OCSP", "TU", "TS"
+        "Cert", "CRL", "OCSP", "TS", "TU", "Type"
     };
     
 

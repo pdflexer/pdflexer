@@ -27,7 +27,7 @@ internal partial class APM_RequirementsMultimedia__Base : ISpecification<PdfDict
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_RequirementsMultimedia>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_RequirementsMultimedia>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -48,7 +48,7 @@ internal partial class APM_RequirementsMultimedia__Base : ISpecification<PdfDict
 
     public static List<string> AllowedFields_20 { get; } = new List<string> 
     {
-        "Type", "S", "V", "RH", "Penalty"
+        "Penalty", "RH", "S", "Type", "V"
     };
     
 

@@ -42,43 +42,23 @@ internal partial class APM_XObjectImageSoftMask__Base : ISpecification<PdfDictio
             case 1.4m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version 1.4");
+                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15_16_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_XObjectImageSoftMask>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -100,31 +80,15 @@ internal partial class APM_XObjectImageSoftMask__Base : ISpecification<PdfDictio
 
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Name", "Decode", "Interpolate", "Matte", "Metadata", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms"
+        "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "F", "FDecodeParms", "FFilter", "Filter", "Height", "ImageMask", "Intent", "Interpolate", "Length", "Matte", "Metadata", "Name", "Subtype", "Type", "Width"
     };
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_15_16_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Name", "Decode", "Interpolate", "Matte", "Metadata", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Name", "Decode", "Interpolate", "Matte", "Metadata", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Name", "Decode", "Interpolate", "Matte", "Metadata", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Name", "Decode", "Interpolate", "Matte", "Metadata", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Name", "Decode", "Interpolate", "Matte", "Metadata", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
+        "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "Height", "ImageMask", "Intent", "Interpolate", "Length", "Matte", "Metadata", "Name", "Subtype", "Type", "Width"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Matte", "Metadata", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
+        "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "Height", "ImageMask", "Intent", "Interpolate", "Length", "Matte", "Metadata", "Subtype", "Type", "Width"
     };
     
 
@@ -215,7 +179,7 @@ internal partial class APM_XObjectImageSoftMask_Width__Base : ISpecification<Pdf
         if (val == null) { return; }
         var Width = obj.Get("Width");
         var parentWidth = parent?.Get("Width");
-        if (!((obj.ContainsKey(PdfName.Matte) && !(eq(Width,parentWidth))))) 
+        if (!((!obj.ContainsKey(PdfName.Matte) || (eq(Width,parentWidth))))) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_Width>($"Value failed special case check: fn:Eval(fn:IsPresent(Matte,(@Width==parent::@Width)))");
         }
@@ -247,7 +211,7 @@ internal partial class APM_XObjectImageSoftMask_Height__Base : ISpecification<Pd
         if (val == null) { return; }
         var Height = obj.Get("Height");
         var parentHeight = parent?.Get("Height");
-        if (!((obj.ContainsKey(PdfName.Matte) && !(eq(Height,parentHeight))))) 
+        if (!((!obj.ContainsKey(PdfName.Matte) || (eq(Height,parentHeight))))) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_Height>($"Value failed special case check: fn:Eval(fn:IsPresent(Matte,(@Height==parent::@Height)))");
         }
@@ -328,7 +292,7 @@ internal partial class APM_XObjectImageSoftMask_BitsPerComponent__Base : ISpecif
             ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>($"Invalid value {val}, required value condition met: fn:RequiredValue((fn:Contains(@Filter,RunLengthDecode) || fn:Contains(@Filter,DCTDecode)),8)");
         }
         
-        if (!(val == 2 || val == 4 || (ctx.Version >= 1.5m && val == 16))) 
+        if (!(val == 1 || val == 2 || val == 4 || val == 8 || (ctx.Version >= 1.5m && val == 16))) 
         {
             ctx.Fail<APM_XObjectImageSoftMask_BitsPerComponent>($"Invalid value {val}, allowed are: [fn:RequiredValue((fn:Contains(@Filter,CCITTFaxDecode) || fn:Contains(@Filter,JBIG2Decode)),1),2,4,fn:RequiredValue((fn:Contains(@Filter,RunLengthDecode) || fn:Contains(@Filter,DCTDecode)),8),fn:SinceVersion(1.5,16)]");
         }

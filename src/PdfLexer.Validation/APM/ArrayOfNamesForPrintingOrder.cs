@@ -18,7 +18,13 @@ internal partial class APM_ArrayOfNamesForPrintingOrder : ISpecification<PdfArra
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        c.Run<APM_ArrayOfNamesForPrintingOrder_x, PdfArray>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 }
 

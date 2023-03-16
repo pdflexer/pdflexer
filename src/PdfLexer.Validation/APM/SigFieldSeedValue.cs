@@ -36,37 +36,22 @@ internal partial class APM_SigFieldSeedValue__Base : ISpecification<PdfDictionar
             case 1.5m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
                 {
-                    ctx.Fail<APM_SigFieldSeedValue>($"Unknown field {extra} for version 1.5");
+                    ctx.Fail<APM_SigFieldSeedValue>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.6m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
                 {
-                    ctx.Fail<APM_SigFieldSeedValue>($"Unknown field {extra} for version 1.6");
+                    ctx.Fail<APM_SigFieldSeedValue>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_SigFieldSeedValue>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_SigFieldSeedValue>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
-                {
-                    ctx.Fail<APM_SigFieldSeedValue>($"Unknown field {extra} for version 1.9");
-                }
-                break;
             case 2.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17_18_19_20.Contains(x)))
                 {
-                    ctx.Fail<APM_SigFieldSeedValue>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_SigFieldSeedValue>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -87,27 +72,15 @@ internal partial class APM_SigFieldSeedValue__Base : ISpecification<PdfDictionar
 
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "Type", "Filter", "SubFilter", "V", "Cert", "Reasons"
+        "Cert", "Filter", "Reasons", "SubFilter", "Type", "V"
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Type", "Filter", "SubFilter", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation"
+        "Cert", "Filter", "LegalAttestation", "MDP", "Reasons", "SubFilter", "TimeStamp", "Type", "V"
     };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_17_18_19_20 { get; } = new HashSet<string> 
     {
-        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo", "LockDocument", "AppearanceFilter"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo", "LockDocument", "AppearanceFilter"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo", "LockDocument", "AppearanceFilter"
-    };
-    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
-    {
-        "Type", "Ff", "Filter", "SubFilter", "DigestMethod", "V", "Cert", "Reasons", "MDP", "TimeStamp", "LegalAttestation", "AddRevInfo", "LockDocument", "AppearanceFilter"
+        "AddRevInfo", "AppearanceFilter", "Cert", "DigestMethod", "Ff", "Filter", "LegalAttestation", "LockDocument", "MDP", "Reasons", "SubFilter", "TimeStamp", "Type", "V"
     };
     
 

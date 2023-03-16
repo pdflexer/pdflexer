@@ -57,37 +57,27 @@ internal partial class APM_AnnotPolyLine__Base : ISpecification<PdfDictionary>
             case 1.5m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version 1.5");
+                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.6m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version 1.6");
+                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_AnnotPolyLine>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -109,27 +99,19 @@ internal partial class APM_AnnotPolyLine__Base : ISpecification<PdfDictionary>
 
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "Vertices", "LE", "BS", "IC", "BE"
+        "AP", "AS", "BE", "Border", "BS", "C", "CA", "Contents", "CreationDate", "F", "IC", "IRT", "LE", "M", "NM", "OC", "P", "Popup", "RC", "Rect", "StructParent", "Subj", "Subtype", "T", "Type", "Vertices"
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "Vertices", "LE", "BS", "IC", "BE", "IT"
+        "AP", "AS", "BE", "Border", "BS", "C", "CA", "Contents", "CreationDate", "F", "IC", "IRT", "IT", "LE", "M", "NM", "OC", "P", "Popup", "RC", "Rect", "RT", "StructParent", "Subj", "Subtype", "T", "Type", "Vertices"
     };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "Vertices", "LE", "BS", "IC", "BE", "IT", "Measure", "ExData"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "Vertices", "LE", "BS", "IC", "BE", "IT", "Measure", "ExData"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "CA", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "Vertices", "LE", "BS", "IC", "BE", "IT", "Measure", "ExData"
+        "AP", "AS", "BE", "Border", "BS", "C", "CA", "Contents", "CreationDate", "ExData", "F", "IC", "IRT", "IT", "LE", "M", "Measure", "NM", "OC", "P", "Popup", "RC", "Rect", "RT", "StructParent", "Subj", "Subtype", "T", "Type", "Vertices"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "AF", "ca", "CA", "BM", "Lang", "T", "Popup", "RC", "CreationDate", "IRT", "Subj", "RT", "Vertices", "LE", "BS", "IC", "BE", "IT", "Measure", "Path", "ExData"
+        "AF", "AP", "AS", "BE", "BM", "Border", "BS", "C", "ca", "CA", "Contents", "CreationDate", "ExData", "F", "IC", "IRT", "IT", "Lang", "LE", "M", "Measure", "NM", "OC", "P", "Path", "Popup", "RC", "Rect", "RT", "StructParent", "Subj", "Subtype", "T", "Type", "Vertices"
     };
     
 

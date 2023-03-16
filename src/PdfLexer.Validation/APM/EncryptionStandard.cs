@@ -37,63 +37,38 @@ internal partial class APM_EncryptionStandard__Base : ISpecification<PdfDictiona
         ctx.Run<APM_EncryptionStandard_KDFSalt, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.1m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_11.Contains(x)))
-                {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 1.1");
-                }
-                break;
             case 1.2m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_11_12.Contains(x)))
                 {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.3m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
                 {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 1.3");
+                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.4m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
                 {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 1.4");
+                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15_16_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_EncryptionStandard>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -106,45 +81,25 @@ internal partial class APM_EncryptionStandard__Base : ISpecification<PdfDictiona
         return false;
     }
 
-    public static HashSet<string> AllowedFields_11 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_11_12 { get; } = new HashSet<string> 
     {
-        "Filter", "V", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms"
-    };
-    public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
-    {
-        "Filter", "V", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms"
+        "EFF", "Filter", "O", "OE", "P", "Perms", "R", "U", "UE", "V"
     };
     public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
     {
-        "Filter", "SubFilter", "V", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms"
+        "EFF", "Filter", "O", "OE", "P", "Perms", "R", "SubFilter", "U", "UE", "V"
     };
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "Filter", "SubFilter", "V", "Length", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms"
+        "EFF", "Filter", "Length", "O", "OE", "P", "Perms", "R", "SubFilter", "U", "UE", "V"
     };
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_15_16_17_18_19 { get; } = new HashSet<string> 
     {
-        "Filter", "SubFilter", "V", "Length", "CF", "StmF", "StrF", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms", "EncryptMetadata"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "Filter", "SubFilter", "V", "Length", "CF", "StmF", "StrF", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms", "EncryptMetadata"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "Filter", "SubFilter", "V", "Length", "CF", "StmF", "StrF", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms", "EncryptMetadata"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Filter", "SubFilter", "V", "Length", "CF", "StmF", "StrF", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms", "EncryptMetadata"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Filter", "SubFilter", "V", "Length", "CF", "StmF", "StrF", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms", "EncryptMetadata"
+        "CF", "EFF", "EncryptMetadata", "Filter", "Length", "O", "OE", "P", "Perms", "R", "StmF", "StrF", "SubFilter", "U", "UE", "V"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Filter", "SubFilter", "V", "CF", "StmF", "StrF", "EFF", "R", "O", "U", "OE", "UE", "P", "Perms", "EncryptMetadata", "KDFSalt"
+        "CF", "EFF", "EncryptMetadata", "Filter", "KDFSalt", "O", "OE", "P", "Perms", "R", "StmF", "StrF", "SubFilter", "U", "UE", "V"
     };
     
 
@@ -423,7 +378,7 @@ internal partial class APM_EncryptionStandard_R__Base : ISpecification<PdfDictio
             ctx.Fail<APM_EncryptionStandard_R>($"Invalid value {val}, required value condition met: fn:SinceVersion(2.0,fn:RequiredValue(@V==5,6))");
         }
         
-        if (!((ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5))) || (ctx.Version < 2.0m && (ctx.Version >= 2.0m && val == 5)) || (ctx.Version >= 2.0m && (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 7)))) 
+        if (!((ctx.Version < 2.0m && val == 2) || (ctx.Version < 2.0m && val == 3) || (ctx.Version < 2.0m && val == 4) || (ctx.Version < 2.0m && (ctx.Version == 1.7m && (ctx.Extensions.Contains(PdfName.ADBE_Extn3) && val == 5))) || (ctx.Version < 2.0m && (ctx.Version >= 2.0m && val == 5)) || (ctx.Version >= 2.0m && val == 6) || (ctx.Version >= 2.0m && (ctx.Extensions.Contains(PdfName.ISO_TS_32003) && val == 7)))) 
         {
             ctx.Fail<APM_EncryptionStandard_R>($"Invalid value {val}, allowed are: [fn:Deprecated(2.0,fn:RequiredValue(@V<2,2)),fn:Deprecated(2.0,fn:RequiredValue((@V==2) || (@V==3),3)),fn:Deprecated(2.0,fn:RequiredValue(@V==4,4)),fn:Deprecated(2.0,fn:IsPDFVersion(1.7,fn:Extension(ADBE_Extn3,5))),fn:Deprecated(2.0,fn:SinceVersion(2.0,5)),fn:SinceVersion(2.0,fn:RequiredValue(@V==5,6)),fn:SinceVersion(2.0,fn:Extension(ISO_TS_32003,7))]");
         }

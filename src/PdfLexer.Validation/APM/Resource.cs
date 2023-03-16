@@ -28,69 +28,34 @@ internal partial class APM_Resource__Base : ISpecification<PdfDictionary>
         ctx.Run<APM_Resource_Properties, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_10.Contains(x)))
-                {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.0");
-                }
-                break;
             case 1.1m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_11.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_10_11.Contains(x)))
                 {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.1");
+                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.2m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
                 {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.3m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
-                {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.3");
-                }
-                break;
             case 1.4m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
-                {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.4");
-                }
-                break;
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13_14_15_16_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_Resource>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -103,49 +68,21 @@ internal partial class APM_Resource__Base : ISpecification<PdfDictionary>
         return false;
     }
 
-    public static List<string> AllowedFields_10 { get; } = new List<string> 
+    public static List<string> AllowedFields_10_11 { get; } = new List<string> 
     {
-        "ColorSpace", "XObject", "Font", "ProcSet"
-    };
-    public static List<string> AllowedFields_11 { get; } = new List<string> 
-    {
-        "ColorSpace", "XObject", "Font", "ProcSet"
+        "ColorSpace", "Font", "ProcSet", "XObject"
     };
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "ExtGState", "ColorSpace", "Pattern", "XObject", "Font", "ProcSet", "Properties"
+        "ColorSpace", "ExtGState", "Font", "Pattern", "ProcSet", "Properties", "XObject"
     };
-    public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_13_14_15_16_17_18_19 { get; } = new HashSet<string> 
     {
-        "ExtGState", "ColorSpace", "Pattern", "Shading", "XObject", "Font", "ProcSet", "Properties"
-    };
-    public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
-    {
-        "ExtGState", "ColorSpace", "Pattern", "Shading", "XObject", "Font", "ProcSet", "Properties"
-    };
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
-    {
-        "ExtGState", "ColorSpace", "Pattern", "Shading", "XObject", "Font", "ProcSet", "Properties"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "ExtGState", "ColorSpace", "Pattern", "Shading", "XObject", "Font", "ProcSet", "Properties"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "ExtGState", "ColorSpace", "Pattern", "Shading", "XObject", "Font", "ProcSet", "Properties"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "ExtGState", "ColorSpace", "Pattern", "Shading", "XObject", "Font", "ProcSet", "Properties"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "ExtGState", "ColorSpace", "Pattern", "Shading", "XObject", "Font", "ProcSet", "Properties"
+        "ColorSpace", "ExtGState", "Font", "Pattern", "ProcSet", "Properties", "Shading", "XObject"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "ExtGState", "ColorSpace", "Pattern", "Shading", "XObject", "Font", "Properties"
+        "ColorSpace", "ExtGState", "Font", "Pattern", "Properties", "Shading", "XObject"
     };
     
 

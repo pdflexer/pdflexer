@@ -36,11 +36,38 @@ internal partial class APM_{{Name}} : ISpecification<PdfArray>
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false;
+{{GenBase.Ident(8, GetMatcher(rows))}}
     }
 }
 
 """;
         return code;
+    }
+
+
+    public string GetMatcher(List<Row> rows)
+    {
+        var t = rows.FirstOrDefault(x => x.Type == "name");
+
+        var txt = "";
+        if (t != null)
+        {
+            var stc = new ArrayChild(this, t, rows);
+            txt += $$"""
+c.Run<APM_{{Name}}_{{stc.Key}}, PdfArray>(new CallStack(), obj, null);
+""";
+        }
+
+        if (txt == "") { return "return false;"; }
+
+        return $$"""
+var c = ctx.Clone();
+{{txt}}
+if (c.Errors.Any())
+{
+    return false;
+}
+return true;
+""";
     }
 }

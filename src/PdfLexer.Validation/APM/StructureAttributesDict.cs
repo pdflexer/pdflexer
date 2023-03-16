@@ -74,49 +74,39 @@ internal partial class APM_StructureAttributesDict__Base : ISpecification<PdfDic
             case 1.3m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
                 {
-                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version 1.3");
+                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.4m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
                 {
-                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version 1.4");
+                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.5m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
                 {
-                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version 1.5");
+                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.6m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
                 {
-                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version 1.6");
+                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_StructureAttributesDict>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -142,31 +132,23 @@ internal partial class APM_StructureAttributesDict__Base : ISpecification<PdfDic
     };
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "O", "Placement", "WritingMode", "SpaceBefore", "SpaceAfter", "StartIndent", "EndIndent", "TextIndent", "TextAlign", "BBox", "Width", "Height", "BlockAlign", "InlineAlign", "BaselineShift", "LineHeight", "TextDecorationType", "ListNumbering", "Role", "RowSpan", "ColSpan", "Headers", "Scope", "Type"
+        "BaselineShift", "BBox", "BlockAlign", "ColSpan", "EndIndent", "Headers", "Height", "InlineAlign", "LineHeight", "ListNumbering", "O", "Placement", "Role", "RowSpan", "Scope", "SpaceAfter", "SpaceBefore", "StartIndent", "TextAlign", "TextDecorationType", "TextIndent", "Type", "Width", "WritingMode"
     };
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "O", "Placement", "WritingMode", "BackgroundColor", "BorderColor", "BorderStyle", "BorderThickness", "Padding", "Color", "SpaceBefore", "SpaceAfter", "StartIndent", "EndIndent", "TextIndent", "TextAlign", "BBox", "Width", "Height", "BlockAlign", "InlineAlign", "TBorderStyle", "TPadding", "BaselineShift", "LineHeight", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "RubyAlign", "RubyPosition", "GlyphOrientationVertical", "ListNumbering", "Role", "RowSpan", "ColSpan", "Headers", "Scope", "Type"
+        "BackgroundColor", "BaselineShift", "BBox", "BlockAlign", "BorderColor", "BorderStyle", "BorderThickness", "Color", "ColSpan", "EndIndent", "GlyphOrientationVertical", "Headers", "Height", "InlineAlign", "LineHeight", "ListNumbering", "O", "Padding", "Placement", "Role", "RowSpan", "RubyAlign", "RubyPosition", "Scope", "SpaceAfter", "SpaceBefore", "StartIndent", "TBorderStyle", "TextAlign", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "TextIndent", "TPadding", "Type", "Width", "WritingMode"
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "O", "Placement", "WritingMode", "BackgroundColor", "BorderColor", "BorderStyle", "BorderThickness", "Padding", "Color", "SpaceBefore", "SpaceAfter", "StartIndent", "EndIndent", "TextIndent", "TextAlign", "BBox", "Width", "Height", "BlockAlign", "InlineAlign", "TBorderStyle", "TPadding", "BaselineShift", "LineHeight", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "RubyAlign", "RubyPosition", "GlyphOrientationVertical", "ColumnCount", "ColumnGap", "ColumnWidths", "ListNumbering", "Role", "RowSpan", "ColSpan", "Headers", "Scope", "P", "Type"
+        "BackgroundColor", "BaselineShift", "BBox", "BlockAlign", "BorderColor", "BorderStyle", "BorderThickness", "Color", "ColSpan", "ColumnCount", "ColumnGap", "ColumnWidths", "EndIndent", "GlyphOrientationVertical", "Headers", "Height", "InlineAlign", "LineHeight", "ListNumbering", "O", "P", "Padding", "Placement", "Role", "RowSpan", "RubyAlign", "RubyPosition", "Scope", "SpaceAfter", "SpaceBefore", "StartIndent", "TBorderStyle", "TextAlign", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "TextIndent", "TPadding", "Type", "Width", "WritingMode"
     };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_17_18_19 { get; } = new HashSet<string> 
     {
-        "O", "Placement", "WritingMode", "BackgroundColor", "BorderColor", "BorderStyle", "BorderThickness", "Padding", "Color", "SpaceBefore", "SpaceAfter", "StartIndent", "EndIndent", "TextIndent", "TextAlign", "BBox", "Width", "Height", "BlockAlign", "InlineAlign", "TBorderStyle", "TPadding", "BaselineShift", "LineHeight", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "RubyAlign", "RubyPosition", "GlyphOrientationVertical", "ColumnCount", "ColumnGap", "ColumnWidths", "ListNumbering", "Role", "Checked", "checked", "Desc", "RowSpan", "ColSpan", "Headers", "Scope", "Summary", "P", "Type", "Subtype", "Contents"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "O", "Placement", "WritingMode", "BackgroundColor", "BorderColor", "BorderStyle", "BorderThickness", "Padding", "Color", "SpaceBefore", "SpaceAfter", "StartIndent", "EndIndent", "TextIndent", "TextAlign", "BBox", "Width", "Height", "BlockAlign", "InlineAlign", "TBorderStyle", "TPadding", "BaselineShift", "LineHeight", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "RubyAlign", "RubyPosition", "GlyphOrientationVertical", "ColumnCount", "ColumnGap", "ColumnWidths", "ListNumbering", "Role", "Checked", "checked", "Desc", "RowSpan", "ColSpan", "Headers", "Scope", "Summary", "P", "Type", "Subtype", "Contents"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "O", "Placement", "WritingMode", "BackgroundColor", "BorderColor", "BorderStyle", "BorderThickness", "Padding", "Color", "SpaceBefore", "SpaceAfter", "StartIndent", "EndIndent", "TextIndent", "TextAlign", "BBox", "Width", "Height", "BlockAlign", "InlineAlign", "TBorderStyle", "TPadding", "BaselineShift", "LineHeight", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "RubyAlign", "RubyPosition", "GlyphOrientationVertical", "ColumnCount", "ColumnGap", "ColumnWidths", "ListNumbering", "Role", "Checked", "checked", "Desc", "RowSpan", "ColSpan", "Headers", "Scope", "Summary", "P", "Type", "Subtype", "Contents"
+        "BackgroundColor", "BaselineShift", "BBox", "BlockAlign", "BorderColor", "BorderStyle", "BorderThickness", "checked", "Checked", "Color", "ColSpan", "ColumnCount", "ColumnGap", "ColumnWidths", "Contents", "Desc", "EndIndent", "GlyphOrientationVertical", "Headers", "Height", "InlineAlign", "LineHeight", "ListNumbering", "O", "P", "Padding", "Placement", "Role", "RowSpan", "RubyAlign", "RubyPosition", "Scope", "SpaceAfter", "SpaceBefore", "StartIndent", "Subtype", "Summary", "TBorderStyle", "TextAlign", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "TextIndent", "TPadding", "Type", "Width", "WritingMode"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "O", "NS", "Placement", "WritingMode", "BackgroundColor", "BorderColor", "BorderStyle", "BorderThickness", "Padding", "Color", "SpaceBefore", "SpaceAfter", "StartIndent", "EndIndent", "TextIndent", "TextAlign", "BBox", "Width", "Height", "BlockAlign", "InlineAlign", "TBorderStyle", "TPadding", "BaselineShift", "LineHeight", "TextPosition", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "RubyAlign", "RubyPosition", "GlyphOrientationVertical", "ColumnCount", "ColumnGap", "ColumnWidths", "ListNumbering", "ContinuedList", "ContinuedForm", "Role", "Checked", "Desc", "RowSpan", "ColSpan", "Headers", "Scope", "Summary", "Short", "P", "Type", "Subtype", "Contents"
+        "BackgroundColor", "BaselineShift", "BBox", "BlockAlign", "BorderColor", "BorderStyle", "BorderThickness", "Checked", "Color", "ColSpan", "ColumnCount", "ColumnGap", "ColumnWidths", "Contents", "ContinuedForm", "ContinuedList", "Desc", "EndIndent", "GlyphOrientationVertical", "Headers", "Height", "InlineAlign", "LineHeight", "ListNumbering", "NS", "O", "P", "Padding", "Placement", "Role", "RowSpan", "RubyAlign", "RubyPosition", "Scope", "Short", "SpaceAfter", "SpaceBefore", "StartIndent", "Subtype", "Summary", "TBorderStyle", "TextAlign", "TextDecorationColor", "TextDecorationThickness", "TextDecorationType", "TextIndent", "TextPosition", "TPadding", "Type", "Width", "WritingMode"
     };
     
 

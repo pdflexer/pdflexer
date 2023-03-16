@@ -38,27 +38,17 @@ internal partial class APM_3DViewAddEntries__Base : ISpecification<PdfDictionary
         ctx.Run<APM_3DViewAddEntries_Params, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_3DViewAddEntries>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_3DViewAddEntries>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_3DViewAddEntries>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_3DViewAddEntries>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_3DViewAddEntries>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_3DViewAddEntries>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -77,21 +67,13 @@ internal partial class APM_3DViewAddEntries__Base : ISpecification<PdfDictionary
         return true;
     }
 
-    public static List<string> AllowedFields_17 { get; } = new List<string> 
+    public static List<string> AllowedFields_17_18_19 { get; } = new List<string> 
     {
-        "Snapshot", "Params"
-    };
-    public static List<string> AllowedFields_18 { get; } = new List<string> 
-    {
-        "Snapshot", "Params"
-    };
-    public static List<string> AllowedFields_19 { get; } = new List<string> 
-    {
-        "Snapshot", "Params"
+        "Params", "Snapshot"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "XN", "IN", "MS", "MA", "C2W", "U3DPath", "CO", "P", "O", "BG", "RM", "LS", "SA", "NA", "NR", "Snapshot", "Params"
+        "BG", "C2W", "CO", "IN", "LS", "MA", "MS", "NA", "NR", "O", "P", "Params", "RM", "SA", "Snapshot", "Type", "U3DPath", "XN"
     };
     
 

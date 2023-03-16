@@ -28,7 +28,7 @@ internal partial class APM_RequirementsEncryption__Base : ISpecification<PdfDict
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_RequirementsEncryption>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_RequirementsEncryption>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -49,7 +49,7 @@ internal partial class APM_RequirementsEncryption__Base : ISpecification<PdfDict
 
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "S", "V", "RH", "Penalty", "Encrypt"
+        "Encrypt", "Penalty", "RH", "S", "Type", "V"
     };
     
 

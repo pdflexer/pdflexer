@@ -56,67 +56,57 @@ internal partial class APM_XObjectImage__Base : ISpecification<PdfDictionary>
             case 1.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_10.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.0");
+                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.1m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_11.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.1");
+                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.2m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.3m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.3");
+                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.4m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.4");
+                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.5m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.5");
+                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.6m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.6");
+                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_XObjectImage>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -138,47 +128,39 @@ internal partial class APM_XObjectImage__Base : ISpecification<PdfDictionary>
 
     public static HashSet<string> AllowedFields_10 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "ImageMask", "Decode", "Interpolate", "Name", "Length", "Filter", "DecodeParms", "F"
+        "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "F", "Filter", "Height", "ImageMask", "Interpolate", "Length", "Name", "Subtype", "Type", "Width"
     };
     public static HashSet<string> AllowedFields_11 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Name", "Length", "Filter", "DecodeParms", "F"
+        "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "F", "Filter", "Height", "ImageMask", "Intent", "Interpolate", "Length", "Name", "Subtype", "Type", "Width"
     };
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Decode", "Interpolate", "Name", "OPI", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms"
+        "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "F", "FDecodeParms", "FFilter", "Filter", "Height", "ImageMask", "Intent", "Interpolate", "Length", "Name", "OPI", "Subtype", "Type", "Width"
     };
     public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Mask", "Decode", "Interpolate", "Alternates", "Name", "StructParent", "ID", "OPI", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms"
+        "Alternates", "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "F", "FDecodeParms", "FFilter", "Filter", "Height", "ID", "ImageMask", "Intent", "Interpolate", "Length", "Mask", "Name", "OPI", "StructParent", "Subtype", "Type", "Width"
     };
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Mask", "Decode", "Interpolate", "Alternates", "SMask", "Name", "StructParent", "ID", "OPI", "Metadata", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms"
+        "Alternates", "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "F", "FDecodeParms", "FFilter", "Filter", "Height", "ID", "ImageMask", "Intent", "Interpolate", "Length", "Mask", "Metadata", "Name", "OPI", "SMask", "StructParent", "Subtype", "Type", "Width"
     };
     public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Mask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL"
+        "Alternates", "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "Height", "ID", "ImageMask", "Intent", "Interpolate", "Length", "Mask", "Metadata", "Name", "OC", "OPI", "SMask", "SMaskInData", "StructParent", "Subtype", "Type", "Width"
     };
     public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Mask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
+        "Alternates", "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "GTS_Encapsulated", "GTS_Env", "GTS_Scope", "GTS_XID", "Height", "ID", "ImageMask", "Intent", "Interpolate", "Length", "Mask", "Metadata", "Name", "OC", "OPI", "SMask", "SMaskInData", "StructParent", "Subtype", "Type", "Width"
     };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Mask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Mask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Mask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "Name", "StructParent", "ID", "OPI", "Metadata", "OC", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
+        "Alternates", "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "GTS_Encapsulated", "GTS_Env", "GTS_Scope", "GTS_XID", "Height", "ID", "ImageMask", "Intent", "Interpolate", "Length", "Mask", "Measure", "Metadata", "Name", "OC", "OPI", "PtData", "SMask", "SMaskInData", "StructParent", "Subtype", "Type", "Width"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Width", "Height", "ColorSpace", "BitsPerComponent", "Intent", "ImageMask", "Mask", "Decode", "Interpolate", "Alternates", "SMask", "SMaskInData", "StructParent", "ID", "Metadata", "OC", "AF", "Measure", "PtData", "Length", "Filter", "DecodeParms", "F", "FFilter", "FDecodeParms", "DL", "GTS_XID", "GTS_Scope", "GTS_Env", "GTS_Encapsulated"
+        "AF", "Alternates", "BitsPerComponent", "ColorSpace", "Decode", "DecodeParms", "DL", "F", "FDecodeParms", "FFilter", "Filter", "GTS_Encapsulated", "GTS_Env", "GTS_Scope", "GTS_XID", "Height", "ID", "ImageMask", "Intent", "Interpolate", "Length", "Mask", "Measure", "Metadata", "OC", "PtData", "SMask", "SMaskInData", "StructParent", "Subtype", "Type", "Width"
     };
     
 
@@ -436,7 +418,7 @@ internal partial class APM_XObjectImage_BitsPerComponent__Base : ISpecification<
             ctx.Fail<APM_XObjectImage_BitsPerComponent>($"Invalid value {val}, required value condition met: fn:RequiredValue((@Filter==RunLengthDecode) || (@Filter==DCTDecode),8)");
         }
         
-        if (!(val == 2 || val == 4 || (ctx.Version >= 1.5m && val == 16))) 
+        if (!(val == 1 || val == 2 || val == 4 || val == 8 || (ctx.Version >= 1.5m && val == 16))) 
         {
             ctx.Fail<APM_XObjectImage_BitsPerComponent>($"Invalid value {val}, allowed are: [fn:RequiredValue((@Filter==CCITTFaxDecode) || (@Filter==JBIG2Decode) || (@ImageMask==true),1),2,4,fn:RequiredValue((@Filter==RunLengthDecode) || (@Filter==DCTDecode),8),fn:SinceVersion(1.5,16)]");
         }

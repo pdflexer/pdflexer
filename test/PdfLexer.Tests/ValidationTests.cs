@@ -12,10 +12,13 @@ public class ValidationTests
         using var ctx = new ParsingContext();
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
         var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
-        var pdfFile = Path.Combine(pdfRoot, "issue1002.pdf");
-        using var doc = PdfDocument.Open(pdfFile);
-        doc.Trailer["Bad"] = new PdfString("Value");
-        var val = new PdfValidator(doc, 0);
-        val.Run();
+        foreach (var pdf in Directory.GetFiles(pdfRoot, "*.pdf"))
+        {
+            var fi = new FileInfo(pdf);
+            using var doc = PdfDocument.Open(pdf);
+            var val = new PdfValidator(doc, fi.Length);
+            val.Run();
+        }
+        
     }
 }

@@ -30,45 +30,20 @@ internal partial class APM_OutputIntents__Base : ISpecification<PdfDictionary>
         ctx.Run<APM_OutputIntents_SpectralData, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.4m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
-                {
-                    ctx.Fail<APM_OutputIntents>($"Unknown field {extra} for version 1.4");
-                }
-                break;
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_OutputIntents>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_OutputIntents>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_OutputIntents>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_OutputIntents>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14_15_16_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_OutputIntents>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_OutputIntents>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_OutputIntents>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_OutputIntents>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -87,33 +62,13 @@ internal partial class APM_OutputIntents__Base : ISpecification<PdfDictionary>
         return true;
     }
 
-    public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_14_15_16_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "S", "OutputCondition", "OutputConditionIdentifier", "RegistryName", "Info", "DestOutputProfile"
-    };
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "OutputCondition", "OutputConditionIdentifier", "RegistryName", "Info", "DestOutputProfile"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "OutputCondition", "OutputConditionIdentifier", "RegistryName", "Info", "DestOutputProfile"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "OutputCondition", "OutputConditionIdentifier", "RegistryName", "Info", "DestOutputProfile"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "OutputCondition", "OutputConditionIdentifier", "RegistryName", "Info", "DestOutputProfile"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "S", "OutputCondition", "OutputConditionIdentifier", "RegistryName", "Info", "DestOutputProfile"
+        "DestOutputProfile", "Info", "OutputCondition", "OutputConditionIdentifier", "RegistryName", "S", "Type"
     };
     public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
     {
-        "Type", "S", "OutputCondition", "OutputConditionIdentifier", "RegistryName", "Info", "DestOutputProfile", "DestOutputProfileRef", "MixingHints", "SpectralData"
+        "DestOutputProfile", "DestOutputProfileRef", "Info", "MixingHints", "OutputCondition", "OutputConditionIdentifier", "RegistryName", "S", "SpectralData", "Type"
     };
     
 

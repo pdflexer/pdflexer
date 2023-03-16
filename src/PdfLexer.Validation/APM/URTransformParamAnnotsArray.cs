@@ -18,7 +18,13 @@ internal partial class APM_URTransformParamAnnotsArray : ISpecification<PdfArray
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        c.Run<APM_URTransformParamAnnotsArray_x, PdfArray>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 }
 

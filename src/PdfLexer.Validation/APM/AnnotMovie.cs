@@ -44,49 +44,29 @@ internal partial class APM_AnnotMovie__Base : ISpecification<PdfDictionary>
             case 1.2m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version 1.2");
+                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.3m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version 1.3");
+                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.4m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version 1.4");
+                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15_16_17_18_19.Contains(x)))
                 {
-                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version 1.9");
+                    ctx.Fail<APM_AnnotMovie>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -108,35 +88,19 @@ internal partial class APM_AnnotMovie__Base : ISpecification<PdfDictionary>
 
     public static HashSet<string> AllowedFields_12 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "M", "F", "AP", "AS", "Border", "C", "T", "Movie", "A"
+        "A", "AP", "AS", "Border", "C", "Contents", "F", "M", "Movie", "Rect", "Subtype", "T", "Type"
     };
     public static HashSet<string> AllowedFields_13 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "M", "F", "AP", "AS", "Border", "C", "StructParent", "T", "Movie", "A"
+        "A", "AP", "AS", "Border", "C", "Contents", "F", "M", "Movie", "P", "Rect", "StructParent", "Subtype", "T", "Type"
     };
     public static HashSet<string> AllowedFields_14 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "T", "Movie", "A"
+        "A", "AP", "AS", "Border", "C", "Contents", "F", "M", "Movie", "NM", "P", "Rect", "StructParent", "Subtype", "T", "Type"
     };
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_15_16_17_18_19 { get; } = new HashSet<string> 
     {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "T", "Movie", "A"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "T", "Movie", "A"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "T", "Movie", "A"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "T", "Movie", "A"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "Type", "Subtype", "Rect", "Contents", "P", "NM", "M", "F", "AP", "AS", "Border", "C", "StructParent", "OC", "T", "Movie", "A"
+        "A", "AP", "AS", "Border", "C", "Contents", "F", "M", "Movie", "NM", "OC", "P", "Rect", "StructParent", "Subtype", "T", "Type"
     };
     
 

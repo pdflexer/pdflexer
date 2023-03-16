@@ -24,15 +24,10 @@ internal partial class APM_SignatureReferenceIdentity__Base : ISpecification<Pdf
         ctx.Run<APM_SignatureReferenceIdentity_DigestMethod, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_SignatureReferenceIdentity>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15_16.Contains(x)))
                 {
-                    ctx.Fail<APM_SignatureReferenceIdentity>($"Unknown field {extra} for version 1.6");
+                    ctx.Fail<APM_SignatureReferenceIdentity>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -51,13 +46,9 @@ internal partial class APM_SignatureReferenceIdentity__Base : ISpecification<Pdf
         return true;
     }
 
-    public static List<string> AllowedFields_15 { get; } = new List<string> 
+    public static List<string> AllowedFields_15_16 { get; } = new List<string> 
     {
-        "Type", "TransformMethod", "Data", "DigestMethod"
-    };
-    public static List<string> AllowedFields_16 { get; } = new List<string> 
-    {
-        "Type", "TransformMethod", "Data", "DigestMethod"
+        "Data", "DigestMethod", "TransformMethod", "Type"
     };
     
 

@@ -21,39 +21,14 @@ internal partial class APM_OptContentPageElement__Base : ISpecification<PdfDicti
         ctx.Run<APM_OptContentPageElement_Subtype, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_OptContentPageElement>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_OptContentPageElement>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_OptContentPageElement>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_OptContentPageElement>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
-                {
-                    ctx.Fail<APM_OptContentPageElement>($"Unknown field {extra} for version 1.9");
-                }
-                break;
             case 2.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15_16_17_18_19_20.Contains(x)))
                 {
-                    ctx.Fail<APM_OptContentPageElement>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_OptContentPageElement>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -73,27 +48,7 @@ internal partial class APM_OptContentPageElement__Base : ISpecification<PdfDicti
         return true;
     }
 
-    public static List<string> AllowedFields_15 { get; } = new List<string> 
-    {
-        "Subtype"
-    };
-    public static List<string> AllowedFields_16 { get; } = new List<string> 
-    {
-        "Subtype"
-    };
-    public static List<string> AllowedFields_17 { get; } = new List<string> 
-    {
-        "Subtype"
-    };
-    public static List<string> AllowedFields_18 { get; } = new List<string> 
-    {
-        "Subtype"
-    };
-    public static List<string> AllowedFields_19 { get; } = new List<string> 
-    {
-        "Subtype"
-    };
-    public static List<string> AllowedFields_20 { get; } = new List<string> 
+    public static List<string> AllowedFields_15_16_17_18_19_20 { get; } = new List<string> 
     {
         "Subtype"
     };

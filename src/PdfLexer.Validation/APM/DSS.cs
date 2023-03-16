@@ -27,7 +27,7 @@ internal partial class APM_DSS__Base : ISpecification<PdfDictionary>
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_DSS>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_DSS>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -48,7 +48,7 @@ internal partial class APM_DSS__Base : ISpecification<PdfDictionary>
 
     public static List<string> AllowedFields_20 { get; } = new List<string> 
     {
-        "Type", "VRI", "Certs", "OCSPs", "CRLs"
+        "Certs", "CRLs", "OCSPs", "Type", "VRI"
     };
     
 

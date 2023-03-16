@@ -18,7 +18,13 @@ internal partial class APM_URTransformParamSignatureArray : ISpecification<PdfAr
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        c.Run<APM_URTransformParamSignatureArray_x, PdfArray>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 }
 

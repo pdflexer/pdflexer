@@ -28,7 +28,7 @@ internal partial class APM_DestOutputProfileRef__Base : ISpecification<PdfDictio
             case 2.0m:
                 foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
                 {
-                    ctx.Fail<APM_DestOutputProfileRef>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_DestOutputProfileRef>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:

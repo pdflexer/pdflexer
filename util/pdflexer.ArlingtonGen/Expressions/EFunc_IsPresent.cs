@@ -23,12 +23,11 @@ internal class EFunc_IsPresent : EFunBase, INode
                     using var ev = new VarScope(VariableHandling.Either);
                     Children[0].Write(sb);
                 }
-            }
-            if (Children.Count > 1)
+            } else if (Children.Count > 1)
             {
-                sb.Append("(");
+                sb.Append("(!");
                 AddVar(Children[0]);
-                sb.Append(" && !(");
+                sb.Append(" || (");
                 Children[1].Write(sb);
                 sb.Append("))");
 

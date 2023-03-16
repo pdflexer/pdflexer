@@ -7,9 +7,9 @@ internal static partial class MathUtil
     public static bool eq(IPdfObject? obj, int val)
     {
         if (obj == null) { return false; }
-        var n = obj as PdfIntNumber;
+        var n = obj as PdfNumber;
         if (n == null) { return false; }
-        return eq(n, val);
+        return eq((decimal)n, val);
     }
     // public static bool eq(PdfNumber obj, int val) 
     // {
@@ -85,9 +85,9 @@ internal static partial class MathUtil
     }public static bool gt(IPdfObject? obj, int val)
     {
         if (obj == null) { return false; }
-        var n = obj as PdfIntNumber;
+        var n = obj as PdfNumber;
         if (n == null) { return false; }
-        return gt(n, val);
+        return gt((decimal)n, val);
     }
     // public static bool gt(PdfNumber obj, int val) 
     // {
@@ -147,9 +147,9 @@ internal static partial class MathUtil
     public static bool lt(IPdfObject? obj, int val)
     {
         if (obj == null) { return false; }
-        var n = obj as PdfIntNumber;
+        var n = obj as PdfNumber;
         if (n == null) { return false; }
-        return lt(n, val);
+        return lt((decimal)n, val);
     }
     // public static bool lt(PdfNumber obj, int val) 
     // {
@@ -209,9 +209,9 @@ internal static partial class MathUtil
     public static bool gte(IPdfObject? obj, int val)
     {
         if (obj == null) { return false; }
-        var n = obj as PdfIntNumber;
+        var n = obj as PdfNumber;
         if (n == null) { return false; }
-        return gte(n, val);
+        return gte((decimal)n, val);
     }
     // public static bool gte(PdfNumber obj, int val) 
     // {
@@ -271,9 +271,9 @@ internal static partial class MathUtil
     public static bool lte(IPdfObject? obj, int val)
     {
         if (obj == null) { return false; }
-        var n = obj as PdfIntNumber;
+        var n = obj as PdfNumber;
         if (n == null) { return false; }
-        return lte(n, val);
+        return lte((decimal)n, val);
     }
     // public static bool lte(PdfNumber obj, int val) 
     // {
@@ -333,9 +333,9 @@ internal static partial class MathUtil
     public static decimal plus(IPdfObject? obj, int val)
     {
         if (obj == null) { return 0m; }
-        var n = obj as PdfIntNumber;
+        var n = obj as PdfNumber;
         if (n == null) { return 0m; }
-        return plus(n, val);
+        return plus((decimal)n, val);
     }
     // public static decimal plus(PdfNumber obj, int val) 
     // {
@@ -395,9 +395,9 @@ internal static partial class MathUtil
     public static decimal minus(IPdfObject? obj, int val)
     {
         if (obj == null) { return 0m; }
-        var n = obj as PdfIntNumber;
+        var n = obj as PdfNumber;
         if (n == null) { return 0m; }
-        return minus(n, val);
+        return minus((decimal)n, val);
     }
     // public static decimal minus(PdfNumber obj, int val) 
     // {
@@ -457,9 +457,9 @@ internal static partial class MathUtil
     public static decimal mult(IPdfObject? obj, int val)
     {
         if (obj == null) { return 0m; }
-        var n = obj as PdfIntNumber;
+        var n = obj as PdfNumber;
         if (n == null) { return 0m; }
-        return mult(n, val);
+        return mult((decimal)n, val);
     }
     // public static decimal mult(PdfNumber obj, int val) 
     // {

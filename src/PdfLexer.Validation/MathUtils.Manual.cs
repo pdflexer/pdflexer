@@ -311,6 +311,8 @@ internal static partial class MathUtil
         return true; // TODO
     }
 
+    public static bool InNameTree(string val, IPdfObject? tree) => InNameTree(new PdfName(val), tree);
+
     public static decimal RectWidth(IPdfObject? obj)
     {
         if (obj == null) { return 0; }
@@ -346,8 +348,6 @@ internal static partial class MathUtil
         }
         return 0;
     }
-
-    public static bool InNameTree(string val, IPdfObject? tree) => InNameTree(new PdfName(val), tree);
 
     public static bool Contains(IPdfObject? obj, string val)
     {

@@ -42,39 +42,14 @@ internal partial class APM_LegalAttestation__Base : ISpecification<PdfDictionary
         ctx.Run<APM_LegalAttestation_Attestation, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_LegalAttestation>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_LegalAttestation>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_LegalAttestation>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_LegalAttestation>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
-                {
-                    ctx.Fail<APM_LegalAttestation>($"Unknown field {extra} for version 1.9");
-                }
-                break;
             case 2.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15_16_17_18_19_20.Contains(x)))
                 {
-                    ctx.Fail<APM_LegalAttestation>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_LegalAttestation>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -87,29 +62,9 @@ internal partial class APM_LegalAttestation__Base : ISpecification<PdfDictionary
         return false;
     }
 
-    public static HashSet<string> AllowedFields_15 { get; } = new HashSet<string> 
+    public static HashSet<string> AllowedFields_15_16_17_18_19_20 { get; } = new HashSet<string> 
     {
-        "JavaScriptActions", "LaunchActions", "URIActions", "MovieActions", "SoundActions", "HideAnnotationActions", "GoToRemoteActions", "AlternateImages", "ExternalStreams", "TrueTypeFonts", "ExternalRefXobjects", "ExternalOPIdicts", "NonEmbeddedFonts", "DevDepGS_OP", "DevDepGS_HT", "DevDepGS_TR", "DevDepGS_UCR", "DevDepGS_BG", "DevDepGS_FL", "Annotations", "OptionalContent", "Attestation"
-    };
-    public static HashSet<string> AllowedFields_16 { get; } = new HashSet<string> 
-    {
-        "JavaScriptActions", "LaunchActions", "URIActions", "MovieActions", "SoundActions", "HideAnnotationActions", "GoToRemoteActions", "AlternateImages", "ExternalStreams", "TrueTypeFonts", "ExternalRefXobjects", "ExternalOPIdicts", "NonEmbeddedFonts", "DevDepGS_OP", "DevDepGS_HT", "DevDepGS_TR", "DevDepGS_UCR", "DevDepGS_BG", "DevDepGS_FL", "Annotations", "OptionalContent", "Attestation"
-    };
-    public static HashSet<string> AllowedFields_17 { get; } = new HashSet<string> 
-    {
-        "JavaScriptActions", "LaunchActions", "URIActions", "MovieActions", "SoundActions", "HideAnnotationActions", "GoToRemoteActions", "AlternateImages", "ExternalStreams", "TrueTypeFonts", "ExternalRefXobjects", "ExternalOPIdicts", "NonEmbeddedFonts", "DevDepGS_OP", "DevDepGS_HT", "DevDepGS_TR", "DevDepGS_UCR", "DevDepGS_BG", "DevDepGS_FL", "Annotations", "OptionalContent", "Attestation"
-    };
-    public static HashSet<string> AllowedFields_18 { get; } = new HashSet<string> 
-    {
-        "JavaScriptActions", "LaunchActions", "URIActions", "MovieActions", "SoundActions", "HideAnnotationActions", "GoToRemoteActions", "AlternateImages", "ExternalStreams", "TrueTypeFonts", "ExternalRefXobjects", "ExternalOPIdicts", "NonEmbeddedFonts", "DevDepGS_OP", "DevDepGS_HT", "DevDepGS_TR", "DevDepGS_UCR", "DevDepGS_BG", "DevDepGS_FL", "Annotations", "OptionalContent", "Attestation"
-    };
-    public static HashSet<string> AllowedFields_19 { get; } = new HashSet<string> 
-    {
-        "JavaScriptActions", "LaunchActions", "URIActions", "MovieActions", "SoundActions", "HideAnnotationActions", "GoToRemoteActions", "AlternateImages", "ExternalStreams", "TrueTypeFonts", "ExternalRefXobjects", "ExternalOPIdicts", "NonEmbeddedFonts", "DevDepGS_OP", "DevDepGS_HT", "DevDepGS_TR", "DevDepGS_UCR", "DevDepGS_BG", "DevDepGS_FL", "Annotations", "OptionalContent", "Attestation"
-    };
-    public static HashSet<string> AllowedFields_20 { get; } = new HashSet<string> 
-    {
-        "JavaScriptActions", "LaunchActions", "URIActions", "MovieActions", "SoundActions", "HideAnnotationActions", "GoToRemoteActions", "AlternateImages", "ExternalStreams", "TrueTypeFonts", "ExternalRefXobjects", "ExternalOPIdicts", "NonEmbeddedFonts", "DevDepGS_OP", "DevDepGS_HT", "DevDepGS_TR", "DevDepGS_UCR", "DevDepGS_BG", "DevDepGS_FL", "Annotations", "OptionalContent", "Attestation"
+        "AlternateImages", "Annotations", "Attestation", "DevDepGS_BG", "DevDepGS_FL", "DevDepGS_HT", "DevDepGS_OP", "DevDepGS_TR", "DevDepGS_UCR", "ExternalOPIdicts", "ExternalRefXobjects", "ExternalStreams", "GoToRemoteActions", "HideAnnotationActions", "JavaScriptActions", "LaunchActions", "MovieActions", "NonEmbeddedFonts", "OptionalContent", "SoundActions", "TrueTypeFonts", "URIActions"
     };
     
 

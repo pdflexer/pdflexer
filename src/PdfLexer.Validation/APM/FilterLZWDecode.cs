@@ -25,69 +25,19 @@ internal partial class APM_FilterLZWDecode__Base : ISpecification<PdfDictionary>
         ctx.Run<APM_FilterLZWDecode_EarlyChange, PdfDictionary>(stack, obj, parent);
         switch (ctx.Version) {
             case 1.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_10.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.0");
-                }
-                break;
             case 1.1m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_11.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.1");
-                }
-                break;
             case 1.2m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_12.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.2");
-                }
-                break;
             case 1.3m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_13.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.3");
-                }
-                break;
             case 1.4m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_14.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.4");
-                }
-                break;
             case 1.5m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_15.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.5");
-                }
-                break;
             case 1.6m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_16.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.6");
-                }
-                break;
             case 1.7m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_17.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.7");
-                }
-                break;
             case 1.8m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_18.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.8");
-                }
-                break;
             case 1.9m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_19.Contains(x)))
-                {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 1.9");
-                }
-                break;
             case 2.0m:
-                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_20.Contains(x)))
+                foreach (var extra in obj.Keys.Where(x=> !AllowedFields_10_11_12_13_14_15_16_17_18_19_20.Contains(x)))
                 {
-                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version 2.0");
+                    ctx.Fail<APM_FilterLZWDecode>($"Unknown field {extra} for version {ctx.Version}");
                 }
                 break;
             default:
@@ -100,49 +50,9 @@ internal partial class APM_FilterLZWDecode__Base : ISpecification<PdfDictionary>
         return false;
     }
 
-    public static List<string> AllowedFields_10 { get; } = new List<string> 
+    public static List<string> AllowedFields_10_11_12_13_14_15_16_17_18_19_20 { get; } = new List<string> 
     {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_11 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_12 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_13 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_14 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_15 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_16 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_17 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_18 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_19 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
-    };
-    public static List<string> AllowedFields_20 { get; } = new List<string> 
-    {
-        "Predictor", "Colors", "BitsPerComponent", "Columns", "EarlyChange"
+        "BitsPerComponent", "Colors", "Columns", "EarlyChange", "Predictor"
     };
     
 

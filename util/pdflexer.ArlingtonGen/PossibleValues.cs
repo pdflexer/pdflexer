@@ -94,11 +94,15 @@ if ({{exp.GetText()}})
 
 """;
         }
-        var nr = values.Where(v => !v.Contains("RequiredValue")).ToList();
-        for (var p = 0; p < nr.Count; p++)
+        for (var p = 0; p < values.Count; p++)
         {
-
-            var exp = new Exp(nr[p]);
+            var v = values[p];
+            var exp = new Exp(values[p]);
+            if (v.Contains("RequiredValue"))
+            {
+                // unwrap
+                RemoveReq(exp);
+            }
             for (var i = 0; i < exp.Children.Count; i++)
             {
                 exp.Children[i].Write(sb);
@@ -108,7 +112,7 @@ if ({{exp.GetText()}})
                 }
             }
 
-            if (p < nr.Count - 1)
+            if (p < values.Count - 1)
             {
                 sb.Append(" || ");
             }
@@ -133,6 +137,21 @@ if (!({{checks}}))
         return "// TODO value checks " + type;
     }
 
+
+    private void RemoveReq(INode node)
+    {
+        for (var i = 0; i < node.Children.Count; i++) 
+        {
+            var e = node.Children[i];
+            if (e is EFunc_RequiredValue)
+            {
+                node.Children[i] = e.Children[1];
+            } else
+            {
+                RemoveReq(e);
+            }
+        }
+    }
     public static List<string> SplitWithFns(string text)
     {
         var parts = new List<string>();

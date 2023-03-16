@@ -18,7 +18,13 @@ internal partial class APM_ArrayOfCompressionFilterNames : ISpecification<PdfArr
 
     public static bool MatchesType(PdfValidator ctx, PdfArray obj) 
     {
-        return false;
+        var c = ctx.Clone();
+        c.Run<APM_ArrayOfCompressionFilterNames_x, PdfArray>(new CallStack(), obj, null);
+        if (c.Errors.Any())
+        {
+            return false;
+        }
+        return true;
     }
 }
 
