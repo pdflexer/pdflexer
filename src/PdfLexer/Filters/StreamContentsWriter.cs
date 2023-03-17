@@ -7,50 +7,205 @@ public interface IStreamContentsWriter
     Stream Stream { get; }
     PdfStreamContents Complete();
 }
-public class FlateWriter : IStreamContentsWriter
+
+
+#if NET6_0_OR_GREATER
+
+public class ZLibLexerStream : Stream, IStreamContentsWriter
 {
-    private MemoryStream ms;
+    private Stream RawStream { get; }
+    private Stream ZLibStream { get; }
 
-    public Stream Stream { get; }
-
-    public FlateWriter()
+    public ZLibLexerStream() : this(new MemoryStream(), CompressionLevel.Fastest)
     {
-        // can write to file in low mem mode
-        ms = new MemoryStream();
-        ms.WriteByte(120);
-        ms.WriteByte(1);
-        Stream = new DeflateStream(ms, CompressionLevel.Fastest, true);
+
     }
 
+    public ZLibLexerStream(Stream stream, CompressionLevel level)
+    {
+        ZLibStream = new ZLibStream(stream, level, true);
+        RawStream = stream;
+    }
+    public override bool CanRead => false;
+
+    public override bool CanSeek => false;
+
+    public override bool CanWrite => true;
+
+    public override long Length => ZLibStream.Length;
+
+    public override long Position { get => ZLibStream.Position; set => throw new NotSupportedException(); }
+
+    public Stream Stream => ZLibStream;
+
+    public override void Flush()
+    {
+        ZLibStream.Flush();
+    }
+
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        throw new NotSupportedException();
+    }
+
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        throw new NotSupportedException();
+    }
+
+    public override void SetLength(long value)
+    {
+        throw new NotSupportedException();
+    }
+
+    public override void Write(byte[] buffer, int offset, int count) => ZLibStream.Write(buffer, offset, count);
+
+    bool completed = false;
+
+    public new void Dispose()
+    {
+        if (!completed)
+        {
+            End();
+        }
+    }
+    private void End()
+    {
+        ZLibStream.Flush();
+        ZLibStream.Dispose();
+        base.Dispose();
+        completed = true;
+    }
     public PdfStreamContents Complete()
     {
-        Stream.Dispose();
-        // TODO calc this during writing
-        ms.Seek(0, SeekOrigin.Begin);
-        var cs = Calculate(ms, 65521);
-        ms.Seek(0, SeekOrigin.End);
-        ms.WriteByte((byte)(cs >> 24));
-        ms.WriteByte((byte)(cs >> 16));
-        ms.WriteByte((byte)(cs >> 8));
-        ms.WriteByte((byte)(cs >> 0));
-        var dat = ms.ToArray();
-        ms = null!;
-        return new PdfByteArrayStreamContents(dat, PdfName.FlateDecode, null);
-
-        static int Calculate(Stream data, int modulus)
+        if (!completed)
         {
-            var s1 = 1;
-            var s2 = 0;
+            End();
+        }
+        if (RawStream is MemoryStream ms)
+        {
+            var dat = ms.ToArray();
+            ms.Dispose();
+            return new PdfByteArrayStreamContents(dat, PdfName.FlateDecode, null);
+        }
+        else
+        {
+            var nms = new MemoryStream();
+            RawStream.CopyTo(nms);
+            var dat = nms.ToArray();
+            RawStream.Dispose();
+            nms.Dispose();
+            return new PdfByteArrayStreamContents(dat, PdfName.FlateDecode, null);
+        }
+    }
+}
+#else
+public class ZLibLexerStream : Stream, IStreamContentsWriter
+{
+    private uint s1 = 1;
+    private uint s2 = 0;
+    private const int mod = 65521;
+    private Stream FlateStream { get; }
+    private Stream RawStream { get; }
 
-            int b = 0;
-            while ((b = data.ReadByte()) != -1)
-            {
-                s1 = (s1 + b) % modulus;
-                s2 = (s1 + s2) % modulus;
-            }
-            return s2 * 65536 + s1;
+    public ZLibLexerStream() : this(new MemoryStream(), CompressionLevel.Fastest)
+    {
+
+    }
+
+    public ZLibLexerStream(Stream stream, CompressionLevel level)
+    {
+        stream.WriteByte(120);
+        stream.WriteByte(1);
+        FlateStream = new DeflateStream(stream, level, true);
+        RawStream = stream;
+    }
+    public override bool CanRead => false;
+
+    public override bool CanSeek => false;
+
+    public override bool CanWrite => true;
+
+    public override long Length => FlateStream.Length;
+
+    public override long Position { get => FlateStream.Position; set => throw new NotSupportedException(); }
+
+    public Stream Stream => this;
+
+    public override void Flush()
+    {
+        FlateStream.Flush();
+    }
+
+    public override int Read(byte[] buffer, int offset, int count)
+    {
+        throw new NotSupportedException();
+    }
+
+    public override long Seek(long offset, SeekOrigin origin)
+    {
+        throw new NotSupportedException();
+    }
+
+    public override void SetLength(long value)
+    {
+        throw new NotSupportedException();
+    }
+
+    public override void Write(byte[] buffer, int offset, int count)
+    {
+        for (var i=offset;i<offset+count;i++)
+        {
+            s1 += buffer[i];
+            s2 += s1;
+            s1 %= mod;
+            s2 %= mod;
+        }
+
+        FlateStream.Write(buffer, offset, count);
+    }
+
+    bool completed = false;
+    public new void Dispose()
+    {
+        if (!completed)
+        {
+            WriteEnd();
         }
     }
 
-    public static implicit operator Stream(FlateWriter str) => str.Stream;
+    private void WriteEnd()
+    {
+        var cs = s2 * 65536 + s1;
+        base.Dispose();
+        FlateStream.Flush();
+        FlateStream.Dispose();
+        RawStream.WriteByte((byte)((cs >> 24) & 0xff));
+        RawStream.WriteByte((byte)((cs >> 16) & 0xff));
+        RawStream.WriteByte((byte)((cs >> 8) & 0xff));
+        RawStream.WriteByte((byte)(cs & 0xff));
+        completed = true;
+    }
+    public PdfStreamContents Complete()
+    {
+        if (!completed)
+        {
+            WriteEnd();
+        }
+        if (RawStream is MemoryStream ms)
+        {
+            var dat = ms.ToArray();
+            ms.Dispose();
+            return new PdfByteArrayStreamContents(dat, PdfName.FlateDecode, null);
+        } else
+        {
+            var nms = new MemoryStream();
+            RawStream.CopyTo(nms);
+            var dat = nms.ToArray();
+            RawStream.Dispose();
+            nms.Dispose();
+            return new PdfByteArrayStreamContents(dat, PdfName.FlateDecode, null);
+        }
+    }
 }
+#endif

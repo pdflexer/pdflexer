@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "pdflexer.ArlingtonGen": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\source\\github\\arlington-pdf-model\\tsv\\latest"
+    }
+  }
+}

@@ -22,7 +22,7 @@ public partial class ContentWriter
     internal PdfDictionary Resources { get; }
     private PdfDictionary XObjs { get; }
     private PdfDictionary Fonts { get; }
-    public FlateWriter Stream { get; private set; }
+    public IStreamContentsWriter StreamWriter { get; private set; }
 
     private double scale;
 
@@ -32,7 +32,7 @@ public partial class ContentWriter
         Resources = resources;
         XObjs = resources.GetOrCreateValue<PdfDictionary>(PdfName.XObject);
         Fonts = resources.GetOrCreateValue<PdfDictionary>(PdfName.Font);
-        Stream = new FlateWriter();
+        StreamWriter = new ZLibLexerStream();
         scale = unit switch
         {
             PageUnit.Points => 1,
@@ -81,16 +81,16 @@ public partial class ContentWriter
         if (xform.HasValue)
         {
             q_Op.Value.Apply(ref GfxState);
-            q_Op.WriteLn(Stream);
-            cm_Op.WriteLn(xform.Value, Stream);
+            q_Op.WriteLn(StreamWriter.Stream);
+            cm_Op.WriteLn(xform.Value, StreamWriter.Stream);
         }
 
-        Do_Op.WriteLn(nm, Stream);
+        Do_Op.WriteLn(nm, StreamWriter.Stream);
 
         if (xform.HasValue)
         {
             Q_Op.Value.Apply(ref GfxState);
-            Q_Op.WriteLn(Stream);
+            Q_Op.WriteLn(StreamWriter.Stream);
         }
         return this;
     }
@@ -98,21 +98,21 @@ public partial class ContentWriter
     public ContentWriter Save()
     {
         q_Op.Value.Apply(ref GfxState);
-        q_Op.WriteLn(Stream);
+        q_Op.WriteLn(StreamWriter.Stream);
         return this;
     }
 
     public ContentWriter Restore()
     {
         Q_Op.Value.Apply(ref GfxState);
-        Q_Op.WriteLn(Stream);
+        Q_Op.WriteLn(StreamWriter.Stream);
         return this;
     }
 
     public ContentWriter LineWidth(decimal w)
     {
         if (scale != 1) { w *= (decimal)scale; }
-        w_Op.WriteLn(w, Stream);
+        w_Op.WriteLn(w, StreamWriter.Stream);
         return this;
     }
 
@@ -125,14 +125,7 @@ public partial class ContentWriter
 
     public ContentWriter LineCap(CapStyle c)
     {
-        J_Op.WriteLn((int)c, Stream);
-        return this;
-    }
-
-    public ContentWriter CustomOp(IPdfOperation op)
-    {
-        op.Serialize(Stream);
-        Stream.Stream.WriteByte((byte)'\n');
+        J_Op.WriteLn((int)c, StreamWriter.Stream);
         return this;
     }
 
@@ -145,7 +138,7 @@ public partial class ContentWriter
 
     public ContentWriter LineJoin(JoinStyle c)
     {
-        j_Op.WriteLn((int)c, Stream);
+        j_Op.WriteLn((int)c, StreamWriter.Stream);
         return this;
     }
 
@@ -158,7 +151,22 @@ public partial class ContentWriter
             0, 0, 0, 1);
 
         GfxState.Apply(cm);
-        cm_Op.WriteLn(cm, Stream);
+        cm_Op.WriteLn(cm, StreamWriter.Stream);
+        return this;
+    }
+
+    public ContentWriter ScaleAt(decimal xs, decimal ys, decimal xLoc, decimal yLoc)
+    {
+        var xp = -(float)(xs * xLoc);
+        var yp = -(float)(ys * yLoc);
+        var cm = new Matrix4x4(
+            (float)xs, 0, 0, 0,
+            0, (float)ys, 0, 0,
+            xp, yp, 1, 0,
+            0, 0, 0, 1);
+
+        GfxState.Apply(cm);
+        cm_Op.WriteLn(cm, StreamWriter.Stream);
         return this;
     }
 
@@ -181,7 +189,7 @@ public partial class ContentWriter
             0, 0, 0, 1);
 
         GfxState.Apply(cm);
-        cm_Op.WriteLn(cm, Stream);
+        cm_Op.WriteLn(cm, StreamWriter.Stream);
         return this;
     }
 
@@ -219,22 +227,28 @@ public partial class ContentWriter
         switch (State)
         {
             case PageState.Text:
-                ET_Op.WriteLn(Stream);
+                ET_Op.WriteLn(StreamWriter.Stream);
                 return;
         }
     }
 
-    public ContentWriter Raw(IPdfOperation op)
+    public ContentWriter Op(IPdfOperation op)
     {
         op.Apply(ref GfxState);
-        op.Serialize(Stream);
-        Stream.Stream.WriteByte((byte)'\n');
+        op.Serialize(StreamWriter.Stream);
+        StreamWriter.Stream.WriteByte((byte)'\n');
         return this;
     }
 
+    [Obsolete("Use .Op(op) instead")]
+    public ContentWriter Raw(IPdfOperation op) => Op(op);
+
+    [Obsolete("Use .Op(op) instead")]
+    public ContentWriter CustomOp(IPdfOperation op) => Op(op);
+
     public PdfStreamContents Complete() { 
-        var result = Stream.Complete();
-        Stream = null!; // TODO: add proper error handling for using methods after calling complete
+        var result = StreamWriter.Complete();
+        StreamWriter = null!; // TODO: add proper error handling for using methods after calling complete
         return result;
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0</TargetFrameworks>
+    <TargetFrameworks>net7</TargetFrameworks>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -24,6 +24,7 @@
     <ProjectReference Include="..\..\src\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer.ImageSharpExts\PdfLexer.ImageSharpExts.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer.Powershell\PdfLexer.Powershell.csproj" />
+    <ProjectReference Include="..\..\src\PdfLexer.Validation\PdfLexer.Validation.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer\PdfLexer.csproj" />
   </ItemGroup>
 

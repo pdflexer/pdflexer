@@ -62,7 +62,7 @@ public class XObjForm
             form.Contents = contents[0].Contents;
         } else
         {
-            var flate = new FlateWriter();
+            var flate = new ZLibLexerStream();
             foreach(var stream in contents)
             {
                 using var str = stream.Contents.GetDecodedStream();

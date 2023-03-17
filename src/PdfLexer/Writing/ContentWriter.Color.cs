@@ -17,7 +17,7 @@ public partial class ContentWriter
     /// <returns></returns>
     public ContentWriter SetStrokingRGB(int r, int g, int b)
     {
-        RG_Op.WriteLn((r & 0xFF) / 255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, Stream);
+        RG_Op.WriteLn((r & 0xFF) / 255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, StreamWriter.Stream);
         return this;
     }
 
@@ -30,7 +30,7 @@ public partial class ContentWriter
     /// <returns></returns>
     public ContentWriter SetFillRGB(int r, int g, int b)
     {
-        rg_Op.WriteLn((r & 0xFF) / 255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, Stream);
+        rg_Op.WriteLn((r & 0xFF) / 255.0m, (g & 0xFF) / 255.0m, (b & 0xFF) / 255.0m, StreamWriter.Stream);
         return this;
     }
 
@@ -46,7 +46,7 @@ public partial class ContentWriter
         r = r > 1 ? 1 : (r < 0 ? 0 : r);
         g = g > 1 ? 1 : (g < 0 ? 0 : g);
         b = b > 1 ? 1 : (b < 0 ? 0 : b);
-        rg_Op.WriteLn(r, g, b, Stream);
+        rg_Op.WriteLn(r, g, b, StreamWriter.Stream);
         return this;
     }
 
@@ -62,7 +62,7 @@ public partial class ContentWriter
         r = r > 1 ? 1 : (r < 0 ? 0 : r);
         g = g > 1 ? 1 : (g < 0 ? 0 : g);
         b = b > 1 ? 1 : (b < 0 ? 0 : b);
-        rg_Op.WriteLn(r, g, b, Stream);
+        rg_Op.WriteLn(r, g, b, StreamWriter.Stream);
         return this;
     }
 
@@ -74,7 +74,7 @@ public partial class ContentWriter
     public ContentWriter SetStrokingGray(decimal v)
     {
         v = v > 1 ? 1 : (v < 0 ? 0 : v);
-        G_Op.WriteLn(v, Stream);
+        G_Op.WriteLn(v, StreamWriter.Stream);
         return this;
     }
 
@@ -86,7 +86,7 @@ public partial class ContentWriter
     public ContentWriter SetFillGray(decimal v)
     {
         v = v > 1 ? 1 : (v < 0 ? 0 : v);
-        G_Op.WriteLn(v, Stream);
+        G_Op.WriteLn(v, StreamWriter.Stream);
         return this;
     }
 
@@ -104,7 +104,7 @@ public partial class ContentWriter
         m = m > 1 ? 1 : (m < 0 ? 0 : m);
         y = y > 1 ? 1 : (y < 0 ? 0 : y);
         k = k > 1 ? 1 : (k < 0 ? 0 : k);
-        K_Op.WriteLn(c, m, y, k, Stream);
+        K_Op.WriteLn(c, m, y, k, StreamWriter.Stream);
         return this;
     }
 
@@ -114,7 +114,7 @@ public partial class ContentWriter
         m = m > 1 ? 1 : (m < 0 ? 0 : m);
         y = y > 1 ? 1 : (y < 0 ? 0 : y);
         k = k > 1 ? 1 : (k < 0 ? 0 : k);
-        K_Op.WriteLn(c, m, y, k, Stream);
+        K_Op.WriteLn(c, m, y, k, StreamWriter.Stream);
         return this;
     }
 }

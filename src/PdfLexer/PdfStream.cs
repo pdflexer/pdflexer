@@ -131,9 +131,9 @@ public abstract class PdfStreamContents
     /// <returns></returns>
     internal DecodedStreamContents GetDecodedBuffer(bool cache=false)
     {
-        if (cache && StreamBufferCache.StaticCache.Value != null)
+        if (cache && StreamContentsCache.StaticCache.Value != null)
         {
-            return StreamBufferCache.StaticCache.Value.GetOrDecodeBuffer(this);
+            return StreamContentsCache.StaticCache.Value.GetOrDecodeBuffer(this);
         }
         if (DecodedData != null)
         {
@@ -440,7 +440,7 @@ public class PdfFileStreamContents : PdfStreamContents
 public abstract class DecodedStreamContents : IDisposable
 {
     public abstract ReadOnlySpan<byte> GetData();
-    public virtual bool TryGetLexInfo(ParsingContext ctx, [NotNullWhen(true)]out RentedStreamLexInfo? contents) { contents = null; return false; }
+    public virtual bool TryGetLexInfo(ParsingContext ctx, [NotNullWhen(true)] out RentedStreamLexInfo? contents) { contents = null; return false; }
     public void Dispose()
     {
         Users -= 1;
@@ -528,16 +528,16 @@ internal class ArrayContents : DecodedStreamContents
     }
 }
 
-public class StreamBufferCache : IDisposable
+public class StreamContentsCache : IStreamContentsCache
 {
-    internal static AsyncLocal<StreamBufferCache?> StaticCache = new AsyncLocal<StreamBufferCache?>();
+    internal static AsyncLocal<IStreamContentsCache?> StaticCache = new AsyncLocal<IStreamContentsCache?>();
     private Dictionary<PdfStreamContents, DecodedStreamContents> cache = new();
-    public StreamBufferCache()
+    public StreamContentsCache()
     {
         StaticCache.Value = this;
     }
 
-    internal DecodedStreamContents GetOrDecodeBuffer(PdfStreamContents stream)
+    public DecodedStreamContents GetOrDecodeBuffer(PdfStreamContents stream)
     {
         if (cache.TryGetValue(stream, out var decoded))
         {
@@ -564,5 +564,81 @@ public class StreamBufferCache : IDisposable
         }
         cache.Clear();
         StaticCache.Value = null;
+    }
+}
+
+public interface IStreamContentsCache : IDisposable
+{
+    DecodedStreamContents GetOrDecodeBuffer(PdfStreamContents stream);
+}
+public class StreamUsageBasedCache : IStreamContentsCache
+{
+    private Dictionary<PdfStreamContents, TrackedContents> cache = new();
+    private DateTime LastCleaned;
+    public StreamUsageBasedCache()
+    {
+        LastCleaned = DateTime.UtcNow;
+        StreamContentsCache.StaticCache.Value = this;
+    }
+
+    public DecodedStreamContents GetOrDecodeBuffer(PdfStreamContents stream)
+    {
+        if (cache.TryGetValue(stream, out var usage))
+        {
+            usage.Contents.Users += 1;
+            usage.LastRead = DateTime.UtcNow;
+            return usage.Contents;
+        }
+
+        var buffer = stream.GetDecodedBuffer(false);
+        cache[stream] = new TrackedContents(buffer);
+        buffer.Users = 2; // cache and requestor
+        return buffer;
+    }
+
+    /// <summary>
+    /// Clears cached stream contents that have not been accessed
+    /// since the last time CleanUsused() was called.
+    /// </summary>
+    public void CleanUnused()
+    {
+        var toRemove = new List<PdfStreamContents>();
+        foreach (var kvp in cache)
+        {
+            if (kvp.Value.LastRead < LastCleaned)
+            {
+                toRemove.Add(kvp.Key);
+            }
+        }
+        foreach (var val in toRemove)
+        {
+            cache.Remove(val);
+        }
+        LastCleaned = DateTime.UtcNow;
+    }
+
+    public void Clear()
+    {
+        Dispose();
+    }
+
+    public void Dispose()
+    {
+        foreach (var item in cache.Values)
+        {
+            item.Contents.Dispose();
+        }
+        cache.Clear();
+    }
+
+    class TrackedContents
+    {
+        public TrackedContents(DecodedStreamContents contents)
+        {
+            Contents = contents;
+            LastRead = DateTime.UtcNow; ;
+        }
+        public DateTime LastRead { get; set; }
+        public DecodedStreamContents Contents { get; set; }
     }
 }

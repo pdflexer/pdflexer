@@ -1,5 +1,16 @@
 ﻿using PdfLexer.DOM;
 using System.Globalization;
+using System.IO.MemoryMappedFiles;
+using System.Text;
+
+
+
+#if NET6_0_OR_GREATER
+
+using DotNext.IO.MemoryMappedFiles;
+
+#endif
+
 
 namespace PdfLexer.Serializers;
 
@@ -11,7 +22,9 @@ public class StreamingWriter : IDisposable
     private readonly bool disposeOnComplete;
     private readonly TreeHasher hasher;
     private readonly Dictionary<PdfStreamHash, PdfIndirectRef> refs;
-    private decimal maxVersion = 1.4m;
+    private decimal maxVersion = 1.0m;
+
+    public decimal MaxPageVersion { get => maxVersion; }
 
     public StreamingWriter(Stream stream, bool dedupXobj, bool inMemoryDedup, bool disposeOnComplete = false)
     {
@@ -145,7 +158,10 @@ public class StreamingWriter : IDisposable
         CompleteBag();
         catalog ??= new PdfDictionary();
         catalog[PdfName.TypeName] = PdfName.Catalog;
-        catalog[PdfName.Version] = new PdfName(maxVersion.ToString("0.0", CultureInfo.InvariantCulture), false);
+        if (maxVersion > 1.4m)
+        {
+            catalog[PdfName.Version] = new PdfName(maxVersion.ToString("0.0", CultureInfo.InvariantCulture), false);
+        }
         var catRef = PdfIndirectRef.Create(catalog);
         trailer[PdfName.Root] = catRef;
 
@@ -212,4 +228,18 @@ public class StreamingWriter : IDisposable
         }
         refs?.Clear();
     }
+
+
+#if NET6_0_OR_GREATER
+
+    public static void UpdateFileHeaderVersion(string filePath, decimal value)
+    {
+        using var mm = MemoryMappedFile.CreateFromFile(filePath, FileMode.Open);
+        using var da = mm.CreateDirectAccessor(0, 9, MemoryMappedFileAccess.ReadWrite);
+        var data = da.Bytes;
+        ReadOnlySpan<byte> header = Encoding.ASCII.GetBytes("%PDF-" + value.ToString("0.0", CultureInfo.InvariantCulture) + '\n');
+        header.Slice(0, 9).CopyTo(data);
+    }
+
+#endif
 }

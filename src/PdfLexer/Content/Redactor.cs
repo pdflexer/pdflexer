@@ -96,7 +96,7 @@ public ref struct SinglePassRedactor
         var start = 0; var length = 0;
         var writeEnd = 0;
 
-        var writers = new List<FlateWriter>() { new FlateWriter() };
+        var writers = new List<ZLibLexerStream>() { new ZLibLexerStream() };
 
         while (true)
         {
