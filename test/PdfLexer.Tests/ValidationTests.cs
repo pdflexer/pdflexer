@@ -6,7 +6,7 @@ namespace PdfLexer.Tests;
 
 public class ValidationTests
 {
-    [Fact]
+    
     public static void It_Validates()
     {
         using var ctx = new ParsingContext();

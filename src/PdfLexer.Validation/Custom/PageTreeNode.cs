@@ -1,6 +1,6 @@
 ﻿namespace PdfLexer.Validation;
 
-internal partial class APM_PageTreeNode : APM_PageTreeNode__Base
+internal partial class APM_PageTreeNode // : APM_PageTreeNode__Base
 {
     public static new bool MatchesType(PdfValidator ctx, PdfDictionary obj)
     {

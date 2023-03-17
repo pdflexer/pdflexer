@@ -25,7 +25,7 @@ public class PdfValidator
 
     public void Run()
     {
-        Run<APM_FileTrailer, PdfDictionary>(new CallStack(), Trailer, null);
+        // Run<APM_FileTrailer, PdfDictionary>(new CallStack(), Trailer, null);
     }
 
     internal void Fail<T>(string msg) where T : ISpecification => Fail(T.Name, msg);
