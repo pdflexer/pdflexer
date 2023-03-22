@@ -18,6 +18,7 @@ public partial class BDC_Op
 
 public partial class d_Op
 {
+    public static d_Op Default { get; } = new d_Op(new PdfArray(), 0);
     public void Serialize(Stream stream)
     {
         PdfOperator.Shared.SerializeObject(stream, dashArray, x => x);

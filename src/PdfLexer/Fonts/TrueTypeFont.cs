@@ -66,7 +66,7 @@ namespace PdfLexer.Fonts
             }
 
             AddWidthInfo(t1, lookup);
-            return new SingleByteFont(t1.BaseFont ?? "Empty", lookup, notdef);
+            return new SingleByteFont(t1.BaseFont ?? "Empty", t1.NativeObject, lookup, notdef);
         }
 
         private static Glyph? MapGlyph(uint cc, string? name)

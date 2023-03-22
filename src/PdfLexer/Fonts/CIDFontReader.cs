@@ -94,7 +94,7 @@ internal class Type0Font
 
         var gs = new GlyphSet(b1g, all, notdef);
 
-        return new CompositeFont(t0.BaseFont?.Value ?? "Empty", encoding, gs, 2, vertical, cidInfo);
+        return new CompositeFont(t0.BaseFont?.Value ?? "Empty", t0.NativeObject, encoding, gs, 2, vertical, cidInfo);
     }
 
     [return: NotNullIfNotNull("name")]

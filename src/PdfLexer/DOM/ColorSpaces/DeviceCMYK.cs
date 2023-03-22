@@ -7,6 +7,8 @@ internal class DeviceCMYK : IColorSpace
     public int Components => 4;
     public PdfName Name => PdfName.DeviceCMYK;
 
+    public bool IsPredefined => true;
+
     // CMYK conversion ported from PDF.JS (https://github.com/mozilla/pdf.js/blob/master/src/core/colorspace.js)
     // PDF.JS is licensed as follows:
     /* Copyright 2012 Mozilla Foundation

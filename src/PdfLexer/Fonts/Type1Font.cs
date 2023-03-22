@@ -74,7 +74,7 @@ internal partial class Type1Font
         AddWidths(t1, encoding);
 
         PdfName fn = t1.BaseFont ?? "Empty";
-        return new SingleByteFont(fn, encoding, notdef);
+        return new SingleByteFont(fn, t1.NativeObject, encoding, notdef);
     }
 
 

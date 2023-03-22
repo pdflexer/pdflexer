@@ -117,4 +117,22 @@ public partial class ContentWriter
         K_Op.WriteLn(c, m, y, k, StreamWriter.Stream);
         return this;
     }
+
+
+
+    private Dictionary<IPdfObject, PdfName> colorSpaces = new Dictionary<IPdfObject, PdfName>();
+    internal PdfName AddColorSpace(IPdfObject cs)
+    {
+        if (colorSpaces.TryGetValue(cs, out var name)) return name;
+
+        name = $"C{objCnt++}";
+        while (ColorSpaces.ContainsKey(name))
+        {
+            name = $"C{objCnt++}";
+        }
+
+        colorSpaces[cs] = name;
+        ColorSpaces[name] = cs;
+        return name;
+    }
 }

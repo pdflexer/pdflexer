@@ -2,7 +2,7 @@
 
 internal class ColorSpace
 {
-    public static IColorSpace Get(ParsingContext ctx, IPdfObject cs)
+    public static IColorSpace Get(ParsingContext ctx, IPdfObject cs, bool wrapUnimplemented=false)
     {
         // TODO if Device* colorspace selected check Resources -> ColorSpace for Default* to replace default with.
         cs = cs.Resolve();
@@ -20,6 +20,10 @@ internal class ColorSpace
                         return DeviceCMYK.Instance;
                     case "Pattern":
                     default:
+                        if (wrapUnimplemented)
+                        {
+                            return new UnImplementedColorSpace(nm, null);
+                        }
                         throw new NotImplementedException($"Colorspace {nm.Value} is not implemented.");
                 }
             case PdfArray arr:
@@ -47,6 +51,10 @@ internal class ColorSpace
                     case "Pattern":
                     case "Separation":
                     case "DeviceN":
+                        if (wrapUnimplemented)
+                        {
+                            return new UnImplementedColorSpace(mode, arr);
+                        }
                         throw new NotImplementedException($"Colorspace {mode.Value} is not implemented.");
                     case "Indexed":
                         if (arr.Count < 4) { throw new PdfLexerException($"Indexed colorspace had less than 4 entries."); }

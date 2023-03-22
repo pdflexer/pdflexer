@@ -105,6 +105,7 @@ public partial class ContentWriter
 
     public ContentWriter MoveTo(decimal x, decimal y)
     {
+        EnsureInPageState();
         if (scale != 1) { x *= (decimal)scale; y *= (decimal)scale; }
         m_Op.WriteLn(x, y, StreamWriter.Stream);
         return this;

@@ -1,6 +1,8 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Content.Model;
 using PdfLexer.DOM;
 using PdfLexer.Filters;
+using PdfLexer.Fonts;
 using PdfLexer.Operators;
 using System;
 using System.Collections.Generic;
@@ -17,21 +19,30 @@ namespace PdfLexer.Writing;
 public partial class ContentWriter
 {
     private static decimal KAPPA = (decimal)(4 * ((Math.Sqrt(2) - 1) / 3.0));
-    private GraphicsState GfxState;
+
     internal PageState State { get; private set; }
     internal PdfDictionary Resources { get; }
     private PdfDictionary XObjs { get; }
     private PdfDictionary Fonts { get; }
+    public PdfDictionary ColorSpaces { get; }
+    public PdfDictionary ExtGS { get; }
+    public PdfDictionary Properties { get; }
+
+    private GfxState GfxState;
+    internal GfxState GS { get => GfxState; }
     public IStreamContentsWriter StreamWriter { get; private set; }
 
     private double scale;
 
     public ContentWriter(PdfDictionary resources, PageUnit unit = PageUnit.Points)
     {
-        GfxState = new GraphicsState();
+        GfxState = new GfxState();
         Resources = resources;
         XObjs = resources.GetOrCreateValue<PdfDictionary>(PdfName.XObject);
         Fonts = resources.GetOrCreateValue<PdfDictionary>(PdfName.Font);
+        ColorSpaces = resources.GetOrCreateValue<PdfDictionary>(PdfName.ColorSpace);
+        ExtGS = resources.GetOrCreateValue<PdfDictionary>(PdfName.ExtGState);
+        Properties = resources.GetOrCreateValue<PdfDictionary>("Properties");
         StreamWriter = new ZLibLexerStream();
         scale = unit switch
         {
@@ -50,6 +61,12 @@ public partial class ContentWriter
         return Do(nm, x, y, w, h);
     }
 
+    internal ContentWriter Image(PdfStream img)
+    {
+        var nm = AddResource(img, "I");
+        return Do(nm);
+    }
+
     public ContentWriter Form(XObjForm form, double x, double y, double xScale = 1, double yScale = 1)
     {
         var nm = AddResource(form.NativeObject, "F");
@@ -59,6 +76,12 @@ public partial class ContentWriter
     public ContentWriter Form(XObjForm form)
     {
         var nm = AddResource(form.NativeObject, "F");
+        return Do(nm);
+    }
+
+    internal ContentWriter Form(PdfStream form)
+    {
+        var nm = AddResource(form, "F");
         return Do(nm);
     }
 
@@ -99,6 +122,7 @@ public partial class ContentWriter
     {
         q_Op.Value.Apply(ref GfxState);
         q_Op.WriteLn(StreamWriter.Stream);
+        qDepth++;
         return this;
     }
 
@@ -106,6 +130,7 @@ public partial class ContentWriter
     {
         Q_Op.Value.Apply(ref GfxState);
         Q_Op.WriteLn(StreamWriter.Stream);
+        qDepth--;
         return this;
     }
 
@@ -150,7 +175,27 @@ public partial class ContentWriter
             0, 0, 1, 0,
             0, 0, 0, 1);
 
-        GfxState.Apply(cm);
+        cm_Op.Apply(ref GfxState, cm);
+        cm_Op.WriteLn(cm, StreamWriter.Stream);
+        return this;
+    }
+
+    public ContentWriter Translate(decimal x, decimal y)
+    {
+        var cm = new Matrix4x4(
+            0, 0, 0, 0,
+            0, 0, 0, 0,
+            (float)x, (float)y, 1, 0,
+            0, 0, 0, 1);
+
+        cm_Op.Apply(ref GfxState, cm);
+        cm_Op.WriteLn(cm, StreamWriter.Stream);
+        return this;
+    }
+
+    internal ContentWriter Transform(Matrix4x4 cm)
+    {
+        cm_Op.Apply(ref GfxState, cm);
         cm_Op.WriteLn(cm, StreamWriter.Stream);
         return this;
     }
@@ -165,7 +210,7 @@ public partial class ContentWriter
             xp, yp, 1, 0,
             0, 0, 0, 1);
 
-        GfxState.Apply(cm);
+        cm_Op.Apply(ref GfxState, cm);
         cm_Op.WriteLn(cm, StreamWriter.Stream);
         return this;
     }
@@ -188,7 +233,7 @@ public partial class ContentWriter
             (float)x, (float)y, 1, 0,
             0, 0, 0, 1);
 
-        GfxState.Apply(cm);
+        cm_Op.Apply(ref GfxState, cm);
         cm_Op.WriteLn(cm, StreamWriter.Stream);
         return this;
     }
@@ -246,8 +291,264 @@ public partial class ContentWriter
     [Obsolete("Use .Op(op) instead")]
     public ContentWriter CustomOp(IPdfOperation op) => Op(op);
 
-    public PdfStreamContents Complete() { 
+    internal ContentWriter SetGS(GfxState state)
+    {
+        var stream = StreamWriter.Stream;
+        if (state == GfxState)
+        {
+            return this;
+        }
+
+        if (state.FontObject != null && state.FontObject != GfxState.FontObject)
+        {
+            writableFont = null;
+            var nm = AddFont(state.FontObject);
+            Tf_Op.WriteLn(nm, (decimal)state.FontSize, stream);
+        }
+        else if (state.FontSize != GfxState.FontSize)
+        {
+            writableFont = null;
+            var nm = AddFont(GfxState.FontObject ?? SingleByteFont.Fallback.NativeObject);
+            Tf_Op.WriteLn(nm, (decimal)state.FontSize, stream);
+        }
+
+        if (state.CharSpacing != GfxState.CharSpacing)
+        {
+            Tc_Op.WriteLn((decimal)state.CharSpacing, stream);
+        }
+
+        if (state.CTM != GfxState.CTM)
+        {
+            var cm = GfxState.GetTranslation(state.CTM);
+            cm_Op.WriteLn(cm, stream);
+        }
+
+        if (state.TextHScale != GfxState.TextHScale)
+        {
+            Tz_Op.WriteLn((decimal)(state.TextHScale * 100.0), stream);
+        }
+
+        if (state.TextLeading != GfxState.TextLeading)
+        {
+            TL_Op.WriteLn((decimal)(state.TextLeading), stream);
+        }
+
+        if (state.TextMode != GfxState.TextMode)
+        {
+            Tr_Op.WriteLn(state.TextMode, stream);
+        }
+
+        if (state.TextRise != GfxState.TextRise)
+        {
+            Ts_Op.WriteLn((decimal)state.TextRise, stream);
+        }
+
+        if (state.WordSpacing != GfxState.WordSpacing)
+        {
+            Tw_Op.WriteLn((decimal)state.WordSpacing, stream);
+        }
+
+        if (state.ColorStroking != GfxState.ColorStroking)
+        {
+            if (state.ColorStroking == null)
+            {
+                // TODO colorspace check
+                G_Op.WriteLn(0, stream);
+            }
+            else
+            {
+                state.ColorStroking.Serialize(stream);
+                stream.WriteByte((byte)'\n');
+            }
+        }
+
+        if (state.Color != GfxState.Color)
+        {
+            if (state.Color == null)
+            {
+                // TODO colorspace check
+                g_Op.WriteLn(0, stream);
+            }
+            else
+            {
+                state.Color.Serialize(stream);
+                stream.WriteByte((byte)'\n');
+            }
+        }
+
+        if (state.Dashing != GfxState.Dashing)
+        {
+            if (state.Dashing == null)
+            {
+                d_Op.Default.Serialize(stream);
+            }
+            else
+            {
+                state.Dashing.Serialize(stream);
+            }
+            stream.WriteByte((byte)'\n');
+        }
+
+        if (state.Flatness != GfxState.Flatness)
+        {
+            i_Op.WriteLn((decimal)state.Flatness, stream);
+        }
+
+        if (state.ColorSpace != GfxState.ColorSpace)
+        {
+            if (state.ColorSpace == null)
+            {
+                g_Op.WriteLn(0, stream);
+            }
+            else
+            {
+                if (state.ColorSpace is PdfName nm)
+                {
+                    cs_Op.WriteLn(nm, stream);
+                }
+                else
+                {
+                    nm = AddColorSpace(state.ColorSpace);
+                    cs_Op.WriteLn(nm, stream);
+                }
+            }
+        }
+
+        if (state.ColorSpaceStroking != GfxState.ColorSpaceStroking)
+        {
+            if (state.ColorSpaceStroking == null)
+            {
+                G_Op.WriteLn(0, stream);
+            }
+            else
+            {
+                if (state.ColorSpaceStroking is PdfName nm)
+                {
+                    CS_Op.WriteLn(nm, stream);
+                }
+                else
+                {
+                    nm = AddColorSpace(state.ColorSpaceStroking);
+                    CS_Op.WriteLn(nm, stream);
+                }
+            }
+        }
+
+        if (state.ExtDict != GfxState.ExtDict)
+        {
+            if (state.ExtDict == null)
+            {
+                if (emptyGS == null)
+                {
+                    emptyGS = AddExtGS(new PdfDictionary());
+                }
+                gs_Op.WriteLn(emptyGS, stream);
+            }
+            else
+            {
+                var nm = AddExtGS(state.ExtDict);
+                gs_Op.WriteLn(nm, stream);
+            }
+        }
+
+        GfxState = state with { Prev = state.Prev, Text = GfxState.Text };
+        return this;
+    }
+    private Dictionary<PdfDictionary, PdfName> propertyLists = new Dictionary<PdfDictionary, PdfName>();
+    internal ContentWriter EndMarkedContent()
+    {
+        EnsureInPageState();
+        mcDepth--;
+        EMC_Op.Value.Serialize(StreamWriter.Stream);
+        StreamWriter.Stream.WriteByte((byte)'\n');
+        return this;
+    }
+    internal ContentWriter MarkedContent(MarkedContent mc)
+    {
+        EnsureInPageState(); // make sure in page state to simplify making sure we don't have
+                             // uneven operators eg. BT BMC ET EMC
+        if (mc.PropList != null)
+        {
+            if (!propertyLists.TryGetValue(mc.PropList, out var name))
+            {
+                name = $"PL{objCnt++}";
+                while (ExtGS.ContainsKey(name))
+                {
+                    name = $"PL{objCnt++}";
+                }
+
+                propertyLists[mc.PropList] = name;
+                Properties[name] = mc.PropList;
+            }
+            var op = new BDC_Op(mc.Name, name);
+            op.Serialize(StreamWriter.Stream);
+            StreamWriter.Stream.WriteByte((byte)'\n');
+        }
+        else if (mc.InlineProps != null)
+        {
+            var op = new BDC_Op(mc.Name, mc.InlineProps);
+            op.Serialize(StreamWriter.Stream);
+            StreamWriter.Stream.WriteByte((byte)'\n');
+        }
+        else
+        {
+            BMC_Op.WriteLn(mc.Name, StreamWriter.Stream);
+        }
+        mcDepth++;
+        return this;
+    }
+
+    private PdfName? emptyGS;
+    private Dictionary<PdfDictionary, PdfName> extGraphics = new Dictionary<PdfDictionary, PdfName>();
+    internal PdfName AddExtGS(PdfDictionary gs)
+    {
+        if (extGraphics.TryGetValue(gs, out var name)) return name;
+
+        name = $"GS{objCnt++}";
+        while (ExtGS.ContainsKey(name))
+        {
+            name = $"GS{objCnt++}";
+        }
+
+        extGraphics[gs] = name;
+        ExtGS[name] = gs;
+        return name;
+    }
+
+    int mcDepth = 0;
+    int qDepth = 0;
+    public PdfStreamContents Complete()
+    {
+        EnsureInPageState();
+        for (var i = 0; i < mcDepth; i++)
+        {
+            EMC_Op.WriteLn(StreamWriter.Stream);
+        }
+        for (var i = 0; i < qDepth; i++)
+        {
+            Q_Op.WriteLn(StreamWriter.Stream);
+        }
         var result = StreamWriter.Complete();
+        if (XObjs.Count == 0)
+        {
+            Resources.Remove(PdfName.XObject);
+        }
+        if (Fonts.Count == 0)
+        {
+            Resources.Remove(PdfName.Font);
+        }
+        if (ColorSpaces.Count == 0)
+        {
+            Resources.Remove(PdfName.ColorSpace);
+        }
+        if (ExtGS.Count == 0)
+        {
+            Resources.Remove(PdfName.ExtGState);
+        }
+        if (Properties.Count == 0)
+        {
+            Resources.Remove("Properties");
+        }
         StreamWriter = null!; // TODO: add proper error handling for using methods after calling complete
         return result;
     }

@@ -2,7 +2,7 @@
 using System.Buffers.Text;
 using System.Runtime.CompilerServices;
 using Microsoft.IO;
-
+using PdfLexer.Content;
 using PdfLexer.Filters;
 using PdfLexer.Fonts;
 using PdfLexer.IO;
@@ -372,6 +372,45 @@ public class ParsingContext : IDisposable
         }
         Error($"Found endstream in contents, using repaired length: {xref.KnownStreamLength}");
         return xref.Source.GetDataAsStream(this, xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+    }
+
+    internal void FillGlyphsFromRawString(GfxState state, ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+    {
+        if (data.Length < 200)
+        {
+            Span<byte> writeBuffer = stackalloc byte[data.Length];
+            var l = StringParser.ConvertBytes(data, writeBuffer);
+            FillGlyphsNoReset(state, writeBuffer.Slice(0, l), glyphs);
+        }
+        else
+        {
+            var rented = ArrayPool<byte>.Shared.Rent(data.Length);
+            ReadOnlySpan<byte> spanned = rented;
+            var l = StringParser.ConvertBytes(data, rented);
+            FillGlyphsNoReset(state, spanned.Slice(0, l), glyphs);
+            ArrayPool<byte>.Shared.Return(rented);
+        }
+    }
+
+    internal void FillGlyphsNoReset(GfxState state, ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+    {
+        int i = 0;
+        int u = 0;
+        while (i < data.Length && (u = GetGlyph(state, data, i, out var glyph)) > 0)
+        {
+            glyphs.Add(new UnappliedGlyph(glyph, 0f, u));
+            i += u;
+        }
+    }
+
+    internal int GetGlyph(GfxState state, ReadOnlySpan<byte> data, int pos, out Glyph info)
+    {
+        if (state.Font == null)
+        {
+            Error("Font data before font set, falling back to helvetica");
+            return SingleByteFont.Fallback.GetGlyph(data, pos, out info);
+        }
+        return state.Font.GetGlyph(data, pos, out info);
     }
 
     internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data)

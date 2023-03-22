@@ -9,6 +9,8 @@ internal class Indexed : IColorSpace
     public int Components => 1;
     public PdfName Name => PdfName.Indexed;
 
+    public bool IsPredefined => false;
+
     public Indexed(IColorSpace baseCs, int hival, byte[] lookup)
     {
         _baseCs = baseCs;

@@ -89,8 +89,16 @@ internal class StringSerializer : ISerializer<PdfString>
     internal static int ConvertLiteralBytes(ReadOnlySpan<byte> data, Span<byte> output, bool escapeNonPrintable)
     {
         var ri = 0;
-        ReadOnlySpan<int> escapes = escapeNeeded;
         output[ri++] = (byte)'(';
+        ri += ConvertLiteralBytesWithoutParenths(data,output.Slice(1),escapeNonPrintable);
+        output[ri++] = (byte)')';
+        return ri;
+    }
+
+    internal static int ConvertLiteralBytesWithoutParenths(ReadOnlySpan<byte> data, Span<byte> output, bool escapeNonPrintable)
+    {
+        var ri = 0;
+        ReadOnlySpan<int> escapes = escapeNeeded;
         int ei = 0;
         for (var i = 0; i < data.Length; i++)
         {
@@ -117,7 +125,6 @@ internal class StringSerializer : ISerializer<PdfString>
                 output[ri++] = (byte)b;
             }
         }
-        output[ri++] = (byte)')';
         return ri;
     }
 

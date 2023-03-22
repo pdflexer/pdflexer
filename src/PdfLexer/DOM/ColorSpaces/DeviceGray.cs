@@ -5,6 +5,7 @@ internal class DeviceGray : IColorSpace
     public static readonly DeviceGray Instance = new ();
     public int Components => 1;
     public PdfName Name => PdfName.DeviceGray;
+    public bool IsPredefined => true;
 
     public void CopyRowToRBGA8Span(ReadOnlySpan<byte> row, Span<byte> output)
     {

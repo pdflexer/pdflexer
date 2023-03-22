@@ -1,4 +1,6 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Content.Model;
+using PdfLexer.DOM;
 using PdfLexer.Fonts;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
@@ -8,8 +10,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
 using Xunit;
 
 namespace PdfLexer.Tests
@@ -147,9 +147,12 @@ namespace PdfLexer.Tests
 
         [Fact]
         public void It_Reads_Type0_TrueType_Embedded_CMap() => RunSingle("Test-plusminus.pdf");
-
+        [Fact]
+        public void It_Reads_Type0_TrueType_Embedded_CMap_COM() => RunCOM("Test-plusminus.pdf");
         [Fact]
         public void It_Reads_Type0_ToUnicode_Identity() => RunSingle("issue12418_reduced.pdf");
+        [Fact]
+        public void It_Reads_Type0_ToUnicode_Identityp_COM() => RunCOM("issue12418_reduced.pdf");
 
         [Fact]
         public void It_Reads_Type0_ToUnicode_Identity2() => RunSingle("issue4402_reduced.pdf");
@@ -167,6 +170,9 @@ namespace PdfLexer.Tests
         public void It_Reads_Type0_Vert() => RunSingle("issue6387.pdf"); // bounding box estimate is not great here, font has huge bbox
 
         [Fact]
+        public void It_Reads_Type0_Vert_COM() => RunCOM("issue6387.pdf");
+
+        [Fact]
         public void It_Reads_With_GS_Op()
         {
             using var ctx = new ParsingContext();
@@ -175,9 +181,10 @@ namespace PdfLexer.Tests
             {
                 using var writer = pg.GetWriter();
 
-                writer.Font(ContentWriter.Base14.Courier, 10)
-                      .Raw(new gs_Op("GSName"))
-                      .Text("Hello world");
+                writer.Font(ContentWriter.Base14.Courier, 10);
+                new gs_Op("GSName").Serialize(writer.StreamWriter.Stream);
+                writer.StreamWriter.Stream.WriteByte((byte)'\n');
+                writer.Text("Hello world");
                 // writer.Complete();
             }
             var dict = Standard14Font.GetHelvetica().GetPdfFont();
@@ -213,15 +220,81 @@ namespace PdfLexer.Tests
 
         private void RunSingle(string name)
         {
-            // using var ctx = new ParsingContext();
+            {
+                var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+                var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+                var txtFile = Path.Combine(tp, "pdfs", "txt-values", name + ".txt");
+                var pdfFile = Path.Combine(pdfRoot, name);
+                using var pdf = PdfDocument.Open(pdfFile);
+                var sb = new StringBuilder();
+                int pg = 1;
+                foreach (var page in pdf.Pages)
+                {
+                    var reader = new TextScanner(pdf.Context, page);
+                    while (reader.Advance())
+                    {
+                        var (x, y) = reader.GetCurrentTextPos();
+                        if (reader.Glyph.MultiChar != null)
+                        {
+                            foreach (var c in reader.Glyph.MultiChar)
+                            {
+                                sb.Append($"{pg} {x:0.00} {y:0.0} {c} {reader.WasNewStatement} {reader.WasNewLine}\n");
+                            }
+                        }
+                        else
+                        {
+                            sb.Append($"{pg} {x:0.00} {y:0.0} {reader.Glyph.Char} {reader.WasNewStatement} {reader.WasNewLine}\n");
+                        }
+                    }
+                    pg++;
+                }
+
+                Directory.CreateDirectory(Path.Combine(tp, "results", "txt-extract"));
+                var output = Path.Combine(tp, "results", "txt-extract", name + ".txt");
+                var result = sb.ToString();
+                File.WriteAllText(output, result);
+
+                string expected = null;
+                if (File.Exists(txtFile))
+                {
+                    expected = File.ReadAllText(txtFile);
+                }
+
+                Assert.Equal(expected, result);
+            }
+            RunCOM(name);
+        }
+
+
+        
+
+        private void RunCOM(string name)
+        {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var txtFile = Path.Combine(tp, "pdfs", "txt-values", name + ".txt");
             var pdfFile = Path.Combine(pdfRoot, name);
-            using var pdf = PdfDocument.Open(pdfFile);
+            using var pdf = PdfDocument.Open(File.ReadAllBytes(pdfFile));
+            var opdf = PdfDocument.Create();
+
+            foreach (var page in pdf.Pages)
+            {
+                var parser = new ContentModelParser(pdf.Context, page);
+                var content = parser.Parse();
+                var newPage = new PdfPage();
+                newPage.MediaBox = page.MediaBox;
+                newPage.CropBox = page.CropBox;
+                var str = ContentModelWriter.CreateContent(newPage.Resources, content);
+                newPage.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(new PdfStream(str));
+                opdf.Pages.Add(newPage);
+            }
+
+            var nd = opdf.Save();
+            using var pdf2 = PdfDocument.Open(nd);
+
             var sb = new StringBuilder();
             int pg = 1;
-            foreach (var page in pdf.Pages)
+            foreach (var page in pdf2.Pages)
             {
                 var reader = new TextScanner(pdf.Context, page);
                 while (reader.Advance())
@@ -231,29 +304,46 @@ namespace PdfLexer.Tests
                     {
                         foreach (var c in reader.Glyph.MultiChar)
                         {
-                            sb.Append($"{pg} {x:0.00} {y:0.0} {c} {reader.WasNewStatement} {reader.WasNewLine}\n");
+                            sb.Append($"{pg} {x:0.00} {y:0.0} {c}\n");
                         }
                     }
                     else
                     {
-                        sb.Append($"{pg} {x:0.00} {y:0.0} {reader.Glyph.Char} {reader.WasNewStatement} {reader.WasNewLine}\n");
+                        sb.Append($"{pg} {x:0.00} {y:0.0} {reader.Glyph.Char}\n");
                     }
                 }
                 pg++;
             }
 
-            Directory.CreateDirectory(Path.Combine(tp, "results", "txt-extract"));
-            var output = Path.Combine(tp, "results", "txt-extract", name + ".txt");
+
+            Directory.CreateDirectory(Path.Combine(tp, "results", "txt-extract-com"));
+            var output = Path.Combine(tp, "results", "txt-extract-com", name + ".txt");
+            var output2 = Path.Combine(tp, "results", "txt-extract-com", name);
+            File.WriteAllBytes(output2, nd);
+            // opdf.SaveTo(output2);
             var result = sb.ToString();
             File.WriteAllText(output, result);
 
-            string expected = null;
+            string expected = "";
             if (File.Exists(txtFile))
             {
-                expected = File.ReadAllText(txtFile);
+                foreach (var ln in File.ReadAllLines(txtFile))
+                {
+                    if (string.IsNullOrWhiteSpace(ln)) { expected += ln + '\n'; }
+                    var segs = ln.Split(' ');
+                    if (segs.Length == 6)
+                    {
+                        expected += string.Join(' ', segs[0..4]) + '\n';
+                    } else
+                    {
+                        expected += string.Join(' ', segs[0..3]) + "  \n";
+                    }
+                    
+                }
             }
 
             Assert.Equal(expected, result);
         }
+
     }
 }

@@ -15,6 +15,11 @@ public interface IColorSpace
     /// </summary>
     PdfName Name { get; }
 
+    /// <summary>
+    /// If the colorspace is predefined by using a PdfName
+    /// in the pdf spec
+    /// </summary>
+    bool IsPredefined { get; }
 
     /// <summary>
     /// Copies and converts component data to RGBA 8 bit format
@@ -32,7 +37,7 @@ public interface IColorSpace
 
     bool IsDefaultDecode(int bpc, List<float> decode) { return false; }
 
+    IPdfObject GetPdfObject() { throw new NotImplementedException(); }
 
-    (double x, double y, double z) GetXYZ(double[] compData) { return (0,0,0); }
 }
 

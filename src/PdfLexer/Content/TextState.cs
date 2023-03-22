@@ -181,10 +181,6 @@ public class TextState
         UpdateTRM();
     }
 
-    public void Apply(Td_Op op)
-    {
-        ShiftTextAndLineMatrix((float)op.tx, (float)op.ty);
-    }
 
     private void ShiftTextAndLineMatrix(float tx, float ty)
     {
@@ -201,6 +197,12 @@ public class TextState
         TextMatrix = TextLineMatrix;
         UpdateTRM();
     }
+
+    public void Apply(Td_Op op)
+    {
+        ShiftTextAndLineMatrix((float)op.tx, (float)op.ty);
+    }
+
 
     public void Apply(TD_Op op)
     {

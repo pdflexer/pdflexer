@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel.Design;
+using System.Text;
 
 namespace PdfLexer.Content;
 
@@ -25,6 +26,7 @@ public ref struct PageContentScanner2
     public IReadOnlyList<ScannerInfo> ReadStack { get => stack; }
     public string? FormName { get => CurrentFormName; }
 
+    public PdfDictionary Resources;
 
     /// <summary>
     /// Reads content from a PDF Page
@@ -49,6 +51,7 @@ public ref struct PageContentScanner2
         CurrentFormName = null;
         SkipOps = -1;
         CurrentStreamId = 0;
+        Resources = page.Get<PdfDictionary>(PdfName.Resources) ?? new PdfDictionary();
         if (!page.TryGetValue(PdfName.Contents, out var contents))
         {
             Scanner = new ContentStreamScanner(ctx, Array.Empty<byte>());
@@ -99,6 +102,10 @@ public ref struct PageContentScanner2
 
     public PageContentScanner2(ParsingContext ctx, PdfDictionary page, PdfStream form)
     {
+        var pr = page.Get<PdfDictionary>(PdfName.Resources);
+        var fr = form.Dictionary.Get<PdfDictionary>(PdfName.Resources);
+        Resources = GetResources(pr, fr);
+
         CurrentOperator = PdfOperatorType.Unknown;
         CurrentBuffer = null;
         FlattenForms = false;
@@ -313,6 +320,10 @@ public ref struct PageContentScanner2
 
         UpdateCurrentStreamId();
 
+        var pr = Page.Get<PdfDictionary>(PdfName.Resources);
+        var fr = CurrentForm.Get<PdfDictionary>(PdfName.Resources);
+        Resources = GetResources(pr, fr);
+
         if (CurrentForm.Get<PdfArray>(PdfName.Matrix) != null)
         {
             State = MultiPageState.CTMForm;
@@ -339,6 +350,11 @@ public ref struct PageContentScanner2
         CurrentFormName = prev.FormName;
         Scanner = CurrentBuffer.GetScanner(Context);
         Scanner.SetPosition(prev.Position);
+
+        var pr = Page.Get<PdfDictionary>(PdfName.Resources);
+        var fr = CurrentForm?.Get<PdfDictionary>(PdfName.Resources);
+        Resources = GetResources(pr, fr);
+
         UpdateCurrentStreamId();
     }
 
@@ -349,13 +365,6 @@ public ref struct PageContentScanner2
             CurrentStreamId = 0;
             return;
         }
-
-        // if (!Context.IndirectLookup.TryGetValue(CurrentStream, out var xref))
-        // {
-        //     CurrentStreamId = 0;
-        //     return;
-        // }
-        // CurrentStreamId = xref.Reference.GetId();
     }
 
     internal bool TryGetForm(PdfName name, [NotNullWhen(true)] out PdfStream? found)
@@ -422,5 +431,227 @@ public ref struct PageContentScanner2
             }
             return false;
         }
+    }
+
+    internal bool TryGetColorSpace(PdfName name, [NotNullWhen(true)] out IPdfObject? found)
+    {
+        if (
+            Resources.TryGetValue<PdfDictionary>(PdfName.ColorSpace, out var cs)
+            && cs.TryGetValue(name, out found)
+        )
+        {
+            found = found.Resolve();
+            return true;
+        }
+        found = null;
+        return false;
+    }
+
+    internal bool TryGetGraphicsState(PdfName name, [NotNullWhen(true)] out PdfDictionary? found)
+    {
+        if (
+            Resources.TryGetValue<PdfDictionary>(PdfName.ExtGState, out var gs)
+            && gs.TryGetValue<PdfDictionary>(name, out found, errorOnMismatch: false)
+        )
+        {
+            return true;
+        }
+        found = null;
+        return false;
+    }
+
+    internal bool TryGetPropertyList(PdfName name, [NotNullWhen(true)] out PdfDictionary? found)
+    {
+        if (
+            Resources.TryGetValue<PdfDictionary>("Properties", out var props)
+            && props.TryGetValue<PdfDictionary>(name, out found, errorOnMismatch: false)
+        )
+        {
+            return true;
+        }
+        found = null;
+        return false;
+    }
+
+    internal bool TryGetFont(PdfName name, [NotNullWhen(true)] out PdfDictionary? found)
+    {
+        if (
+            Resources.TryGetValue<PdfDictionary>(PdfName.Font, out var fonts)
+            && fonts.TryGetValue<PdfDictionary>(name, out found, errorOnMismatch: false)
+        )
+        {
+            return true;
+        }
+        found = null;
+        return false;
+    }
+
+    internal bool TryGetXObject(PdfName name, [NotNullWhen(true)] out PdfStream? found, out bool isForm)
+    {
+        isForm = false;
+        found = null;
+        if (
+            Resources.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobj)
+            && xobj.TryGetValue(name, out var formObj)
+                )
+        {
+            if (formObj == null) { return false; }
+            formObj = formObj.Resolve();
+            if (formObj.Type == PdfObjectType.DictionaryObj)
+            {
+                // special handling for forms that have no contents
+                // review all the special forms and see how to handle those
+                var fd = (PdfDictionary)formObj;
+                found = new PdfStream(fd, new PdfByteArrayStreamContents(new byte[0]));
+                if (fd.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
+                    st == PdfName.Form)
+                {
+                    isForm = true;
+                }
+            }
+            else if (formObj.Type == PdfObjectType.StreamObj)
+            {
+                found = (PdfStream)formObj;
+                if (found.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
+                    st == PdfName.Form)
+                {
+                    isForm = true;
+                }
+            }
+            else { found = null; return false; } // todo warning with type
+            return true;
+        }
+        return false;
+    }
+
+    internal bool TryGetXObj(PdfName name, [NotNullWhen(true)] out PdfStream? found, out bool isForm)
+    {
+        if (CurrentForm != null && TryGetXObjInt(CurrentForm, out found, out isForm))
+        {
+            return true;
+        }
+
+        if (TryGetXObjInt(Page, out found, out isForm))
+        {
+            return true;
+        }
+
+        found = null;
+        return false;
+
+        bool TryGetXObjInt(PdfDictionary obj, [NotNullWhen(true)] out PdfStream? form, out bool isForm)
+        {
+            form = null;
+            isForm = false;
+            if (obj.TryGetValue<PdfDictionary>(PdfName.Resources, out var res) &&
+                res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobj) &&
+                xobj.TryGetValue(name, out var formObj)
+                )
+            {
+                if (formObj == null) { form = null; return false; }
+                formObj = formObj.Resolve();
+                if (formObj.Type == PdfObjectType.DictionaryObj)
+                {
+                    // special handling for forms that have no contents
+                    // review all the special forms and see how to handle those
+                    var fd = (PdfDictionary)formObj;
+                    form = new PdfStream(fd, new PdfByteArrayStreamContents(new byte[0]));
+                    if (fd.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
+                        st == PdfName.Form)
+                    {
+                        isForm = true;
+                    }
+                }
+                else if (formObj.Type == PdfObjectType.StreamObj)
+                {
+                    form = (PdfStream)formObj;
+                    if (form.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var st) &&
+                        st == PdfName.Form)
+                    {
+                        isForm = true;
+                    }
+                }
+                else { form = null; return false; } // todo warning with type
+                return true;
+            }
+            return false;
+        }
+    }
+
+
+    internal PdfDictionary? GetFontObj(PdfName name)
+    {
+        if (CurrentForm != null 
+            && CurrentForm.TryGetValue<PdfDictionary>(PdfName.Resources, out var res) 
+            && res.TryGetValue<PdfDictionary>(PdfName.Font, out var fonts)
+            && fonts.TryGetValue<PdfDictionary>(name, out var fnt))
+        {
+            return fnt;
+        }
+
+        if (stack != null && stack.Count > 0)
+        {
+            for (var i = stack.Count - 1; i > -1; i--)
+            {
+                var dict = stack[i].Stream.Dictionary?.Get<PdfDictionary>(PdfName.Resources);
+                if (dict != null && dict.TryGetValue<PdfDictionary>(PdfName.Font, out var fd)
+                        && fd.TryGetValue<PdfDictionary>(name, out var f))
+                {
+                    return f;
+                }
+            }
+        }
+
+        if (
+            Page.TryGetValue<PdfDictionary>(PdfName.Resources, out res)
+            && res.TryGetValue<PdfDictionary>(PdfName.Font, out fonts)
+            && fonts.TryGetValue<PdfDictionary>(name, out fnt))
+        {
+            return fnt;
+        }
+        Context.Error($"Unable to find font for {name.Value}, using fallback.");
+        return null;
+    }
+
+
+    private static PdfDictionary GetResources(PdfDictionary? parentResources, PdfDictionary? childResources)
+    {
+        if (parentResources == null)
+        {
+            return childResources ?? new PdfDictionary();
+        }
+        else if (childResources == null)
+        {
+            return parentResources;
+        }
+        else
+        {
+            return MergeResources(parentResources, childResources);
+        }
+    }
+    private static PdfDictionary MergeResources(PdfDictionary parent, PdfDictionary child)
+    {
+        // does not follow pdf spec, more lenient with inheritance
+        var result = parent.CloneShallow();
+        foreach (var kvp in child)
+        {
+            if (kvp.Value.Type != PdfObjectType.DictionaryObj)
+            {
+                continue; // warn?
+            }
+            if (!result.TryGetValue(kvp.Key, out var sd) || sd.Type != PdfObjectType.DictionaryObj)
+            {
+                sd = new PdfDictionary();
+                result[kvp.Key] = sd;
+            }
+            var psd = (PdfDictionary)sd;
+            var csd = (PdfDictionary)kvp.Value;
+            foreach (var skvp in csd)
+            {
+                psd[skvp.Key] = skvp.Value;
+            }
+        }
+        return result;
+
     }
 }

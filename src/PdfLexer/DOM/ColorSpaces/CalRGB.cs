@@ -51,6 +51,8 @@ internal class CalRGB : IColorSpace
 
     public PdfName Name => PdfName.CalGray;
 
+    public bool IsPredefined => false;
+
     public CalRGB(Vector3 wp, Vector3 bp, Vector3 gamma, Matrix4x4 matrix)
     {
         WP = wp;

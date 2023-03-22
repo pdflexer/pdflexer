@@ -44,5 +44,7 @@ namespace PdfLexer.Fonts
         int GetGlyph(ReadOnlySpan<byte> data, int os, out Glyph glyph);
         bool IsVertical { get; }
         string Name { get; }
+
+        PdfDictionary NativeObject { get; }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Lexing;
+using PdfLexer.Parsers;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -649,8 +650,8 @@ namespace PdfLexer.Operators
         public static byte[] OpData { get; } = new byte[] { (byte) 'B', (byte) 'D', (byte) 'C' };
         public PdfOperatorType Type => PdfOperatorType.BDC;
         public PdfName tag { get; }
-        public PdfObject props { get; }
-        public BDC_Op(PdfName tag, PdfObject props)
+        public IPdfObject props { get; }
+        public BDC_Op(PdfName tag, IPdfObject props)
         {
             this.tag = tag;
             this.props = props;
@@ -1308,8 +1309,8 @@ namespace PdfLexer.Operators
         public static byte[] OpData { get; } = new byte[] { (byte) 'D', (byte) 'P' };
         public PdfOperatorType Type => PdfOperatorType.DP;
         public PdfName tag { get; }
-        public PdfObject props { get; }
-        public DP_Op(PdfName tag, PdfObject props)
+        public IPdfObject props { get; }
+        public DP_Op(PdfName tag, IPdfObject props)
         {
             this.tag = tag;
             this.props = props;
