@@ -1,5 +1,4 @@
 ﻿using PdfLexer.Fonts;
-using System.Text;
 
 namespace PdfLexer.Content.Model;
 

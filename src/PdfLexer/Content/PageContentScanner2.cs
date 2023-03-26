@@ -645,12 +645,12 @@ public ref struct PageContentScanner2
                 result[kvp.Key] = sd;
             } else
             {
-                var tc = (PdfDictionary)sd;
+                var tc = (PdfDictionary)sd.Resolve();
                 sd = tc.CloneShallow();
                 result[kvp.Key] = sd;
             }
             var psd = (PdfDictionary)sd;
-            var csd = (PdfDictionary)kvp.Value;
+            var csd = (PdfDictionary)kvp.Value.Resolve();
             foreach (var skvp in csd)
             {
                 psd[skvp.Key] = skvp.Value;

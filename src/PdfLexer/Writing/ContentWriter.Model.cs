@@ -9,7 +9,7 @@ public partial class ContentWriter
     internal ContentWriter SetGS(GfxState state, bool wrapExtDicts = true)
     {
         var stream = StreamWriter.Stream;
-        if (state == GfxState)
+        if (Object.ReferenceEquals(GfxState, state))
         {
             return this;
         }
