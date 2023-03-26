@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Content.Model;
 using PdfLexer.DOM;
 using PdfLexer.DOM.ColorSpaces;
 using PdfLexer.Fonts;
@@ -41,7 +42,7 @@ namespace PdfLexer.Content
         public IPdfOperation? ColorStroking { get; init; }
         public PdfDictionary? FontObject { get; init; }
         public PdfDictionary? ExtDict { get; init; }
-        internal IClippingPath? Clipping { get; init; }
+        internal ClippingInfo? Clipping { get; init; }
 
         // not part of real gfx state
         internal TxtState Text { get; init; }
@@ -193,6 +194,17 @@ namespace PdfLexer.Content
         }
     }
 
+    internal class ClippingInfo
+    {
+        public ClippingInfo(SubPath path, bool evenOdd)
+        {
+            Path = path;
+            EvenOdd = evenOdd;
+        }
+        public SubPath Path { get; set; }
+        public bool EvenOdd { get; set; }
+    }
+
     public class TxtState
     {
         public TxtState()
@@ -299,8 +311,9 @@ namespace PdfLexer.Operators
             throw new NotSupportedException();
         }
 
-        public void Apply(ref GfxState state, PdfDictionary dict, PdfDictionary resources, ParsingContext ctx)
+        public void Apply(ref GfxState state, PdfDictionary dict, PdfDictionary resources, ParsingContext ctx, Dictionary<PdfDictionary, PdfDictionary> cache)
         {
+            var orig = dict;
             dict = dict.CloneShallow();
             if (dict.TryGetValue<PdfNumber>("LS", out var lsobj, false))
             {
@@ -357,6 +370,14 @@ namespace PdfLexer.Operators
                 {
                     fsize = fz;
                 }
+            }
+
+            if (!cache.TryGetValue(orig, out var cached))
+            {
+                cache[orig] = dict;
+            } else
+            {
+                dict = cached;
             }
 
             state = state with { 
@@ -509,7 +530,7 @@ namespace PdfLexer.Operators
     {
         public void Apply(ref GfxState state)
         {
-            state = state with { ColorSpaceStroking = PdfName.DeviceGray, ColorStroking = this };
+            state = state with { ColorSpaceStroking = PdfName.DeviceGray, ColorStroking = new SC_Op(new List<decimal> { this.gray }) }; // TODO revisit how this is handled
         }
     }
 
@@ -517,7 +538,7 @@ namespace PdfLexer.Operators
     {
         public void Apply(ref GfxState state)
         {
-            state = state with { ColorSpace = PdfName.DeviceGray, Color = this };
+            state = state with { ColorSpace = PdfName.DeviceGray, Color = new sc_Op(new List<decimal> { this.gray }) };  // TODO revisit how this is handled
         }
     }
 
@@ -525,7 +546,7 @@ namespace PdfLexer.Operators
     {
         public void Apply(ref GfxState state)
         {
-            state = state with { ColorSpaceStroking = PdfName.DeviceRGB, ColorStroking = this };
+            state = state with { ColorSpaceStroking = PdfName.DeviceRGB, ColorStroking = new SC_Op(new List<decimal> { r, g, b }) };
         }
     }
 
@@ -533,7 +554,7 @@ namespace PdfLexer.Operators
     {
         public void Apply(ref GfxState state)
         {
-            state = state with { ColorSpace = PdfName.DeviceRGB, Color = this };
+            state = state with { ColorSpace = PdfName.DeviceRGB, Color = new sc_Op(new List<decimal> { r, g, b }) };   // TODO revisit how this is handled
         }
     }
 
@@ -542,7 +563,7 @@ namespace PdfLexer.Operators
     {
         public void Apply(ref GfxState state)
         {
-            state = state with { ColorSpaceStroking = PdfName.DeviceCMYK, ColorStroking = this };
+            state = state with { ColorSpaceStroking = PdfName.DeviceCMYK, ColorStroking = new SC_Op(new List<decimal> { c, m, y, k }) }; // TODO revisit how this is handled
         }
     }
 
@@ -550,7 +571,7 @@ namespace PdfLexer.Operators
     {
         public void Apply(ref GfxState state)
         {
-            state = state with { ColorSpace = PdfName.DeviceCMYK, Color = this };
+            state = state with { ColorSpace = PdfName.DeviceCMYK, Color = new sc_Op(new List<decimal> { c, m, y, k }) }; // TODO revisit how this is handled
         }
     }
 

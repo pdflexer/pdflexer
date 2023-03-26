@@ -53,6 +53,13 @@ internal class CompositeFont : IReadableFont
                 glyph.Char = (char)val.Code;
             }
             _glyphSet.Add(cid, glyph);
+        } else
+        {
+            if (glyph.CodePoint != cp) // cid fonts can sometimes have multiple code points mapped to same CID
+            {
+                glyph = glyph.Clone();
+                glyph.CodePoint = cp;
+            }
         }
 
         return l;

@@ -6,7 +6,7 @@ namespace PdfLexer.DOM.ColorSpaces;
 
 internal class UnImplementedColorSpace : IColorSpace
 {
-    public int Components => throw new NotImplementedException();
+    public int Components => throw new NotSupportedException();
 
     public PdfName Name { get; }
 
@@ -14,12 +14,12 @@ internal class UnImplementedColorSpace : IColorSpace
 
     public void CopyRowToRBGA16Span(ReadOnlySpan<ushort> row, Span<ushort> output)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     public void CopyRowToRBGA8Span(ReadOnlySpan<byte> row, Span<byte> output)
     {
-        throw new NotImplementedException();
+        throw new NotSupportedException();
     }
 
     PdfArray? obj;

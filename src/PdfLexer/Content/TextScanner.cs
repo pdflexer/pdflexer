@@ -183,6 +183,7 @@ public ref struct TextScanner
                         gso.Apply(ref GraphicsState);
                     }
                     TextState.GS = GraphicsState;
+                    TextState.FormResources = Scanner.CurrentForm?.Get<PdfDictionary>(PdfName.Resources); // Q from pop form
                     TextState.UpdateTRM();
                     continue;
             }

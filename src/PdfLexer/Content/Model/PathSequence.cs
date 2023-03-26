@@ -34,18 +34,7 @@ internal class PathSequence : IContentGroup
     {
         foreach (var subPath in Paths)
         {
-            if (subPath.Operations.Count > 0 && subPath.Operations[0].Type != PdfOperatorType.re)
-            {
-                writer.MoveTo((decimal)subPath.XPos, (decimal)subPath.YPos);
-            }
-            foreach (var op in subPath.Operations)
-            {
-                writer.Op(op);
-            }
-            if (subPath.Closed)
-            {
-                writer.Op(h_Op.Value);
-            }
+            writer.SubPath(subPath);
         }
         writer.Op(Closing);
     }

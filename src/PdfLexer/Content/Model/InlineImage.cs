@@ -12,11 +12,6 @@ internal class InlineImage : IContentGroup
 
     public void Write(ContentWriter writer)
     {
-        if (writer.GS.CTM != GraphicsState.CTM)
-        {
-            var cm = writer.GS.GetTranslation(GraphicsState.CTM);
-            writer.Transform(cm);
-        }
         writer.Op(Img);
     }
 }

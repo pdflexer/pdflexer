@@ -219,6 +219,7 @@ public partial class ContentWriter
             buffer[1] = (byte)((cp >> 16) & 0xFF);
             buffer[2] = (byte)((cp >> 8) & 0xFF);
             buffer[3] = (byte)(cp & 0xFF);
+
             buffer = buffer.Slice(4 - item.Bytes, item.Bytes);
             var i = StringSerializer.ConvertLiteralBytesWithoutParenths(buffer, output, false);
             str.Write(output.Slice(0, i));

@@ -17,12 +17,6 @@ internal class XFormContent : IContentGroup
 
     public void Write(ContentWriter writer)
     {
-        // TODO full GS
-        if (writer.GS.CTM != GraphicsState.CTM)
-        {
-            var cm = writer.GS.GetTranslation(GraphicsState.CTM);
-            writer.Transform(cm);
-        }
         writer.Form(Stream);
     }
 }
@@ -38,11 +32,6 @@ internal class XImgContent : IContentGroup
 
     public void Write(ContentWriter writer)
     {
-        if (writer.GS.CTM != GraphicsState.CTM)
-        {
-            var cm = writer.GS.GetTranslation(GraphicsState.CTM);
-            writer.Transform(cm);
-        }
         writer.Image(Stream);
     }
 }

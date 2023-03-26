@@ -643,6 +643,11 @@ public ref struct PageContentScanner2
             {
                 sd = new PdfDictionary();
                 result[kvp.Key] = sd;
+            } else
+            {
+                var tc = (PdfDictionary)sd;
+                sd = tc.CloneShallow();
+                result[kvp.Key] = sd;
             }
             var psd = (PdfDictionary)sd;
             var csd = (PdfDictionary)kvp.Value;

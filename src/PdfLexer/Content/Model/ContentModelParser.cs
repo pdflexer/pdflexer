@@ -53,6 +53,13 @@ internal ref struct ContentModelParser
 
         ParseState state = ParseState.Page;
         PathSequence? currentPath = null;
+        bool textReset = true;
+
+
+        // we trim some data from ext graphics but want to keep
+        // incoming objects that are the same to have the same outgoing object
+        // for GS deduping
+        var extGraphics = new Dictionary<PdfDictionary, PdfDictionary>();
 
         SubPath? currentSubPath = null;
         PdfOperatorType? clipping = null;
@@ -172,10 +179,12 @@ internal ref struct ContentModelParser
                 case PdfOperatorType.BT:
                     state = ParseState.Text;
                     BT_Op.Value.Apply(ref GraphicsState);
+                    textReset = true;
                     continue;
                 case PdfOperatorType.ET:
                     CompleteCurrent(GraphicsState);
                     state = ParseState.Page;
+                    textReset = true;
                     continue;
                 case PdfOperatorType.Tf:
                     {
@@ -210,7 +219,7 @@ internal ref struct ContentModelParser
                         {
                             continue;
                         }
-                        gso.Apply(ref GraphicsState, gsd, Scanner.Resources, Context);
+                        gso.Apply(ref GraphicsState, gsd, Scanner.Resources, Context, extGraphics);
 
                         continue;
                     }
@@ -351,13 +360,17 @@ internal ref struct ContentModelParser
                         {
                             currentPath.Closing = n_Op.Value;
                         }
-                        
+
+                        var clip = clipping != null ? new ClippingInfo(currentSubPath, clipping == PdfOperatorType.W_Star) : null;
+
                         CompleteCurrent(GraphicsState);
 
-                        if (clipping != null)
+                        if (clip != null) 
                         {
-                            // TODO
+                            GraphicsState = GraphicsState with { Clipping = clip };
                         }
+
+                        currentSubPath = null;
                         clipping = null;
                         continue;
                     }
@@ -369,6 +382,18 @@ internal ref struct ContentModelParser
                             continue; // warning
                         }
                         clipping = nxt;
+                        continue;
+                    }
+                case PdfOperatorType.Td:
+                case PdfOperatorType.TD:
+                case PdfOperatorType.Tm:
+                case PdfOperatorType.T_Star:
+                    {
+                        if (Scanner.TryGetCurrentOperation(out var gso))
+                        {
+                            gso.Apply(ref GraphicsState);
+                        }
+                        textReset = true;
                         continue;
                     }
                 case PdfOperatorType.d0: 
@@ -383,110 +408,95 @@ internal ref struct ContentModelParser
                         {
                             gso.Apply(ref GraphicsState);
                         }
+                        textReset = true;
                         continue;
                     }
-            }
-
-
-            if (nxt == PdfOperatorType.EI) { continue; } // EI can spill outside bounds if data is corrupt
-            var b = Scanner.Scanner.Data[Scanner.Scanner.CurrentInfo.StartAt];
-            if (b == (byte)'T' || b == (byte)'\'' || b == (byte)'"')
-            {
-                try
-                {
-                    switch (nxt)
+                case PdfOperatorType.singlequote:
                     {
-                        case PdfOperatorType.singlequote:
-                            {
-                                var ops = Scanner.Scanner.GetOperands();
-                                var op = ops[0];
-                                T_Star_Op.Value.Apply(ref GraphicsState);
-                                var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                var seq = CreateTextSequence(slice);
-                                seq.CompatibilitySection = bx;
-                                seq.Markings = mc.Count > 0 ? mc.ToList() : null;
-                                content.Add(seq);
-                                continue;
-                            }
-                        case PdfOperatorType.doublequote:
-                            {
-                                var ops = Scanner.Scanner.GetOperands();
-                                var aw = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, ops[0]);
-                                var ac = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, ops[1]);
-                                var op = ops[2];
-                                var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                GraphicsState = GraphicsState with { CharSpacing = ac, WordSpacing = aw };
-                                T_Star_Op.Value.Apply(ref GraphicsState);
-                                var seq = CreateTextSequence(slice);
-                                seq.CompatibilitySection = bx;
-                                seq.Markings = mc.Count > 0 ? mc.ToList() : null;
-                                content.Add(seq);
-                                continue;
-                            }
-                        case PdfOperatorType.Tj:
-                            {
-                                var ops = Scanner.Scanner.GetOperands();
-                                var op = ops[0];
-                                var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                var seq = CreateTextSequence(slice);
-                                seq.CompatibilitySection = bx;
-                                seq.Markings = mc.Count > 0 ? mc.ToList() : null;
-                                content.Add(seq);
-                                break;
-                            }
-                        case PdfOperatorType.TJ:
-                            {
-                                TJCache.Clear();
-                                var ops = Scanner.Scanner.GetOperands();
-                                var (x, y) = GetCurrentTextPos();
-                                var seq = new TextSequence { 
-                                    Glyphs = new List<UnappliedGlyph>(),
-                                    GraphicsState = GraphicsState,
-                                    CompatibilitySection = bx,
-                                    LineMatrix = GraphicsState.Text.TextLineMatrix,
-                                    Markings = mc.Count > 0 ? mc.ToList() : null
-                                };
-                                PdfOperator.ParseTJLazy(Context, Scanner.Scanner.Data, ops, TJCache);
-                                foreach (var item in TJCache)
-                                {
-                                    if (item.OpNum == -1)
-                                    {
-                                        seq.Glyphs.Add(new UnappliedGlyph(null, (float)item.Shift));
-                                    }
-                                    else
-                                    {
-                                        var op = ops[item.OpNum];
-                                        var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                        Context.FillGlyphsFromRawString(GraphicsState, slice, seq.Glyphs);
-                                    }
-                                }
-                                ApplyAll(seq.Glyphs);
-                                content.Add(seq);
-                                continue;
-                            }
-                        default:
-                            if (Scanner.TryGetCurrentOperation(out var tao))
-                            {
-                                tao.Apply(ref GraphicsState);
-                            }
-                            continue;
+                        // TODO error handling
+                        var ops = Scanner.Scanner.GetOperands();
+                        var op = ops[0];
+                        T_Star_Op.Value.Apply(ref GraphicsState);
+                        var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
+                        var seq = CreateTextSequence(slice, true);
+                        seq.CompatibilitySection = bx;
+                        seq.Markings = mc.Count > 0 ? mc.ToList() : null;
+                        content.Add(seq);
+                        textReset = false;
+                        continue;
                     }
-
-                }
-                catch (Exception e)
-                {
-                    // since we are manually parsing text ops (not using TryGetCurrentOperation)
-                    // we have to handle errors manually here
-                    var data = Encoding.ASCII.GetString(Scanner.Scanner.GetDataForCurrent());
-                    Context.Error($"error while parsing text op ({nxt.ToString()} -> '{data}'): " + e.Message);
+                case PdfOperatorType.doublequote:
+                    {
+                        // TODO error handling
+                        var ops = Scanner.Scanner.GetOperands();
+                        var aw = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, ops[0]);
+                        var ac = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, ops[1]);
+                        var op = ops[2];
+                        var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
+                        GraphicsState = GraphicsState with { CharSpacing = ac, WordSpacing = aw };
+                        T_Star_Op.Value.Apply(ref GraphicsState);
+                        var seq = CreateTextSequence(slice, true);
+                        seq.CompatibilitySection = bx;
+                        seq.Markings = mc.Count > 0 ? mc.ToList() : null;
+                        content.Add(seq);
+                        textReset = false;
+                        continue;
+                    }
+                case PdfOperatorType.Tj:
+                    {
+                        // TODO error handling
+                        var ops = Scanner.Scanner.GetOperands();
+                        var op = ops[0];
+                        var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
+                        var seq = CreateTextSequence(slice, textReset);
+                        seq.CompatibilitySection = bx;
+                        seq.Markings = mc.Count > 0 ? mc.ToList() : null;
+                        content.Add(seq);
+                        textReset = false;
+                        break;
+                    }
+                case PdfOperatorType.TJ:
+                    {
+                        // TODO error handling
+                        TJCache.Clear();
+                        var ops = Scanner.Scanner.GetOperands();
+                        var seq = new TextLineSequence
+                        {
+                            Glyphs = new List<UnappliedGlyph>(),
+                            GraphicsState = GraphicsState,
+                            CompatibilitySection = bx,
+                            LineMatrix = textReset ? GraphicsState.Text.TextLineMatrix : null,
+                            Markings = mc.Count > 0 ? mc.ToList() : null
+                        };
+                        PdfOperator.ParseTJLazy(Context, Scanner.Scanner.Data, ops, TJCache);
+                        foreach (var item in TJCache)
+                        {
+                            if (item.OpNum == -1)
+                            {
+                                seq.Glyphs.Add(new UnappliedGlyph(null, (float)item.Shift));
+                            }
+                            else
+                            {
+                                var op = ops[item.OpNum];
+                                var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
+                                Context.FillGlyphsFromRawString(GraphicsState, slice, seq.Glyphs);
+                            }
+                        }
+                        ApplyAll(seq.Glyphs);
+                        content.Add(seq);
+                        textReset = false;
+                        continue;
+                    }
+                default:
+                    if (Scanner.TryGetCurrentOperation(out var tao))
+                    {
+                        tao.Apply(ref GraphicsState);
+                    }
                     continue;
-                }
             }
-
-            // non-text affecting op
         }
-        return content;
 
+        return content;
 
         void CompleteCurrent(GfxState gs, bool reset=true)
         {
@@ -498,7 +508,10 @@ internal ref struct ContentModelParser
                 }
             } else if (state == ParseState.Paths)
             {
-                content.Add(currentPath!);
+                if (currentPath!.Closing != n_Op.Value)
+                {
+                    content.Add(currentPath!);
+                }
                 if (reset)
                 {
                     currentPath = null;
@@ -540,9 +553,12 @@ internal ref struct ContentModelParser
     }
 
 
-    private TextSequence CreateTextSequence(ReadOnlySpan<byte> slice)
+    private TextLineSequence CreateTextSequence(ReadOnlySpan<byte> slice, bool textReset)
     {
-        var seq = new TextSequence { LineMatrix = GraphicsState.Text.TextLineMatrix, Glyphs = new List<UnappliedGlyph>(), GraphicsState = GraphicsState };
+        var seq = new TextLineSequence { 
+            LineMatrix = textReset ? GraphicsState.Text.TextLineMatrix : null,
+            Glyphs = new List<UnappliedGlyph>(), GraphicsState = GraphicsState
+        };
         Context.FillGlyphsFromRawString(GraphicsState, slice, seq.Glyphs);
         ApplyAll(seq.Glyphs);
         return seq;
