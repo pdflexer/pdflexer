@@ -18,13 +18,18 @@ internal class TextLineSequence : IContentGroup
 
     public required List<UnappliedGlyph> Glyphs { get; set; }
     public Matrix4x4? LineMatrix { get; set; }
+    public bool NewLine { get; set; }
 
     public void Write(ContentWriter writer)
     {
         if (LineMatrix.HasValue)
         {
             writer.SetLinePosition(LineMatrix.Value);
+        } else if (NewLine)
+        {
+            writer.Op(T_Star_Op.Value);
         }
+
         writer.WriteGlyphs(Glyphs);
     }
 }

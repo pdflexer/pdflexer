@@ -11,7 +11,6 @@ internal enum ParseState
 internal ref struct ContentModelParser
 {
     private ParsingContext Context;
-    private PdfDictionary? PgRes;
     private readonly List<TJ_Lazy_Item> TJCache;
 
     internal PageContentScanner2 Scanner;
@@ -26,7 +25,6 @@ internal ref struct ContentModelParser
     {
         Context = ctx;
         Scanner = new PageContentScanner2(ctx, page, flattenForms);
-        PgRes = page.Get<PdfDictionary>(PdfName.Resources);
         GraphicsState = new GfxState();
         TJCache = new List<TJ_Lazy_Item>(10);
     }
@@ -35,7 +33,6 @@ internal ref struct ContentModelParser
     {
         Context = ctx;
         Scanner = new PageContentScanner2(ctx, page, form);
-        PgRes = page.Get<PdfDictionary>(PdfName.Resources);
         GraphicsState = state;
         TJCache = new List<TJ_Lazy_Item>(10);
     }
@@ -360,13 +357,22 @@ internal ref struct ContentModelParser
                             currentPath.Closing = n_Op.Value;
                         }
 
-                        var clip = clipping != null ? new ClippingInfo(currentSubPath, clipping == PdfOperatorType.W_Star) : null;
+                        var clip = clipping != null ? new ClippingInfo(GraphicsState.CTM, currentSubPath, clipping == PdfOperatorType.W_Star) : null;
 
                         CompleteCurrent(GraphicsState);
 
                         if (clip != null) 
                         {
-                            GraphicsState = GraphicsState with { Clipping = clip };
+                            if (GraphicsState.Clipping != null)
+                            {
+                                var old = GraphicsState.Clipping.ToList();
+                                old.Add(clip);
+                                GraphicsState = GraphicsState with { Clipping = old };
+                            } else
+                            {
+                                GraphicsState = GraphicsState with { Clipping = new List<ClippingInfo> { clip } };
+                            }
+                            
                         }
 
                         currentSubPath = null;
@@ -417,9 +423,10 @@ internal ref struct ContentModelParser
                         var op = ops[0];
                         T_Star_Op.Value.Apply(ref GraphicsState);
                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                        var seq = CreateTextSequence(slice, true);
+                        var seq = CreateTextSequence(slice, textReset);
                         seq.CompatibilitySection = bx;
                         seq.Markings = mc.Count > 0 ? mc.ToList() : null;
+                        seq.NewLine = !textReset;
                         content.Add(seq);
                         textReset = false;
                         continue;
@@ -434,9 +441,10 @@ internal ref struct ContentModelParser
                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
                         GraphicsState = GraphicsState with { CharSpacing = ac, WordSpacing = aw };
                         T_Star_Op.Value.Apply(ref GraphicsState);
-                        var seq = CreateTextSequence(slice, true);
+                        var seq = CreateTextSequence(slice, textReset);
                         seq.CompatibilitySection = bx;
                         seq.Markings = mc.Count > 0 ? mc.ToList() : null;
+                        seq.NewLine = !textReset;
                         content.Add(seq);
                         textReset = false;
                         continue;

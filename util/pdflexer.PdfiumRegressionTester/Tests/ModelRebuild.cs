@@ -1,5 +1,6 @@
 ﻿using PdfLexer;
 using PdfLexer.Content;
+using PdfLexer.Content.Model;
 using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.Serializers;
@@ -29,25 +30,21 @@ internal class ModelRebuild : ITest
     static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
     {
         // TODO -> content model rebuild
-        var scanner = new PageContentScanner2(doc.Context, page);
-        var ms = new MemoryStream();
-        var fl = new ZLibLexerStream();
+        var parser = new ContentModelParser(doc.Context, page);
+        var data = parser.Parse();
+        data.ForEach(x => { if (x is XImgContent im) { 
+                // im.GraphicsState = x.GraphicsState with { Clipping = null }; 
+            } 
+        });
 
-        while (scanner.Advance())
-        {
-            if (scanner.TryGetCurrentOperation(out var op))
-            {
-                op.Serialize(fl.Stream);
-                fl.Stream.WriteByte((byte)'\n');
-            }
-        }
-
-        var content = fl.Complete();
+        var resources = new PdfDictionary();
+        var content = ContentModelWriter.CreateContent(resources, data);
 
         page = page.NativeObject.CloneShallow();
 
         var updatedStr = new PdfStream(new PdfDictionary(), content);
         page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
+        page.Resources = resources;
         return page;
     }
 }

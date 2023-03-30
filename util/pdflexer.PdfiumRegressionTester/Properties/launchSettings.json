@@ -2,7 +2,7 @@
   "profiles": {
     "pdflexer.PdfiumRegressionTester": {
       "commandName": "Project",
-      "commandLineArgs": "--strict --type quicksave --data C:\\source\\Github\\pdflexer\\util\\pdflexer.PdfiumRegressionTester --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\need_repair\\bug1020226.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\manual"
+      "commandLineArgs": "--strict --type model-rebuild --data C:\\source\\Github\\pdflexer\\util\\pdflexer.PdfiumRegressionTester --pdf C:\\source\\Github\\pdflexer\\test\\pdfs\\pdfjs\\zerowidthline.pdf --output C:\\source\\Github\\pdflexer\\test\\results\\manual"
     }
   }
 }

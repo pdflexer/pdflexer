@@ -1,7 +1,4 @@
 ﻿using PdfLexer.Writing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PdfLexer.Content.Model;
 
@@ -28,7 +25,6 @@ internal class XImgContent : IContentGroup
     public required PdfStream Stream { get; set; }
     public List<MarkedContent>? Markings { get; set; }
     public bool CompatibilitySection { get; set; }
-
 
     public void Write(ContentWriter writer)
     {

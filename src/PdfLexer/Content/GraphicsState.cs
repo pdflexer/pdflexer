@@ -29,11 +29,11 @@ namespace PdfLexer.Content
         public float CharSpacing { get; init; }
         public float WordSpacing { get; init; }
         public float TextLeading { get; init; }
-        public float LineWidth { get; init; }
+        public float LineWidth { get; init; } = 1f;
         public int LineCap { get; init; }
         public int LineJoin { get; init; }
-        public float MiterLimit { get; init; }
-        public float Flatness { get; init; }
+        public float MiterLimit { get; init; } = 10f;
+        public float Flatness { get; init; } = 1f;
         public d_Op? Dashing { get; init; }
         public PdfName? RenderingIntent { get; init; }
         public IPdfObject? ColorSpace { get; init; } = PdfName.DeviceGray;
@@ -42,7 +42,7 @@ namespace PdfLexer.Content
         public IPdfOperation? ColorStroking { get; init; }
         public PdfDictionary? FontObject { get; init; }
         public PdfDictionary? ExtDict { get; init; }
-        internal ClippingInfo? Clipping { get; init; }
+        internal List<ClippingInfo>? Clipping { get; init; }
 
         // not part of real gfx state
         internal TxtState Text { get; init; }
@@ -194,15 +194,18 @@ namespace PdfLexer.Content
         }
     }
 
-    internal class ClippingInfo
+    internal record ClippingInfo
     {
-        public ClippingInfo(SubPath path, bool evenOdd)
+        public ClippingInfo(Matrix4x4 tm, SubPath path, bool evenOdd)
         {
+            TM = tm;
             Path = path;
             EvenOdd = evenOdd;
         }
         public SubPath Path { get; set; }
+        public Matrix4x4 TM { get; set; }
         public bool EvenOdd { get; set; }
+        public ClippingInfo? Next { get; set; }
     }
 
     public class TxtState
@@ -620,6 +623,14 @@ namespace PdfLexer.Operators
         public void Apply(ref GfxState state)
         {
             state = state with { Dashing = this };
+        }
+    }
+
+    public partial class ri_Op
+    {
+        public void Apply(ref GfxState state)
+        {
+            state = state with { RenderingIntent = intent };
         }
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("PdfLexer.Tests")]
+[assembly: InternalsVisibleTo("PdfLexer.PdfiumRegressionTester")]
 [assembly: InternalsVisibleTo("PdfLexer.ImageSharpExts")] // shouldn't need this but will need to clean up images / colorspace refs
 [assembly: InternalsVisibleTo("PdfLexer.Benchmarks")]
 

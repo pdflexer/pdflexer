@@ -176,7 +176,7 @@ public partial class ContentWriter
                     if (Utf8Formatter.TryFormat(item.Shift, output, out int cnt))
                     {
                         str.Write(output.Slice(0, cnt));
-                        str.WriteByte((byte)' ');
+                        // str.WriteByte((byte)' ');
                     }
                 }
                 else

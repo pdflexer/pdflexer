@@ -23,12 +23,13 @@ public partial class ContentWriter
         }
 
         // want to reset to default using gfx restore
-        var ctmIdentity = state.CTM != GfxState.CTM && state.CTM.IsIdentity;
-        var clippingReset = state.Clipping != GfxState.Clipping && state.Clipping == null;
+        var ctmIdentity = (state.CTM != GfxState.CTM && state.CTM.IsIdentity)
+            || (state.Clipping != GfxState.Clipping);
+        var clippingReset = state.Clipping != GfxState.Clipping;
         if (ctmIdentity || clippingReset)
         {
             EnsureInPageState();
-            if (clippingReset)
+            if (clippingReset && GfxState.Clipping != null)
             {
                 var gfx = GfxState;
                 var cnt = 0;
@@ -55,7 +56,7 @@ public partial class ContentWriter
                     throw new PdfLexerException("Unable to reset clipping to default.");
                 }
             }
-            if (ctmIdentity)
+            if (ctmIdentity && !GfxState.CTM.IsIdentity)
             {
                 var gfx = GfxState;
                 var cnt = 0;
@@ -82,9 +83,34 @@ public partial class ContentWriter
                     throw new PdfLexerException("Unable to reset CTM to default.");
                 }
             }
-            return SetGS(state, wrapExtDicts);
+            // return SetGS(state, wrapExtDicts);
         }
 
+
+        if (state.Clipping != GfxState.Clipping)
+        {
+            EnsureInPageState();
+            Save();
+            foreach (var clip in state.Clipping)
+            {
+                if (clip.TM != GfxState.CTM)
+                {
+                    var cm = GfxState.GetTranslation(clip.TM);
+                    cm_Op.WriteLn(cm, stream);
+                    GfxState = GfxState with { CTM = clip.TM };
+                }
+                SubPath(clip.Path);
+                if (clip.EvenOdd)
+                {
+                    W_Star_Op.WriteLn(StreamWriter.Stream);
+                }
+                else
+                {
+                    W_Op.WriteLn(StreamWriter.Stream);
+                }
+            }
+            
+        }
 
         if (state.CTM != GfxState.CTM)
         {
@@ -94,21 +120,7 @@ public partial class ContentWriter
             cm_Op.WriteLn(cm, stream);
             GfxState = GfxState with { CTM = state.CTM };
         }
-        if (state.Clipping != GfxState.Clipping)
-        {
-            EnsureInPageState();
-            Save();
-            SubPath(state.Clipping.Path);
-            if (state.Clipping.EvenOdd)
-            {
-                W_Star_Op.WriteLn(StreamWriter.Stream);
-            }
-            else
-            {
-                W_Op.WriteLn(StreamWriter.Stream);
-            }
-            n_Op.WriteLn(StreamWriter.Stream);
-        }
+
 
         if (state.FontObject != null && state.FontObject != GfxState.FontObject)
         {
@@ -238,6 +250,38 @@ public partial class ContentWriter
         {
             i_Op.WriteLn((decimal)state.Flatness, stream);
         }
+
+        if (state.LineWidth != GfxState.LineWidth)
+        {
+            w_Op.WriteLn((decimal)state.LineWidth, stream);
+        }
+
+        if (state.LineCap != GfxState.LineCap)
+        {
+            J_Op.WriteLn(state.LineCap, stream);
+        }
+        if (state.LineJoin != GfxState.LineJoin)
+        {
+            j_Op.WriteLn(state.LineJoin, stream);
+        }
+        if (state.MiterLimit != GfxState.MiterLimit)
+        {
+            M_Op.WriteLn((decimal)state.MiterLimit, stream);
+        }
+
+        if (state.RenderingIntent != GfxState.RenderingIntent)
+        {
+            if (state.RenderingIntent == null)
+            {
+                ri_Op.WriteLn(PdfName.RelativeColorimetric, stream);
+            } else
+            {
+                ri_Op.WriteLn(state.RenderingIntent, stream);
+            }
+            
+        }
+
+        //MiterLimit
 
         GfxState = state with { Prev = GfxState.Prev, Text = GfxState.Text, ExtDict = GfxState.ExtDict };
 

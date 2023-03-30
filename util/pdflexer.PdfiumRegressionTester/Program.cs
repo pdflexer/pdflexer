@@ -192,6 +192,18 @@ async Task<int> RunBase(string data, string type, string pdfRoot, string[] pdfPa
                 }
                 return 0;
             }
+        case "MODEL-REBUILD":
+            {
+                var rb = new ModelRebuild();
+                foreach (var file in pdfPaths)
+                {
+                    var result = runner.RunTest(rb, file, output);
+                    writer.WriteLine($"[{Path.GetFileName(file)}] {result.Status} {result.Message}");
+                    errInfo.WriteLine(JsonSerializer.Serialize(result.Info));
+                    summary.WriteLine(JsonSerializer.Serialize(new { Result = result.Status.ToString(), PdfName = Path.GetFileName(file), result.Message }));
+                }
+                return 0;
+            }
         default:
             Console.WriteLine("Unknown test type: " + type);
             return 1;
