@@ -11,20 +11,7 @@ public interface IPdfOperation
     public void Serialize(Stream stream);
     public void Apply(ref GraphicsState state) { }
     public void Apply(ref GfxState state) { }
-
-    public void Apply(ref GfxState state, ContentContext ctx) { }
-
     public void Apply(TextState state) { }
-}
-
-public class ContentContext
-{
-    public ContentContext(PdfDictionary page)
-    {
-        Page = page;
-    }
-    public PdfDictionary Page { get; set; }
-    public PdfDictionary? Form { get; set; }
 }
 
 public class PdfOperator

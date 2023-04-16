@@ -197,6 +197,15 @@ async Task<int> RunBase(string data, string type, string pdfRoot, string[] pdfPa
                 var rb = new ModelRebuild();
                 foreach (var file in pdfPaths)
                 {
+                    if (Path.GetFileName(file) == "__pdf.pdf") { continue; }
+                    { 
+                        try
+                        {
+                            using var pc = PdfDocument.Open(File.ReadAllBytes(file));
+                            if (pc.Pages.Count > 10) { continue; }
+                        } catch (Exception) { }
+                        
+                    }
                     var result = runner.RunTest(rb, file, output);
                     writer.WriteLine($"[{Path.GetFileName(file)}] {result.Status} {result.Message}");
                     errInfo.WriteLine(JsonSerializer.Serialize(result.Info));

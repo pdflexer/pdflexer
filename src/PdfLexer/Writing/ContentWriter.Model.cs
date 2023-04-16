@@ -1,6 +1,9 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Content.Model;
 using PdfLexer.Fonts;
+using PdfLexer.Serializers;
+using System.IO;
+using System.Numerics;
 
 namespace PdfLexer.Writing;
 
@@ -83,9 +86,21 @@ public partial class ContentWriter
                     throw new PdfLexerException("Unable to reset CTM to default.");
                 }
             }
-            // return SetGS(state, wrapExtDicts);
         }
 
+        // set fonts here in case clipping is based on text
+        if (state.FontObject != null && state.FontObject != GfxState.FontObject)
+        {
+            writableFont = null;
+            var nm = AddFont(state.FontObject);
+            Tf_Op.WriteLn(nm, (decimal)state.FontSize, stream);
+        }
+        else if (state.FontObject != null && state.FontSize != GfxState.FontSize)
+        {
+            writableFont = null;
+            var nm = AddFont(state.FontObject);
+            Tf_Op.WriteLn(nm, (decimal)state.FontSize, stream);
+        }
 
         if (state.Clipping != GfxState.Clipping)
         {
@@ -99,15 +114,8 @@ public partial class ContentWriter
                     cm_Op.WriteLn(cm, stream);
                     GfxState = GfxState with { CTM = clip.TM };
                 }
-                SubPath(clip.Path);
-                if (clip.EvenOdd)
-                {
-                    W_Star_Op.WriteLn(StreamWriter.Stream);
-                }
-                else
-                {
-                    W_Op.WriteLn(StreamWriter.Stream);
-                }
+
+                clip.Apply(this);
             }
             
         }
@@ -122,18 +130,7 @@ public partial class ContentWriter
         }
 
 
-        if (state.FontObject != null && state.FontObject != GfxState.FontObject)
-        {
-            writableFont = null;
-            var nm = AddFont(state.FontObject);
-            Tf_Op.WriteLn(nm, (decimal)state.FontSize, stream);
-        }
-        else if (state.FontSize != GfxState.FontSize)
-        {
-            writableFont = null;
-            var nm = AddFont(GfxState.FontObject ?? SingleByteFont.Fallback.NativeObject);
-            Tf_Op.WriteLn(nm, (decimal)state.FontSize, stream);
-        }
+
 
         if (state.CharSpacing != GfxState.CharSpacing)
         {
@@ -173,16 +170,10 @@ public partial class ContentWriter
             }
             else
             {
-                if (state.ColorSpace is PdfName nm)
-                {
-                    cs_Op.WriteLn(nm, stream);
-                }
-                else
-                {
-                    nm = AddColorSpace(state.ColorSpace);
-                    cs_Op.WriteLn(nm, stream);
-                }
+                Writecs(state.ColorSpace);
             }
+
+            GfxState = GfxState with { Color = null };
         }
 
         if (state.ColorSpaceStroking != GfxState.ColorSpaceStroking)
@@ -193,29 +184,39 @@ public partial class ContentWriter
             }
             else
             {
-                if (state.ColorSpaceStroking is PdfName nm)
-                {
-                    CS_Op.WriteLn(nm, stream);
-                }
-                else
-                {
-                    nm = AddColorSpace(state.ColorSpaceStroking);
-                    CS_Op.WriteLn(nm, stream);
-                }
+                WriteCS(state.ColorSpaceStroking);
             }
+            GfxState = GfxState with { ColorStroking = null };
         }
 
         if (!ColorsEqual(state.ColorStroking, GfxState.ColorStroking))
         {
             if (state.ColorStroking == null)
             {
-                // TODO colorspace check
-                G_Op.WriteLn(0, stream);
+                if (state.ColorSpaceStroking == null)
+                {
+                    G_Op.WriteLn(0, stream);
+                }
+                else
+                {
+                    WriteCS(state.ColorSpaceStroking);
+                }
             }
             else
             {
-                state.ColorStroking.Serialize(stream);
-                stream.WriteByte((byte)'\n');
+                if (state.ColorStroking is IPatternableColor pc && pc.Pattern != null)
+                {
+                    var nm = AddPattern(pc.Pattern);
+                    NameSerializer.WriteToStreamInternal(nm, stream);
+                    stream.WriteByte((byte)' ');
+                    stream.Write(SCN_Op.OpData);
+                    stream.WriteByte((byte)'\n');
+                } else
+                {
+                    state.ColorStroking.Serialize(stream);
+                    stream.WriteByte((byte)'\n');
+                }
+                
             }
         }
 
@@ -223,13 +224,29 @@ public partial class ContentWriter
         {
             if (state.Color == null)
             {
-                // TODO colorspace check
-                g_Op.WriteLn(0, stream);
+                if (state.ColorSpace == null)
+                {
+                    g_Op.WriteLn(0, stream);
+                } else
+                {
+                    Writecs(state.ColorSpace);
+                }
             }
             else
             {
-                state.Color.Serialize(stream);
-                stream.WriteByte((byte)'\n');
+                if (state.Color is IPatternableColor pc && pc.Pattern != null)
+                {
+                    var nm = AddPattern(pc.Pattern);
+                    NameSerializer.WriteToStreamInternal(nm, stream);
+                    stream.WriteByte((byte)' ');
+                    stream.Write(scn_Op.OpData);
+                    stream.WriteByte((byte)'\n');
+                }
+                else
+                {
+                    state.Color.Serialize(stream);
+                    stream.WriteByte((byte)'\n');
+                }
             }
         }
 
@@ -293,8 +310,24 @@ public partial class ContentWriter
                 EnsureRestorable();
             }
 
-            var nm = AddExtGS(state.ExtDict);
-            gs_Op.WriteLn(nm, stream);
+
+            var nm = AddExtGS(state.ExtDict.Dict);
+            if (state.ExtDict.Dict.ContainsKey(PdfName.SMask))
+            {
+                // smask dependent on CTM
+                var prev = GfxState.CTM;
+                var cm = GfxState.GetTranslation(state.ExtDict.CTM);
+                cm_Op.WriteLn(cm, stream);
+                gs_Op.WriteLn(nm, stream);
+                Matrix4x4.Invert(state.ExtDict.CTM, out var iv);
+                var toPrev = prev * iv;
+                cm_Op.WriteLn(toPrev, stream);
+            } else
+            {
+                gs_Op.WriteLn(nm, stream);
+            }
+            
+            
 
             GfxState = GfxState with { ExtDict = state.ExtDict };
         }
@@ -303,6 +336,32 @@ public partial class ContentWriter
         return this;
     }
     private Dictionary<PdfDictionary, PdfName> propertyLists = new Dictionary<PdfDictionary, PdfName>();
+
+    private void WriteCS(IPdfObject CS)
+    {
+        if (CS is PdfName nm)
+        {
+            CS_Op.WriteLn(nm, StreamWriter.Stream);
+        }
+        else
+        {
+            nm = AddColorSpace(CS);
+            CS_Op.WriteLn(nm, StreamWriter.Stream);
+        }
+    }
+
+    private void Writecs(IPdfObject cs)
+    {
+        if (cs is PdfName nm)
+        {
+            cs_Op.WriteLn(nm, StreamWriter.Stream);
+        }
+        else
+        {
+            nm = AddColorSpace(cs);
+            cs_Op.WriteLn(nm, StreamWriter.Stream);
+        }
+    }
 
     private static bool ColorsEqual(IPdfOperation? a, IPdfOperation? b)
     {
@@ -340,6 +399,7 @@ public partial class ContentWriter
     }
     internal void SubPath(SubPath subPath)
     {
+        EnsureInPageState();
         if (subPath.Operations.Count > 0 && subPath.Operations[0].Type != PdfOperatorType.re)
         {
             MoveTo((decimal)subPath.XPos, (decimal)subPath.YPos);
@@ -496,6 +556,51 @@ public partial class ContentWriter
 
         extGraphics[gs] = name;
         ExtGS[name] = gs;
+        return name;
+    }
+
+
+    internal void Shading(IPdfObject sh)
+    {
+        EnsureInPageState();
+        var nm = AddShading(sh);
+        sh_Op.WriteLn(nm, StreamWriter.Stream);
+    }
+    private Dictionary<IPdfObject, PdfName> shadings = new Dictionary<IPdfObject, PdfName>();
+    internal PdfName AddShading(IPdfObject sh)
+    {
+        if (shadings.TryGetValue(sh, out var name))
+        {
+            return name;
+        }
+
+        name = $"SH{objCnt++}";
+        while (Shadings.ContainsKey(name))
+        {
+            name = $"SH{objCnt++}";
+        }
+
+        shadings[sh] = name;
+        Shadings[name] = sh.Indirect();
+        return name;
+    }
+
+    private Dictionary<IPdfObject, PdfName> patterns = new Dictionary<IPdfObject, PdfName>();
+    internal PdfName AddPattern(IPdfObject sh)
+    {
+        if (patterns.TryGetValue(sh, out var name))
+        {
+            return name;
+        }
+
+        name = $"PA{objCnt++}";
+        while (Patterns.ContainsKey(name))
+        {
+            name = $"PA{objCnt++}";
+        }
+
+        patterns[sh] = name;
+        Patterns[name] = sh.Indirect();
         return name;
     }
 }

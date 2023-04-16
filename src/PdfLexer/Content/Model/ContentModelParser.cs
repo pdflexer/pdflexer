@@ -59,6 +59,7 @@ internal ref struct ContentModelParser
 
         SubPath? currentSubPath = null;
         PdfOperatorType? clipping = null;
+        List<TextLineSequence>? textClipping = null;
 
         while (Scanner.Advance())
         {
@@ -91,14 +92,17 @@ internal ref struct ContentModelParser
                             {
                                 // turn into BMC
                                 mc.Add(new MarkedContent(bdcOp.tag));
-                            } else
+                            }
+                            else
                             {
                                 mc.Add(new MarkedContent(bdcOp.tag) { PropList = found });
                             }
-                        } else if (bdcOp.props is PdfDictionary dict)
+                        }
+                        else if (bdcOp.props is PdfDictionary dict)
                         {
                             mc.Add(new MarkedContent(bdcOp.tag) { InlineProps = dict });
-                        } else
+                        }
+                        else
                         {
                             mc.Add(new MarkedContent(bdcOp.tag));
                         }
@@ -125,6 +129,26 @@ internal ref struct ContentModelParser
                         bx = false;
                         continue;
                     }
+                case PdfOperatorType.sh:
+                    {
+                        if (!Scanner.TryGetCurrentOperation(out var shOpI))
+                        {
+                            continue;
+                        }
+                        var shOp = (sh_Op)shOpI;
+                        if (!Scanner.TryGetShading(shOp.name, out var shObj))
+                        {
+                            continue;
+                        }
+                        content.Add(new ShadingContent
+                        {
+                            Shading = shObj,
+                            GraphicsState = GraphicsState,
+                            CompatibilitySection = bx,
+                            Markings = mc.Count > 0 ? mc.ToList() : null
+                        });
+                        break;
+                    }
                 case PdfOperatorType.Do:
                     if (!Scanner.TryGetCurrentOperation(out var doOpI))
                     {
@@ -144,7 +168,8 @@ internal ref struct ContentModelParser
                             CompatibilitySection = bx,
                             Markings = mc.Count > 0 ? mc.ToList() : null
                         });
-                    } else
+                    }
+                    else
                     {
                         content.Add(new XImgContent
                         {
@@ -155,7 +180,7 @@ internal ref struct ContentModelParser
                         });
                     }
                     continue;
-                case PdfOperatorType.BI:
+                case PdfOperatorType.EI:
                     {
                         if (!Scanner.TryGetCurrentOperation(out var iiop))
                         {
@@ -173,14 +198,70 @@ internal ref struct ContentModelParser
                 case PdfOperatorType.EOC:
                     return content;
                 case PdfOperatorType.BT:
-                    state = ParseState.Text;
-                    BT_Op.Value.Apply(ref GraphicsState);
-                    textReset = true;
+                    {
+                        state = ParseState.Text;
+                        BT_Op.Value.Apply(ref GraphicsState);
+                        textReset = true;
+                        var clip = GraphicsState.TextMode == 4
+                                    || GraphicsState.TextMode == 5
+                                    || GraphicsState.TextMode == 6
+                                    || GraphicsState.TextMode == 7;
+                        if (clip)
+                        {
+                            textClipping = new List<TextLineSequence>();
+                        }
+                        else
+                        {
+                            textClipping = null;
+                        }
+                    }
+                    continue;
+                case PdfOperatorType.Tr:
+                    {
+                        if (Scanner.TryGetCurrentOperation(out var trOp))
+                        {
+                            trOp.Apply(ref GraphicsState);
+                            var clip = GraphicsState.TextMode == 4
+                                || GraphicsState.TextMode == 5
+                                || GraphicsState.TextMode == 6
+                                || GraphicsState.TextMode == 7;
+                            if (clip)
+                            {
+                                textClipping = new List<TextLineSequence>();
+                            }
+                            else
+                            {
+                                textClipping = null;
+                            }
+                        }
+                    }
                     continue;
                 case PdfOperatorType.ET:
                     CompleteCurrent(GraphicsState);
                     state = ParseState.Page;
                     textReset = true;
+                    if (textClipping != null)
+                    {
+                        var clip = GraphicsState.Clipping;
+                        if (clip == null)
+                        {
+                            clip = new List<IClippingSection>();
+                        } else
+                        {
+                            clip = clip.ToList();
+                        }
+                        clip.AddRange(textClipping.Select(x => new TextClippingInfo
+                        {
+                            Glyphs = x.Glyphs.ToList(),
+                            TM = x.GraphicsState.CTM,
+                            LineMatrix = x.LineMatrix,
+                            NewLine = x.NewLine
+                        }));
+                        GraphicsState = GraphicsState with
+                        {
+                            Clipping = clip
+                        };
+                    }
                     continue;
                 case PdfOperatorType.Tf:
                     {
@@ -192,9 +273,18 @@ internal ref struct ContentModelParser
                             {
                                 rf = SingleByteFont.Fallback;
                                 font = Standard14Font.GetHelvetica().GetPdfFont();
-                            } else
+                            }
+                            else
                             {
+                                // resources may not be included
+                                var ft = font.Get(PdfName.Subtype);
+                                if (ft != null && (ft as PdfName) == PdfName.Type3 && !font.ContainsKey(PdfName.Resources))
+                                {
+                                    font = font.CloneShallow();
+                                    font[PdfName.Resources] = Scanner.Resources.CloneShallow();
+                                }
                                 rf = Context.GetFont(font);
+
                             }
                             Tf_Op.Apply(ref GraphicsState, font, rf, (float)tfOp.size);
                         }
@@ -219,7 +309,7 @@ internal ref struct ContentModelParser
 
                         continue;
                     }
-                case PdfOperatorType.CS: 
+                case PdfOperatorType.CS:
                 case PdfOperatorType.cs:
                     {
                         if (!Scanner.TryGetCurrentOperation(out var gso))
@@ -236,11 +326,13 @@ internal ref struct ContentModelParser
                             if (Scanner.TryGetColorSpace(nm, out var cs))
                             {
                                 GraphicsState = GraphicsState with { ColorSpaceStroking = cs };
-                            } else
+                            }
+                            else
                             {
                                 GraphicsState = GraphicsState with { ColorSpaceStroking = nm };
                             }
-                        } else
+                        }
+                        else
                         {
                             var nm = ((cs_Op)gso).name;
                             if (Scanner.TryGetColorSpace(nm, out var cs))
@@ -268,8 +360,6 @@ internal ref struct ContentModelParser
                 case PdfOperatorType.ri:
                 case PdfOperatorType.SC:
                 case PdfOperatorType.sc:
-                case PdfOperatorType.SCN:
-                case PdfOperatorType.scn:
                 case PdfOperatorType.w:
                     {
                         CompleteCurrent(GraphicsState, false);
@@ -278,12 +368,40 @@ internal ref struct ContentModelParser
                         {
                             gso.Apply(ref GraphicsState);
                         }
-                        
+
+                        continue;
+                    }
+                case PdfOperatorType.SCN: // may need resources
+                case PdfOperatorType.scn:
+                    {
+                        CompleteCurrent(GraphicsState, false);
+
+                        if (Scanner.TryGetCurrentOperation(out var gso))
+                        {
+                            if (nxt == PdfOperatorType.SCN)
+                            {
+                                var scn = (SCN_Op)gso;
+                                if (scn.name != null && Scanner.TryGetPattern(scn.name, out var pattern))
+                                {
+                                    scn.Pattern = pattern;
+                                }
+                            }
+                            else
+                            {
+                                var scn = (scn_Op)gso;
+                                if (scn.name != null && Scanner.TryGetPattern(scn.name, out var pattern))
+                                {
+                                    scn.Pattern = pattern;
+                                }
+                            }
+                            gso.Apply(ref GraphicsState);
+                        }
+
                         continue;
                     }
                 // path creating ops
                 case PdfOperatorType.c:
-                case PdfOperatorType.l: 
+                case PdfOperatorType.l:
                 case PdfOperatorType.v:
                 case PdfOperatorType.y:
                     {
@@ -337,13 +455,12 @@ internal ref struct ContentModelParser
                 case PdfOperatorType.B:
                 case PdfOperatorType.b_Star:
                 case PdfOperatorType.B_Star:
-                case PdfOperatorType.f: 
+                case PdfOperatorType.f:
                 case PdfOperatorType.F:
                 case PdfOperatorType.f_Star:
                 case PdfOperatorType.n:
                 case PdfOperatorType.s:
                 case PdfOperatorType.S:
-                case PdfOperatorType.sh:
                     {
                         if (currentPath == null)
                         {
@@ -352,27 +469,29 @@ internal ref struct ContentModelParser
                         if (Scanner.TryGetCurrentOperation(out var pdo))
                         {
                             currentPath.Closing = pdo;
-                        } else
+                        }
+                        else
                         {
                             currentPath.Closing = n_Op.Value;
                         }
 
-                        var clip = clipping != null ? new ClippingInfo(GraphicsState.CTM, currentSubPath, clipping == PdfOperatorType.W_Star) : null;
+                        var clip = clipping != null ? new ClippingInfo(GraphicsState.CTM, currentPath.Paths, clipping == PdfOperatorType.W_Star) : null;
 
                         CompleteCurrent(GraphicsState);
 
-                        if (clip != null) 
+                        if (clip != null)
                         {
                             if (GraphicsState.Clipping != null)
                             {
                                 var old = GraphicsState.Clipping.ToList();
                                 old.Add(clip);
                                 GraphicsState = GraphicsState with { Clipping = old };
-                            } else
-                            {
-                                GraphicsState = GraphicsState with { Clipping = new List<ClippingInfo> { clip } };
                             }
-                            
+                            else
+                            {
+                                GraphicsState = GraphicsState with { Clipping = new List<IClippingSection> { clip } };
+                            }
+
                         }
 
                         currentSubPath = null;
@@ -401,7 +520,7 @@ internal ref struct ContentModelParser
                         textReset = true;
                         continue;
                     }
-                case PdfOperatorType.d0: 
+                case PdfOperatorType.d0:
                 case PdfOperatorType.d1:
                     // should never occur, this doesn't parse t3 font streams
                     continue;
@@ -427,7 +546,11 @@ internal ref struct ContentModelParser
                         seq.CompatibilitySection = bx;
                         seq.Markings = mc.Count > 0 ? mc.ToList() : null;
                         seq.NewLine = !textReset;
-                        content.Add(seq);
+                        if (GraphicsState.TextMode != 7)
+                        {
+                            content.Add(seq);
+                        }
+                        textClipping?.Add(seq);
                         textReset = false;
                         continue;
                     }
@@ -445,7 +568,11 @@ internal ref struct ContentModelParser
                         seq.CompatibilitySection = bx;
                         seq.Markings = mc.Count > 0 ? mc.ToList() : null;
                         seq.NewLine = !textReset;
-                        content.Add(seq);
+                        if (GraphicsState.TextMode != 7)
+                        {
+                            content.Add(seq);
+                        }
+                        textClipping?.Add(seq);
                         textReset = false;
                         continue;
                     }
@@ -458,7 +585,11 @@ internal ref struct ContentModelParser
                         var seq = CreateTextSequence(slice, textReset);
                         seq.CompatibilitySection = bx;
                         seq.Markings = mc.Count > 0 ? mc.ToList() : null;
-                        content.Add(seq);
+                        if (GraphicsState.TextMode != 7)
+                        {
+                            content.Add(seq);
+                        }
+                        textClipping?.Add(seq);
                         textReset = false;
                         break;
                     }
@@ -470,7 +601,7 @@ internal ref struct ContentModelParser
                         var seq = new TextLineSequence
                         {
                             Glyphs = new List<UnappliedGlyph>(),
-                            GraphicsState = GraphicsState,
+                            GraphicsState = GraphicsState.TextMode > 3 ? GraphicsState with { TextMode = GraphicsState.TextMode - 4 } : GraphicsState,
                             CompatibilitySection = bx,
                             LineMatrix = textReset ? GraphicsState.Text.TextLineMatrix : null,
                             Markings = mc.Count > 0 ? mc.ToList() : null
@@ -490,7 +621,11 @@ internal ref struct ContentModelParser
                             }
                         }
                         ApplyAll(seq.Glyphs);
-                        content.Add(seq);
+                        if (GraphicsState.TextMode != 7)
+                        {
+                            content.Add(seq);
+                        }
+                        textClipping?.Add(seq);
                         textReset = false;
                         continue;
                     }
@@ -505,7 +640,7 @@ internal ref struct ContentModelParser
 
         return content;
 
-        void CompleteCurrent(GfxState gs, bool reset=true)
+        void CompleteCurrent(GfxState gs, bool reset = true)
         {
             if (state == ParseState.Text)
             {
@@ -513,7 +648,8 @@ internal ref struct ContentModelParser
                 {
                     state = ParseState.Page;
                 }
-            } else if (state == ParseState.Paths)
+            }
+            else if (state == ParseState.Paths)
             {
                 if (currentPath!.Closing != n_Op.Value)
                 {
@@ -550,7 +686,8 @@ internal ref struct ContentModelParser
                     nsp
                 }
                 };
-            } else
+            }
+            else
             {
                 currentPath.Paths.Add(nsp);
             }
@@ -562,9 +699,11 @@ internal ref struct ContentModelParser
 
     private TextLineSequence CreateTextSequence(ReadOnlySpan<byte> slice, bool textReset)
     {
-        var seq = new TextLineSequence { 
+        var seq = new TextLineSequence
+        {
             LineMatrix = textReset ? GraphicsState.Text.TextLineMatrix : null,
-            Glyphs = new List<UnappliedGlyph>(), GraphicsState = GraphicsState
+            Glyphs = new List<UnappliedGlyph>(),
+            GraphicsState = GraphicsState.TextMode > 3 ? GraphicsState with { TextMode = GraphicsState.TextMode - 4 } : GraphicsState
         };
         Context.FillGlyphsFromRawString(GraphicsState, slice, seq.Glyphs);
         ApplyAll(seq.Glyphs);

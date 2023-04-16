@@ -21,6 +21,8 @@ public partial class ContentWriter
     private PdfDictionary Fonts { get; }
     public PdfDictionary ColorSpaces { get; }
     public PdfDictionary ExtGS { get; }
+    public PdfDictionary Shadings { get; }
+    public PdfDictionary Patterns { get; }
     public PdfDictionary Properties { get; }
 
     private GfxState GfxState;
@@ -37,7 +39,9 @@ public partial class ContentWriter
         Fonts = resources.GetOrCreateValue<PdfDictionary>(PdfName.Font);
         ColorSpaces = resources.GetOrCreateValue<PdfDictionary>(PdfName.ColorSpace);
         ExtGS = resources.GetOrCreateValue<PdfDictionary>(PdfName.ExtGState);
+        Shadings = resources.GetOrCreateValue<PdfDictionary>(PdfName.Shading);
         Properties = resources.GetOrCreateValue<PdfDictionary>("Properties");
+        Patterns = resources.GetOrCreateValue<PdfDictionary>(PdfName.Pattern);
         StreamWriter = new ZLibLexerStream();
         scale = unit switch
         {
@@ -277,7 +281,6 @@ public partial class ContentWriter
             Save();
         }
     }
-
   
     public ContentWriter Op(IPdfOperation op)
     {
@@ -328,6 +331,14 @@ public partial class ContentWriter
         if (ExtGS.Count == 0)
         {
             Resources.Remove(PdfName.ExtGState);
+        }
+        if (Shadings.Count == 0)
+        {
+            Resources.Remove(PdfName.Shading);
+        }
+        if (Patterns.Count == 0)
+        {
+            Resources.Remove(PdfName.Pattern);
         }
         if (Properties.Count == 0)
         {

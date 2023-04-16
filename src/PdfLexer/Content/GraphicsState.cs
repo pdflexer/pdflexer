@@ -4,6 +4,7 @@ using PdfLexer.DOM;
 using PdfLexer.DOM.ColorSpaces;
 using PdfLexer.Fonts;
 using PdfLexer.Graphics;
+using PdfLexer.Writing;
 using System.Numerics;
 
 namespace PdfLexer.Content
@@ -41,8 +42,8 @@ namespace PdfLexer.Content
         public IPdfOperation? Color { get; init; }
         public IPdfOperation? ColorStroking { get; init; }
         public PdfDictionary? FontObject { get; init; }
-        public PdfDictionary? ExtDict { get; init; }
-        internal List<ClippingInfo>? Clipping { get; init; }
+        public ExtGraphicsDict? ExtDict { get; init; }
+        internal List<IClippingSection>? Clipping { get; init; }
 
         // not part of real gfx state
         internal TxtState Text { get; init; }
@@ -52,6 +53,8 @@ namespace PdfLexer.Content
             Matrix4x4.Invert(CTM, out var iv);
             return desired * iv;
         }
+
+
 
         internal (float llx, float lly, float urx, float ury) GetBoundingBox(Glyph glyph)
         {
@@ -194,18 +197,72 @@ namespace PdfLexer.Content
         }
     }
 
-    internal record ClippingInfo
+    public record ExtGraphicsDict
     {
-        public ClippingInfo(Matrix4x4 tm, SubPath path, bool evenOdd)
+        public required Matrix4x4 CTM { get; init; }
+        public required PdfDictionary Dict { get; init; }
+    }
+
+    internal record ClippingInfo : IClippingSection
+    {
+        public ClippingInfo(Matrix4x4 tm, List<SubPath> path, bool evenOdd)
         {
             TM = tm;
             Path = path;
             EvenOdd = evenOdd;
         }
-        public SubPath Path { get; set; }
+        public List<SubPath> Path { get; set; }
         public Matrix4x4 TM { get; set; }
         public bool EvenOdd { get; set; }
-        public ClippingInfo? Next { get; set; }
+
+        public void Apply(ContentWriter writer)
+        {
+            foreach (var path in Path)
+            {
+                writer.SubPath(path);
+            }
+
+            if (EvenOdd)
+            {
+                W_Star_Op.WriteLn(writer.StreamWriter.Stream);
+            }
+            else
+            {
+                W_Op.WriteLn(writer.StreamWriter.Stream);
+            }
+            n_Op.WriteLn(writer.StreamWriter.Stream);
+        }
+    }
+
+    internal interface IClippingSection
+    {
+        void Apply(ContentWriter writer);
+        Matrix4x4 TM { get; }
+    }
+    internal record TextClippingInfo : IClippingSection
+    {
+        public required List<UnappliedGlyph> Glyphs { get; set; }
+        public required Matrix4x4 TM { get; set; }
+        public Matrix4x4? LineMatrix { get; set; }
+        public bool NewLine { get; set; }
+
+        public void Apply(ContentWriter writer)
+        {
+            var prev = writer.GS.TextMode;
+            writer.BeginText();
+            Tr_Op.WriteLn(7, writer.StreamWriter.Stream);
+            if (LineMatrix.HasValue)
+            {
+                writer.SetLinePosition(LineMatrix.Value);
+            }
+            else if (NewLine)
+            {
+                writer.Op(T_Star_Op.Value);
+            }
+            writer.WriteGlyphs(Glyphs);
+            writer.EndText();
+            Tr_Op.WriteLn(prev, writer.StreamWriter.Stream);
+        }
     }
 
     public class TxtState
@@ -394,7 +451,7 @@ namespace PdfLexer.Operators
                 Font = fread == null ? state.Font : fread,
                 FontObject = fdict == null ? state.FontObject : fdict,
                 FontSize = fsize == null ? state.FontSize : fsize.Value,
-                ExtDict = dict.Count > 0 ? dict : null
+                ExtDict = dict.Count > 0 ? new ExtGraphicsDict { Dict = dict, CTM = state.CTM } : null
             };
             state.UpdateTRM();
         }
@@ -505,12 +562,18 @@ namespace PdfLexer.Operators
         }
     }
 
-    public partial class SCN_Op
+    public interface IPatternableColor
+    {
+        IPdfObject? Pattern { get; }
+    }
+
+    public partial class SCN_Op : IPatternableColor
     {
         public void Apply(ref GfxState state)
         {
             state = state with { ColorStroking = this };
         }
+        public IPdfObject? Pattern { get; set; } // hack for resource until adding better color handling
     }
 
     public partial class sc_Op
@@ -521,12 +584,13 @@ namespace PdfLexer.Operators
         }
     }
 
-    public partial class scn_Op
+    public partial class scn_Op : IPatternableColor
     {
         public void Apply(ref GfxState state)
         {
             state = state with { Color = this };
         }
+        public IPdfObject? Pattern { get; set; } // hack for resource until adding better color handling
     }
 
     public partial class G_Op

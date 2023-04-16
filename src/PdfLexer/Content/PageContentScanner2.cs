@@ -447,6 +447,20 @@ public ref struct PageContentScanner2
         return false;
     }
 
+    internal bool TryGetShading(PdfName name, [NotNullWhen(true)] out IPdfObject? found)
+    {
+        if (
+            Resources.TryGetValue<PdfDictionary>(PdfName.Shading, out var sh)
+            && sh.TryGetValue(name, out found)
+        )
+        {
+            found = found.Resolve();
+            return true;
+        }
+        found = null;
+        return false;
+    }
+
     internal bool TryGetGraphicsState(PdfName name, [NotNullWhen(true)] out PdfDictionary? found)
     {
         if (
@@ -467,6 +481,20 @@ public ref struct PageContentScanner2
             && props.TryGetValue<PdfDictionary>(name, out found, errorOnMismatch: false)
         )
         {
+            return true;
+        }
+        found = null;
+        return false;
+    }
+
+    internal bool TryGetPattern(PdfName name, [NotNullWhen(true)] out IPdfObject? found)
+    {
+        if (
+            Resources.TryGetValue<PdfDictionary>(PdfName.Pattern, out var patterns)
+            && patterns.TryGetValue(name, out var dfound)
+        )
+        {
+            found = dfound.Resolve();
             return true;
         }
         found = null;

@@ -31,3 +31,17 @@ internal class XImgContent : IContentGroup
         writer.Image(Stream);
     }
 }
+
+internal class ShadingContent : IContentGroup
+{
+    public ContentType Type { get; } = ContentType.Shading;
+    public required GfxState GraphicsState { get; set; }
+    public List<MarkedContent>? Markings { get; set; }
+    public required IPdfObject Shading { get; set; }
+    public bool CompatibilitySection { get; set; }
+
+    public void Write(ContentWriter writer)
+    {
+        writer.Shading(Shading);
+    }
+}
