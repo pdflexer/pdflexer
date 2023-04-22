@@ -1,4 +1,5 @@
-﻿using PdfLexer.Fonts;
+﻿using PdfLexer.DOM;
+using PdfLexer.Fonts;
 
 namespace PdfLexer.Content.Model;
 
@@ -186,9 +187,11 @@ internal ref struct ContentModelParser
                         {
                             continue;
                         }
-                        content.Add(new InlineImage
+                        var img = (InlineImage_Op)iiop;
+                        var ximg = img.ConvertToStream(Scanner.Resources);
+                        content.Add(new XImgContent
                         {
-                            Img = (InlineImage_Op)iiop,
+                            Stream = ximg,
                             GraphicsState = GraphicsState,
                             CompatibilitySection = bx,
                             Markings = mc.Count > 0 ? mc.ToList() : null

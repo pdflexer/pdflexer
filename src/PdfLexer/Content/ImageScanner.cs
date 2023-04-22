@@ -71,7 +71,7 @@ public ref struct ImageScanner
                 return false;
             }
             var iim = (InlineImage_Op)gso;
-            image = GetImage(iim.ConvertToStream());
+            image = GetImage(iim.ConvertToStream(Scanner.Resources));
             return true;
         }
         else if (Scanner.CurrentOperator == PdfOperatorType.Do)

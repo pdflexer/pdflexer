@@ -34,7 +34,7 @@ public class InlineImage_Op : IPdfOperation
         stream.Write(EI_Op.OpData);
     }
 
-    public PdfStream ConvertToStream()
+    public PdfStream ConvertToStream(PdfDictionary resources)
     {
         var dict = new PdfDictionary();
         PdfName? key = null;
@@ -47,8 +47,16 @@ public class InlineImage_Op : IPdfOperation
             }
             if (key != null)
             {
-                dict[key] = GetReplacement(item);
+                var v = GetReplacement(item);
+                dict[key] = v;
+                if (key == PdfName.ColorSpace && v is PdfName nm &&
+                    resources.TryGetValue<PdfDictionary>(PdfName.ColorSpace, out var css) && css.TryGetValue(nm, out var obj))
+                {
+                    obj = obj.Resolve();
+                    dict[key] = obj.Indirect();
+                }
                 key = null;
+                
             }
         }
         dict[PdfName.Subtype] = PdfName.Image;

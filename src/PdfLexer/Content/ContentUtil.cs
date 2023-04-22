@@ -8,7 +8,7 @@ public class ContentUtil
     public static PdfDictionary ConvertInlineImagesToXObjs(ParsingContext ctx, PdfPage page, bool clone = false) 
         => ConvertInlineImagesToXObjs(ctx, page.NativeObject, new HashSet<PdfStream>(), clone);
 
-    private static PdfStreamContents RunSingle(ParsingContext ctx, PdfDictionary xobjs, PdfStream str)
+    private static PdfStreamContents RunSingle(ParsingContext ctx, PdfDictionary xobjs, PdfDictionary resources, PdfStream str)
     {
         var fw = new ZLibLexerStream();
         var last = 0;
@@ -27,7 +27,7 @@ public class ContentUtil
                     i++;
                     nm = "Im" + i;
                 }
-                var imageStream = im.ConvertToStream();
+                var imageStream = im.ConvertToStream(resources);
                 xobjs[nm] = imageStream.Indirect();
 
                 var start = scanner.Items[scanner.Position - 2].StartAt;
@@ -54,13 +54,14 @@ public class ContentUtil
         var (pu, xo) = UpdateForms(ctx, page, callStack, clone);
         page = pu;
 
+        var res = page.Get<PdfDictionary>(PdfName.Resources)!;
 
         var content = page.Get(PdfName.Contents);
         if (content == null) { return page; }
         switch (content.Type)
         {
             case PdfObjectType.StreamObj:
-                page[PdfName.Contents] = new PdfStream(RunSingle(ctx, xo, (PdfStream)content)).Indirect();
+                page[PdfName.Contents] = new PdfStream(RunSingle(ctx, xo, res, (PdfStream)content)).Indirect();
                 break;
             case PdfObjectType.ArrayObj:
                 var arr = (PdfArray)content;
@@ -68,7 +69,7 @@ public class ContentUtil
                 foreach (var item in arr)
                 {
                     var ss = item.GetAs<PdfStream>();
-                    newArr.Add(new PdfStream(RunSingle(ctx, xo, ss)).Indirect());
+                    newArr.Add(new PdfStream(RunSingle(ctx, xo, res, ss)).Indirect());
                 }
                 page[PdfName.Contents] = newArr;
                 break;
@@ -83,8 +84,9 @@ public class ContentUtil
         callStack.Add(form);
 
         var (dict, xo) = UpdateForms(ctx, form.Dictionary, callStack, clone);
+        var res = dict.Get<PdfDictionary>(PdfName.Resources)!;
 
-        form = new PdfStream(dict, RunSingle(ctx, xo, form));
+        form = new PdfStream(dict, RunSingle(ctx, xo, res, form));
 
         return form;
     }
