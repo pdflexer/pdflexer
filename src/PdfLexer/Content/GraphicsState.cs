@@ -408,15 +408,28 @@ namespace PdfLexer.Operators
                     fsize = fz;
                 }
             }
+            if (state.ExtDict != null)
+            {
+                // TODO -> dedup these or change extdict to list
+                var existing = state.ExtDict.Dict.CloneShallow();
+                foreach (var kvp in dict)
+                {
+                    existing[kvp.Key] = kvp.Value;
+                }
+                dict = existing;
+            } else
+            {
+                if (!cache.TryGetValue(orig, out var cached))
+                {
+                    cache[orig] = dict;
+                }
+                else
+                {
+                    dict = cached;
+                }
+            }
 
-            if (!cache.TryGetValue(orig, out var cached))
-            {
-                cache[orig] = dict;
-            }
-            else
-            {
-                dict = cached;
-            }
+
 
             state = state with
             {
