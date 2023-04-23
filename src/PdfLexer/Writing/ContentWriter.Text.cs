@@ -3,17 +3,20 @@ using PdfLexer.Serializers;
 using System.Buffers.Text;
 using System;
 using System.Numerics;
+using PdfLexer.Content;
 
 namespace PdfLexer.Writing;
 
 public partial class ContentWriter
 {
-    public ContentWriter Font(IWritableFont font, double size)
+    public ContentWriter Font(IWritableFont font, double size) => Font(font, (decimal)size);
+
+    public ContentWriter Font(IWritableFont font, decimal size)
     {
         var nm = AddFont(font);
         writableFont = font;
         Tf_Op.WriteLn(nm, (decimal)size, StreamWriter.Stream);
-        GfxState = GfxState with { FontSize = (float)size }; // font handled already
+        GfxState = GfxState with { FontSize = (decimal)size }; // font handled already
         return this;
     }
 
@@ -37,7 +40,7 @@ public partial class ContentWriter
 
     private Dictionary<Base14, IWritableFont> used = new();
 
-    public ContentWriter Font(Base14 font, double size)
+    public ContentWriter Font(Base14 font, decimal size)
     {
         if (!used.TryGetValue(font, out var wf))
         {
@@ -95,15 +98,25 @@ public partial class ContentWriter
     {
         EnsureInTextState();
         Td_Op.WriteLn((decimal)x, (decimal)y, StreamWriter.Stream);
-        Td_Op.Apply(ref GfxState, (float)x, (float)y);
+        Td_Op.Apply(ref GfxState, (decimal)x, (decimal)y);
         return this;
     }
 
-    public ContentWriter TextTransform(Matrix4x4 tm)
+    public ContentWriter TextMove(decimal x, decimal y)
+    {
+        EnsureInTextState();
+        Td_Op.WriteLn(x, y, StreamWriter.Stream);
+        Td_Op.Apply(ref GfxState, x, y);
+        return this;
+    }
+
+    public ContentWriter TextTransform(GfxMatrix tm)
     {
         EnsureInTextState();
         Tm_Op.WriteLn(tm, StreamWriter.Stream);
         GfxState.Text.TextLineMatrix = tm;
+        GfxState.Text.TextMatrix = tm;
+        GfxState.UpdateTRM();
         return this;
     }
 
@@ -119,36 +132,39 @@ public partial class ContentWriter
     {
         State = PageState.Text;
         BT_Op.WriteLn(StreamWriter.Stream);
-        GfxState.Text.TextLineMatrix = Matrix4x4.Identity;
-        GfxState.Text.TextMatrix = Matrix4x4.Identity;
+        GfxState.Text.TextLineMatrix = GfxMatrix.Identity;
+        GfxState.Text.TextMatrix = GfxMatrix.Identity;
         GfxState.UpdateTRM();
         return this;
     }
 
-    internal ContentWriter SetLinePosition(Matrix4x4 lm)
+    internal ContentWriter SetLinePosition(GfxMatrix lm)
     {
         EnsureInTextState();
         if (GS.Text.TextLineMatrix != lm)
         {
             var cur = GS.Text.TextLineMatrix;
 
-            Matrix4x4.Invert(cur, out var iv);
+            cur.Invert(out var iv);
             var xform = lm * iv;
-            if (xform.M11 == 1 && xform.M12 == 0 && xform.M21 == 0 && xform.M22 == 1)
+
+            if (cur.A == lm.A && cur.B == lm.B && cur.C == lm.C && cur.D == lm.D)
             {
-                if (xform.M31 == 0 && Math.Round(xform.M32 + GS.TextLeading, 6) == 0)
+                // E = (C * F - E * D) * invDet,
+                // F = (E * B - A * F) * invDet
+                if (xform.E == 0 && Math.Round(xform.F + GS.TextLeading, 6) == 0)
                 {
                     Op(T_Star_Op.Value);
                 }
                 else
                 {
-                    TextMove(xform.M31, xform.M32);
+                    TextMove(Math.Round(xform.E, 6), Math.Round(xform.F, 6));
                 }
-            }
-            else
+            } else
             {
                 TextTransform(lm);
             }
+
         }
         return this;
     }
@@ -159,6 +175,7 @@ public partial class ContentWriter
         Span<byte> buffer = stackalloc byte[4];
         Span<byte> output = stackalloc byte[16];
         var str = StreamWriter.Stream;
+
         if (glyphs.Any(x => x.Shift != 0))
         {
             bool inString = false;
@@ -178,6 +195,7 @@ public partial class ContentWriter
                         str.Write(output.Slice(0, cnt));
                         // str.WriteByte((byte)' ');
                     }
+                    GfxState.ApplyShift(item);
                 }
                 else
                 {
@@ -188,6 +206,7 @@ public partial class ContentWriter
                         inString = true;
                     }
                     WriteGlyph(item, buffer, output, str);
+                    GfxState.ApplyCharShift(item);
                 }
             }
             if (inString)
@@ -205,6 +224,7 @@ public partial class ContentWriter
             foreach (var item in glyphs)
             {
                 WriteGlyph(item, buffer, output, str);
+                GfxState.ApplyCharShift(item);
             }
             str.WriteByte((byte)')');
             str.WriteByte((byte)' ');

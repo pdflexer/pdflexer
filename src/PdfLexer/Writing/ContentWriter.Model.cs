@@ -1,9 +1,6 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Content.Model;
-using PdfLexer.Fonts;
 using PdfLexer.Serializers;
-using System.IO;
-using System.Numerics;
 
 namespace PdfLexer.Writing;
 
@@ -28,7 +25,8 @@ public partial class ContentWriter
         // want to reset to default using gfx restore
         var ctmIdentity = (state.CTM != GfxState.CTM && state.CTM.IsIdentity)
             || (state.Clipping != GfxState.Clipping);
-        var clippingReset = state.Clipping != GfxState.Clipping;
+        var clippingReset = ((state.Clipping == null || GfxState.Clipping == null) && state.Clipping != GfxState.Clipping)
+            || (state.Clipping != null && GfxState.Clipping != null && !state.Clipping.SequenceEqual(GfxState.Clipping));
         if (ctmIdentity || clippingReset)
         {
             EnsureInPageState();
@@ -102,22 +100,41 @@ public partial class ContentWriter
             Tf_Op.WriteLn(nm, (decimal)state.FontSize, stream);
         }
 
-        if (state.Clipping != GfxState.Clipping)
+        if (state.Clipping != null && !(GfxState.Clipping?.SequenceEqual(state.Clipping) ?? false))
         {
             EnsureInPageState();
             Save();
+            var prev = GS.TextMode;
+            bool reset = false;
+
+            if (state.Clipping.Any(x => x is TextClippingInfo))
+            {
+                if (State == PageState.Text)
+                {
+                    EndText();
+                    BeginText();
+                }
+                Tr_Op.WriteLn(7, StreamWriter.Stream);
+                reset = true;
+            }
             foreach (var clip in state.Clipping)
             {
                 if (clip.TM != GfxState.CTM)
                 {
                     var cm = GfxState.GetTranslation(clip.TM);
-                    cm_Op.WriteLn(cm, stream);
+                    cm_Op.WriteLn(cm.Round(), stream);
                     GfxState = GfxState with { CTM = clip.TM };
                 }
 
                 clip.Apply(this);
             }
-            
+
+            if (reset)
+            {
+                EndText();
+                Tr_Op.WriteLn(prev, StreamWriter.Stream);
+            }
+
         }
 
         if (state.CTM != GfxState.CTM)
@@ -125,7 +142,7 @@ public partial class ContentWriter
             EnsureInPageState();
             EnsureRestorable();
             var cm = GfxState.GetTranslation(state.CTM);
-            cm_Op.WriteLn(cm, stream);
+            cm_Op.WriteLn(cm.Round(), stream);
             GfxState = GfxState with { CTM = state.CTM };
         }
 
@@ -139,7 +156,7 @@ public partial class ContentWriter
 
         if (state.TextHScale != GfxState.TextHScale)
         {
-            Tz_Op.WriteLn((decimal)(state.TextHScale * 100.0), stream);
+            Tz_Op.WriteLn((decimal)(state.TextHScale * 100.0m), stream);
         }
 
         if (state.TextLeading != GfxState.TextLeading)
@@ -211,12 +228,13 @@ public partial class ContentWriter
                     stream.WriteByte((byte)' ');
                     stream.Write(SCN_Op.OpData);
                     stream.WriteByte((byte)'\n');
-                } else
+                }
+                else
                 {
                     state.ColorStroking.Serialize(stream);
                     stream.WriteByte((byte)'\n');
                 }
-                
+
             }
         }
 
@@ -227,7 +245,8 @@ public partial class ContentWriter
                 if (state.ColorSpace == null)
                 {
                     g_Op.WriteLn(0, stream);
-                } else
+                }
+                else
                 {
                     Writecs(state.ColorSpace);
                 }
@@ -291,16 +310,17 @@ public partial class ContentWriter
             if (state.RenderingIntent == null)
             {
                 ri_Op.WriteLn(PdfName.RelativeColorimetric, stream);
-            } else
+            }
+            else
             {
                 ri_Op.WriteLn(state.RenderingIntent, stream);
             }
-            
+
         }
 
         //MiterLimit
-
         GfxState = state with { Prev = GfxState.Prev, Text = GfxState.Text, ExtDict = GfxState.ExtDict };
+
 
         if (state.ExtDict != GfxState.ExtDict && state.ExtDict != null)
         {
@@ -317,17 +337,18 @@ public partial class ContentWriter
                 // smask dependent on CTM
                 var prev = GfxState.CTM;
                 var cm = GfxState.GetTranslation(state.ExtDict.CTM);
-                cm_Op.WriteLn(cm, stream);
+                cm_Op.WriteLn(cm.Round(), stream);
                 gs_Op.WriteLn(nm, stream);
-                Matrix4x4.Invert(state.ExtDict.CTM, out var iv);
+                state.ExtDict.CTM.Invert(out var iv);
                 var toPrev = prev * iv;
-                cm_Op.WriteLn(toPrev, stream);
-            } else
+                cm_Op.WriteLn(toPrev.Round(), stream);
+            }
+            else
             {
                 gs_Op.WriteLn(nm, stream);
             }
-            
-            
+
+
 
             GfxState = GfxState with { ExtDict = state.ExtDict };
         }
@@ -435,16 +456,17 @@ public partial class ContentWriter
                     EndMarkedContent();
                 }
             }
-            else
+            else if (!mcState.SequenceEqual(desired))
             {
-                var min = Math.Min(mcState.Count, mcState.Count);
+                var min = Math.Min(mcState.Count, desired.Count);
                 var i = 0;
                 for (; i < min; i++)
                 {
-                    if (mcState[i] == mcState[i])
+                    if (mcState[i] == desired[i])
                     {
                         continue;
                     }
+                    break;
                 }
                 if (i < mcState.Count)
                 {
@@ -453,12 +475,9 @@ public partial class ContentWriter
                     {
                         EndMarkedContent();
                     }
-                }
-                if (i < mcState.Count)
-                {
-                    for (var x = i; x < mcState.Count; x++)
+                    for (var x = i; x < desired.Count; x++)
                     {
-                        MarkedContent(mcState[i]);
+                        MarkedContent(desired[i]);
                     }
                 }
             }

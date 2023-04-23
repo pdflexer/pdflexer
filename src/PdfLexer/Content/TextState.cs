@@ -78,7 +78,7 @@ public class TextState
         int u = 0;
         while (i < data.Length && (u = GetGlyph(data, i, out var glyph)) > 0)
         {
-            glyphs.Add(new UnappliedGlyph(glyph, 0f, u));
+            glyphs.Add(new UnappliedGlyph(glyph, 0m, u));
             i += u;
         }
     }
@@ -103,7 +103,7 @@ public class TextState
 
     internal void ApplyShift(UnappliedGlyph glyph)
     {
-        ApplyTj(glyph.Shift);
+        ApplyTj((float)glyph.Shift);
     }
 
     internal void ApplyCharShift(UnappliedGlyph glyph)

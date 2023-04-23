@@ -358,6 +358,23 @@ public class PdfOperator
         {
             throw new ApplicationException("TODO: Unable to write decimal: " + val.ToString());
         }
+        if (buffer.IndexOf((byte)'.') > -1)
+        {
+            for (; bytes > 0; bytes--)
+            {
+                var b = buffer[bytes - 1];
+                if (b != (byte)'0')
+                {
+                    if (b == (byte)'.')
+                    {
+                        bytes--;
+                    }
+                    break;
+                }
+            }
+        }
+
+        
         stream.Write(buffer[..bytes]);
     }
 

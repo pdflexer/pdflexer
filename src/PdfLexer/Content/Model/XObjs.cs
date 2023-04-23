@@ -16,6 +16,11 @@ internal class XFormContent : IContentGroup
     {
         writer.Form(Stream);
     }
+
+    public PdfRect GetBoundingBox()
+    {
+        return new PdfRect { LLx = 0, LLy = 0, URx = 0, URy = 0, };
+    }
 }
 
 internal class XImgContent : IContentGroup
@@ -30,6 +35,10 @@ internal class XImgContent : IContentGroup
     {
         writer.Image(Stream);
     }
+    public PdfRect GetBoundingBox()
+    {
+        return new PdfRect { LLx = 0, LLy = 0, URx = 0, URy = 0, };
+    }
 }
 
 internal class ShadingContent : IContentGroup
@@ -43,5 +52,10 @@ internal class ShadingContent : IContentGroup
     public void Write(ContentWriter writer)
     {
         writer.Shading(Shading);
+    }
+
+    public PdfRect GetBoundingBox()
+    {
+        return new PdfRect { LLx = 0, LLy = 0, URx = 0, URy = 0, };
     }
 }

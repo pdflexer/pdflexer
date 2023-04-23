@@ -29,7 +29,7 @@ public partial class ContentWriter
     internal GfxState GS { get => GfxState; }
     public IStreamContentsWriter StreamWriter { get; private set; }
 
-    private double scale;
+    private decimal scale;
 
     public ContentWriter(PdfDictionary resources, PageUnit unit = PageUnit.Points)
     {
@@ -52,13 +52,20 @@ public partial class ContentWriter
 
 
     public ContentWriter Image(XObjImage form, PdfRectangle rect)
-          => Image(form, rect.LLx, rect.LLy, rect.Width, rect.Height);
+          => Image(form, (decimal)rect.LLx, rect.LLy, rect.Width, rect.Height);
 
     public ContentWriter Image(XObjImage img, double x, double y, double w, double h)
     {
         var nm = AddResource(img.Stream, "I");
+        return Do(nm, (decimal)x, (decimal)y, (decimal)w, (decimal)h);
+    }
+
+    public ContentWriter Image(XObjImage img, decimal x, decimal y, decimal w, decimal h)
+    {
+        var nm = AddResource(img.Stream, "I");
         return Do(nm, x, y, w, h);
     }
+
 
     internal ContentWriter Image(PdfStream img)
     {
@@ -67,6 +74,12 @@ public partial class ContentWriter
     }
 
     public ContentWriter Form(XObjForm form, double x, double y, double xScale = 1, double yScale = 1)
+    {
+        var nm = AddResource(form.NativeObject, "F");
+        return Do(nm, (decimal)x, (decimal)y, (decimal)xScale, (decimal)yScale);
+    }
+
+    public ContentWriter Form(XObjForm form, decimal x, decimal y, decimal xScale = 1, decimal yScale = 1)
     {
         var nm = AddResource(form.NativeObject, "F");
         return Do(nm, x, y, xScale, yScale);
@@ -85,19 +98,15 @@ public partial class ContentWriter
     }
 
 
-    private ContentWriter Do(PdfName nm, double x, double y, double w, double h)
+    private ContentWriter Do(PdfName nm, decimal x, decimal y, decimal w, decimal h)
     {
         if (scale != 1) { x *= scale; y *= scale; w *= scale; h *= scale; }
-        var d = new Matrix4x4(
-            (float)w, 0, 0, 0,
-            0, (float)h, 0, 0,
-            (float)x, (float)y, 1, 0,
-            0, 0, 0, 1);
+        var d = new GfxMatrix(w, 0, 0, h, x, y);
         var cm = GfxState.GetTranslation(d);
         return Do(nm, cm);
     }
 
-    private ContentWriter Do(PdfName nm, Matrix4x4? xform = null)
+    private ContentWriter Do(PdfName nm, GfxMatrix? xform = null)
     {
         EnsureInPageState();
         if (xform.HasValue)
@@ -172,12 +181,7 @@ public partial class ContentWriter
     public ContentWriter Scale(decimal x, decimal y)
     {
         EnsureInPageState();
-        var cm = new Matrix4x4(
-            (float)x, 0, 0, 0,
-            0, (float)y, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1);
-
+        var cm = new GfxMatrix(x, 0, 0, y, 0, 0);
         cm_Op.Apply(ref GfxState, cm);
         cm_Op.WriteLn(cm, StreamWriter.Stream);
         return this;
@@ -186,35 +190,26 @@ public partial class ContentWriter
     public ContentWriter Translate(decimal x, decimal y)
     {
         EnsureInPageState();
-        var cm = new Matrix4x4(
-            0, 0, 0, 0,
-            0, 0, 0, 0,
-            (float)x, (float)y, 1, 0,
-            0, 0, 0, 1);
-
+        var cm = new GfxMatrix(0, 0, 0, 0, x, y);
         cm_Op.Apply(ref GfxState, cm);
         cm_Op.WriteLn(cm, StreamWriter.Stream);
         return this;
     }
 
-    internal ContentWriter Transform(Matrix4x4 cm)
-    {
-        EnsureInPageState();
-        cm_Op.Apply(ref GfxState, cm);
-        cm_Op.WriteLn(cm, StreamWriter.Stream);
-        return this;
-    }
+    // internal ContentWriter Transform(Matrix4x4 cm)
+    // {
+    //     EnsureInPageState();
+    //     cm_Op.Apply(ref GfxState, cm);
+    //     cm_Op.WriteLn(cm, StreamWriter.Stream);
+    //     return this;
+    // }
 
     public ContentWriter ScaleAt(decimal xs, decimal ys, decimal xLoc, decimal yLoc)
     {
         EnsureInPageState();
-        var xp = -(float)(xs * xLoc);
-        var yp = -(float)(ys * yLoc);
-        var cm = new Matrix4x4(
-            (float)xs, 0, 0, 0,
-            0, (float)ys, 0, 0,
-            xp, yp, 1, 0,
-            0, 0, 0, 1);
+        var xp = -(xs * xLoc);
+        var yp = -(ys * yLoc);
+        var cm = new GfxMatrix(xs, 0, 0, ys, xp, yp);
 
         cm_Op.Apply(ref GfxState, cm);
         cm_Op.WriteLn(cm, StreamWriter.Stream);
@@ -223,10 +218,15 @@ public partial class ContentWriter
 
     public ContentWriter Rotate(double angle)
     {
-        return RotateAt(angle, 0, 0);
+        return RotateAt(angle, 0m, 0m);
     }
 
     public ContentWriter RotateAt(double angle, double x, double y)
+    {
+        return RotateAt(angle, (decimal)x, (decimal)y);
+    }
+
+    public ContentWriter RotateAt(double angle, decimal x, decimal y)
     {
         EnsureInPageState();
         if (scale != 1) { x *= scale; y *= scale; }
@@ -234,11 +234,10 @@ public partial class ContentWriter
         var cos = Math.Cos(rad);
         var sin = Math.Sin(rad);
 
-        var cm = new Matrix4x4(
-            (float)cos, (float)sin, 0, 0,
-            (float)-sin, (float)cos, 0, 0,
-            (float)x, (float)y, 1, 0,
-            0, 0, 0, 1);
+        var cm = new GfxMatrix(
+            (decimal)cos, (decimal)sin,
+            -(decimal)sin, (decimal)cos,
+            x, y);
 
         cm_Op.Apply(ref GfxState, cm);
         cm_Op.WriteLn(cm, StreamWriter.Stream);
@@ -281,7 +280,7 @@ public partial class ContentWriter
             Save();
         }
     }
-  
+
     public ContentWriter Op(IPdfOperation op)
     {
         op.Apply(ref GfxState);
@@ -296,7 +295,7 @@ public partial class ContentWriter
     [Obsolete("Use .Op(op) instead")]
     public ContentWriter CustomOp(IPdfOperation op) => Op(op);
 
-   
+
 
     int mcDepth = 0;
     int qDepth = 0;

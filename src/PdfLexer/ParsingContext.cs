@@ -398,7 +398,7 @@ public class ParsingContext : IDisposable
         int u = 0;
         while (i < data.Length && (u = GetGlyph(state, data, i, out var glyph)) > 0)
         {
-            glyphs.Add(new UnappliedGlyph(glyph, 0f, u));
+            glyphs.Add(new UnappliedGlyph(glyph, 0m, u));
             i += u;
         }
     }

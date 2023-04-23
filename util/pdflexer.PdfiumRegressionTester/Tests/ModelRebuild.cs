@@ -32,11 +32,11 @@ internal class ModelRebuild : ITest
         // TODO -> content model rebuild
         var parser = new ContentModelParser(doc.Context, page);
         var data = parser.Parse();
-        data.ForEach(x => { if (x is TextLineSequence txt && txt.Glyphs.Any(c=>c.Glyph?.Char == 'H')) {
-                // im.GraphicsState = x.GraphicsState with { Clipping = null }; 
-                var text = string.Join("", txt.Glyphs.Select(x => x.Glyph?.Char));
-            } 
-        });
+        // data.ForEach(x => { if (x is TextSequence txt && txt.Glyphs.Any(c=>c.Glyph?.Char == 'H')) {
+        //         // im.GraphicsState = x.GraphicsState with { Clipping = null }; 
+        //         var text = string.Join("", txt.Glyphs.Select(x => x.Glyph?.Char));
+        //     } 
+        // });
 
         var resources = new PdfDictionary();
         var content = ContentModelWriter.CreateContent(resources, data);

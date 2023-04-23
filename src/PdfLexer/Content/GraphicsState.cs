@@ -13,7 +13,7 @@ namespace PdfLexer.Content
     {
         public GfxState()
         {
-            CTM = Matrix4x4.Identity;
+            CTM = GfxMatrix.Identity;
             Text = new TxtState();
             UpdateTRM();
         }
@@ -21,20 +21,20 @@ namespace PdfLexer.Content
         internal GfxState? Prev { get; init; }
         internal IReadableFont? Font { get; init; }
 
-        public Matrix4x4 CTM { get; init; }
+        public GfxMatrix CTM { get; init; }
 
         public int TextMode { get; init; }
-        public float FontSize { get; init; }
-        public float TextHScale { get; init; } = 1f;
-        public float TextRise { get; init; }
-        public float CharSpacing { get; init; }
-        public float WordSpacing { get; init; }
-        public float TextLeading { get; init; }
-        public float LineWidth { get; init; } = 1f;
+        public decimal FontSize { get; init; }
+        public decimal TextHScale { get; init; } = 1;
+        public decimal TextRise { get; init; }
+        public decimal CharSpacing { get; init; }
+        public decimal WordSpacing { get; init; }
+        public decimal TextLeading { get; init; }
+        public decimal LineWidth { get; init; } = 1;
         public int LineCap { get; init; }
         public int LineJoin { get; init; }
-        public float MiterLimit { get; init; } = 10f;
-        public float Flatness { get; init; } = 1f;
+        public decimal MiterLimit { get; init; } = 10;
+        public decimal Flatness { get; init; } = 1;
         public d_Op? Dashing { get; init; }
         public PdfName? RenderingIntent { get; init; }
         public IPdfObject? ColorSpace { get; init; } = PdfName.DeviceGray;
@@ -48,77 +48,59 @@ namespace PdfLexer.Content
         // not part of real gfx state
         internal TxtState Text { get; init; }
 
-        internal Matrix4x4 GetTranslation(Matrix4x4 desired)
+        internal GfxMatrix GetTranslation(GfxMatrix desired)
         {
-            Matrix4x4.Invert(CTM, out var iv);
+            CTM.Invert(out var iv);
             return desired * iv;
         }
 
 
 
-        internal (float llx, float lly, float urx, float ury) GetBoundingBox(Glyph glyph)
+        internal (decimal llx, decimal lly, decimal urx, decimal ury) GetBoundingBox(Glyph glyph)
         {
 
-            float x = 0, y = 0, x2 = glyph.w0, y2 = 0;
+            decimal x = 0, y = 0, x2 = (decimal)glyph.w0, y2 = 0;
             if (glyph.BBox != null)
             {
                 // TODO : should this be moved to fonts to decide fallback?
-                x = (float)glyph.BBox[0];
-                y = (float)glyph.BBox[1];
-                x2 = (float)glyph.BBox[2];
-                y2 = (float)glyph.BBox[3];
+                x = glyph.BBox[0];
+                y = glyph.BBox[1];
+                x2 = glyph.BBox[2];
+                y2 = glyph.BBox[3];
             }
-            var bl = new Matrix4x4(
-                          1f, 0f, 0f, 0f,
-                          0f, 1f, 0f, 0f,
-                          x, y, 1f, 0f,
-                          0f, 0f, 0f, 1f) * Text.TextRenderingMatrix;
+            var bl = GfxMatrix.Identity with { E = x, F = y } * Text.TextRenderingMatrix;
 
-            var tr = new Matrix4x4(
-              1f, 0f, 0f, 0f,
-              0f, 1f, 0f, 0f,
-              x2, y2, 1f, 0f,
-              0f, 0f, 0f, 1f) * Text.TextRenderingMatrix;
+            var tr = GfxMatrix.Identity with { E = x2, F = y2 } * Text.TextRenderingMatrix;
 
-            return (bl.M31, bl.M32, tr.M31, tr.M32);
+            return (bl.E, bl.F, tr.E, tr.F);
         }
 
-        internal void ShiftTextMatrix(float tx, float ty)
+        internal void ShiftTextMatrix(decimal tx, decimal ty)
         {
             // Tm = [ 1  0  0 ] x Tm
             //        0  1  0
             //        tx ty 1
 
-            Text.TextMatrix = new Matrix4x4(
-              1f, 0f, 0f, 0f,
-              0f, 1f, 0f, 0f,
-              tx, ty, 1f, 0f,
-              0f, 0f, 0f, 1f) * Text.TextMatrix;
+            Text.TextMatrix = GfxMatrix.Identity with { E = tx, F = ty } * Text.TextMatrix;
 
             UpdateTRM();
         }
 
         internal void UpdateTRM()
         {
-            Text.TextRenderingMatrix = new Matrix4x4(
-              FontSize * TextHScale, 0, 0, 0,
-              0, FontSize, 0, 0,
-              0, TextRise, 1, 0,
-              0, 0, 0, 1) * Text.TextMatrix * CTM;
+            Text.TextRenderingMatrix = new GfxMatrix(
+              FontSize * TextHScale, 0,
+              0, FontSize,
+              0, TextRise) * Text.TextMatrix * CTM;
         }
 
-        internal void ShiftTextAndLineMatrix(float tx, float ty)
+        internal void ShiftTextAndLineMatrix(decimal tx, decimal ty)
         {
             // Tm = Tlm = [ 1  0  0 ] x Tlm
             //              0  1  0
             //              tx ty 1
 
-            Text.TextLineMatrix = new Matrix4x4(
-                          1f, 0f, 0f, 0f,
-                          0f, 1f, 0f, 0f,
-                          tx, ty, 1f, 0f,
-                          0f, 0f, 0f, 1f) * Text.TextLineMatrix;
-
+            Text.TextLineMatrix = GfxMatrix.Identity with { E = tx, F = ty } * Text.TextLineMatrix;
             Text.TextMatrix = Text.TextLineMatrix;
             UpdateTRM();
         }
@@ -144,13 +126,13 @@ namespace PdfLexer.Content
         internal void Apply(Glyph info)
         {
             // shift
-            float tx = 0f;
-            float ty = 0f;
+            decimal tx = 0;
+            decimal ty = 0;
             if (!(Font?.IsVertical ?? false))
             {
                 // tx = ((w0-Tj/1000) * T_fs + T_c + T_w?) * Th
                 // var s = (info.w0 - tj / 1000) * FontSize + CharSpacing; // Tj pre applied
-                var s = (info.w0) * FontSize + CharSpacing;
+                var s = ((decimal)info.w0) * FontSize + CharSpacing;
                 if (info.IsWordSpace)
                 {
                     s += WordSpacing;
@@ -160,25 +142,25 @@ namespace PdfLexer.Content
             else
             {
                 // ty = (w1-Tj/1000) * T_fs + T_c + T_w?)
-                var s = (info.w1) * FontSize + CharSpacing;
+                var s = (decimal)(info.w1) * FontSize + CharSpacing;
                 if (info.IsWordSpace) { s += WordSpacing; }
                 ty = s;
             }
 
             ShiftTextMatrix(tx, ty);
         }
-        internal void ApplyTj(float tj)
+        internal void ApplyTj(decimal tj)
         {
-            if (tj == 0f) { return; }
-            float tx = 0f;
-            float ty = 0f;
+            if (tj == 0) { return; }
+            decimal tx = 0;
+            decimal ty = 0;
             if (!(Font?.IsVertical ?? false))
             {
-                tx = (-tj / 1000.0f) * FontSize * TextHScale;
+                tx = (-tj / 1000.0m) * FontSize * TextHScale;
             }
             else
             {
-                var s = (-tj / 1000.0f) * FontSize;
+                var s = (-tj / 1000.0m) * FontSize;
                 ty = s;
             }
 
@@ -187,7 +169,7 @@ namespace PdfLexer.Content
 
         internal void ApplyShift(UnappliedGlyph glyph)
         {
-            ApplyTj(glyph.Shift);
+            ApplyTj((decimal)glyph.Shift);
         }
 
         internal void ApplyCharShift(UnappliedGlyph glyph)
@@ -199,20 +181,20 @@ namespace PdfLexer.Content
 
     public record ExtGraphicsDict
     {
-        public required Matrix4x4 CTM { get; init; }
+        public required GfxMatrix CTM { get; init; }
         public required PdfDictionary Dict { get; init; }
     }
 
     internal record ClippingInfo : IClippingSection
     {
-        public ClippingInfo(Matrix4x4 tm, List<SubPath> path, bool evenOdd)
+        public ClippingInfo(GfxMatrix tm, List<SubPath> path, bool evenOdd)
         {
             TM = tm;
             Path = path;
             EvenOdd = evenOdd;
         }
         public List<SubPath> Path { get; set; }
-        public Matrix4x4 TM { get; set; }
+        public GfxMatrix TM { get; set; }
         public bool EvenOdd { get; set; }
 
         public void Apply(ContentWriter writer)
@@ -237,20 +219,17 @@ namespace PdfLexer.Content
     internal interface IClippingSection
     {
         void Apply(ContentWriter writer);
-        Matrix4x4 TM { get; }
+        GfxMatrix TM { get; }
     }
     internal record TextClippingInfo : IClippingSection
     {
         public required List<UnappliedGlyph> Glyphs { get; set; }
-        public required Matrix4x4 TM { get; set; }
-        public Matrix4x4? LineMatrix { get; set; }
+        public required GfxMatrix TM { get; set; }
+        public GfxMatrix? LineMatrix { get; set; }
         public bool NewLine { get; set; }
 
         public void Apply(ContentWriter writer)
         {
-            var prev = writer.GS.TextMode;
-            writer.BeginText();
-            Tr_Op.WriteLn(7, writer.StreamWriter.Stream);
             if (LineMatrix.HasValue)
             {
                 writer.SetLinePosition(LineMatrix.Value);
@@ -260,8 +239,6 @@ namespace PdfLexer.Content
                 writer.Op(T_Star_Op.Value);
             }
             writer.WriteGlyphs(Glyphs);
-            writer.EndText();
-            Tr_Op.WriteLn(prev, writer.StreamWriter.Stream);
         }
     }
 
@@ -269,15 +246,15 @@ namespace PdfLexer.Content
     {
         public TxtState()
         {
-            TextLineMatrix = Matrix4x4.Identity;
-            TextMatrix = Matrix4x4.Identity;
+            TextLineMatrix = GfxMatrix.Identity;
+            TextMatrix = GfxMatrix.Identity;
         }
-        public Matrix4x4 TextRenderingMatrix { get; internal set; }
+        public GfxMatrix TextRenderingMatrix { get; internal set; }
         //      Trm = [ T_fs*T_h  0       0 ] x Tm x CTM
         //              0         T_fs    0
         //              0         T_rise  1
-        internal Matrix4x4 TextMatrix { get; set; }
-        internal Matrix4x4 TextLineMatrix { get; set; }
+        internal GfxMatrix TextMatrix { get; set; }
+        internal GfxMatrix TextLineMatrix { get; set; }
     }
 
     public class GraphicsState
@@ -415,7 +392,7 @@ namespace PdfLexer.Operators
                 }
             }
 
-            float? fsize = null;
+            decimal? fsize = null;
             PdfDictionary? fdict = null;
             IReadableFont? fread = null;
             if (dict.TryGetValue<PdfArray>(PdfName.Font, out var fobj, false))
@@ -435,16 +412,18 @@ namespace PdfLexer.Operators
             if (!cache.TryGetValue(orig, out var cached))
             {
                 cache[orig] = dict;
-            } else
+            }
+            else
             {
                 dict = cached;
             }
 
-            state = state with { 
-                LineWidth = lsobj == null ? state.LineWidth : (float)lsobj,
+            state = state with
+            {
+                LineWidth = lsobj == null ? state.LineWidth : lsobj,
                 LineCap = lcobj == null ? state.LineCap : (int)lcobj,
                 LineJoin = ljobj == null ? state.LineJoin : (int)ljobj,
-                MiterLimit = mlobj == null ? state.MiterLimit: (float)mlobj,
+                MiterLimit = mlobj == null ? state.MiterLimit : mlobj,
                 RenderingIntent = riobj == null ? state.RenderingIntent : riobj,
                 Flatness = flobj == null ? state.Flatness : flobj,
                 Dashing = dop == null ? state.Dashing : dop,
@@ -514,16 +493,12 @@ namespace PdfLexer.Operators
         public void Apply(ref GfxState state)
         {
             // new = cm x ctm
-            var val = new Matrix4x4(
-                          (float)a, (float)b, 0f, 0f,
-                          (float)c, (float)d, 0f, 0f,
-                          (float)e, (float)f, 1f, 0f,
-                          0f, 0f, 0f, 1f);
+            var val = new GfxMatrix(a, b, c, d, e, f);
             state = state with { CTM = val * state.CTM };
             state.UpdateTRM();
         }
 
-        public static void Apply(ref GfxState state, Matrix4x4 val)
+        public static void Apply(ref GfxState state, GfxMatrix val)
         {
             state = state with { CTM = val * state.CTM };
             state.UpdateTRM();
@@ -535,6 +510,14 @@ namespace PdfLexer.Operators
                 (decimal)ctm.M11, (decimal)ctm.M12,
                 (decimal)ctm.M21, (decimal)ctm.M22,
                 (decimal)ctm.M31, (decimal)ctm.M32, stream);
+        }
+
+        public static void WriteLn(GfxMatrix ctm, Stream stream)
+        {
+            WriteLn(
+                ctm.A, ctm.B,
+                ctm.C, ctm.D,
+                ctm.E, ctm.F, stream);
         }
     }
 
@@ -646,7 +629,7 @@ namespace PdfLexer.Operators
     {
         public void Apply(ref GfxState state)
         {
-            state = state with { LineWidth = (float)lineWidth };
+            state = state with { LineWidth = lineWidth };
         }
     }
 
@@ -670,7 +653,7 @@ namespace PdfLexer.Operators
     {
         public void Apply(ref GfxState state)
         {
-            state = state with { MiterLimit = (float)miterLimit };
+            state = state with { MiterLimit = miterLimit };
         }
     }
 
@@ -678,7 +661,7 @@ namespace PdfLexer.Operators
     {
         public void Apply(ref GfxState state)
         {
-            state = state with { Flatness = (float)flatness };
+            state = state with { Flatness = flatness };
         }
     }
 

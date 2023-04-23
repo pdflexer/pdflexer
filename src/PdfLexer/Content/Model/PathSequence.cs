@@ -1,25 +1,7 @@
-﻿using PdfLexer.Writing;
+﻿using PdfLexer.DOM;
+using PdfLexer.Writing;
 
 namespace PdfLexer.Content.Model;
-
-internal enum ContentType
-{
-    Text,
-    Paths,
-    InlineImage,
-    XImage,
-    XForm,
-    Shading,
-    MarkedPoint
-}
-internal interface IContentGroup
-{
-    public GfxState GraphicsState { get; }
-    public ContentType Type { get; }
-    public List<MarkedContent>? Markings { get; }
-    public bool CompatibilitySection { get; }
-    public void Write(ContentWriter writer);
-}
 
 internal class PathSequence : IContentGroup
 {
@@ -29,6 +11,11 @@ internal class PathSequence : IContentGroup
     public required GfxState GraphicsState { get; set; }
     public required List<SubPath> Paths { get; set; }
     public IPdfOperation Closing { get; set; }
+
+    public PdfRect GetBoundingBox()
+    {
+        return new PdfRect { LLx = 0, LLy = 0, URx = 0, URy = 0,  };
+    }
 
     public void Write(ContentWriter writer)
     {

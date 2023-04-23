@@ -50,7 +50,6 @@ internal ref struct ContentModelParser
 
         ParseState state = ParseState.Page;
         PathSequence? currentPath = null;
-        bool textReset = true;
 
 
         // we trim some data from ext graphics but want to keep
@@ -60,7 +59,8 @@ internal ref struct ContentModelParser
 
         SubPath? currentSubPath = null;
         PdfOperatorType? clipping = null;
-        List<TextLineSequence>? textClipping = null;
+        List<TextSequence>? textClipping = null;
+        TextSequence? currentText = null;
 
         while (Scanner.Advance())
         {
@@ -204,14 +204,14 @@ internal ref struct ContentModelParser
                     {
                         state = ParseState.Text;
                         BT_Op.Value.Apply(ref GraphicsState);
-                        textReset = true;
+                        currentText = null;
                         var clip = GraphicsState.TextMode == 4
                                     || GraphicsState.TextMode == 5
                                     || GraphicsState.TextMode == 6
                                     || GraphicsState.TextMode == 7;
                         if (clip)
                         {
-                            textClipping = new List<TextLineSequence>();
+                            textClipping = new List<TextSequence>();
                         }
                         else
                         {
@@ -223,6 +223,7 @@ internal ref struct ContentModelParser
                     {
                         if (Scanner.TryGetCurrentOperation(out var trOp))
                         {
+                            var prev = GraphicsState.TextMode;
                             trOp.Apply(ref GraphicsState);
                             var clip = GraphicsState.TextMode == 4
                                 || GraphicsState.TextMode == 5
@@ -230,11 +231,15 @@ internal ref struct ContentModelParser
                                 || GraphicsState.TextMode == 7;
                             if (clip)
                             {
-                                textClipping = new List<TextLineSequence>();
+                                textClipping = new List<TextSequence>();
                             }
                             else
                             {
                                 textClipping = null;
+                            }
+                            if ((prev == 7 || GraphicsState.TextMode == 7) && prev != GraphicsState.TextMode)
+                            {
+                                currentText = null;
                             }
                         }
                     }
@@ -242,23 +247,23 @@ internal ref struct ContentModelParser
                 case PdfOperatorType.ET:
                     CompleteCurrent(GraphicsState);
                     state = ParseState.Page;
-                    textReset = true;
+                    currentText = null;
                     if (textClipping != null)
                     {
                         var clip = GraphicsState.Clipping;
                         if (clip == null)
                         {
                             clip = new List<IClippingSection>();
-                        } else
+                        }
+                        else
                         {
                             clip = clip.ToList();
                         }
                         clip.AddRange(textClipping.Select(x => new TextClippingInfo
                         {
-                            Glyphs = x.Glyphs.ToList(),
+                            Glyphs = x.Segments[0].Glyphs.ToList(),
                             TM = x.GraphicsState.CTM,
                             LineMatrix = x.LineMatrix,
-                            NewLine = x.NewLine
                         }));
                         GraphicsState = GraphicsState with
                         {
@@ -289,7 +294,7 @@ internal ref struct ContentModelParser
                                 rf = Context.GetFont(font);
 
                             }
-                            Tf_Op.Apply(ref GraphicsState, font, rf, (float)tfOp.size);
+                            Tf_Op.Apply(ref GraphicsState, font, rf, tfOp.size);
                         }
                     }
                     continue;
@@ -520,7 +525,7 @@ internal ref struct ContentModelParser
                         {
                             gso.Apply(ref GraphicsState);
                         }
-                        textReset = true;
+                        currentText = null;
                         continue;
                     }
                 case PdfOperatorType.d0:
@@ -535,7 +540,7 @@ internal ref struct ContentModelParser
                         {
                             gso.Apply(ref GraphicsState);
                         }
-                        textReset = true;
+                        currentText = null;
                         continue;
                     }
                 case PdfOperatorType.singlequote:
@@ -545,38 +550,69 @@ internal ref struct ContentModelParser
                         var op = ops[0];
                         T_Star_Op.Value.Apply(ref GraphicsState);
                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                        var seq = CreateTextSequence(slice, textReset);
-                        seq.CompatibilitySection = bx;
-                        seq.Markings = mc.Count > 0 ? mc.ToList() : null;
-                        seq.NewLine = !textReset;
-                        if (GraphicsState.TextMode != 7)
+                        var seg = CreateTextSegment(slice);
+                        seg.CompatibilitySection = bx;
+                        seg.Markings = mc.Count > 0 ? mc.ToList() : null;
+                        if (currentText == null)
                         {
-                            content.Add(seq);
+                            currentText = new TextSequence
+                            {
+                                Segments = new List<TextSegment> { seg },
+                                LineMatrix = GraphicsState.Text.TextLineMatrix
+                            };
+                            if (GraphicsState.TextMode != 7)
+                            {
+                                content.Add(currentText);
+                            }
                         }
-                        textClipping?.Add(seq);
-                        textReset = false;
+                        else
+                        {
+                            seg.NewLine = true;
+                            currentText.Segments.Add(seg);
+                        }
+
+                        textClipping?.Add(new TextSequence
+                        {
+                            Segments = new List<TextSegment> { seg with { NewLine = false } },
+                            LineMatrix = GraphicsState.Text.TextLineMatrix
+                        });
                         continue;
                     }
                 case PdfOperatorType.doublequote:
                     {
                         // TODO error handling
                         var ops = Scanner.Scanner.GetOperands();
-                        var aw = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, ops[0]);
-                        var ac = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, ops[1]);
+                        var aw = PdfOperator.ParseDecimal(Context, Scanner.Scanner.Data, ops[0]);
+                        var ac = PdfOperator.ParseDecimal(Context, Scanner.Scanner.Data, ops[1]);
                         var op = ops[2];
                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
                         GraphicsState = GraphicsState with { CharSpacing = ac, WordSpacing = aw };
                         T_Star_Op.Value.Apply(ref GraphicsState);
-                        var seq = CreateTextSequence(slice, textReset);
-                        seq.CompatibilitySection = bx;
-                        seq.Markings = mc.Count > 0 ? mc.ToList() : null;
-                        seq.NewLine = !textReset;
-                        if (GraphicsState.TextMode != 7)
+                        var seg = CreateTextSegment(slice);
+                        seg.CompatibilitySection = bx;
+                        seg.Markings = mc.Count > 0 ? mc.ToList() : null;
+                        if (currentText == null)
                         {
-                            content.Add(seq);
+                            currentText = new TextSequence
+                            {
+                                Segments = new List<TextSegment> { seg },
+                                LineMatrix = GraphicsState.Text.TextLineMatrix
+                            };
+                            if (GraphicsState.TextMode != 7)
+                            {
+                                content.Add(currentText);
+                            }
                         }
-                        textClipping?.Add(seq);
-                        textReset = false;
+                        else
+                        {
+                            seg.NewLine = true;
+                            currentText.Segments.Add(seg);
+                        }
+                        textClipping?.Add(new TextSequence
+                        {
+                            Segments = new List<TextSegment> { seg with { NewLine = false } },
+                            LineMatrix = GraphicsState.Text.TextLineMatrix
+                        });
                         continue;
                     }
                 case PdfOperatorType.Tj:
@@ -585,15 +621,30 @@ internal ref struct ContentModelParser
                         var ops = Scanner.Scanner.GetOperands();
                         var op = ops[0];
                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                        var seq = CreateTextSequence(slice, textReset);
-                        seq.CompatibilitySection = bx;
-                        seq.Markings = mc.Count > 0 ? mc.ToList() : null;
-                        if (GraphicsState.TextMode != 7)
+                        var seg = CreateTextSegment(slice);
+                        seg.CompatibilitySection = bx;
+                        seg.Markings = mc.Count > 0 ? mc.ToList() : null;
+                        if (currentText == null)
                         {
-                            content.Add(seq);
+                            currentText = new TextSequence
+                            {
+                                Segments = new List<TextSegment> { seg },
+                                LineMatrix = GraphicsState.Text.TextLineMatrix
+                            };
+                            if (GraphicsState.TextMode != 7)
+                            {
+                                content.Add(currentText);
+                            }
                         }
-                        textClipping?.Add(seq);
-                        textReset = false;
+                        else
+                        {
+                            currentText.Segments.Add(seg);
+                        }
+                        textClipping?.Add(new TextSequence
+                        {
+                            Segments = new List<TextSegment> { seg with { } },
+                            LineMatrix = GraphicsState.Text.TextLineMatrix
+                        });
                         break;
                     }
                 case PdfOperatorType.TJ:
@@ -601,12 +652,11 @@ internal ref struct ContentModelParser
                         // TODO error handling
                         TJCache.Clear();
                         var ops = Scanner.Scanner.GetOperands();
-                        var seq = new TextLineSequence
+                        var seg = new TextSegment
                         {
                             Glyphs = new List<UnappliedGlyph>(),
                             GraphicsState = GraphicsState.TextMode > 3 ? GraphicsState with { TextMode = GraphicsState.TextMode - 4 } : GraphicsState,
                             CompatibilitySection = bx,
-                            LineMatrix = textReset ? GraphicsState.Text.TextLineMatrix : null,
                             Markings = mc.Count > 0 ? mc.ToList() : null
                         };
                         PdfOperator.ParseTJLazy(Context, Scanner.Scanner.Data, ops, TJCache);
@@ -614,22 +664,38 @@ internal ref struct ContentModelParser
                         {
                             if (item.OpNum == -1)
                             {
-                                seq.Glyphs.Add(new UnappliedGlyph(null, (float)item.Shift));
+                                seg.Glyphs.Add(new UnappliedGlyph(null, item.Shift));
                             }
                             else
                             {
                                 var op = ops[item.OpNum];
                                 var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                Context.FillGlyphsFromRawString(GraphicsState, slice, seq.Glyphs);
+                                Context.FillGlyphsFromRawString(GraphicsState, slice, seg.Glyphs);
                             }
                         }
-                        ApplyAll(seq.Glyphs);
-                        if (GraphicsState.TextMode != 7)
+                        ApplyAll(seg.Glyphs);
+
+                        if (currentText == null)
                         {
-                            content.Add(seq);
+                            currentText = new TextSequence
+                            {
+                                Segments = new List<TextSegment> { seg },
+                                LineMatrix = GraphicsState.Text.TextLineMatrix
+                            };
+                            if (GraphicsState.TextMode != 7)
+                            {
+                                content.Add(currentText);
+                            }
                         }
-                        textClipping?.Add(seq);
-                        textReset = false;
+                        else
+                        {
+                            currentText.Segments.Add(seg);
+                        }
+                        textClipping?.Add(new TextSequence
+                        {
+                            Segments = new List<TextSegment> { seg with { } },
+                            LineMatrix = GraphicsState.Text.TextLineMatrix
+                        });
                         continue;
                     }
                 default:
@@ -700,11 +766,10 @@ internal ref struct ContentModelParser
     }
 
 
-    private TextLineSequence CreateTextSequence(ReadOnlySpan<byte> slice, bool textReset)
+    private TextSegment CreateTextSegment(ReadOnlySpan<byte> slice)
     {
-        var seq = new TextLineSequence
+        var seq = new TextSegment
         {
-            LineMatrix = textReset ? GraphicsState.Text.TextLineMatrix : null,
             Glyphs = new List<UnappliedGlyph>(),
             GraphicsState = GraphicsState.TextMode > 3 ? GraphicsState with { TextMode = GraphicsState.TextMode - 4 } : GraphicsState
         };
@@ -720,9 +785,9 @@ internal ref struct ContentModelParser
         ReadingOp
     }
 
-    public (float x, float y) GetCurrentTextPos()
+    public (decimal x, decimal y) GetCurrentTextPos()
     {
-        return (GraphicsState.Text.TextRenderingMatrix.M31, GraphicsState.Text.TextRenderingMatrix.M32);
+        return (GraphicsState.Text.TextRenderingMatrix.E, GraphicsState.Text.TextRenderingMatrix.F);
     }
 
     private void ApplyAll(List<UnappliedGlyph> glyphs)

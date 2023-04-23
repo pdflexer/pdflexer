@@ -5,7 +5,7 @@ using System.Text;
 
 namespace PdfLexer.Content.Model;
 
-internal class MarkedContent
+internal record class MarkedContent
 {
     public MarkedContent(PdfName name)
     {

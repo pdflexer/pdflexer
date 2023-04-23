@@ -247,7 +247,7 @@ public ref struct TextScanner
                                 {
                                     if (item.OpNum == -1)
                                     {
-                                        CurrentGlyphs.Add(new UnappliedGlyph(null, (float)item.Shift));
+                                        CurrentGlyphs.Add(new UnappliedGlyph(null, item.Shift));
                                     }
                                     else
                                     {
