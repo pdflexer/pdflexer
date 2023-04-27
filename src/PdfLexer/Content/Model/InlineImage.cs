@@ -15,8 +15,4 @@ internal class InlineImage : IContentGroup
         writer.Op(Img);
     }
 
-    public PdfRect GetBoundingBox()
-    {
-        return new PdfRect { LLx = 0, LLy = 0, URx = 0, URy = 0, };
-    }
 }

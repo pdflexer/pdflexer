@@ -32,6 +32,17 @@ internal class ModelRebuild : ITest
         // TODO -> content model rebuild
         var parser = new ContentModelParser(doc.Context, page);
         var data = parser.Parse();
+        var test = new PdfRect { LLx = 144, LLy = 684, URx = 160, URy = 700};
+        foreach (var item in data) 
+        {
+            var rect = item.GetBoundingBox();
+            if (rect.Intersects(test) && item is XImgContent img)
+            {
+                img.Markings ??= new List<MarkedContent>();
+                img.Markings.Add(new MarkedContent("MatchArea"));
+            }
+        }
+        // data = data.Where(x=> x.GetBoundingBox().Normalize(page).Intersects(test)).ToList();
         // data.ForEach(x => { if (x is TextSequence txt && txt.Glyphs.Any(c=>c.Glyph?.Char == 'H')) {
         //         // im.GraphicsState = x.GraphicsState with { Clipping = null }; 
         //         var text = string.Join("", txt.Glyphs.Select(x => x.Glyph?.Char));

@@ -19,6 +19,7 @@ internal class ContentModelWriter
             writer.SetGS(group.GraphicsState);
             group.Write(writer);
         }
+
         // writer will restore if needed
         return writer.Complete();
     }

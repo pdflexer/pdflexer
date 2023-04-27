@@ -51,8 +51,8 @@ public partial class ContentWriter
     }
 
 
-    public ContentWriter Image(XObjImage form, PdfRectangle rect)
-          => Image(form, (decimal)rect.LLx, rect.LLy, rect.Width, rect.Height);
+    // public ContentWriter Image(XObjImage form, PdfRectangle rect)
+    //       => Image(form, (decimal)rect.LLx, rect.LLy, rect.Width, rect.Height);
 
     public ContentWriter Image(XObjImage img, double x, double y, double w, double h)
     {
@@ -221,10 +221,6 @@ public partial class ContentWriter
         return RotateAt(angle, 0m, 0m);
     }
 
-    public ContentWriter RotateAt(double angle, double x, double y)
-    {
-        return RotateAt(angle, (decimal)x, (decimal)y);
-    }
 
     public ContentWriter RotateAt(double angle, decimal x, decimal y)
     {

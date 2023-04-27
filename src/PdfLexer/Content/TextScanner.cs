@@ -27,14 +27,14 @@ public ref struct TextScanner
     private readonly List<TJ_Lazy_Item> TJCache;
     
     private TextReadState ReadState;
-    private UnappliedGlyph CurrentGlyph;
+    private GlyphOrShift CurrentGlyph;
 
     private bool DataRead;
     private bool IgnoreUndefined;
 
 
     internal int CurrentTextPos;
-    internal readonly List<UnappliedGlyph> CurrentGlyphs;
+    internal readonly List<GlyphOrShift> CurrentGlyphs;
     internal PageContentScanner2 Scanner;
     internal int TxtOpStart;
     internal int TxtOpLength;
@@ -83,7 +83,7 @@ public ref struct TextScanner
         TextState.UpdateTRM();
         CurrentTextPos = 0;
         ReadState = TextReadState.Normal;
-        CurrentGlyphs = new List<UnappliedGlyph>(50);
+        CurrentGlyphs = new List<GlyphOrShift>(50);
         CurrentGlyph = default;
         Glyph = default!;
         TJCache = new List<TJ_Lazy_Item>(10);
@@ -108,7 +108,7 @@ public ref struct TextScanner
         TextState.UpdateTRM();
         CurrentTextPos = 0;
         ReadState = TextReadState.Normal;
-        CurrentGlyphs = new List<UnappliedGlyph>(50);
+        CurrentGlyphs = new List<GlyphOrShift>(50);
         CurrentGlyph = default;
         Glyph = default!;
         TJCache = new List<TJ_Lazy_Item>(10);
@@ -247,7 +247,7 @@ public ref struct TextScanner
                                 {
                                     if (item.OpNum == -1)
                                     {
-                                        CurrentGlyphs.Add(new UnappliedGlyph(null, item.Shift));
+                                        CurrentGlyphs.Add(new GlyphOrShift(null, item.Shift));
                                     }
                                     else
                                     {

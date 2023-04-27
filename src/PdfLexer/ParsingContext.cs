@@ -374,7 +374,7 @@ public class ParsingContext : IDisposable
         return xref.Source.GetDataAsStream(this, xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
     }
 
-    internal void FillGlyphsFromRawString(GfxState state, ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+    internal void FillGlyphsFromRawString(GfxState state, ReadOnlySpan<byte> data, List<GlyphOrShift> glyphs)
     {
         if (data.Length < 200)
         {
@@ -392,13 +392,13 @@ public class ParsingContext : IDisposable
         }
     }
 
-    internal void FillGlyphsNoReset(GfxState state, ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+    internal void FillGlyphsNoReset(GfxState state, ReadOnlySpan<byte> data, List<GlyphOrShift> glyphs)
     {
         int i = 0;
         int u = 0;
         while (i < data.Length && (u = GetGlyph(state, data, i, out var glyph)) > 0)
         {
-            glyphs.Add(new UnappliedGlyph(glyph, 0m, u));
+            glyphs.Add(new GlyphOrShift(glyph, 0m, u));
             i += u;
         }
     }

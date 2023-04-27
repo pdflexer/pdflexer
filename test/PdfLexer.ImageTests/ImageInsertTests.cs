@@ -1,16 +1,10 @@
-﻿using PdfLexer.Content;
-using PdfLexer.DOM;
+﻿using PdfLexer.DOM;
 using PdfLexer.Images;
 using PdfLexer.Operators;
 using PdfLexer.Tests;
 using PdfLexer.Writing;
 using SixLabors.ImageSharp;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace PdfLexer.ImageTests
@@ -46,7 +40,7 @@ namespace PdfLexer.ImageTests
 
             var wr = new ContentWriter(pg.Resources);
             wr.Raw(new cm_Op(0.1m, 0.2m, 0.3m, 0.4m, 0.5m, 0.6m))
-              .Image(xobj, 0, 0, xobj.Width, xobj.Height);
+              .Image(xobj, 0, 0, (decimal)xobj.Width, (decimal)xobj.Height);
 
             var content = wr.Complete();
 

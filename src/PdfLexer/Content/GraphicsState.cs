@@ -167,12 +167,12 @@ namespace PdfLexer.Content
             ShiftTextMatrix(tx, ty);
         }
 
-        internal void ApplyShift(UnappliedGlyph glyph)
+        internal void ApplyShift(GlyphOrShift glyph)
         {
-            ApplyTj((decimal)glyph.Shift);
+            ApplyTj(glyph.Shift);
         }
 
-        internal void ApplyCharShift(UnappliedGlyph glyph)
+        internal void ApplyCharShift(GlyphOrShift glyph)
         {
             if (glyph.Glyph == null) { return; }
             Apply(glyph.Glyph);
@@ -223,7 +223,7 @@ namespace PdfLexer.Content
     }
     internal record TextClippingInfo : IClippingSection
     {
-        public required List<UnappliedGlyph> Glyphs { get; set; }
+        public required List<GlyphOrShift> Glyphs { get; set; }
         public required GfxMatrix TM { get; set; }
         public GfxMatrix? LineMatrix { get; set; }
         public bool NewLine { get; set; }

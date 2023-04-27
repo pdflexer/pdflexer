@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PdfLexer.Content.Model;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -68,7 +69,7 @@ public record struct GfxMatrix
         return true;
     }
 
-    public GfxMatrix Round(int decimals=8)
+    public GfxMatrix Round(int decimals = 8)
     {
         return this with
         {
@@ -79,6 +80,57 @@ public record struct GfxMatrix
             E = Math.Round(E, decimals),
             F = Math.Round(F, decimals),
         };
+    }
+
+    /// <summary>
+    /// Transforms the rectangle to it's representation
+    /// in the current matrix.
+    /// Note: in cases where the current matrix has skew
+    /// the transformed rectangle is a parallelogram
+    /// and this method returns a rectangle based on it's
+    /// bounding box.
+    /// </summary>
+    /// <param name="rect"></param>
+    /// <returns></returns>
+    internal PdfRect GetTransformedBoundingBox(PdfRect rect)
+    {
+        if (B != 0 || C != 0)
+        {
+            var x1 = A * rect.LLx + C * rect.LLy + E;
+            var y1 = B * rect.LLx + D * rect.LLy + F;
+            var x2 = A * rect.URx + C * rect.URy + E;
+            var y2 = B * rect.URx + D * rect.URy + F;
+            var x11 = A * rect.LLx + C * rect.URy + E; // top left
+            var y11 = B * rect.LLx + D * rect.URy + F; // top left
+            var x22 = A * rect.URx + C * rect.LLy + E; // lower right
+            var y22 = B * rect.URx + D * rect.LLy + F; // lower right
+            x1 = Math.Min(x1, x11);
+            y1 = Math.Min(y1, y11);
+            x2 = Math.Max(x2, x22);
+            y2 = Math.Max(y2, y22);
+            return new PdfRect
+            {
+                LLx = Math.Min(x1, x2),
+                LLy = Math.Min(y1, y2),
+                URx = Math.Max(x1, x2),
+                URy = Math.Max(y1, y2)
+            };
+        }
+        else
+        {
+            var x1 = A * rect.LLx + E;
+            var y1 = D * rect.LLy + F;
+            var x2 = A * rect.URx + E;
+            var y2 = D * rect.URy + F;
+            return new PdfRect
+            {
+                LLx = x1,
+                LLy = y1,
+                URx = x2,
+                URy = y2,
+            };
+        }
+
     }
 
 

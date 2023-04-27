@@ -13,7 +13,7 @@ internal record class TextSegment : IContentGroup
     public required GfxState GraphicsState { get; set; }
     public List<MarkedContent>? Markings { get; set; }
     public bool CompatibilitySection { get; set; }
-    public required List<UnappliedGlyph> Glyphs { get; set; }
+    public required List<GlyphOrShift> Glyphs { get; set; }
     public bool NewLine { get; set; }
 
     public void Write(ContentWriter writer)
@@ -72,6 +72,48 @@ internal class TextSequence : IContentGroup
 
     public PdfRect GetBoundingBox()
     {
-        return new PdfRect { LLx = 0, LLy = 0, URx = 0, URy = 0, };
+        bool triggered = false;
+        var xmin = decimal.MaxValue;
+        var xmax = decimal.MinValue;
+        var ymin = decimal.MaxValue;
+        var ymax = decimal.MinValue;
+        var gfx = GraphicsState with { Text = new TxtState {  TextLineMatrix = LineMatrix, TextMatrix = LineMatrix } };
+        foreach (var seg in Segments)
+        {
+            gfx = seg.GraphicsState with { Text = gfx.Text };
+            if (seg.NewLine)
+            {
+                T_Star_Op.Value.Apply(ref gfx);
+            } else
+            {
+                gfx.UpdateTRM();
+            }
+            GlyphOrShift prev = default;
+            foreach (var glyph in seg.Glyphs)
+            {
+                if (prev.Glyph != null)
+                {
+                    gfx.ApplyCharShift(prev);
+                } else if (prev.Shift != 0)
+                {
+                    gfx.ApplyTj(prev.Shift);
+                }
+                prev = glyph;
+                if (glyph.Glyph != null)
+                {
+                    var (x,y,x2,y2) = gfx.GetBoundingBox(glyph.Glyph);
+                    xmin = Math.Min(xmin, x);
+                    ymin = Math.Min(ymin, y);
+                    xmax = Math.Max(xmax, x2);
+                    ymax = Math.Max(ymax, y2);
+                    triggered = true;
+                }
+            }
+        }
+        if (!triggered)
+        {
+            return new PdfRect { LLx = 0, LLy = 0, URx = 0, URy = 0 };
+        }
+        return GraphicsState.CTM.GetTransformedBoundingBox(new PdfRect { LLx = xmin, LLy = ymin, URx = xmax, URy = ymax });
     }
 }

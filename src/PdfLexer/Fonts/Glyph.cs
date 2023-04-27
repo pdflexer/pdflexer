@@ -50,16 +50,30 @@ namespace PdfLexer.Fonts
         }
     }
 
-    public readonly struct UnappliedGlyph
+    public readonly struct GlyphOrShift
     {
-        public UnappliedGlyph(Glyph? glyph, decimal shift, int bytes=0)
+        internal GlyphOrShift(Glyph? glyph, decimal shift, int bytes=0)
         {
             Glyph = glyph;
             Shift = shift;
             Bytes = bytes;
         }
+
+        public GlyphOrShift(decimal shift)
+        {
+            Glyph = null;
+            Shift = shift;
+            Bytes = 0;
+        }
+
+        public GlyphOrShift(Glyph glyph)
+        {
+            Glyph = glyph;
+            Bytes = 0;
+        }
+
         public readonly Glyph? Glyph;
         public readonly decimal Shift;
-        public readonly int Bytes;
+        internal readonly int Bytes;
     }
 }

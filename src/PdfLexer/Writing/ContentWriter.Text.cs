@@ -9,8 +9,6 @@ namespace PdfLexer.Writing;
 
 public partial class ContentWriter
 {
-    public ContentWriter Font(IWritableFont font, double size) => Font(font, (decimal)size);
-
     public ContentWriter Font(IWritableFont font, decimal size)
     {
         var nm = AddFont(font);
@@ -94,14 +92,6 @@ public partial class ContentWriter
         return this;
     }
 
-    public ContentWriter TextMove(double x, double y)
-    {
-        EnsureInTextState();
-        Td_Op.WriteLn((decimal)x, (decimal)y, StreamWriter.Stream);
-        Td_Op.Apply(ref GfxState, (decimal)x, (decimal)y);
-        return this;
-    }
-
     public ContentWriter TextMove(decimal x, decimal y)
     {
         EnsureInTextState();
@@ -169,7 +159,7 @@ public partial class ContentWriter
         return this;
     }
 
-    internal void WriteGlyphs(List<UnappliedGlyph> glyphs)
+    internal void WriteGlyphs(List<GlyphOrShift> glyphs)
     {
         EnsureInTextState();
         Span<byte> buffer = stackalloc byte[4];
@@ -232,7 +222,7 @@ public partial class ContentWriter
             str.WriteByte((byte)'\n');
         }
 
-        static void WriteGlyph(UnappliedGlyph item, Span<byte> buffer, Span<byte> output, Stream str)
+        static void WriteGlyph(GlyphOrShift item, Span<byte> buffer, Span<byte> output, Stream str)
         {
             var cp = item.Glyph?.CodePoint ?? 0;
             buffer[0] = (byte)((cp >> 24) & 0xFF);

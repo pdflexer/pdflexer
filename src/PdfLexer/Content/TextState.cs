@@ -54,7 +54,7 @@ public class TextState
         return GS.Font.GetGlyph(data, pos, out info);
     }
 
-    internal void FillGlyphsFromRawString(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+    internal void FillGlyphsFromRawString(ReadOnlySpan<byte> data, List<GlyphOrShift> glyphs)
     {
         if (data.Length < 200)
         {
@@ -72,13 +72,13 @@ public class TextState
         }
     }
 
-    internal void FillGlyphsNoReset(ReadOnlySpan<byte> data, List<UnappliedGlyph> glyphs)
+    internal void FillGlyphsNoReset(ReadOnlySpan<byte> data, List<GlyphOrShift> glyphs)
     {
         int i = 0;
         int u = 0;
         while (i < data.Length && (u = GetGlyph(data, i, out var glyph)) > 0)
         {
-            glyphs.Add(new UnappliedGlyph(glyph, 0m, u));
+            glyphs.Add(new GlyphOrShift(glyph, 0m, u));
             i += u;
         }
     }
@@ -101,12 +101,12 @@ public class TextState
         ShiftTextMatrix(tx, ty);
     }
 
-    internal void ApplyShift(UnappliedGlyph glyph)
+    internal void ApplyShift(GlyphOrShift glyph)
     {
         ApplyTj((float)glyph.Shift);
     }
 
-    internal void ApplyCharShift(UnappliedGlyph glyph)
+    internal void ApplyCharShift(GlyphOrShift glyph)
     {
         if (glyph.Glyph == null) { return; }
         Apply(glyph.Glyph);

@@ -415,7 +415,7 @@ internal ref struct ContentModelParser
                     {
                         if (Scanner.TryGetCurrentOperation(out var pco))
                         {
-                            currentSubPath ??= NewSubPath(0f, 0f, GraphicsState);
+                            currentSubPath ??= NewSubPath(0m, 0m, GraphicsState);
                             currentSubPath.Operations.Add(pco);
                         }
                         continue;
@@ -439,7 +439,7 @@ internal ref struct ContentModelParser
                         if (Scanner.TryGetCurrentOperation(out var gso))
                         {
                             var re = (re_Op)gso;
-                            currentSubPath = NewSubPath((float)re.x, (float)re.y, GraphicsState);
+                            currentSubPath = NewSubPath(re.x, re.y, GraphicsState);
                             currentSubPath.Operations.Add(re);
                         }
                         continue;
@@ -454,7 +454,7 @@ internal ref struct ContentModelParser
                         if (Scanner.TryGetCurrentOperation(out var gso))
                         {
                             var m = (m_Op)gso;
-                            currentSubPath = NewSubPath((float)m.x, (float)m.y, GraphicsState);
+                            currentSubPath = NewSubPath(m.x, m.y, GraphicsState);
                         }
                         continue;
                     }
@@ -654,7 +654,7 @@ internal ref struct ContentModelParser
                         var ops = Scanner.Scanner.GetOperands();
                         var seg = new TextSegment
                         {
-                            Glyphs = new List<UnappliedGlyph>(),
+                            Glyphs = new List<GlyphOrShift>(),
                             GraphicsState = GraphicsState.TextMode > 3 ? GraphicsState with { TextMode = GraphicsState.TextMode - 4 } : GraphicsState,
                             CompatibilitySection = bx,
                             Markings = mc.Count > 0 ? mc.ToList() : null
@@ -664,7 +664,7 @@ internal ref struct ContentModelParser
                         {
                             if (item.OpNum == -1)
                             {
-                                seg.Glyphs.Add(new UnappliedGlyph(null, item.Shift));
+                                seg.Glyphs.Add(new GlyphOrShift(null, item.Shift));
                             }
                             else
                             {
@@ -741,7 +741,7 @@ internal ref struct ContentModelParser
             }
         }
 
-        SubPath NewSubPath(float x, float y, GfxState gs)
+        SubPath NewSubPath(decimal x, decimal y, GfxState gs)
         {
             var nsp = new SubPath { XPos = x, YPos = y, Operations = new List<IPdfOperation>() };
             if (currentPath == null)
@@ -770,7 +770,7 @@ internal ref struct ContentModelParser
     {
         var seq = new TextSegment
         {
-            Glyphs = new List<UnappliedGlyph>(),
+            Glyphs = new List<GlyphOrShift>(),
             GraphicsState = GraphicsState.TextMode > 3 ? GraphicsState with { TextMode = GraphicsState.TextMode - 4 } : GraphicsState
         };
         Context.FillGlyphsFromRawString(GraphicsState, slice, seq.Glyphs);
@@ -790,7 +790,7 @@ internal ref struct ContentModelParser
         return (GraphicsState.Text.TextRenderingMatrix.E, GraphicsState.Text.TextRenderingMatrix.F);
     }
 
-    private void ApplyAll(List<UnappliedGlyph> glyphs)
+    private void ApplyAll(List<GlyphOrShift> glyphs)
     {
         foreach (var glyph in glyphs)
         {

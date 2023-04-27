@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Content.Model;
 using PdfLexer.Lexing;
 using System.Buffers.Text;
 using System.Text;
@@ -12,6 +13,12 @@ public interface IPdfOperation
     public void Apply(ref GraphicsState state) { }
     public void Apply(ref GfxState state) { }
     public void Apply(TextState state) { }
+}
+
+internal interface IPathPaintingOp
+{
+    public PdfRect GetApproximateBoundingBox(decimal xpos, decimal ypos);
+    public (decimal, decimal) GetFinishingPoint();
 }
 
 public class PdfOperator

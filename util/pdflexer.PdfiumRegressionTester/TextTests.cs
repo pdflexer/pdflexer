@@ -304,7 +304,7 @@ namespace pdflexer.PdfiumRegressionTester
                     fpdf_text.FPDFTextGetCharBox(txt, i, ref llx, ref urx, ref lly, ref ury);
                     var c = (char)fpdf_text.FPDFTextGetUnicode(txt, i);
                     if (c == '\n' || c == '\r' || c == ' ' || c == '-' || c == '\u0002') { continue; }
-                    
+
                     double x = 0, y = 0;
                     fpdf_text.FPDFTextGetCharOrigin(txt, i, ref x, ref y);
 
@@ -333,14 +333,14 @@ namespace pdflexer.PdfiumRegressionTester
                             var (dd, cc) = Nearest((float)x, (float)y, charList);
                             if (cc != null && dd < 5)
                             {
-                                writer.Font(font, 0.5)
-                                      .TextMove(x + 1, y - 1)
+                                writer.Font(font, 0.5m)
+                                      .TextMove((decimal)x + 1 , (decimal)y - 1)
                                       .Text($"b:{(int)c} c:{(int)cc.c} cp: {cc.cp} cf: {cc.Font}")
                                       .EndText();
                             } else
                             {
-                                writer.Font(font, 0.1)
-                                      .TextMove(x + 1, y - 1)
+                                writer.Font(font, 0.1m)
+                                      .TextMove((decimal)x + 1, (decimal)y - 1)
                                       .Text($"b:{(int)c}")
                                       .EndText();
                             }
@@ -374,8 +374,8 @@ namespace pdflexer.PdfiumRegressionTester
 
                             writer.Circle((decimal)kvp.Value.x, (decimal)kvp.Value.y, 0.1m).Stroke();
                             unmatched.Add((kvp.Value.x, kvp.Value.y, kvp.Value.c));
-                            writer.Font(font, 0.5)
-                              .TextMove(kvp.Value.x + 1, kvp.Value.y - 2)
+                            writer.Font(font, 0.5m)
+                              .TextMove((decimal)kvp.Value.x + 1, (decimal)kvp.Value.y - 2)
                               .Text($"c:{(int)kvp.Value.c} cp: {kvp.Value.cp} cf: {kvp.Value.Font}")
                               .EndText();
                         }

@@ -283,8 +283,8 @@ namespace PdfLexer.Tests
             {
                 var parser = new ContentModelParser(pdf.Context, page);
                 var content = parser.Parse();
-                var matches = content.Where(x => x.Type == ContentType.Text).Cast<TextLineSequence>()
-                    .Where(x => x.Glyphs.Any(c => c.Glyph?.Char == ',' || c.Glyph?.Char == 'M')).Cast<IContentGroup>().ToList();
+                // var matches = content.Where(x => x.Type == ContentType.Text).Cast<TextLineSequence>()
+                //     .Where(x => x.Glyphs.Any(c => c.Glyph?.Char == ',' || c.Glyph?.Char == 'M')).Cast<IContentGroup>().ToList();
                 var newPage = new PdfPage();
                 newPage.MediaBox = page.MediaBox;
                 newPage.CropBox = page.CropBox;

@@ -83,7 +83,7 @@ public ref struct SinglePassRedactor
         // info for last statement, only set if a character triggered
         // redaction during it
         PdfOperatorType type = default;
-        var glyphs = new List<UnappliedGlyph>(50);
+        var glyphs = new List<GlyphOrShift>(50);
         float ws = 0;
         float cs = 0;
 
