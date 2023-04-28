@@ -516,7 +516,9 @@ internal class Type0Font
             }
             else
             {
-                var x = bbox.LLx / 1000m;
+                // TODO revisit bounding box
+                // var x = bbox.LLx / 1000m;
+                var x = 0;
                 glyph.BBox = new decimal[] { x, bbox.LLy / 1000m, x + (decimal)glyph.w0, bbox.URy / 1000m };
             }
 
@@ -568,8 +570,10 @@ internal class Type0Font
             }
             else
             {
-                var y = bbox.LLy / 1000m;
-                glyph.BBox = new decimal[] { bbox.LLx / 1000m, y, bbox.URx / 1000m, y+(decimal)dy };
+                // TODO revisit bounding box
+                // var y = bbox.LLy / 1000m;
+                // glyph.BBox = new decimal[] { bbox.LLx / 1000m, y, bbox.URx / 1000m, y+(decimal)dy };
+                glyph.BBox = new decimal[] { 0, 0, bbox.URx / 1000m, (decimal)dy };
             }
         }
     }

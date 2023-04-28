@@ -1,8 +1,5 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Writing;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace PdfLexer.Content.Model;
 
@@ -22,6 +19,14 @@ public record class PdfRect
         return true;
     }
 
+    public EncloseType CheckEnclosure(PdfRect rect)
+    {
+        if (rect.LLx > URx || rect.LLy > URy || rect.URx < LLx || rect.URy < LLy) return EncloseType.None;
+        if (rect.LLx < LLx || rect.LLy < LLy || rect.URx > URx || rect.URy > URy) return EncloseType.Partial;
+        return EncloseType.Full;
+    }
+
+
     public PdfRect Normalize(PdfPage pg) => Normalize(pg.CropBox);
 
     public PdfRect Normalize(PdfRectangle rect)
@@ -33,16 +38,23 @@ public record class PdfRect
     }
 }
 
+public enum EncloseType
+{
+    Full,
+    Partial,
+    None
+}
+
 internal enum ContentType
 {
     Text,
     Paths,
-    InlineImage,
-    XImage,
-    XForm,
+    Image,
+    Form,
     Shading,
-    MarkedPoint
+    // MarkedPoint
 }
+
 internal interface IContentGroup
 {
     public GfxState GraphicsState { get; }
@@ -63,5 +75,4 @@ internal interface IContentGroup
             URy = y + GraphicsState.CTM.D
         };
     }
-
 }

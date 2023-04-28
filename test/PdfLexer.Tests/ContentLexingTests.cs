@@ -98,7 +98,7 @@ f";
         [Fact]
         public void It_Reads_And_Writes_Stream()
         {
-            var text = "q\n0.06000 0 0 -0.06000 1 594 cm\n870 1095 768 176 re\nh\nW*\nn\nQ\nf\n";
+            var text = "q\n0.06 0 0 -0.06 1 594 cm\n870 1095 768 176 re\nh\nW*\nn\nQ\nf\n";
             var data = Encoding.ASCII.GetBytes(text);
 
             var scanner = new ContentScanner(new ParsingContext(), data);

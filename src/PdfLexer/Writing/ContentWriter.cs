@@ -51,14 +51,6 @@ public partial class ContentWriter
     }
 
 
-    // public ContentWriter Image(XObjImage form, PdfRectangle rect)
-    //       => Image(form, (decimal)rect.LLx, rect.LLy, rect.Width, rect.Height);
-
-    public ContentWriter Image(XObjImage img, double x, double y, double w, double h)
-    {
-        var nm = AddResource(img.Stream, "I");
-        return Do(nm, (decimal)x, (decimal)y, (decimal)w, (decimal)h);
-    }
 
     public ContentWriter Image(XObjImage img, decimal x, decimal y, decimal w, decimal h)
     {
@@ -71,12 +63,6 @@ public partial class ContentWriter
     {
         var nm = AddResource(img, "I");
         return Do(nm);
-    }
-
-    public ContentWriter Form(XObjForm form, double x, double y, double xScale = 1, double yScale = 1)
-    {
-        var nm = AddResource(form.NativeObject, "F");
-        return Do(nm, (decimal)x, (decimal)y, (decimal)xScale, (decimal)yScale);
     }
 
     public ContentWriter Form(XObjForm form, decimal x, decimal y, decimal xScale = 1, decimal yScale = 1)
@@ -131,7 +117,7 @@ public partial class ContentWriter
         EnsureInPageState();
         q_Op.Value.Apply(ref GfxState);
         q_Op.WriteLn(StreamWriter.Stream);
-        qDepth++;
+        GraphicsStackSize++;
         return this;
     }
 
@@ -140,7 +126,7 @@ public partial class ContentWriter
         EnsureInPageState();
         Q_Op.Value.Apply(ref GfxState);
         Q_Op.WriteLn(StreamWriter.Stream);
-        qDepth--;
+        GraphicsStackSize--;
         return this;
     }
 
@@ -294,7 +280,7 @@ public partial class ContentWriter
 
 
     int mcDepth = 0;
-    int qDepth = 0;
+    internal int GraphicsStackSize = 0;
     public PdfStreamContents Complete()
     {
         EnsureInPageState();
@@ -306,7 +292,7 @@ public partial class ContentWriter
         {
             EX_Op.WriteLn(StreamWriter.Stream);
         }
-        for (var i = 0; i < qDepth; i++)
+        for (var i = 0; i < GraphicsStackSize; i++)
         {
             Q_Op.WriteLn(StreamWriter.Stream);
         }

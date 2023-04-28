@@ -59,8 +59,8 @@ internal ref struct ContentModelParser
 
         SubPath? currentSubPath = null;
         PdfOperatorType? clipping = null;
-        List<TextSequence>? textClipping = null;
-        TextSequence? currentText = null;
+        List<TextContent>? textClipping = null;
+        TextContent? currentText = null;
 
         while (Scanner.Advance())
         {
@@ -162,7 +162,7 @@ internal ref struct ContentModelParser
                     }
                     if (isForm)
                     {
-                        content.Add(new XFormContent
+                        content.Add(new FormContent
                         {
                             Stream = obj,
                             GraphicsState = GraphicsState,
@@ -172,7 +172,7 @@ internal ref struct ContentModelParser
                     }
                     else
                     {
-                        content.Add(new XImgContent
+                        content.Add(new ImageContent
                         {
                             Stream = obj,
                             GraphicsState = GraphicsState,
@@ -189,7 +189,7 @@ internal ref struct ContentModelParser
                         }
                         var img = (InlineImage_Op)iiop;
                         var ximg = img.ConvertToStream(Scanner.Resources);
-                        content.Add(new XImgContent
+                        content.Add(new ImageContent
                         {
                             Stream = ximg,
                             GraphicsState = GraphicsState,
@@ -211,7 +211,7 @@ internal ref struct ContentModelParser
                                     || GraphicsState.TextMode == 7;
                         if (clip)
                         {
-                            textClipping = new List<TextSequence>();
+                            textClipping = new List<TextContent>();
                         }
                         else
                         {
@@ -231,7 +231,7 @@ internal ref struct ContentModelParser
                                 || GraphicsState.TextMode == 7;
                             if (clip)
                             {
-                                textClipping = new List<TextSequence>();
+                                textClipping = new List<TextContent>();
                             }
                             else
                             {
@@ -416,7 +416,7 @@ internal ref struct ContentModelParser
                         if (Scanner.TryGetCurrentOperation(out var pco))
                         {
                             currentSubPath ??= NewSubPath(0m, 0m, GraphicsState);
-                            currentSubPath.Operations.Add(pco);
+                            currentSubPath.Operations.Add((IPathCreatingOp)pco);
                         }
                         continue;
                     }
@@ -555,7 +555,7 @@ internal ref struct ContentModelParser
                         seg.Markings = mc.Count > 0 ? mc.ToList() : null;
                         if (currentText == null)
                         {
-                            currentText = new TextSequence
+                            currentText = new TextContent
                             {
                                 Segments = new List<TextSegment> { seg },
                                 LineMatrix = GraphicsState.Text.TextLineMatrix
@@ -571,7 +571,7 @@ internal ref struct ContentModelParser
                             currentText.Segments.Add(seg);
                         }
 
-                        textClipping?.Add(new TextSequence
+                        textClipping?.Add(new TextContent
                         {
                             Segments = new List<TextSegment> { seg with { NewLine = false } },
                             LineMatrix = GraphicsState.Text.TextLineMatrix
@@ -593,7 +593,7 @@ internal ref struct ContentModelParser
                         seg.Markings = mc.Count > 0 ? mc.ToList() : null;
                         if (currentText == null)
                         {
-                            currentText = new TextSequence
+                            currentText = new TextContent
                             {
                                 Segments = new List<TextSegment> { seg },
                                 LineMatrix = GraphicsState.Text.TextLineMatrix
@@ -608,7 +608,7 @@ internal ref struct ContentModelParser
                             seg.NewLine = true;
                             currentText.Segments.Add(seg);
                         }
-                        textClipping?.Add(new TextSequence
+                        textClipping?.Add(new TextContent
                         {
                             Segments = new List<TextSegment> { seg with { NewLine = false } },
                             LineMatrix = GraphicsState.Text.TextLineMatrix
@@ -626,7 +626,7 @@ internal ref struct ContentModelParser
                         seg.Markings = mc.Count > 0 ? mc.ToList() : null;
                         if (currentText == null)
                         {
-                            currentText = new TextSequence
+                            currentText = new TextContent
                             {
                                 Segments = new List<TextSegment> { seg },
                                 LineMatrix = GraphicsState.Text.TextLineMatrix
@@ -640,7 +640,7 @@ internal ref struct ContentModelParser
                         {
                             currentText.Segments.Add(seg);
                         }
-                        textClipping?.Add(new TextSequence
+                        textClipping?.Add(new TextContent
                         {
                             Segments = new List<TextSegment> { seg with { } },
                             LineMatrix = GraphicsState.Text.TextLineMatrix
@@ -677,7 +677,7 @@ internal ref struct ContentModelParser
 
                         if (currentText == null)
                         {
-                            currentText = new TextSequence
+                            currentText = new TextContent
                             {
                                 Segments = new List<TextSegment> { seg },
                                 LineMatrix = GraphicsState.Text.TextLineMatrix
@@ -691,7 +691,7 @@ internal ref struct ContentModelParser
                         {
                             currentText.Segments.Add(seg);
                         }
-                        textClipping?.Add(new TextSequence
+                        textClipping?.Add(new TextContent
                         {
                             Segments = new List<TextSegment> { seg with { } },
                             LineMatrix = GraphicsState.Text.TextLineMatrix
@@ -743,7 +743,7 @@ internal ref struct ContentModelParser
 
         SubPath NewSubPath(decimal x, decimal y, GfxState gs)
         {
-            var nsp = new SubPath { XPos = x, YPos = y, Operations = new List<IPdfOperation>() };
+            var nsp = new SubPath { XPos = x, YPos = y, Operations = new List<IPathCreatingOp>() };
             if (currentPath == null)
             {
                 currentPath = new PathSequence

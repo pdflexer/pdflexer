@@ -15,7 +15,7 @@ public interface IPdfOperation
     public void Apply(TextState state) { }
 }
 
-internal interface IPathPaintingOp
+internal interface IPathCreatingOp : IPdfOperation
 {
     public PdfRect GetApproximateBoundingBox(decimal xpos, decimal ypos);
     public (decimal, decimal) GetFinishingPoint();

@@ -10,7 +10,7 @@ internal class PathSequence : IContentGroup
     public bool CompatibilitySection { get; set; }
     public required GfxState GraphicsState { get; set; }
     public required List<SubPath> Paths { get; set; }
-    public IPdfOperation Closing { get; set; }
+    public IPdfOperation? Closing { get; set; }
 
     public PdfRect GetBoundingBox()
     {
@@ -24,7 +24,7 @@ internal class PathSequence : IContentGroup
             var x = path.XPos; var y = path.YPos;
             foreach (var op in path.Operations)
             {
-                if (op is IPathPaintingOp pp)
+                if (op is IPathCreatingOp pp)
                 {
                     var current = pp.GetApproximateBoundingBox(x, y);
                     (x, y) = pp.GetFinishingPoint();
@@ -51,7 +51,13 @@ internal class PathSequence : IContentGroup
         {
             writer.SubPath(subPath);
         }
-        writer.Op(Closing);
+        if (Closing != null)
+        {
+            writer.Op(Closing);
+        } else
+        {
+            writer.Op(n_Op.Value);
+        }
     }
 }
 
@@ -59,6 +65,6 @@ internal class SubPath
 {
     public required decimal XPos { get; set; }
     public required decimal YPos { get; set; }
-    public required List<IPdfOperation> Operations { get; set; }
+    public required List<IPathCreatingOp> Operations { get; set; }
     public bool Closed { get; set; }
 }

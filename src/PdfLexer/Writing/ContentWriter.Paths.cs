@@ -1,4 +1,6 @@
-﻿namespace PdfLexer.Writing;
+﻿using PdfLexer.Content.Model;
+
+namespace PdfLexer.Writing;
 
 // Parts of API in this file for writing were ported from https://github.com/foliojs/pdfkit
 // pdfkit is licensed under:
@@ -136,6 +138,12 @@ public partial class ContentWriter
     {
         if (scale != 1) { var s = (decimal)scale; x *= s; y *= s; w *= s; h *= s; }
         re_Op.WriteLn(x, y, w, h, StreamWriter.Stream);
+        return this;
+    }
+
+    public ContentWriter Rect(PdfRect rect)
+    {
+        re_Op.WriteLn(rect.LLx, rect.LLy, rect.URx - rect.LLx, rect.URy - rect.LLy, StreamWriter.Stream);
         return this;
     }
     public ContentWriter RoundedRect(decimal x, decimal y, decimal w, decimal h, decimal r)

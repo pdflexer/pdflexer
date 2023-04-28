@@ -128,7 +128,7 @@ public partial class ContentWriter
         return this;
     }
 
-    internal ContentWriter SetLinePosition(GfxMatrix lm)
+    internal ContentWriter SetTextAndLinePosition(GfxMatrix lm)
     {
         EnsureInTextState();
         if (GS.Text.TextLineMatrix != lm)
@@ -155,6 +155,9 @@ public partial class ContentWriter
                 TextTransform(lm);
             }
 
+        } else if (GS.Text.TextMatrix != lm)
+        {
+            TextTransform(lm);
         }
         return this;
     }

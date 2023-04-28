@@ -1,12 +1,9 @@
-﻿using PdfLexer.Content;
-using PdfLexer.Content.Model;
-using PdfLexer.Serializers;
-using System.IO;
+﻿using PdfLexer.Content.Model;
 
 namespace PdfLexer.Operators;
 
 // c l v r re
-public partial class c_Op : IPathPaintingOp
+public partial class c_Op : IPathCreatingOp
 {
     public PdfRect GetApproximateBoundingBox(decimal xpos, decimal ypos)
     {
@@ -20,7 +17,7 @@ public partial class c_Op : IPathPaintingOp
     public (decimal, decimal) GetFinishingPoint() => (x3, y3);
 }
 
-public partial class l_Op : IPathPaintingOp
+public partial class l_Op : IPathCreatingOp
 {
     public PdfRect GetApproximateBoundingBox(decimal xpos, decimal ypos)
     {
@@ -34,7 +31,7 @@ public partial class l_Op : IPathPaintingOp
     public (decimal, decimal) GetFinishingPoint() => (x,y);
 }
 
-public partial class v_Op : IPathPaintingOp
+public partial class v_Op : IPathCreatingOp
 {
     public PdfRect GetApproximateBoundingBox(decimal xpos, decimal ypos)
     {
@@ -48,7 +45,7 @@ public partial class v_Op : IPathPaintingOp
     public (decimal, decimal) GetFinishingPoint() => (x3, y3);
 }
 
-public partial class y_Op : IPathPaintingOp
+public partial class y_Op : IPathCreatingOp
 {
     public PdfRect GetApproximateBoundingBox(decimal xpos, decimal ypos)
     {
@@ -62,7 +59,7 @@ public partial class y_Op : IPathPaintingOp
     public (decimal, decimal) GetFinishingPoint() => (x3, y3);
 }
 
-public partial class re_Op : IPathPaintingOp
+public partial class re_Op : IPathCreatingOp
 {
     public PdfRect GetApproximateBoundingBox(decimal xpos, decimal ypos)
     {

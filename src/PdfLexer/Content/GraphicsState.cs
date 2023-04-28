@@ -75,6 +75,25 @@ namespace PdfLexer.Content
             return (bl.E, bl.F, tr.E, tr.F);
         }
 
+        internal PdfRect GetGlyphBoundingBox(Glyph glyph)
+        {
+
+            decimal x = 0, y = 0, x2 = (decimal)glyph.w0, y2 = 0;
+            if (glyph.BBox != null)
+            {
+                // TODO : should this be moved to fonts to decide fallback?
+                x = glyph.BBox[0];
+                y = glyph.BBox[1];
+                x2 = glyph.BBox[2];
+                y2 = glyph.BBox[3];
+            }
+            var bl = GfxMatrix.Identity with { E = x, F = y } * Text.TextRenderingMatrix;
+
+            var tr = GfxMatrix.Identity with { E = x2, F = y2 } * Text.TextRenderingMatrix;
+
+            return new PdfRect { LLx = bl.E, LLy = bl.F, URx = tr.E, URy = tr.F };
+        }
+
         internal void ShiftTextMatrix(decimal tx, decimal ty)
         {
             // Tm = [ 1  0  0 ] x Tm
@@ -177,6 +196,18 @@ namespace PdfLexer.Content
             if (glyph.Glyph == null) { return; }
             Apply(glyph.Glyph);
         }
+
+        internal void Apply(GlyphOrShift glyph)
+        {
+            if (glyph.Glyph != null)
+            {
+                Apply(glyph.Glyph);
+            }
+            else if (glyph.Shift != 0)
+            {
+                ApplyTj(glyph.Shift);
+            }
+        }
     }
 
     public record ExtGraphicsDict
@@ -232,7 +263,7 @@ namespace PdfLexer.Content
         {
             if (LineMatrix.HasValue)
             {
-                writer.SetLinePosition(LineMatrix.Value);
+                writer.SetTextAndLinePosition(LineMatrix.Value);
             }
             else if (NewLine)
             {
