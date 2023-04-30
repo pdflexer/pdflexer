@@ -1,14 +1,15 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Content.Model;
 using PdfLexer.Serializers;
+using System.Numerics;
 
 namespace PdfLexer.Writing;
-
-public partial class ContentWriter
+#if NET7_0_OR_GREATER
+public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 {
-    internal ContentWriter SetGS(GfxState state, bool wrapExtDicts = true)
+    internal ContentWriter<T> SetGS(GfxState<T> state, bool wrapExtDicts = true)
     {
-        var stream = StreamWriter.Stream;
+        var stream = Writer.Stream;
         if (Object.ReferenceEquals(GfxState, state))
         {
             return this;
@@ -91,13 +92,13 @@ public partial class ContentWriter
         {
             writableFont = null;
             var nm = AddFont(state.FontObject);
-            Tf_Op.WriteLn(nm, (decimal)state.FontSize, stream);
+            Tf_Op<T>.WriteLn(nm, state.FontSize, stream);
         }
         else if (state.FontObject != null && state.FontSize != GfxState.FontSize)
         {
             writableFont = null;
             var nm = AddFont(state.FontObject);
-            Tf_Op.WriteLn(nm, (decimal)state.FontSize, stream);
+            Tf_Op<T>.WriteLn(nm, state.FontSize, stream);
         }
 
         if (state.Clipping != null && !(GfxState.Clipping?.SequenceEqual(state.Clipping) ?? false))
@@ -107,14 +108,14 @@ public partial class ContentWriter
             var prev = GS.TextMode;
             bool reset = false;
 
-            if (state.Clipping.Any(x => x is TextClippingInfo))
+            if (state.Clipping.Any(x => x is TextClippingInfo<T>))
             {
                 if (State == PageState.Text)
                 {
                     EndText();
                     BeginText();
                 }
-                Tr_Op.WriteLn(7, StreamWriter.Stream);
+                Tr_Op<T>.WriteLn(7, Writer.Stream);
                 reset = true;
             }
             foreach (var clip in state.Clipping)
@@ -122,7 +123,7 @@ public partial class ContentWriter
                 if (clip.TM != GfxState.CTM)
                 {
                     var cm = GfxState.GetTranslation(clip.TM);
-                    cm_Op.WriteLn(cm.Round(), stream);
+                    cm_Op<T>.WriteLn(cm.Round(), stream);
                     GfxState = GfxState with { CTM = clip.TM };
                 }
 
@@ -132,7 +133,7 @@ public partial class ContentWriter
             if (reset)
             {
                 EndText();
-                Tr_Op.WriteLn(prev, StreamWriter.Stream);
+                Tr_Op<T>.WriteLn(prev, Writer.Stream);
             }
 
         }
@@ -142,7 +143,7 @@ public partial class ContentWriter
             EnsureInPageState();
             EnsureRestorable();
             var cm = GfxState.GetTranslation(state.CTM);
-            cm_Op.WriteLn(cm.Round(), stream);
+            cm_Op<T>.WriteLn(cm.Round(), stream);
             GfxState = GfxState with { CTM = state.CTM };
         }
 
@@ -151,39 +152,39 @@ public partial class ContentWriter
 
         if (state.CharSpacing != GfxState.CharSpacing)
         {
-            Tc_Op.WriteLn((decimal)state.CharSpacing, stream);
+            Tc_Op<T>.WriteLn(state.CharSpacing, stream);
         }
 
         if (state.TextHScale != GfxState.TextHScale)
         {
-            Tz_Op.WriteLn((decimal)(state.TextHScale * 100.0m), stream);
+            Tz_Op<T>.WriteLn((state.TextHScale * FPC<T>.V100), stream);
         }
 
         if (state.TextLeading != GfxState.TextLeading)
         {
-            TL_Op.WriteLn((decimal)(state.TextLeading), stream);
+            TL_Op<T>.WriteLn((state.TextLeading), stream);
         }
 
         if (state.TextMode != GfxState.TextMode)
         {
-            Tr_Op.WriteLn(state.TextMode, stream);
+            Tr_Op<T>.WriteLn(state.TextMode, stream);
         }
 
         if (state.TextRise != GfxState.TextRise)
         {
-            Ts_Op.WriteLn((decimal)state.TextRise, stream);
+            Ts_Op<T>.WriteLn(state.TextRise, stream);
         }
 
         if (state.WordSpacing != GfxState.WordSpacing)
         {
-            Tw_Op.WriteLn((decimal)state.WordSpacing, stream);
+            Tw_Op<T>.WriteLn(state.WordSpacing, stream);
         }
 
         if (state.ColorSpace != GfxState.ColorSpace)
         {
             if (state.ColorSpace == null)
             {
-                g_Op.WriteLn(0, stream);
+                g_Op<T>.WriteLn(T.Zero, stream);
             }
             else
             {
@@ -197,7 +198,7 @@ public partial class ContentWriter
         {
             if (state.ColorSpaceStroking == null)
             {
-                G_Op.WriteLn(0, stream);
+                G_Op<T>.WriteLn(T.Zero, stream);
             }
             else
             {
@@ -212,7 +213,7 @@ public partial class ContentWriter
             {
                 if (state.ColorSpaceStroking == null)
                 {
-                    G_Op.WriteLn(0, stream);
+                    G_Op<T>.WriteLn(T.Zero, stream);
                 }
                 else
                 {
@@ -244,7 +245,7 @@ public partial class ContentWriter
             {
                 if (state.ColorSpace == null)
                 {
-                    g_Op.WriteLn(0, stream);
+                    g_Op<T>.WriteLn(T.Zero, stream);
                 }
                 else
                 {
@@ -284,25 +285,25 @@ public partial class ContentWriter
 
         if (state.Flatness != GfxState.Flatness)
         {
-            i_Op.WriteLn((decimal)state.Flatness, stream);
+            i_Op<T>.WriteLn(state.Flatness, stream);
         }
 
         if (state.LineWidth != GfxState.LineWidth)
         {
-            w_Op.WriteLn((decimal)state.LineWidth, stream);
+            w_Op<T>.WriteLn(state.LineWidth, stream);
         }
 
         if (state.LineCap != GfxState.LineCap)
         {
-            J_Op.WriteLn(state.LineCap, stream);
+            J_Op<T>.WriteLn(state.LineCap, stream);
         }
         if (state.LineJoin != GfxState.LineJoin)
         {
-            j_Op.WriteLn(state.LineJoin, stream);
+            j_Op<T>.WriteLn(state.LineJoin, stream);
         }
         if (state.MiterLimit != GfxState.MiterLimit)
         {
-            M_Op.WriteLn((decimal)state.MiterLimit, stream);
+            M_Op<T>.WriteLn(state.MiterLimit, stream);
         }
 
         if (state.RenderingIntent != GfxState.RenderingIntent)
@@ -337,11 +338,11 @@ public partial class ContentWriter
                 // smask dependent on CTM
                 var prev = GfxState.CTM;
                 var cm = GfxState.GetTranslation(state.ExtDict.CTM);
-                cm_Op.WriteLn(cm.Round(), stream);
+                cm_Op<T>.WriteLn(cm.Round(), stream);
                 gs_Op.WriteLn(nm, stream);
                 state.ExtDict.CTM.Invert(out var iv);
                 var toPrev = prev * iv;
-                cm_Op.WriteLn(toPrev.Round(), stream);
+                cm_Op<T>.WriteLn(toPrev.Round(), stream);
             }
             else
             {
@@ -362,12 +363,12 @@ public partial class ContentWriter
     {
         if (CS is PdfName nm)
         {
-            CS_Op.WriteLn(nm, StreamWriter.Stream);
+            CS_Op.WriteLn(nm, Writer.Stream);
         }
         else
         {
             nm = AddColorSpace(CS);
-            CS_Op.WriteLn(nm, StreamWriter.Stream);
+            CS_Op.WriteLn(nm, Writer.Stream);
         }
     }
 
@@ -375,12 +376,12 @@ public partial class ContentWriter
     {
         if (cs is PdfName nm)
         {
-            cs_Op.WriteLn(nm, StreamWriter.Stream);
+            cs_Op.WriteLn(nm, Writer.Stream);
         }
         else
         {
             nm = AddColorSpace(cs);
-            cs_Op.WriteLn(nm, StreamWriter.Stream);
+            cs_Op.WriteLn(nm, Writer.Stream);
         }
     }
 
@@ -395,35 +396,35 @@ public partial class ContentWriter
         if (a.Type != b.Type) { return false; }
         switch (a)
         {
-            case scn_Op ac:
+            case scn_Op<T> ac:
                 {
-                    var bc = (scn_Op)b;
+                    var bc = (scn_Op<T>)b;
                     return bc.name == ac.name && bc.colorInfo.SequenceEqual(ac.colorInfo);
                 }
-            case sc_Op ac:
+            case sc_Op<T> ac:
                 {
-                    var bc = (sc_Op)b;
+                    var bc = (sc_Op<T>)b;
                     return bc.colorInfo.SequenceEqual(ac.colorInfo);
                 }
-            case SCN_Op ac:
+            case SCN_Op<T> ac:
                 {
-                    var bc = (SCN_Op)b;
+                    var bc = (SCN_Op<T>)b;
                     return bc.name == ac.name && bc.colorInfo.SequenceEqual(ac.colorInfo);
                 }
-            case SC_Op ac:
+            case SC_Op<T> ac:
                 {
-                    var bc = (SC_Op)b;
+                    var bc = (SC_Op<T>)b;
                     return bc.colorInfo.SequenceEqual(ac.colorInfo);
                 }
         }
         return false;
     }
-    internal void SubPath(SubPath subPath)
+    internal void SubPath(SubPath<T> subPath)
     {
         EnsureInPageState();
         if (subPath.Operations.Count > 0 && subPath.Operations[0].Type != PdfOperatorType.re)
         {
-            MoveTo((decimal)subPath.XPos, (decimal)subPath.YPos);
+            MoveTo(subPath.XPos, subPath.YPos);
         }
         foreach (var op in subPath.Operations)
         {
@@ -431,7 +432,7 @@ public partial class ContentWriter
         }
         if (subPath.Closed)
         {
-            Op(h_Op.Value);
+            Op(h_Op<T>.Value);
         }
     }
 
@@ -491,17 +492,17 @@ public partial class ContentWriter
         {
             if (compat)
             {
-                BX_Op.WriteLn(StreamWriter.Stream);
+                BX_Op.WriteLn(Writer.Stream);
             }
             else
             {
-                EX_Op.WriteLn(StreamWriter.Stream);
+                EX_Op.WriteLn(Writer.Stream);
             }
             isCompatSection = compat;
         }
     }
 
-    internal ContentWriter MarkedContent(MarkedContent mc)
+    internal ContentWriter<T> MarkedContent(MarkedContent mc)
     {
         EnsureInPageState(); // make sure in page state to simplify making sure we don't have
                              // uneven operators eg. BT BMC ET EMC
@@ -519,18 +520,18 @@ public partial class ContentWriter
                 Properties[name] = mc.PropList;
             }
             var op = new BDC_Op(mc.Name, name);
-            op.Serialize(StreamWriter.Stream);
-            StreamWriter.Stream.WriteByte((byte)'\n');
+            op.Serialize(Writer.Stream);
+            Writer.Stream.WriteByte((byte)'\n');
         }
         else if (mc.InlineProps != null)
         {
             var op = new BDC_Op(mc.Name, mc.InlineProps);
-            op.Serialize(StreamWriter.Stream);
-            StreamWriter.Stream.WriteByte((byte)'\n');
+            op.Serialize(Writer.Stream);
+            Writer.Stream.WriteByte((byte)'\n');
         }
         else
         {
-            BMC_Op.WriteLn(mc.Name, StreamWriter.Stream);
+            BMC_Op.WriteLn(mc.Name, Writer.Stream);
         }
         mcState ??= new List<MarkedContent>();
         mcState.Add(mc);
@@ -538,7 +539,7 @@ public partial class ContentWriter
         return this;
     }
 
-    internal ContentWriter EndMarkedContent()
+    internal ContentWriter<T> EndMarkedContent()
     {
         EnsureInPageState();
         if (mcState == null || mcState.Count == 0)
@@ -553,8 +554,8 @@ public partial class ContentWriter
         }
 
         mcDepth--;
-        EMC_Op.Value.Serialize(StreamWriter.Stream);
-        StreamWriter.Stream.WriteByte((byte)'\n');
+        EMC_Op.Value.Serialize(Writer.Stream);
+        Writer.Stream.WriteByte((byte)'\n');
         return this;
     }
 
@@ -583,7 +584,7 @@ public partial class ContentWriter
     {
         EnsureInPageState();
         var nm = AddShading(sh);
-        sh_Op.WriteLn(nm, StreamWriter.Stream);
+        sh_Op.WriteLn(nm, Writer.Stream);
     }
     private Dictionary<IPdfObject, PdfName> shadings = new Dictionary<IPdfObject, PdfName>();
     internal PdfName AddShading(IPdfObject sh)
@@ -623,3 +624,4 @@ public partial class ContentWriter
         return name;
     }
 }
+#endif

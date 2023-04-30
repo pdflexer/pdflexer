@@ -279,7 +279,7 @@ public ref struct PageContentScanner
             var mtx = CurrentForm?.Get<PdfArray>(PdfName.Matrix);
             if (mtx == null)
             {
-                return new cm_Op(1m, 0m, 0m, 1m, 0m, 0m);
+                return new cm_Op(1, 0, 0, 1, 0, 0);
             }
             else
             {
@@ -301,7 +301,7 @@ public ref struct PageContentScanner
             var mtx = CurrentForm?.Get<PdfArray>(PdfName.Matrix);
             if (mtx == null)
             {
-                op = new cm_Op(1m, 0m, 0m, 1m, 0m, 0m);
+                op = new cm_Op(1, 0, 0, 1, 0, 0);
             }
             else
             {

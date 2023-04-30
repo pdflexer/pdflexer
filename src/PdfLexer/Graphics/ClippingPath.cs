@@ -3,15 +3,12 @@ using System.Numerics;
 
 namespace PdfLexer.Graphics;
 
-
-
 internal enum ClippingResult
 {
     NotVisible,
     Partial,
     Visible
 }
-
 
 internal interface IClippingPath
 {

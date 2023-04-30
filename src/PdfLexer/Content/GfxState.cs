@@ -5,22 +5,24 @@ using System.Text;
 
 namespace PdfLexer.Content;
 
+using PdfLexer.Content.Model;
 using PdfLexer.Fonts;
 
 #if NET7_0_OR_GREATER
 
 using System.Numerics;
 
-internal class GfxState2<T> where T : struct, IFloatingPoint<T>
+
+public record GfxState<T> where T : struct, IFloatingPoint<T>
 {
-    public GfxState2()
+    public GfxState()
     {
         CTM = GfxMatrix<T>.Identity;
-        Text = new TxtState();
+        Text = new TxtState<T>();
         // UpdateTRM();
     }
-    
-    internal GfxState? Prev { get; init; }
+
+    internal GfxState<T>? Prev { get; init; }
     internal IReadableFont? Font { get; init; }
 
     public GfxMatrix<T> CTM { get; init; }
@@ -38,97 +40,173 @@ internal class GfxState2<T> where T : struct, IFloatingPoint<T>
     private static T ten = T.One + T.One + T.One + T.One + T.One + T.One + T.One + T.One + T.One + T.One; // gotta be better way
     public T MiterLimit { get; init; } = ten;
     public T Flatness { get; init; } = T.One;
-    public d_Op? Dashing { get; init; }
+    public d_Op<T>? Dashing { get; init; }
     public PdfName? RenderingIntent { get; init; }
     public IPdfObject? ColorSpace { get; init; } = PdfName.DeviceGray;
     public IPdfObject? ColorSpaceStroking { get; init; } = PdfName.DeviceGray;
     public IPdfOperation? Color { get; init; }
     public IPdfOperation? ColorStroking { get; init; }
     public PdfDictionary? FontObject { get; init; }
-    public PdfDictionary? ExtDict { get; init; }
-    internal List<ClippingInfo>? Clipping { get; init; }
+    public ExtGraphicsDict<T>? ExtDict { get; init; }
+    internal List<IClippingSection<T>>? Clipping { get; init; }
 
     // not part of real gfx state
-    internal TxtState Text { get; init; }
+    internal TxtState<T> Text { get; init; }
 
     internal GfxMatrix<T> GetTranslation(GfxMatrix<T> desired)
     {
         CTM.Invert(out var iv);
         return desired * iv;
     }
-}
 
-
-internal record struct GfxMatrix<T> where T : struct, IFloatingPoint<T>
-{
-    public static readonly GfxMatrix<T> Identity = new GfxMatrix<T>
+    internal void UpdateTRM()
     {
-        A = T.One,
-        B = T.Zero,
-        C = T.Zero,
-        D = T.One,
-        E = T.Zero,
-        F = T.Zero
-    };
-    public T A { get; init; }
-    public T B { get; init; }
-    public T C { get; init; }
-    public T D { get; init; }
-    public T E { get; init; }
-    public T F { get; init; }
-
-    public GfxMatrix<T> Multiply(GfxMatrix<T> matrix)
-    {
-        var a = (A * matrix.A) + (B * matrix.C);
-        var b = (A * matrix.B) + (B * matrix.D);
-        var c = (C * matrix.A) + (D * matrix.C);
-        var d = (C * matrix.B) + (D * matrix.D);
-        var e = (E * matrix.A) + (F * matrix.C) + (matrix.E);
-        var f = (E * matrix.B) + (F * matrix.D) + (matrix.F);
-        return new GfxMatrix<T> { A = a, B = b, C = c, D = d, E = e, F = f };
+        Text.TextRenderingMatrix = new GfxMatrix<T>(
+          FontSize * TextHScale, T.Zero,
+          T.Zero, FontSize,
+          T.Zero, TextRise) * Text.TextMatrix * CTM;
     }
 
-    public bool Invert(out GfxMatrix<T> matrix)
+    internal PdfRect<T> GetGlyphBoundingBox(Glyph glyph)
     {
-        var det = (A * D) - (C * B);
 
-        if (T.IsZero(det))
+        T x = T.Zero, y = T.Zero, x2 = FPC<T>.Util.FromDecimal<T>((decimal)glyph.w0), y2 = T.Zero;
+        if (glyph.BBox != null)
         {
-            matrix = default;
-            return false;
+            // TODO : should this be moved to fonts to decide fallback?
+            x = FPC<T>.Util.FromPdfNumber<T>(glyph.BBox[0]);
+            y = FPC<T>.Util.FromPdfNumber<T>(glyph.BBox[1]);
+            x2 = FPC<T>.Util.FromPdfNumber<T>(glyph.BBox[2]);
+            y2 = FPC<T>.Util.FromPdfNumber<T>(glyph.BBox[3]);
+        }
+        var bl = GfxMatrix<T>.Identity with { E = x, F = y } * Text.TextRenderingMatrix;
+
+        var tr = GfxMatrix<T>.Identity with { E = x2, F = y2 } * Text.TextRenderingMatrix;
+
+        return new PdfRect<T> { LLx = bl.E, LLy = bl.F, URx = tr.E, URy = tr.F };
+    }
+
+    internal void ShiftTextMatrix(T tx, T ty)
+    {
+        // Tm = [ 1  0  0 ] x Tm
+        //        0  1  0
+        //        tx ty 1
+
+        Text.TextMatrix = GfxMatrix<T>.Identity with { E = tx, F = ty } * Text.TextMatrix;
+
+        UpdateTRM();
+    }
+
+    internal void ShiftTextAndLineMatrix(T tx, T ty)
+    {
+        // Tm = Tlm = [ 1  0  0 ] x Tlm
+        //              0  1  0
+        //              tx ty 1
+
+        Text.TextLineMatrix = GfxMatrix<T>.Identity with { E = tx, F = ty } * Text.TextLineMatrix;
+        Text.TextMatrix = Text.TextLineMatrix;
+        UpdateTRM();
+    }
+
+
+    internal void ApplyData(ReadOnlySpan<byte> data)
+    {
+        var font = Font;
+        if (font == null)
+        {
+            font = SingleByteFont.Fallback;
+            /// Ctx.Error("Font data before font set, falling back to helvetica");
         }
 
-        var invDet = T.One / det;
-
-        matrix = new GfxMatrix<T>
+        var i = 0;
+        while (i < data.Length)
         {
-            A = D * invDet,
-            B = -B * invDet,
-            C = -C * invDet,
-            D = A * invDet,
-            E = (C * F - E * D) * invDet,
-            F = (E * B - A * F) * invDet
-        };
-        return true;
+            i += font.GetGlyph(data, i, out var glyph);
+            Apply(glyph);
+        }
     }
 
-    /// <summary>
-    /// Multiplies two matrices together and returns the resulting matrix.
-    /// </summary>
-    /// <param name="value1">The first source matrix.</param>
-    /// <param name="value2">The second source matrix.</param>
-    /// <returns>The product matrix.</returns>
-    public static GfxMatrix<T> operator *(GfxMatrix<T> value1, GfxMatrix<T> value2)
+    internal void Apply(Glyph info)
     {
-        
-        var a = (value1.A * value2.A) + (value1.B * value2.C);
-        var b = (value1.A * value2.B) + (value1.B * value2.D);
-        var c = (value1.C * value2.A) + (value1.D * value2.C);
-        var d = (value1.C * value2.B) + (value1.D * value2.D);
-        var e = (value1.E * value2.A) + (value1.F * value2.C) + (value2.E);
-        var f = (value1.E * value2.B) + (value1.F * value2.D) + (value2.F);
-        return new GfxMatrix<T> { A = a, B = b, C = c, D = d, E = e, F = f };
+        // shift
+        T tx = T.Zero;
+        T ty = T.Zero;
+        if (!(Font?.IsVertical ?? false))
+        {
+            // tx = ((w0-Tj/1000) * T_fs + T_c + T_w?) * Th
+            // var s = (info.w0 - tj / 1000) * FontSize + CharSpacing; // Tj pre applied
+            var w0 = FPC<T>.Util.FromPdfNumber<T>(info.w0);
+            var s = w0 * FontSize + CharSpacing;
+            if (info.IsWordSpace)
+            {
+                s += WordSpacing;
+            }
+            tx = s * TextHScale;
+        }
+        else
+        {
+            // ty = (w1-Tj/1000) * T_fs + T_c + T_w?)
+            var w1 = FPC<T>.Util.FromPdfNumber<T>(info.w1);
+            var s = w1 * FontSize + CharSpacing;
+            if (info.IsWordSpace) { s += WordSpacing; }
+            ty = s;
+        }
+
+        ShiftTextMatrix(tx, ty);
+    }
+    internal static T V1000 = T.Parse("1000", null);
+    internal void ApplyTj(T tj)
+    {
+        if (tj == T.Zero) { return; }
+        T tx = T.Zero;
+        T ty = T.Zero;
+        if (!(Font?.IsVertical ?? false))
+        {
+            tx = (-tj / V1000) * FontSize * TextHScale;
+        }
+        else
+        {
+            var s = (-tj / V1000) * FontSize;
+            ty = s;
+        }
+
+        ShiftTextMatrix(tx, ty);
+    }
+
+    internal void ApplyShift(GlyphOrShift<T> glyph)
+    {
+        ApplyTj(glyph.Shift);
+    }
+
+    internal void ApplyCharShift(GlyphOrShift<T> glyph)
+    {
+        if (glyph.Glyph == null) { return; }
+        Apply(glyph.Glyph);
+    }
+
+    internal void Apply(GlyphOrShift<T> glyph)
+    {
+        if (glyph.Glyph != null)
+        {
+            Apply(glyph.Glyph);
+        }
+        else if (glyph.Shift != T.Zero)
+        {
+            ApplyTj(glyph.Shift);
+        }
+    }
+
+    internal GfxState<T> ClipExcept(PdfRect<T> rect)
+    {
+        return this with { Clipping = Clipping.ClipExcept(rect) };
+    }
+
+    internal GfxState<T> Clip(PdfRect<T> rect, PdfRect<T> boundary)
+    {
+        return this with { Clipping = Clipping.Clip(rect, boundary) };
     }
 }
+
+
 
 #endif

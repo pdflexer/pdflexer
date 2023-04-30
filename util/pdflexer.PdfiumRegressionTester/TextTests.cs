@@ -194,8 +194,8 @@ namespace pdflexer.PdfiumRegressionTester
                     var word = words.CurrentWord;
                     var (llx ,lly, urx, ury) = words.GetWordBoundingBox();
                     writer
-                      .LineWidth(0.5m)
-                      .Rect((decimal)llx, (decimal)lly, (decimal)(urx - llx), (decimal)(ury - lly))
+                      .LineWidth(0.5)
+                      .Rect(llx, lly, (urx - llx), (ury - lly))
                       .Stroke();
                 }
 
@@ -324,23 +324,23 @@ namespace pdflexer.PdfiumRegressionTester
                             }
                             // var nm = GetFontName(txt, i);
                             writer
-                              .LineWidth(0.01m)
-                              .Rect((decimal)llx, (decimal)lly, (decimal)(urx - llx), (decimal)(ury - lly))
+                              .LineWidth(0.01)
+                              .Rect(llx, lly, (urx - llx), (ury - lly))
                               .Stroke();
-                                writer.Circle((decimal)x, (decimal)y, 0.05m).Stroke();
+                                writer.Circle(x, y, 0.05).Stroke();
                             unmatched2.Add(((float)x, (float)y, c));
 
                             var (dd, cc) = Nearest((float)x, (float)y, charList);
                             if (cc != null && dd < 5)
                             {
-                                writer.Font(font, 0.5m)
-                                      .TextMove((decimal)x + 1 , (decimal)y - 1)
+                                writer.Font(font, 0.5)
+                                      .TextMove(x + 1 , y - 1)
                                       .Text($"b:{(int)c} c:{(int)cc.c} cp: {cc.cp} cf: {cc.Font}")
                                       .EndText();
                             } else
                             {
-                                writer.Font(font, 0.1m)
-                                      .TextMove((decimal)x + 1, (decimal)y - 1)
+                                writer.Font(font, 0.1)
+                                      .TextMove(x + 1, y - 1)
                                       .Text($"b:{(int)c}")
                                       .EndText();
                             }
@@ -367,15 +367,15 @@ namespace pdflexer.PdfiumRegressionTester
                                 continue;
                             }
 
-                            writer.LineWidth(0.05m)
-                                  .Rect((decimal)kvp.Value.llx, (decimal)kvp.Value.lly,
-                                    (decimal)(kvp.Value.urx - kvp.Value.llx), (decimal)(kvp.Value.ury - kvp.Value.lly))
+                            writer.LineWidth(0.05)
+                                  .Rect(kvp.Value.llx, kvp.Value.lly,
+                                    (kvp.Value.urx - kvp.Value.llx), (kvp.Value.ury - kvp.Value.lly))
                                   .Stroke();
 
-                            writer.Circle((decimal)kvp.Value.x, (decimal)kvp.Value.y, 0.1m).Stroke();
+                            writer.Circle(kvp.Value.x, kvp.Value.y, 0.1).Stroke();
                             unmatched.Add((kvp.Value.x, kvp.Value.y, kvp.Value.c));
-                            writer.Font(font, 0.5m)
-                              .TextMove((decimal)kvp.Value.x + 1, (decimal)kvp.Value.y - 2)
+                            writer.Font(font, 0.5)
+                              .TextMove(kvp.Value.x + 1, kvp.Value.y - 2)
                               .Text($"c:{(int)kvp.Value.c} cp: {kvp.Value.cp} cf: {kvp.Value.Font}")
                               .EndText();
                         }

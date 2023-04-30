@@ -17,9 +17,9 @@ public class ContentUtil
 
         while (scanner.Advance())
         {
-            if (scanner.CurrentOperator == PdfOperatorType.EI && scanner.TryGetCurrentOperation(out var op))
+            if (scanner.CurrentOperator == PdfOperatorType.EI && scanner.TryGetCurrentOperation<double>(out var op))
             {
-                var im = (InlineImage_Op)op;
+                var im = (InlineImage_Op<double>)op;
                 var i = 1;
                 var nm = "Im" + i;
                 while (xobjs.ContainsKey(nm))

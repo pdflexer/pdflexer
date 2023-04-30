@@ -1,23 +1,35 @@
 ﻿using PdfLexer.Writing;
+using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
 
-internal class ImageContent : IContentGroup
+internal class ImageContent<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Image;
-    public required GfxState GraphicsState { get; set; }
+    public required GfxState<T> GraphicsState { get; set; }
     public required PdfStream Stream { get; set; }
     public List<MarkedContent>? Markings { get; set; }
     public bool CompatibilitySection { get; set; }
-    
+
+
+
     // TODO inline support
     // public bool Inline { get; set; }
 
-    public void Write(ContentWriter writer)
+    public void Write(ContentWriter<T> writer)
     {
         writer.Image(Stream);
     }
+
+    public ISinglePartCopy<T> Clone()
+    {
+        return (ISinglePartCopy<T>)this.MemberwiseClone();
+    }
+
+    IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
+
+    (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
 }
 
 // Old inline image, implementation not possible without changes since

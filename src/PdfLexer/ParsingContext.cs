@@ -1,5 +1,6 @@
 ﻿using System.Buffers;
 using System.Buffers.Text;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using Microsoft.IO;
 using PdfLexer.Content;
@@ -374,7 +375,9 @@ public class ParsingContext : IDisposable
         return xref.Source.GetDataAsStream(this, xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
     }
 
-    internal void FillGlyphsFromRawString(GfxState state, ReadOnlySpan<byte> data, List<GlyphOrShift> glyphs)
+
+#if NET7_0_OR_GREATER
+    internal void FillGlyphsFromRawString<T>(GfxState<T> state, ReadOnlySpan<byte> data, List<GlyphOrShift<T>> glyphs) where T : struct, IFloatingPoint<T>
     {
         if (data.Length < 200)
         {
@@ -392,18 +395,18 @@ public class ParsingContext : IDisposable
         }
     }
 
-    internal void FillGlyphsNoReset(GfxState state, ReadOnlySpan<byte> data, List<GlyphOrShift> glyphs)
+    internal void FillGlyphsNoReset<T>(GfxState<T> state, ReadOnlySpan<byte> data, List<GlyphOrShift<T>> glyphs) where T : struct, IFloatingPoint<T>
     {
         int i = 0;
         int u = 0;
         while (i < data.Length && (u = GetGlyph(state, data, i, out var glyph)) > 0)
         {
-            glyphs.Add(new GlyphOrShift(glyph, 0m, u));
+            glyphs.Add(new GlyphOrShift<T>(glyph, T.Zero, u));
             i += u;
         }
     }
 
-    internal int GetGlyph(GfxState state, ReadOnlySpan<byte> data, int pos, out Glyph info)
+    internal int GetGlyph<T>(GfxState<T> state, ReadOnlySpan<byte> data, int pos, out Glyph info) where T: struct, IFloatingPoint<T>
     {
         if (state.Font == null)
         {
@@ -412,6 +415,7 @@ public class ParsingContext : IDisposable
         }
         return state.Font.GetGlyph(data, pos, out info);
     }
+#endif
 
     internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data)
     {

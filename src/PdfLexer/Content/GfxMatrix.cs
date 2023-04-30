@@ -1,40 +1,40 @@
-﻿using PdfLexer.Content.Model;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Numerics;
 
 namespace PdfLexer.Content;
 
 
-public record struct GfxMatrix
+public record struct GfxMatrix<T> where T : struct, IFloatingPoint<T>
 {
+    public static readonly GfxMatrix<T> Identity = new GfxMatrix<T>
+    {
+        A = T.One,
+        B = T.Zero,
+        C = T.Zero,
+        D = T.One,
+        E = T.Zero,
+        F = T.Zero
+    };
+
     public GfxMatrix()
     {
 
     }
-    public GfxMatrix(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f)
+
+    public GfxMatrix(T a, T b, T c, T d, T e, T f)
     {
         A = a; B = b; C = c; D = d; E = e; F = f;
     }
-    public static readonly GfxMatrix Identity = new GfxMatrix
-    {
-        A = 1,
-        B = 0,
-        C = 0,
-        D = 1,
-        E = 0,
-        F = 0
-    };
+
+    public T A { get; init; }
+    public T B { get; init; }
+    public T C { get; init; }
+    public T D { get; init; }
+    public T E { get; init; }
+    public T F { get; init; }
+
     public bool IsIdentity { get => this == Identity; }
 
-    public decimal A { get; init; }
-    public decimal B { get; init; }
-    public decimal C { get; init; }
-    public decimal D { get; init; }
-    public decimal E { get; init; }
-    public decimal F { get; init; }
-
-    public GfxMatrix Multiply(GfxMatrix matrix)
+    public GfxMatrix<T> Multiply(GfxMatrix<T> matrix)
     {
         var a = (A * matrix.A) + (B * matrix.C);
         var b = (A * matrix.B) + (B * matrix.D);
@@ -42,22 +42,22 @@ public record struct GfxMatrix
         var d = (C * matrix.B) + (D * matrix.D);
         var e = (E * matrix.A) + (F * matrix.C) + (matrix.E);
         var f = (E * matrix.B) + (F * matrix.D) + (matrix.F);
-        return new GfxMatrix { A = a, B = b, C = c, D = d, E = e, F = f };
+        return new GfxMatrix<T> { A = a, B = b, C = c, D = d, E = e, F = f };
     }
 
-    public bool Invert(out GfxMatrix matrix)
+    public bool Invert(out GfxMatrix<T> matrix)
     {
         var det = (A * D) - (C * B);
 
-        if (det == 0)
+        if (T.IsZero(det))
         {
             matrix = default;
             return false;
         }
 
-        var invDet = 1m / det;
+        var invDet = T.One / det;
 
-        matrix = new GfxMatrix
+        matrix = new GfxMatrix<T>
         {
             A = D * invDet,
             B = -B * invDet,
@@ -69,16 +69,17 @@ public record struct GfxMatrix
         return true;
     }
 
-    public GfxMatrix Round(int decimals = 8)
+
+    public GfxMatrix<T> Round(int decimals = 8)
     {
         return this with
         {
-            A = Math.Round(A, decimals),
-            B = Math.Round(B, decimals),
-            C = Math.Round(C, decimals),
-            D = Math.Round(D, decimals),
-            E = Math.Round(E, decimals),
-            F = Math.Round(F, decimals),
+            A = T.Round(A, decimals),
+            B = T.Round(B, decimals),
+            C = T.Round(C, decimals),
+            D = T.Round(D, decimals),
+            E = T.Round(E, decimals),
+            F = T.Round(F, decimals),
         };
     }
 
@@ -92,9 +93,9 @@ public record struct GfxMatrix
     /// </summary>
     /// <param name="rect"></param>
     /// <returns></returns>
-    internal PdfRect GetTransformedBoundingBox(PdfRect rect)
+    internal PdfRect<T> GetTransformedBoundingBox(PdfRect<T> rect)
     {
-        if (B != 0 || C != 0)
+        if (B != T.Zero || C != T.Zero)
         {
             var x1 = A * rect.LLx + C * rect.LLy + E;
             var y1 = B * rect.LLx + D * rect.LLy + F;
@@ -104,16 +105,16 @@ public record struct GfxMatrix
             var y11 = B * rect.LLx + D * rect.URy + F; // top left
             var x22 = A * rect.URx + C * rect.LLy + E; // lower right
             var y22 = B * rect.URx + D * rect.LLy + F; // lower right
-            x1 = Math.Min(x1, x11);
-            y1 = Math.Min(y1, y11);
-            x2 = Math.Max(x2, x22);
-            y2 = Math.Max(y2, y22);
-            return new PdfRect
+            x1 = T.Min(x1, x11);
+            y1 = T.Min(y1, y11);
+            x2 = T.Max(x2, x22);
+            y2 = T.Max(y2, y22);
+            return new PdfRect<T>
             {
-                LLx = Math.Min(x1, x2),
-                LLy = Math.Min(y1, y2),
-                URx = Math.Max(x1, x2),
-                URy = Math.Max(y1, y2)
+                LLx = T.Min(x1, x2),
+                LLy = T.Min(y1, y2),
+                URx = T.Max(x1, x2),
+                URy = T.Max(y1, y2)
             };
         }
         else
@@ -122,7 +123,7 @@ public record struct GfxMatrix
             var y1 = D * rect.LLy + F;
             var x2 = A * rect.URx + E;
             var y2 = D * rect.URy + F;
-            return new PdfRect
+            return new PdfRect<T>
             {
                 LLx = x1,
                 LLy = y1,
@@ -140,7 +141,7 @@ public record struct GfxMatrix
     /// <param name="value1">The first source matrix.</param>
     /// <param name="value2">The second source matrix.</param>
     /// <returns>The product matrix.</returns>
-    public static GfxMatrix operator *(GfxMatrix value1, GfxMatrix value2)
+    public static GfxMatrix<T> operator *(GfxMatrix<T> value1, GfxMatrix<T> value2)
     {
 
         var a = (value1.A * value2.A) + (value1.B * value2.C);
@@ -149,6 +150,6 @@ public record struct GfxMatrix
         var d = (value1.C * value2.B) + (value1.D * value2.D);
         var e = (value1.E * value2.A) + (value1.F * value2.C) + (value2.E);
         var f = (value1.E * value2.B) + (value1.F * value2.D) + (value2.F);
-        return new GfxMatrix { A = a, B = b, C = c, D = d, E = e, F = f };
+        return new GfxMatrix<T> { A = a, B = b, C = c, D = d, E = e, F = f };
     }
 }

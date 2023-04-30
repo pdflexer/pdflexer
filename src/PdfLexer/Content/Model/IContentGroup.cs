@@ -1,78 +1,81 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Writing;
+using System;
+using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace PdfLexer.Content.Model;
 
-public record class PdfRect
+
+
+internal interface IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
-    public required decimal LLx { get; init; }
-    public required decimal LLy { get; init; }
-    public required decimal URx { get; init; }
-    public required decimal URy { get; init; }
-
-    public bool Intersects(PdfRect rect)
-    {
-        if (rect.LLx > URx) return false;
-        if (rect.LLy > URy) return false;
-        if (rect.URx < LLx) return false;
-        if (rect.URy < LLy) return false;
-        return true;
-    }
-
-    public EncloseType CheckEnclosure(PdfRect rect)
-    {
-        if (rect.LLx > URx || rect.LLy > URy || rect.URx < LLx || rect.URy < LLy) return EncloseType.None;
-        if (rect.LLx < LLx || rect.LLy < LLy || rect.URx > URx || rect.URy > URy) return EncloseType.Partial;
-        return EncloseType.Full;
-    }
-
-
-    public PdfRect Normalize(PdfPage pg) => Normalize(pg.CropBox);
-
-    public PdfRect Normalize(PdfRectangle rect)
-    {
-        var x = Math.Min((decimal)rect.LLx, (decimal)rect.URx);
-        var y = Math.Min((decimal)rect.LLy, (decimal)rect.URy);
-        if (x == 0 && y == 0) { return this; }
-        return new PdfRect { LLx = LLx - x, LLy = LLy - y, URx = URx - x, URy = URy - y };
-    }
-}
-
-public enum EncloseType
-{
-    Full,
-    Partial,
-    None
-}
-
-internal enum ContentType
-{
-    Text,
-    Paths,
-    Image,
-    Form,
-    Shading,
-    // MarkedPoint
-}
-
-internal interface IContentGroup
-{
-    public GfxState GraphicsState { get; }
+    public GfxState<T> GraphicsState { get; }
     public ContentType Type { get; }
     public List<MarkedContent>? Markings { get; }
     public bool CompatibilitySection { get; }
-    public void Write(ContentWriter writer);
+    public void Write(ContentWriter<T> writer);
 
-    public PdfRect GetBoundingBox()
+    public PdfRect<T> GetBoundingBox()
     {
         var x = GraphicsState.CTM.E;
         var y = GraphicsState.CTM.F;
-        return new PdfRect
+        return new PdfRect<T>
         {
             LLx = x,
             LLy = y,
             URx = x + GraphicsState.CTM.A,
             URy = y + GraphicsState.CTM.D
         };
+    }
+
+    // public IContentGroup Shift(decimal dx, decimal dy);
+
+    public IContentGroup<T>? CopyArea(PdfRect<T> rect);
+    public (IContentGroup<T>? Inside, IContentGroup<T>? Outside) Split(PdfRect<T> rect);
+}
+
+internal interface ISinglePartCopy<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
+{
+    public ISinglePartCopy<T> Clone();
+    public new GfxState<T> GraphicsState { get; set; }
+
+    public IContentGroup<T>? CopyAreaByClipping(PdfRect<T> rect)
+    {
+        var cg = (IContentGroup<T>)this;
+        var enc = rect.CheckEnclosure(cg.GetBoundingBox());
+        if (enc == EncloseType.None)
+        {
+            return null;
+        }
+        else if (enc == EncloseType.Full)
+        {
+            return this;
+        }
+
+        var cp = Clone();
+        cp.GraphicsState = GraphicsState.ClipExcept(rect);
+        return cp;
+    }
+
+    public (IContentGroup<T>? Inside, IContentGroup<T>? Outside) SplitByClipping(PdfRect<T> rect)
+    {
+        var cg = (IContentGroup<T>)this;
+        var bb = cg.GetBoundingBox();
+        var enc = rect.CheckEnclosure(bb);
+        if (enc == EncloseType.None)
+        {
+            return (null, this);
+        }
+        else if (enc == EncloseType.Full)
+        {
+            return (this, null);
+        }
+
+        var inside = Clone();
+        inside.GraphicsState = GraphicsState.ClipExcept(rect);
+        var outside = Clone();
+        outside.GraphicsState = GraphicsState.Clip(rect, bb);
+        return (inside, outside);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Writing;
+using System.Numerics;
 
 namespace PdfLexer.DOM;
 
@@ -103,9 +104,14 @@ public sealed class PdfPage
         return s;
     }
 
-    public PageWriter GetWriter(PageWriteMode mode=PageWriteMode.Append)
+    public PageWriter<double> GetWriter(PageWriteMode mode=PageWriteMode.Append)
     {
-        return new PageWriter(this, mode);
+        return new PageWriter<double>(this, mode);
+    }
+
+    public PageWriter<T> GetWriter<T>(PageWriteMode mode = PageWriteMode.Append) where T : struct, IFloatingPoint<T>
+    {
+        return new PageWriter<T>(this, mode);
     }
 
     public TextScanner GetTextScanner(ParsingContext ctx)

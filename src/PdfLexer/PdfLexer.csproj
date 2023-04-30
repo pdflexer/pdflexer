@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks>
+		<!-- <TargetFrameworks>netstandard2.1;net6.0;net7.0</TargetFrameworks> -->
+		<TargetFramework>net7.0</TargetFramework>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/pdflexer/pdflexer</PackageProjectUrl>
 		<Authors>Michael Plaisted</Authors>
@@ -43,6 +44,10 @@
 			<LastGenOutput>DOMGen.cs</LastGenOutput>
 			<Generator>TextTemplatingFileGenerator</Generator>
 		</None>
+		<None Update="Operators\PdfOperatorType.Generic.tt">
+		  <LastGenOutput>PdfOperatorType.Generic.cs</LastGenOutput>
+		  <Generator>TextTemplatingFileGenerator</Generator>
+		</None>
 		<None Update="Operators\PdfOperatorType.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
 			<LastGenOutput>PdfOperatorType.cs</LastGenOutput>
@@ -58,6 +63,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Compile Update="Operators\PdfOperatorType.Generic.cs">
+		  <DependentUpon>PdfOperatorType.Generic.tt</DependentUpon>
+		  <DesignTime>True</DesignTime>
+		  <AutoGen>True</AutoGen>
+		</Compile>
 		<Compile Update="Operators\PdfOperatorType.cs">
 			<DesignTime>True</DesignTime>
 			<AutoGen>True</AutoGen>

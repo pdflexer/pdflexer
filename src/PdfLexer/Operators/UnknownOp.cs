@@ -1,8 +1,14 @@
 ﻿using System.IO;
+using System.Numerics;
 
 namespace PdfLexer.Operators;
 
+#if NET7_0_OR_GREATER
+public class Unkown_Op<T> : IPdfOperation<T> where T : struct, IFloatingPoint<T>
+#else
 public class Unkown_Op : IPdfOperation
+#endif
+
 {
     public PdfOperatorType Type => PdfOperatorType.Unknown;
 

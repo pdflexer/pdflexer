@@ -1,0 +1,330 @@
+﻿using PdfLexer.Fonts;
+using PdfLexer.Writing;
+using System.Numerics;
+
+namespace PdfLexer.Content.Model;
+
+
+/// <summary>
+/// A sequence of write operations beginning with
+/// a set initial line matrix.
+/// 
+/// Can be used to represent paragraphs but when 
+/// parsed from existing pdfs a paragraph will 
+/// likely be broken into multiple TextContent
+/// sections.
+/// </summary>
+internal class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
+{
+    public ContentType Type { get; } = ContentType.Text;
+    public GfxState<T> GraphicsState { get => Segments[0].GraphicsState; }
+    public List<MarkedContent>? Markings { get => Segments[0].Markings; }
+    public bool CompatibilitySection { get => Segments[0].CompatibilitySection; }
+    public required List<TextSegment<T>> Segments { get; set; }
+    public required GfxMatrix<T> LineMatrix { get; set; }
+
+    public void Write(ContentWriter<T> writer)
+    {
+        writer.SetTextAndLinePosition(LineMatrix);
+        var lm = LineMatrix;
+        for (var i = 0; i < Segments.Count; i++)
+        {
+            var group = Segments[i];
+            if (i != 0)
+            {
+                writer.ReconcileCompatibility(group.CompatibilitySection);
+                writer.ReconcileMC(group.Markings);
+                writer.SetGS(group.GraphicsState);
+                if (writer.State != PageState.Text)
+                {
+                    writer.BeginText();
+                }
+                if (lm != writer.GS.Text.TextMatrix) // in case GFX state reset
+                {
+                    writer.TextTransform(lm);
+                }
+            }
+            group.Write(writer);
+            lm = writer.GS.Text.TextMatrix;
+        }
+    }
+
+    public PdfRect<T> GetBoundingBox()
+    {
+        bool triggered = false;
+        T xmin = default;
+        T xmax = default;
+        T ymin = default;
+        T ymax = default;
+
+        foreach (var rect in GetGlyphBoundingBoxes())
+        {
+            if (triggered)
+            {
+                xmin = T.Min(xmin, rect.LLx);
+                ymin = T.Min(ymin, rect.LLy);
+                xmax = T.Max(xmax, rect.URx);
+                ymax = T.Max(ymax, rect.URy);
+            } else
+            {
+                xmin = rect.LLx;
+                ymin = rect.LLy;
+                xmax = rect.URx;
+                ymax = rect.URy;
+            }
+            
+            triggered = true;
+        }
+        if (!triggered)
+        {
+            return new PdfRect<T> { LLx = T.Zero, LLy = T.Zero, URx = T.Zero, URy = T.Zero };
+        }
+        return GraphicsState.CTM.GetTransformedBoundingBox(new PdfRect<T> { LLx = xmin, LLy = ymin, URx = xmax, URy = ymax });
+    }
+
+    public IEnumerable<PdfRect<T>> GetGlyphBoundingBoxes()
+    {
+        var gfx = GraphicsState with { Text = new TxtState<T> { TextLineMatrix = LineMatrix, TextMatrix = LineMatrix } };
+        foreach (var seg in Segments)
+        {
+            gfx = seg.GraphicsState with { Text = gfx.Text };
+            if (seg.NewLine)
+            {
+                T_Star_Op<T>.Value.Apply(ref gfx);
+            }
+            else
+            {
+                gfx.UpdateTRM();
+            }
+            GlyphOrShift<T> prev = default;
+            foreach (var glyph in seg.Glyphs)
+            {
+                if (prev.Glyph != null)
+                {
+                    gfx.ApplyCharShift(prev);
+                }
+                else if (prev.Shift != T.Zero)
+                {
+                    gfx.ApplyTj(prev.Shift);
+                }
+                prev = glyph;
+                if (glyph.Glyph != null)
+                {
+                    yield return gfx.GetGlyphBoundingBox(glyph.Glyph);
+                }
+            }
+        }
+    }
+
+    public TextContent<T>? CopyArea(PdfRect<T> rect) => SplitInternal(rect, true, false).Inside;
+    public (TextContent<T>? Inside, TextContent<T>? Outside) Split(PdfRect<T> rect) => SplitInternal(rect, true, true);
+
+    public (TextContent<T>? Inside, TextContent<T>? Outside) SplitInternal(PdfRect<T> rect, bool trackInside, bool trackOutside)
+    {
+        var gfx = GraphicsState with { Text = new TxtState<T> { TextLineMatrix = LineMatrix, TextMatrix = LineMatrix } };
+
+        var inside = trackInside ? new TextContent<T>
+        {
+            LineMatrix = LineMatrix,
+            Segments = new List<TextSegment<T>> { }
+        } : null;
+        var outside = trackOutside ? new TextContent<T>
+        {
+            LineMatrix = LineMatrix,
+            Segments = new List<TextSegment<T>> { }
+        } : null;
+
+        foreach (var seg in Segments)
+        {
+            gfx = seg.GraphicsState with { Text = gfx.Text };
+            if (seg.NewLine)
+            {
+                T_Star_Op<T>.Value.Apply(ref gfx);
+            }
+            else
+            {
+                gfx.UpdateTRM();
+            }
+
+            var ci = trackInside ? GetInside(seg, gfx.Text) : null;
+
+            var co = trackOutside ? GetOutside(seg, gfx.Text) : null;
+
+            T bbx1 = default;
+            T bbx2 = default;
+            T bby1 = default;
+            T bby2 = default;
+
+            GlyphOrShift<T> prev = default;
+            bool hadInside = false;
+            bool hadOutside = false;
+            T skippedInside = T.Zero;
+            T skippedOutside = T.Zero;
+            foreach (var glyph in seg.Glyphs)
+            {
+                gfx.Apply(prev);
+                prev = glyph;
+                if (glyph.Glyph != null)
+                {
+                    var bb = gfx.GetGlyphBoundingBox(glyph.Glyph);
+                    var info = rect.CheckEnclosure(bb);
+
+                    if (ci != null)
+                    {
+                        if (info == EncloseType.Full || info == EncloseType.Partial)
+                        {
+                            hadInside = true;
+                            if (skippedInside != T.Zero)
+                            {
+                                ci.Glyphs.Add(new GlyphOrShift<T>(-skippedInside));
+                                skippedInside = T.Zero;
+                            }
+                            ci.Glyphs.Add(glyph);
+                        }
+                        else
+                        {
+
+                            skippedInside += FPC<T>.V1000 * 
+                                FPC<T>.Util.FromDouble<T>((double)((gfx.Font?.IsVertical ?? false) ? glyph.Glyph.w1 : glyph.Glyph.w0));
+                            var cw = gfx.CharSpacing;
+                            if (glyph.Glyph.IsWordSpace) { cw += gfx.WordSpacing; }
+                            skippedInside += FPC<T>.V1000 * (cw / gfx.FontSize);
+                        }
+                    }
+
+                    if (co != null)
+                    {
+                        if (info == EncloseType.None || info == EncloseType.Partial)
+                        {
+                            if (!hadOutside)
+                            {
+                                bbx1 = bb.LLx;
+                                bbx2 = bb.URx;
+                                bby1 = bb.LLy;
+                                bby2 = bb.URy;
+                            } else
+                            {
+                                bbx1 = T.Min(bbx1, bb.LLx);
+                                bbx2 = T.Max(bbx2, bb.URx);
+                                bby1 = T.Min(bby1, bb.LLy);
+                                bby2 = T.Max(bby2, bb.URy);
+                            }
+                            hadOutside = true;
+                            if (skippedOutside != T.Zero)
+                            {
+                                co.Glyphs.Add(new GlyphOrShift<T>(-skippedOutside));
+                                skippedOutside = T.Zero;
+                            }
+                            co.Glyphs.Add(glyph);
+                        }
+                        else
+                        {
+                            skippedOutside += FPC<T>.V1000 *
+                                FPC<T>.Util.FromDouble<T>((double)((gfx.Font?.IsVertical ?? false) ? glyph.Glyph.w1 : glyph.Glyph.w0));
+                            var cw = gfx.CharSpacing;
+                            if (glyph.Glyph.IsWordSpace) { cw += gfx.WordSpacing; }
+                            skippedOutside += FPC<T>.V1000 * (cw / gfx.FontSize);
+                        }
+                    }
+
+                }
+                else if (glyph.Shift != T.Zero)
+                {
+                    skippedInside += -glyph.Shift;
+                    skippedOutside += -glyph.Shift;
+                }
+            }
+            if (hadInside)
+            {
+                inside.Segments.Add(ci);
+            }
+            if (hadOutside)
+            {
+                co.GraphicsState = co.GraphicsState.Clip(rect, 
+                    new PdfRect<T> { LLx = bbx1 - T.One, LLy = bby1 - T.One, URx = bbx1 + T.One, URy = bby1 + T.One });
+                outside.Segments.Add(co);
+            }
+        }
+        return (inside?.Segments.Count > 0 ? inside : null, outside?.Segments.Count > 0 ? outside : null);
+
+
+        TextSegment<T> GetInside(TextSegment<T> seg, TxtState<T> current)
+        {
+            var ci = new TextSegment<T>
+            {
+                GraphicsState = seg.GraphicsState with
+                {
+                    Text = new TxtState<T>
+                    {
+                        TextLineMatrix = current.TextMatrix,
+                        TextMatrix = current.TextMatrix
+                    },
+                    Clipping = GraphicsState.Clipping.ClipExcept(rect)
+                },
+                Glyphs = new List<GlyphOrShift<T>> { }
+            };
+            return ci;
+        }
+
+        TextSegment<T> GetOutside(TextSegment<T> seg, TxtState<T> current)
+        {
+            var co = new TextSegment<T>
+            {
+                GraphicsState = seg.GraphicsState with
+                {
+                    Text = new TxtState<T>
+                    {
+                        TextLineMatrix = current.TextMatrix,
+                        TextMatrix = current.TextMatrix
+                    }
+                },
+                Glyphs = new List<GlyphOrShift<T>> { }
+            };
+            return co;
+        }
+    }
+
+
+    IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => CopyArea(rect);
+
+    (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => Split(rect);
+}
+
+
+
+/// <summary>
+/// A sequence of glyphs
+/// </summary>
+internal record class TextSegment<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
+{
+    public ContentType Type { get; } = ContentType.Text;
+    public required GfxState<T> GraphicsState { get; set; }
+    public List<MarkedContent>? Markings { get; set; }
+    public bool CompatibilitySection { get; set; }
+    public required List<GlyphOrShift<T>> Glyphs { get; set; }
+    public bool NewLine { get; set; }
+
+    public void Write(ContentWriter<T> writer)
+    {
+        if (NewLine)
+        {
+            writer.Op(T_Star_Op<T>.Value);
+        }
+        writer.WriteGlyphs(Glyphs);
+    }
+
+    public PdfRect<T> GetBoundingBox()
+    {
+        throw new NotSupportedException();
+    }
+
+    public IContentGroup<T>? CopyArea(PdfRect<T> rect)
+    {
+        throw new NotSupportedException();
+    }
+
+    public (IContentGroup<T>? Inside, IContentGroup<T>? Outside) Split(PdfRect<T> rect)
+    {
+        throw new NotSupportedException();
+    }
+}

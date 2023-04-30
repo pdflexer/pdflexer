@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.Design;
+using System.Numerics;
 using System.Text;
 
 namespace PdfLexer.Content;
@@ -157,7 +158,7 @@ public ref struct PageContentScanner2
         {
             if (Scanner.CurrentOperator == PdfOperatorType.Do && FlattenForms)
             {
-                if (!Scanner.TryGetCurrentOperation(out var op))
+                if (!Scanner.TryGetCurrentOperation<double>(out var op))
                 {
                     Context.Error("Bad do op, skipping");
                     return Advance();
@@ -253,20 +254,24 @@ public ref struct PageContentScanner2
 
     public PdfOperatorType CurrentOperator;
 
-    public IPdfOperation? GetCurrentOperation()
+    public IPdfOperation<T>? GetCurrentOperation<T>() where T : struct, IFloatingPoint<T>
     {
-        TryGetCurrentOperation(out var op);
+        TryGetCurrentOperation<T>(out var op);
         return op;
     }
 
-    public bool TryGetCurrentOperation([NotNullWhen(true)] out IPdfOperation? op)
+    public bool TryGetCurrentOperation([NotNullWhen(true)] out IPdfOperation<double>? op)
     {
         if (State == MultiPageState.CTMForm)
         {
             var mtx = CurrentForm?.Get<PdfArray>(PdfName.Matrix);
             if (mtx == null)
             {
+#if NET7_0_OR_GREATER
+                op = new cm_Op(1, 0, 0, 1, 0, 0);
+#else
                 op = new cm_Op(1m, 0m, 0m, 1m, 0m, 0m);
+#endif
             }
             else
             {
@@ -279,8 +284,38 @@ public ref struct PageContentScanner2
         }
         if (State == MultiPageState.StartForm) { op = q_Op.Value; return true; }
         if (State == MultiPageState.EndForm) { op = Q_Op.Value; return true; }
+        return Scanner.TryGetCurrentOperation<double>(out op);
+    }
+
+#if NET7_0_OR_GREATER
+
+    public bool TryGetCurrentOperation<T>([NotNullWhen(true)] out IPdfOperation<T>? op) where T : struct, IFloatingPoint<T>
+    {
+        if (State == MultiPageState.CTMForm)
+        {
+            var mtx = CurrentForm?.Get<PdfArray>(PdfName.Matrix);
+            if (mtx == null)
+            {
+                op = new cm_Op<T>(T.One, T.Zero, T.Zero, T.One, T.Zero, T.Zero);
+            }
+            else
+            {
+                op = new cm_Op<T>(
+                    FPC<T>.Util.FromPdfNumber<T>(mtx[0].GetAs<PdfNumber>()),
+                    FPC<T>.Util.FromPdfNumber<T>(mtx[1].GetAs<PdfNumber>()),
+                    FPC<T>.Util.FromPdfNumber<T>(mtx[2].GetAs<PdfNumber>()),
+                    FPC<T>.Util.FromPdfNumber<T>(mtx[3].GetAs<PdfNumber>()),
+                    FPC<T>.Util.FromPdfNumber<T>(mtx[4].GetAs<PdfNumber>()),
+                    FPC<T>.Util.FromPdfNumber<T>(mtx[5].GetAs<PdfNumber>())
+                    );
+            }
+            return true;
+        }
+        if (State == MultiPageState.StartForm) { op = q_Op<T>.Value; return true; }
+        if (State == MultiPageState.EndForm) { op = Q_Op<T>.Value; return true; }
         return Scanner.TryGetCurrentOperation(out op);
     }
+#endif
 
     public int GetScannerPosition()
     {

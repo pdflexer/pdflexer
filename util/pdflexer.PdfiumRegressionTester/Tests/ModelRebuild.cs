@@ -31,41 +31,31 @@ internal class ModelRebuild : ITest
     static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
     {
         // TODO -> content model rebuild
-        var parser = new ContentModelParser(doc.Context, page);
+        var parser = new ContentModelParser<double>(doc.Context, page);
         var data = parser.Parse();
         // var test = new PdfRect { LLx = 144, LLy = 684, URx = 160, URy = 700};
-        var test = new PdfRect { LLx = 10, LLy = 10, URx = 160, URy = 500 }.Normalize(page);
-        var split = new List<IContentGroup>();
+        var test = new PdfRect { LLx = 10, LLy = 10, URx = 160, URy = 500 }.NormalizeTo(page);
+        var split = new List<IContentGroup<double>>();
 
 
         var resources = new PdfDictionary();
-        var writer = new ContentWriter(resources);
+        var writer = new ContentWriter<double>(resources);
         writer.Save();
-        writer.LineWidth(0.2m);
+        writer.LineWidth(0.2);
 
         foreach (var item in data) 
         {
-            if (item is TextContent txt)
+            if (item.Type == ContentType.Text || item.Type == ContentType.Image || item.Type == ContentType.Paths)
             {
-                var (i, o) = txt.Split(test);
-                if (o?.Segments.Any() ?? false) 
+                var r = item.CopyArea(test);
+                if (r != null) 
                 { 
-                    split.Add(o);
+                    split.Add(r);
                     // foreach (var rect in i.GetGlyphBoundingBoxes())
                     // {
                     //     writer.Rect(rect).Stroke();
                     // }
                 }
-                if (i?.Segments.Any() ?? false)
-                {
-                    split.Add(i);
-                }
-
-                foreach (var rect in txt.GetGlyphBoundingBoxes())
-                {
-                    // writer.Rect(rect).Stroke();
-                }
-                // split.Add(item);
 
             } else
             {
@@ -86,9 +76,9 @@ internal class ModelRebuild : ITest
         // });
         writer.Restore();
 
-        ContentModelWriter.WriteContent(writer, split);
+        ContentModelWriter<double>.WriteContent(writer, split);
 
-        writer.LineWidth(2m)
+        writer.LineWidth(0.1)
               .Rect(test)
               .Stroke();
 

@@ -1,27 +1,39 @@
 ﻿using PdfLexer.Writing;
+using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
-internal class FormContent : IContentGroup
+internal class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Form;
-    public required GfxState GraphicsState { get; set; }
+    public required GfxState<T> GraphicsState { get; set; }
     public required PdfStream Stream { get; set; }
     public List<MarkedContent>? Markings { get; set; }
     public bool CompatibilitySection { get; set; }
 
-    public void Write(ContentWriter writer)
+    public void Write(ContentWriter<T> writer)
     {
         writer.Form(Stream);
     }
 
-    public List<IContentGroup> Parse(PdfDictionary parentPage)
+    public List<IContentGroup<T>> Parse(PdfDictionary parentPage)
     {
-        var parser = new ContentModelParser(ParsingContext.Current, parentPage, Stream, GraphicsState);
+        var parser = new ContentModelParser<T>(ParsingContext.Current, parentPage, Stream, GraphicsState);
         return parser.Parse();
     }
 
 
     // not able to accurately get bounding box for form
     // without fully processing it
+
+
+    IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect)
+    {
+        throw new NotImplementedException();
+    }
+
+    (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -4,19 +4,38 @@ using System.Buffers.Text;
 using System;
 using System.Numerics;
 using PdfLexer.Content;
+using System.Drawing;
 
 namespace PdfLexer.Writing;
 
-public partial class ContentWriter
+#if NET7_0_OR_GREATER
+public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
+#else
+    public partial class ContentWriter
+#endif
 {
-    public ContentWriter Font(IWritableFont font, decimal size)
+
+
+#if NET7_0_OR_GREATER
+    public ContentWriter<T> Font(IWritableFont font, T size)
     {
         var nm = AddFont(font);
         writableFont = font;
-        Tf_Op.WriteLn(nm, (decimal)size, StreamWriter.Stream);
-        GfxState = GfxState with { FontSize = (decimal)size }; // font handled already
+        Tf_Op<T>.WriteLn(nm, size, Writer.Stream);
+        GfxState = GfxState with { FontSize = size }; // font handled already
         return this;
     }
+#else
+    public ContentWriter Font(IWritableFont font, double size)
+    {
+        var nm = AddFont(font);
+        writableFont = font;
+        Tf_Op.WriteLn(nm, size, Writer.Stream);
+        GfxState = GfxState with { FontSize = size }; // font handled already
+        return this;
+    }
+#endif
+
 
     public enum Base14
     {
@@ -38,7 +57,11 @@ public partial class ContentWriter
 
     private Dictionary<Base14, IWritableFont> used = new();
 
-    public ContentWriter Font(Base14 font, decimal size)
+#if NET7_0_OR_GREATER
+    public ContentWriter<T> Font(Base14 font, T size)
+#else
+ public ContentWriter Font(Base14 font, double size)
+#endif
     {
         if (!used.TryGetValue(font, out var wf))
         {
@@ -60,75 +83,110 @@ public partial class ContentWriter
                 Base14.ZapfDingbats => Standard14Font.GetZapfDingbats(),
                 _ => throw new PdfLexerException("Base14 not implemented: " + font.ToString())
             };
-            used[font] = wf;
+used[font] = wf;
         }
         return Font(wf, size);
     }
 
+
+#if NET7_0_OR_GREATER
+    public ContentWriter<T> Text(string text)
+#else
     public ContentWriter Text(string text)
+#endif
     {
         if (writableFont == null) { throw new NotSupportedException("Must set current font before writing."); }
         // very inefficient just experimenting
         var b = new byte[2];
         Span<byte> buf = new byte[text.Length];
         int os = 0;
-        StreamWriter.Stream.WriteByte((byte)'[');
+        Writer.Stream.WriteByte((byte)'[');
         foreach (var c in writableFont.ConvertFromUnicode(text, 0, text.Length, b))
         {
             if (c.PrevKern != 0)
             {
-                StringSerializer.WriteToStream(buf.Slice(0, os), StreamWriter.Stream);
-                PdfOperator.Writedecimal((decimal)c.PrevKern, StreamWriter.Stream);
+                StringSerializer.WriteToStream(buf.Slice(0, os), Writer.Stream);
+                PdfOperator.Writedecimal((decimal)c.PrevKern, Writer.Stream);
                 os = 0;
             }
             buf[os++] = b[0];
         }
-        StringSerializer.WriteToStream(buf.Slice(0, os), StreamWriter.Stream);
-        StreamWriter.Stream.WriteByte((byte)']');
-        StreamWriter.Stream.WriteByte((byte)' ');
-        StreamWriter.Stream.Write(TJ_Op.OpData);
-        StreamWriter.Stream.WriteByte((byte)'\n');
+        StringSerializer.WriteToStream(buf.Slice(0, os), Writer.Stream);
+        Writer.Stream.WriteByte((byte)']');
+        Writer.Stream.WriteByte((byte)' ');
+        Writer.Stream.Write(TJ_Op.OpData);
+        Writer.Stream.WriteByte((byte)'\n');
 
         return this;
     }
 
-    public ContentWriter TextMove(decimal x, decimal y)
+#if NET7_0_OR_GREATER
+    public ContentWriter<T> TextMove(T x, T y)
     {
         EnsureInTextState();
-        Td_Op.WriteLn(x, y, StreamWriter.Stream);
+        Td_Op<T>.WriteLn(x, y, Writer.Stream);
+        Td_Op<T>.Apply(ref GfxState, x, y);
+        return this;
+    }
+#else
+    public ContentWriter TextMove(double x, double y)
+    {
+        EnsureInTextState();
+        Td_Op.WriteLn(x, y, Writer.Stream);
         Td_Op.Apply(ref GfxState, x, y);
         return this;
     }
+#endif
 
-    public ContentWriter TextTransform(GfxMatrix tm)
+#if NET7_0_OR_GREATER
+    public ContentWriter<T> TextTransform(GfxMatrix<T> tm)
     {
         EnsureInTextState();
-        Tm_Op.WriteLn(tm, StreamWriter.Stream);
+        Tm_Op<T>.WriteLn(tm, Writer.Stream);
         GfxState.Text.TextLineMatrix = tm;
         GfxState.Text.TextMatrix = tm;
         GfxState.UpdateTRM();
         return this;
     }
+#endif
 
 
+
+#if NET7_0_OR_GREATER
+    public ContentWriter<T> EndText()
+#else
     public ContentWriter EndText()
+#endif
     {
         State = PageState.Page;
-        ET_Op.WriteLn(StreamWriter.Stream);
+        ET_Op.WriteLn(Writer.Stream);
         return this;
     }
 
+#if NET7_0_OR_GREATER
+    public ContentWriter<T> BeginText()
+    {
+        State = PageState.Text;
+        BT_Op.WriteLn(Writer.Stream);
+        GfxState.Text.TextLineMatrix = GfxMatrix<T>.Identity;
+        GfxState.Text.TextMatrix = GfxMatrix<T>.Identity;
+        GfxState.UpdateTRM();
+        return this;
+    }
+#else
     public ContentWriter BeginText()
     {
         State = PageState.Text;
-        BT_Op.WriteLn(StreamWriter.Stream);
+        BT_Op.WriteLn(Writer.Stream);
         GfxState.Text.TextLineMatrix = GfxMatrix.Identity;
         GfxState.Text.TextMatrix = GfxMatrix.Identity;
         GfxState.UpdateTRM();
         return this;
     }
+#endif
 
-    internal ContentWriter SetTextAndLinePosition(GfxMatrix lm)
+#if NET7_0_OR_GREATER
+    internal ContentWriter<T> SetTextAndLinePosition(GfxMatrix<T> lm)
     {
         EnsureInTextState();
         if (GS.Text.TextLineMatrix != lm)
@@ -142,13 +200,13 @@ public partial class ContentWriter
             {
                 // E = (C * F - E * D) * invDet,
                 // F = (E * B - A * F) * invDet
-                if (xform.E == 0 && Math.Round(xform.F + GS.TextLeading, 6) == 0)
+                if (xform.E == T.Zero && T.Round(xform.F + GS.TextLeading, 6) == T.Zero)
                 {
-                    Op(T_Star_Op.Value);
+                    Op(T_Star_Op<T>.Value);
                 }
                 else
                 {
-                    TextMove(Math.Round(xform.E, 6), Math.Round(xform.F, 6));
+                    TextMove(T.Round(xform.E, 6), T.Round(xform.F, 6));
                 }
             } else
             {
@@ -162,20 +220,20 @@ public partial class ContentWriter
         return this;
     }
 
-    internal void WriteGlyphs(List<GlyphOrShift> glyphs)
+    internal void WriteGlyphs(List<GlyphOrShift<T>> glyphs)
     {
         EnsureInTextState();
         Span<byte> buffer = stackalloc byte[4];
         Span<byte> output = stackalloc byte[16];
-        var str = StreamWriter.Stream;
+        var str = Writer.Stream;
 
-        if (glyphs.Any(x => x.Shift != 0))
+        if (glyphs.Any(x => x.Shift != T.Zero))
         {
             bool inString = false;
             str.WriteByte((byte)'[');
             foreach (var item in glyphs)
             {
-                if (item.Shift != 0)
+                if (item.Shift != T.Zero)
                 {
                     if (inString)
                     {
@@ -183,11 +241,7 @@ public partial class ContentWriter
                         str.WriteByte((byte)' ');
                         inString = false;
                     }
-                    if (Utf8Formatter.TryFormat(item.Shift, output, out int cnt))
-                    {
-                        str.Write(output.Slice(0, cnt));
-                        // str.WriteByte((byte)' ');
-                    }
+                    FPC<T>.Util.Write(item.Shift, str);
                     GfxState.ApplyShift(item);
                 }
                 else
@@ -225,7 +279,7 @@ public partial class ContentWriter
             str.WriteByte((byte)'\n');
         }
 
-        static void WriteGlyph(GlyphOrShift item, Span<byte> buffer, Span<byte> output, Stream str)
+        static void WriteGlyph(GlyphOrShift<T> item, Span<byte> buffer, Span<byte> output, Stream str)
         {
             var cp = item.Glyph?.CodePoint ?? 0;
             buffer[0] = (byte)((cp >> 24) & 0xFF);
@@ -238,6 +292,8 @@ public partial class ContentWriter
             str.Write(output.Slice(0, i));
         }
     }
+
+#endif
 
     private void EnsureInTextState()
     {

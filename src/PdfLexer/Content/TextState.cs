@@ -78,7 +78,7 @@ public class TextState
         int u = 0;
         while (i < data.Length && (u = GetGlyph(data, i, out var glyph)) > 0)
         {
-            glyphs.Add(new GlyphOrShift(glyph, 0m, u));
+            glyphs.Add(new GlyphOrShift(glyph, 0, u));
             i += u;
         }
     }
@@ -268,7 +268,7 @@ public class TextState
     {
         foreach (var item in op.info)
         {
-            if (item.Shift != 0m)
+            if (item.Shift != 0)
             {
                 ApplyTj((float)item.Shift);
             }
