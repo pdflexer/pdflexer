@@ -250,11 +250,10 @@ internal class TestRunner
     {
         if (doc.Pages.Count <= pg) { return; }
         var scanner = new PageContentScanner(doc.Context, doc.Pages[pg]);
-        while (scanner.Peek() != PdfOperatorType.EOC)
+        while (scanner.Advance())
         {
             output.Write(scanner.GetCurrentData());
             output.WriteByte((byte)'\n');
-            scanner.SkipCurrent();
         }
     }
 

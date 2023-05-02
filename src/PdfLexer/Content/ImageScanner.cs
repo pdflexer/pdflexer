@@ -6,27 +6,27 @@ public ref struct ImageScanner
 {
     private readonly ParsingContext Context;
     private readonly PdfDictionary Page;
-    private PageContentScanner2 Scanner;
+    private PageContentScanner Scanner;
 
-    public GraphicsState GraphicsState;
+    public GfxState<double> GraphicsState;
 
 
     public ImageScanner(ParsingContext ctx, PdfDictionary page)
     {
         Context = ctx;
-        Scanner = new PageContentScanner2(ctx, page, true);
-        GraphicsState = new GraphicsState();
+        Scanner = new PageContentScanner(ctx, page, true);
+        GraphicsState = new GfxState<double>();
         Page = page;
         lastDoImg = null;
     }
 
-    public (float x, float y, float w, float h) GetCurrentSize()
+    public PdfRect<double> GetCurrentSize()
     {
         if (Scanner.CurrentOperator == PdfOperatorType.BI || Scanner.CurrentOperator == PdfOperatorType.Do)
         {
-            return GraphicsState.GetCurrentSize();
+            return GraphicsState.CTM.GetCurrentSize();
         }
-        return (0, 0, 0, 0);
+        return new PdfRect<double> { LLx = 0, LLy = 0, URx = 0, URy = 0 };
     }
 
     public bool Advance()
@@ -146,13 +146,13 @@ public ref struct ImageScanner
 
     private PdfImage GetImage(PdfStream stream)
     {
-        var (x, y, w, h) = GetCurrentSize();
+        var rect = GetCurrentSize();
         return new PdfImage
         {
-            X = x,
-            Y = y,
-            W = w,
-            H = h,
+            X = rect.LLx,
+            Y = rect.LLy,
+            W = rect.URx - rect.LLx,
+            H = rect.URy - rect.LLy,
             XObj = stream
         };
     }
@@ -160,10 +160,10 @@ public ref struct ImageScanner
 
 public sealed class PdfImage
 {
-    public float X { get; set; }
-    public float Y { get; set; }
-    public float W { get; set; }
-    public float H { get; set; }
+    public double X { get; set; }
+    public double Y { get; set; }
+    public double W { get; set; }
+    public double H { get; set; }
     public XObjImage XObj { get; set; } = null!;
 
     // TODO need to pass through access default colorspaces if 

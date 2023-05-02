@@ -375,8 +375,6 @@ public class ParsingContext : IDisposable
         return xref.Source.GetDataAsStream(this, xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
     }
 
-
-#if NET7_0_OR_GREATER
     internal void FillGlyphsFromRawString<T>(GfxState<T> state, ReadOnlySpan<byte> data, List<GlyphOrShift<T>> glyphs) where T : struct, IFloatingPoint<T>
     {
         if (data.Length < 200)
@@ -415,7 +413,6 @@ public class ParsingContext : IDisposable
         }
         return state.Font.GetGlyph(data, pos, out info);
     }
-#endif
 
     internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data)
     {

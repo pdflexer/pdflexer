@@ -819,13 +819,13 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'c' };
         public PdfOperatorType Type => PdfOperatorType.c;
-        public decimal x1 { get; }
-        public decimal y1 { get; }
-        public decimal x2 { get; }
-        public decimal y2 { get; }
-        public decimal x3 { get; }
-        public decimal y3 { get; }
-        public c_Op(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3)
+        public double x1 { get; }
+        public double y1 { get; }
+        public double x2 { get; }
+        public double y2 { get; }
+        public double x3 { get; }
+        public double y3 { get; }
+        public c_Op(double x1, double y1, double x2, double y2, double x3, double y3)
         {
             this.x1 = x1;
             this.y1 = y1;
@@ -837,45 +837,45 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(x1, stream);
+            PdfOperator.Writedouble(x1, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y1, stream);
+            PdfOperator.Writedouble(y1, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(x2, stream);
+            PdfOperator.Writedouble(x2, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y2, stream);
+            PdfOperator.Writedouble(y2, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(x3, stream);
+            PdfOperator.Writedouble(x3, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y3, stream);
+            PdfOperator.Writedouble(y3, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3, Stream stream) 
+        public static void WriteLn(double x1, double y1, double x2, double y2, double x3, double y3, Stream stream) 
         {
             Write(x1, y1, x2, y2, x3, y3, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3, Stream stream) 
+        public static void Write(double x1, double y1, double x2, double y2, double x3, double y3, Stream stream) 
         {
-            PdfOperator.Writedecimal(x1, stream);
+            PdfOperator.Writedouble(x1, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y1, stream);
+            PdfOperator.Writedouble(y1, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(x2, stream);
+            PdfOperator.Writedouble(x2, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y2, stream);
+            PdfOperator.Writedouble(y2, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(x3, stream);
+            PdfOperator.Writedouble(x3, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y3, stream);
+            PdfOperator.Writedouble(y3, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double", "double", "double", "double"  };
 
         public static c_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -888,12 +888,12 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
-            var a3 = PdfOperator.ParseDecimal(ctx, data, operands[3]);
-            var a4 = PdfOperator.ParseDecimal(ctx, data, operands[4]);
-            var a5 = PdfOperator.ParseDecimal(ctx, data, operands[5]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
+            var a3 = PdfOperator.Parsedouble(ctx, data, operands[3]);
+            var a4 = PdfOperator.Parsedouble(ctx, data, operands[4]);
+            var a5 = PdfOperator.Parsedouble(ctx, data, operands[5]);
     
             return new c_Op(a0, a1, a2, a3, a4, a5);
         }
@@ -906,13 +906,13 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'c', (byte) 'm' };
         public PdfOperatorType Type => PdfOperatorType.cm;
-        public decimal a { get; }
-        public decimal b { get; }
-        public decimal c { get; }
-        public decimal d { get; }
-        public decimal e { get; }
-        public decimal f { get; }
-        public cm_Op(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f)
+        public double a { get; }
+        public double b { get; }
+        public double c { get; }
+        public double d { get; }
+        public double e { get; }
+        public double f { get; }
+        public cm_Op(double a, double b, double c, double d, double e, double f)
         {
             this.a = a;
             this.b = b;
@@ -924,45 +924,45 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(a, stream);
+            PdfOperator.Writedouble(a, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(b, stream);
+            PdfOperator.Writedouble(b, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(c, stream);
+            PdfOperator.Writedouble(c, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(d, stream);
+            PdfOperator.Writedouble(d, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(e, stream);
+            PdfOperator.Writedouble(e, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(f, stream);
+            PdfOperator.Writedouble(f, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f, Stream stream) 
+        public static void WriteLn(double a, double b, double c, double d, double e, double f, Stream stream) 
         {
             Write(a, b, c, d, e, f, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f, Stream stream) 
+        public static void Write(double a, double b, double c, double d, double e, double f, Stream stream) 
         {
-            PdfOperator.Writedecimal(a, stream);
+            PdfOperator.Writedouble(a, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(b, stream);
+            PdfOperator.Writedouble(b, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(c, stream);
+            PdfOperator.Writedouble(c, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(d, stream);
+            PdfOperator.Writedouble(d, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(e, stream);
+            PdfOperator.Writedouble(e, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(f, stream);
+            PdfOperator.Writedouble(f, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double", "double", "double", "double"  };
 
         public static cm_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -975,12 +975,12 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
-            var a3 = PdfOperator.ParseDecimal(ctx, data, operands[3]);
-            var a4 = PdfOperator.ParseDecimal(ctx, data, operands[4]);
-            var a5 = PdfOperator.ParseDecimal(ctx, data, operands[5]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
+            var a3 = PdfOperator.Parsedouble(ctx, data, operands[3]);
+            var a4 = PdfOperator.Parsedouble(ctx, data, operands[4]);
+            var a5 = PdfOperator.Parsedouble(ctx, data, operands[5]);
     
             return new cm_Op(a0, a1, a2, a3, a4, a5);
         }
@@ -1098,8 +1098,8 @@ namespace PdfLexer.Operators
         public static byte[] OpData { get; } = new byte[] { (byte) 'd' };
         public PdfOperatorType Type => PdfOperatorType.d;
         public PdfArray dashArray { get; }
-        public decimal dashPhase { get; }
-        public d_Op(PdfArray dashArray, decimal dashPhase)
+        public double dashPhase { get; }
+        public d_Op(PdfArray dashArray, double dashPhase)
         {
             this.dashArray = dashArray;
             this.dashPhase = dashPhase;
@@ -1113,9 +1113,9 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'd', (byte) '0' };
         public PdfOperatorType Type => PdfOperatorType.d0;
-        public decimal wx { get; }
-        public decimal wy { get; }
-        public d0_Op(decimal wx, decimal wy)
+        public double wx { get; }
+        public double wy { get; }
+        public d0_Op(double wx, double wy)
         {
             this.wx = wx;
             this.wy = wy;
@@ -1123,29 +1123,29 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(wx, stream);
+            PdfOperator.Writedouble(wx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(wy, stream);
+            PdfOperator.Writedouble(wy, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal wx, decimal wy, Stream stream) 
+        public static void WriteLn(double wx, double wy, Stream stream) 
         {
             Write(wx, wy, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal wx, decimal wy, Stream stream) 
+        public static void Write(double wx, double wy, Stream stream) 
         {
-            PdfOperator.Writedecimal(wx, stream);
+            PdfOperator.Writedouble(wx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(wy, stream);
+            PdfOperator.Writedouble(wy, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double"  };
 
         public static d0_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1158,8 +1158,8 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
     
             return new d0_Op(a0, a1);
         }
@@ -1172,13 +1172,13 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'd', (byte) '1' };
         public PdfOperatorType Type => PdfOperatorType.d1;
-        public decimal wx { get; }
-        public decimal wy { get; }
-        public decimal llx { get; }
-        public decimal lly { get; }
-        public decimal urx { get; }
-        public decimal ury { get; }
-        public d1_Op(decimal wx, decimal wy, decimal llx, decimal lly, decimal urx, decimal ury)
+        public double wx { get; }
+        public double wy { get; }
+        public double llx { get; }
+        public double lly { get; }
+        public double urx { get; }
+        public double ury { get; }
+        public d1_Op(double wx, double wy, double llx, double lly, double urx, double ury)
         {
             this.wx = wx;
             this.wy = wy;
@@ -1190,45 +1190,45 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(wx, stream);
+            PdfOperator.Writedouble(wx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(wy, stream);
+            PdfOperator.Writedouble(wy, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(llx, stream);
+            PdfOperator.Writedouble(llx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(lly, stream);
+            PdfOperator.Writedouble(lly, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(urx, stream);
+            PdfOperator.Writedouble(urx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(ury, stream);
+            PdfOperator.Writedouble(ury, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal wx, decimal wy, decimal llx, decimal lly, decimal urx, decimal ury, Stream stream) 
+        public static void WriteLn(double wx, double wy, double llx, double lly, double urx, double ury, Stream stream) 
         {
             Write(wx, wy, llx, lly, urx, ury, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal wx, decimal wy, decimal llx, decimal lly, decimal urx, decimal ury, Stream stream) 
+        public static void Write(double wx, double wy, double llx, double lly, double urx, double ury, Stream stream) 
         {
-            PdfOperator.Writedecimal(wx, stream);
+            PdfOperator.Writedouble(wx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(wy, stream);
+            PdfOperator.Writedouble(wy, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(llx, stream);
+            PdfOperator.Writedouble(llx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(lly, stream);
+            PdfOperator.Writedouble(lly, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(urx, stream);
+            PdfOperator.Writedouble(urx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(ury, stream);
+            PdfOperator.Writedouble(ury, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double", "double", "double", "double"  };
 
         public static d1_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1241,12 +1241,12 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
-            var a3 = PdfOperator.ParseDecimal(ctx, data, operands[3]);
-            var a4 = PdfOperator.ParseDecimal(ctx, data, operands[4]);
-            var a5 = PdfOperator.ParseDecimal(ctx, data, operands[5]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
+            var a3 = PdfOperator.Parsedouble(ctx, data, operands[3]);
+            var a4 = PdfOperator.Parsedouble(ctx, data, operands[4]);
+            var a5 = PdfOperator.Parsedouble(ctx, data, operands[5]);
     
             return new d1_Op(a0, a1, a2, a3, a4, a5);
         }
@@ -1558,33 +1558,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'G' };
         public PdfOperatorType Type => PdfOperatorType.G;
-        public decimal gray { get; }
-        public G_Op(decimal gray)
+        public double gray { get; }
+        public G_Op(double gray)
         {
             this.gray = gray;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(gray, stream);
+            PdfOperator.Writedouble(gray, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal gray, Stream stream) 
+        public static void WriteLn(double gray, Stream stream) 
         {
             Write(gray, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal gray, Stream stream) 
+        public static void Write(double gray, Stream stream) 
         {
-            PdfOperator.Writedecimal(gray, stream);
+            PdfOperator.Writedouble(gray, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static G_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1597,7 +1597,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new G_Op(a0);
         }
@@ -1610,33 +1610,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'g' };
         public PdfOperatorType Type => PdfOperatorType.g;
-        public decimal gray { get; }
-        public g_Op(decimal gray)
+        public double gray { get; }
+        public g_Op(double gray)
         {
             this.gray = gray;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(gray, stream);
+            PdfOperator.Writedouble(gray, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal gray, Stream stream) 
+        public static void WriteLn(double gray, Stream stream) 
         {
             Write(gray, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal gray, Stream stream) 
+        public static void Write(double gray, Stream stream) 
         {
-            PdfOperator.Writedecimal(gray, stream);
+            PdfOperator.Writedouble(gray, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static g_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1649,7 +1649,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new g_Op(a0);
         }
@@ -1747,33 +1747,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'i' };
         public PdfOperatorType Type => PdfOperatorType.i;
-        public decimal flatness { get; }
-        public i_Op(decimal flatness)
+        public double flatness { get; }
+        public i_Op(double flatness)
         {
             this.flatness = flatness;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(flatness, stream);
+            PdfOperator.Writedouble(flatness, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal flatness, Stream stream) 
+        public static void WriteLn(double flatness, Stream stream) 
         {
             Write(flatness, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal flatness, Stream stream) 
+        public static void Write(double flatness, Stream stream) 
         {
-            PdfOperator.Writedecimal(flatness, stream);
+            PdfOperator.Writedouble(flatness, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static i_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1786,7 +1786,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new i_Op(a0);
         }
@@ -1936,11 +1936,11 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'K' };
         public PdfOperatorType Type => PdfOperatorType.K;
-        public decimal c { get; }
-        public decimal m { get; }
-        public decimal y { get; }
-        public decimal k { get; }
-        public K_Op(decimal c, decimal m, decimal y, decimal k)
+        public double c { get; }
+        public double m { get; }
+        public double y { get; }
+        public double k { get; }
+        public K_Op(double c, double m, double y, double k)
         {
             this.c = c;
             this.m = m;
@@ -1950,37 +1950,37 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(c, stream);
+            PdfOperator.Writedouble(c, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(m, stream);
+            PdfOperator.Writedouble(m, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(k, stream);
+            PdfOperator.Writedouble(k, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal c, decimal m, decimal y, decimal k, Stream stream) 
+        public static void WriteLn(double c, double m, double y, double k, Stream stream) 
         {
             Write(c, m, y, k, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal c, decimal m, decimal y, decimal k, Stream stream) 
+        public static void Write(double c, double m, double y, double k, Stream stream) 
         {
-            PdfOperator.Writedecimal(c, stream);
+            PdfOperator.Writedouble(c, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(m, stream);
+            PdfOperator.Writedouble(m, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(k, stream);
+            PdfOperator.Writedouble(k, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double", "double"  };
 
         public static K_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -1993,10 +1993,10 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
-            var a3 = PdfOperator.ParseDecimal(ctx, data, operands[3]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
+            var a3 = PdfOperator.Parsedouble(ctx, data, operands[3]);
     
             return new K_Op(a0, a1, a2, a3);
         }
@@ -2009,11 +2009,11 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'k' };
         public PdfOperatorType Type => PdfOperatorType.k;
-        public decimal c { get; }
-        public decimal m { get; }
-        public decimal y { get; }
-        public decimal k { get; }
-        public k_Op(decimal c, decimal m, decimal y, decimal k)
+        public double c { get; }
+        public double m { get; }
+        public double y { get; }
+        public double k { get; }
+        public k_Op(double c, double m, double y, double k)
         {
             this.c = c;
             this.m = m;
@@ -2023,37 +2023,37 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(c, stream);
+            PdfOperator.Writedouble(c, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(m, stream);
+            PdfOperator.Writedouble(m, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(k, stream);
+            PdfOperator.Writedouble(k, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal c, decimal m, decimal y, decimal k, Stream stream) 
+        public static void WriteLn(double c, double m, double y, double k, Stream stream) 
         {
             Write(c, m, y, k, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal c, decimal m, decimal y, decimal k, Stream stream) 
+        public static void Write(double c, double m, double y, double k, Stream stream) 
         {
-            PdfOperator.Writedecimal(c, stream);
+            PdfOperator.Writedouble(c, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(m, stream);
+            PdfOperator.Writedouble(m, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(k, stream);
+            PdfOperator.Writedouble(k, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double", "double"  };
 
         public static k_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2066,10 +2066,10 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
-            var a3 = PdfOperator.ParseDecimal(ctx, data, operands[3]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
+            var a3 = PdfOperator.Parsedouble(ctx, data, operands[3]);
     
             return new k_Op(a0, a1, a2, a3);
         }
@@ -2082,9 +2082,9 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'l' };
         public PdfOperatorType Type => PdfOperatorType.l;
-        public decimal x { get; }
-        public decimal y { get; }
-        public l_Op(decimal x, decimal y)
+        public double x { get; }
+        public double y { get; }
+        public l_Op(double x, double y)
         {
             this.x = x;
             this.y = y;
@@ -2092,29 +2092,29 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(x, stream);
+            PdfOperator.Writedouble(x, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal x, decimal y, Stream stream) 
+        public static void WriteLn(double x, double y, Stream stream) 
         {
             Write(x, y, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal x, decimal y, Stream stream) 
+        public static void Write(double x, double y, Stream stream) 
         {
-            PdfOperator.Writedecimal(x, stream);
+            PdfOperator.Writedouble(x, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double"  };
 
         public static l_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2127,8 +2127,8 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
     
             return new l_Op(a0, a1);
         }
@@ -2141,9 +2141,9 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'm' };
         public PdfOperatorType Type => PdfOperatorType.m;
-        public decimal x { get; }
-        public decimal y { get; }
-        public m_Op(decimal x, decimal y)
+        public double x { get; }
+        public double y { get; }
+        public m_Op(double x, double y)
         {
             this.x = x;
             this.y = y;
@@ -2151,29 +2151,29 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(x, stream);
+            PdfOperator.Writedouble(x, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal x, decimal y, Stream stream) 
+        public static void WriteLn(double x, double y, Stream stream) 
         {
             Write(x, y, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal x, decimal y, Stream stream) 
+        public static void Write(double x, double y, Stream stream) 
         {
-            PdfOperator.Writedecimal(x, stream);
+            PdfOperator.Writedouble(x, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double"  };
 
         public static m_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2186,8 +2186,8 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
     
             return new m_Op(a0, a1);
         }
@@ -2200,33 +2200,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'M' };
         public PdfOperatorType Type => PdfOperatorType.M;
-        public decimal miterLimit { get; }
-        public M_Op(decimal miterLimit)
+        public double miterLimit { get; }
+        public M_Op(double miterLimit)
         {
             this.miterLimit = miterLimit;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(miterLimit, stream);
+            PdfOperator.Writedouble(miterLimit, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal miterLimit, Stream stream) 
+        public static void WriteLn(double miterLimit, Stream stream) 
         {
             Write(miterLimit, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal miterLimit, Stream stream) 
+        public static void Write(double miterLimit, Stream stream) 
         {
-            PdfOperator.Writedecimal(miterLimit, stream);
+            PdfOperator.Writedouble(miterLimit, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static M_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2239,7 +2239,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new M_Op(a0);
         }
@@ -2403,11 +2403,11 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'r', (byte) 'e' };
         public PdfOperatorType Type => PdfOperatorType.re;
-        public decimal x { get; }
-        public decimal y { get; }
-        public decimal width { get; }
-        public decimal height { get; }
-        public re_Op(decimal x, decimal y, decimal width, decimal height)
+        public double x { get; }
+        public double y { get; }
+        public double width { get; }
+        public double height { get; }
+        public re_Op(double x, double y, double width, double height)
         {
             this.x = x;
             this.y = y;
@@ -2417,37 +2417,37 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(x, stream);
+            PdfOperator.Writedouble(x, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(width, stream);
+            PdfOperator.Writedouble(width, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(height, stream);
+            PdfOperator.Writedouble(height, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal x, decimal y, decimal width, decimal height, Stream stream) 
+        public static void WriteLn(double x, double y, double width, double height, Stream stream) 
         {
             Write(x, y, width, height, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal x, decimal y, decimal width, decimal height, Stream stream) 
+        public static void Write(double x, double y, double width, double height, Stream stream) 
         {
-            PdfOperator.Writedecimal(x, stream);
+            PdfOperator.Writedouble(x, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y, stream);
+            PdfOperator.Writedouble(y, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(width, stream);
+            PdfOperator.Writedouble(width, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(height, stream);
+            PdfOperator.Writedouble(height, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double", "double"  };
 
         public static re_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2460,10 +2460,10 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
-            var a3 = PdfOperator.ParseDecimal(ctx, data, operands[3]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
+            var a3 = PdfOperator.Parsedouble(ctx, data, operands[3]);
     
             return new re_Op(a0, a1, a2, a3);
         }
@@ -2476,10 +2476,10 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'R', (byte) 'G' };
         public PdfOperatorType Type => PdfOperatorType.RG;
-        public decimal r { get; }
-        public decimal g { get; }
-        public decimal b { get; }
-        public RG_Op(decimal r, decimal g, decimal b)
+        public double r { get; }
+        public double g { get; }
+        public double b { get; }
+        public RG_Op(double r, double g, double b)
         {
             this.r = r;
             this.g = g;
@@ -2488,33 +2488,33 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(r, stream);
+            PdfOperator.Writedouble(r, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(g, stream);
+            PdfOperator.Writedouble(g, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(b, stream);
+            PdfOperator.Writedouble(b, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal r, decimal g, decimal b, Stream stream) 
+        public static void WriteLn(double r, double g, double b, Stream stream) 
         {
             Write(r, g, b, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal r, decimal g, decimal b, Stream stream) 
+        public static void Write(double r, double g, double b, Stream stream) 
         {
-            PdfOperator.Writedecimal(r, stream);
+            PdfOperator.Writedouble(r, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(g, stream);
+            PdfOperator.Writedouble(g, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(b, stream);
+            PdfOperator.Writedouble(b, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double"  };
 
         public static RG_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2527,9 +2527,9 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
     
             return new RG_Op(a0, a1, a2);
         }
@@ -2542,10 +2542,10 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'r', (byte) 'g' };
         public PdfOperatorType Type => PdfOperatorType.rg;
-        public decimal r { get; }
-        public decimal g { get; }
-        public decimal b { get; }
-        public rg_Op(decimal r, decimal g, decimal b)
+        public double r { get; }
+        public double g { get; }
+        public double b { get; }
+        public rg_Op(double r, double g, double b)
         {
             this.r = r;
             this.g = g;
@@ -2554,33 +2554,33 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(r, stream);
+            PdfOperator.Writedouble(r, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(g, stream);
+            PdfOperator.Writedouble(g, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(b, stream);
+            PdfOperator.Writedouble(b, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal r, decimal g, decimal b, Stream stream) 
+        public static void WriteLn(double r, double g, double b, Stream stream) 
         {
             Write(r, g, b, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal r, decimal g, decimal b, Stream stream) 
+        public static void Write(double r, double g, double b, Stream stream) 
         {
-            PdfOperator.Writedecimal(r, stream);
+            PdfOperator.Writedouble(r, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(g, stream);
+            PdfOperator.Writedouble(g, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(b, stream);
+            PdfOperator.Writedouble(b, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double"  };
 
         public static rg_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2593,9 +2593,9 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
     
             return new rg_Op(a0, a1, a2);
         }
@@ -2726,8 +2726,8 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'S', (byte) 'C' };
         public PdfOperatorType Type => PdfOperatorType.SC;
-        public List<decimal> colorInfo { get; }
-        public SC_Op(List<decimal> colorInfo)
+        public List<double> colorInfo { get; }
+        public SC_Op(List<double> colorInfo)
         {
             this.colorInfo = colorInfo;
         }
@@ -2740,8 +2740,8 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 's', (byte) 'c' };
         public PdfOperatorType Type => PdfOperatorType.sc;
-        public List<decimal> colorInfo { get; }
-        public sc_Op(List<decimal> colorInfo)
+        public List<double> colorInfo { get; }
+        public sc_Op(List<double> colorInfo)
         {
             this.colorInfo = colorInfo;
         }
@@ -2754,9 +2754,9 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'S', (byte) 'C', (byte) 'N' };
         public PdfOperatorType Type => PdfOperatorType.SCN;
-        public List<decimal> colorInfo { get; }
+        public List<double> colorInfo { get; }
         public PdfName? name { get; }
-        public SCN_Op(List<decimal> colorInfo, PdfName? name)
+        public SCN_Op(List<double> colorInfo, PdfName? name)
         {
             this.colorInfo = colorInfo;
             this.name = name;
@@ -2770,9 +2770,9 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 's', (byte) 'c', (byte) 'n' };
         public PdfOperatorType Type => PdfOperatorType.scn;
-        public List<decimal> colorInfo { get; }
+        public List<double> colorInfo { get; }
         public PdfName? name { get; }
-        public scn_Op(List<decimal> colorInfo, PdfName? name)
+        public scn_Op(List<double> colorInfo, PdfName? name)
         {
             this.colorInfo = colorInfo;
             this.name = name;
@@ -2871,33 +2871,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'T', (byte) 'c' };
         public PdfOperatorType Type => PdfOperatorType.Tc;
-        public decimal charSpace { get; }
-        public Tc_Op(decimal charSpace)
+        public double charSpace { get; }
+        public Tc_Op(double charSpace)
         {
             this.charSpace = charSpace;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(charSpace, stream);
+            PdfOperator.Writedouble(charSpace, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal charSpace, Stream stream) 
+        public static void WriteLn(double charSpace, Stream stream) 
         {
             Write(charSpace, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal charSpace, Stream stream) 
+        public static void Write(double charSpace, Stream stream) 
         {
-            PdfOperator.Writedecimal(charSpace, stream);
+            PdfOperator.Writedouble(charSpace, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static Tc_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2910,7 +2910,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new Tc_Op(a0);
         }
@@ -2923,9 +2923,9 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'T', (byte) 'd' };
         public PdfOperatorType Type => PdfOperatorType.Td;
-        public decimal tx { get; }
-        public decimal ty { get; }
-        public Td_Op(decimal tx, decimal ty)
+        public double tx { get; }
+        public double ty { get; }
+        public Td_Op(double tx, double ty)
         {
             this.tx = tx;
             this.ty = ty;
@@ -2933,29 +2933,29 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(tx, stream);
+            PdfOperator.Writedouble(tx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(ty, stream);
+            PdfOperator.Writedouble(ty, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal tx, decimal ty, Stream stream) 
+        public static void WriteLn(double tx, double ty, Stream stream) 
         {
             Write(tx, ty, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal tx, decimal ty, Stream stream) 
+        public static void Write(double tx, double ty, Stream stream) 
         {
-            PdfOperator.Writedecimal(tx, stream);
+            PdfOperator.Writedouble(tx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(ty, stream);
+            PdfOperator.Writedouble(ty, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double"  };
 
         public static Td_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -2968,8 +2968,8 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
     
             return new Td_Op(a0, a1);
         }
@@ -2982,9 +2982,9 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'T', (byte) 'D' };
         public PdfOperatorType Type => PdfOperatorType.TD;
-        public decimal tx { get; }
-        public decimal ty { get; }
-        public TD_Op(decimal tx, decimal ty)
+        public double tx { get; }
+        public double ty { get; }
+        public TD_Op(double tx, double ty)
         {
             this.tx = tx;
             this.ty = ty;
@@ -2992,29 +2992,29 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(tx, stream);
+            PdfOperator.Writedouble(tx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(ty, stream);
+            PdfOperator.Writedouble(ty, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal tx, decimal ty, Stream stream) 
+        public static void WriteLn(double tx, double ty, Stream stream) 
         {
             Write(tx, ty, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal tx, decimal ty, Stream stream) 
+        public static void Write(double tx, double ty, Stream stream) 
         {
-            PdfOperator.Writedecimal(tx, stream);
+            PdfOperator.Writedouble(tx, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(ty, stream);
+            PdfOperator.Writedouble(ty, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double"  };
 
         public static TD_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3027,8 +3027,8 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
     
             return new TD_Op(a0, a1);
         }
@@ -3042,8 +3042,8 @@ namespace PdfLexer.Operators
         public static byte[] OpData { get; } = new byte[] { (byte) 'T', (byte) 'f' };
         public PdfOperatorType Type => PdfOperatorType.Tf;
         public PdfName font { get; }
-        public decimal size { get; }
-        public Tf_Op(PdfName font, decimal size)
+        public double size { get; }
+        public Tf_Op(PdfName font, double size)
         {
             this.font = font;
             this.size = size;
@@ -3053,27 +3053,27 @@ namespace PdfLexer.Operators
         {
             PdfOperator.WritePdfName(font, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(size, stream);
+            PdfOperator.Writedouble(size, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(PdfName font, decimal size, Stream stream) 
+        public static void WriteLn(PdfName font, double size, Stream stream) 
         {
             Write(font, size, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(PdfName font, decimal size, Stream stream) 
+        public static void Write(PdfName font, double size, Stream stream) 
         {
             PdfOperator.WritePdfName(font, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(size, stream);
+            PdfOperator.Writedouble(size, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "PdfName", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "PdfName", "double"  };
 
         public static Tf_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3087,7 +3087,7 @@ namespace PdfLexer.Operators
                 operands = fixedOps;
             }
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
     
             return new Tf_Op(a0, a1);
         }
@@ -3128,33 +3128,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'T', (byte) 'L' };
         public PdfOperatorType Type => PdfOperatorType.TL;
-        public decimal leading { get; }
-        public TL_Op(decimal leading)
+        public double leading { get; }
+        public TL_Op(double leading)
         {
             this.leading = leading;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(leading, stream);
+            PdfOperator.Writedouble(leading, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal leading, Stream stream) 
+        public static void WriteLn(double leading, Stream stream) 
         {
             Write(leading, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal leading, Stream stream) 
+        public static void Write(double leading, Stream stream) 
         {
-            PdfOperator.Writedecimal(leading, stream);
+            PdfOperator.Writedouble(leading, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static TL_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3167,7 +3167,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new TL_Op(a0);
         }
@@ -3180,13 +3180,13 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'T', (byte) 'm' };
         public PdfOperatorType Type => PdfOperatorType.Tm;
-        public decimal a { get; }
-        public decimal b { get; }
-        public decimal c { get; }
-        public decimal d { get; }
-        public decimal e { get; }
-        public decimal f { get; }
-        public Tm_Op(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f)
+        public double a { get; }
+        public double b { get; }
+        public double c { get; }
+        public double d { get; }
+        public double e { get; }
+        public double f { get; }
+        public Tm_Op(double a, double b, double c, double d, double e, double f)
         {
             this.a = a;
             this.b = b;
@@ -3198,45 +3198,45 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(a, stream);
+            PdfOperator.Writedouble(a, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(b, stream);
+            PdfOperator.Writedouble(b, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(c, stream);
+            PdfOperator.Writedouble(c, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(d, stream);
+            PdfOperator.Writedouble(d, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(e, stream);
+            PdfOperator.Writedouble(e, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(f, stream);
+            PdfOperator.Writedouble(f, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f, Stream stream) 
+        public static void WriteLn(double a, double b, double c, double d, double e, double f, Stream stream) 
         {
             Write(a, b, c, d, e, f, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal a, decimal b, decimal c, decimal d, decimal e, decimal f, Stream stream) 
+        public static void Write(double a, double b, double c, double d, double e, double f, Stream stream) 
         {
-            PdfOperator.Writedecimal(a, stream);
+            PdfOperator.Writedouble(a, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(b, stream);
+            PdfOperator.Writedouble(b, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(c, stream);
+            PdfOperator.Writedouble(c, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(d, stream);
+            PdfOperator.Writedouble(d, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(e, stream);
+            PdfOperator.Writedouble(e, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(f, stream);
+            PdfOperator.Writedouble(f, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double", "double", "double", "double"  };
 
         public static Tm_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3249,12 +3249,12 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
-            var a3 = PdfOperator.ParseDecimal(ctx, data, operands[3]);
-            var a4 = PdfOperator.ParseDecimal(ctx, data, operands[4]);
-            var a5 = PdfOperator.ParseDecimal(ctx, data, operands[5]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
+            var a3 = PdfOperator.Parsedouble(ctx, data, operands[3]);
+            var a4 = PdfOperator.Parsedouble(ctx, data, operands[4]);
+            var a5 = PdfOperator.Parsedouble(ctx, data, operands[5]);
     
             return new Tm_Op(a0, a1, a2, a3, a4, a5);
         }
@@ -3319,33 +3319,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'T', (byte) 's' };
         public PdfOperatorType Type => PdfOperatorType.Ts;
-        public decimal rise { get; }
-        public Ts_Op(decimal rise)
+        public double rise { get; }
+        public Ts_Op(double rise)
         {
             this.rise = rise;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(rise, stream);
+            PdfOperator.Writedouble(rise, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal rise, Stream stream) 
+        public static void WriteLn(double rise, Stream stream) 
         {
             Write(rise, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal rise, Stream stream) 
+        public static void Write(double rise, Stream stream) 
         {
-            PdfOperator.Writedecimal(rise, stream);
+            PdfOperator.Writedouble(rise, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static Ts_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3358,7 +3358,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new Ts_Op(a0);
         }
@@ -3371,33 +3371,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'T', (byte) 'w' };
         public PdfOperatorType Type => PdfOperatorType.Tw;
-        public decimal wordSpace { get; }
-        public Tw_Op(decimal wordSpace)
+        public double wordSpace { get; }
+        public Tw_Op(double wordSpace)
         {
             this.wordSpace = wordSpace;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(wordSpace, stream);
+            PdfOperator.Writedouble(wordSpace, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal wordSpace, Stream stream) 
+        public static void WriteLn(double wordSpace, Stream stream) 
         {
             Write(wordSpace, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal wordSpace, Stream stream) 
+        public static void Write(double wordSpace, Stream stream) 
         {
-            PdfOperator.Writedecimal(wordSpace, stream);
+            PdfOperator.Writedouble(wordSpace, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static Tw_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3410,7 +3410,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new Tw_Op(a0);
         }
@@ -3423,33 +3423,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'T', (byte) 'z' };
         public PdfOperatorType Type => PdfOperatorType.Tz;
-        public decimal scale { get; }
-        public Tz_Op(decimal scale)
+        public double scale { get; }
+        public Tz_Op(double scale)
         {
             this.scale = scale;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(scale, stream);
+            PdfOperator.Writedouble(scale, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal scale, Stream stream) 
+        public static void WriteLn(double scale, Stream stream) 
         {
             Write(scale, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal scale, Stream stream) 
+        public static void Write(double scale, Stream stream) 
         {
-            PdfOperator.Writedecimal(scale, stream);
+            PdfOperator.Writedouble(scale, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static Tz_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3462,7 +3462,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new Tz_Op(a0);
         }
@@ -3475,11 +3475,11 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'v' };
         public PdfOperatorType Type => PdfOperatorType.v;
-        public decimal x2 { get; }
-        public decimal y2 { get; }
-        public decimal x3 { get; }
-        public decimal y3 { get; }
-        public v_Op(decimal x2, decimal y2, decimal x3, decimal y3)
+        public double x2 { get; }
+        public double y2 { get; }
+        public double x3 { get; }
+        public double y3 { get; }
+        public v_Op(double x2, double y2, double x3, double y3)
         {
             this.x2 = x2;
             this.y2 = y2;
@@ -3489,37 +3489,37 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(x2, stream);
+            PdfOperator.Writedouble(x2, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y2, stream);
+            PdfOperator.Writedouble(y2, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(x3, stream);
+            PdfOperator.Writedouble(x3, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y3, stream);
+            PdfOperator.Writedouble(y3, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal x2, decimal y2, decimal x3, decimal y3, Stream stream) 
+        public static void WriteLn(double x2, double y2, double x3, double y3, Stream stream) 
         {
             Write(x2, y2, x3, y3, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal x2, decimal y2, decimal x3, decimal y3, Stream stream) 
+        public static void Write(double x2, double y2, double x3, double y3, Stream stream) 
         {
-            PdfOperator.Writedecimal(x2, stream);
+            PdfOperator.Writedouble(x2, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y2, stream);
+            PdfOperator.Writedouble(y2, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(x3, stream);
+            PdfOperator.Writedouble(x3, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y3, stream);
+            PdfOperator.Writedouble(y3, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double", "double"  };
 
         public static v_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3532,10 +3532,10 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
-            var a3 = PdfOperator.ParseDecimal(ctx, data, operands[3]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
+            var a3 = PdfOperator.Parsedouble(ctx, data, operands[3]);
     
             return new v_Op(a0, a1, a2, a3);
         }
@@ -3548,33 +3548,33 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'w' };
         public PdfOperatorType Type => PdfOperatorType.w;
-        public decimal lineWidth { get; }
-        public w_Op(decimal lineWidth)
+        public double lineWidth { get; }
+        public w_Op(double lineWidth)
         {
             this.lineWidth = lineWidth;
         }
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(lineWidth, stream);
+            PdfOperator.Writedouble(lineWidth, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal lineWidth, Stream stream) 
+        public static void WriteLn(double lineWidth, Stream stream) 
         {
             Write(lineWidth, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal lineWidth, Stream stream) 
+        public static void Write(double lineWidth, Stream stream) 
         {
-            PdfOperator.Writedecimal(lineWidth, stream);
+            PdfOperator.Writedouble(lineWidth, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double"  };
 
         public static w_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3587,7 +3587,7 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
     
             return new w_Op(a0);
         }
@@ -3666,11 +3666,11 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) 'y' };
         public PdfOperatorType Type => PdfOperatorType.y;
-        public decimal x1 { get; }
-        public decimal y1 { get; }
-        public decimal x3 { get; }
-        public decimal y3 { get; }
-        public y_Op(decimal x1, decimal y1, decimal x3, decimal y3)
+        public double x1 { get; }
+        public double y1 { get; }
+        public double x3 { get; }
+        public double y3 { get; }
+        public y_Op(double x1, double y1, double x3, double y3)
         {
             this.x1 = x1;
             this.y1 = y1;
@@ -3680,37 +3680,37 @@ namespace PdfLexer.Operators
 
         public void Serialize(Stream stream) 
         {
-            PdfOperator.Writedecimal(x1, stream);
+            PdfOperator.Writedouble(x1, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y1, stream);
+            PdfOperator.Writedouble(y1, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(x3, stream);
+            PdfOperator.Writedouble(x3, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y3, stream);
+            PdfOperator.Writedouble(y3, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        public static void WriteLn(decimal x1, decimal y1, decimal x3, decimal y3, Stream stream) 
+        public static void WriteLn(double x1, double y1, double x3, double y3, Stream stream) 
         {
             Write(x1, y1, x3, y3, stream);
             stream.WriteByte((byte)'\n');
         }
 
-        public static void Write(decimal x1, decimal y1, decimal x3, decimal y3, Stream stream) 
+        public static void Write(double x1, double y1, double x3, double y3, Stream stream) 
         {
-            PdfOperator.Writedecimal(x1, stream);
+            PdfOperator.Writedouble(x1, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y1, stream);
+            PdfOperator.Writedouble(y1, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(x3, stream);
+            PdfOperator.Writedouble(x3, stream);
             stream.WriteByte((byte)' ');
-            PdfOperator.Writedecimal(y3, stream);
+            PdfOperator.Writedouble(y3, stream);
             stream.WriteByte((byte)' ');
             stream.Write(OpData);
         }
 
-        private static readonly List<string> OpTypes = new () { "decimal", "decimal", "decimal", "decimal"  };
+        private static readonly List<string> OpTypes = new () { "double", "double", "double", "double"  };
 
         public static y_Op? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
         {
@@ -3723,10 +3723,10 @@ namespace PdfLexer.Operators
                 }
                 operands = fixedOps;
             }
-            var a0 = PdfOperator.ParseDecimal(ctx, data, operands[0]);
-            var a1 = PdfOperator.ParseDecimal(ctx, data, operands[1]);
-            var a2 = PdfOperator.ParseDecimal(ctx, data, operands[2]);
-            var a3 = PdfOperator.ParseDecimal(ctx, data, operands[3]);
+            var a0 = PdfOperator.Parsedouble(ctx, data, operands[0]);
+            var a1 = PdfOperator.Parsedouble(ctx, data, operands[1]);
+            var a2 = PdfOperator.Parsedouble(ctx, data, operands[2]);
+            var a3 = PdfOperator.Parsedouble(ctx, data, operands[3]);
     
             return new y_Op(a0, a1, a2, a3);
         }
@@ -3753,10 +3753,10 @@ namespace PdfLexer.Operators
     {
         public static byte[] OpData { get; } = new byte[] { (byte) '"' };
         public PdfOperatorType Type => PdfOperatorType.doublequote;
-        public decimal aw { get; }
-        public decimal ac { get; }
+        public double aw { get; }
+        public double ac { get; }
         public byte[] text { get; }
-        public doublequote_Op(decimal aw, decimal ac, byte[] text)
+        public doublequote_Op(double aw, double ac, byte[] text)
         {
             this.aw = aw;
             this.ac = ac;

@@ -16,18 +16,7 @@ internal interface IContentGroup<T> where T : struct, IFloatingPoint<T>
     public bool CompatibilitySection { get; }
     public void Write(ContentWriter<T> writer);
 
-    public PdfRect<T> GetBoundingBox()
-    {
-        var x = GraphicsState.CTM.E;
-        var y = GraphicsState.CTM.F;
-        return new PdfRect<T>
-        {
-            LLx = x,
-            LLy = y,
-            URx = x + GraphicsState.CTM.A,
-            URy = y + GraphicsState.CTM.D
-        };
-    }
+    public PdfRect<T> GetBoundingBox();
 
     // public IContentGroup Shift(decimal dx, decimal dy);
 

@@ -1,11 +1,8 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Fonts;
-using System;
-using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
 
 namespace PdfLexer.Operators;
+
 
 public partial class q_Op<T>
 {
@@ -215,12 +212,11 @@ public partial class cm_Op<T>
 
 public partial class gs_Op<T>
 {
-
     public void Apply(ref GfxState<T> state,
         PdfDictionary dict,
         PdfDictionary resources,
         ParsingContext ctx,
-        Dictionary<PdfDictionary, PdfDictionary> cache
+        Dictionary<PdfDictionary, PdfDictionary>? cache
         )
     {
         var orig = dict;
@@ -291,7 +287,7 @@ public partial class gs_Op<T>
             }
             dict = existing;
         }
-        else
+        else if (cache != null)
         {
             if (!cache.TryGetValue(orig, out var cached))
             {
@@ -302,8 +298,6 @@ public partial class gs_Op<T>
                 dict = cached;
             }
         }
-
-
 
         state = state with
         {

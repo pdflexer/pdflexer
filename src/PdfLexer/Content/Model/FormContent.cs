@@ -22,6 +22,18 @@ internal class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoin
         return parser.Parse();
     }
 
+    public PdfRect<T> GetBoundingBox()
+    {
+        var x = GraphicsState.CTM.E;
+        var y = GraphicsState.CTM.F;
+        return new PdfRect<T>
+        {
+            LLx = x,
+            LLy = y,
+            URx = x + GraphicsState.CTM.A,
+            URy = y + GraphicsState.CTM.D
+        };
+    }
 
     // not able to accurately get bounding box for form
     // without fully processing it

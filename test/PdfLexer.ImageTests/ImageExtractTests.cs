@@ -412,8 +412,8 @@ namespace PdfLexer.ImageTests
                             var imgRdr = new ImageScanner(doc.Context, page);
                             while (imgRdr.Advance())
                             {
-                                var (x, y, w, h) = imgRdr.GetCurrentSize();
-                                if (w < 5 || h < 5) { continue; }
+                                var rect = imgRdr.GetCurrentSize();
+                                if (rect.Width() < 5 || rect.Height() < 5) { continue; }
                                 if (!imgRdr.TryGetImage(out var img))
                                 {
                                     continue;

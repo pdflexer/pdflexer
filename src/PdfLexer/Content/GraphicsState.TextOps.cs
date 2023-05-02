@@ -48,9 +48,9 @@ public partial class Tf_Op<T> where T : struct, IFloatingPoint<T>
         throw new NotSupportedException();
     }
 
-    public static void Apply(ref GfxState<T> state, PdfDictionary font, IReadableFont readable, T size)
+    public static void Apply(ref GfxState<T> state, PdfName name,  PdfDictionary font, IReadableFont readable, T size)
     {
-        state = state with { FontSize = size, FontObject = font, Font = readable };
+        state = state with { FontSize = size, FontObject = font, Font = readable, FontResourceName = name };
         state.UpdateTRM();
     }
 }

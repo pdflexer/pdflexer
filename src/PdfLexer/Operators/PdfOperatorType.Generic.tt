@@ -82,6 +82,17 @@
 }; #>
 
 #if NET7_0_OR_GREATER
+<#
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+#>
+global using <#= name #>_Op = PdfLexer.Operators.<#= name #>_Op<double>;
+<#
+}
+#>
+
+
 
 using PdfLexer.Lexing;
 using PdfLexer.Parsers;
@@ -179,29 +190,6 @@ foreach (var op in operators)
 {
     var name = op.Item2 == null ? op.Item1 : op.Item2;
 #>
-
-/// <summary>
-    /// <#= op.Item3 #> (double precision)
-    /// </summary>
-    public partial class <#= name #>_Op : <#= name #>_Op<double> 
-    {
-<# if (op.Item4 != null) { #>
-        public <#= name #>_Op(<#= string.Join(", ", op.Item4.Select(i=> $"{
-            (
-            i.Item1 == "T" ? "double" :
-                (i.Item1 == "List<T>" ? "List<double>" :
-                    (i.Item1 == "List<TJ_Item<T>>" ? "List<TJ_Item<double>>" :
-                        i.Item1
-                    )
-                )
-            )} {i.Item2}")) #>)
-            : base(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item2}")) #>)
-        {
-        }
-<# } else { #>
-        public static readonly new <#= name #>_Op Value = new ();
-<# } #>
-    }
 
     /// <summary>
     /// <#= op.Item3 #>

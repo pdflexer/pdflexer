@@ -1,5 +1,80 @@
 ﻿
 #if NET7_0_OR_GREATER
+global using b_Op = PdfLexer.Operators.b_Op<double>;
+global using B_Op = PdfLexer.Operators.B_Op<double>;
+global using b_Star_Op = PdfLexer.Operators.b_Star_Op<double>;
+global using B_Star_Op = PdfLexer.Operators.B_Star_Op<double>;
+global using BDC_Op = PdfLexer.Operators.BDC_Op<double>;
+global using BI_Op = PdfLexer.Operators.BI_Op<double>;
+global using BMC_Op = PdfLexer.Operators.BMC_Op<double>;
+global using BT_Op = PdfLexer.Operators.BT_Op<double>;
+global using BX_Op = PdfLexer.Operators.BX_Op<double>;
+global using c_Op = PdfLexer.Operators.c_Op<double>;
+global using cm_Op = PdfLexer.Operators.cm_Op<double>;
+global using CS_Op = PdfLexer.Operators.CS_Op<double>;
+global using cs_Op = PdfLexer.Operators.cs_Op<double>;
+global using d_Op = PdfLexer.Operators.d_Op<double>;
+global using d0_Op = PdfLexer.Operators.d0_Op<double>;
+global using d1_Op = PdfLexer.Operators.d1_Op<double>;
+global using Do_Op = PdfLexer.Operators.Do_Op<double>;
+global using DP_Op = PdfLexer.Operators.DP_Op<double>;
+global using EI_Op = PdfLexer.Operators.EI_Op<double>;
+global using EMC_Op = PdfLexer.Operators.EMC_Op<double>;
+global using ET_Op = PdfLexer.Operators.ET_Op<double>;
+global using EX_Op = PdfLexer.Operators.EX_Op<double>;
+global using f_Op = PdfLexer.Operators.f_Op<double>;
+global using F_Op = PdfLexer.Operators.F_Op<double>;
+global using f_Star_Op = PdfLexer.Operators.f_Star_Op<double>;
+global using G_Op = PdfLexer.Operators.G_Op<double>;
+global using g_Op = PdfLexer.Operators.g_Op<double>;
+global using gs_Op = PdfLexer.Operators.gs_Op<double>;
+global using h_Op = PdfLexer.Operators.h_Op<double>;
+global using i_Op = PdfLexer.Operators.i_Op<double>;
+global using ID_Op = PdfLexer.Operators.ID_Op<double>;
+global using j_Op = PdfLexer.Operators.j_Op<double>;
+global using J_Op = PdfLexer.Operators.J_Op<double>;
+global using K_Op = PdfLexer.Operators.K_Op<double>;
+global using k_Op = PdfLexer.Operators.k_Op<double>;
+global using l_Op = PdfLexer.Operators.l_Op<double>;
+global using m_Op = PdfLexer.Operators.m_Op<double>;
+global using M_Op = PdfLexer.Operators.M_Op<double>;
+global using MP_Op = PdfLexer.Operators.MP_Op<double>;
+global using n_Op = PdfLexer.Operators.n_Op<double>;
+global using q_Op = PdfLexer.Operators.q_Op<double>;
+global using Q_Op = PdfLexer.Operators.Q_Op<double>;
+global using re_Op = PdfLexer.Operators.re_Op<double>;
+global using RG_Op = PdfLexer.Operators.RG_Op<double>;
+global using rg_Op = PdfLexer.Operators.rg_Op<double>;
+global using ri_Op = PdfLexer.Operators.ri_Op<double>;
+global using s_Op = PdfLexer.Operators.s_Op<double>;
+global using S_Op = PdfLexer.Operators.S_Op<double>;
+global using SC_Op = PdfLexer.Operators.SC_Op<double>;
+global using sc_Op = PdfLexer.Operators.sc_Op<double>;
+global using SCN_Op = PdfLexer.Operators.SCN_Op<double>;
+global using scn_Op = PdfLexer.Operators.scn_Op<double>;
+global using sh_Op = PdfLexer.Operators.sh_Op<double>;
+global using T_Star_Op = PdfLexer.Operators.T_Star_Op<double>;
+global using Tc_Op = PdfLexer.Operators.Tc_Op<double>;
+global using Td_Op = PdfLexer.Operators.Td_Op<double>;
+global using TD_Op = PdfLexer.Operators.TD_Op<double>;
+global using Tf_Op = PdfLexer.Operators.Tf_Op<double>;
+global using Tj_Op = PdfLexer.Operators.Tj_Op<double>;
+global using TJ_Op = PdfLexer.Operators.TJ_Op<double>;
+global using TL_Op = PdfLexer.Operators.TL_Op<double>;
+global using Tm_Op = PdfLexer.Operators.Tm_Op<double>;
+global using Tr_Op = PdfLexer.Operators.Tr_Op<double>;
+global using Ts_Op = PdfLexer.Operators.Ts_Op<double>;
+global using Tw_Op = PdfLexer.Operators.Tw_Op<double>;
+global using Tz_Op = PdfLexer.Operators.Tz_Op<double>;
+global using v_Op = PdfLexer.Operators.v_Op<double>;
+global using w_Op = PdfLexer.Operators.w_Op<double>;
+global using W_Op = PdfLexer.Operators.W_Op<double>;
+global using W_Star_Op = PdfLexer.Operators.W_Star_Op<double>;
+global using y_Op = PdfLexer.Operators.y_Op<double>;
+global using singlequote_Op = PdfLexer.Operators.singlequote_Op<double>;
+global using doublequote_Op = PdfLexer.Operators.doublequote_Op<double>;
+
+
 
 using PdfLexer.Lexing;
 using PdfLexer.Parsers;
@@ -508,14 +583,6 @@ namespace PdfLexer.Operators
     }
 
 
-/// <summary>
-    /// Close, fill, and stroke path using nonzero winding number rule (double precision)
-    /// </summary>
-    public partial class b_Op : b_Op<double> 
-    {
-        public static readonly new b_Op Value = new ();
-    }
-
     /// <summary>
     /// Close, fill, and stroke path using nonzero winding number rule
     /// </summary>
@@ -547,14 +614,6 @@ namespace PdfLexer.Operators
         public static b_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Fill and stroke path using nonzero winding number rule (double precision)
-    /// </summary>
-    public partial class B_Op : B_Op<double> 
-    {
-        public static readonly new B_Op Value = new ();
     }
 
     /// <summary>
@@ -590,14 +649,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// Close, fill, and stroke path using even-odd rule (double precision)
-    /// </summary>
-    public partial class b_Star_Op : b_Star_Op<double> 
-    {
-        public static readonly new b_Star_Op Value = new ();
-    }
-
     /// <summary>
     /// Close, fill, and stroke path using even-odd rule
     /// </summary>
@@ -629,14 +680,6 @@ namespace PdfLexer.Operators
         public static b_Star_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Fill and stroke path using even-odd rule (double precision)
-    /// </summary>
-    public partial class B_Star_Op : B_Star_Op<double> 
-    {
-        public static readonly new B_Star_Op Value = new ();
     }
 
     /// <summary>
@@ -672,17 +715,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// Begin marked-content sequence with property list (double precision)
-    /// </summary>
-    public partial class BDC_Op : BDC_Op<double> 
-    {
-        public BDC_Op(PdfName tag, IPdfObject props)
-            : base(tag, props)
-        {
-        }
-    }
-
     /// <summary>
     /// Begin marked-content sequence with property list
     /// </summary>
@@ -697,14 +729,6 @@ namespace PdfLexer.Operators
             this.tag = tag;
             this.props = props;
         }
-    }
-
-/// <summary>
-    /// Begin inline image object (double precision)
-    /// </summary>
-    public partial class BI_Op : BI_Op<double> 
-    {
-        public static readonly new BI_Op Value = new ();
     }
 
     /// <summary>
@@ -738,17 +762,6 @@ namespace PdfLexer.Operators
         public static BI_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Begin marked-content sequence (double precision)
-    /// </summary>
-    public partial class BMC_Op : BMC_Op<double> 
-    {
-        public BMC_Op(PdfName tag)
-            : base(tag)
-        {
-        }
     }
 
     /// <summary>
@@ -803,14 +816,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Begin text object (double precision)
-    /// </summary>
-    public partial class BT_Op : BT_Op<double> 
-    {
-        public static readonly new BT_Op Value = new ();
-    }
-
     /// <summary>
     /// Begin text object
     /// </summary>
@@ -844,14 +849,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// Begin compatibility section (double precision)
-    /// </summary>
-    public partial class BX_Op : BX_Op<double> 
-    {
-        public static readonly new BX_Op Value = new ();
-    }
-
     /// <summary>
     /// Begin compatibility section
     /// </summary>
@@ -883,17 +880,6 @@ namespace PdfLexer.Operators
         public static BX_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Append curved segment to path (three control points) (double precision)
-    /// </summary>
-    public partial class c_Op : c_Op<double> 
-    {
-        public c_Op(double x1, double y1, double x2, double y2, double x3, double y3)
-            : base(x1, y1, x2, y2, x3, y3)
-        {
-        }
     }
 
     /// <summary>
@@ -980,17 +966,6 @@ namespace PdfLexer.Operators
             var a5 = FPC<T>.Util.Parse<T>(ctx, data, operands[5]);
     
             return new c_Op<T>(a0, a1, a2, a3, a4, a5);
-        }
-    }
-
-/// <summary>
-    /// Concatenate matrix to current transformation matrix (double precision)
-    /// </summary>
-    public partial class cm_Op : cm_Op<double> 
-    {
-        public cm_Op(double a, double b, double c, double d, double e, double f)
-            : base(a, b, c, d, e, f)
-        {
         }
     }
 
@@ -1081,17 +1056,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set color space for stroking operations (double precision)
-    /// </summary>
-    public partial class CS_Op : CS_Op<double> 
-    {
-        public CS_Op(PdfName name)
-            : base(name)
-        {
-        }
-    }
-
     /// <summary>
     /// Set color space for stroking operations
     /// </summary>
@@ -1141,17 +1105,6 @@ namespace PdfLexer.Operators
             var a0 = PdfOperator.ParsePdfName(ctx, data, operands[0]);
     
             return new CS_Op<T>(a0);
-        }
-    }
-
-/// <summary>
-    /// Set color space for nonstroking operations (double precision)
-    /// </summary>
-    public partial class cs_Op : cs_Op<double> 
-    {
-        public cs_Op(PdfName name)
-            : base(name)
-        {
         }
     }
 
@@ -1207,17 +1160,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set line dash pattern (double precision)
-    /// </summary>
-    public partial class d_Op : d_Op<double> 
-    {
-        public d_Op(PdfArray dashArray, double dashPhase)
-            : base(dashArray, dashPhase)
-        {
-        }
-    }
-
     /// <summary>
     /// Set line dash pattern
     /// </summary>
@@ -1231,17 +1173,6 @@ namespace PdfLexer.Operators
         {
             this.dashArray = dashArray;
             this.dashPhase = dashPhase;
-        }
-    }
-
-/// <summary>
-    /// Set glyph width in Type 3 font (double precision)
-    /// </summary>
-    public partial class d0_Op : d0_Op<double> 
-    {
-        public d0_Op(double wx, double wy)
-            : base(wx, wy)
-        {
         }
     }
 
@@ -1301,17 +1232,6 @@ namespace PdfLexer.Operators
             var a1 = FPC<T>.Util.Parse<T>(ctx, data, operands[1]);
     
             return new d0_Op<T>(a0, a1);
-        }
-    }
-
-/// <summary>
-    /// Set glyph width and bounding box in Type 3 font (double precision)
-    /// </summary>
-    public partial class d1_Op : d1_Op<double> 
-    {
-        public d1_Op(double wx, double wy, double llx, double lly, double urx, double ury)
-            : base(wx, wy, llx, lly, urx, ury)
-        {
         }
     }
 
@@ -1402,17 +1322,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Invoke named XObject (double precision)
-    /// </summary>
-    public partial class Do_Op : Do_Op<double> 
-    {
-        public Do_Op(PdfName name)
-            : base(name)
-        {
-        }
-    }
-
     /// <summary>
     /// Invoke named XObject
     /// </summary>
@@ -1465,17 +1374,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Define marked-content point with property list (double precision)
-    /// </summary>
-    public partial class DP_Op : DP_Op<double> 
-    {
-        public DP_Op(PdfName tag, IPdfObject props)
-            : base(tag, props)
-        {
-        }
-    }
-
     /// <summary>
     /// Define marked-content point with property list
     /// </summary>
@@ -1490,14 +1388,6 @@ namespace PdfLexer.Operators
             this.tag = tag;
             this.props = props;
         }
-    }
-
-/// <summary>
-    /// End inline image object (double precision)
-    /// </summary>
-    public partial class EI_Op : EI_Op<double> 
-    {
-        public static readonly new EI_Op Value = new ();
     }
 
     /// <summary>
@@ -1533,14 +1423,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// End marked-content sequence (double precision)
-    /// </summary>
-    public partial class EMC_Op : EMC_Op<double> 
-    {
-        public static readonly new EMC_Op Value = new ();
-    }
-
     /// <summary>
     /// End marked-content sequence
     /// </summary>
@@ -1572,14 +1454,6 @@ namespace PdfLexer.Operators
         public static EMC_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// End text object (double precision)
-    /// </summary>
-    public partial class ET_Op : ET_Op<double> 
-    {
-        public static readonly new ET_Op Value = new ();
     }
 
     /// <summary>
@@ -1615,14 +1489,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// End compatibility section (double precision)
-    /// </summary>
-    public partial class EX_Op : EX_Op<double> 
-    {
-        public static readonly new EX_Op Value = new ();
-    }
-
     /// <summary>
     /// End compatibility section
     /// </summary>
@@ -1654,14 +1520,6 @@ namespace PdfLexer.Operators
         public static EX_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Fill path using nonzero winding number rule (double precision)
-    /// </summary>
-    public partial class f_Op : f_Op<double> 
-    {
-        public static readonly new f_Op Value = new ();
     }
 
     /// <summary>
@@ -1697,14 +1555,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// Fill path using nonzero winding number rule (obsolete) (double precision)
-    /// </summary>
-    public partial class F_Op : F_Op<double> 
-    {
-        public static readonly new F_Op Value = new ();
-    }
-
     /// <summary>
     /// Fill path using nonzero winding number rule (obsolete)
     /// </summary>
@@ -1738,14 +1588,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// Fill path using even-odd rule (double precision)
-    /// </summary>
-    public partial class f_Star_Op : f_Star_Op<double> 
-    {
-        public static readonly new f_Star_Op Value = new ();
-    }
-
     /// <summary>
     /// Fill path using even-odd rule
     /// </summary>
@@ -1777,17 +1619,6 @@ namespace PdfLexer.Operators
         public static f_Star_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Set gray level for stroking operations (double precision)
-    /// </summary>
-    public partial class G_Op : G_Op<double> 
-    {
-        public G_Op(double gray)
-            : base(gray)
-        {
-        }
     }
 
     /// <summary>
@@ -1839,17 +1670,6 @@ namespace PdfLexer.Operators
             var a0 = FPC<T>.Util.Parse<T>(ctx, data, operands[0]);
     
             return new G_Op<T>(a0);
-        }
-    }
-
-/// <summary>
-    /// Set gray level for nonstroking operations (double precision)
-    /// </summary>
-    public partial class g_Op : g_Op<double> 
-    {
-        public g_Op(double gray)
-            : base(gray)
-        {
         }
     }
 
@@ -1905,17 +1725,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set parameters from graphics state parameter dictionary (double precision)
-    /// </summary>
-    public partial class gs_Op : gs_Op<double> 
-    {
-        public gs_Op(PdfName name)
-            : base(name)
-        {
-        }
-    }
-
     /// <summary>
     /// Set parameters from graphics state parameter dictionary
     /// </summary>
@@ -1968,14 +1777,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Close subpath (double precision)
-    /// </summary>
-    public partial class h_Op : h_Op<double> 
-    {
-        public static readonly new h_Op Value = new ();
-    }
-
     /// <summary>
     /// Close subpath
     /// </summary>
@@ -2007,17 +1808,6 @@ namespace PdfLexer.Operators
         public static h_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Set flatness tolerance (double precision)
-    /// </summary>
-    public partial class i_Op : i_Op<double> 
-    {
-        public i_Op(double flatness)
-            : base(flatness)
-        {
-        }
     }
 
     /// <summary>
@@ -2072,14 +1862,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Begin inline image data (double precision)
-    /// </summary>
-    public partial class ID_Op : ID_Op<double> 
-    {
-        public static readonly new ID_Op Value = new ();
-    }
-
     /// <summary>
     /// Begin inline image data
     /// </summary>
@@ -2111,17 +1893,6 @@ namespace PdfLexer.Operators
         public static ID_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Set line join style (double precision)
-    /// </summary>
-    public partial class j_Op : j_Op<double> 
-    {
-        public j_Op(int lineJoin)
-            : base(lineJoin)
-        {
-        }
     }
 
     /// <summary>
@@ -2176,17 +1947,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set line capstyle (double precision)
-    /// </summary>
-    public partial class J_Op : J_Op<double> 
-    {
-        public J_Op(int lineCap)
-            : base(lineCap)
-        {
-        }
-    }
-
     /// <summary>
     /// Set line capstyle
     /// </summary>
@@ -2236,17 +1996,6 @@ namespace PdfLexer.Operators
             var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
     
             return new J_Op<T>(a0);
-        }
-    }
-
-/// <summary>
-    /// Set CMYK color for stroking operations (double precision)
-    /// </summary>
-    public partial class K_Op : K_Op<double> 
-    {
-        public K_Op(double c, double m, double y, double k)
-            : base(c, m, y, k)
-        {
         }
     }
 
@@ -2323,17 +2072,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set CMYK color for nonstroking operations (double precision)
-    /// </summary>
-    public partial class k_Op : k_Op<double> 
-    {
-        public k_Op(double c, double m, double y, double k)
-            : base(c, m, y, k)
-        {
-        }
-    }
-
     /// <summary>
     /// Set CMYK color for nonstroking operations
     /// </summary>
@@ -2407,17 +2145,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Append straight line segment to path (double precision)
-    /// </summary>
-    public partial class l_Op : l_Op<double> 
-    {
-        public l_Op(double x, double y)
-            : base(x, y)
-        {
-        }
-    }
-
     /// <summary>
     /// Append straight line segment to path
     /// </summary>
@@ -2474,17 +2201,6 @@ namespace PdfLexer.Operators
             var a1 = FPC<T>.Util.Parse<T>(ctx, data, operands[1]);
     
             return new l_Op<T>(a0, a1);
-        }
-    }
-
-/// <summary>
-    /// Begin new subpath (double precision)
-    /// </summary>
-    public partial class m_Op : m_Op<double> 
-    {
-        public m_Op(double x, double y)
-            : base(x, y)
-        {
         }
     }
 
@@ -2547,17 +2263,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set miter limit (double precision)
-    /// </summary>
-    public partial class M_Op : M_Op<double> 
-    {
-        public M_Op(double miterLimit)
-            : base(miterLimit)
-        {
-        }
-    }
-
     /// <summary>
     /// Set miter limit
     /// </summary>
@@ -2607,17 +2312,6 @@ namespace PdfLexer.Operators
             var a0 = FPC<T>.Util.Parse<T>(ctx, data, operands[0]);
     
             return new M_Op<T>(a0);
-        }
-    }
-
-/// <summary>
-    /// Define marked-content point (double precision)
-    /// </summary>
-    public partial class MP_Op : MP_Op<double> 
-    {
-        public MP_Op(PdfName tag)
-            : base(tag)
-        {
         }
     }
 
@@ -2673,14 +2367,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// End path without filling or stroking (double precision)
-    /// </summary>
-    public partial class n_Op : n_Op<double> 
-    {
-        public static readonly new n_Op Value = new ();
-    }
-
     /// <summary>
     /// End path without filling or stroking
     /// </summary>
@@ -2712,14 +2398,6 @@ namespace PdfLexer.Operators
         public static n_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Save graphics state (double precision)
-    /// </summary>
-    public partial class q_Op : q_Op<double> 
-    {
-        public static readonly new q_Op Value = new ();
     }
 
     /// <summary>
@@ -2755,14 +2433,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// Restore graphics state (double precision)
-    /// </summary>
-    public partial class Q_Op : Q_Op<double> 
-    {
-        public static readonly new Q_Op Value = new ();
-    }
-
     /// <summary>
     /// Restore graphics state
     /// </summary>
@@ -2794,17 +2464,6 @@ namespace PdfLexer.Operators
         public static Q_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Append rectangle to path (double precision)
-    /// </summary>
-    public partial class re_Op : re_Op<double> 
-    {
-        public re_Op(double x, double y, double width, double height)
-            : base(x, y, width, height)
-        {
-        }
     }
 
     /// <summary>
@@ -2880,17 +2539,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set RGB color for stroking operations (double precision)
-    /// </summary>
-    public partial class RG_Op : RG_Op<double> 
-    {
-        public RG_Op(double r, double g, double b)
-            : base(r, g, b)
-        {
-        }
-    }
-
     /// <summary>
     /// Set RGB color for stroking operations
     /// </summary>
@@ -2954,17 +2602,6 @@ namespace PdfLexer.Operators
             var a2 = FPC<T>.Util.Parse<T>(ctx, data, operands[2]);
     
             return new RG_Op<T>(a0, a1, a2);
-        }
-    }
-
-/// <summary>
-    /// Set RGB color for nonstroking operations (double precision)
-    /// </summary>
-    public partial class rg_Op : rg_Op<double> 
-    {
-        public rg_Op(double r, double g, double b)
-            : base(r, g, b)
-        {
         }
     }
 
@@ -3034,17 +2671,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set color rendering intent (double precision)
-    /// </summary>
-    public partial class ri_Op : ri_Op<double> 
-    {
-        public ri_Op(PdfName intent)
-            : base(intent)
-        {
-        }
-    }
-
     /// <summary>
     /// Set color rendering intent
     /// </summary>
@@ -3097,14 +2723,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Close and stroke path (double precision)
-    /// </summary>
-    public partial class s_Op : s_Op<double> 
-    {
-        public static readonly new s_Op Value = new ();
-    }
-
     /// <summary>
     /// Close and stroke path
     /// </summary>
@@ -3136,14 +2754,6 @@ namespace PdfLexer.Operators
         public static s_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Stroke path (double precision)
-    /// </summary>
-    public partial class S_Op : S_Op<double> 
-    {
-        public static readonly new S_Op Value = new ();
     }
 
     /// <summary>
@@ -3179,17 +2789,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// Set color for stroking operations (double precision)
-    /// </summary>
-    public partial class SC_Op : SC_Op<double> 
-    {
-        public SC_Op(List<double> colorInfo)
-            : base(colorInfo)
-        {
-        }
-    }
-
     /// <summary>
     /// Set color for stroking operations
     /// </summary>
@@ -3204,17 +2803,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set color for nonstroking operations (double precision)
-    /// </summary>
-    public partial class sc_Op : sc_Op<double> 
-    {
-        public sc_Op(List<double> colorInfo)
-            : base(colorInfo)
-        {
-        }
-    }
-
     /// <summary>
     /// Set color for nonstroking operations
     /// </summary>
@@ -3226,17 +2814,6 @@ namespace PdfLexer.Operators
         public sc_Op(List<T> colorInfo)
         {
             this.colorInfo = colorInfo;
-        }
-    }
-
-/// <summary>
-    /// Set color for stroking operations (ICCBased and special color spaces) (double precision)
-    /// </summary>
-    public partial class SCN_Op : SCN_Op<double> 
-    {
-        public SCN_Op(List<double> colorInfo, PdfName? name)
-            : base(colorInfo, name)
-        {
         }
     }
 
@@ -3256,17 +2833,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set color for nonstroking operations (ICCBased and special color spaces) (double precision)
-    /// </summary>
-    public partial class scn_Op : scn_Op<double> 
-    {
-        public scn_Op(List<double> colorInfo, PdfName? name)
-            : base(colorInfo, name)
-        {
-        }
-    }
-
     /// <summary>
     /// Set color for nonstroking operations (ICCBased and special color spaces)
     /// </summary>
@@ -3280,17 +2846,6 @@ namespace PdfLexer.Operators
         {
             this.colorInfo = colorInfo;
             this.name = name;
-        }
-    }
-
-/// <summary>
-    /// Paint area defined by shading pattern (double precision)
-    /// </summary>
-    public partial class sh_Op : sh_Op<double> 
-    {
-        public sh_Op(PdfName name)
-            : base(name)
-        {
         }
     }
 
@@ -3346,14 +2901,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Move to start of next text line (double precision)
-    /// </summary>
-    public partial class T_Star_Op : T_Star_Op<double> 
-    {
-        public static readonly new T_Star_Op Value = new ();
-    }
-
     /// <summary>
     /// Move to start of next text line
     /// </summary>
@@ -3385,17 +2932,6 @@ namespace PdfLexer.Operators
         public static T_Star_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Set character spacing (double precision)
-    /// </summary>
-    public partial class Tc_Op : Tc_Op<double> 
-    {
-        public Tc_Op(double charSpace)
-            : base(charSpace)
-        {
-        }
     }
 
     /// <summary>
@@ -3447,17 +2983,6 @@ namespace PdfLexer.Operators
             var a0 = FPC<T>.Util.Parse<T>(ctx, data, operands[0]);
     
             return new Tc_Op<T>(a0);
-        }
-    }
-
-/// <summary>
-    /// Move text position (double precision)
-    /// </summary>
-    public partial class Td_Op : Td_Op<double> 
-    {
-        public Td_Op(double tx, double ty)
-            : base(tx, ty)
-        {
         }
     }
 
@@ -3520,17 +3045,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Move text position and set leading (double precision)
-    /// </summary>
-    public partial class TD_Op : TD_Op<double> 
-    {
-        public TD_Op(double tx, double ty)
-            : base(tx, ty)
-        {
-        }
-    }
-
     /// <summary>
     /// Move text position and set leading
     /// </summary>
@@ -3587,17 +3101,6 @@ namespace PdfLexer.Operators
             var a1 = FPC<T>.Util.Parse<T>(ctx, data, operands[1]);
     
             return new TD_Op<T>(a0, a1);
-        }
-    }
-
-/// <summary>
-    /// Set text font and size (double precision)
-    /// </summary>
-    public partial class Tf_Op : Tf_Op<double> 
-    {
-        public Tf_Op(PdfName font, double size)
-            : base(font, size)
-        {
         }
     }
 
@@ -3660,17 +3163,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Show text (double precision)
-    /// </summary>
-    public partial class Tj_Op : Tj_Op<double> 
-    {
-        public Tj_Op(byte[] text)
-            : base(text)
-        {
-        }
-    }
-
     /// <summary>
     /// Show text
     /// </summary>
@@ -3685,17 +3177,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Show text, allowing individual glyph positioning (double precision)
-    /// </summary>
-    public partial class TJ_Op : TJ_Op<double> 
-    {
-        public TJ_Op(List<TJ_Item<double>> info)
-            : base(info)
-        {
-        }
-    }
-
     /// <summary>
     /// Show text, allowing individual glyph positioning
     /// </summary>
@@ -3707,17 +3188,6 @@ namespace PdfLexer.Operators
         public TJ_Op(List<TJ_Item<T>> info)
         {
             this.info = info;
-        }
-    }
-
-/// <summary>
-    /// Set text leading (double precision)
-    /// </summary>
-    public partial class TL_Op : TL_Op<double> 
-    {
-        public TL_Op(double leading)
-            : base(leading)
-        {
         }
     }
 
@@ -3770,17 +3240,6 @@ namespace PdfLexer.Operators
             var a0 = FPC<T>.Util.Parse<T>(ctx, data, operands[0]);
     
             return new TL_Op<T>(a0);
-        }
-    }
-
-/// <summary>
-    /// Set text matrix and text line matrix (double precision)
-    /// </summary>
-    public partial class Tm_Op : Tm_Op<double> 
-    {
-        public Tm_Op(double a, double b, double c, double d, double e, double f)
-            : base(a, b, c, d, e, f)
-        {
         }
     }
 
@@ -3871,17 +3330,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set text rendering mode (double precision)
-    /// </summary>
-    public partial class Tr_Op : Tr_Op<double> 
-    {
-        public Tr_Op(int render)
-            : base(render)
-        {
-        }
-    }
-
     /// <summary>
     /// Set text rendering mode
     /// </summary>
@@ -3931,17 +3379,6 @@ namespace PdfLexer.Operators
             var a0 = PdfOperator.Parseint(ctx, data, operands[0]);
     
             return new Tr_Op<T>(a0);
-        }
-    }
-
-/// <summary>
-    /// Set text rise (double precision)
-    /// </summary>
-    public partial class Ts_Op : Ts_Op<double> 
-    {
-        public Ts_Op(double rise)
-            : base(rise)
-        {
         }
     }
 
@@ -3997,17 +3434,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set word spacing (double precision)
-    /// </summary>
-    public partial class Tw_Op : Tw_Op<double> 
-    {
-        public Tw_Op(double wordSpace)
-            : base(wordSpace)
-        {
-        }
-    }
-
     /// <summary>
     /// Set word spacing
     /// </summary>
@@ -4060,17 +3486,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set horizontal text scaling (double precision)
-    /// </summary>
-    public partial class Tz_Op : Tz_Op<double> 
-    {
-        public Tz_Op(double scale)
-            : base(scale)
-        {
-        }
-    }
-
     /// <summary>
     /// Set horizontal text scaling
     /// </summary>
@@ -4120,17 +3535,6 @@ namespace PdfLexer.Operators
             var a0 = FPC<T>.Util.Parse<T>(ctx, data, operands[0]);
     
             return new Tz_Op<T>(a0);
-        }
-    }
-
-/// <summary>
-    /// Append curved segment to path (initial point replicated) (double precision)
-    /// </summary>
-    public partial class v_Op : v_Op<double> 
-    {
-        public v_Op(double x2, double y2, double x3, double y3)
-            : base(x2, y2, x3, y3)
-        {
         }
     }
 
@@ -4207,17 +3611,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set line width (double precision)
-    /// </summary>
-    public partial class w_Op : w_Op<double> 
-    {
-        public w_Op(double lineWidth)
-            : base(lineWidth)
-        {
-        }
-    }
-
     /// <summary>
     /// Set line width
     /// </summary>
@@ -4270,14 +3663,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Set clipping path using nonzero winding number rule (double precision)
-    /// </summary>
-    public partial class W_Op : W_Op<double> 
-    {
-        public static readonly new W_Op Value = new ();
-    }
-
     /// <summary>
     /// Set clipping path using nonzero winding number rule
     /// </summary>
@@ -4311,14 +3696,6 @@ namespace PdfLexer.Operators
 
     }
 
-/// <summary>
-    /// Set clipping path using even-odd rule (double precision)
-    /// </summary>
-    public partial class W_Star_Op : W_Star_Op<double> 
-    {
-        public static readonly new W_Star_Op Value = new ();
-    }
-
     /// <summary>
     /// Set clipping path using even-odd rule
     /// </summary>
@@ -4350,17 +3727,6 @@ namespace PdfLexer.Operators
         public static W_Star_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
             => Value;
 
-    }
-
-/// <summary>
-    /// Append curved segment to path (final point replicated) (double precision)
-    /// </summary>
-    public partial class y_Op : y_Op<double> 
-    {
-        public y_Op(double x1, double y1, double x3, double y3)
-            : base(x1, y1, x3, y3)
-        {
-        }
     }
 
     /// <summary>
@@ -4436,17 +3802,6 @@ namespace PdfLexer.Operators
         }
     }
 
-/// <summary>
-    /// Move to next line and show text (double precision)
-    /// </summary>
-    public partial class singlequote_Op : singlequote_Op<double> 
-    {
-        public singlequote_Op(byte[] text)
-            : base(text)
-        {
-        }
-    }
-
     /// <summary>
     /// Move to next line and show text
     /// </summary>
@@ -4458,17 +3813,6 @@ namespace PdfLexer.Operators
         public singlequote_Op(byte[] text)
         {
             this.text = text;
-        }
-    }
-
-/// <summary>
-    /// Set word and character spacing, move to next line, and show text (double precision)
-    /// </summary>
-    public partial class doublequote_Op : doublequote_Op<double> 
-    {
-        public doublequote_Op(double aw, double ac, byte[] text)
-            : base(aw, ac, text)
-        {
         }
     }
 

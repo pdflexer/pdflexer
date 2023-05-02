@@ -4,8 +4,6 @@ using System.Numerics;
 
 namespace PdfLexer;
 
-
-#if NET7_0_OR_GREATER
 public static class GfxStateExtensions
 {
     internal static List<IClippingSection<T>> Clip<T>(this List<IClippingSection<T>>? existing, PdfRect<T> rect, PdfRect<T> boundary)
@@ -45,7 +43,4 @@ public static class GfxStateExtensions
             }, false));
         return copy;
     }
-
 }
-
-#endif

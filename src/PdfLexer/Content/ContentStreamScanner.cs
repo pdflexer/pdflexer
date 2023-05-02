@@ -219,6 +219,7 @@ public ref struct ContentStreamScanner
     {
         if (CurrentOperator == PdfOperatorType.EI)
         {
+
             op = GetImage<T>();
             return true;
         }
@@ -226,6 +227,9 @@ public ref struct ContentStreamScanner
         var ops = GetOperands();
 
         var oi = (int)CurrentOperator;
+
+
+
         PdfOperator.ParseOp<T>? parser = null;
         if (oi > 0 && oi < 256)
         {
@@ -259,6 +263,7 @@ public ref struct ContentStreamScanner
             return false;
         }
 
+
         static Unkown_Op<T> GetUnknown(ContentItem current, ReadOnlySpan<byte> allData, ReadOnlySpan<byte> thisOp)
         {
             var l = current.Type switch
@@ -269,6 +274,8 @@ public ref struct ContentStreamScanner
             };
             return new Unkown_Op<T>(Encoding.ASCII.GetString(allData.Slice(current.StartAt, l)), thisOp.ToArray());
         }
+
+
     }
 
     private InlineImage_Op<T> GetImage<T>() where T : struct, IFloatingPoint<T>
@@ -277,14 +284,15 @@ public ref struct ContentStreamScanner
         if (Position < 2)
         {
             Ctx.Error("Found EI in stream but did not have proper format");
-            return new InlineImage_Op<T>(new PdfArray(), new byte[0]);
+
+            return Create(new PdfArray(), new byte[0]);
         }
         var h = Items[Position - 2];
         var d = Items[Position - 1];
         if (h.Type != 21 || d.Type != 21)
         {
             Ctx.Error("Found EI in stream but did not have proper format");
-            return new InlineImage_Op<T>(new PdfArray(), new byte[0]);
+            return Create(new PdfArray(), new byte[0]);
         }
         var pos = h.StartAt + 2; // skip BI
         var he = h.StartAt + h.Length;
@@ -331,7 +339,9 @@ public ref struct ContentStreamScanner
         if (data[data.Length - 1] == '\n') { wsCount++; }
         if (data[data.Length - 2] == '\r') { wsCount++; }
 
-        return new InlineImage_Op<T>(header, data.Slice(start, data.Length - start - wsCount).ToArray());
+        return Create(header, data.Slice(start, data.Length - start - wsCount).ToArray());
+
+        InlineImage_Op<T> Create(PdfArray header, byte[] allData) => new InlineImage_Op<T>(header, allData);
     }
 
     public static Span<ContentItem> FillListWithLexedItems(ParsingContext ctx, ReadOnlySpan<byte> data, out byte[] arr)

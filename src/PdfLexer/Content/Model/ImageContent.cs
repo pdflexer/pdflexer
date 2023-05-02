@@ -22,6 +22,19 @@ internal class ImageContent<T> : ISinglePartCopy<T> where T : struct, IFloatingP
         writer.Image(Stream);
     }
 
+    public PdfRect<T> GetBoundingBox()
+    {
+        var x = GraphicsState.CTM.E;
+        var y = GraphicsState.CTM.F;
+        return new PdfRect<T>
+        {
+            LLx = x,
+            LLy = y,
+            URx = x + GraphicsState.CTM.A,
+            URy = y + GraphicsState.CTM.D
+        };
+    }
+
     public ISinglePartCopy<T> Clone()
     {
         return (ISinglePartCopy<T>)this.MemberwiseClone();

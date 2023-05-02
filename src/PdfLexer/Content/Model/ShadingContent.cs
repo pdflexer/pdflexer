@@ -23,6 +23,19 @@ internal class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T 
         return (ISinglePartCopy<T>)this.MemberwiseClone();
     }
 
+    public PdfRect<T> GetBoundingBox()
+    {
+        var x = GraphicsState.CTM.E;
+        var y = GraphicsState.CTM.F;
+        return new PdfRect<T>
+        {
+            LLx = x,
+            LLy = y,
+            URx = x + GraphicsState.CTM.A,
+            URy = y + GraphicsState.CTM.D
+        };
+    }
+
     IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
 
     (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);

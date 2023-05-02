@@ -7,7 +7,6 @@ using System.Text;
 
 namespace PdfLexer.Operators;
 
-#if NET7_0_OR_GREATER
 public partial class PdfOperator
 {
     public delegate IPdfOperation<T>? ParseOp<T>(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
@@ -196,6 +195,3 @@ public partial class PdfOperator
         return new d_Op<T>(da, dp);
     }
 }
-
-
-#endif

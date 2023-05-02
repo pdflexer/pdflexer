@@ -31,8 +31,8 @@ namespace PdfLexer.ImageTests
                 while (reader.Advance())
                 {
                     var c = reader.Glyph.Char;
-                    var (llx, lly, urx, ury) = reader.GetCurrentBoundingBox();
-                    sb.AppendLine($"{llx:0.00} {lly:0.00} {urx:0.00} {ury:0.00} {c}");
+                    var rect = reader.GetCurrentBoundingBox();
+                    sb.AppendLine($"{rect.LLx:0.00} {rect.LLy:0.00} {rect.URx:0.00} {rect.URy:0.00} {c}");
                 }
                 var str = sb.ToString();
             }

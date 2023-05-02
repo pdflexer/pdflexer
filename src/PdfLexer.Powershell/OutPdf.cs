@@ -73,11 +73,7 @@ public class OutPdf : InputOutputPathCmdlet, IDisposable
         _fo?.Dispose();
         _sw = null;
         _fo = null;
-#if NET7_0_OR_GREATER
         GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
-#else
-        GC.Collect(GC.MaxGeneration, GCCollectionMode.Forced, true, true);
-#endif
     }
 
     public void Dispose()

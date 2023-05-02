@@ -204,7 +204,7 @@ internal class ReadCmd
                 
                 
                 int lines = 1;
-                float? llp = null;
+                double? llp = null;
                 foreach (var line in size.GroupBy(x=>x.lly).OrderByDescending(x=>x.Key))
                 {
                     llp ??= line.Key;
@@ -221,15 +221,6 @@ internal class ReadCmd
                     
                 }
                     
-                // foreach (var line in linesInRegion)
-                // {
-                //     llp ??= line.Key;
-                //     if (line.Key - llp > 1)
-                //     {
-                //         spaces++;
-                //     }
-                // }
-                // var total = linesInRegion.Count + spaces;
                 if (lines > maxLines)
                 {
                     maxLines = lines;
@@ -329,8 +320,8 @@ internal class ReadCmd
 
 internal class Region
 {
-    public float Start { get; set; }
-    public float End { get; set; }
+    public double Start { get; set; }
+    public double End { get; set; }
     public HashSet<double> Sizes { get; set; }
     public List<WordInfo> Words { get; set; }
 }

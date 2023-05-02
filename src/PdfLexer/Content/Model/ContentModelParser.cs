@@ -15,7 +15,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
     private ParsingContext Context;
     private readonly List<TJ_Lazy_Item<T>> TJCache;
 
-    internal PageContentScanner2 Scanner;
+    internal PageContentScanner Scanner;
 
     /// <summary>
     /// Current graphics state
@@ -26,7 +26,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
     public ContentModelParser(ParsingContext ctx, PdfDictionary page, bool flattenForms = false)
     {
         Context = ctx;
-        Scanner = new PageContentScanner2(ctx, page, flattenForms);
+        Scanner = new PageContentScanner(ctx, page, flattenForms);
         GraphicsState = new GfxState<T>();
         TJCache = new List<TJ_Lazy_Item<T>>(10);
     }
@@ -34,7 +34,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
     public ContentModelParser(ParsingContext ctx, PdfDictionary page, PdfStream form, GfxState<T> state)
     {
         Context = ctx;
-        Scanner = new PageContentScanner2(ctx, page, form);
+        Scanner = new PageContentScanner(ctx, page, form);
         GraphicsState = state;
         TJCache = new List<TJ_Lazy_Item<T>>(10);
     }
@@ -295,7 +295,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                                 rf = Context.GetFont(font);
 
                             }
-                            Tf_Op<T>.Apply(ref GraphicsState, font, rf, tfOp.size);
+                            Tf_Op<T>.Apply(ref GraphicsState, tfOp.font, font, rf, tfOp.size);
                         }
                     }
                     continue;

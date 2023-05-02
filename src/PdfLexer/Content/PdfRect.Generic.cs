@@ -10,13 +10,6 @@ using static DotNext.Generic.BooleanConst;
 
 namespace PdfLexer.Content;
 
-
-
-
-
-#if NET7_0_OR_GREATER
-
-
 internal interface IFloatingPointConverter
 {
     decimal ToDecimal<T>(T value) where T : IFloatingPoint<T>;
@@ -84,7 +77,6 @@ internal class DecimalFPConverter : IFloatingPointConverter
                 }
             }
         }
-
         stream.Write(buffer[..bytes]);
     }
 
@@ -96,8 +88,6 @@ internal class DecimalFPConverter : IFloatingPointConverter
         }
         return Unsafe.As<decimal, T>(ref val);
     }
-
-
 }
 
 internal class DoubleFPConverter : IFloatingPointConverter
@@ -144,8 +134,22 @@ internal class DoubleFPConverter : IFloatingPointConverter
             throw new ApplicationException("TODO: Unable to write double: " + val.ToString());
         }
         stream.Write(buffer[..bytes]);
-
-        // TODO round / truncate?
+        if (buffer.IndexOf((byte)'.') > -1)
+        {
+            for (; bytes > 0; bytes--)
+            {
+                var b = buffer[bytes - 1];
+                if (b != (byte)'0')
+                {
+                    if (b == (byte)'.')
+                    {
+                        bytes--;
+                    }
+                    break;
+                }
+            }
+        }
+        stream.Write(buffer[..bytes]);
     }
 
     public T Parse<T>(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
@@ -155,6 +159,80 @@ internal class DoubleFPConverter : IFloatingPointConverter
             ctx.Error("Bad decimal found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
         }
         return Unsafe.As<double, T>(ref val);
+    }
+}
+
+internal class FloatFPConverter : IFloatingPointConverter
+{
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public decimal ToDecimal<T>(T value) where T : IFloatingPoint<T>
+    {
+        var db = Unsafe.As<T, float>(ref value);
+        return (decimal)db;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T FromDecimal<T>(decimal value) where T : IFloatingPoint<T>
+    {
+        var db = (float)value;
+        return Unsafe.As<float, T>(ref db);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public double ToDouble<T>(T value) where T : IFloatingPoint<T>
+    {
+        var fl = Unsafe.As<T, float>(ref value);
+        return (double)fl;
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T FromDouble<T>(double value) where T : IFloatingPoint<T>
+    {
+        var fl = (float)value;
+        return Unsafe.As<float, T>(ref fl);
+    }
+
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public T FromPdfNumber<T>(PdfNumber value) where T : IFloatingPoint<T>
+    {
+        var val = (float)value;
+        return Unsafe.As<float, T>(ref val);
+    }
+
+    public void Write<T>(T value, Stream stream) where T : IFloatingPoint<T>
+    {
+        var val = Unsafe.As<T, float>(ref value);
+        Span<byte> buffer = stackalloc byte[35];
+        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes))
+        {
+            throw new ApplicationException("TODO: Unable to write double: " + val.ToString());
+        }
+        stream.Write(buffer[..bytes]);
+        if (buffer.IndexOf((byte)'.') > -1)
+        {
+            for (; bytes > 0; bytes--)
+            {
+                var b = buffer[bytes - 1];
+                if (b != (byte)'0')
+                {
+                    if (b == (byte)'.')
+                    {
+                        bytes--;
+                    }
+                    break;
+                }
+            }
+        }
+        stream.Write(buffer[..bytes]);
+    }
+
+    public T Parse<T>(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
+    {
+        if (!Utf8Parser.TryParse(data.Slice(op.StartAt, op.Length), out float val, out _))
+        {
+            ctx.Error("Bad decimal found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
+        }
+        return Unsafe.As<float, T>(ref val);
     }
 }
 
@@ -169,6 +247,10 @@ internal static class FPC<T> where T : IFloatingPoint<T>
         else if (typeof(T) == typeof(double))
         {
             return new DoubleFPConverter();
+        }
+        else if (typeof(T) == typeof(float))
+        {
+            return new FloatFPConverter();
         }
         throw new NotImplementedException("Converter for FloatingPoint: " + typeof(T));
     }
@@ -189,6 +271,9 @@ public record class PdfRect<T> where T : IFloatingPoint<T>
     public required T LLy { get; init; }
     public required T URx { get; init; }
     public required T URy { get; init; }
+
+    public T Width() => URx - LLx;
+    public T Height() => URy - LLy;
 
     public bool Intersects(PdfRect<T> rect)
     {
@@ -227,46 +312,6 @@ public record class PdfRect<T> where T : IFloatingPoint<T>
         return new PdfRect<T> { LLx = x1, LLy = y1, URx = x2, URy = y2 };
     }
 }
-
-#else
-
-public record class PdfRect
-{
-    public required decimal LLx { get; init; }
-    public required decimal LLy { get; init; }
-    public required decimal URx { get; init; }
-    public required decimal URy { get; init; }
-
-    public bool Intersects(PdfRect rect)
-    {
-        if (rect.LLx > URx) return false;
-        if (rect.LLy > URy) return false;
-        if (rect.URx < LLx) return false;
-        if (rect.URy < LLy) return false;
-        return true;
-    }
-
-    public EncloseType CheckEnclosure(PdfRect rect)
-    {
-        if (rect.LLx > URx || rect.LLy > URy || rect.URx < LLx || rect.URy < LLy) return EncloseType.None;
-        if (rect.LLx < LLx || rect.LLy < LLy || rect.URx > URx || rect.URy > URy) return EncloseType.Partial;
-        return EncloseType.Full;
-    }
-
-
-    public PdfRect Normalize(PdfPage pg) => Normalize(pg.CropBox);
-
-    public PdfRect Normalize(PdfRectangle rect)
-    {
-        var x = Math.Min((decimal)rect.LLx, (decimal)rect.URx);
-        var y = Math.Min((decimal)rect.LLy, (decimal)rect.URy);
-        if (x == 0 && y == 0) { return this; }
-        return new PdfRect { LLx = LLx - x, LLy = LLy - y, URx = URx - x, URy = URy - y };
-    }
-}
-
-#endif
-
 
 public enum EncloseType
 {

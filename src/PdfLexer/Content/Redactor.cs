@@ -46,7 +46,7 @@ public ref struct SinglePassRedactor
         return Page;
     }
 
-    private PdfStream RunForm(PdfStream str, GraphicsState state, Func<CharInfo, bool> shouldRedact, int depth)
+    private PdfStream RunForm(PdfStream str, GfxState<double> state, Func<CharInfo, bool> shouldRedact, int depth)
     {
         if (depth > Ctx.Options.MaxFormDepth)
         {
@@ -84,13 +84,13 @@ public ref struct SinglePassRedactor
         // info for last statement, only set if a character triggered
         // redaction during it
         PdfOperatorType type = default;
-        var glyphs = new List<GlyphOrShift>(50);
-        float ws = 0;
-        float cs = 0;
+        var glyphs = new List<GlyphOrShift<double>>(50);
+        double ws = 0;
+        double cs = 0;
 
         // redaction info for last statement
         var seqs = new List<int>();
-        var widths = new List<float>();
+        var widths = new List<double>();
         int pos = 0;
 
         // info for each statement regardless of redaction
@@ -356,8 +356,8 @@ public ref struct SinglePassRedactor
 public struct CharInfo
 {
     public char Char;
-    public float X;
-    public float Y;
+    public double X;
+    public double Y;
     internal ulong Stream;
     internal int Pos;
     internal int OpPos;

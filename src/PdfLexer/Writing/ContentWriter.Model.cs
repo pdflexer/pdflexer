@@ -4,7 +4,7 @@ using PdfLexer.Serializers;
 using System.Numerics;
 
 namespace PdfLexer.Writing;
-#if NET7_0_OR_GREATER
+
 public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 {
     internal ContentWriter<T> SetGS(GfxState<T> state, bool wrapExtDicts = true)
@@ -485,7 +485,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         }
     }
 
-    bool isCompatSection;
+
     internal void ReconcileCompatibility(bool compat)
     {
         if (compat != isCompatSection)
@@ -624,4 +624,3 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return name;
     }
 }
-#endif

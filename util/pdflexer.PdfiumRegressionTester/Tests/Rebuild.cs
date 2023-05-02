@@ -27,7 +27,7 @@ internal class Rebuild : ITest
 
     static PdfPage ReWriteStream(PdfDocument doc, PdfPage page)
     {
-        var scanner = new PageContentScanner2(doc.Context, page);
+        var scanner = new PageContentScanner(doc.Context, page);
         var ms = new MemoryStream();
         var fl = new ZLibLexerStream();
 

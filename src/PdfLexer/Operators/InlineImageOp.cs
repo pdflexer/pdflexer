@@ -1,22 +1,12 @@
-﻿using System.IO;
+﻿global using InlineImage_Op = PdfLexer.Operators.InlineImage_Op<double>;
+
+using System.IO;
 using System.Numerics;
 
 namespace PdfLexer.Operators;
 
 
-public class InlineImage_Op : InlineImage_Op<double>
-{
-    public InlineImage_Op(PdfArray header, byte[] allData) : base(header, allData)
-    {
-    }
-}
-
-#if NET7_0_OR_GREATER
 public class InlineImage_Op<T> : IPdfOperation<T> where T : struct, IFloatingPoint<T>
-
-#else
-public class InlineImage_Op : IPdfOperation
-#endif
 {
     public PdfOperatorType Type => PdfOperatorType.Unknown;
 
@@ -142,4 +132,3 @@ public class InlineImage_Op : IPdfOperation
         return name;
     }
 }
-

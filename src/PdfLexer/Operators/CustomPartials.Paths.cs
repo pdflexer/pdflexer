@@ -2,9 +2,6 @@
 using System.Numerics;
 
 namespace PdfLexer.Operators;
-
-
-#if NET7_0_OR_GREATER
 // c l v r re
 public partial class c_Op<T> : IPathCreatingOp<T> where T : struct, IFloatingPoint<T>
 {
@@ -74,5 +71,3 @@ public partial class re_Op<T> : IPathCreatingOp<T> where T : struct, IFloatingPo
 
     public (T, T) GetFinishingPoint() => (x, y);
 }
-
-#endif

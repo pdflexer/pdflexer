@@ -208,7 +208,7 @@ namespace pdflexer.PdfiumRegressionTester
                 {
                     var glyphChars = reader.Glyph.MultiChar ?? $"{reader.Glyph.Char}";
 
-                    var (llx, lly, urx, ury) = reader.GetCurrentBoundingBox();
+                    var rect = reader.GetCurrentBoundingBox();
                     var (x, y) = reader.GetCurrentTextPos();
                     // lines.Add($"{x:0.000} {y:0.000} {bb.llx:0.0} {bb.lly:0.0} {bb.urx:0.0} {bb.ury:0.0} {c}");
 
@@ -220,19 +220,19 @@ namespace pdflexer.PdfiumRegressionTester
                         {
                             lines.Add(((float)x, (float)y, 'f'));
                             var ci = new CharInfo { c = 'f', Font = reader.GraphicsState.FontResourceName?.Value ?? "uk", 
-                                x = x, y = y, llx = llx, lly = lly, urx = urx, ury= ury };
+                                x = (float)x, y = (float)y, llx = (float)rect.LLx, lly = (float)rect.LLy, urx = (float)rect.URx, ury= (float)rect.URy };
                             chars[$"{x:0.0}{y:0.0}f"] = ci;
                             lines.Add(((float)x, (float)y, 'i'));
                             ci = new CharInfo
                             {
                                 c = 'l',
                                 Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
-                                x = x,
-                                y = y,
-                                llx = llx,
-                                lly = lly,
-                                urx = urx,
-                                ury = ury
+                                x = (float)x,
+                                y = (float)y,
+                                llx = (float)rect.LLx,
+                                lly = (float)rect.LLy,
+                                urx = (float)rect.URx,
+                                ury = (float)rect.URy
                             };
                             chars[$"{x:0.0}{y:0.0}i"] = ci;
                         }
@@ -243,12 +243,12 @@ namespace pdflexer.PdfiumRegressionTester
                             {
                                 c = 'f',
                                 Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
-                                x = x,
-                                y = y,
-                                llx = llx,
-                                lly = lly,
-                                urx = urx,
-                                ury = ury
+                                x = (float)x,
+                                y = (float)y,
+                                llx = (float)rect.LLx,
+                                lly = (float)rect.LLy,
+                                urx = (float)rect.URx,
+                                ury = (float)rect.URy
                             }; ;
                             chars[$"{x:0.0}{y:0.0}f"] = ci;
                             lines.Add(((float)x, (float)y, 'l'));
@@ -256,12 +256,12 @@ namespace pdflexer.PdfiumRegressionTester
                             {
                                 c = 'l',
                                 Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
-                                x = x,
-                                y = y,
-                                llx = llx,
-                                lly = lly,
-                                urx = urx,
-                                ury = ury
+                                x = (float)x,
+                                y = (float)y,
+                                llx = (float)rect.LLx,
+                                lly = (float)rect.LLy,
+                                urx = (float)rect.URx,
+                                ury = (float)rect.URy
                             };
                             chars[$"{x:0.0}{y:0.0}l"] = ci;
                         }
@@ -272,12 +272,12 @@ namespace pdflexer.PdfiumRegressionTester
                             {
                                 c = c,
                                 Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
-                                x = x,
-                                y = y,
-                                llx = llx,
-                                lly = lly,
-                                urx = urx,
-                                ury = ury,
+                                x = (float)x,
+                                y = (float)y,
+                                llx = (float)rect.LLx,
+                                lly = (float)rect.LLy,
+                                urx = (float)rect.URx,
+                                ury = (float)rect.URy,
                                 cp = reader.Glyph.CodePoint ?? 0
                             }; ;
                             chars[$"{x:0.0}{y:0.0}{c}"] = ci;

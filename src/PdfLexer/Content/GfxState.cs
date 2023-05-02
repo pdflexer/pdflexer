@@ -8,7 +8,6 @@ namespace PdfLexer.Content;
 using PdfLexer.Content.Model;
 using PdfLexer.Fonts;
 
-#if NET7_0_OR_GREATER
 
 using System.Numerics;
 
@@ -24,6 +23,7 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
 
     internal GfxState<T>? Prev { get; init; }
     internal IReadableFont? Font { get; init; }
+    internal PdfName? FontResourceName { get; init; }
 
     public GfxMatrix<T> CTM { get; init; }
 
@@ -206,7 +206,3 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
         return this with { Clipping = Clipping.Clip(rect, boundary) };
     }
 }
-
-
-
-#endif

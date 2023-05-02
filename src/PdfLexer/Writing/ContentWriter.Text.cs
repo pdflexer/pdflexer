@@ -1,22 +1,12 @@
 ﻿using PdfLexer.Fonts;
 using PdfLexer.Serializers;
-using System.Buffers.Text;
-using System;
 using System.Numerics;
 using PdfLexer.Content;
-using System.Drawing;
 
 namespace PdfLexer.Writing;
 
-#if NET7_0_OR_GREATER
 public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
-#else
-    public partial class ContentWriter
-#endif
 {
-
-
-#if NET7_0_OR_GREATER
     public ContentWriter<T> Font(IWritableFont font, T size)
     {
         var nm = AddFont(font);
@@ -25,43 +15,10 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         GfxState = GfxState with { FontSize = size }; // font handled already
         return this;
     }
-#else
-    public ContentWriter Font(IWritableFont font, double size)
-    {
-        var nm = AddFont(font);
-        writableFont = font;
-        Tf_Op.WriteLn(nm, size, Writer.Stream);
-        GfxState = GfxState with { FontSize = size }; // font handled already
-        return this;
-    }
-#endif
-
-
-    public enum Base14
-    {
-        TimesRoman,
-        TimesRomanBold,
-        TimesRomanBoldItalic,
-        TimesRomanItalic,
-        Courier,
-        CourierBold,
-        CourierBoldItalic,
-        CourierItalic,
-        Helvetica,
-        HelveticaBold,
-        HelveticaBoldItalic,
-        HelveticaItalic,
-        Symbol,
-        ZapfDingbats,
-    }
 
     private Dictionary<Base14, IWritableFont> used = new();
 
-#if NET7_0_OR_GREATER
     public ContentWriter<T> Font(Base14 font, T size)
-#else
- public ContentWriter Font(Base14 font, double size)
-#endif
     {
         if (!used.TryGetValue(font, out var wf))
         {
@@ -88,12 +45,7 @@ used[font] = wf;
         return Font(wf, size);
     }
 
-
-#if NET7_0_OR_GREATER
     public ContentWriter<T> Text(string text)
-#else
-    public ContentWriter Text(string text)
-#endif
     {
         if (writableFont == null) { throw new NotSupportedException("Must set current font before writing."); }
         // very inefficient just experimenting
@@ -120,7 +72,6 @@ used[font] = wf;
         return this;
     }
 
-#if NET7_0_OR_GREATER
     public ContentWriter<T> TextMove(T x, T y)
     {
         EnsureInTextState();
@@ -128,17 +79,6 @@ used[font] = wf;
         Td_Op<T>.Apply(ref GfxState, x, y);
         return this;
     }
-#else
-    public ContentWriter TextMove(double x, double y)
-    {
-        EnsureInTextState();
-        Td_Op.WriteLn(x, y, Writer.Stream);
-        Td_Op.Apply(ref GfxState, x, y);
-        return this;
-    }
-#endif
-
-#if NET7_0_OR_GREATER
     public ContentWriter<T> TextTransform(GfxMatrix<T> tm)
     {
         EnsureInTextState();
@@ -148,22 +88,14 @@ used[font] = wf;
         GfxState.UpdateTRM();
         return this;
     }
-#endif
 
-
-
-#if NET7_0_OR_GREATER
     public ContentWriter<T> EndText()
-#else
-    public ContentWriter EndText()
-#endif
     {
         State = PageState.Page;
         ET_Op.WriteLn(Writer.Stream);
         return this;
     }
 
-#if NET7_0_OR_GREATER
     public ContentWriter<T> BeginText()
     {
         State = PageState.Text;
@@ -173,19 +105,7 @@ used[font] = wf;
         GfxState.UpdateTRM();
         return this;
     }
-#else
-    public ContentWriter BeginText()
-    {
-        State = PageState.Text;
-        BT_Op.WriteLn(Writer.Stream);
-        GfxState.Text.TextLineMatrix = GfxMatrix.Identity;
-        GfxState.Text.TextMatrix = GfxMatrix.Identity;
-        GfxState.UpdateTRM();
-        return this;
-    }
-#endif
 
-#if NET7_0_OR_GREATER
     internal ContentWriter<T> SetTextAndLinePosition(GfxMatrix<T> lm)
     {
         EnsureInTextState();
@@ -293,8 +213,6 @@ used[font] = wf;
         }
     }
 
-#endif
-
     private void EnsureInTextState()
     {
         if (State == PageState.Text) { return; }
@@ -339,4 +257,22 @@ used[font] = wf;
         Fonts[name] = PdfIndirectRef.Create(obj);
         return name;
     }
+}
+
+public enum Base14
+{
+    TimesRoman,
+    TimesRomanBold,
+    TimesRomanBoldItalic,
+    TimesRomanItalic,
+    Courier,
+    CourierBold,
+    CourierBoldItalic,
+    CourierItalic,
+    Helvetica,
+    HelveticaBold,
+    HelveticaBoldItalic,
+    HelveticaItalic,
+    Symbol,
+    ZapfDingbats,
 }

@@ -11,12 +11,9 @@ public partial interface IPdfOperation
 {
     public PdfOperatorType Type { get; }
     public void Serialize(Stream stream);
-    public void Apply(ref GraphicsState state) { }
-    
-    public void Apply(TextState state) { }
 }
 
-#if NET7_0_OR_GREATER
+
 public partial interface IPdfOperation<T> : IPdfOperation where T : struct, IFloatingPoint<T>
 {
     public void Apply(ref GfxState<T> state) 
@@ -30,7 +27,7 @@ internal interface IPathCreatingOp<T> : IPdfOperation<T> where T : struct, IFloa
     public (T, T) GetFinishingPoint();
 }
 
-#endif
+
 public partial class PdfOperator
 {
     public static bool TryRepair(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> info, List<string> types,
@@ -174,6 +171,15 @@ public partial class PdfOperator
         if (!Utf8Parser.TryParse(data.Slice(op.StartAt, op.Length), out float val, out _))
         {
             ctx.Error("Bad float found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
+        }
+        return val;
+    }
+
+    public static double Parsedouble(ParsingContext ctx, ReadOnlySpan<byte> data, OperandInfo op)
+    {
+        if (!Utf8Parser.TryParse(data.Slice(op.StartAt, op.Length), out double val, out _))
+        {
+            ctx.Error("Bad double found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
         }
         return val;
     }

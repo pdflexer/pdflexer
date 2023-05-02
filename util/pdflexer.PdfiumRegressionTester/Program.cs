@@ -317,7 +317,7 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
     var xObjReplacements = new Dictionary<PdfName, PdfName>();
     var gsReplacements = new Dictionary<PdfName, PdfName>();
 
-    while (scanner.Peek() != PdfOperatorType.EOC)
+    while (scanner.Advance())
     {
         if (scanner.TryGetCurrentOperation(out var op))
         {
@@ -394,10 +394,7 @@ static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
                         break;
                 }
             }
-
-
         }
-        scanner.SkipCurrent();
     }
 
     page = page.NativeObject.CloneShallow();

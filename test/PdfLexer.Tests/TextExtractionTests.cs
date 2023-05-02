@@ -178,9 +178,9 @@ namespace PdfLexer.Tests
             {
                 using var writer = pg.GetWriter();
 
-                writer.Font(ContentWriter.Base14.Courier, 10);
-                new gs_Op("GSName").Serialize(writer.StreamWriter.Stream);
-                writer.StreamWriter.Stream.WriteByte((byte)'\n');
+                writer.Font(Base14.Courier, 10);
+                new gs_Op("GSName").Serialize(writer.Writer.Stream);
+                writer.Writer.Stream.WriteByte((byte)'\n');
                 writer.Text("Hello world");
                 // writer.Complete();
             }
@@ -281,14 +281,14 @@ namespace PdfLexer.Tests
 
             foreach (var page in pdf.Pages)
             {
-                var parser = new ContentModelParser(pdf.Context, page);
+                var parser = new ContentModelParser<double>(pdf.Context, page);
                 var content = parser.Parse();
                 // var matches = content.Where(x => x.Type == ContentType.Text).Cast<TextLineSequence>()
                 //     .Where(x => x.Glyphs.Any(c => c.Glyph?.Char == ',' || c.Glyph?.Char == 'M')).Cast<IContentGroup>().ToList();
                 var newPage = new PdfPage();
                 newPage.MediaBox = page.MediaBox;
                 newPage.CropBox = page.CropBox;
-                var str = ContentModelWriter.CreateContent(newPage.Resources, content);
+                var str = ContentModelWriter<double>.CreateContent(newPage.Resources, content);
                 newPage.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(new PdfStream(str));
                 opdf.Pages.Add(newPage);
             }

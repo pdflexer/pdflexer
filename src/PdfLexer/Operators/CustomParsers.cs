@@ -121,67 +121,6 @@ public partial class PdfOperator
         return new SCN_Op(colors, name);
     }
 
-    internal static Tj_Op ParseTj(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
-    {
-        var op = operands[0];
-        var text = ctx.StringParser.ParseRaw(data.Slice(op.StartAt, op.Length));
-        return new Tj_Op(text);
-    }
-
-    internal static TJ_Op ParseTJ(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands)
-    {
-        var items = new List<TJ_Item<double>>(operands.Count - 2);
-        foreach (var op in operands)
-        {
-            if (op.Type == PdfTokenType.StringStart)
-            {
-                items.Add(
-                    new TJ_Item<double>
-                    {
-                        Data = ctx.StringParser.ParseRaw(data.Slice(op.StartAt, op.Length)) // TODO don't allocate arrays here, need to 
-                                                                                            // find solution for Writing since it won't 
-                                                                                            // have access to source data span if we just 
-                                                                                            // track refs
-                    });
-            }
-            else if (op.Type == PdfTokenType.NumericObj || op.Type == PdfTokenType.DecimalObj)
-            {
-                items.Add(
-                    new TJ_Item<double>
-                    {
-                        Shift = (double)ParseDecimal(ctx, data, op) // TODO
-                    });
-            }
-        }
-        return new TJ_Op(items);
-    }
-
-    internal static void ParseTJLazy(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands, List<TJ_Lazy_Item> items)
-    {
-        int i = 0;
-        foreach (var op in operands)
-        {
-            if (op.Type == PdfTokenType.StringStart)
-            {
-                items.Add(
-                    new TJ_Lazy_Item
-                    {
-                        OpNum = i
-                    });
-            }
-            else if (op.Type == PdfTokenType.NumericObj || op.Type == PdfTokenType.DecimalObj)
-            {
-                items.Add(
-                    new TJ_Lazy_Item
-                    {
-                        Shift = (double)ParseDecimal(ctx, data, op),
-                        OpNum = -1
-                    });
-            }
-            i++;
-        }
-    }
-
     internal static void ParseTJLazy<T>(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands, List<TJ_Lazy_Item<T>> items) 
         where T: struct, IFloatingPoint<T>
     {

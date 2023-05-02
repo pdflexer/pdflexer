@@ -1,17 +1,18 @@
 ﻿using BenchmarkDotNet.Attributes;
 using PDFiumCore;
 using PdfLexer.Content;
-using PdfLexer.Operators;
+using PdfLexer.Content.Model;
 using PdfLexer.Serializers;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 
 namespace PdfLexer.Benchmarks.Benchmarks
 {
     [Config(typeof(BenchmarkConfig))]
-    public class ScannerBenchmark
+    public class ModelBenchmark
     {
         public static string GetPathFromSegmentOfCurrent(string segment)
         {
@@ -34,7 +35,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         private List<MemoryStream> mems;
 
         // "issue2128r" pdflexer need to research
-        [Params( "bug1669099")]//, "__bpl13210.pdf", "issue1905", "__ecma262.pdf", "__gesamt.pdf", "__issue1133.pdf", "issue2128r")]
+        [Params("__bpl13210.pdf", "bug1669099.pdf", "issue1905.pdf")] //, "__ecma262.pdf", "__gesamt.pdf", "__issue1133.pdf", "issue2128r.pdf")]
         public string testPdf;
 
         [GlobalSetup]
@@ -49,11 +50,9 @@ namespace PdfLexer.Benchmarks.Benchmarks
             paths = new List<string>();
             mems = new List<MemoryStream>();
             Add(testPdf);
-            V1();
-            V2();
             void Add(string name)
             {
-                var path = Path.Combine(pdfRoot, name + ".pdf");
+                var path = Path.Combine(pdfRoot, name);
                 // var path = "c:\\temp\\vector2.pdf";
                 paths.Add(path);
                 var data = File.ReadAllBytes(path);
@@ -64,55 +63,41 @@ namespace PdfLexer.Benchmarks.Benchmarks
 
 
         [Benchmark(Baseline = true)]
-        public int V1()
+        public decimal ParseModelDouble()
         {
-            int total = 0;
-            int chars = 0;
-            foreach (var pdf in pdfs)
-            {
-                using var doc = PdfDocument.Open(pdf);
-                foreach (var page in doc.Pages)
-                {
-                    var reader = new PageContentScanner(doc.Context, page);
-                    while (reader.Advance())
-                    {
-                        unchecked { chars += (int)reader.CurrentOperator; }
-                    }
-                    // reader = new PageContentScanner(doc.Context, page);
-                    // while ((op = reader.Peek()) != PdfOperatorType.EOC)
-                    // {
-                    //     unchecked { chars += (int)op; }
-                    //     reader.SkipCurrent();
-                    // }
-                }
-            }
-            unchecked { return chars + total; }
+            return ParseModel<double>();
         }
 
         [Benchmark()]
-        public int V2()
+        public decimal ParseModelFloat()
         {
-            int total = 0;
-            int chars = 0;
+            return ParseModel<float>();
+        }
+
+        [Benchmark()]
+        public decimal ParseModelDecimal()
+        {
+            return ParseModel<decimal>();
+        }
+
+        private decimal ParseModel<T>() where T : struct, IFloatingPoint<T>
+        {
+            T total = T.Zero;
             foreach (var pdf in pdfs)
             {
                 using var doc = PdfDocument.Open(pdf);
                 foreach (var page in doc.Pages)
                 {
-                    // using var cache = new StreamBufferCache();
-                    var reader = new PageContentScanner(doc.Context, page);
-                    while (reader.Advance())
+                    var parser = new ContentModelParser<T>(doc.Context, page, true);
+                    var val = parser.Parse();
+                    foreach (var item in val)
                     {
-                        unchecked { chars += (int)reader.CurrentOperator; }
+                        var rect = item.GetBoundingBox();
+                        unchecked { total += rect.LLx; }
                     }
-                    // reader = new PageContentScanner2(doc.Context, page);
-                    // while (reader.Advance())
-                    // {
-                    //     unchecked { chars += (int)reader.CurrentOperator; }
-                    // }
                 }
             }
-            unchecked { return chars + total; }
+            return FPC<T>.Util.ToDecimal(total);
         }
     }
 }

@@ -134,6 +134,19 @@ public record struct GfxMatrix<T> where T : struct, IFloatingPoint<T>
 
     }
 
+    public PdfRect<T> GetCurrentSize()
+    {
+        var x = E;
+        var y = F;
+        return new PdfRect<T>
+        {
+            LLx = x,
+            LLy = y,
+            URx = x + A,
+            URy = y + D
+        };
+    }
+
 
     /// <summary>
     /// Multiplies two matrices together and returns the resulting matrix.

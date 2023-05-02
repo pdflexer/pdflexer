@@ -1,8 +1,6 @@
 ﻿using System.Numerics;
 using System.Text;
 
-
-
 namespace PdfLexer.Lexing;
 
 public struct OperandInfo
@@ -69,15 +67,9 @@ public ref struct ContentScanner
         Scanner.SkipCurrent();
         Operands.Clear();
     }
-#if NET7_0_OR_GREATER
     
     public bool TryGetCurrentOperation([NotNullWhen(true)] out IPdfOperation? op) => TryGetCurrentOperation<double>(out op);
     public bool TryGetCurrentOperation<T>([NotNullWhen(true)] out IPdfOperation? op) where T : struct, IFloatingPoint<T>
-#else
-    public bool TryGetCurrentOperation<T>([NotNullWhen(true)] out IPdfOperation? op)
-#endif
-
-    
     {
         Peek();
 
