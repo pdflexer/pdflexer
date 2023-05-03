@@ -51,13 +51,23 @@ public class InlineImage_Op<T> : IPdfOperation<T> where T : struct, IFloatingPoi
             }
             if (key != null)
             {
-                var v = GetReplacement(item);
-                dict[key] = v;
-                if (key == PdfName.ColorSpace && v is PdfName nm &&
-                    resources.TryGetValue<PdfDictionary>(PdfName.ColorSpace, out var css) && css.TryGetValue(nm, out var obj))
+                if (key == PdfName.ColorSpace)
                 {
-                    obj = obj.Resolve();
-                    dict[key] = obj.Indirect();
+                    var v = GetReplacement(item, true);
+
+                    if (v is PdfName nm &&
+                        resources.TryGetValue<PdfDictionary>(PdfName.ColorSpace, out var css) && css.TryGetValue(nm, out var obj))
+                    {
+                        obj = obj.Resolve();
+                        dict[key] = obj.Indirect();
+                    } else 
+                    {
+                        dict[key] = v;
+                    }
+                } else
+                {
+                    var v = GetReplacement(item);
+                    dict[key] = v;
                 }
                 key = null;
                 
@@ -69,24 +79,24 @@ public class InlineImage_Op<T> : IPdfOperation<T> where T : struct, IFloatingPoi
         ba.DecodeParams = dict.Get(PdfName.DecodeParms);
         return new PdfStream(dict, ba);
     }
-    private static IPdfObject GetReplacement(IPdfObject obj)
+    private static IPdfObject GetReplacement(IPdfObject obj, bool cs = false)
     {
         switch (obj)
         {
             case PdfName nm:
-                return GetReplacedName(nm);
+                return GetReplacedName(nm, cs);
             case PdfArray arr:
                 var copy = new PdfArray();
                 foreach (var item in arr)
                 {
-                    copy.Add(GetReplacement(item));
+                    copy.Add(GetReplacement(item, cs));
                 }
                 return copy;
             default:
                 return obj;
         }
     }
-    private static PdfName GetReplacedName(PdfName name)
+    private static PdfName GetReplacedName(PdfName name, bool cs = false)
     {
         switch (name.Value)
         {
@@ -125,7 +135,7 @@ public class InlineImage_Op<T> : IPdfOperation<T> where T : struct, IFloatingPoi
             case "H":
                 return PdfName.Height;
             case "I":
-                return PdfName.Interpolate;
+                return cs ? PdfName.Indexed : PdfName.Interpolate;
             case "IM":
                 return PdfName.ImageMask;
         }

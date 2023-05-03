@@ -170,10 +170,6 @@ public partial class doublequote_Op<T>
     }
 }
 
-
-
-
-
 public struct TJ_Item<T> where T : struct, IFloatingPoint<T>
 {
     public T Shift;
@@ -184,8 +180,6 @@ internal struct TJ_Lazy_Item<T> where T : struct, IFloatingPoint<T>
     public T Shift;
     public int OpNum;
 }
-
-
 
 #if false
 

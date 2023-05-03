@@ -1,12 +1,9 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Lexing;
-using System;
 using System.Buffers.Text;
-using System.Collections.Generic;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
-using static DotNext.Generic.BooleanConst;
 
 namespace PdfLexer.Content;
 
@@ -133,7 +130,6 @@ internal class DoubleFPConverter : IFloatingPointConverter
         {
             throw new ApplicationException("TODO: Unable to write double: " + val.ToString());
         }
-        stream.Write(buffer[..bytes]);
         if (buffer.IndexOf((byte)'.') > -1)
         {
             for (; bytes > 0; bytes--)
@@ -207,7 +203,6 @@ internal class FloatFPConverter : IFloatingPointConverter
         {
             throw new ApplicationException("TODO: Unable to write double: " + val.ToString());
         }
-        stream.Write(buffer[..bytes]);
         if (buffer.IndexOf((byte)'.') > -1)
         {
             for (; bytes > 0; bytes--)
@@ -290,7 +285,6 @@ public record class PdfRect<T> where T : IFloatingPoint<T>
         if (rect.LLx < LLx || rect.LLy < LLy || rect.URx > URx || rect.URy > URy) return EncloseType.Partial;
         return EncloseType.Full;
     }
-
 
     public PdfRect<T> NormalizeTo(PdfPage pg) => NormalizeTo(pg.CropBox);
 

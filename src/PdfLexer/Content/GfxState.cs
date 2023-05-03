@@ -135,7 +135,7 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
         {
             // tx = ((w0-Tj/1000) * T_fs + T_c + T_w?) * Th
             // var s = (info.w0 - tj / 1000) * FontSize + CharSpacing; // Tj pre applied
-            var w0 = FPC<T>.Util.FromPdfNumber<T>(info.w0);
+            var w0 = FPC<T>.Util.FromDouble<T>(info.w0);
             var s = w0 * FontSize + CharSpacing;
             if (info.IsWordSpace)
             {
@@ -146,7 +146,7 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
         else
         {
             // ty = (w1-Tj/1000) * T_fs + T_c + T_w?)
-            var w1 = FPC<T>.Util.FromPdfNumber<T>(info.w1);
+            var w1 = FPC<T>.Util.FromDouble<T>(info.w1);
             var s = w1 * FontSize + CharSpacing;
             if (info.IsWordSpace) { s += WordSpacing; }
             ty = s;
@@ -154,7 +154,7 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
 
         ShiftTextMatrix(tx, ty);
     }
-    internal static T V1000 = T.Parse("1000", null);
+
     internal void ApplyTj(T tj)
     {
         if (tj == T.Zero) { return; }
@@ -162,11 +162,11 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
         T ty = T.Zero;
         if (!(Font?.IsVertical ?? false))
         {
-            tx = (-tj / V1000) * FontSize * TextHScale;
+            tx = (-tj / FPC<T>.V1000) * FontSize * TextHScale;
         }
         else
         {
-            var s = (-tj / V1000) * FontSize;
+            var s = (-tj / FPC<T>.V1000) * FontSize;
             ty = s;
         }
 

@@ -1,5 +1,6 @@
 ﻿using PdfLexer.Fonts;
 using PdfLexer.Lexing;
+using System.Numerics;
 using System.Text;
 
 namespace PdfLexer.Content;
@@ -15,6 +16,7 @@ internal class CharPosition
     public int Pos { get; set; }
     public int OpPos { get; set; }
 }
+
 
 /// <summary>
 /// Lowest level text reader for PdfLexer
@@ -150,12 +152,10 @@ public ref struct TextScanner
                     states.Add(GraphicsState with { Prev = null });
                     break;
                 case PdfOperatorType.EOC:
-                    // Glyph = null;
                     return false;
                 case PdfOperatorType.BT:
                     ReadState = TextReadState.ReadingText;
-                    BT_Op.Value.Apply(ref GraphicsState);
-                    // FormResources = Scanner.CurrentForm?.Get<PdfDictionary>(PdfName.Resources);
+                    BT_Op<double>.Value.Apply(ref GraphicsState);
                     continue;
                 case PdfOperatorType.ET:
                     ReadState = TextReadState.Normal;
@@ -171,7 +171,7 @@ public ref struct TextScanner
                     {
                         continue;
                     }
-                    double? fsize = null;
+                    float? fsize = null;
                     PdfDictionary? fdict = null;
                     IReadableFont? fread = null;
                     if (gsd.TryGetValue<PdfArray>(PdfName.Font, out var fobj, false))
@@ -191,7 +191,7 @@ public ref struct TextScanner
                 case PdfOperatorType.q:
                 case PdfOperatorType.Q:
                 case PdfOperatorType.cm:
-                    if (Scanner.TryGetCurrentOperation(out var gso))
+                    if (Scanner.TryGetCurrentOperation<double>(out var gso))
                     {
                         gso.Apply(ref GraphicsState);
                     }
@@ -214,7 +214,7 @@ public ref struct TextScanner
                                 var ops = Scanner.Scanner.GetOperands();
                                 var op = ops[0];
                                 CurrentGlyphs.Clear();
-                                T_Star_Op.Value.Apply(ref GraphicsState);
+                                T_Star_Op<double>.Value.Apply(ref GraphicsState);
                                 var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
                                 Context.FillGlyphsFromRawString(GraphicsState, slice, CurrentGlyphs);
                                 CurrentTextPos = 0;
@@ -230,7 +230,7 @@ public ref struct TextScanner
                                 var op = ops[2];
                                 var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
                                 GraphicsState = GraphicsState with { WordSpacing = aw, CharSpacing = ac };
-                                T_Star_Op.Value.Apply(ref GraphicsState);
+                                T_Star_Op<double>.Value.Apply(ref GraphicsState);
                                 Context.FillGlyphsFromRawString(GraphicsState, slice, CurrentGlyphs);
                                 CurrentTextPos = 0;
                                 ReadState = TextReadState.ReadingOp;
@@ -272,9 +272,9 @@ public ref struct TextScanner
                             }
                         case PdfOperatorType.Tf:
                             {
-                                if (Scanner.TryGetCurrentOperation(out var op))
+                                if (Scanner.TryGetCurrentOperation<double>(out var op))
                                 {
-                                    var tfOp = (Tf_Op)op;
+                                    var tfOp = (Tf_Op<double>)op;
                                     IReadableFont? rf;
                                     if (!Scanner.TryGetFont(tfOp.font, out var font))
                                     {
@@ -283,22 +283,14 @@ public ref struct TextScanner
                                     }
                                     else
                                     {
-                                        // resources may not be included
-                                        var ft = font.Get(PdfName.Subtype);
-                                        if (ft != null && (ft as PdfName) == PdfName.Type3 && !font.ContainsKey(PdfName.Resources))
-                                        {
-                                            font = font.CloneShallow();
-                                            font[PdfName.Resources] = Scanner.Resources.CloneShallow();
-                                        }
                                         rf = Context.GetFont(font);
-
                                     }
-                                    Tf_Op.Apply(ref GraphicsState, tfOp.font, font, rf, tfOp.size);
+                                    Tf_Op<double>.Apply(ref GraphicsState, tfOp.font, font, rf, tfOp.size);
                                 }
                             }
                             continue;
                         default:
-                            if (Scanner.TryGetCurrentOperation(out var tao))
+                            if (Scanner.TryGetCurrentOperation<double>(out var tao))
                             {
                                 tao.Apply(ref GraphicsState);
                             }

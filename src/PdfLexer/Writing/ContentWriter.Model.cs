@@ -93,12 +93,14 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             writableFont = null;
             var nm = AddFont(state.FontObject);
             Tf_Op<T>.WriteLn(nm, state.FontSize, stream);
+            GfxState = GfxState with { FontObject = state.FontObject, FontSize = state.FontSize };
         }
         else if (state.FontObject != null && state.FontSize != GfxState.FontSize)
         {
             writableFont = null;
             var nm = AddFont(state.FontObject);
             Tf_Op<T>.WriteLn(nm, state.FontSize, stream);
+            GfxState = GfxState with { FontSize = state.FontSize };
         }
 
         if (state.Clipping != null && !(GfxState.Clipping?.SequenceEqual(state.Clipping) ?? false))

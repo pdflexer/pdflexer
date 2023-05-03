@@ -724,8 +724,13 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
             }
             else if (state == ParseState.Paths)
             {
+                if (currentPath!.Closing == null && !reset)
+                {
+                    return; // allow changes before stroking to effect final op
+                }
                 if (currentPath!.Closing != n_Op.Value)
                 {
+                    currentPath.GraphicsState = gs; // catch GS changes for final stroking
                     content.Add(currentPath!);
                 }
                 if (reset)

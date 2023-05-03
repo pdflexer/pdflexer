@@ -8,7 +8,7 @@ using System.Text;
 namespace PdfLexer.Operators;
 
 
-public partial class Tc_Op<T> where T : struct, IFloatingPoint<T>
+public partial class Tc_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -16,7 +16,7 @@ public partial class Tc_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class Tw_Op<T> where T : struct, IFloatingPoint<T>
+public partial class Tw_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -24,7 +24,7 @@ public partial class Tw_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class Tz_Op<T> where T : struct, IFloatingPoint<T>
+public partial class Tz_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -33,7 +33,7 @@ public partial class Tz_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class TL_Op<T> where T : struct, IFloatingPoint<T>
+public partial class TL_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -41,7 +41,7 @@ public partial class TL_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class Tf_Op<T> where T : struct, IFloatingPoint<T>
+public partial class Tf_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -55,7 +55,7 @@ public partial class Tf_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class Tr_Op<T> where T : struct, IFloatingPoint<T>
+public partial class Tr_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -63,7 +63,7 @@ public partial class Tr_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class Ts_Op<T> where T : struct, IFloatingPoint<T>
+public partial class Ts_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -72,7 +72,7 @@ public partial class Ts_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class Td_Op<T> where T : struct, IFloatingPoint<T>
+public partial class Td_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -84,7 +84,7 @@ public partial class Td_Op<T> where T : struct, IFloatingPoint<T>
         state.ShiftTextAndLineMatrix(tx, ty);
     }
 }
-public partial class TD_Op<T> where T : struct, IFloatingPoint<T>
+public partial class TD_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -93,12 +93,13 @@ public partial class TD_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class Tm_Op<T> where T : struct, IFloatingPoint<T>
+public partial class Tm_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
         state.Text.TextLineMatrix = new GfxMatrix<T>(a, b, c, d, e, f);
         state.Text.TextMatrix = state.Text.TextLineMatrix;
+        state.UpdateTRM();
     }
 
     public static void WriteLn(GfxMatrix<T> tm, Stream stream)
@@ -109,7 +110,7 @@ public partial class Tm_Op<T> where T : struct, IFloatingPoint<T>
 
 }
 
-public partial class T_Star_Op<T> where T : struct, IFloatingPoint<T>
+public partial class T_Star_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -117,7 +118,7 @@ public partial class T_Star_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class Tj_Op<T> where T : struct, IFloatingPoint<T>
+public partial class Tj_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -125,7 +126,7 @@ public partial class Tj_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class doublequote_Op<T> where T : struct, IFloatingPoint<T>
+public partial class doublequote_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -135,7 +136,7 @@ public partial class doublequote_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class singlequote_Op<T> where T : struct, IFloatingPoint<T>
+public partial class singlequote_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -144,7 +145,7 @@ public partial class singlequote_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class TJ_Op<T> where T : struct, IFloatingPoint<T>
+public partial class TJ_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
@@ -162,7 +163,7 @@ public partial class TJ_Op<T> where T : struct, IFloatingPoint<T>
     }
 }
 
-public partial class BT_Op<T> where T : struct, IFloatingPoint<T>
+public partial class BT_Op<T>
 {
     public void Apply(ref GfxState<T> state)
     {
