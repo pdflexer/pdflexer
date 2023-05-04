@@ -38,8 +38,8 @@ internal class ModelRebuild : ITest
         var test2 = new PdfRect { LLx = 54, LLy = 790, URx = 60, URy = 795 }.NormalizeTo(page);
         var split = new List<IContentGroup<decimal>>();
 
-
-        var resources = new PdfDictionary();
+        // var resources = new PdfDictionary();
+        var resources = data.Any(x => x.Type == ContentType.Form) ? page.Resources.CloneShallow() : new PdfDictionary();
         var writer = new ContentWriter<decimal>(resources);
         // writer.Save();
         // writer.LineWidth(0.2);

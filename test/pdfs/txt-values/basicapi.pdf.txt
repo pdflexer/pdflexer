@@ -90,7 +90,7 @@
 1 74.00 699.7 r False False
 1 78.52 699.7 a False False
 1 85.26 699.7 g False False
-1 92.25 699.7 r False False
+1 92.24 699.7 r False False
 1 96.77 699.7 a False False
 1 103.51 699.7 p False False
 1 110.49 699.7 h False False
@@ -264,7 +264,7 @@
 3 2.83 1.2 P True False
 3 3.50 1.2 o False False
 3 4.05 1.2 w False False
-3 4.78 1.2 e False False
+3 4.77 1.2 e False False
 3 5.33 1.2 r False False
 3 5.66 1.2 e False False
 3 6.22 1.2 d False False

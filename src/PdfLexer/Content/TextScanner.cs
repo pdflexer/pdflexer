@@ -17,6 +17,17 @@ internal class CharPosition
     public int OpPos { get; set; }
 }
 
+public struct CharPos
+{
+    public double x { get; init; }
+    public double y { get; init; }
+    public char c { get; init; }
+    public override string ToString()
+    {
+        return $"{c} {x:00} {y:00}";
+    }
+}
+
 
 /// <summary>
 /// Lowest level text reader for PdfLexer
@@ -186,7 +197,14 @@ public ref struct TextScanner
                             fsize = fz;
                         }
                     }
-                    GraphicsState = GraphicsState with { Font = fread, FontObject = fdict, FontSize = fsize ?? GraphicsState.FontSize };
+                    if (fdict != null) 
+                    {
+                        GraphicsState = GraphicsState with { 
+                            Font = fread != null ? fread : GraphicsState.Font,
+                            FontObject = fdict != null ? fdict : GraphicsState.FontObject,
+                            FontSize = fsize ?? GraphicsState.FontSize };
+                    }
+                    
                     continue;
                 case PdfOperatorType.q:
                 case PdfOperatorType.Q:
@@ -340,6 +358,42 @@ public ref struct TextScanner
         Normal,
         ReadingText,
         ReadingOp
+    }
+
+    public IEnumerable<CharPos> EnumerateCharacters()
+    {
+        if (Glyph == null)
+        {
+            throw new NotSupportedException("GetCurrentBoundingBox called with no current glyph in scanner state.");
+        }
+        var x = GraphicsState.Text.TextRenderingMatrix.E;
+        var y = GraphicsState.Text.TextRenderingMatrix.F;
+        return GetEnum(Glyph, x, y);
+    }
+
+    private static IEnumerable<CharPos> GetEnum(Glyph glyph, double x, double y) 
+    {
+        if (glyph.MultiChar != null)
+        {
+            foreach (var c in glyph.MultiChar)
+            {
+                yield return new CharPos
+                {
+                    c = c,
+                    x = x,
+                    y = y
+                };
+            }
+        }
+        else
+        {
+            yield return new CharPos
+            {
+                c = glyph.Char,
+                x = x,
+                y = y
+            };
+        }
     }
 
     public (double x, double y) GetCurrentTextPos()

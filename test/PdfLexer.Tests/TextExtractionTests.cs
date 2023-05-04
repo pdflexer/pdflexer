@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using UglyToad.PdfPig.Content;
 using Xunit;
 
 namespace PdfLexer.Tests
@@ -211,11 +212,11 @@ namespace PdfLexer.Tests
             var pdfFile = Path.Combine(pdfRoot, "issue1002.pdf");
             using var pdf = PdfDocument.Open(pdfFile);
 
-            var text= pdf.Pages[0].GetTextVisually(pdf.Context);
+            var text = pdf.Pages[0].GetTextVisually(pdf.Context);
             Assert.NotEqual(' ', text[text.Length - 2]);
         }
 
-        private void RunSingle(string name, bool runCom=true)
+        private void RunSingle(string name, bool runCom = true)
         {
             {
                 var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -296,33 +297,33 @@ namespace PdfLexer.Tests
             var nd = opdf.Save();
             using var pdf2 = PdfDocument.Open(nd);
 
+            var txt1 = pdf.Pages[0].GetTextVisually(pdf.Context);
+            var txt2 = pdf2.Pages[0].GetTextVisually(pdf2.Context);
+
+            var candidate = new List<List<CharPos>>();
             var sb = new StringBuilder();
             int pg = 1;
             foreach (var page in pdf2.Pages)
             {
+                var charPos = new List<CharPos>();
                 var reader = new TextScanner(pdf.Context, page);
                 while (reader.Advance())
                 {
-                    var (x, y) = reader.GetCurrentTextPos();
-                    if (reader.Glyph.MultiChar != null)
-                    {
-                        foreach (var c in reader.Glyph.MultiChar)
-                        {
-                            sb.Append($"{pg} {x:0.00} {y:0.0} {c}\n");
-                        }
-                    }
-                    else
-                    {
-                        if (reader.Glyph.Char == 'T' && x > 235)
-                        {
-
-                        }
-                        sb.Append($"{pg} {x:0.00} {y:0.0} {reader.Glyph.Char}\n");
-                    }
+                    // reader.;
+                    charPos.AddRange(reader.EnumerateCharacters());
                 }
                 pg++;
+                candidate.Add(charPos);
+                
             }
 
+            for (var i = 0; i < candidate.Count; i++)
+            {
+                candidate[i] = candidate[i].Select(x=> new CharPos { c = x.c, x = Math.Round(x.x, 2), y = Math.Round(x.y,2) })
+                                           .OrderBy(x => x.x)
+                                           .ThenBy(x => x.y)
+                                           .ToList();
+            }
 
             Directory.CreateDirectory(Path.Combine(tp, "results", "txt-extract-com"));
             var output = Path.Combine(tp, "results", "txt-extract-com", name + ".txt");
@@ -332,6 +333,8 @@ namespace PdfLexer.Tests
             var result = sb.ToString();
             File.WriteAllText(output, result);
 
+            var baseLine = new List<List<CharPos>>();
+
             string expected = "";
             if (File.Exists(txtFile))
             {
@@ -339,19 +342,48 @@ namespace PdfLexer.Tests
                 {
                     if (string.IsNullOrWhiteSpace(ln)) { expected += ln + '\n'; }
                     var segs = ln.Split(' ');
+                    var pgNum = int.Parse(segs[0]);
+                    if (pgNum > baseLine.Count)
+                    {
+                        baseLine.Add(new List<CharPos>());
+                    }
                     if (segs.Length == 6)
                     {
-                        expected += string.Join(' ', segs[0..4]) + '\n';
-                    } else
-                    {
-                        expected += string.Join(' ', segs[0..3]) + "  \n";
+                        baseLine[pgNum - 1].Add(new CharPos { c = segs[3][0], x = double.Parse(segs[1]), y = double.Parse(segs[2]) });
                     }
-                    
+                    else
+                    {
+                        baseLine[pgNum - 1].Add(new CharPos { c = ' ', x = double.Parse(segs[1]), y = double.Parse(segs[2]) });
+                    }
                 }
             }
+            for (var i = 0; i < baseLine.Count;i++)
+            {
+                baseLine[i] = baseLine[i].OrderBy(x => x.x).ThenBy(x => x.y).ToList();
+            }
 
-            Assert.Equal(expected, result);
+            for (var i = 0; i < baseLine.Count; i++)
+            {
+                var candPage = candidate[i];
+                var basePage = baseLine[i];
+                for (var c = 0; c < basePage.Count; c++)
+                {
+                    if (candPage.Count <= c)
+                    {
+                        throw new ApplicationException("Missing char");
+                    }
+                    var bc = basePage[c];
+                    var cc = candPage[c];
+                    Assert.Equal(bc.c, cc.c);
+                    var dx = Math.Abs(bc.x - cc.x);
+                    var dy = Math.Abs(bc.y - cc.y);
+                    Assert.True(dx < 0.1);
+                    Assert.True(dy < 0.1);
+                }
+            }
         }
 
     }
 }
+
+

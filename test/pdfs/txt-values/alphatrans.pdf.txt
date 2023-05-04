@@ -95,7 +95,7 @@
 1 2.83 1.2 P True False
 1 3.50 1.2 o False False
 1 4.05 1.2 w False False
-1 4.78 1.2 e False False
+1 4.77 1.2 e False False
 1 5.33 1.2 r False False
 1 5.66 1.2 e False False
 1 6.22 1.2 d False False

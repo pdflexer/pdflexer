@@ -255,7 +255,7 @@ public partial class gs_Op<T>
         if (dict.TryGetValue<PdfArray>("D", out var dobj, false))
         {
             dict.Remove("D");
-            if (dobj.Count > 1 && dobj[0] is PdfArray dashes && dobj[1] is PdfNumber dp)
+            if (dobj.Count > 1 && dobj[0].Resolve() is PdfArray dashes && dobj[1].Resolve() is PdfNumber dp)
             {
                 dop = new d_Op<T>(dashes, FPC<T>.Util.FromPdfNumber<T>(dp));
             }

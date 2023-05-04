@@ -191,7 +191,7 @@ internal class TestRunner
         using var fb = PdfDocument.Open(File.ReadAllBytes(filePath));
         using var fc = PdfDocument.Open(File.ReadAllBytes(outputPdf));
 
-        var comparer = new Compare(Path.Combine(output, Path.GetFileNameWithoutExtension(filePath)), 2);
+        var comparer = new Compare(Path.Combine(output, Path.GetFileNameWithoutExtension(filePath)), 1);
         var pgs = comparer.CompareAllPages(filePath, outputPdf);
         var changedpages = new List<int>();
         for (var i = 0; i < pgs.Count; i++)

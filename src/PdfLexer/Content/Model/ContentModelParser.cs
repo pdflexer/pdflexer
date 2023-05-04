@@ -327,7 +327,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             continue;
                         }
 
-                        CompleteCurrent(GraphicsState);
+                        CompleteCurrent(GraphicsState, false);
 
                         if (nxt == PdfOperatorType.CS)
                         {
@@ -435,7 +435,6 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         if (state != ParseState.Paths)
                         {
                             state = ParseState.Paths;
-                            clipping = null;
                         }
                         if (Scanner.TryGetCurrentOperation<T>(out var gso))
                         {
@@ -450,7 +449,6 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         if (state != ParseState.Paths)
                         {
                             state = ParseState.Paths;
-                            clipping = null;
                         }
                         if (Scanner.TryGetCurrentOperation<T>(out var gso))
                         {
@@ -513,10 +511,9 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                 case PdfOperatorType.W:
                 case PdfOperatorType.W_Star:
                     {
-                        if (state != ParseState.Paths)
-                        {
-                            continue; // warning
-                        }
+                        // set even if not currently in path, seems like occasionally 
+                        // this comes before a path starting Op and viewers treat it
+                        // as being parth of the path
                         clipping = nxt;
                         continue;
                     }
@@ -728,9 +725,11 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                 {
                     return; // allow changes before stroking to effect final op
                 }
-                if (currentPath!.Closing != n_Op.Value)
+                if (currentPath!.Closing != n_Op<T>.Value)
                 {
                     currentPath.GraphicsState = gs; // catch GS changes for final stroking
+                    currentPath.Markings = mc?.ToList();
+                    currentPath.CompatibilitySection = bx;
                     content.Add(currentPath!);
                 }
                 if (reset)
