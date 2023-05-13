@@ -37,12 +37,16 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
     public d_Op<T>? Dashing { get; init; }
     public PdfName? RenderingIntent { get; init; }
 
-    public IColorSpace ColorSpaceModel { get; init; } = DeviceGray.Instance;
+
+    // TODO color model and replace existing
+    internal IColorSpace ColorSpaceModel { get; init; } = DeviceGray.Instance;
+    internal IColorSpace ColorSpaceStrokingModel { get; init; } = DeviceGray.Instance;
+    internal IColor<T> ColorModel { get; init; } = DeviceGray.GetBlack<T>();
+    internal IColor<T> ColorModelStroking { get; init; } = DeviceGray.GetBlack<T>();
+
+
     public IPdfObject? ColorSpace { get; init; } = PdfName.DeviceGray;
-    public IColorSpace ColorSpaceStrokingModel { get; init; } = DeviceGray.Instance;
     public IPdfObject? ColorSpaceStroking { get; init; } = PdfName.DeviceGray;
-    public IColor<T> ColorModel { get; init; } = DeviceGray.GetBlack<T>();
-    public IColor<T> ColorModelStroking { get; init; } = DeviceGray.GetBlack<T>();
     public IPdfOperation? Color { get; init; }
     public IPdfOperation? ColorStroking { get; init; }
     public PdfDictionary? FontObject { get; init; }

@@ -218,7 +218,12 @@ public ref struct TextScanner
             }
 
 
-            if (nxt == PdfOperatorType.EI) { continue; } // EI can spill outside bounds if data is corrupt
+            if (Scanner.Scanner.CurrentInfo.StartAt >= Scanner.Scanner.Data.Length)
+            {
+                // EI can spill out
+                // re / T_star for form clipping will occur before data filled
+                continue;
+            }
             var b = Scanner.Scanner.Data[Scanner.Scanner.CurrentInfo.StartAt];
             if (b == (byte)'T' || b == (byte)'\'' || b == (byte)'"')
             {
