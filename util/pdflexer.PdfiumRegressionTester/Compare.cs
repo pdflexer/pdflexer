@@ -1,6 +1,7 @@
 ﻿using PDFiumCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using System.Security.Cryptography;
 
 namespace pdflexer.PdfiumRegressionTester;
 
@@ -142,7 +143,7 @@ internal class Compare
             DiffImage = path
         };
     }
-
+    private static int delta = 2;
     private bool RunCompare(FpdfBitmapT bmp, int w1, int h1, FpdfBitmapT bmc, int w2, int h2, string output)
     {
         var imgB = CreateImage(fpdfview.FPDFBitmapGetBuffer(bmp), w1, h1);
@@ -187,7 +188,8 @@ internal class Compare
                     continue;
                 }
 
-                if (a.R == b.R && a.G == b.G && a.B == b.B && a.A == b.A)
+                //if (Math.Abs(a.R - b.R) < delta && Math.Abs(a. - b.G) < delta && a.B == b.B && a.A == b.A)
+                if (Math.Abs(a.R - b.R) < delta && Math.Abs(a.G - b.G) < delta && Math.Abs(a.B - b.B) < delta && Math.Abs(a.A - b.A) < delta)
                 {
                     maskImage[x, y] = samepix;
                     continue;

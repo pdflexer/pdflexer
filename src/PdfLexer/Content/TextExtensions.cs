@@ -88,7 +88,7 @@ public static class TextExtensions
             foreach (var size in sizes)
             {
                 int lines = 1;
-                float? llp = null;
+                double? llp = null;
                 foreach (var line in size.GroupBy(x => x.lly).OrderByDescending(x => x.Key))
                 {
                     llp ??= line.Key;
@@ -152,8 +152,8 @@ public static class TextExtensions
     }
     private class Region
     {
-        public float Start { get; set; }
-        public float End { get; set; }
+        public double Start { get; set; }
+        public double End { get; set; }
         public HashSet<double> Sizes { get; set; }
         public List<WordInfo> Words { get; set; }
     }

@@ -8,6 +8,8 @@ internal class Lab : IColorSpace
 
     public PdfName Name => PdfName.Lab;
 
+    public bool IsPredefined => false;
+
     double amin; double amax; double bmin; double bmax;
     Vector3 WP;
     Vector3 BP;

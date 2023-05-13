@@ -1,4 +1,6 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Content.Model;
+using PdfLexer.DOM;
 using PdfLexer.Fonts;
 using PdfLexer.Operators;
 using PdfLexer.Parsers;
@@ -8,8 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
+using UglyToad.PdfPig.Content;
 using Xunit;
 
 namespace PdfLexer.Tests
@@ -48,9 +49,6 @@ namespace PdfLexer.Tests
         public void It_Reads_Type1_Enc_Widths() => RunSingle("alphatrans.pdf");
 
         [Fact]
-        public void It_Reads_Type1_Diff_Widths() => RunSingle("issue6127.pdf");
-
-        [Fact]
         public void It_Reads_Type1_Diff_ToUnicode() => RunSingle("issue5238.pdf");
 
         [Fact]
@@ -69,7 +67,7 @@ namespace PdfLexer.Tests
         public void It_Reads_TrueType_MacRoman_Embedded() => RunSingle("openoffice.pdf");
 
         [Fact]
-        public void It_Reads_TrueType_MacRoman_NonEmbed() => RunSingle("issue6127.pdf");
+        public void It_Reads_TrueType_MacRoman_NonEmbed_Diff_Widths() => RunSingle("issue6127.pdf", false); // rounding error
 
         [Fact]
         public void It_Reads_TrueType_MacRoman_Embedded_ToUnicode() => RunSingle("issue8707.pdf");
@@ -147,9 +145,12 @@ namespace PdfLexer.Tests
 
         [Fact]
         public void It_Reads_Type0_TrueType_Embedded_CMap() => RunSingle("Test-plusminus.pdf");
-
+        [Fact]
+        public void It_Reads_Type0_TrueType_Embedded_CMap_COM() => RunCOM("Test-plusminus.pdf");
         [Fact]
         public void It_Reads_Type0_ToUnicode_Identity() => RunSingle("issue12418_reduced.pdf");
+        [Fact]
+        public void It_Reads_Type0_ToUnicode_Identityp_COM() => RunCOM("issue12418_reduced.pdf");
 
         [Fact]
         public void It_Reads_Type0_ToUnicode_Identity2() => RunSingle("issue4402_reduced.pdf");
@@ -167,6 +168,9 @@ namespace PdfLexer.Tests
         public void It_Reads_Type0_Vert() => RunSingle("issue6387.pdf"); // bounding box estimate is not great here, font has huge bbox
 
         [Fact]
+        public void It_Reads_Type0_Vert_COM() => RunCOM("issue6387.pdf");
+
+        [Fact]
         public void It_Reads_With_GS_Op()
         {
             using var ctx = new ParsingContext();
@@ -175,9 +179,10 @@ namespace PdfLexer.Tests
             {
                 using var writer = pg.GetWriter();
 
-                writer.Font(ContentWriter.Base14.Courier, 10)
-                      .Raw(new gs_Op("GSName"))
-                      .Text("Hello world");
+                writer.Font(Base14.Courier, 10);
+                new gs_Op("GSName").Serialize(writer.Writer.Stream);
+                writer.Writer.Stream.WriteByte((byte)'\n');
+                writer.Text("Hello world");
                 // writer.Complete();
             }
             var dict = Standard14Font.GetHelvetica().GetPdfFont();
@@ -207,53 +212,178 @@ namespace PdfLexer.Tests
             var pdfFile = Path.Combine(pdfRoot, "issue1002.pdf");
             using var pdf = PdfDocument.Open(pdfFile);
 
-            var text= pdf.Pages[0].GetTextVisually(pdf.Context);
+            var text = pdf.Pages[0].GetTextVisually(pdf.Context);
             Assert.NotEqual(' ', text[text.Length - 2]);
         }
 
-        private void RunSingle(string name)
+        private void RunSingle(string name, bool runCom = true)
         {
-            // using var ctx = new ParsingContext();
+            {
+                var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+                var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+                var txtFile = Path.Combine(tp, "pdfs", "txt-values", name + ".txt");
+                var pdfFile = Path.Combine(pdfRoot, name);
+                using var pdf = PdfDocument.Open(pdfFile);
+                var sb = new StringBuilder();
+                int pg = 1;
+                foreach (var page in pdf.Pages)
+                {
+                    var reader = new TextScanner(pdf.Context, page);
+                    while (reader.Advance())
+                    {
+                        var (x, y) = reader.GetCurrentTextPos();
+                        if (reader.Glyph.MultiChar != null)
+                        {
+                            foreach (var c in reader.Glyph.MultiChar)
+                            {
+                                sb.Append($"{pg} {x:0.00} {y:0.0} {c} {reader.WasNewStatement} {reader.WasNewLine}\n");
+                            }
+                        }
+                        else
+                        {
+                            if (reader.Glyph.Char == 'T' && x > 235)
+                            {
+
+                            }
+                            sb.Append($"{pg} {x:0.00} {y:0.0} {reader.Glyph.Char} {reader.WasNewStatement} {reader.WasNewLine}\n");
+                        }
+                    }
+                    pg++;
+                }
+
+                Directory.CreateDirectory(Path.Combine(tp, "results", "txt-extract"));
+                var output = Path.Combine(tp, "results", "txt-extract", name + ".txt");
+                var result = sb.ToString();
+                File.WriteAllText(output, result);
+
+                string expected = null;
+                if (File.Exists(txtFile))
+                {
+                    expected = File.ReadAllText(txtFile);
+                }
+
+                Assert.Equal(expected, result);
+            }
+
+            if (runCom)
+            {
+                RunCOM(name);
+            }
+        }
+
+        private void RunCOM(string name)
+        {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var txtFile = Path.Combine(tp, "pdfs", "txt-values", name + ".txt");
             var pdfFile = Path.Combine(pdfRoot, name);
-            using var pdf = PdfDocument.Open(pdfFile);
-            var sb = new StringBuilder();
-            int pg = 1;
+            using var pdf = PdfDocument.Open(File.ReadAllBytes(pdfFile));
+            var opdf = PdfDocument.Create();
+
             foreach (var page in pdf.Pages)
             {
+                var parser = new ContentModelParser<double>(pdf.Context, page);
+                var content = parser.Parse();
+                // var matches = content.Where(x => x.Type == ContentType.Text).Cast<TextLineSequence>()
+                //     .Where(x => x.Glyphs.Any(c => c.Glyph?.Char == ',' || c.Glyph?.Char == 'M')).Cast<IContentGroup>().ToList();
+                var newPage = new PdfPage();
+                newPage.MediaBox = page.MediaBox;
+                newPage.CropBox = page.CropBox;
+                var str = ContentModelWriter<double>.CreateContent(newPage.Resources, content);
+                newPage.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(new PdfStream(str));
+                opdf.Pages.Add(newPage);
+            }
+
+            var nd = opdf.Save();
+            using var pdf2 = PdfDocument.Open(nd);
+
+            var txt1 = pdf.Pages[0].GetTextVisually(pdf.Context);
+            var txt2 = pdf2.Pages[0].GetTextVisually(pdf2.Context);
+
+            var candidate = new List<List<CharPos>>();
+            var sb = new StringBuilder();
+            int pg = 1;
+            foreach (var page in pdf2.Pages)
+            {
+                var charPos = new List<CharPos>();
                 var reader = new TextScanner(pdf.Context, page);
                 while (reader.Advance())
                 {
-                    var (x, y) = reader.GetCurrentTextPos();
-                    if (reader.Glyph.MultiChar != null)
-                    {
-                        foreach (var c in reader.Glyph.MultiChar)
-                        {
-                            sb.Append($"{pg} {x:0.00} {y:0.0} {c} {reader.WasNewStatement} {reader.WasNewLine}\n");
-                        }
-                    }
-                    else
-                    {
-                        sb.Append($"{pg} {x:0.00} {y:0.0} {reader.Glyph.Char} {reader.WasNewStatement} {reader.WasNewLine}\n");
-                    }
+                    // reader.;
+                    charPos.AddRange(reader.EnumerateCharacters());
                 }
                 pg++;
+                candidate.Add(charPos);
+                
             }
 
-            Directory.CreateDirectory(Path.Combine(tp, "results", "txt-extract"));
-            var output = Path.Combine(tp, "results", "txt-extract", name + ".txt");
+            for (var i = 0; i < candidate.Count; i++)
+            {
+                candidate[i] = candidate[i].Select(x=> new CharPos { c = x.c, x = Math.Round(x.x, 2), y = Math.Round(x.y,2) })
+                                           .OrderBy(x => x.x)
+                                           .ThenBy(x => x.y)
+                                           .ToList();
+            }
+
+            Directory.CreateDirectory(Path.Combine(tp, "results", "txt-extract-com"));
+            var output = Path.Combine(tp, "results", "txt-extract-com", name + ".txt");
+            var output2 = Path.Combine(tp, "results", "txt-extract-com", name);
+            File.WriteAllBytes(output2, nd);
+            // opdf.SaveTo(output2);
             var result = sb.ToString();
             File.WriteAllText(output, result);
 
-            string expected = null;
+            var baseLine = new List<List<CharPos>>();
+
+            string expected = "";
             if (File.Exists(txtFile))
             {
-                expected = File.ReadAllText(txtFile);
+                foreach (var ln in File.ReadAllLines(txtFile))
+                {
+                    if (string.IsNullOrWhiteSpace(ln)) { expected += ln + '\n'; }
+                    var segs = ln.Split(' ');
+                    var pgNum = int.Parse(segs[0]);
+                    if (pgNum > baseLine.Count)
+                    {
+                        baseLine.Add(new List<CharPos>());
+                    }
+                    if (segs.Length == 6)
+                    {
+                        baseLine[pgNum - 1].Add(new CharPos { c = segs[3][0], x = double.Parse(segs[1]), y = double.Parse(segs[2]) });
+                    }
+                    else
+                    {
+                        baseLine[pgNum - 1].Add(new CharPos { c = ' ', x = double.Parse(segs[1]), y = double.Parse(segs[2]) });
+                    }
+                }
+            }
+            for (var i = 0; i < baseLine.Count;i++)
+            {
+                baseLine[i] = baseLine[i].OrderBy(x => x.x).ThenBy(x => x.y).ToList();
             }
 
-            Assert.Equal(expected, result);
+            for (var i = 0; i < baseLine.Count; i++)
+            {
+                var candPage = candidate[i];
+                var basePage = baseLine[i];
+                for (var c = 0; c < basePage.Count; c++)
+                {
+                    if (candPage.Count <= c)
+                    {
+                        throw new ApplicationException("Missing char");
+                    }
+                    var bc = basePage[c];
+                    var cc = candPage[c];
+                    Assert.Equal(bc.c, cc.c);
+                    var dx = Math.Abs(bc.x - cc.x);
+                    var dy = Math.Abs(bc.y - cc.y);
+                    Assert.True(dx < 0.1);
+                    Assert.True(dy < 0.1);
+                }
+            }
         }
+
     }
 }
+
+

@@ -66,7 +66,7 @@ namespace PdfLexer.Fonts
             }
 
             AddWidthInfo(t1, lookup);
-            return new SingleByteFont(t1.BaseFont ?? "Empty", lookup, notdef);
+            return new SingleByteFont(t1.BaseFont ?? "Empty", t1.NativeObject, lookup, notdef);
         }
 
         private static Glyph? MapGlyph(uint cc, string? name)
@@ -376,8 +376,10 @@ namespace PdfLexer.Fonts
                     glyph.w0 = ws[lup];
                     if (bbox != null)
                     {
-                        var x = bbox.LLx / 1000.0m;
-                        glyph.BBox = new decimal[] { x, bbox.LLy / 1000.0m, x + (decimal)glyph.w0, bbox.URy / 1000.0m };
+                        // TODO revisit bounding box
+                        // var x = bbox.LLx / 1000.0m;
+                        // glyph.BBox = new decimal[] { x, bbox.LLy / 1000.0m, x + (decimal)glyph.w0, bbox.URy / 1000.0m };
+                        glyph.BBox = new decimal[] { 0, bbox.LLy / 1000.0m, (decimal)glyph.w0, bbox.URy / 1000.0m };
                     }
                 }
                 else

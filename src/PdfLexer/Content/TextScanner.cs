@@ -1,5 +1,6 @@
 ﻿using PdfLexer.Fonts;
 using PdfLexer.Lexing;
+using System.Numerics;
 using System.Text;
 
 namespace PdfLexer.Content;
@@ -7,14 +8,26 @@ namespace PdfLexer.Content;
 
 internal class CharPosition
 {
-    public float x { get; set; }
-    public float y { get; set; }
+    public double x { get; set; }
+    public double y { get; set; }
     public char c { get; set; }
     public string? s { get; set; }
     public ulong Stream { get; set; }
     public int Pos { get; set; }
     public int OpPos { get; set; }
 }
+
+public struct CharPos
+{
+    public double x { get; init; }
+    public double y { get; init; }
+    public char c { get; init; }
+    public override string ToString()
+    {
+        return $"{c} {x:00} {y:00}";
+    }
+}
+
 
 /// <summary>
 /// Lowest level text reader for PdfLexer
@@ -24,18 +37,18 @@ public ref struct TextScanner
 {
     private ParsingContext Context;
     private PdfDictionary? PgRes;
-    private readonly List<TJ_Lazy_Item> TJCache;
-    
+    private readonly List<TJ_Lazy_Item<double>> TJCache;
+
     private TextReadState ReadState;
-    private UnappliedGlyph CurrentGlyph;
+    private GlyphOrShift<double> CurrentGlyph;
 
     private bool DataRead;
     private bool IgnoreUndefined;
 
 
     internal int CurrentTextPos;
-    internal readonly List<UnappliedGlyph> CurrentGlyphs;
-    internal PageContentScanner2 Scanner;
+    internal readonly List<GlyphOrShift<double>> CurrentGlyphs;
+    internal PageContentScanner Scanner;
     internal int TxtOpStart;
     internal int TxtOpLength;
     internal PdfOperatorType LastOp;
@@ -45,15 +58,12 @@ public ref struct TextScanner
     /// Only populated if (readForms = false) or TextScanner is 
     /// created using a form.
     /// </summary>
-    public Dictionary<PdfName, List<GraphicsState>>? FormsRead;
-    /// <summary>
-    /// Current text state
-    /// </summary>
-    public TextState TextState;
+    public Dictionary<PdfName, List<GfxState<double>>>? FormsRead;
+
     /// <summary>
     /// Current graphics state
     /// </summary>
-    public GraphicsState GraphicsState;
+    public GfxState<double> GraphicsState;
     /// <summary>
     /// Current glyph.
     /// Note may be null before first Advance() call
@@ -74,19 +84,17 @@ public ref struct TextScanner
     public TextScanner(ParsingContext ctx, PdfDictionary page, bool readForms = true, bool ignoreUndefined = true)
     {
         Context = ctx;
-        FormsRead = readForms ? null : new Dictionary<PdfName, List<GraphicsState>>();
-        Scanner = new PageContentScanner2(ctx, page, readForms);
+        FormsRead = readForms ? null : new Dictionary<PdfName, List<GfxState<double>>>();
+        Scanner = new PageContentScanner(ctx, page, readForms);
         PgRes = page.Get<PdfDictionary>(PdfName.Resources);
-        GraphicsState = new GraphicsState();
-        TextState = new TextState(ctx, GraphicsState, PgRes);
-        TextState.stack = Scanner.stack;
-        TextState.UpdateTRM();
+        GraphicsState = new GfxState<double>();
+        GraphicsState.UpdateTRM();
         CurrentTextPos = 0;
         ReadState = TextReadState.Normal;
-        CurrentGlyphs = new List<UnappliedGlyph>(50);
+        CurrentGlyphs = new List<GlyphOrShift<double>>(50);
         CurrentGlyph = default;
         Glyph = default!;
-        TJCache = new List<TJ_Lazy_Item>(10);
+        TJCache = new List<TJ_Lazy_Item<double>>(10);
         WasNewLine = false;
         WasNewStatement = false;
         LastOp = PdfOperatorType.Unknown;
@@ -96,22 +104,20 @@ public ref struct TextScanner
         IgnoreUndefined = ignoreUndefined;
     }
 
-    public TextScanner(ParsingContext ctx, PdfDictionary page, PdfStream form, GraphicsState state, bool ignoreUndefined = true)
+    public TextScanner(ParsingContext ctx, PdfDictionary page, PdfStream form, GfxState<double> state, bool ignoreUndefined = true)
     {
-        FormsRead = new Dictionary<PdfName, List<GraphicsState>>();
+        FormsRead = new Dictionary<PdfName, List<GfxState<double>>>();
         Context = ctx;
-        Scanner = new PageContentScanner2(ctx, page, form);
+        Scanner = new PageContentScanner(ctx, page, form);
         PgRes = page.Get<PdfDictionary>(PdfName.Resources);
         GraphicsState = state;
-        TextState = new TextState(ctx, GraphicsState, PgRes);
-        TextState.stack = Scanner.stack;
-        TextState.UpdateTRM();
+        GraphicsState.UpdateTRM();
         CurrentTextPos = 0;
         ReadState = TextReadState.Normal;
-        CurrentGlyphs = new List<UnappliedGlyph>(50);
+        CurrentGlyphs = new List<GlyphOrShift<double>>(50);
         CurrentGlyph = default;
         Glyph = default!;
-        TJCache = new List<TJ_Lazy_Item>(10);
+        TJCache = new List<TJ_Lazy_Item<double>>(10);
         WasNewLine = false;
         WasNewStatement = false;
         LastOp = PdfOperatorType.Unknown;
@@ -151,44 +157,73 @@ public ref struct TextScanner
                     }
                     if (!FormsRead.TryGetValue(doOp.name, out var states))
                     {
-                        states = new List<GraphicsState>();
+                        states = new List<GfxState<double>>();
                         FormsRead[doOp.name] = states;
                     }
-                    states.Add(GraphicsState.CloneNoPrev());
+                    states.Add(GraphicsState with { Prev = null });
                     break;
                 case PdfOperatorType.EOC:
-                    // Glyph = null;
                     return false;
                 case PdfOperatorType.BT:
                     ReadState = TextReadState.ReadingText;
-                    // todo reset text state ?
-                    TextState.Apply(BT_Op.Value);
-                    TextState.FormResources = Scanner.CurrentForm?.Get<PdfDictionary>(PdfName.Resources);
-
+                    BT_Op<double>.Value.Apply(ref GraphicsState);
                     continue;
                 case PdfOperatorType.ET:
                     ReadState = TextReadState.Normal;
                     continue;
                 case PdfOperatorType.gs:
-                    if (Scanner.TryGetCurrentOperation(out var gs))
+                    if (!Scanner.TryGetCurrentOperation(out var gs))
                     {
-                        gs.Apply(TextState);
+                        // TODO warn
+                        continue;
                     }
+                    var extGs = (gs_Op)gs;
+                    if (!Scanner.TryGetGraphicsState(extGs.name, out var gsd))
+                    {
+                        continue;
+                    }
+                    float? fsize = null;
+                    PdfDictionary? fdict = null;
+                    IReadableFont? fread = null;
+                    if (gsd.TryGetValue<PdfArray>(PdfName.Font, out var fobj, false))
+                    {
+                        if (fobj.Count > 0 && fobj[0].Resolve() is PdfDictionary fdv)
+                        {
+                            fdict = fdv;
+                            fread = Context.GetFont(fdv);
+                        }
+                        if (fobj.Count > 1 && fobj[1].Resolve() is PdfNumber fz)
+                        {
+                            fsize = fz;
+                        }
+                    }
+                    if (fdict != null) 
+                    {
+                        GraphicsState = GraphicsState with { 
+                            Font = fread != null ? fread : GraphicsState.Font,
+                            FontObject = fdict != null ? fdict : GraphicsState.FontObject,
+                            FontSize = fsize ?? GraphicsState.FontSize };
+                    }
+                    
                     continue;
                 case PdfOperatorType.q:
                 case PdfOperatorType.Q:
                 case PdfOperatorType.cm:
-                    if (Scanner.TryGetCurrentOperation(out var gso))
+                    if (Scanner.TryGetCurrentOperation<double>(out var gso))
                     {
                         gso.Apply(ref GraphicsState);
                     }
-                    TextState.GS = GraphicsState;
-                    TextState.UpdateTRM();
+                    GraphicsState.UpdateTRM();
                     continue;
             }
 
-            
-            if (nxt == PdfOperatorType.EI) { continue; } // EI can spill outside bounds if data is corrupt
+
+            if (Scanner.Scanner.CurrentInfo.StartAt >= Scanner.Scanner.Data.Length)
+            {
+                // EI can spill out
+                // re / T_star for form clipping will occur before data filled
+                continue;
+            }
             var b = Scanner.Scanner.Data[Scanner.Scanner.CurrentInfo.StartAt];
             if (b == (byte)'T' || b == (byte)'\'' || b == (byte)'"')
             {
@@ -202,9 +237,9 @@ public ref struct TextScanner
                                 var ops = Scanner.Scanner.GetOperands();
                                 var op = ops[0];
                                 CurrentGlyphs.Clear();
-                                TextState.Apply(T_Star_Op.Value);
+                                T_Star_Op<double>.Value.Apply(ref GraphicsState);
                                 var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
+                                Context.FillGlyphsFromRawString(GraphicsState, slice, CurrentGlyphs);
                                 CurrentTextPos = 0;
                                 ReadState = TextReadState.ReadingOp;
                                 break;
@@ -217,10 +252,9 @@ public ref struct TextScanner
                                 var ac = PdfOperator.ParseFloat(Context, Scanner.Scanner.Data, ops[1]);
                                 var op = ops[2];
                                 var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                GraphicsState.WordSpacing = aw;
-                                GraphicsState.CharSpacing = ac;
-                                TextState.Apply(T_Star_Op.Value);
-                                TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
+                                GraphicsState = GraphicsState with { WordSpacing = aw, CharSpacing = ac };
+                                T_Star_Op<double>.Value.Apply(ref GraphicsState);
+                                Context.FillGlyphsFromRawString(GraphicsState, slice, CurrentGlyphs);
                                 CurrentTextPos = 0;
                                 ReadState = TextReadState.ReadingOp;
                                 break;
@@ -228,10 +262,10 @@ public ref struct TextScanner
                         case PdfOperatorType.Tj:
                             {
                                 CurrentGlyphs.Clear();
-                                var ops = Scanner.Scanner.GetOperands(); 
+                                var ops = Scanner.Scanner.GetOperands();
                                 var op = ops[0];
                                 var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
+                                Context.FillGlyphsFromRawString(GraphicsState, slice, CurrentGlyphs);
                                 CurrentTextPos = 0;
                                 ReadState = TextReadState.ReadingOp;
                                 break;
@@ -246,23 +280,42 @@ public ref struct TextScanner
                                 {
                                     if (item.OpNum == -1)
                                     {
-                                        CurrentGlyphs.Add(new UnappliedGlyph(null, (float)item.Shift));
+                                        CurrentGlyphs.Add(new GlyphOrShift<double>(null, item.Shift));
                                     }
                                     else
                                     {
                                         var op = ops[item.OpNum];
                                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
-                                        TextState.FillGlyphsFromRawString(slice, CurrentGlyphs);
+                                        Context.FillGlyphsFromRawString(GraphicsState, slice, CurrentGlyphs);
                                     }
                                 }
                                 CurrentTextPos = 0;
                                 ReadState = TextReadState.ReadingOp;
                                 break;
                             }
-                        default:
-                            if (Scanner.TryGetCurrentOperation(out var tao))
+                        case PdfOperatorType.Tf:
                             {
-                                tao.Apply(TextState);
+                                if (Scanner.TryGetCurrentOperation<double>(out var op))
+                                {
+                                    var tfOp = (Tf_Op<double>)op;
+                                    IReadableFont? rf;
+                                    if (!Scanner.TryGetFont(tfOp.font, out var font))
+                                    {
+                                        rf = SingleByteFont.Fallback;
+                                        font = Standard14Font.GetHelvetica().GetPdfFont();
+                                    }
+                                    else
+                                    {
+                                        rf = Context.GetFont(font);
+                                    }
+                                    Tf_Op<double>.Apply(ref GraphicsState, tfOp.font, font, rf, tfOp.size);
+                                }
+                            }
+                            continue;
+                        default:
+                            if (Scanner.TryGetCurrentOperation<double>(out var tao))
+                            {
+                                tao.Apply(ref GraphicsState);
                             }
                             if (LastOp == PdfOperatorType.singlequote
                                 || LastOp == PdfOperatorType.doublequote
@@ -312,9 +365,45 @@ public ref struct TextScanner
         ReadingOp
     }
 
-    public (float x, float y) GetCurrentTextPos()
+    public IEnumerable<CharPos> EnumerateCharacters()
     {
-        return (TextState.TextRenderingMatrix.M31, TextState.TextRenderingMatrix.M32);
+        if (Glyph == null)
+        {
+            throw new NotSupportedException("GetCurrentBoundingBox called with no current glyph in scanner state.");
+        }
+        var x = GraphicsState.Text.TextRenderingMatrix.E;
+        var y = GraphicsState.Text.TextRenderingMatrix.F;
+        return GetEnum(Glyph, x, y);
+    }
+
+    private static IEnumerable<CharPos> GetEnum(Glyph glyph, double x, double y) 
+    {
+        if (glyph.MultiChar != null)
+        {
+            foreach (var c in glyph.MultiChar)
+            {
+                yield return new CharPos
+                {
+                    c = c,
+                    x = x,
+                    y = y
+                };
+            }
+        }
+        else
+        {
+            yield return new CharPos
+            {
+                c = glyph.Char,
+                x = x,
+                y = y
+            };
+        }
+    }
+
+    public (double x, double y) GetCurrentTextPos()
+    {
+        return (GraphicsState.Text.TextRenderingMatrix.E, GraphicsState.Text.TextRenderingMatrix.F);
     }
 
     internal CharPosition GetCurrentInfo()
@@ -323,31 +412,31 @@ public ref struct TextScanner
         {
             c = Glyph.Char,
             s = Glyph.MultiChar,
-            x = TextState.TextRenderingMatrix.M31,
-            y = TextState.TextRenderingMatrix.M32,
+            x = GraphicsState.Text.TextRenderingMatrix.E,
+            y = GraphicsState.Text.TextRenderingMatrix.F,
             Pos = Scanner.Scanner.Position,
             OpPos = CurrentTextPos
         };
     }
 
-    public (float llx, float lly, float urx, float ury) GetCurrentBoundingBox()
+    public PdfRect<double> GetCurrentBoundingBox()
     {
         if (Glyph == null)
         {
             throw new NotSupportedException("GetCurrentBoundingBox called with no current glyph in scanner state.");
         }
-        return TextState.GetBoundingBox(Glyph);
+        return GraphicsState.GetGlyphBoundingBox(Glyph);
     }
 
     private bool ReadCurrent()
     {
         if (CurrentGlyph.Glyph != null)
         {
-            TextState.ApplyCharShift(CurrentGlyph); // apply previous glyph to shift char size
+            GraphicsState.ApplyCharShift(CurrentGlyph); // apply previous glyph to shift char size
         }
         else
         {
-            TextState.UpdateTRM();
+            GraphicsState.UpdateTRM();
         }
 
         bool trigger = CurrentTextPos == 0;
@@ -365,7 +454,7 @@ public ref struct TextScanner
 
             if (CurrentGlyph.Shift != 0)
             {
-                TextState.ApplyShift(CurrentGlyph);
+                GraphicsState.ApplyShift(CurrentGlyph);
             }
             else if (CurrentGlyph.Glyph != null)
             {
@@ -378,7 +467,7 @@ public ref struct TextScanner
                     }
                     else
                     {
-                        TextState.ApplyCharShift(CurrentGlyph);
+                        GraphicsState.ApplyCharShift(CurrentGlyph);
                         continue;
                     }
                 }

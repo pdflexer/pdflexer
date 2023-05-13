@@ -9,20 +9,20 @@
     ("B", null, "Fill and stroke path using nonzero winding number rule", null, false), // no ops
     ("b*", "b_Star", "Close, fill, and stroke path using even-odd rule", null, false), // no ops
     ("B*", "B_Star", "Fill and stroke path using even-odd rule", null, false), // no ops
-    ("BDC", null, "Begin marked-content sequence with property list", new List<(string, string)>{ ("PdfName", "tag"), ("PdfObject", "props") }, true),
+    ("BDC", null, "Begin marked-content sequence with property list", new List<(string, string)>{ ("PdfName", "tag"), ("IPdfObject", "props") }, true),
     ("BI", null, "Begin inline image object", null, false), // no ops
     ("BMC", null, "Begin marked-content sequence", new List<(string, string)>{ ("PdfName", "tag") }, false),
     ("BT", null, "Begin text object", null, false), // no ops
     ("BX", null, "Begin compatibility section", null, false), // no ops
-    ("c", null, "Append curved segment to path (three control points)", new List<(string, string)>{ ("decimal", "x1"), ("decimal", "y1"), ("decimal", "x2"), ("decimal", "y2"), ("decimal", "x3"), ("decimal", "y3")}, false),
-    ("cm", null, "Concatenate matrix to current transformation matrix", new List<(string, string)>{ ("decimal", "a"), ("decimal", "b"), ("decimal", "c"), ("decimal", "d"), ("decimal", "e"), ("decimal", "f")}, false),
+    ("c", null, "Append curved segment to path (three control points)", new List<(string, string)>{ ("double", "x1"), ("double", "y1"), ("double", "x2"), ("double", "y2"), ("double", "x3"), ("double", "y3")}, false),
+    ("cm", null, "Concatenate matrix to current transformation matrix", new List<(string, string)>{ ("double", "a"), ("double", "b"), ("double", "c"), ("double", "d"), ("double", "e"), ("double", "f")}, false),
     ("CS", null, "Set color space for stroking operations", new List<(string, string)>{ ("PdfName", "name") }, false),
     ("cs", null, "Set color space for nonstroking operations", new List<(string, string)>{ ("PdfName", "name") }, false),
-    ("d", null, "Set line dash pattern", new List<(string, string)>{ ("PdfArray", "dashArray"), ("decimal", "dashPhase") } , true),
-    ("d0", null, "Set glyph width in Type 3 font", new List<(string, string)>{ ("decimal", "wx"), ("decimal", "wy") }, false),
-    ("d1", null, "Set glyph width and bounding box in Type 3 font", new List<(string, string)>{ ("decimal", "wx"), ("decimal", "wy"), ("decimal", "llx"), ("decimal", "lly"), ("decimal", "urx"), ("decimal", "ury") }, false),
+    ("d", null, "Set line dash pattern", new List<(string, string)>{ ("PdfArray", "dashArray"), ("double", "dashPhase") } , true),
+    ("d0", null, "Set glyph width in Type 3 font", new List<(string, string)>{ ("double", "wx"), ("double", "wy") }, false),
+    ("d1", null, "Set glyph width and bounding box in Type 3 font", new List<(string, string)>{ ("double", "wx"), ("double", "wy"), ("double", "llx"), ("double", "lly"), ("double", "urx"), ("double", "ury") }, false),
     ("Do", null, "Invoke named XObject", new List<(string, string)>{ ("PdfName", "name") }, false),
-    ("DP", null, "Define marked-content point with property list", new List<(string, string)>{ ("PdfName", "tag"), ("PdfObject", "props") }, true),
+    ("DP", null, "Define marked-content point with property list", new List<(string, string)>{ ("PdfName", "tag"), ("IPdfObject", "props") }, true),
     ("EI", null, "End inline image object", null, false), // no ops
     ("EMC", null, "End marked-content sequence", null, false), // no ops
     ("ET", null, "End text object", null, false), // no ops
@@ -30,56 +30,59 @@
     ("f", null, "Fill path using nonzero winding number rule", null, false), // no ops
     ("F", null, "Fill path using nonzero winding number rule (obsolete)", null, false), // no ops
     ("f*", "f_Star", "Fill path using even-odd rule", null, false), // no ops
-    ("G", null, "Set gray level for stroking operations", new List<(string, string)>{ ("decimal", "gray") }, false),
-    ("g", null, "Set gray level for nonstroking operations", new List<(string, string)>{ ("decimal", "gray") }, false),
+    ("G", null, "Set gray level for stroking operations", new List<(string, string)>{ ("double", "gray") }, false),
+    ("g", null, "Set gray level for nonstroking operations", new List<(string, string)>{ ("double", "gray") }, false),
     ("gs", null, "Set parameters from graphics state parameter dictionary", new List<(string, string)>{ ("PdfName", "name") }, false),
     ("h", null, "Close subpath", null, false), // no ops
-    ("i", null, "Set flatness tolerance", new List<(string, string)>{ ("decimal", "flatness") }, false),
+    ("i", null, "Set flatness tolerance", new List<(string, string)>{ ("double", "flatness") }, false),
     ("ID", null, "Begin inline image data", null, false), // no ops
     ("j", null, "Set line join style", new List<(string, string)>{ ("int", "lineJoin") }, false),
     ("J", null, "Set line capstyle", new List<(string, string)>{ ("int", "lineCap") }, false),
-    ("K", null, "Set CMYK color for stroking operations", new List<(string, string)>{ ("decimal", "c"), ("decimal", "m"), ("decimal", "y"), ("decimal", "k") }, false),
-    ("k", null, "Set CMYK color for nonstroking operations", new List<(string, string)>{ ("decimal", "c"), ("decimal", "m"), ("decimal", "y"), ("decimal", "k") }, false),
-    ("l", null, "Append straight line segment to path", new List<(string, string)>{ ("decimal", "x"), ("decimal", "y")}, false),
-    ("m", null, "Begin new subpath", new List<(string, string)>{ ("decimal", "x"), ("decimal", "y")}, false),
-    ("M", null, "Set miter limit", new List<(string, string)>{ ("decimal", "miterLimit") }, false),
+    ("K", null, "Set CMYK color for stroking operations", new List<(string, string)>{ ("double", "c"), ("double", "m"), ("double", "y"), ("double", "k") }, false),
+    ("k", null, "Set CMYK color for nonstroking operations", new List<(string, string)>{ ("double", "c"), ("double", "m"), ("double", "y"), ("double", "k") }, false),
+    ("l", null, "Append straight line segment to path", new List<(string, string)>{ ("double", "x"), ("double", "y")}, false),
+    ("m", null, "Begin new subpath", new List<(string, string)>{ ("double", "x"), ("double", "y")}, false),
+    ("M", null, "Set miter limit", new List<(string, string)>{ ("double", "miterLimit") }, false),
     ("MP", null, "Define marked-content point", new List<(string, string)>{ ("PdfName", "tag") }, false),
     ("n", null, "End path without filling or stroking", null, false), // no ops
     ("q", null, "Save graphics state", null, false), // no ops
     ("Q", null, "Restore graphics state", null, false),  // no ops
-    ("re", null, "Append rectangle to path", new List<(string, string)>{ ("decimal", "x"), ("decimal", "y"), ("decimal", "width"), ("decimal", "height") }, false),
-    ("RG", null, "Set RGB color for stroking operations", new List<(string, string)>{ ("decimal", "r"), ("decimal", "g"), ("decimal", "b") }, false),
-    ("rg", null, "Set RGB color for nonstroking operations", new List<(string, string)>{ ("decimal", "r"), ("decimal", "g"), ("decimal", "b") }, false),
+    ("re", null, "Append rectangle to path", new List<(string, string)>{ ("double", "x"), ("double", "y"), ("double", "width"), ("double", "height") }, false),
+    ("RG", null, "Set RGB color for stroking operations", new List<(string, string)>{ ("double", "r"), ("double", "g"), ("double", "b") }, false),
+    ("rg", null, "Set RGB color for nonstroking operations", new List<(string, string)>{ ("double", "r"), ("double", "g"), ("double", "b") }, false),
     ("ri", null, "Set color rendering intent", new List<(string, string)>{ ("PdfName", "intent") }, false),
     ("s", null, "Close and stroke path", null, false), // no ops
     ("S", null, "Stroke path", null, false), // no ops
-    ("SC", null, "Set color for stroking operations", new List<(string, string)>{ ("List<decimal>", "colorInfo") }, true),
-    ("sc", null, "Set color for nonstroking operations", new List<(string, string)>{ ("List<decimal>", "colorInfo") }, true),
-    ("SCN", null, "Set color for stroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<decimal>", "colorInfo"), ("PdfName?", "name") }, true),
-    ("scn", null, "Set color for nonstroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<decimal>", "colorInfo"), ("PdfName?", "name") }, true),
+    ("SC", null, "Set color for stroking operations", new List<(string, string)>{ ("List<double>", "colorInfo") }, true),
+    ("sc", null, "Set color for nonstroking operations", new List<(string, string)>{ ("List<double>", "colorInfo") }, true),
+    ("SCN", null, "Set color for stroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<double>", "colorInfo"), ("PdfName?", "name") }, true),
+    ("scn", null, "Set color for nonstroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<double>", "colorInfo"), ("PdfName?", "name") }, true),
     ("sh", null, "Paint area defined by shading pattern", new List<(string, string)>{ ("PdfName", "name") }, false),
     ("T*", "T_Star", "Move to start of next text line", null, false), // no ops
-    ("Tc", null, "Set character spacing", new List<(string, string)>{ ("decimal", "charSpace") }, false),
-    ("Td", null, "Move text position", new List<(string, string)> { ("decimal", "tx"), ("decimal", "ty") }, false),
-    ("TD", null, "Move text position and set leading", new List<(string, string)> { ("decimal", "tx"), ("decimal", "ty") }, false),
-    ("Tf", null, "Set text font and size", new List<(string, string)>{ ("PdfName", "font"), ("decimal", "size") }, false),
+    ("Tc", null, "Set character spacing", new List<(string, string)>{ ("double", "charSpace") }, false),
+    ("Td", null, "Move text position", new List<(string, string)> { ("double", "tx"), ("double", "ty") }, false),
+    ("TD", null, "Move text position and set leading", new List<(string, string)> { ("double", "tx"), ("double", "ty") }, false),
+    ("Tf", null, "Set text font and size", new List<(string, string)>{ ("PdfName", "font"), ("double", "size") }, false),
     ("Tj", null, "Show text", new List<(string, string)> { ("byte[]", "text") }, true),
     ("TJ", null, "Show text, allowing individual glyph positioning", new List<(string, string)> { ("List<TJ_Item>", "info") }, true),
-    ("TL", null, "Set text leading", new List<(string, string)>{ ("decimal", "leading") }, false),
-    ("Tm", null, "Set text matrix and text line matrix", new List<(string, string)>{ ("decimal", "a"), ("decimal", "b"), ("decimal", "c"), ("decimal", "d"), ("decimal", "e"), ("decimal", "f")}, false),
+    ("TL", null, "Set text leading", new List<(string, string)>{ ("double", "leading") }, false),
+    ("Tm", null, "Set text matrix and text line matrix", new List<(string, string)>{ ("double", "a"), ("double", "b"), ("double", "c"), ("double", "d"), ("double", "e"), ("double", "f")}, false),
     ("Tr", null, "Set text rendering mode", new List<(string, string)>{ ("int", "render") }, false),
-    ("Ts", null, "Set text rise", new List<(string, string)>{ ("decimal", "rise") }, false),
-    ("Tw", null, "Set word spacing", new List<(string, string)>{ ("decimal", "wordSpace") }, false),
-    ("Tz", null, "Set horizontal text scaling", new List<(string, string)>{ ("decimal", "scale") }, false),
-    ("v", null, "Append curved segment to path (initial point replicated)", new List<(string, string)>{ ("decimal", "x2"), ("decimal", "y2"), ("decimal", "x3"), ("decimal", "y3")}, false),
-    ("w", null, "Set line width", new List<(string, string)>{ ("decimal", "lineWidth") }, false),
+    ("Ts", null, "Set text rise", new List<(string, string)>{ ("double", "rise") }, false),
+    ("Tw", null, "Set word spacing", new List<(string, string)>{ ("double", "wordSpace") }, false),
+    ("Tz", null, "Set horizontal text scaling", new List<(string, string)>{ ("double", "scale") }, false),
+    ("v", null, "Append curved segment to path (initial point replicated)", new List<(string, string)>{ ("double", "x2"), ("double", "y2"), ("double", "x3"), ("double", "y3")}, false),
+    ("w", null, "Set line width", new List<(string, string)>{ ("double", "lineWidth") }, false),
     ("W", null, "Set clipping path using nonzero winding number rule", null, false), // no ops
     ("W*", "W_Star", "Set clipping path using even-odd rule", null, false), // no ops
-    ("y", null, "Append curved segment to path (final point replicated)", new List<(string, string)>{ ("decimal", "x1"), ("decimal", "y1"), ("decimal", "x3"), ("decimal", "y3")}, false),
+    ("y", null, "Append curved segment to path (final point replicated)", new List<(string, string)>{ ("double", "x1"), ("double", "y1"), ("double", "x3"), ("double", "y3")}, false),
     ("'", "singlequote", "Move to next line and show text", new List<(string, string)> { ("byte[]", "text") }, true),
-    ("\"", "doublequote", "Set word and character spacing, move to next line, and show text", new List<(string, string)> { ("decimal", "aw"), ("decimal", "ac"), ("byte[]", "text") }, true),
+    ("\"", "doublequote", "Set word and character spacing, move to next line, and show text", new List<(string, string)> { ("double", "aw"), ("double", "ac"), ("byte[]", "text") }, true),
 
 }; #>
+
+#if !NET7_0_OR_GREATER
+
 using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using System;
@@ -286,8 +289,8 @@ foreach (var op in operators)
        foreach (var prop in op.Item4) { 
             var parser = "throw new NotImplementedException()";
             switch (prop.Item1) {
-                case "decimal":
-                    parser = $"PdfOperator.ParseDecimal(ctx, data, operands[{i}])";
+                case "double":
+                    parser = $"PdfOperator.Parsedouble(ctx, data, operands[{i}])";
                     break;
                 default:
                     parser = $"PdfOperator.Parse{prop.Item1}(ctx, data, operands[{i}])";
@@ -311,3 +314,5 @@ foreach (var op in operators)
 
 #>
 }
+
+#endif

@@ -14,9 +14,12 @@ internal class CompositeFont : IReadableFont
     public bool IsVertical { get; }
     public string Name { get; }
 
-    public CompositeFont(string name, CMap encoding, GlyphSet glyphSet, int notdefBytes, bool vertical, CMap? cidInfo = null)
+    public PdfDictionary NativeObject { get; }
+
+    public CompositeFont(string name, PdfDictionary dict, CMap encoding, GlyphSet glyphSet, int notdefBytes, bool vertical, CMap? cidInfo = null)
     {
         Name = name;
+        NativeObject = dict;
         IsVertical = vertical;
         _encoding = encoding;
         _cidInfo = cidInfo;
@@ -50,6 +53,13 @@ internal class CompositeFont : IReadableFont
                 glyph.Char = (char)val.Code;
             }
             _glyphSet.Add(cid, glyph);
+        } else
+        {
+            if (glyph.CodePoint != cp) // cid fonts can sometimes have multiple code points mapped to same CID
+            {
+                glyph = glyph.Clone();
+                glyph.CodePoint = cp;
+            }
         }
 
         return l;

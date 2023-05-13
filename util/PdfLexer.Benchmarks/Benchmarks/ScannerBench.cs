@@ -74,11 +74,9 @@ namespace PdfLexer.Benchmarks.Benchmarks
                 foreach (var page in doc.Pages)
                 {
                     var reader = new PageContentScanner(doc.Context, page);
-                    PdfOperatorType op;
-                    while ((op = reader.Peek()) != PdfOperatorType.EOC)
+                    while (reader.Advance())
                     {
-                        unchecked { chars += (int)op; }
-                        reader.SkipCurrent();
+                        unchecked { chars += (int)reader.CurrentOperator; }
                     }
                     // reader = new PageContentScanner(doc.Context, page);
                     // while ((op = reader.Peek()) != PdfOperatorType.EOC)
@@ -102,7 +100,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
                 foreach (var page in doc.Pages)
                 {
                     // using var cache = new StreamBufferCache();
-                    var reader = new PageContentScanner2(doc.Context, page);
+                    var reader = new PageContentScanner(doc.Context, page);
                     while (reader.Advance())
                     {
                         unchecked { chars += (int)reader.CurrentOperator; }

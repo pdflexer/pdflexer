@@ -1,8 +1,9 @@
 ﻿using System.Buffers;
 using System.Buffers.Text;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using Microsoft.IO;
-
+using PdfLexer.Content;
 using PdfLexer.Filters;
 using PdfLexer.Fonts;
 using PdfLexer.IO;
@@ -372,6 +373,45 @@ public class ParsingContext : IDisposable
         }
         Error($"Found endstream in contents, using repaired length: {xref.KnownStreamLength}");
         return xref.Source.GetDataAsStream(this, xref.Offset + xref.KnownStreamStart, xref.KnownStreamLength);
+    }
+
+    internal void FillGlyphsFromRawString<T>(GfxState<T> state, ReadOnlySpan<byte> data, List<GlyphOrShift<T>> glyphs) where T : struct, IFloatingPoint<T>
+    {
+        if (data.Length < 200)
+        {
+            Span<byte> writeBuffer = stackalloc byte[data.Length];
+            var l = StringParser.ConvertBytes(data, writeBuffer);
+            FillGlyphsNoReset(state, writeBuffer.Slice(0, l), glyphs);
+        }
+        else
+        {
+            var rented = ArrayPool<byte>.Shared.Rent(data.Length);
+            ReadOnlySpan<byte> spanned = rented;
+            var l = StringParser.ConvertBytes(data, rented);
+            FillGlyphsNoReset(state, spanned.Slice(0, l), glyphs);
+            ArrayPool<byte>.Shared.Return(rented);
+        }
+    }
+
+    internal void FillGlyphsNoReset<T>(GfxState<T> state, ReadOnlySpan<byte> data, List<GlyphOrShift<T>> glyphs) where T : struct, IFloatingPoint<T>
+    {
+        int i = 0;
+        int u = 0;
+        while (i < data.Length && (u = GetGlyph(state, data, i, out var glyph)) > 0)
+        {
+            glyphs.Add(new GlyphOrShift<T>(glyph, T.Zero, u));
+            i += u;
+        }
+    }
+
+    internal int GetGlyph<T>(GfxState<T> state, ReadOnlySpan<byte> data, int pos, out Glyph info) where T: struct, IFloatingPoint<T>
+    {
+        if (state.Font == null)
+        {
+            Error("Font data before font set, falling back to helvetica");
+            return SingleByteFont.Fallback.GetGlyph(data, pos, out info);
+        }
+        return state.Font.GetGlyph(data, pos, out info);
     }
 
     internal IPdfObject GetPdfItem(PdfObjectType type, in ReadOnlySequence<byte> data)

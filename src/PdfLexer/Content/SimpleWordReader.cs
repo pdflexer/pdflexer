@@ -7,10 +7,10 @@ namespace PdfLexer.Content;
 public struct WordInfo
 {
     public string word;
-    public float llx;
-    public float lly;
-    public float urx;
-    public float ury;
+    public double llx;
+    public double lly;
+    public double urx;
+    public double ury;
 }
 
 /// <summary>
@@ -51,17 +51,17 @@ public ref struct SimpleWordReader
 
 
     public string CurrentWord { get; private set; }
-    public Matrix4x4 Position { get; private set; }
-    private (float llx, float lly, float urx, float ury)? last;
-    private (float llx, float lly, float urx, float ury)? first;
-    private (float llx, float lly, float urx, float ury)? prevbb;
-    private float pw;
-    private Matrix4x4 prev;
+    public GfxMatrix<double> Position { get; private set; }
+    private PdfRect<double>? last;
+    private PdfRect<double>? first;
+    private PdfRect<double>? prevbb;
+    private double pw;
+    private GfxMatrix<double> prev;
     private readonly StringBuilder sb;
 
-    public (float llx, float lly, float urx, float ury) GetWordBoundingBox()
+    public (double llx, double lly, double urx, double ury) GetWordBoundingBox()
     {
-        return (first?.llx ?? 0, first?.lly ?? 0, last?.urx ?? 0, last?.ury ?? 0);
+        return (first?.LLx ?? 0, first?.LLy ?? 0, last?.URx ?? 0, last?.URy ?? 0);
     }
 
     public bool Advance()
@@ -72,7 +72,7 @@ public ref struct SimpleWordReader
         while (Scanner.Advance())
         {
             var vert = Scanner.GraphicsState.Font?.IsVertical ?? false;
-            var current = Scanner.TextState.TextMatrix;
+            var current = Scanner.GraphicsState.Text.TextMatrix;
             if (first == null)
             {
                 Position = current;
@@ -80,8 +80,8 @@ public ref struct SimpleWordReader
             }
             else
             {
-                if (prev.M11 != current.M11 || prev.M12 != current.M12
-                || prev.M21 != current.M21 || prev.M22 != current.M22)
+                if (prev.A != current.A || prev.B != current.B
+                || prev.C != current.C || prev.D != current.D)
                 {
                     CurrentWord = sb.ToString();
                     sb.Clear();
@@ -89,10 +89,10 @@ public ref struct SimpleWordReader
                     returnWord = true;
                 } else
                 {
-                    Matrix4x4.Invert(prev, out var iv);
+                    prev.Invert(out var iv);
                     var change = current * iv;
-                    var dw = vert ? change.M32 : change.M31;
-                    var dh = vert ? change.M31 : change.M32;
+                    var dw = vert ? change.F : change.E;
+                    var dh = vert ? change.E : change.F;
                     if (Math.Abs(pw - dw) > 0.25 * pw || Math.Abs(dh) > pw * 0.25)
                     {
                         CurrentWord = sb.ToString();

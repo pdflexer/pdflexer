@@ -6,26 +6,29 @@ namespace PdfLexer.Serializers;
 internal class NameSerializer : ISerializer<PdfName>
 {
     private static Encoding Iso88591 = Encoding.GetEncoding("ISO-8859-1"); // StandardEncoding
-    public void WriteToStream(PdfName obj, Stream stream)
+    public void WriteToStream(PdfName obj, Stream stream) => WriteToStreamInternal(obj, stream);
+    internal static void WriteToStreamInternal(PdfName obj, Stream stream)
     {
         if (obj.Value.Length == 0) { stream.Write(Iso88591.GetBytes("/Empty")); return; }
         if (obj.Value.Length < 50)
         {
             Span<byte> bytes = stackalloc byte[obj.Value.Length * 3+1];
-            var written = GetBytes(obj, bytes);
+            var written = GetBytesInternal(obj, bytes);
             stream.Write(bytes.Slice(0, written));
         }
         else
         {
             var buffer = ArrayPool<byte>.Shared.Rent(obj.Value.Length * 3+1);
-            var written = GetBytes(obj, buffer);
+            var written = GetBytesInternal(obj, buffer);
             stream.Write(buffer, 0, written);
             ArrayPool<byte>.Shared.Return(buffer);
         }
         return;
     }
 
-    public int GetBytes(PdfName obj, Span<byte> data)
+    public int GetBytes(PdfName obj, Span<byte> data) => GetBytesInternal(obj, data);
+
+    internal static int GetBytesInternal(PdfName obj, Span<byte> data)
     {
         if (obj.CacheValue > 0)
         {
@@ -50,7 +53,7 @@ internal class NameSerializer : ISerializer<PdfName>
         }
     }
 
-    private int ReplaceChars(PdfName obj, Span<char> data)
+    private static int ReplaceChars(PdfName obj, Span<char> data)
     {
         data[0] = '/';
         var ci = 1; // TODO perf analysis
@@ -76,7 +79,7 @@ internal class NameSerializer : ISerializer<PdfName>
         return ci;
     }
 
-    private int WriteCached(PdfName obj, Span<byte> data)
+    private static int WriteCached(PdfName obj, Span<byte> data)
     {
         data[0] = (byte)'/';
         ulong val = obj.CacheValue;

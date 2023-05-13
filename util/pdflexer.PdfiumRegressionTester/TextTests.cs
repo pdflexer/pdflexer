@@ -194,8 +194,8 @@ namespace pdflexer.PdfiumRegressionTester
                     var word = words.CurrentWord;
                     var (llx ,lly, urx, ury) = words.GetWordBoundingBox();
                     writer
-                      .LineWidth(0.5m)
-                      .Rect((decimal)llx, (decimal)lly, (decimal)(urx - llx), (decimal)(ury - lly))
+                      .LineWidth(0.5)
+                      .Rect(llx, lly, (urx - llx), (ury - lly))
                       .Stroke();
                 }
 
@@ -208,7 +208,7 @@ namespace pdflexer.PdfiumRegressionTester
                 {
                     var glyphChars = reader.Glyph.MultiChar ?? $"{reader.Glyph.Char}";
 
-                    var (llx, lly, urx, ury) = reader.GetCurrentBoundingBox();
+                    var rect = reader.GetCurrentBoundingBox();
                     var (x, y) = reader.GetCurrentTextPos();
                     // lines.Add($"{x:0.000} {y:0.000} {bb.llx:0.0} {bb.lly:0.0} {bb.urx:0.0} {bb.ury:0.0} {c}");
 
@@ -220,19 +220,19 @@ namespace pdflexer.PdfiumRegressionTester
                         {
                             lines.Add(((float)x, (float)y, 'f'));
                             var ci = new CharInfo { c = 'f', Font = reader.GraphicsState.FontResourceName?.Value ?? "uk", 
-                                x = x, y = y, llx = llx, lly = lly, urx = urx, ury= ury };
+                                x = (float)x, y = (float)y, llx = (float)rect.LLx, lly = (float)rect.LLy, urx = (float)rect.URx, ury= (float)rect.URy };
                             chars[$"{x:0.0}{y:0.0}f"] = ci;
                             lines.Add(((float)x, (float)y, 'i'));
                             ci = new CharInfo
                             {
                                 c = 'l',
                                 Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
-                                x = x,
-                                y = y,
-                                llx = llx,
-                                lly = lly,
-                                urx = urx,
-                                ury = ury
+                                x = (float)x,
+                                y = (float)y,
+                                llx = (float)rect.LLx,
+                                lly = (float)rect.LLy,
+                                urx = (float)rect.URx,
+                                ury = (float)rect.URy
                             };
                             chars[$"{x:0.0}{y:0.0}i"] = ci;
                         }
@@ -243,12 +243,12 @@ namespace pdflexer.PdfiumRegressionTester
                             {
                                 c = 'f',
                                 Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
-                                x = x,
-                                y = y,
-                                llx = llx,
-                                lly = lly,
-                                urx = urx,
-                                ury = ury
+                                x = (float)x,
+                                y = (float)y,
+                                llx = (float)rect.LLx,
+                                lly = (float)rect.LLy,
+                                urx = (float)rect.URx,
+                                ury = (float)rect.URy
                             }; ;
                             chars[$"{x:0.0}{y:0.0}f"] = ci;
                             lines.Add(((float)x, (float)y, 'l'));
@@ -256,12 +256,12 @@ namespace pdflexer.PdfiumRegressionTester
                             {
                                 c = 'l',
                                 Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
-                                x = x,
-                                y = y,
-                                llx = llx,
-                                lly = lly,
-                                urx = urx,
-                                ury = ury
+                                x = (float)x,
+                                y = (float)y,
+                                llx = (float)rect.LLx,
+                                lly = (float)rect.LLy,
+                                urx = (float)rect.URx,
+                                ury = (float)rect.URy
                             };
                             chars[$"{x:0.0}{y:0.0}l"] = ci;
                         }
@@ -272,12 +272,12 @@ namespace pdflexer.PdfiumRegressionTester
                             {
                                 c = c,
                                 Font = reader.GraphicsState.FontResourceName?.Value ?? "uk",
-                                x = x,
-                                y = y,
-                                llx = llx,
-                                lly = lly,
-                                urx = urx,
-                                ury = ury,
+                                x = (float)x,
+                                y = (float)y,
+                                llx = (float)rect.LLx,
+                                lly = (float)rect.LLy,
+                                urx = (float)rect.URx,
+                                ury = (float)rect.URy,
                                 cp = reader.Glyph.CodePoint ?? 0
                             }; ;
                             chars[$"{x:0.0}{y:0.0}{c}"] = ci;
@@ -304,7 +304,7 @@ namespace pdflexer.PdfiumRegressionTester
                     fpdf_text.FPDFTextGetCharBox(txt, i, ref llx, ref urx, ref lly, ref ury);
                     var c = (char)fpdf_text.FPDFTextGetUnicode(txt, i);
                     if (c == '\n' || c == '\r' || c == ' ' || c == '-' || c == '\u0002') { continue; }
-                    
+
                     double x = 0, y = 0;
                     fpdf_text.FPDFTextGetCharOrigin(txt, i, ref x, ref y);
 
@@ -324,17 +324,17 @@ namespace pdflexer.PdfiumRegressionTester
                             }
                             // var nm = GetFontName(txt, i);
                             writer
-                              .LineWidth(0.01m)
-                              .Rect((decimal)llx, (decimal)lly, (decimal)(urx - llx), (decimal)(ury - lly))
+                              .LineWidth(0.01)
+                              .Rect(llx, lly, (urx - llx), (ury - lly))
                               .Stroke();
-                                writer.Circle((decimal)x, (decimal)y, 0.05m).Stroke();
+                                writer.Circle(x, y, 0.05).Stroke();
                             unmatched2.Add(((float)x, (float)y, c));
 
                             var (dd, cc) = Nearest((float)x, (float)y, charList);
                             if (cc != null && dd < 5)
                             {
                                 writer.Font(font, 0.5)
-                                      .TextMove(x + 1, y - 1)
+                                      .TextMove(x + 1 , y - 1)
                                       .Text($"b:{(int)c} c:{(int)cc.c} cp: {cc.cp} cf: {cc.Font}")
                                       .EndText();
                             } else
@@ -367,12 +367,12 @@ namespace pdflexer.PdfiumRegressionTester
                                 continue;
                             }
 
-                            writer.LineWidth(0.05m)
-                                  .Rect((decimal)kvp.Value.llx, (decimal)kvp.Value.lly,
-                                    (decimal)(kvp.Value.urx - kvp.Value.llx), (decimal)(kvp.Value.ury - kvp.Value.lly))
+                            writer.LineWidth(0.05)
+                                  .Rect(kvp.Value.llx, kvp.Value.lly,
+                                    (kvp.Value.urx - kvp.Value.llx), (kvp.Value.ury - kvp.Value.lly))
                                   .Stroke();
 
-                            writer.Circle((decimal)kvp.Value.x, (decimal)kvp.Value.y, 0.1m).Stroke();
+                            writer.Circle(kvp.Value.x, kvp.Value.y, 0.1).Stroke();
                             unmatched.Add((kvp.Value.x, kvp.Value.y, kvp.Value.c));
                             writer.Font(font, 0.5)
                               .TextMove(kvp.Value.x + 1, kvp.Value.y - 2)

@@ -1,0 +1,321 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ output extension=".cs" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<# var operators = new List<(string, string, string, List<(string, string)>, bool)> {
+    ("b", null, "Close, fill, and stroke path using nonzero winding number rule", null, false), // no ops
+    ("B", null, "Fill and stroke path using nonzero winding number rule", null, false), // no ops
+    ("b*", "b_Star", "Close, fill, and stroke path using even-odd rule", null, false), // no ops
+    ("B*", "B_Star", "Fill and stroke path using even-odd rule", null, false), // no ops
+    ("BDC", null, "Begin marked-content sequence with property list", new List<(string, string)>{ ("PdfName", "tag"), ("IPdfObject", "props") }, true),
+    ("BI", null, "Begin inline image object", null, false), // no ops
+    ("BMC", null, "Begin marked-content sequence", new List<(string, string)>{ ("PdfName", "tag") }, false),
+    ("BT", null, "Begin text object", null, false), // no ops
+    ("BX", null, "Begin compatibility section", null, false), // no ops
+    ("c", null, "Append curved segment to path (three control points)", new List<(string, string)>{ ("T", "x1"), ("T", "y1"), ("T", "x2"), ("T", "y2"), ("T", "x3"), ("T", "y3")}, false),
+    ("cm", null, "Concatenate matrix to current transformation matrix", new List<(string, string)>{ ("T", "a"), ("T", "b"), ("T", "c"), ("T", "d"), ("T", "e"), ("T", "f")}, false),
+    ("CS", null, "Set color space for stroking operations", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("cs", null, "Set color space for nonstroking operations", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("d", null, "Set line dash pattern", new List<(string, string)>{ ("PdfArray", "dashArray"), ("T", "dashPhase") } , true),
+    ("d0", null, "Set glyph width in Type 3 font", new List<(string, string)>{ ("T", "wx"), ("T", "wy") }, false),
+    ("d1", null, "Set glyph width and bounding box in Type 3 font", new List<(string, string)>{ ("T", "wx"), ("T", "wy"), ("T", "llx"), ("T", "lly"), ("T", "urx"), ("T", "ury") }, false),
+    ("Do", null, "Invoke named XObject", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("DP", null, "Define marked-content point with property list", new List<(string, string)>{ ("PdfName", "tag"), ("IPdfObject", "props") }, true),
+    ("EI", null, "End inline image object", null, false), // no ops
+    ("EMC", null, "End marked-content sequence", null, false), // no ops
+    ("ET", null, "End text object", null, false), // no ops
+    ("EX", null, "End compatibility section", null, false), // no ops
+    ("f", null, "Fill path using nonzero winding number rule", null, false), // no ops
+    ("F", null, "Fill path using nonzero winding number rule (obsolete)", null, false), // no ops
+    ("f*", "f_Star", "Fill path using even-odd rule", null, false), // no ops
+    ("G", null, "Set gray level for stroking operations", new List<(string, string)>{ ("T", "gray") }, false),
+    ("g", null, "Set gray level for nonstroking operations", new List<(string, string)>{ ("T", "gray") }, false),
+    ("gs", null, "Set parameters from graphics state parameter dictionary", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("h", null, "Close subpath", null, false), // no ops
+    ("i", null, "Set flatness tolerance", new List<(string, string)>{ ("T", "flatness") }, false),
+    ("ID", null, "Begin inline image data", null, false), // no ops
+    ("j", null, "Set line join style", new List<(string, string)>{ ("int", "lineJoin") }, false),
+    ("J", null, "Set line capstyle", new List<(string, string)>{ ("int", "lineCap") }, false),
+    ("K", null, "Set CMYK color for stroking operations", new List<(string, string)>{ ("T", "c"), ("T", "m"), ("T", "y"), ("T", "k") }, false),
+    ("k", null, "Set CMYK color for nonstroking operations", new List<(string, string)>{ ("T", "c"), ("T", "m"), ("T", "y"), ("T", "k") }, false),
+    ("l", null, "Append straight line segment to path", new List<(string, string)>{ ("T", "x"), ("T", "y")}, false),
+    ("m", null, "Begin new subpath", new List<(string, string)>{ ("T", "x"), ("T", "y")}, false),
+    ("M", null, "Set miter limit", new List<(string, string)>{ ("T", "miterLimit") }, false),
+    ("MP", null, "Define marked-content point", new List<(string, string)>{ ("PdfName", "tag") }, false),
+    ("n", null, "End path without filling or stroking", null, false), // no ops
+    ("q", null, "Save graphics state", null, false), // no ops
+    ("Q", null, "Restore graphics state", null, false),  // no ops
+    ("re", null, "Append rectangle to path", new List<(string, string)>{ ("T", "x"), ("T", "y"), ("T", "width"), ("T", "height") }, false),
+    ("RG", null, "Set RGB color for stroking operations", new List<(string, string)>{ ("T", "r"), ("T", "g"), ("T", "b") }, false),
+    ("rg", null, "Set RGB color for nonstroking operations", new List<(string, string)>{ ("T", "r"), ("T", "g"), ("T", "b") }, false),
+    ("ri", null, "Set color rendering intent", new List<(string, string)>{ ("PdfName", "intent") }, false),
+    ("s", null, "Close and stroke path", null, false), // no ops
+    ("S", null, "Stroke path", null, false), // no ops
+    ("SC", null, "Set color for stroking operations", new List<(string, string)>{ ("List<T>", "colorInfo") }, true),
+    ("sc", null, "Set color for nonstroking operations", new List<(string, string)>{ ("List<T>", "colorInfo") }, true),
+    ("SCN", null, "Set color for stroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<T>", "colorInfo"), ("PdfName?", "name") }, true),
+    ("scn", null, "Set color for nonstroking operations (ICCBased and special color spaces)", new List<(string, string)>{ ("List<T>", "colorInfo"), ("PdfName?", "name") }, true),
+    ("sh", null, "Paint area defined by shading pattern", new List<(string, string)>{ ("PdfName", "name") }, false),
+    ("T*", "T_Star", "Move to start of next text line", null, false), // no ops
+    ("Tc", null, "Set character spacing", new List<(string, string)>{ ("T", "charSpace") }, false),
+    ("Td", null, "Move text position", new List<(string, string)> { ("T", "tx"), ("T", "ty") }, false),
+    ("TD", null, "Move text position and set leading", new List<(string, string)> { ("T", "tx"), ("T", "ty") }, false),
+    ("Tf", null, "Set text font and size", new List<(string, string)>{ ("PdfName", "font"), ("T", "size") }, false),
+    ("Tj", null, "Show text", new List<(string, string)> { ("byte[]", "text") }, true),
+    ("TJ", null, "Show text, allowing individual glyph positioning", new List<(string, string)> { ("List<TJ_Item<T>>", "info") }, true),
+    ("TL", null, "Set text leading", new List<(string, string)>{ ("T", "leading") }, false),
+    ("Tm", null, "Set text matrix and text line matrix", new List<(string, string)>{ ("T", "a"), ("T", "b"), ("T", "c"), ("T", "d"), ("T", "e"), ("T", "f")}, false),
+    ("Tr", null, "Set text rendering mode", new List<(string, string)>{ ("int", "render") }, false),
+    ("Ts", null, "Set text rise", new List<(string, string)>{ ("T", "rise") }, false),
+    ("Tw", null, "Set word spacing", new List<(string, string)>{ ("T", "wordSpace") }, false),
+    ("Tz", null, "Set horizontal text scaling", new List<(string, string)>{ ("T", "scale") }, false),
+    ("v", null, "Append curved segment to path (initial point replicated)", new List<(string, string)>{ ("T", "x2"), ("T", "y2"), ("T", "x3"), ("T", "y3")}, false),
+    ("w", null, "Set line width", new List<(string, string)>{ ("T", "lineWidth") }, false),
+    ("W", null, "Set clipping path using nonzero winding number rule", null, false), // no ops
+    ("W*", "W_Star", "Set clipping path using even-odd rule", null, false), // no ops
+    ("y", null, "Append curved segment to path (final point replicated)", new List<(string, string)>{ ("T", "x1"), ("T", "y1"), ("T", "x3"), ("T", "y3")}, false),
+    ("'", "singlequote", "Move to next line and show text", new List<(string, string)> { ("byte[]", "text") }, true),
+    ("\"", "doublequote", "Set word and character spacing, move to next line, and show text", new List<(string, string)> { ("T", "aw"), ("T", "ac"), ("byte[]", "text") }, true),
+
+}; #>
+
+#if NET7_0_OR_GREATER
+<#
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+#>
+global using <#= name #>_Op = PdfLexer.Operators.<#= name #>_Op<double>;
+<#
+}
+#>
+
+
+
+using PdfLexer.Lexing;
+using PdfLexer.Parsers;
+using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Numerics;
+using PdfLexer.Content;
+
+/// <summary>
+/// Auto-generated, do not modify.
+/// </summary>
+namespace PdfLexer.Operators
+{
+    public enum PdfOperatorType
+    {
+        Unknown = 200,
+        NoOp = 201,
+        RawOp = 202,
+        // End of content
+        EOC = 203,
+<#
+foreach (var op in operators) 
+{
+    var bytes = Encoding.ASCII.GetBytes(op.Item1);
+    int key = 0;
+    for (int i = 0; i < bytes.Length; i++)
+    {
+        key = key | (bytes[i] << 8 * i);
+    } #>
+        // <#= op.Item3 #>
+        <#= op.Item2 == null ? op.Item1 : op.Item2 #> = <#= key #>,
+<#
+}
+#>
+    }
+
+    public static class ParseOpMapping<T> where T: struct, IFloatingPoint<T>
+    {
+        public static Dictionary<int, PdfOperator.ParseOp<T>> Parsers = new () {
+<#
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+    var bytes = Encoding.ASCII.GetBytes(op.Item1);
+    int key = 0;
+    for (int i = 0; i < bytes.Length; i++)
+    {
+        key = key | (bytes[i] << 8 * i);
+    }
+#>
+            [<#=key#>] = <# if (op.Item5) { #> PdfOperator.Parse<#= name #><T>, <# } else { #> <#= name #>_Op<T>.Parse, <# } #>
+
+<#
+}
+#>
+        };
+
+                public static PdfOperator.ParseOp<T>?[] SingleByteParsers = new PdfOperator.ParseOp<T>?[] {
+<#
+var items = new string[256];
+var b2items = new string[256];
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+    var bytes = Encoding.ASCII.GetBytes(op.Item1);
+    var parseName = op.Item5 ? "PdfOperator.Parse" + name + "<T>" : name + "_Op<T>.Parse";
+    if (bytes.Length != 1) { continue; }
+    items[(int)bytes[0]] = parseName;
+}
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+    var bytes = Encoding.ASCII.GetBytes(op.Item1);
+    var parseName = op.Item5 ? "PdfOperator.Parse" + name + "<T>": name + "_Op<T>.Parse";
+    if (bytes.Length != 2 || (int)bytes[0] != (int)'T') { continue; }
+    var b2 = (int)bytes[1];
+    if (items[b2] != null)
+    {
+        // items[b2] = parseName;    
+    }
+}
+foreach (var op in items) 
+{
+#>
+            <#= op == null ? "null" : op #>,
+<#
+}
+#>
+        };
+    }
+
+<#
+foreach (var op in operators) 
+{
+    var name = op.Item2 == null ? op.Item1 : op.Item2;
+#>
+
+    /// <summary>
+    /// <#= op.Item3 #>
+    /// </summary>
+    public partial class <#= name #>_Op<T> : IPdfOperation<T> where T : struct, IFloatingPoint<T>
+    {
+        public static byte[] OpData { get; } = new byte[] { <#= string.Join(", ", op.Item1.Select(x=> "(byte) '" + (x == '\'' ? "\\'" : x) + "'")) #> };
+        public PdfOperatorType Type => PdfOperatorType.<#= name #>;
+<# if (op.Item4 == null) { #>
+        public static readonly <#= name #>_Op<T> Value = new ();
+
+        // <#= op.Item3 #>
+        public <#= name #>_Op()
+        {
+
+        }
+
+        public static void WriteLn(Stream stream) 
+        {
+            Write(stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(Stream stream) 
+        {
+            stream.Write(OpData);
+        }
+
+        public void Serialize(Stream stream) 
+            => stream.Write(OpData);
+<# if (!op.Item5) { #>
+        public static <#= name #>_Op<T> Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+            => Value;
+
+<# } #>
+<# } else { #>
+<#     foreach (var prop in op.Item4) { #>
+        public <#= prop.Item1 #> <#= prop.Item2 #> { get; }
+<#     } #>
+        public <#= name #>_Op(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item1} {i.Item2}")) #>)
+        {
+<#     
+       foreach (var prop in op.Item4) { 
+#>
+            this.<#= prop.Item2 #> = <#= prop.Item2 #>;
+<#     } #>
+        }
+<# if (!op.Item5) { #>
+
+        public void Serialize(Stream stream) 
+        {
+<#     var ii = 0;
+       foreach (var prop in op.Item4) { 
+            var serializer = prop.Item1 == "T" ? $"FPC<T>.Util.Write({prop.Item2}, stream)" : $"PdfOperator.Write{prop.Item1}({prop.Item2}, stream)";
+#>
+            <#= serializer #>;
+            stream.WriteByte((byte)' ');
+<#         ii++;
+       }
+#>
+            stream.Write(OpData);
+        }
+
+        public static void WriteLn(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item1} {i.Item2}")) #>, Stream stream) 
+        {
+            Write(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item2}")) #>, stream);
+            stream.WriteByte((byte)'\n');
+        }
+
+        public static void Write(<#= string.Join(", ", op.Item4.Select(i=> $"{i.Item1} {i.Item2}")) #>, Stream stream) 
+        {
+<#     
+       foreach (var prop in op.Item4) { 
+            var serializer2 = prop.Item1 == "T" ? $"FPC<T>.Util.Write({prop.Item2}, stream)" : $"PdfOperator.Write{prop.Item1}({prop.Item2}, stream)";
+#>
+            <#= serializer2 #>;
+            stream.WriteByte((byte)' ');
+<#         
+       }
+#>
+            stream.Write(OpData);
+        }
+
+        private static readonly List<string> OpTypes = new () { "<#= string.Join("\", \"", op.Item4.Select(x=>x.Item1)) #>"  };
+
+        public static <#= name #>_Op<T>? Parse(ParsingContext ctx, ReadOnlySpan<byte> data, List<OperandInfo> operands) 
+        {
+            if (operands.Count != <#=op.Item4.Count#>) 
+            {
+                ctx.Error($"Incorrect operand count for <#= name #>, got {operands.Count}, expected <#=op.Item4.Count#>.");
+                if (!ctx.Options.AttemptOperatorRepair || !PdfOperator.TryRepair(ctx, data, operands, OpTypes, out var fixedOps)) 
+                {
+                    return null;
+                }
+                operands = fixedOps;
+            }
+<#     var i = 0;
+       var a = "";
+
+       foreach (var prop in op.Item4) { 
+            var parser = "throw new NotImplementedException()";
+            switch (prop.Item1) {
+                case "T":
+                    parser = $"FPC<T>.Util.Parse<T>(ctx, data, operands[{i}])";
+                    break;
+                default:
+                    parser = $"PdfOperator.Parse{prop.Item1}(ctx, data, operands[{i}])";
+                    break;
+            }
+            a += $"a{i}, ";
+#>
+            var a<#= i #> = <#= parser #>;
+<#         i++; #>
+<#     }
+       a = a.Trim().TrimEnd(',');
+#>
+    
+            return new <#= name #>_Op<T>(<#= a #>);
+        }
+<# } #>
+<# } #>
+    }
+<#
+}
+
+#>
+}
+
+#endif

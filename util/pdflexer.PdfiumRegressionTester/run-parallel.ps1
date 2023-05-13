@@ -18,9 +18,9 @@ function Slice-Array {
     }
 }
 
-$testType = "quicksave"
+$testType = "model-rebuild"
 
-Push-Location $PSScriptRoot;
+Push-Location $PSScriptRoot; # 453
 
 dotnet publish -c release -f net7.0
 

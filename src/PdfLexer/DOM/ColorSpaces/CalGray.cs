@@ -13,6 +13,8 @@ internal class CalGray : IColorSpace
 
     public PdfName Name => PdfName.CalGray;
 
+    public bool IsPredefined => false;
+
     public CalGray(float xw, float yw, float zw, float xb, float yb, float zb, float gamma)
     {
         XW = xw;

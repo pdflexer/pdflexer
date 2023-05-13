@@ -1,9 +1,10 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Filters;
+using System.Numerics;
 
 namespace PdfLexer.Writing;
 
-public sealed class PageWriter : ContentWriter, IDisposable
+public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : struct, IFloatingPoint<T>
 {
     private readonly PageWriteMode Mode;
     private PdfPage Page;

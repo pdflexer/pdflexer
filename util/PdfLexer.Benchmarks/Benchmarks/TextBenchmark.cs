@@ -33,7 +33,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         private List<MemoryStream> mems;
 
         // "issue2128r" pdflexer need to research
-        [Params("__bpl13210.pdf", "bug1669099", "issue1905", "__ecma262.pdf", "__gesamt.pdf", "__issue1133.pdf", "issue2128r")]
+        [Params("__bpl13210.pdf", "bug1669099.pdf", "issue1905.pdf", "__ecma262.pdf", "__gesamt.pdf", "__issue1133.pdf", "issue2128r.pdf")]
         public string testPdf;
 
         [GlobalSetup]
@@ -54,7 +54,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             ReadTxtPdfiumCore();
             void Add(string name)
             {
-                var path = Path.Combine(pdfRoot, name + ".pdf");
+                var path = Path.Combine(pdfRoot, name);
                 // var path = "c:\\temp\\vector2.pdf";
                 paths.Add(path);
                 var data = File.ReadAllBytes(path);

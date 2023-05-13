@@ -1,8 +1,12 @@
-﻿using System.IO;
+﻿global using InlineImage_Op = PdfLexer.Operators.InlineImage_Op<double>;
+
+using System.IO;
+using System.Numerics;
 
 namespace PdfLexer.Operators;
 
-public class InlineImage_Op : IPdfOperation
+
+public class InlineImage_Op<T> : IPdfOperation<T> where T : struct, IFloatingPoint<T>
 {
     public PdfOperatorType Type => PdfOperatorType.Unknown;
 
@@ -34,7 +38,7 @@ public class InlineImage_Op : IPdfOperation
         stream.Write(EI_Op.OpData);
     }
 
-    public PdfStream ConvertToStream()
+    public PdfStream ConvertToStream(PdfDictionary resources)
     {
         var dict = new PdfDictionary();
         PdfName? key = null;
@@ -47,8 +51,26 @@ public class InlineImage_Op : IPdfOperation
             }
             if (key != null)
             {
-                dict[key] = GetReplacement(item);
+                if (key == PdfName.ColorSpace)
+                {
+                    var v = GetReplacement(item, true);
+
+                    if (v is PdfName nm &&
+                        resources.TryGetValue<PdfDictionary>(PdfName.ColorSpace, out var css) && css.TryGetValue(nm, out var obj))
+                    {
+                        obj = obj.Resolve();
+                        dict[key] = obj.Indirect();
+                    } else 
+                    {
+                        dict[key] = v;
+                    }
+                } else
+                {
+                    var v = GetReplacement(item);
+                    dict[key] = v;
+                }
                 key = null;
+                
             }
         }
         dict[PdfName.Subtype] = PdfName.Image;
@@ -57,24 +79,24 @@ public class InlineImage_Op : IPdfOperation
         ba.DecodeParams = dict.Get(PdfName.DecodeParms);
         return new PdfStream(dict, ba);
     }
-    private static IPdfObject GetReplacement(IPdfObject obj)
+    private static IPdfObject GetReplacement(IPdfObject obj, bool cs = false)
     {
         switch (obj)
         {
             case PdfName nm:
-                return GetReplacedName(nm);
+                return GetReplacedName(nm, cs);
             case PdfArray arr:
                 var copy = new PdfArray();
                 foreach (var item in arr)
                 {
-                    copy.Add(GetReplacement(item));
+                    copy.Add(GetReplacement(item, cs));
                 }
                 return copy;
             default:
                 return obj;
         }
     }
-    private static PdfName GetReplacedName(PdfName name)
+    private static PdfName GetReplacedName(PdfName name, bool cs = false)
     {
         switch (name.Value)
         {
@@ -113,11 +135,10 @@ public class InlineImage_Op : IPdfOperation
             case "H":
                 return PdfName.Height;
             case "I":
-                return PdfName.Interpolate;
+                return cs ? PdfName.Indexed : PdfName.Interpolate;
             case "IM":
                 return PdfName.ImageMask;
         }
         return name;
     }
 }
-

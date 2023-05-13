@@ -205,7 +205,7 @@
 1 985.75 639.0 - True False
 1 990.49 639.0 1 False False
 1 998.03 639.0 0 False False
-1 1005.58 639.0 0 False False
+1 1005.57 639.0 0 False False
 1 1013.12 639.0   False False
 1 1016.03 639.0 f False False
 1 1020.79 639.0 o False False
@@ -216,7 +216,7 @@
 1 1052.31 639.0 c False False
 1 1059.06 639.0 h False False
 1 1067.26 639.0   False False
-1 1070.17 639.0 c False False
+1 1070.16 639.0 c False False
 1 1076.91 639.0 h False False
 1 1085.11 639.0 a False False
 1 1092.68 639.0 r False False

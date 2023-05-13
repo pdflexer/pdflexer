@@ -191,7 +191,7 @@ internal class TestRunner
         using var fb = PdfDocument.Open(File.ReadAllBytes(filePath));
         using var fc = PdfDocument.Open(File.ReadAllBytes(outputPdf));
 
-        var comparer = new Compare(Path.Combine(output, Path.GetFileNameWithoutExtension(filePath)), 2);
+        var comparer = new Compare(Path.Combine(output, Path.GetFileNameWithoutExtension(filePath)), 1);
         var pgs = comparer.CompareAllPages(filePath, outputPdf);
         var changedpages = new List<int>();
         for (var i = 0; i < pgs.Count; i++)
@@ -249,12 +249,15 @@ internal class TestRunner
     void DumpPageContent(PdfDocument doc, int pg, Stream output)
     {
         if (doc.Pages.Count <= pg) { return; }
+        // using var str = doc.Pages[pg].Contents.First().Contents.GetDecodedStream();
+        // str.CopyTo(output);
+        // return;
         var scanner = new PageContentScanner(doc.Context, doc.Pages[pg]);
-        while (scanner.Peek() != PdfOperatorType.EOC)
+        while (scanner.Advance())
         {
-            output.Write(scanner.GetCurrentData());
+            var data = scanner.GetCurrentData();
+            output.Write(data);
             output.WriteByte((byte)'\n');
-            scanner.SkipCurrent();
         }
     }
 

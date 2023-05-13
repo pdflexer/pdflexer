@@ -9,6 +9,7 @@ internal class DeviceRGB : IColorSpace
     public static readonly DeviceRGB Instance = new ();
     public int Components => 3;
     public PdfName Name => PdfName.DeviceRGB;
+    public bool IsPredefined => true;
 
     public (ushort r, ushort g, ushort b) GetRGB16(ushort[] components, int offset)
     {

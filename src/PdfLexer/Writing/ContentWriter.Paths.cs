@@ -1,4 +1,8 @@
-﻿namespace PdfLexer.Writing;
+﻿using PdfLexer.Content;
+using PdfLexer.Content.Model;
+using System.Numerics;
+
+namespace PdfLexer.Writing;
 
 // Parts of API in this file for writing were ported from https://github.com/foliojs/pdfkit
 // pdfkit is licensed under:
@@ -6,92 +10,93 @@
 // Copyright (c) 2014 Devon Govett
 
 
-public partial class ContentWriter
+public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 {
-    public ContentWriter ClosePath()
+    public ContentWriter<T> ClosePath()
     {
-        h_Op.WriteLn(StreamWriter.Stream);
+        h_Op.WriteLn(Writer.Stream);
         return this;
     }
 
-    public ContentWriter Stroke()
+    public ContentWriter<T> Stroke()
     {
-        S_Op.WriteLn(StreamWriter.Stream);
+        S_Op.WriteLn(Writer.Stream);
         return this;
     }
 
-    public ContentWriter Fill(bool evenOdd = false)
+    public ContentWriter<T> Fill(bool evenOdd = false)
     {
         if (evenOdd)
         {
-            f_Star_Op.WriteLn(StreamWriter.Stream);
+            f_Star_Op.WriteLn(Writer.Stream);
         }
         else
         {
-            f_Op.WriteLn(StreamWriter.Stream);
+            f_Op.WriteLn(Writer.Stream);
         }
         return this;
     }
 
-    public ContentWriter FillAndStroke(bool evenOdd = false)
+    public ContentWriter<T> FillAndStroke(bool evenOdd = false)
     {
         if (evenOdd)
         {
-            B_Star_Op.WriteLn(StreamWriter.Stream);
+            B_Star_Op.WriteLn(Writer.Stream);
         }
         else
         {
-            B_Op.WriteLn(StreamWriter.Stream);
+            B_Op.WriteLn(Writer.Stream);
         }
 
         return this;
     }
 
-    public ContentWriter CloseFillAndStroke(bool evenOdd = false)
+    public ContentWriter<T> CloseFillAndStroke(bool evenOdd = false)
     {
         if (evenOdd)
         {
-            b_Star_Op.WriteLn(StreamWriter.Stream);
+            b_Star_Op.WriteLn(Writer.Stream);
         }
         else
         {
-            b_Op.WriteLn(StreamWriter.Stream);
+            b_Op.WriteLn(Writer.Stream);
         }
 
         return this;
     }
 
-    public ContentWriter Clip(bool evenOdd = false)
+    public ContentWriter<T> Clip(bool evenOdd = false)
     {
         if (evenOdd)
         {
-            W_Star_Op.WriteLn(StreamWriter.Stream);
+            W_Star_Op.WriteLn(Writer.Stream);
         }
         else
         {
-            W_Op.WriteLn(StreamWriter.Stream);
+            W_Op.WriteLn(Writer.Stream);
         }
         return this;
     }
 
-    public ContentWriter EndPathNoOp()
+    public ContentWriter<T> EndPathNoOp()
     {
-        n_Op.WriteLn(StreamWriter.Stream);
+        n_Op.WriteLn(Writer.Stream);
         return this;
     }
 
-    public ContentWriter Circle(decimal x, decimal y, decimal r) => Ellipse(x, y, r, r);
+    public ContentWriter<T> Circle(T x, T y, T r) => Ellipse(x, y, r, r);
 
-    public ContentWriter Ellipse(decimal x, decimal y, decimal r1, decimal r2)
+    // note: from pdfkit js
+    // originally based on http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas/2173084#2173084
+    public ContentWriter<T> Ellipse(T x, T y, T r1, T r2)
     {
-        // note: from pdfkit js
-        // originally based on http://stackoverflow.com/questions/2172798/how-to-draw-an-oval-in-html5-canvas/2173084#2173084
         x -= r1;
         y -= r2;
+        var two = FPC<T>.V2;
         var ox = r1 * KAPPA;
         var oy = r2 * KAPPA;
-        var xe = x + r1 * 2;
-        var ye = y + r2 * 2;
+        var xe = x + r1 * two;
+        var ye = y + r2 * two;
         var xm = x + r1;
         var ym = y + r2;
 
@@ -103,44 +108,53 @@ public partial class ContentWriter
         return this.ClosePath();
     }
 
-    public ContentWriter MoveTo(decimal x, decimal y)
+    public ContentWriter<T> MoveTo(T x, T y)
     {
-        if (scale != 1) { x *= (decimal)scale; y *= (decimal)scale; }
-        m_Op.WriteLn(x, y, StreamWriter.Stream);
+        EnsureInPageState();
+        if (scale != T.One) { x *= scale; y *= scale; }
+        m_Op<T>.WriteLn(x, y, Writer.Stream);
         return this;
     }
 
-    public ContentWriter LineTo(decimal x, decimal y)
+    public ContentWriter<T> LineTo(T x, T y)
     {
-        if (scale != 1) { x *= (decimal)scale; y *= (decimal)scale; }
-        l_Op.WriteLn(x, y, StreamWriter.Stream);
+        if (scale != T.One) { x *= scale; y *= scale; }
+        l_Op<T>.WriteLn(x, y, Writer.Stream);
         return this;
     }
 
-    public ContentWriter BezierCurveTo(decimal x1, decimal y1, decimal x2, decimal y2, decimal x3, decimal y3)
+    public ContentWriter<T> BezierCurveTo(T x1, T y1, T x2, T y2, T x3, T y3)
     {
-        if (scale != 1) { var s = (decimal)scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; x3 *= s; y3 *= s; }
-        c_Op.WriteLn(x1, y1, x2, y2, x3, y3, StreamWriter.Stream);
+        if (scale != T.One) { var s = scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; x3 *= s; y3 *= s; }
+        c_Op<T>.WriteLn(x1, y1, x2, y2, x3, y3, Writer.Stream);
         return this;
     }
 
-    public ContentWriter QuadraticCurveTo(decimal x1, decimal y1, decimal x2, decimal y2)
+    public ContentWriter<T> QuadraticCurveTo(T x1, T y1, T x2, T y2)
     {
-        if (scale != 1) { var s = (decimal)scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; }
-        v_Op.WriteLn(x1, y1, x2, y2, StreamWriter.Stream);
+        if (scale != T.One) { var s = scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; }
+        v_Op<T>.WriteLn(x1, y1, x2, y2, Writer.Stream);
         return this;
     }
 
-    public ContentWriter Rect(decimal x, decimal y, decimal w, decimal h)
+    public ContentWriter<T> Rect(PdfRect<T> rect)
     {
-        if (scale != 1) { var s = (decimal)scale; x *= s; y *= s; w *= s; h *= s; }
-        re_Op.WriteLn(x, y, w, h, StreamWriter.Stream);
+        re_Op<T>.WriteLn(rect.LLx, rect.LLy, rect.URx - rect.LLx, rect.URy-rect.LLy, Writer.Stream);
         return this;
     }
-    public ContentWriter RoundedRect(decimal x, decimal y, decimal w, decimal h, decimal r)
+
+    public ContentWriter<T> Rect(T x, T y, T w, T h)
     {
-        r = Math.Min(Math.Min(r, 0.5m * w), 0.5m * h);
-        var c = r * (1 - KAPPA);
+        if (scale != T.One) { var s = scale; x *= s; y *= s; w *= s; h *= s; }
+        re_Op<T>.WriteLn(x, y, w, h, Writer.Stream);
+        return this;
+    }
+
+    public ContentWriter<T> RoundedRect(T x, T y, T w, T h, T r)
+    {
+        var half = FPC<T>.V0_5;
+        r = T.Min(T.Min(r, half * w), half * h);
+        var c = r * (T.One - KAPPA);
         MoveTo(x + r, y);
         LineTo(x + w - r, y);
         BezierCurveTo(x + w - c, y, x + w, y + c, x + w, y + r);

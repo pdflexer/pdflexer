@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace PdfLexer.Fonts
@@ -50,16 +51,58 @@ namespace PdfLexer.Fonts
         }
     }
 
-    public readonly struct UnappliedGlyph
+    public readonly struct GlyphOrShift
     {
-        public UnappliedGlyph(Glyph? glyph, float shift, int bytes=0)
+        internal GlyphOrShift(Glyph? glyph, double shift, int bytes=0)
         {
             Glyph = glyph;
             Shift = shift;
             Bytes = bytes;
         }
+
+        public GlyphOrShift(double shift)
+        {
+            Glyph = null;
+            Shift = shift;
+            Bytes = 0;
+        }
+
+        public GlyphOrShift(Glyph glyph)
+        {
+            Glyph = glyph;
+            Bytes = 0;
+        }
+
         public readonly Glyph? Glyph;
-        public readonly float Shift;
-        public readonly int Bytes;
+        public readonly double Shift;
+        internal readonly int Bytes;
+    }
+
+    public readonly struct GlyphOrShift<T> where T : struct, IFloatingPoint<T>
+    {
+        internal GlyphOrShift(Glyph? glyph, T shift, int bytes = 0)
+        {
+            Glyph = glyph;
+            Shift = shift;
+            Bytes = bytes;
+        }
+
+        public GlyphOrShift(T shift)
+        {
+            Glyph = null;
+            Shift = shift;
+            Bytes = 0;
+        }
+
+        public GlyphOrShift(Glyph glyph)
+        {
+            Glyph = glyph;
+            Bytes = 0;
+            Shift = T.Zero;
+        }
+
+        public readonly Glyph? Glyph;
+        public readonly T Shift;
+        internal readonly int Bytes;
     }
 }

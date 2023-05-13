@@ -1,5 +1,7 @@
-﻿using System;
+﻿using PdfLexer.Writing;
+using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace PdfLexer.DOM.ColorSpaces;
@@ -15,6 +17,11 @@ public interface IColorSpace
     /// </summary>
     PdfName Name { get; }
 
+    /// <summary>
+    /// If the colorspace is predefined by using a PdfName
+    /// in the pdf spec
+    /// </summary>
+    bool IsPredefined { get; }
 
     /// <summary>
     /// Copies and converts component data to RGBA 8 bit format
@@ -32,7 +39,22 @@ public interface IColorSpace
 
     bool IsDefaultDecode(int bpc, List<float> decode) { return false; }
 
+    IPdfObject GetPdfObject() { throw new NotImplementedException(); }
 
-    (double x, double y, double z) GetXYZ(double[] compData) { return (0,0,0); }
+
+    void Set<T>(ContentWriter<T> writer) where T : struct, IFloatingPoint<T>
+    {
+        throw new NotImplementedException();
+    }
+
+    IColor<T> ReadColor<T>(PdfDictionary resources, IPdfOperation<T> colorOp) where T : struct, IFloatingPoint<T> { throw new NotImplementedException(); }
 }
 
+public interface IColor<T>  where T : struct, IFloatingPoint<T>
+{
+    IColorSpace Colorspace { get; }
+    bool IsRGBConvertable { get; }
+    (ushort r, ushort g, ushort b) GetRBG();
+    void Set(ContentWriter<T> writer);
+    void SetStroking(ContentWriter<T> writer);
+}

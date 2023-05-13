@@ -1,9 +1,6 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.DOM;
 using PdfLexer.Filters;
-using PdfLexer.Operators;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
 
 
@@ -14,182 +11,198 @@ using System.Numerics;
 
 namespace PdfLexer.Writing;
 
-public partial class ContentWriter
-{
-    private static decimal KAPPA = (decimal)(4 * ((Math.Sqrt(2) - 1) / 3.0));
-    private GraphicsState GfxState;
+public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
+{ 
+        private GfxState<T> GfxState;
+        internal GfxState<T> GS { get => GfxState; }
+        private static T KAPPA = FPC<T>.Util.FromDecimal<T>((decimal)(4 * ((Math.Sqrt(2) - 1) / 3.0)));
+        private T scale;
+
+    bool isCompatSection;
+
     internal PageState State { get; private set; }
     internal PdfDictionary Resources { get; }
     private PdfDictionary XObjs { get; }
     private PdfDictionary Fonts { get; }
-    public IStreamContentsWriter StreamWriter { get; private set; }
+    public PdfDictionary ColorSpaces { get; }
+    public PdfDictionary ExtGS { get; }
+    public PdfDictionary Shadings { get; }
+    public PdfDictionary Patterns { get; }
+    public PdfDictionary Properties { get; }
 
-    private double scale;
+    internal Dictionary<PdfIndirectRef, bool> OCDefaults { get; set; } = new Dictionary<PdfIndirectRef, bool>();
+
+
+    public IStreamContentsWriter Writer { get; private set; }
 
     public ContentWriter(PdfDictionary resources, PageUnit unit = PageUnit.Points)
     {
-        GfxState = new GraphicsState();
+        GfxState = new GfxState<T>();
+        scale = unit switch
+        {
+            PageUnit.Points => T.One,
+            _ => throw new PdfLexerException("Unknown page unit: " + unit)
+        };
+
         Resources = resources;
         XObjs = resources.GetOrCreateValue<PdfDictionary>(PdfName.XObject);
         Fonts = resources.GetOrCreateValue<PdfDictionary>(PdfName.Font);
-        StreamWriter = new ZLibLexerStream();
-        scale = unit switch
-        {
-            PageUnit.Points => 1,
-            _ => throw new PdfLexerException("Unknown page unit: " + unit)
-        };
+        ColorSpaces = resources.GetOrCreateValue<PdfDictionary>(PdfName.ColorSpace);
+        ExtGS = resources.GetOrCreateValue<PdfDictionary>(PdfName.ExtGState);
+        Shadings = resources.GetOrCreateValue<PdfDictionary>(PdfName.Shading);
+        Properties = resources.GetOrCreateValue<PdfDictionary>("Properties");
+        Patterns = resources.GetOrCreateValue<PdfDictionary>(PdfName.Pattern);
+        Writer = new ZLibLexerStream();
     }
-
-
-    public ContentWriter Image(XObjImage form, PdfRectangle rect)
-          => Image(form, rect.LLx, rect.LLy, rect.Width, rect.Height);
-
-    public ContentWriter Image(XObjImage img, double x, double y, double w, double h)
+    public ContentWriter<T> Image(XObjImage img, T x, T y, T w, T h)
     {
         var nm = AddResource(img.Stream, "I");
         return Do(nm, x, y, w, h);
     }
 
-    public ContentWriter Form(XObjForm form, double x, double y, double xScale = 1, double yScale = 1)
+    internal ContentWriter<T> Image(PdfStream img)
+    {
+        var nm = AddResource(img, "I");
+        return Do(nm);
+    }
+
+
+
+    public ContentWriter<T> Form(XObjForm form, T x, T y) => Form(form, x, y, T.One, T.One);
+    public ContentWriter<T> Form(XObjForm form, T x, T y, T xScale, T yScale)
     {
         var nm = AddResource(form.NativeObject, "F");
         return Do(nm, x, y, xScale, yScale);
     }
 
-    public ContentWriter Form(XObjForm form)
+    public ContentWriter<T> Form(XObjForm form)
+
     {
         var nm = AddResource(form.NativeObject, "F");
         return Do(nm);
     }
 
-
-    private ContentWriter Do(PdfName nm, double x, double y, double w, double h)
+    internal ContentWriter<T> Form(PdfStream form)
     {
-        if (scale != 1) { x *= scale; y *= scale; w *= scale; h *= scale; }
-        var d = new Matrix4x4(
-            (float)w, 0, 0, 0,
-            0, (float)h, 0, 0,
-            (float)x, (float)y, 1, 0,
-            0, 0, 0, 1);
+        var nm = AddResource(form, "F");
+        return Do(nm);
+    }
+
+    private ContentWriter<T> Do(PdfName nm, T x, T y, T w, T h)
+    {
+        if (scale != T.One) { x *= scale; y *= scale; w *= scale; h *= scale; }
+        var d = new GfxMatrix<T>(w, T.Zero, T.Zero, h, x, y);
         var cm = GfxState.GetTranslation(d);
         return Do(nm, cm);
     }
-
-    private ContentWriter Do(PdfName nm, Matrix4x4? xform = null)
+    private ContentWriter<T> Do(PdfName nm, GfxMatrix<T>? xform = null)
     {
         EnsureInPageState();
         if (xform.HasValue)
         {
-            q_Op.Value.Apply(ref GfxState);
-            q_Op.WriteLn(StreamWriter.Stream);
-            cm_Op.WriteLn(xform.Value, StreamWriter.Stream);
+            q_Op<T>.Value.Apply(ref GfxState);
+            q_Op<T>.WriteLn(Writer.Stream);
+            cm_Op<T>.WriteLn(xform.Value, Writer.Stream);
         }
 
-        Do_Op.WriteLn(nm, StreamWriter.Stream);
+        Do_Op<T>.WriteLn(nm, Writer.Stream);
 
         if (xform.HasValue)
         {
-            Q_Op.Value.Apply(ref GfxState);
-            Q_Op.WriteLn(StreamWriter.Stream);
+            Q_Op<T>.Value.Apply(ref GfxState);
+            Q_Op<T>.WriteLn(Writer.Stream);
         }
         return this;
     }
 
-    public ContentWriter Save()
+    public ContentWriter<T> Save()
     {
-        q_Op.Value.Apply(ref GfxState);
-        q_Op.WriteLn(StreamWriter.Stream);
+        EnsureInPageState();
+        q_Op<T>.Value.Apply(ref GfxState);
+        q_Op<T>.WriteLn(Writer.Stream);
+        GraphicsStackSize++;
         return this;
     }
 
-    public ContentWriter Restore()
+    public ContentWriter<T> Restore()
     {
-        Q_Op.Value.Apply(ref GfxState);
-        Q_Op.WriteLn(StreamWriter.Stream);
+        EnsureInPageState();
+        Q_Op<T>.Value.Apply(ref GfxState);
+        Q_Op<T>.WriteLn(Writer.Stream);
+        GraphicsStackSize--;
+        return this;
+    }
+    public ContentWriter<T> LineJoin(JoinStyle c)
+    {
+        j_Op<T>.WriteLn((int)c, Writer.Stream);
         return this;
     }
 
-    public ContentWriter LineWidth(decimal w)
+    public ContentWriter<T> LineWidth(T w)
     {
-        if (scale != 1) { w *= (decimal)scale; }
-        w_Op.WriteLn(w, StreamWriter.Stream);
+        if (scale != T.One) { w *= scale; }
+        w_Op<T>.WriteLn(w, Writer.Stream);
         return this;
     }
 
-    public enum CapStyle
+    public ContentWriter<T> LineCap(CapStyle c)
     {
-        BUTT = 0,
-        ROUND = 1,
-        SQUARE = 2
-    }
-
-    public ContentWriter LineCap(CapStyle c)
-    {
-        J_Op.WriteLn((int)c, StreamWriter.Stream);
+        J_Op<T>.WriteLn((int)c, Writer.Stream);
         return this;
     }
 
-    public enum JoinStyle
+    public ContentWriter<T> Scale(T x, T y)
     {
-        MITER = 0,
-        ROUND = 1,
-        BEVEL = 2
-    }
-
-    public ContentWriter LineJoin(JoinStyle c)
-    {
-        j_Op.WriteLn((int)c, StreamWriter.Stream);
+        EnsureInPageState();
+        var cm = new GfxMatrix<T>(x, T.Zero, T.Zero, y, T.Zero, T.Zero);
+        cm_Op<T>.Apply(ref GfxState, cm);
+        cm_Op<T>.WriteLn(cm, Writer.Stream);
         return this;
     }
 
-    public ContentWriter Scale(decimal x, decimal y)
+    public ContentWriter<T> Translate(T x, T y)
     {
-        var cm = new Matrix4x4(
-            (float)x, 0, 0, 0,
-            0, (float)y, 0, 0,
-            0, 0, 1, 0,
-            0, 0, 0, 1);
-
-        GfxState.Apply(cm);
-        cm_Op.WriteLn(cm, StreamWriter.Stream);
+        EnsureInPageState();
+        var cm = new GfxMatrix<T>(T.One, T.Zero, T.Zero, T.One, x, y);
+        cm_Op<T>.Apply(ref GfxState, cm);
+        cm_Op<T>.WriteLn(cm, Writer.Stream);
         return this;
     }
 
-    public ContentWriter ScaleAt(decimal xs, decimal ys, decimal xLoc, decimal yLoc)
+    public ContentWriter<T> ScaleAt(T xs, T ys, T xLoc, T yLoc)
     {
-        var xp = -(float)(xs * xLoc);
-        var yp = -(float)(ys * yLoc);
-        var cm = new Matrix4x4(
-            (float)xs, 0, 0, 0,
-            0, (float)ys, 0, 0,
-            xp, yp, 1, 0,
-            0, 0, 0, 1);
+        EnsureInPageState();
+        var xp = -(xs * xLoc);
+        var yp = -(ys * yLoc);
+        var cm = new GfxMatrix<T>(xs, T.Zero, T.Zero, ys, xp, yp);
 
-        GfxState.Apply(cm);
-        cm_Op.WriteLn(cm, StreamWriter.Stream);
+        cm_Op<T>.Apply(ref GfxState, cm);
+        cm_Op<T>.WriteLn(cm, Writer.Stream);
         return this;
     }
 
-    public ContentWriter Rotate(double angle)
+    public ContentWriter<T> Rotate(T angle)
     {
-        return RotateAt(angle, 0, 0);
+        return RotateAt(angle, T.Zero, T.Zero);
     }
 
-    public ContentWriter RotateAt(double angle, double x, double y)
+
+    public ContentWriter<T> RotateAt(T angle, T x, T y)
     {
-        if (scale != 1) { x *= scale; y *= scale; }
-        var rad = (angle * Math.PI) / 180.0;
-        var cos = Math.Cos(rad);
-        var sin = Math.Sin(rad);
+        EnsureInPageState();
+        if (scale != T.One) { x *= scale; y *= scale; }
+        var rad = (angle * T.Pi) / FPC<T>.V180;
+        var dr = FPC<T>.Util.ToDouble(rad);
+        var cos = FPC<T>.Util.FromDouble<T>(Math.Cos(dr)); // TODO
+        var sin = FPC<T>.Util.FromDouble<T>(Math.Sin(dr)); // TODO
 
-        var cm = new Matrix4x4(
-            (float)cos, (float)sin, 0, 0,
-            (float)-sin, (float)cos, 0, 0,
-            (float)x, (float)y, 1, 0,
-            0, 0, 0, 1);
+        var cm = new GfxMatrix<T>(
+            cos, sin,
+            -sin, cos,
+            x, y);
 
-        GfxState.Apply(cm);
-        cm_Op.WriteLn(cm, StreamWriter.Stream);
+        cm_Op<T>.Apply(ref GfxState, cm);
+        cm_Op<T>.WriteLn(cm, Writer.Stream);
         return this;
     }
 
@@ -222,33 +235,76 @@ public partial class ContentWriter
         }
     }
 
-    private void ResetState()
+    private void EnsureRestorable()
     {
-        switch (State)
+        if (GfxState.Prev == null)
         {
-            case PageState.Text:
-                ET_Op.WriteLn(StreamWriter.Stream);
-                return;
+            Save();
         }
     }
 
-    public ContentWriter Op(IPdfOperation op)
+
+    public ContentWriter<T> Op(IPdfOperation<T> op)
     {
         op.Apply(ref GfxState);
-        op.Serialize(StreamWriter.Stream);
-        StreamWriter.Stream.WriteByte((byte)'\n');
+        op.Serialize(Writer.Stream);
+        Writer.Stream.WriteByte((byte)'\n');
         return this;
     }
 
     [Obsolete("Use .Op(op) instead")]
-    public ContentWriter Raw(IPdfOperation op) => Op(op);
+    public ContentWriter<T> Raw(IPdfOperation<T> op) => Op(op);
 
     [Obsolete("Use .Op(op) instead")]
-    public ContentWriter CustomOp(IPdfOperation op) => Op(op);
+    public ContentWriter<T> CustomOp(IPdfOperation<T> op) => Op(op);
 
-    public PdfStreamContents Complete() { 
-        var result = StreamWriter.Complete();
-        StreamWriter = null!; // TODO: add proper error handling for using methods after calling complete
+    int mcDepth = 0;
+    internal int GraphicsStackSize = 0;
+    public PdfStreamContents Complete()
+    {
+        EnsureInPageState();
+        for (var i = 0; i < mcDepth; i++)
+        {
+            EMC_Op.WriteLn(Writer.Stream);
+        }
+        if (isCompatSection)
+        {
+            EX_Op.WriteLn(Writer.Stream);
+        }
+        for (var i = 0; i < GraphicsStackSize; i++)
+        {
+            Q_Op.WriteLn(Writer.Stream);
+        }
+        var result = Writer.Complete();
+        if (XObjs.Count == 0)
+        {
+            Resources.Remove(PdfName.XObject);
+        }
+        if (Fonts.Count == 0)
+        {
+            Resources.Remove(PdfName.Font);
+        }
+        if (ColorSpaces.Count == 0)
+        {
+            Resources.Remove(PdfName.ColorSpace);
+        }
+        if (ExtGS.Count == 0)
+        {
+            Resources.Remove(PdfName.ExtGState);
+        }
+        if (Shadings.Count == 0)
+        {
+            Resources.Remove(PdfName.Shading);
+        }
+        if (Patterns.Count == 0)
+        {
+            Resources.Remove(PdfName.Pattern);
+        }
+        if (Properties.Count == 0)
+        {
+            Resources.Remove("Properties");
+        }
+        Writer = null!; // TODO: add proper error handling for using methods after calling complete
         return result;
     }
 }
@@ -268,3 +324,16 @@ public enum PageUnit
     Points
 }
 
+public enum CapStyle
+{
+    BUTT = 0,
+    ROUND = 1,
+    SQUARE = 2
+}
+
+public enum JoinStyle
+{
+    MITER = 0,
+    ROUND = 1,
+    BEVEL = 2
+}

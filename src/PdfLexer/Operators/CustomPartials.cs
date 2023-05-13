@@ -1,10 +1,13 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Serializers;
 using System.IO;
+using System.Numerics;
 
 namespace PdfLexer.Operators;
 
-public partial class BDC_Op
+
+
+public partial class BDC_Op<T>
 {
     public void Serialize(Stream stream)
     {
@@ -16,19 +19,21 @@ public partial class BDC_Op
     }
 }
 
-public partial class d_Op
+public partial class d_Op<T>
 {
+    public static d_Op<T> Default { get; } = new d_Op<T>(new PdfArray(), T.Zero);
     public void Serialize(Stream stream)
     {
         PdfOperator.Shared.SerializeObject(stream, dashArray, x => x);
         stream.WriteByte((byte)' ');
-        PdfOperator.Writedecimal(dashPhase, stream);
+        FPC<T>.Util.Write(dashPhase, stream);
         stream.WriteByte((byte)' ');
         stream.Write(OpData);
     }
 }
 
-public partial class DP_Op
+public partial class DP_Op<T>
+
 {
     public void Serialize(Stream stream)
     {
@@ -40,39 +45,43 @@ public partial class DP_Op
     }
 }
 
-public partial class SC_Op
+
+public partial class SC_Op<T>
 {
     public void Serialize(Stream stream)
     {
-        foreach (var dec in colorInfo)
+        foreach (var val in colorInfo)
         {
-            PdfOperator.Writedecimal(dec, stream);
+            FPC<T>.Util.Write(val, stream);
             stream.WriteByte((byte)' ');
         }
         stream.Write(OpData);
     }
 }
 
-public partial class sc_Op
+
+
+public partial class sc_Op<T>
 {
     public void Serialize(Stream stream)
     {
-        foreach (var dec in colorInfo)
+        foreach (var val in colorInfo)
         {
-            PdfOperator.Writedecimal(dec, stream);
+            FPC<T>.Util.Write(val, stream);
             stream.WriteByte((byte)' ');
         }
         stream.Write(OpData);
     }
 }
 
-public partial class SCN_Op
+
+public partial class SCN_Op<T>
 {
     public void Serialize(Stream stream)
     {
-        foreach (var dec in colorInfo)
+        foreach (var val in colorInfo)
         {
-            PdfOperator.Writedecimal(dec, stream);
+            FPC<T>.Util.Write(val, stream);
             stream.WriteByte((byte)' ');
         }
         if (name != null)
@@ -84,13 +93,14 @@ public partial class SCN_Op
     }
 }
 
-public partial class scn_Op
+
+public partial class scn_Op<T>
 {
     public void Serialize(Stream stream)
     {
-        foreach (var dec in colorInfo)
+        foreach (var val in colorInfo)
         {
-            PdfOperator.Writedecimal(dec, stream);
+            FPC<T>.Util.Write(val, stream);
             stream.WriteByte((byte)' ');
         }
         if (name != null)
@@ -102,7 +112,7 @@ public partial class scn_Op
     }
 }
 
-public partial class TJ_Op
+public partial class TJ_Op<T>
 {
     public void Serialize(Stream stream)
     {
@@ -112,11 +122,10 @@ public partial class TJ_Op
             if (item.Data != null)
             {
                 StringSerializer.WriteToStream(item.Data, stream);
-                // PdfOperator.Shared.StringSerializer.WriteToStream(item.Text, stream);
             }
             else
             {
-                PdfOperator.Writedecimal(item.Shift, stream);
+                FPC<T>.Util.Write(item.Shift, stream);
             }
             stream.WriteByte((byte)' ');
         }
@@ -125,7 +134,7 @@ public partial class TJ_Op
     }
 }
 
-public partial class Tj_Op
+public partial class Tj_Op<T>
 {
     public void Serialize(Stream stream)
     {
@@ -135,7 +144,8 @@ public partial class Tj_Op
     }
 }
 
-public partial class singlequote_Op
+
+public partial class singlequote_Op<T>
 {
     public void Serialize(Stream stream)
     {
@@ -145,13 +155,14 @@ public partial class singlequote_Op
     }
 }
 
-public partial class doublequote_Op
+
+public partial class doublequote_Op<T>
 {
     public void Serialize(Stream stream)
     {
-        PdfOperator.Writedecimal(aw, stream);
+        FPC<T>.Util.Write(aw, stream);
         stream.WriteByte((byte)' ');
-        PdfOperator.Writedecimal(ac, stream);
+        FPC<T>.Util.Write(ac, stream);
         stream.WriteByte((byte)' ');
         StringSerializer.WriteToStream(text, stream);
         stream.WriteByte((byte)' ');
@@ -159,16 +170,18 @@ public partial class doublequote_Op
     }
 }
 
-public struct TJ_Item
+public struct TJ_Item<T> where T : struct, IFloatingPoint<T>
 {
-    public decimal Shift;
+    public T Shift;
     public byte[] Data;
 }
-internal struct TJ_Lazy_Item
+internal struct TJ_Lazy_Item<T> where T : struct, IFloatingPoint<T>
 {
-    public decimal Shift;
+    public T Shift;
     public int OpNum;
 }
+
+#if false
 
 public partial class Tc_Op
 {
@@ -297,15 +310,61 @@ public partial class gs_Op
     }
 }
 
-public partial class NoOp_Op : IPdfOperation
+public partial class Q_Op
 {
-    public NoOp_Op Value { get; } = new NoOp_Op();
-    public PdfOperatorType Type => PdfOperatorType.NoOp;
-    public NoOp_Op()
+    public void Apply(ref GraphicsState state)
     {
+        if (state.Prev == null)
+        {
+            // err
+            state = new GraphicsState();
+            return;
+        }
+        state = state.Prev;
     }
 
-    public void Serialize(Stream stream)
+}
+
+
+
+public partial class q_Op
+{
+    public void Apply(ref GraphicsState state)
     {
+        var prev = state;
+        state = state.CloneNoPrev();
+        state.Prev = prev;
     }
 }
+
+
+
+public partial class cm_Op
+{
+    public void Apply(ref GraphicsState state)
+    {
+        // new = cm x ctm
+        var val = new Matrix4x4(
+                      (float)a, (float)b, 0f, 0f,
+                      (float)c, (float)d, 0f, 0f,
+                      (float)e, (float)f, 1f, 0f,
+                      0f, 0f, 0f, 1f);
+        state.CTM = val * state.CTM;
+    }
+
+    public static void Apply(ref GraphicsState state, Matrix4x4 val)
+    {
+        state.CTM = val * state.CTM;
+    }
+
+    public static void WriteLn(Matrix4x4 ctm, Stream stream)
+    {
+        WriteLn(
+            (double)ctm.M11, (double)ctm.M12,
+            (double)ctm.M21, (double)ctm.M22,
+            (double)ctm.M31, (double)ctm.M32, stream);
+    }
+
+}
+
+#endif

@@ -76,8 +76,8 @@ internal class ImageSampler
                         var imgRdr = new ImageScanner(doc.Context, page);
                         while (imgRdr.Advance())
                         {
-                            var (x, y, w, h) = imgRdr.GetCurrentSize();
-                            if (w < 5 || h < 5) { continue; }
+                            var rect = imgRdr.GetCurrentSize();
+                            if (rect.Width() < 5 || rect.Height() < 5) { continue; }
                             if (!imgRdr.TryGetImage(out var img))
                             {
                                 continue;
@@ -162,10 +162,10 @@ internal class ImageSampler
                                 bx.URy = img.XObj.NativeObject.Get<PdfNumber>(PdfName.Height);
 
                                 var cs = new MemoryStream();
-                                q_Op.WriteLn(cs);
-                                cm_Op.WriteLn(bx.URx, 0, 0, bx.URy, 0, 0, cs);
-                                Do_Op.WriteLn("Im1", cs);
-                                Q_Op.WriteLn(cs);
+                                q_Op<double>.WriteLn(cs);
+                                cm_Op<double>.WriteLn(bx.URx, 0, 0, bx.URy, 0, 0, cs);
+                                Do_Op<double>.WriteLn("Im1", cs);
+                                Q_Op<double>.WriteLn(cs);
                                 var cnt = new PdfStream(new PdfDictionary(), new PdfByteArrayStreamContents(cs.ToArray()));
                                 pg.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(cnt);
                                 var pdfOut = Path.Combine(cmd.OutputPath, $"{hash}.pdf");

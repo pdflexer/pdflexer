@@ -2,6 +2,7 @@
 using PdfLexer.Filters;
 using PdfLexer.Fonts;
 using System.Resources;
+using System.Transactions;
 
 namespace PdfLexer.Content;
 
@@ -45,7 +46,7 @@ public ref struct SinglePassRedactor
         return Page;
     }
 
-    private PdfStream RunForm(PdfStream str, GraphicsState state, Func<CharInfo, bool> shouldRedact, int depth)
+    private PdfStream RunForm(PdfStream str, GfxState<double> state, Func<CharInfo, bool> shouldRedact, int depth)
     {
         if (depth > Ctx.Options.MaxFormDepth)
         {
@@ -83,13 +84,13 @@ public ref struct SinglePassRedactor
         // info for last statement, only set if a character triggered
         // redaction during it
         PdfOperatorType type = default;
-        var glyphs = new List<UnappliedGlyph>(50);
-        float ws = 0;
-        float cs = 0;
+        var glyphs = new List<GlyphOrShift<double>>(50);
+        double ws = 0;
+        double cs = 0;
 
         // redaction info for last statement
         var seqs = new List<int>();
-        var widths = new List<float>();
+        var widths = new List<double>();
         int pos = 0;
 
         // info for each statement regardless of redaction
@@ -217,8 +218,8 @@ public ref struct SinglePassRedactor
                     {
                         case PdfOperatorType.doublequote:
                             {
-                                Tc_Op.WriteLn((decimal)cs, str);
-                                Tw_Op.WriteLn((decimal)ws, str);
+                                Tc_Op.WriteLn(cs, str);
+                                Tw_Op.WriteLn(ws, str);
                                 T_Star_Op.WriteLn(str);
                                 WriteRedacted(str);
                                 break;
@@ -243,9 +244,9 @@ public ref struct SinglePassRedactor
             void WriteRedacted(Stream str)
             {
                 int wp = 0;
-                var tj = new TJ_Op(new List<TJ_Item> { });
+                var tj = new TJ_Op(new List<TJ_Item<double>> { });
                 int bp = 0;
-                decimal shift = 0;
+                double shift = 0;
                 Span<byte> charData = stackalloc byte[4];
                 Span<byte> buffer = stackalloc byte[100];
                 int i = 0;
@@ -257,14 +258,14 @@ public ref struct SinglePassRedactor
                         {
                             CompleteBuffer(buffer);
                         }
-                        shift -= 1000 * (decimal)widths[wp];
+                        shift -= 1000 * (double)widths[wp];
                         wp++;
                     }
                     else
                     {
                         if (shift != 0)
                         {
-                            tj.info.Add(new TJ_Item { Shift = shift });
+                            tj.info.Add(new TJ_Item<double> { Shift = shift });
                             shift = 0;
                         }
                         if (bp > 96)
@@ -277,7 +278,7 @@ public ref struct SinglePassRedactor
                             {
                                 CompleteBuffer(buffer);
                             }
-                            tj.info.Add(new TJ_Item { Shift = (decimal)g.Shift });
+                            tj.info.Add(new TJ_Item<double> { Shift = g.Shift });
                             // TJ spacer not counter in seqs to redact
                             continue;
                         }
@@ -321,7 +322,7 @@ public ref struct SinglePassRedactor
                 }
                 if (shift != 0)
                 {
-                    tj.info.Add(new TJ_Item { Shift = shift });
+                    tj.info.Add(new TJ_Item<double> { Shift = shift });
                 }
                 if (bp > 0)
                 {
@@ -332,7 +333,7 @@ public ref struct SinglePassRedactor
 
                 void CompleteBuffer(Span<byte> buff)
                 {
-                    tj.info.Add(new TJ_Item { Data = buff.Slice(0, bp).ToArray() });
+                    tj.info.Add(new TJ_Item<double> { Data = buff.Slice(0, bp).ToArray() });
                     bp = 0;
                 }
 
@@ -355,8 +356,8 @@ public ref struct SinglePassRedactor
 public struct CharInfo
 {
     public char Char;
-    public float X;
-    public float Y;
+    public double X;
+    public double Y;
     internal ulong Stream;
     internal int Pos;
     internal int OpPos;

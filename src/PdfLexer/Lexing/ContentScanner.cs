@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Numerics;
+using System.Text;
 
 namespace PdfLexer.Lexing;
 
@@ -61,29 +62,30 @@ public ref struct ContentScanner
 
     public void SkipCurrent()
     {
-        if (CurrentOperator == PdfOperatorType.BI && !ImageScanned ) { GetImage(true); }
+        if (CurrentOperator == PdfOperatorType.BI && !ImageScanned ) { GetImage<double>(true); }
         CurrentOperator = PdfOperatorType.Unknown;
         Scanner.SkipCurrent();
         Operands.Clear();
     }
-
-    public bool TryGetCurrentOperation([NotNullWhen(true)] out IPdfOperation? op)
+    
+    public bool TryGetCurrentOperation([NotNullWhen(true)] out IPdfOperation? op) => TryGetCurrentOperation<double>(out op);
+    public bool TryGetCurrentOperation<T>([NotNullWhen(true)] out IPdfOperation? op) where T : struct, IFloatingPoint<T>
     {
         Peek();
 
         if (CurrentOperator == PdfOperatorType.BI)
         {
-            op = GetImage();
+            op = GetImage<T>();
             return true;
         }
 
         var oi = (int)CurrentOperator;
-        PdfOperator.ParseOp? parser = null;
+        PdfOperator.ParseOp<T>? parser = null;
         if (oi > 0 && oi < 256)
         {
-            parser = ParseOpMapping.SingleByteParsers[oi];
+            parser = ParseOpMapping<T>.SingleByteParsers[oi];
         } 
-        if (parser == null && !ParseOpMapping.Parsers.TryGetValue(oi, out parser))
+        if (parser == null && !ParseOpMapping<T>.Parsers.TryGetValue(oi, out parser))
         {
             var uk = GetUnknown(Scanner, Operands, Data);
             op = uk;
@@ -111,7 +113,7 @@ public ref struct ContentScanner
             return false;
         }
 
-        static Unkown_Op GetUnknown(Scanner scanner, List<OperandInfo> ops, ReadOnlySpan<byte> data)
+        static Unkown_Op<T> GetUnknown(Scanner scanner, List<OperandInfo> ops, ReadOnlySpan<byte> data)
         {
             byte[] opData;
             var op = Encoding.ASCII.GetString(data.Slice(scanner.Position, scanner.CurrentLength));
@@ -123,7 +125,7 @@ public ref struct ContentScanner
             {
                 opData = data.Slice(scanner.Position, scanner.CurrentLength).ToArray();
             }
-            return new Unkown_Op(op, opData);
+            return new Unkown_Op<T>(op, opData);
         }
     }
 
@@ -133,7 +135,7 @@ public ref struct ContentScanner
         return op;
     }
 
-    private IPdfOperation GetImage(bool justSkip = false)
+    private IPdfOperation<T> GetImage<T>(bool justSkip = false) where T : struct, IFloatingPoint<T>
     {
         if (ImageScanned)
         {
@@ -209,7 +211,7 @@ public ref struct ContentScanner
                 // get skipCurrent to work
                 Scanner.Position = Data.Length;
                 Scanner.CurrentLength = 0;
-                return justSkip ? null! : new InlineImage_Op(header, Data.Slice(start).ToArray());
+                return justSkip ? null! : new InlineImage_Op<T>(header, Data.Slice(start).ToArray());
             }
             i += current; // correct for slice offset
 
@@ -225,7 +227,7 @@ public ref struct ContentScanner
                 // get skipCurrent to work
                 Scanner.Position = i;
                 Scanner.CurrentLength = 2;
-                return justSkip ? null! : new InlineImage_Op(header, Data.Slice(start, i - start - wsCount).ToArray());
+                return justSkip ? null! : new InlineImage_Op<T>(header, Data.Slice(start, i - start - wsCount).ToArray());
             }
             current = i + 2;
         }
@@ -263,7 +265,7 @@ public ref struct ContentScanner
     public ReadOnlySpan<byte> GetCurrentData()
     {
         Peek();
-        if (CurrentOperator == PdfOperatorType.BI && !ImageScanned) { GetImage(true); }
+        if (CurrentOperator == PdfOperatorType.BI && !ImageScanned) { GetImage<double>(true); }
         if (Operands.Count > 0)
         {
             var sp = Operands[0].StartAt;

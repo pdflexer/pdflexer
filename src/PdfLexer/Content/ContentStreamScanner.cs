@@ -1,5 +1,6 @@
 ﻿using PdfLexer.Lexing;
 using System.Buffers;
+using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -63,6 +64,7 @@ public struct ContentItem
 /// 
 /// </summary>
 public ref struct ContentStreamScanner
+
 {
     public ReadOnlySpan<byte> Data;
     public ReadOnlySpan<ContentItem> Items;
@@ -165,7 +167,7 @@ public ref struct ContentStreamScanner
         var oplen = CurrentInfo.Type switch
         {
             < 256 => 1,
-            < 6553 => 2,
+            < 65536 => 2,
             _ => 3
         };
 
@@ -213,23 +215,27 @@ public ref struct ContentStreamScanner
         return Operands;
     }
 
-    public bool TryGetCurrentOperation([NotNullWhen(true)] out IPdfOperation? op)
+    public bool TryGetCurrentOperation<T>([NotNullWhen(true)] out IPdfOperation<T>? op) where T : struct, IFloatingPoint<T>
     {
         if (CurrentOperator == PdfOperatorType.EI)
         {
-            op = GetImage();
+
+            op = GetImage<T>();
             return true;
         }
 
         var ops = GetOperands();
 
         var oi = (int)CurrentOperator;
-        PdfOperator.ParseOp? parser = null;
+
+
+
+        PdfOperator.ParseOp<T>? parser = null;
         if (oi > 0 && oi < 256)
         {
-            parser = ParseOpMapping.SingleByteParsers[oi];
+            parser = ParseOpMapping<T>.SingleByteParsers[oi];
         }
-        if (parser == null && !ParseOpMapping.Parsers.TryGetValue(oi, out parser))
+        if (parser == null && !ParseOpMapping<T>.Parsers.TryGetValue(oi, out parser))
         {
             var uk = GetUnknown(CurrentInfo, Data, GetDataForCurrent());
             op = uk;
@@ -257,7 +263,8 @@ public ref struct ContentStreamScanner
             return false;
         }
 
-        static Unkown_Op GetUnknown(ContentItem current, ReadOnlySpan<byte> allData, ReadOnlySpan<byte> thisOp)
+
+        static Unkown_Op<T> GetUnknown(ContentItem current, ReadOnlySpan<byte> allData, ReadOnlySpan<byte> thisOp)
         {
             var l = current.Type switch
             {
@@ -265,24 +272,27 @@ public ref struct ContentStreamScanner
                 < 6553 => 2,
                 _ => 3
             };
-            return new Unkown_Op(Encoding.ASCII.GetString(allData.Slice(current.StartAt, l)), thisOp.ToArray());
+            return new Unkown_Op<T>(Encoding.ASCII.GetString(allData.Slice(current.StartAt, l)), thisOp.ToArray());
         }
+
+
     }
 
-    private InlineImage_Op GetImage()
+    private InlineImage_Op<T> GetImage<T>() where T : struct, IFloatingPoint<T>
     {
         var header = new PdfArray();
         if (Position < 2)
         {
             Ctx.Error("Found EI in stream but did not have proper format");
-            return new InlineImage_Op(new PdfArray(), new byte[0]);
+
+            return Create(new PdfArray(), new byte[0]);
         }
         var h = Items[Position - 2];
         var d = Items[Position - 1];
         if (h.Type != 21 || d.Type != 21)
         {
             Ctx.Error("Found EI in stream but did not have proper format");
-            return new InlineImage_Op(new PdfArray(), new byte[0]);
+            return Create(new PdfArray(), new byte[0]);
         }
         var pos = h.StartAt + 2; // skip BI
         var he = h.StartAt + h.Length;
@@ -329,7 +339,9 @@ public ref struct ContentStreamScanner
         if (data[data.Length - 1] == '\n') { wsCount++; }
         if (data[data.Length - 2] == '\r') { wsCount++; }
 
-        return new InlineImage_Op(header, data.Slice(start, data.Length - start - wsCount).ToArray());
+        return Create(header, data.Slice(start, data.Length - start - wsCount).ToArray());
+
+        InlineImage_Op<T> Create(PdfArray header, byte[] allData) => new InlineImage_Op<T>(header, allData);
     }
 
     public static Span<ContentItem> FillListWithLexedItems(ParsingContext ctx, ReadOnlySpan<byte> data, out byte[] arr)

@@ -8,16 +8,15 @@ internal class Type0Font
 {
     public static IReadableFont CreateReadable(ParsingContext ctx, FontType0 t0)
     {
-        var enc = t0.Encoding;
-
         var (encoding, vertical) = GetEncoding(ctx, t0.Encoding);
 
+        // TODO: this needs to support lists of cidsysteminfo
         // if encodingmap is null we CMapFont assumes identity
         var cidCharSet = t0.DescendantFont?.CIDSystemInfo?.Registry?.Value + "-" + t0.DescendantFont?.CIDSystemInfo?.Ordering?.Value;
         var knownDesc = cidCharSet == "Adobe-GB1" || cidCharSet == "Adobe-CNS1" || cidCharSet == "Adobe-Japan1" || cidCharSet == "Adobe-Korea1";
 
-        var all = new Dictionary<uint, Glyph>();
-        var b1g = new Glyph[256];
+        var all = new Dictionary<uint, Glyph>(); // cid to glyph
+        var b1g = new Glyph[256]; // cid to glyph
 
         AddEmbeddedValues(ctx, t0, all, b1g);
 
@@ -94,7 +93,7 @@ internal class Type0Font
 
         var gs = new GlyphSet(b1g, all, notdef);
 
-        return new CompositeFont(t0.BaseFont?.Value ?? "Empty", encoding, gs, 2, vertical, cidInfo);
+        return new CompositeFont(t0.BaseFont?.Value ?? "Empty", t0.NativeObject, encoding, gs, 2, vertical, cidInfo);
     }
 
     [return: NotNullIfNotNull("name")]
@@ -119,7 +118,7 @@ internal class Type0Font
     {
         if (encoding == null)
         {
-            return FallbackEncoding();
+            return IdentityEncoding();
         }
         encoding = encoding.Resolve();
 
@@ -128,7 +127,7 @@ internal class Type0Font
             var name = encoding.GetAs<PdfName>();
             if (name == null)
             {
-                return FallbackEncoding();
+                return IdentityEncoding();
             }
             var identityEncoded = (name.Value == "Identity-H" || name.Value == "Identity-V");
             if (!identityEncoded)
@@ -141,10 +140,10 @@ internal class Type0Font
             }
             else if (name.Value == "Identity-V")
             {
-                var def = FallbackEncoding();
+                var def = IdentityEncoding();
                 return (def.encoding, true);
             }
-            return FallbackEncoding();
+            return IdentityEncoding();
         }
         else if (encoding?.Type == PdfObjectType.StreamObj)
         {
@@ -171,10 +170,10 @@ internal class Type0Font
             }
             return (new CMap(ranges, cids), isVert);
         }
-        return FallbackEncoding();
+        return IdentityEncoding();
     }
 
-    private static (CMap encoding, bool isVertical) FallbackEncoding()
+    private static (CMap encoding, bool isVertical) IdentityEncoding()
     {
         var twoByte = new CRange
         {
@@ -407,10 +406,10 @@ internal class Type0Font
             }
             return;
         }
-        Dictionary<uint, uint> lookup = new Dictionary<uint, uint>();
+        Dictionary<uint, uint> lookup = new Dictionary<uint, uint>(); // cid to cp
         foreach (var kvp in mapping)
         {
-            lookup[kvp.Value.Code] = kvp.Key; ;
+            lookup[kvp.Value.Code] = kvp.Key;
         }
 
         foreach (var g in all.Values)
@@ -517,7 +516,9 @@ internal class Type0Font
             }
             else
             {
-                var x = bbox.LLx / 1000m;
+                // TODO revisit bounding box
+                // var x = bbox.LLx / 1000m;
+                var x = 0;
                 glyph.BBox = new decimal[] { x, bbox.LLy / 1000m, x + (decimal)glyph.w0, bbox.URy / 1000m };
             }
 
@@ -569,8 +570,10 @@ internal class Type0Font
             }
             else
             {
-                var y = bbox.LLy / 1000m;
-                glyph.BBox = new decimal[] { bbox.LLx / 1000m, y, bbox.URx / 1000m, y+(decimal)dy };
+                // TODO revisit bounding box
+                // var y = bbox.LLy / 1000m;
+                // glyph.BBox = new decimal[] { bbox.LLx / 1000m, y, bbox.URx / 1000m, y+(decimal)dy };
+                glyph.BBox = new decimal[] { 0, 0, bbox.URx / 1000m, (decimal)dy };
             }
         }
     }
