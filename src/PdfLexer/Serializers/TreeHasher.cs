@@ -13,7 +13,17 @@ internal class TreeHasher
         Tracker = new RefTracker();
     }
 
-    
+
+    public int GetQuickHash(IPdfObject obj)
+    {
+        var o = obj.Resolve();
+        Stream.SetLength(0);
+        Stream.Position = 0;
+        Serializers.SerializeObject(Stream, o, (s, x) => { });
+        var hasher = new PdfStreamHash(Stream);
+        return hasher.Hash;
+    }
+
     public PdfStreamHash GetHash(IPdfObject obj)
     {
         Objs.Clear();

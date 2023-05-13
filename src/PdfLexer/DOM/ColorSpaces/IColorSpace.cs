@@ -1,5 +1,7 @@
-﻿using System;
+﻿using PdfLexer.Writing;
+using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace PdfLexer.DOM.ColorSpaces;
@@ -39,5 +41,20 @@ public interface IColorSpace
 
     IPdfObject GetPdfObject() { throw new NotImplementedException(); }
 
+
+    void Set<T>(ContentWriter<T> writer) where T : struct, IFloatingPoint<T>
+    {
+        throw new NotImplementedException();
+    }
+
+    IColor<T> ReadColor<T>(PdfDictionary resources, IPdfOperation<T> colorOp) where T : struct, IFloatingPoint<T> { throw new NotImplementedException(); }
 }
 
+public interface IColor<T>  where T : struct, IFloatingPoint<T>
+{
+    IColorSpace Colorspace { get; }
+    bool IsRGBConvertable { get; }
+    (ushort r, ushort g, ushort b) GetRBG();
+    void Set(ContentWriter<T> writer);
+    void SetStroking(ContentWriter<T> writer);
+}

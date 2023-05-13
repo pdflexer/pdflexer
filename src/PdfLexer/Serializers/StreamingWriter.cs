@@ -2,15 +2,7 @@
 using System.Globalization;
 using System.IO.MemoryMappedFiles;
 using System.Text;
-
-
-
-#if NET6_0_OR_GREATER
-
 using DotNext.IO.MemoryMappedFiles;
-
-#endif
-
 
 namespace PdfLexer.Serializers;
 

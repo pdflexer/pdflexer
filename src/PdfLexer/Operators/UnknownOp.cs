@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Numerics;
+using System.Text;
 
 namespace PdfLexer.Operators;
 
@@ -22,5 +23,10 @@ public class Unkown_Op : IPdfOperation
     public void Serialize(Stream stream)
     {
         stream.Write(allData);
+    }
+
+    public override string ToString()
+    {
+        return Encoding.ASCII.GetString(allData);
     }
 }

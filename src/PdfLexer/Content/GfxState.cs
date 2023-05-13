@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-
-using System.Text;
-
-namespace PdfLexer.Content;
-
-using PdfLexer.Content.Model;
+﻿using PdfLexer.Content.Model;
+using PdfLexer.DOM.ColorSpaces;
 using PdfLexer.Fonts;
-
 
 using System.Numerics;
 
+namespace PdfLexer.Content;
 
 public record GfxState<T> where T : struct, IFloatingPoint<T>
 {
@@ -42,8 +36,13 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
     public T Flatness { get; init; } = T.One;
     public d_Op<T>? Dashing { get; init; }
     public PdfName? RenderingIntent { get; init; }
+
+    public IColorSpace ColorSpaceModel { get; init; } = DeviceGray.Instance;
     public IPdfObject? ColorSpace { get; init; } = PdfName.DeviceGray;
+    public IColorSpace ColorSpaceStrokingModel { get; init; } = DeviceGray.Instance;
     public IPdfObject? ColorSpaceStroking { get; init; } = PdfName.DeviceGray;
+    public IColor<T> ColorModel { get; init; } = DeviceGray.GetBlack<T>();
+    public IColor<T> ColorModelStroking { get; init; } = DeviceGray.GetBlack<T>();
     public IPdfOperation? Color { get; init; }
     public IPdfOperation? ColorStroking { get; init; }
     public PdfDictionary? FontObject { get; init; }

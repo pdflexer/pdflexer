@@ -83,6 +83,20 @@ public record struct GfxMatrix<T> where T : struct, IFloatingPoint<T>
         };
     }
 
+    public PdfArray AsPdfArray()
+    {
+        var array = new PdfArray
+        {
+            new PdfDoubleNumber(FPC<T>.Util.ToDouble(A)),
+            new PdfDoubleNumber(FPC<T>.Util.ToDouble(B)),
+            new PdfDoubleNumber(FPC<T>.Util.ToDouble(C)),
+            new PdfDoubleNumber(FPC<T>.Util.ToDouble(D)),
+            new PdfDoubleNumber(FPC<T>.Util.ToDouble(E)),
+            new PdfDoubleNumber(FPC<T>.Util.ToDouble(F))
+        };
+        return array;
+    }
+
     /// <summary>
     /// Transforms the rectangle to it's representation
     /// in the current matrix.

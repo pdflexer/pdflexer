@@ -1,6 +1,5 @@
-﻿using System.ComponentModel.Design;
+﻿using PdfLexer.DOM;
 using System.Numerics;
-using System.Text;
 
 namespace PdfLexer.Content;
 
@@ -10,6 +9,7 @@ internal enum MultiPageState
     ReadingForm,
     StartForm,
     CTMForm,
+    ClipForm,
     EndForm,
 }
 public struct ScannerInfo
@@ -32,9 +32,11 @@ public ref struct PageContentScanner
     private PdfStream? NextForm;
     private string? NextFormName;
     private string? CurrentFormName;
+    private int ClipOp = 0;
 
     private int SkipOps;
     private DecodedStreamContents? CurrentBuffer;
+    private Action? NewForm;
 
     internal List<ScannerInfo> stack;
     internal ulong CurrentStreamId;
@@ -52,8 +54,9 @@ public ref struct PageContentScanner
     /// <param name="ctx"></param>
     /// <param name="page"></param>
     /// <param name="flattenForms"></param>
-    public PageContentScanner(ParsingContext ctx, PdfDictionary page, bool flattenForms = false)
+    public PageContentScanner(ParsingContext ctx, PdfDictionary page, bool flattenForms = false, Action? newForm = null)
     {
+        NewForm = newForm;
         CurrentOperator = PdfOperatorType.Unknown;
         CurrentBuffer = null;
         FlattenForms = flattenForms;
@@ -148,7 +151,10 @@ public ref struct PageContentScanner
         {
             State = MultiPageState.CTMForm;
         }
-        else
+        else if (CurrentForm.Get<PdfArray>(PdfName.BBox) != null)
+        {
+            State = MultiPageState.ClipForm;
+        } else
         {
             State = MultiPageState.ReadingForm;
         }
@@ -157,15 +163,40 @@ public ref struct PageContentScanner
 
     public bool Advance()
     {
-        if (State == MultiPageState.CTMForm)
-        {
-            State = MultiPageState.ReadingForm;
-            return Advance();
-        }
         if (State == MultiPageState.StartForm)
         {
             return PushForm();
         }
+
+        if (State == MultiPageState.CTMForm)
+        {
+            if (CurrentForm?.ContainsKey(PdfName.BBox) ?? false)
+            {
+                State = MultiPageState.ClipForm;
+                ClipOp = 0;
+                CurrentOperator = PdfOperatorType.re;
+                return true;
+            }
+            State = MultiPageState.ReadingForm;
+            return Advance();
+        }
+        if (State == MultiPageState.ClipForm)
+        {
+            if (ClipOp == 0)
+            {
+                ClipOp++;
+                CurrentOperator = PdfOperatorType.W_Star;
+                return true;
+            } else if (ClipOp == 1)
+            {
+                ClipOp++;
+                CurrentOperator = PdfOperatorType.n;
+                return true;
+            }
+            State = MultiPageState.ReadingForm;
+            return Advance();
+        }
+
         if (State == MultiPageState.EndForm) { 
             PopForm();
             return Advance();
@@ -197,6 +228,7 @@ public ref struct PageContentScanner
                 NextForm = form;
                 NextFormName = doOp.name.Value;
                 State = MultiPageState.StartForm;
+                NewForm?.Invoke();
                 CurrentOperator = PdfOperatorType.q;
                 return true;
             }
@@ -287,6 +319,8 @@ public ref struct PageContentScanner
 
     public bool TryGetCurrentOperation<T>([NotNullWhen(true)] out IPdfOperation<T>? op) where T : struct, IFloatingPoint<T>
     {
+        if (State == MultiPageState.StartForm) { op = q_Op<T>.Value; return true; }
+
         if (State == MultiPageState.CTMForm)
         {
             var mtx = CurrentForm?.Get<PdfArray>(PdfName.Matrix);
@@ -307,7 +341,37 @@ public ref struct PageContentScanner
             }
             return true;
         }
-        if (State == MultiPageState.StartForm) { op = q_Op<T>.Value; return true; }
+        if (State == MultiPageState.ClipForm)
+        {
+            if (ClipOp == 0)
+            {
+                var bbox = CurrentForm?.Get<PdfArray>(PdfName.BBox);
+                if (bbox == null)
+                {
+                    State = MultiPageState.ReadingForm;
+                    return TryGetCurrentOperation<T>(out op);
+                } else
+                {
+                    var rect = (PdfRectangle)bbox;
+                    var llx = FPC<T>.Util.FromPdfNumber<T>(rect.LLx);
+                    var lly = FPC<T>.Util.FromPdfNumber<T>(rect.LLy);
+                    var urx = FPC<T>.Util.FromPdfNumber<T>(rect.URx);
+                    var ury = FPC<T>.Util.FromPdfNumber<T>(rect.URy);
+                    op = new re_Op<T>(llx, lly, urx - llx, ury - lly);
+                    return true;
+                }
+
+            } else if (ClipOp == 1)
+            {
+                op = W_Star_Op<T>.Value;
+                return true;
+            } else
+            {
+                op = n_Op<T>.Value;
+                return true;
+            }
+        }
+
         if (State == MultiPageState.EndForm) { op = Q_Op<T>.Value; return true; }
         return Scanner.TryGetCurrentOperation(out op);
     }
@@ -324,6 +388,7 @@ public ref struct PageContentScanner
     public ReadOnlySpan<byte> GetCurrentData()
     {
         if (State == MultiPageState.CTMForm) { throw new NotSupportedException("Get current data not currently supported in form flattening"); }
+        if (State == MultiPageState.ClipForm) { throw new NotSupportedException("Get current data not currently supported in form flattening"); }
         if (State == MultiPageState.StartForm) { throw new NotSupportedException("Get current data not currently supported in form flattening"); }
         if (State == MultiPageState.EndForm) { throw new NotSupportedException("Get current data not currently supported in form flattening"); }
         return Scanner.GetDataForCurrent();
@@ -358,6 +423,13 @@ public ref struct PageContentScanner
         {
             State = MultiPageState.CTMForm;
             CurrentOperator = PdfOperatorType.cm;
+            return true;
+        }
+        else if (CurrentForm.Get<PdfArray>(PdfName.BBox) != null)
+        {
+            State = MultiPageState.ClipForm;
+            CurrentOperator = PdfOperatorType.re;
+            ClipOp = 0;
             return true;
         }
         else
@@ -511,6 +583,21 @@ public ref struct PageContentScanner
             && props.TryGetValue<PdfDictionary>(name, out found, errorOnMismatch: false)
         )
         {
+            return true;
+        }
+        found = null;
+        return false;
+    }
+
+    internal bool TryGetPropertyRef(PdfName name, [NotNullWhen(true)] out PdfIndirectRef? found)
+    {
+        if (
+            Resources.TryGetValue<PdfDictionary>("Properties", out var props)
+            && props.TryGetValue(name, out var obj)
+            && obj is PdfIndirectRef value
+        )
+        {
+            found = value;
             return true;
         }
         found = null;
@@ -693,7 +780,8 @@ public ref struct PageContentScanner
         var result = parent.CloneShallow();
         foreach (var kvp in child)
         {
-            if (kvp.Value.Type != PdfObjectType.DictionaryObj)
+            var val = kvp.Value.Resolve();
+            if (val.Type != PdfObjectType.DictionaryObj)
             {
                 continue; // warn?
             }
@@ -708,7 +796,7 @@ public ref struct PageContentScanner
                 result[kvp.Key] = sd;
             }
             var psd = (PdfDictionary)sd;
-            var csd = (PdfDictionary)kvp.Value.Resolve();
+            var csd = (PdfDictionary)val;
             foreach (var skvp in csd)
             {
                 psd[skvp.Key] = skvp.Value;

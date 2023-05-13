@@ -249,10 +249,14 @@ internal class TestRunner
     void DumpPageContent(PdfDocument doc, int pg, Stream output)
     {
         if (doc.Pages.Count <= pg) { return; }
+        // using var str = doc.Pages[pg].Contents.First().Contents.GetDecodedStream();
+        // str.CopyTo(output);
+        // return;
         var scanner = new PageContentScanner(doc.Context, doc.Pages[pg]);
         while (scanner.Advance())
         {
-            output.Write(scanner.GetCurrentData());
+            var data = scanner.GetCurrentData();
+            output.Write(data);
             output.WriteByte((byte)'\n');
         }
     }

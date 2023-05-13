@@ -30,6 +30,8 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     public PdfDictionary Patterns { get; }
     public PdfDictionary Properties { get; }
 
+    internal Dictionary<PdfIndirectRef, bool> OCDefaults { get; set; } = new Dictionary<PdfIndirectRef, bool>();
+
 
     public IStreamContentsWriter Writer { get; private set; }
 

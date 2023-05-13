@@ -503,7 +503,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             isCompatSection = compat;
         }
     }
-
+    
     internal ContentWriter<T> MarkedContent(MarkedContent mc)
     {
         EnsureInPageState(); // make sure in page state to simplify making sure we don't have
@@ -519,7 +519,12 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
                 }
 
                 propertyLists[mc.PropList] = name;
-                Properties[name] = mc.PropList;
+                var ir = mc.PropList.Indirect();
+                if (mc.OCGDefault != null)
+                {
+                    OCDefaults[ir] = mc.OCGDefault.Value;
+                }
+                Properties[name] = ir;
             }
             var op = new BDC_Op(mc.Name, name);
             op.Serialize(Writer.Stream);

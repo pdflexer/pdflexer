@@ -1,6 +1,8 @@
 ﻿using PdfLexer.DOM;
+using PdfLexer.DOM.ColorSpaces;
 using PdfLexer.Fonts;
 using System.Numerics;
+using System.Reflection.Metadata.Ecma335;
 
 namespace PdfLexer.Content.Model;
 
@@ -10,6 +12,8 @@ internal enum ParseState
     Text,
     Paths
 }
+
+
 internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
 {
     private ParsingContext Context;
@@ -22,13 +26,13 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
     /// </summary>
     public GfxState<T> GraphicsState;
 
-
     public ContentModelParser(ParsingContext ctx, PdfDictionary page, bool flattenForms = false)
     {
         Context = ctx;
         Scanner = new PageContentScanner(ctx, page, flattenForms);
         GraphicsState = new GfxState<T>();
         TJCache = new List<TJ_Lazy_Item<T>>(10);
+
     }
 
     public ContentModelParser(ParsingContext ctx, PdfDictionary page, PdfStream form, GfxState<T> state)
@@ -39,8 +43,22 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
         TJCache = new List<TJ_Lazy_Item<T>>(10);
     }
 
-    public List<IContentGroup<T>> Parse()
+    internal void SetLastForm()
     {
+
+    }
+
+    public List<IContentGroup<T>> Parse(PdfDictionary? catalog=null)
+    {
+        PdfArray? ocgdOff = null;
+        PdfDictionary? ocgd = null;
+        if (catalog != null 
+            && catalog.TryGetValue<PdfDictionary>("OCProperties", out var ocp, false)
+            && ocp.TryGetValue<PdfDictionary>("D", out ocgd, false)
+            && ocgd.TryGetValue<PdfArray>(PdfName.OFF, out ocgdOff))
+        {
+            // grabbing defaults
+        }
         var mc = new List<MarkedContent>();
         var bx = false;
         var content = new List<IContentGroup<T>> { };
@@ -63,9 +81,18 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
         List<TextContent<T>>? textClipping = null;
         TextContent<T>? currentText = null;
 
+        PdfDictionary? lastForm = null;
+        GfxMatrix<T> formStart = GraphicsState.CTM;
+
         while (Scanner.Advance())
         {
             var nxt = Scanner.CurrentOperator;
+
+            if (Scanner.State == MultiPageState.ReadingForm && Scanner.CurrentForm != lastForm)
+            {
+                lastForm = Scanner.CurrentForm;
+                formStart = GraphicsState.CTM;
+            }
 
             switch (nxt)
             {
@@ -108,6 +135,23 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         {
                             mc.Add(new MarkedContent(bdcOp.tag));
                         }
+                        if (ocgdOff != null)
+                        {
+                            var ocg = mc.Last();
+                            var dv = ocg.PropList ?? ocg.InlineProps;
+                            if (dv != null && dv.TryGetValue<PdfName>(PdfName.TYPE, out var val, false) && val == PdfName.OCG
+                                && bdcOp.props is PdfName nm2 && Scanner.TryGetPropertyRef(nm2, out var ir))
+                            {
+                                if (ocgdOff.Contains(ir))
+                                {
+                                    ocg.OCGDefault = false;
+                                } else
+                                {
+                                    ocg.OCGDefault = true;
+                                }
+                            }
+                        }
+
                         continue;
                     }
                 case PdfOperatorType.EMC:
@@ -334,11 +378,17 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             var nm = ((CS_Op<T>)gso).name;
                             if (Scanner.TryGetColorSpace(nm, out var cs))
                             {
-                                GraphicsState = GraphicsState with { ColorSpaceStroking = cs };
+                                GraphicsState = GraphicsState with { 
+                                    ColorSpaceStroking = cs,
+                                    // ColorSpaceStrokingModel = ColorSpace.Get(Context, cs, true)
+                                };
                             }
                             else
                             {
-                                GraphicsState = GraphicsState with { ColorSpaceStroking = nm };
+                                GraphicsState = GraphicsState with { 
+                                    ColorSpaceStroking = nm,
+                                    // ColorSpaceStrokingModel = ColorSpace.Get(Context, nm, true)
+                                };
                             }
                         }
                         else
@@ -346,11 +396,17 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             var nm = ((cs_Op<T>)gso).name;
                             if (Scanner.TryGetColorSpace(nm, out var cs))
                             {
-                                GraphicsState = GraphicsState with { ColorSpace = cs };
+                                GraphicsState = GraphicsState with { 
+                                    ColorSpace = cs,
+                                    // ColorSpaceModel = ColorSpace.Get(Context, cs, true)
+                                };
                             }
                             else
                             {
-                                GraphicsState = GraphicsState with { ColorSpace = nm };
+                                GraphicsState = GraphicsState with { 
+                                    ColorSpace = nm,
+                                    // ColorSpaceModel = ColorSpace.Get(Context, nm, true)
+                                };
                             }
                         }
 
@@ -392,6 +448,10 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                                 var scn = (SCN_Op<T>)gso;
                                 if (scn.name != null && Scanner.TryGetPattern(scn.name, out var pattern))
                                 {
+                                    if (Scanner.CurrentForm != null)
+                                    {
+                                        scn.Pattern = GetShiftedPattern(pattern, formStart);
+                                    }
                                     scn.Pattern = pattern;
                                 }
                             }
@@ -400,7 +460,14 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                                 var scn = (scn_Op<T>)gso;
                                 if (scn.name != null && Scanner.TryGetPattern(scn.name, out var pattern))
                                 {
-                                    scn.Pattern = pattern;
+                                    if (Scanner.CurrentForm != null)
+                                    {
+                                        scn.Pattern = GetShiftedPattern(pattern, formStart);
+                                    } else
+                                    {
+                                        scn.Pattern = pattern;
+                                    }
+                                    
                                 }
                             }
                             gso.Apply(ref GraphicsState);
@@ -432,12 +499,13 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                 // subpath starting ops
                 case PdfOperatorType.re:
                     {
-                        if (state != ParseState.Paths)
-                        {
-                            state = ParseState.Paths;
-                        }
                         if (Scanner.TryGetCurrentOperation<T>(out var gso))
                         {
+                            if (state != ParseState.Paths)
+                            {
+                                state = ParseState.Paths;
+                            }
+
                             var re = (re_Op<T>)gso;
                             currentSubPath = NewSubPath(re.x, re.y, GraphicsState);
                             currentSubPath.Operations.Add(re);
@@ -446,12 +514,12 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                     }
                 case PdfOperatorType.m:
                     {
-                        if (state != ParseState.Paths)
-                        {
-                            state = ParseState.Paths;
-                        }
                         if (Scanner.TryGetCurrentOperation<T>(out var gso))
                         {
+                            if (state != ParseState.Paths)
+                            {
+                                state = ParseState.Paths;
+                            }
                             var m = (m_Op<T>)gso;
                             currentSubPath = NewSubPath(m.x, m.y, GraphicsState);
                         }
@@ -773,6 +841,25 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
         }
     }
 
+    private IPdfObject GetShiftedPattern(IPdfObject pattern, GfxMatrix<T> formStart)
+    {
+        pattern = pattern.Resolve();
+        var dict = pattern.Type == PdfObjectType.StreamObj ? (pattern as PdfStream)?.Dictionary : pattern as PdfDictionary;
+        if (dict == null) { return pattern; }
+        dict.TryGetValue<PdfArray>(PdfName.Matrix, out var mtx);
+        var m = new GfxMatrix<T>(
+            FPC<T>.Util.FromPdfNumber<T>(mtx[0].GetAs<PdfNumber>()),
+            FPC<T>.Util.FromPdfNumber<T>(mtx[1].GetAs<PdfNumber>()),
+            FPC<T>.Util.FromPdfNumber<T>(mtx[2].GetAs<PdfNumber>()),
+            FPC<T>.Util.FromPdfNumber<T>(mtx[3].GetAs<PdfNumber>()),
+            FPC<T>.Util.FromPdfNumber<T>(mtx[4].GetAs<PdfNumber>()),
+            FPC<T>.Util.FromPdfNumber<T>(mtx[5].GetAs<PdfNumber>())
+            );
+        var a = m * formStart;
+        var dc = dict.CloneShallow();
+        dc[PdfName.Matrix] = a.AsPdfArray();
+        return dc;
+    }
 
     private TextSegment<T> CreateTextSegment(ReadOnlySpan<byte> slice)
     {
