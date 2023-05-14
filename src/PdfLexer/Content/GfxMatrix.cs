@@ -148,6 +148,17 @@ public record struct GfxMatrix<T> where T : struct, IFloatingPoint<T>
 
     }
 
+    internal PdfPoint<T> GetTransformedPoint(PdfPoint<T> pt)
+    {
+        var x1 = A * pt.X + C * pt.Y + E;
+        var y1 = B * pt.X + D * pt.Y + F;
+        return new PdfPoint<T>
+        {
+            X = x1,
+            Y = y1,
+        };
+    }
+
     public PdfRect<T> GetCurrentSize()
     {
         var x = E;

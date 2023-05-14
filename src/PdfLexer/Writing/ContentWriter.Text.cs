@@ -2,6 +2,7 @@
 using PdfLexer.Serializers;
 using System.Numerics;
 using PdfLexer.Content;
+using System.Buffers;
 
 namespace PdfLexer.Writing;
 
@@ -18,7 +19,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     private Dictionary<Base14, IWritableFont> used = new();
 
-    public ContentWriter<T> Font(Base14 font, T size)
+    public ContentWriter<T> Font(Base14 font, T size, bool setTextLeading=true)
     {
         if (!used.TryGetValue(font, out var wf))
         {
@@ -42,7 +43,39 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             };
 used[font] = wf;
         }
-        return Font(wf, size);
+        Font(wf, size);
+        if (setTextLeading)
+        {
+            TextLeading(size);
+        }
+        return this;
+    }
+
+    public PdfPoint<T> GetCurrentTextPos()
+    {
+        return new PdfPoint<T> { X = GfxState.Text.TextMatrix.E, Y = GfxState.Text.TextMatrix.F };
+    }
+
+    public ContentWriter<T> WordSpacing(T w)
+    {
+        Tw_Op<T>.WriteLn(w, Writer.Stream);
+        GfxState = GfxState with { WordSpacing = w };
+        return this;
+    }
+
+    public ContentWriter<T> NewLine()
+    {
+        T_Star_Op<T>.WriteLn(Writer.Stream);
+        T_Star_Op<T>.Value.Apply(ref GfxState);
+        return this;
+    }
+
+    public ContentWriter<T> TextLeading(T spacing) => LineSpacing(spacing);
+    public ContentWriter<T> LineSpacing(T spacing)
+    {
+        TL_Op<T>.WriteLn(spacing, Writer.Stream);
+        new TL_Op<T>(spacing).Apply(ref GfxState);
+        return this;
     }
 
     public ContentWriter<T> Text(string text)
@@ -52,6 +85,10 @@ used[font] = wf;
         var b = new byte[2];
         Span<byte> buf = new byte[text.Length];
         int os = 0;
+        double total = 0;
+        double fs = FPC<T>.Util.ToDouble(GfxState.FontSize);
+        var ws = FPC<T>.Util.ToDouble(GfxState.WordSpacing);
+
         Writer.Stream.WriteByte((byte)'[');
         foreach (var c in writableFont.ConvertFromUnicode(text, 0, text.Length, b))
         {
@@ -60,25 +97,160 @@ used[font] = wf;
                 StringSerializer.WriteToStream(buf.Slice(0, os), Writer.Stream);
                 PdfOperator.Writedecimal((decimal)c.PrevKern, Writer.Stream);
                 os = 0;
+                total -= c.PrevKern/1000;
             }
             buf[os++] = b[0];
+            total += c.Width;
+            if (c.ByteCount == 1 && b[0] == 32)
+            {
+                total += ws/ fs;
+            }
         }
         StringSerializer.WriteToStream(buf.Slice(0, os), Writer.Stream);
         Writer.Stream.WriteByte((byte)']');
         Writer.Stream.WriteByte((byte)' ');
         Writer.Stream.Write(TJ_Op.OpData);
         Writer.Stream.WriteByte((byte)'\n');
-
+        GfxState.ApplyCharShift(FPC<T>.Util.FromDouble<T>(total), false);
         return this;
     }
 
-    public ContentWriter<T> TextMove(T x, T y)
+    public ContentWriter<T> TextWrap(string text, T width, bool scaled=true)
+    {
+        if (writableFont == null) { throw new NotSupportedException("Must set current font before writing."); }
+
+        var rented = ArrayPool<byte>.Shared.Rent(text.Length);
+        Span<byte> buf = rented;
+
+        if (scaled) 
+        {
+            GfxState.CTM.Invert(out var iv);
+            width = iv.GetTransformedPoint(new PdfPoint<T> { X = width, Y = T.Zero }).X;
+        } 
+
+        var b = new byte[2];
+        Span<byte> sb = stackalloc byte[1];
+        sb[0] = 32;
+        T spaceWidth = T.Zero;
+        foreach (var c in writableFont.ConvertFromUnicode(" ", 0, 1, b))
+        {
+            var x = FPC<T>.Util.FromDouble<T>(c.Width);
+            var (sx, sy) = GfxState.CalculateCharShift(x);
+            spaceWidth = sx == T.Zero ? sy : sx;
+        }
+
+        var ms = new MemoryStream();
+
+        T cw = T.Zero;
+
+        double fs = FPC<T>.Util.ToDouble(GfxState.FontSize);
+        var ws = FPC<T>.Util.ToDouble(GfxState.WordSpacing);
+
+        var (dx,dy) = GfxState.CalculateCharShift(GfxState.WordSpacing / GfxState.FontSize);
+        var extraSpacing = dy == T.Zero ? dx : dy;
+
+        
+        var lines = text.Split('\n');
+        foreach (var line in lines)
+        {
+            var blocks = new List<TextBlock<T>>();
+            var txt = line.Trim();
+            var words = txt.Split(" ");
+            foreach (var word in words)
+            {
+                if (string.IsNullOrWhiteSpace(word)) continue;
+                int os = 0;
+                double total = 0;
+
+                var w = word.Trim();
+                foreach (var c in writableFont.ConvertFromUnicode(w, 0, w.Length, b))
+                {
+                    if (c.PrevKern != 0)
+                    {
+                        StringSerializer.WriteToStream(buf.Slice(0, os), ms);
+                        PdfOperator.Writedecimal((decimal)c.PrevKern, ms);
+                        os = 0;
+                        total -= c.PrevKern / 1000;
+                    }
+                    buf[os++] = b[0];
+                    total += c.Width;
+                    if (c.ByteCount == 1 && b[0] == 32)
+                    {
+                        total += ws / fs;
+                    }
+                }
+                StringSerializer.WriteToStream(buf.Slice(0, os), ms);
+
+                var (x, y) = GfxState.CalculateCharShift(FPC<T>.Util.FromDouble<T>(total));
+                var wi = new TextBlock<T> { Op = ms.ToArray(), Width = y == T.Zero ? x : y };
+                ms.Position = 0;
+                ms.SetLength(0);
+                if (cw + wi.Width > width)
+                {
+                    WriteBlocks(blocks, true);
+                }
+                blocks.Add(wi);
+                cw += wi.Width;
+                cw += spaceWidth + extraSpacing; // for space
+            }
+            if (blocks.Count > 0)
+            {
+                WriteBlocks(blocks, false);
+            }
+
+            T_Star_Op.WriteLn(Writer.Stream);
+        }
+
+        ArrayPool<byte>.Shared.Return(rented);
+
+        return this;
+
+        void WriteBlocks(List<TextBlock<T>> blocks, bool newLine)
+        {
+            Span<byte> space = stackalloc byte[1];
+            space[0] = 32;
+            Writer.Stream.WriteByte((byte)'[');
+            for (var i = 0; i < blocks.Count;i++)
+            {
+                Writer.Stream.Write(blocks[i].Op);
+                if (i + 1 < blocks.Count)
+                {
+                    StringSerializer.WriteToStream(space, Writer.Stream);
+                }
+            }
+            blocks.Clear();
+            Writer.Stream.WriteByte((byte)']');
+            Writer.Stream.WriteByte((byte)' ');
+            Writer.Stream.Write(TJ_Op.OpData);
+            Writer.Stream.WriteByte((byte)'\n');
+            if (newLine)
+            {
+                T_Star_Op.WriteLn(Writer.Stream);
+            }
+            cw = T.Zero;
+        }
+    }
+
+    public ContentWriter<T> TextMoveTo(PdfPoint<T> point) => TextMoveTo(point.X, point.Y);
+
+    public ContentWriter<T> TextMove(T dx, T dy)
     {
         EnsureInTextState();
-        Td_Op<T>.WriteLn(x, y, Writer.Stream);
-        Td_Op<T>.Apply(ref GfxState, x, y);
+        Td_Op<T>.WriteLn(dx, dy, Writer.Stream);
+        Td_Op<T>.Apply(ref GfxState, dx, dy);
         return this;
     }
+
+    public ContentWriter<T> LineShift(T dx, T dy)
+    {
+        EnsureInTextState();
+        Td_Op<T>.WriteLn(dx, dy, Writer.Stream);
+        Td_Op<T>.Apply(ref GfxState, dx, dy);
+        return this;
+    }
+
+    public ContentWriter<T> TextMoveTo(T x, T y) => TextTransform(GfxMatrix<T>.Identity with { E = x, F = y });
+
     public ContentWriter<T> TextTransform(GfxMatrix<T> tm)
     {
         EnsureInTextState();

@@ -198,7 +198,7 @@ namespace PdfLexer.Tests
                 var str = sb.ToString();
                 sb.Clear();
 
-                var words = new SimpleWordReader(doc.Context, page);
+                var words = new SimpleWordScanner(doc.Context, page);
                 while (words.Advance())
                 {
                     sb.AppendLine(words.CurrentWord);
@@ -260,7 +260,7 @@ namespace PdfLexer.Tests
                             var str = sb.ToString();
                             sb.Clear();
 
-                            var words = new SimpleWordReader(doc.Context, page);
+                            var words = new SimpleWordScanner(doc.Context, page);
                             while (words.Advance())
                             {
                                 sb.AppendLine(words.CurrentWord);

@@ -123,6 +123,13 @@ public sealed class PdfPage
     {
         return new TextScanner(ParsingContext.Current, this);
     }
+
+    public SimpleWordScanner GetWordScanner()
+    {
+        return new SimpleWordScanner(ParsingContext.Current, this);
+    }
+
+
 }
 
 

@@ -10,7 +10,6 @@ using PdfLexer.Serializers;
 using System.CommandLine;
 using System.Text.Json;
 
-
 var data = new Option<string>(
             name: "--data",
             description: "Path where previous results re.");

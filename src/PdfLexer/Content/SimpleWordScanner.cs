@@ -18,19 +18,19 @@ public struct WordInfo
 /// and splitting into words if spacing between chars is significant or a word delimiting
 /// character is encountered.
 /// </summary>
-public ref struct SimpleWordReader
+public ref struct SimpleWordScanner
 {
     public static List<string> GetWords(ParsingContext ctx, PdfPage page, HashSet<char>? wordDelimiters = null)
     {
         var words = new List<string>();
-        var reader = new SimpleWordReader(ctx, page, wordDelimiters);
+        var reader = new SimpleWordScanner(ctx, page, wordDelimiters);
         while (reader.Advance())
         {
             words.Add(reader.CurrentWord);
         }
         return words;
     }
-    public SimpleWordReader(ParsingContext ctx, PdfPage page, HashSet<char>? wordDelimiters = null)
+    public SimpleWordScanner(ParsingContext ctx, PdfPage page, HashSet<char>? wordDelimiters = null)
     {
         Page = page;
         Scanner = new TextScanner(ctx, page);
@@ -45,13 +45,14 @@ public ref struct SimpleWordReader
         customDelims = wordDelimiters;
     }
 
-    private TextScanner Scanner;
-    private HashSet<char>? customDelims;
+
     public PdfPage Page { get; }
-
-
+    public GfxState<double> GraphicsState { get => Scanner.GraphicsState; }
     public string CurrentWord { get; private set; }
     public GfxMatrix<double> Position { get; private set; }
+
+    private TextScanner Scanner;
+    private HashSet<char>? customDelims;
     private PdfRect<double>? last;
     private PdfRect<double>? first;
     private PdfRect<double>? prevbb;
@@ -59,9 +60,22 @@ public ref struct SimpleWordReader
     private GfxMatrix<double> prev;
     private readonly StringBuilder sb;
 
-    public (double llx, double lly, double urx, double ury) GetWordBoundingBox()
+    public PdfRect<double> GetWordBoundingBox()
     {
-        return (first?.LLx ?? 0, first?.LLy ?? 0, last?.URx ?? 0, last?.URy ?? 0);
+        return CurrentWord.Length == 1 ?
+         new PdfRect<double>
+         {
+             LLx = (first?.LLx ?? 0),
+             LLy = (first?.LLy ?? 0),
+             URx = (first?.URx ?? 0),
+             URy = (first?.URy ?? 0)
+         } : new PdfRect<double>
+         {
+             LLx = (first?.LLx ?? 0),
+             LLy = (first?.LLy ?? 0),
+             URx = (last?.URx ?? 0),
+             URy = (last?.URy ?? 0)
+         };
     }
 
     public bool Advance()
@@ -87,7 +101,8 @@ public ref struct SimpleWordReader
                     sb.Clear();
                     last = prevbb;
                     returnWord = true;
-                } else
+                }
+                else
                 {
                     prev.Invert(out var iv);
                     var change = current * iv;
@@ -168,10 +183,10 @@ public ref struct SimpleWordReader
         return new WordInfo
         {
             word = CurrentWord,
-            llx = pos.llx,
-            lly = pos.lly,
-            urx = pos.urx,
-            ury = pos.ury
+            llx = pos.LLx,
+            lly = pos.LLy,
+            urx = pos.URx,
+            ury = pos.URy
         };
     }
 }

@@ -10,4 +10,9 @@ public class PdfNull : PdfObject
 
     public PdfNull() { }
     public override PdfObjectType Type => PdfObjectType.NullObj;
+
+    public override string ToString()
+    {
+        return "null";
+    }
 }

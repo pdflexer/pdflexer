@@ -49,7 +49,7 @@ internal class SearchCmd
         int count = 0;
         for (var i =0;i<pdf.Pages.Count;i++)
         {
-            var reader = new SimpleWordReader(pdf.Context, pdf.Pages[i], new HashSet<char> { '\n', ' ', '\r', '\t' }); ;
+            var reader = new SimpleWordScanner(pdf.Context, pdf.Pages[i], new HashSet<char> { '\n', ' ', '\r', '\t' }); ;
             while (reader.Advance())
             {
                 if (regex.IsMatch(reader.CurrentWord))

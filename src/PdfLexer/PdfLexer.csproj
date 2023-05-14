@@ -18,21 +18,23 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	</PropertyGroup>
+
 	<PropertyGroup>
 		<LangVersion>11.0</LangVersion>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net6.0' Or '$(TargetFramework)' == 'net7.0'">
-		<PackageReference Include="DotNext.Unsafe">
-			<Version>4.10.0</Version>
-		</PackageReference>
-	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)' == 'Release'">
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="DotNext.Unsafe">
+			<Version>4.10.0</Version>
+		</PackageReference>
 		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="2.3.1" />
 		<PackageReference Include="System.IO.Pipelines" Version="7.0.0" />
 		<PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
@@ -44,8 +46,8 @@
 			<Generator>TextTemplatingFileGenerator</Generator>
 		</None>
 		<None Update="Operators\PdfOperatorType.Generic.tt">
-		  <LastGenOutput>PdfOperatorType.Generic.cs</LastGenOutput>
-		  <Generator>TextTemplatingFileGenerator</Generator>
+			<LastGenOutput>PdfOperatorType.Generic.cs</LastGenOutput>
+			<Generator>TextTemplatingFileGenerator</Generator>
 		</None>
 		<None Update="Operators\PdfOperatorType.tt">
 			<Generator>TextTemplatingFileGenerator</Generator>
@@ -63,9 +65,9 @@
 
 	<ItemGroup>
 		<Compile Update="Operators\PdfOperatorType.Generic.cs">
-		  <DependentUpon>PdfOperatorType.Generic.tt</DependentUpon>
-		  <DesignTime>True</DesignTime>
-		  <AutoGen>True</AutoGen>
+			<DependentUpon>PdfOperatorType.Generic.tt</DependentUpon>
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
 		</Compile>
 		<Compile Update="Operators\PdfOperatorType.cs">
 			<DesignTime>True</DesignTime>

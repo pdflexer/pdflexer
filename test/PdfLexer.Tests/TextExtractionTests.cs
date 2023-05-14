@@ -201,7 +201,32 @@ namespace PdfLexer.Tests
                 Assert.Equal(15f, scanner.GraphicsState.FontSize);
             }
         }
+        [Fact]
+        public void It_Wraps_Text()
+        {
+            using var doc = PdfDocument.Create();
+            var pg = doc.AddPage();
+            {
+                using var writer = pg.GetWriter();
+                writer
+                    .Scale(1.5, 1.5)
+                    .WordSpacing(10)
+                    .Font(Base14.Helvetica, 40)
+                    .TextMove(50, 100)
+                    .Text("H e l l o  W o r l d  ").Text("Lower");
+                var tp = writer.GetCurrentTextPos();
+                writer.TextMove(0, 100)
+                    .Text("A little higher")
+                    .NewLine()
+                    .Font(Base14.Helvetica, 20)
+                    .TextWrap("Text shifted and wrapped", 100)
+                    .TextMoveTo(PdfPoint.Create(50.0, -100.0).NormalizeToTopLeft(pg))
+                    .Text("Relative to top");
 
+                writer.Circle(tp.X, tp.Y, 3).FillAndStroke();
+
+            }
+        }
 
         [Fact]
         public void It_Reads_Visually()
@@ -214,6 +239,36 @@ namespace PdfLexer.Tests
 
             var text = pdf.Pages[0].GetTextVisually(pdf.Context);
             Assert.NotEqual(' ', text[text.Length - 2]);
+        }
+
+
+        [Fact]
+        public void It_Reads_Visually_Lines()
+        {
+            using var ctx = new ParsingContext();
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdfFile = Path.Combine(pdfRoot, "calgray.pdf");
+            using var pdf = PdfDocument.Open(pdfFile);
+
+            var text = pdf.Pages[0].GetTextVisually(pdf.Context);
+            var lc = text.Split('\n').Count();
+            Assert.Equal(7, lc);
+        }
+
+        [Fact]
+        public void It_Reads_Visually_Rows()
+        {
+            using var ctx = new ParsingContext();
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdfFile = Path.Combine(pdfRoot, "basicapi.pdf");
+            using var pdf = PdfDocument.Open(pdfFile);
+
+            var text = pdf.Pages[0].GetTextVisually(pdf.Context);
+            var cc = text.Split('\n').Select(x => x.Length).Max();
+            Assert.True(90 > cc);
+            
         }
 
         private void RunSingle(string name, bool runCom = true)
@@ -319,9 +374,9 @@ namespace PdfLexer.Tests
 
             for (var i = 0; i < candidate.Count; i++)
             {
-                candidate[i] = candidate[i].Select(x=> new CharPos { c = x.c, x = Math.Round(x.x, 2), y = Math.Round(x.y,2) })
-                                           .OrderBy(x => x.x)
-                                           .ThenBy(x => x.y)
+                candidate[i] = candidate[i].Select(x=> new CharPos { Char = x.Char, XPos = Math.Round(x.XPos, 2), YPos = Math.Round(x.YPos,2) })
+                                           .OrderBy(x => x.XPos)
+                                           .ThenBy(x => x.YPos)
                                            .ToList();
             }
 
@@ -349,17 +404,17 @@ namespace PdfLexer.Tests
                     }
                     if (segs.Length == 6)
                     {
-                        baseLine[pgNum - 1].Add(new CharPos { c = segs[3][0], x = double.Parse(segs[1]), y = double.Parse(segs[2]) });
+                        baseLine[pgNum - 1].Add(new CharPos { Char = segs[3][0], XPos = double.Parse(segs[1]), YPos = double.Parse(segs[2]) });
                     }
                     else
                     {
-                        baseLine[pgNum - 1].Add(new CharPos { c = ' ', x = double.Parse(segs[1]), y = double.Parse(segs[2]) });
+                        baseLine[pgNum - 1].Add(new CharPos { Char = ' ', XPos = double.Parse(segs[1]), YPos = double.Parse(segs[2]) });
                     }
                 }
             }
             for (var i = 0; i < baseLine.Count;i++)
             {
-                baseLine[i] = baseLine[i].OrderBy(x => x.x).ThenBy(x => x.y).ToList();
+                baseLine[i] = baseLine[i].OrderBy(x => x.XPos).ThenBy(x => x.YPos).ToList();
             }
 
             for (var i = 0; i < baseLine.Count; i++)
@@ -374,9 +429,9 @@ namespace PdfLexer.Tests
                     }
                     var bc = basePage[c];
                     var cc = candPage[c];
-                    Assert.Equal(bc.c, cc.c);
-                    var dx = Math.Abs(bc.x - cc.x);
-                    var dy = Math.Abs(bc.y - cc.y);
+                    Assert.Equal(bc.Char, cc.Char);
+                    var dx = Math.Abs(bc.XPos - cc.XPos);
+                    var dy = Math.Abs(bc.YPos - cc.YPos);
                     Assert.True(dx < 0.1);
                     Assert.True(dy < 0.1);
                 }

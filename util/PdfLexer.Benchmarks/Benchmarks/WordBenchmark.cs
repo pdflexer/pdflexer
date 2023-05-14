@@ -75,7 +75,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
                 using var doc = PdfDocument.Open(pdf);
                 foreach (var page in doc.Pages)
                 {
-                    var reader = new SimpleWordReader(doc.Context, page);
+                    var reader = new SimpleWordScanner(doc.Context, page);
                     while (reader.Advance())
                     {
                         unchecked { chars += reader.CurrentWord.Length; }

@@ -158,6 +158,50 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
         ShiftTextMatrix(tx, ty);
     }
 
+    internal void ApplyCharShift(T w, bool isWordSpace)
+    {
+        // shift
+        T tx = T.Zero;
+        T ty = T.Zero;
+        if (!(Font?.IsVertical ?? false))
+        {
+            var s = w * FontSize + CharSpacing;
+            if (isWordSpace)
+            {
+                s += WordSpacing;
+            }
+            tx = s * TextHScale;
+        }
+        else
+        {
+            var s = w * FontSize + CharSpacing;
+            if (isWordSpace) { s += WordSpacing; }
+            ty = s;
+        }
+
+        ShiftTextMatrix(tx, ty);
+    }
+
+    internal (T x, T y) CalculateCharShift(T w)
+    {
+        // shift
+        T tx = T.Zero;
+        T ty = T.Zero;
+        if (!(Font?.IsVertical ?? false))
+        {
+            var s = w * FontSize + CharSpacing;
+            tx = s * TextHScale;
+        }
+        else
+        {
+            var s = w * FontSize + CharSpacing;
+            ty = s;
+        }
+
+        return (tx, ty);
+    }
+
+
     internal void ApplyTj(T tj)
     {
         if (tj == T.Zero) { return; }

@@ -64,7 +64,7 @@ public class RedactionTests
     private void RunTest(string tp, string name, PdfDocument doc, PdfPage pg, char c)
     {
         var redact = new SinglePassRedactor(doc.Context, pg);
-        var reader = new SimpleWordReader(doc.Context, pg, new HashSet<char> { '\n', ' ', '\r', '\t' });
+        var reader = new SimpleWordScanner(doc.Context, pg, new HashSet<char> { '\n', ' ', '\r', '\t' });
         var sb = new StringBuilder();
         while (reader.Advance())
         {
@@ -81,7 +81,7 @@ public class RedactionTests
         od.SaveTo(output);
 
         sb = new StringBuilder();
-        reader = new SimpleWordReader(doc.Context, redacted, new HashSet<char> { '\n', ' ', '\r', '\t' });
+        reader = new SimpleWordScanner(doc.Context, redacted, new HashSet<char> { '\n', ' ', '\r', '\t' });
         while (reader.Advance())
         {
             sb.Append(reader.CurrentWord + " ");
