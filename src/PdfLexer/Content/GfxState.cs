@@ -17,7 +17,10 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
 
     internal GfxState<T>? Prev { get; init; }
     internal IReadableFont? Font { get; init; }
+    internal IWritableFont? WritableFont { get; init; }
     internal PdfName? FontResourceName { get; init; }
+    
+    public PdfDictionary? FontObject { get; init; }
 
     public GfxMatrix<T> CTM { get; init; }
 
@@ -49,7 +52,6 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
     public IPdfObject? ColorSpaceStroking { get; init; } = PdfName.DeviceGray;
     public IPdfOperation? Color { get; init; }
     public IPdfOperation? ColorStroking { get; init; }
-    public PdfDictionary? FontObject { get; init; }
     public ExtGraphicsDict<T>? ExtDict { get; init; }
     internal List<IClippingSection<T>>? Clipping { get; init; }
 

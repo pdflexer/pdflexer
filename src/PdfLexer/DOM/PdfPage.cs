@@ -130,6 +130,11 @@ public sealed class PdfPage
     }
 
 
+    public string DumpDecodedContents()
+    {
+        return string.Join('\n', Contents.Select(x => System.Text.Encoding.UTF8.GetString(x.Contents.GetDecodedData())));
+    }
+
 }
 
 

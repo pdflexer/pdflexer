@@ -209,22 +209,42 @@ namespace PdfLexer.Tests
             {
                 using var writer = pg.GetWriter();
                 writer
-                    .Scale(1.5, 1.5)
                     .WordSpacing(10)
                     .Font(Base14.Helvetica, 40)
-                    .TextMove(50, 100)
+                    .TextShift(50, 100)
                     .Text("H e l l o  W o r l d  ").Text("Lower");
                 var tp = writer.GetCurrentTextPos();
                 writer.TextMove(0, 100)
                     .Text("A little higher")
                     .NewLine()
-                    .Font(Base14.Helvetica, 20)
-                    .TextWrap("Text shifted and wrapped", 100)
-                    .TextMoveTo(PdfPoint.Create(50.0, -100.0).NormalizeToTopLeft(pg))
+                    .Font(Base14.HelveticaBoldItalic, 20)
+                    .TextWrapCenter("Text Align More", 200)
+                    .TextWrapCenter("Text Align More Wraps A A", 200)
+                    .TextMove(PdfPoint.Create(50.0, -100.0).NormalizeToTopLeft(pg))
                     .Text("Relative to top");
 
                 writer.Circle(tp.X, tp.Y, 3).FillAndStroke();
 
+            }
+
+            var txt = pg.GetTextVisually();
+        }
+
+        [Fact]
+        public void It_Wraps_Text_Box()
+        {
+            using var doc = PdfDocument.Create();
+            var pg = doc.AddPage();
+            {
+                var rect = new PdfRect<double> { LLx = 10, LLy = 10, URx = 210, URy = 110 };
+                using var writer = pg.GetWriter();
+
+                writer.Font(Base14.HelveticaBold, 20);
+                writer.TextBox(rect, TextAlign.Center)
+                      .TextBoxWrite("Text Center")
+                      // .TextBoxFontSize(40)
+                      .TextBoxWrite("Larger text")
+                      .TextBoxComplete();
             }
         }
 

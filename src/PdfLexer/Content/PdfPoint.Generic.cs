@@ -6,6 +6,17 @@ namespace PdfLexer.Content;
 
 public record struct PdfPoint<T> where T : struct, IFloatingPoint<T>
 {
+    public PdfPoint()
+    {
+
+    }
+
+    [SetsRequiredMembers]
+    public PdfPoint(T x, T y)
+    {
+        X = x;
+        Y = y;
+    }
     public required T X { get; init; }
     public required T Y { get; init; }
 
