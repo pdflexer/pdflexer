@@ -3,9 +3,33 @@ using System.Numerics;
 
 namespace PdfLexer.Content;
 
-public record class PdfRect : PdfRect<double> { }
+public record class PdfRect : PdfRect<double> 
+{
+    public PdfRect()
+    {
+
+    }
+
+    [SetsRequiredMembers]
+    public PdfRect(double llx, double lly, double urx, double ury) : base(llx, lly, urx, ury)
+    {
+
+    }
+}
 public record class PdfRect<T> where T : struct, IFloatingPoint<T>
 {
+    public PdfRect()
+    {
+    }
+
+    [SetsRequiredMembers]
+    public PdfRect(T llx, T lly, T urx, T ury)
+    {
+        LLx = llx;
+        LLy = lly;
+        URx = urx;
+        URy = ury;
+    }
     public required T LLx { get; init; }
     public required T LLy { get; init; }
     public required T URx { get; init; }

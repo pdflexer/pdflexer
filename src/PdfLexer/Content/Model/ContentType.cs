@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace PdfLexer.Content.Model;
 
+/// <summary>
+/// Type of content the content group represents
+/// </summary>
 public enum ContentType
 {
     Text,

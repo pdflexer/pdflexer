@@ -358,22 +358,25 @@ namespace PdfLexer.Tests
             }
 
 
-            var formReader = new CachedContentMutation(f => {
-                var bb = f.GetBoundingBox();
+            var formReader = new CachedContentMutation(Mutation);
+
+            IEnumerable<IContentGroup<double>> Mutation(IContentGroup<double> input)
+            {
+                var bb = input.GetBoundingBox();
 
                 if (bb.LLy > 200)
                 {
-                    f.Transform(new GfxMatrix<double> { E = -200, F = 40 });
+                    input.Transform(new GfxMatrix<double> { E = -200, F = 40 });
                 }
                 else
                 {
-                    f.Transform(new GfxMatrix<double> { E = 200, F = -40 });
+                    input.Transform(new GfxMatrix<double> { E = 200, F = -40 });
                 }
-                return f;
-            });
+                yield return input;
+            }
 
 
-            var pg2 = formReader.Mutate(pg);
+            var pg2 = formReader.Apply(pg);
 
 
             var count = 0;

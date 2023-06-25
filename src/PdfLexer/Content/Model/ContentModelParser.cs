@@ -13,6 +13,9 @@ internal enum ParseState
 internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
 {
     private ParsingContext Context;
+
+    private PdfDictionary Page;
+
     private readonly List<TJ_Lazy_Item<T>> TJCache;
 
     internal PageContentScanner Scanner;
@@ -25,6 +28,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
     public ContentModelParser(ParsingContext ctx, PdfDictionary page, bool flattenForms = false)
     {
         Context = ctx;
+        Page = page;
         Scanner = new PageContentScanner(ctx, page, flattenForms);
         GraphicsState = new GfxState<T>();
         TJCache = new List<TJ_Lazy_Item<T>>(10);
@@ -34,6 +38,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
     public ContentModelParser(ParsingContext ctx, PdfDictionary page, PdfStream form, GfxState<T> state)
     {
         Context = ctx;
+        Page = page;
         Scanner = new PageContentScanner(ctx, page, form);
         GraphicsState = state;
         TJCache = new List<TJ_Lazy_Item<T>>(10);
@@ -208,6 +213,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             Stream = obj,
                             GraphicsState = GraphicsState,
                             CompatibilitySection = bx,
+                            ParentPage = Page,
                             Markings = mc.Count > 0 ? mc.ToList() : null
                         });
                     }

@@ -10,47 +10,80 @@ namespace PdfLexer.Content.Model;
 
 public class CachedContentMutation : CachedContentMutation<double>
 {
-    public CachedContentMutation(Func<IContentGroup<double>, IContentGroup<double>> mutation) : base(mutation)
+    public CachedContentMutation(Func<IContentGroup<double>, IEnumerable<IContentGroup<double>>> mutation) : base(mutation)
     {
 
     }
+
+    public CachedContentMutation(Func<IContentGroup<double>, IContentGroup<double>> mutation) : base(mutation) { }
 }
 
+/// <summary>
+/// Helper class for recursively applying mutations to content groups across nested forms.
+/// 
+/// Includes internal caching to increase performance in cases where form are re-used 
+/// across multiple pages.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
 {
-    private Func<IContentGroup<T>, IContentGroup<T>> _mutation;
+    private Func<IContentGroup<T>, IEnumerable<IContentGroup<T>>> _mutation;
     private ConditionalWeakTable<PdfStream, Dictionary<GfxMatrix<T>, XObjForm>> _cache =
         new ConditionalWeakTable<PdfStream, Dictionary<GfxMatrix<T>, XObjForm>>();
 
-    public CachedContentMutation(Func<IContentGroup<T>, IContentGroup<T>> mutation)
+    /// <summary>
+    /// Create mutation helper with func that applies mutation to content group returning enumerable result.
+    /// </summary>
+    /// <param name="mutation"></param>
+    public CachedContentMutation(Func<IContentGroup<T>, IEnumerable<IContentGroup<T>>> mutation)
     {
         _mutation = mutation;
     }
 
-    public List<IContentGroup<T>> Mutate(PdfDictionary page, List<IContentGroup<T>> content)
+    /// <summary>
+    /// Create mutation helper with func that applies mutation to content group returning single (or none/null) content group result.
+    /// </summary>
+    /// <param name="mutation"></param>
+    public CachedContentMutation(Func<IContentGroup<T>, IContentGroup<T>?> mutation)
+    {
+        _mutation = Wrap(mutation);
+    }
+
+    /// <summary>
+    /// Applies the mutation to a list of content groups.
+    /// 
+    /// If any content groups are forms these are parsed into content groups themselves and
+    /// mutation applied recursively.
+    /// </summary>
+    /// <param name="content"></param>
+    /// <returns></returns>
+    public List<IContentGroup<T>> Apply(List<IContentGroup<T>> content)
     {
         var newContents = new List<IContentGroup<T>>();
         foreach (var item in content)
         {
-            IContentGroup<T> mutated;
             if (item is FormContent<T> nested)
             {
-                mutated = RecursivelyApply(page, nested);
+                newContents.Add(RecursivelyApply(nested));
             }
             else
             {
-                mutated = _mutation(item);
+                newContents.AddRange(_mutation(item));
             }
 
-            newContents.Add(mutated);
         }
         return newContents;
     }
 
-    public PdfPage Mutate(PdfPage page)
+    /// <summary>
+    /// Applies the mutation to all content of a page including nested forms.
+    /// </summary>
+    /// <param name="page"></param>
+    /// <returns></returns>
+    public PdfPage Apply(PdfPage page)
     {
         var model = page.GetContentModel<T>(false);
-        var mutated = Mutate(page.NativeObject, model);
+        var mutated = Apply(model);
 
         PdfPage newPage = page.NativeObject.CloneShallow();
         var res = new PdfDictionary();
@@ -60,7 +93,7 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
         return newPage;
     }
 
-    private FormContent<T> RecursivelyApply(PdfDictionary page, FormContent<T> form)
+    private FormContent<T> RecursivelyApply(FormContent<T> form)
     {
         if (_cache.TryGetValue(form.Stream, out var result) && result.TryGetValue(form.GraphicsState.CTM, out var match))
         {
@@ -71,9 +104,9 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
             };
         }
 
-        var parser = new ContentModelParser<T>(ParsingContext.Current, page, form.Stream, new GfxState<T> { CTM = form.GraphicsState.CTM });
+        var parser = new ContentModelParser<T>(ParsingContext.Current, form.ParentPage ?? new PdfDictionary(), form.Stream, new GfxState<T> { CTM = form.GraphicsState.CTM });
         var content = parser.Parse();
-        var newContents = Mutate(page, content);
+        var newContents = Apply(content);
         // these were in a form, need to "undo" the applied CTM
         if (!form.GraphicsState.CTM.IsIdentity)
         {
@@ -84,10 +117,6 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
 
             foreach (var item in newContents)
             {
-                // if (item is FormContent<T>)
-                // {
-                //     continue;
-                // }
                 item.Transform(inv);
             }
         }
@@ -115,5 +144,18 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
             GraphicsState = form.GraphicsState,
             Stream = xObj.NativeObject
         };
+    }
+
+    private static Func<IContentGroup<T>, IEnumerable<IContentGroup<T>>> Wrap(Func<IContentGroup<T>, IContentGroup<T>?> single)
+    {
+        IEnumerable<IContentGroup<T>> Wrapped(IContentGroup<T> input)
+        {
+            var r = single(input);
+            if (r != null)
+            {
+                yield return r;
+            }
+        }
+        return Wrapped;
     }
 }

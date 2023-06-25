@@ -3,6 +3,10 @@ using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
+/// <summary>
+/// Shading content.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Shading;

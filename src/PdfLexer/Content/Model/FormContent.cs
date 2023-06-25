@@ -1,9 +1,12 @@
-﻿using DotNext.Collections.Specialized;
-using PdfLexer.Writing;
+﻿using PdfLexer.Writing;
 using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
+/// <summary>
+/// Form content. This is analogous to a /Form Do PDF operation.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Form;
@@ -11,15 +14,22 @@ public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
     public required PdfStream Stream { get; set; }
     public List<MarkedContent>? Markings { get; set; }
     public bool CompatibilitySection { get; set; }
+    
+    /// <summary>
+    /// Parent page of this form. Required if resources are
+    /// not included in form resource dictionary.
+    /// </summary>
+    public PdfDictionary? ParentPage { get; set; }
+
 
     public void Write(ContentWriter<T> writer)
     {
         writer.Form(Stream);
     }
 
-    public List<IContentGroup<T>> Parse(PdfDictionary parentPage)
+    public List<IContentGroup<T>> Parse()
     {
-        var parser = new ContentModelParser<T>(ParsingContext.Current, parentPage, Stream, GraphicsState);
+        var parser = new ContentModelParser<T>(ParsingContext.Current, ParentPage ?? new PdfDictionary(), Stream, GraphicsState);
         return parser.Parse();
     }
 

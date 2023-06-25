@@ -4,6 +4,12 @@ using System.Numerics;
 namespace PdfLexer.Content.Model;
 
 
+/// <summary>
+/// Image content. This is analogous to a /Image Do PDF operation or an inline image.
+/// 
+/// Inlines images are currently always converted to XObj images.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public record class ImageContent<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Image;

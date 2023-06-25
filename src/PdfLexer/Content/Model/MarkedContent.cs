@@ -1,10 +1,8 @@
-﻿using PdfLexer.IO;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿namespace PdfLexer.Content.Model;
 
-namespace PdfLexer.Content.Model;
-
+/// <summary>
+/// PDF Marked Content model
+/// </summary>
 public record class MarkedContent
 {
     public MarkedContent(PdfName name)
