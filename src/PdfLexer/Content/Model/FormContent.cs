@@ -63,5 +63,24 @@ public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
     public void Transform(GfxMatrix<T> transformation)
     {
         GraphicsState = GraphicsState with { CTM = transformation * GraphicsState.CTM };
+        if (GraphicsState.Clipping != null)
+        {
+            foreach (var item in GraphicsState.Clipping)
+            {
+                item.TM = transformation * item.TM;
+            }
+        }
+    }
+
+    public void TransformInitial(GfxMatrix<T> transformation)
+    {
+        GraphicsState = GraphicsState with { CTM = GraphicsState.CTM * transformation };
+        if (GraphicsState.Clipping != null)
+        {
+            foreach (var item in GraphicsState.Clipping)
+            {
+                item.TM = item.TM * transformation;
+            }
+        }
     }
 }

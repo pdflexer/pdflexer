@@ -181,8 +181,32 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
         foreach (var item in Segments)
         {
             item.GraphicsState = item.GraphicsState with { CTM = transformation * item.GraphicsState.CTM };
+            if (GraphicsState.Clipping != null)
+            {
+                foreach (var clip in GraphicsState.Clipping)
+                {
+                    clip.TM = transformation * clip.TM;
+                }
+            }
         }
-        
+
+
+    }
+
+    public void TransformInitial(GfxMatrix<T> transformation)
+    {
+        foreach (var item in Segments)
+        {
+            item.GraphicsState = item.GraphicsState with { CTM = item.GraphicsState.CTM * transformation };
+            if (GraphicsState.Clipping != null)
+            {
+                foreach (var clip in GraphicsState.Clipping)
+                {
+                    clip.TM = clip.TM * transformation;
+                }
+            }
+        }
+
     }
 
     public TextContent<T>? CopyArea(PdfRect<T> rect) => SplitInternal(rect, true, false).Inside;

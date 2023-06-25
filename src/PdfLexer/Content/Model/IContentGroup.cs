@@ -42,10 +42,19 @@ public interface IContentGroup<T> where T : struct, IFloatingPoint<T>
     public PdfRect<T> GetBoundingBox();
 
     /// <summary>
-    /// Applies the transformation to the content group.
+    /// Appends the transformation to the content groups transformation matrix
     /// </summary>
     /// <param name="transformation"></param>
     public void Transform(GfxMatrix<T> transformation);
+
+    /// <summary>
+    /// Prepends the transformation to the content groups transformation matrix
+    /// 
+    /// This it typically used to apply a transform relative to how it is
+    /// viewed on the page (eg. shift content X points)
+    /// </summary>
+    /// <param name="transformation"></param>
+    public void TransformInitial(GfxMatrix<T> transformation);
 
     /// <summary>
     /// Creates a new content group that represents the area of the existing
@@ -118,5 +127,29 @@ internal interface ISinglePartCopy<T> : IContentGroup<T> where T : struct, IFloa
         var outside = Clone();
         outside.GraphicsState = GraphicsState.Clip(rect, bb);
         return (inside, outside);
+    }
+
+    public void TransformImpl(GfxMatrix<T> transformation)
+    {
+        GraphicsState = GraphicsState with { CTM = transformation * GraphicsState.CTM };
+        if (GraphicsState.Clipping != null)
+        {
+            foreach (var item in GraphicsState.Clipping)
+            {
+                item.TM = transformation * item.TM;
+            }
+        }
+    }
+
+    public void TransformInitialImpl(GfxMatrix<T> transformation)
+    {
+        GraphicsState = GraphicsState with { CTM = GraphicsState.CTM * transformation };
+        if (GraphicsState.Clipping != null)
+        {
+            foreach (var item in GraphicsState.Clipping)
+            {
+                item.TM = item.TM * transformation;
+            }
+        }
     }
 }

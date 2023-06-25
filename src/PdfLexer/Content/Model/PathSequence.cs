@@ -3,6 +3,13 @@ using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
+/// <summary>
+/// Vector drawing path from a PDF.
+/// 
+/// This is a group of path construction operations terminated by a 
+/// path drawing operation.
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public record class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Paths;
@@ -71,10 +78,9 @@ public record class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloa
         }
     }
 
-    public void Transform(GfxMatrix<T> transformation)
-    {
-        GraphicsState = GraphicsState with { CTM = transformation * GraphicsState.CTM };
-    }
+    public void Transform(GfxMatrix<T> transformation) => ((ISinglePartCopy<T>)this).TransformImpl(transformation);
+
+    public void TransformInitial(GfxMatrix<T> transformation) => ((ISinglePartCopy<T>)this).TransformInitialImpl(transformation);
 
 
     ISinglePartCopy<T> ISinglePartCopy<T>.Clone()

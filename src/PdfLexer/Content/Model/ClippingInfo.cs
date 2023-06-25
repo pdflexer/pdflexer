@@ -42,7 +42,7 @@ internal interface IClippingSection : IClippingSection<double>
 internal interface IClippingSection<T> where T : struct, IFloatingPoint<T>
 {
     void Apply(ContentWriter<T> writer);
-    GfxMatrix<T> TM { get; }
+    GfxMatrix<T> TM { get; set; }
 }
 internal record TextClippingInfo<T> : IClippingSection<T> where T : struct, IFloatingPoint<T>
 {

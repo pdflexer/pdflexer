@@ -1,5 +1,8 @@
-﻿using System;
+﻿using PdfLexer.Content;
+using PdfLexer.Content.Model;
+using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Text;
 
 namespace PdfLexer;
@@ -15,5 +18,15 @@ public static class Extensions
     {
         CommonUtil.RecursiveLoad(obj);
         return obj;
+    }
+
+    public static List<IContentGroup<T>> Shift<T>(this List<IContentGroup<T>> content, T dx, T dy) where T : struct, IFloatingPoint<T>
+    {
+        var mtx = GfxMatrix<T>.Identity with { E = dx, F = dy };
+        foreach (var item in content)
+        {
+            item.TransformInitial(mtx);
+        }
+        return content;
     }
 }
