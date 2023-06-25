@@ -1,10 +1,19 @@
-﻿using PdfLexer.DOM;
+﻿using PdfLexer.Content;
+using PdfLexer.DOM;
 using System.Text;
 
-namespace PdfLexer.Content;
+namespace PdfLexer;
 
 public static class TextExtensions
 {
+    /// <summary>
+    /// Returns text from page as a string that attempts to represent the text 
+    /// layout of the pdf page.
+    /// </summary>
+    /// <param name="page"></param>
+    /// <param name="ctx"></param>
+    /// <returns></returns>
+    public static string GetTextVisually(this PdfPage page) => GetTextVisually(page, ParsingContext.Current);
     /// <summary>
     /// Returns text from page as a string that attempts to represent the text 
     /// layout of the pdf page.
@@ -21,7 +30,7 @@ public static class TextExtensions
         float pw = page.MediaBox.Width;
         float ph = page.MediaBox.Height;
 
-        var reader = new SimpleWordReader(ctx, page, new HashSet<char> { '\n', ' ', '\r', '\t' });
+        var reader = new SimpleWordScanner(ctx, page, new HashSet<char> { '\n', ' ', '\r', '\t' });
         while (reader.Advance())
         {
             words.Add(reader.GetInfo());
@@ -54,7 +63,7 @@ public static class TextExtensions
                 current.Words = group.ToList();
                 continue;
             }
-            else if (current.Sizes.SetEquals(lineSizes))
+            else if (current.Sizes.SetEquals(lineSizes) || group.Key + hpc > current.Words.Min(x => x.lly))
             {
                 current.Words.AddRange(group);
             }

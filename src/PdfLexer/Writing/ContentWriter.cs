@@ -12,11 +12,11 @@ using System.Numerics;
 namespace PdfLexer.Writing;
 
 public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
-{ 
-        private GfxState<T> GfxState;
-        internal GfxState<T> GS { get => GfxState; }
-        private static T KAPPA = FPC<T>.Util.FromDecimal<T>((decimal)(4 * ((Math.Sqrt(2) - 1) / 3.0)));
-        private T scale;
+{
+    internal GfxState<T> GfxState;
+    internal GfxState<T> GS { get => GfxState; }
+    private static T KAPPA = FPC<T>.Util.FromDecimal<T>((decimal)(4 * ((Math.Sqrt(2) - 1) / 3.0)));
+    private T scale;
 
     bool isCompatSection;
 
@@ -76,7 +76,6 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     }
 
     public ContentWriter<T> Form(XObjForm form)
-
     {
         var nm = AddResource(form.NativeObject, "F");
         return Do(nm);

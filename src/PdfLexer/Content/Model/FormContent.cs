@@ -1,9 +1,10 @@
-﻿using PdfLexer.Writing;
+﻿using DotNext.Collections.Specialized;
+using PdfLexer.Writing;
 using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
-internal class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
+public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Form;
     public required GfxState<T> GraphicsState { get; set; }
@@ -41,11 +42,16 @@ internal class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoin
 
     IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException("Area copying not supported for forms. Complete action on individual content items inside form.");
     }
 
     (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect)
     {
-        throw new NotImplementedException();
+        throw new NotImplementedException("Area splitting not supported for forms. Complete action on individual content items inside form.");
+    }
+
+    public void Transform(GfxMatrix<T> transformation)
+    {
+        GraphicsState = GraphicsState with { CTM = transformation * GraphicsState.CTM };
     }
 }

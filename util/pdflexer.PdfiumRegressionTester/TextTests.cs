@@ -188,14 +188,14 @@ namespace pdflexer.PdfiumRegressionTester
                 writer.Form(form)
                       .SetStrokingRGB(0, 255, 0);
 
-                var words = new SimpleWordReader(doc.Context, page);
+                var words = new SimpleWordScanner(doc.Context, page);
                 while (words.Advance())
                 {
                     var word = words.CurrentWord;
-                    var (llx ,lly, urx, ury) = words.GetWordBoundingBox();
+                    var bb = words.GetWordBoundingBox();
                     writer
                       .LineWidth(0.5)
-                      .Rect(llx, lly, (urx - llx), (ury - lly))
+                      .Rect(bb.LLx, bb.LLy, bb.Width(), bb.Height())
                       .Stroke();
                 }
 

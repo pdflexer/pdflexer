@@ -131,7 +131,7 @@ internal class ReadCmd
         float pw = pg.MediaBox.Width;
         float ph = pg.MediaBox.Height;
 
-        var reader = new SimpleWordReader(doc.Context, pg, new HashSet<char> {  '\n', ' ', '\r', '\t' });
+        var reader = new SimpleWordScanner(doc.Context, pg, new HashSet<char> {  '\n', ' ', '\r', '\t' });
         while (reader.Advance())
         {
             words.Add(reader.GetInfo());

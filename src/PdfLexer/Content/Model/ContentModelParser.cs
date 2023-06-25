@@ -1,8 +1,5 @@
-﻿using PdfLexer.DOM;
-using PdfLexer.DOM.ColorSpaces;
-using PdfLexer.Fonts;
+﻿using PdfLexer.Fonts;
 using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
 
 namespace PdfLexer.Content.Model;
 
@@ -12,7 +9,6 @@ internal enum ParseState
     Text,
     Paths
 }
-
 
 internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
 {

@@ -1,4 +1,5 @@
-﻿using PdfLexer.Fonts;
+﻿using PdfLexer.DOM;
+using PdfLexer.Fonts;
 using PdfLexer.Lexing;
 using System.Numerics;
 using System.Text;
@@ -17,14 +18,25 @@ internal class CharPosition
     public int OpPos { get; set; }
 }
 
-public struct CharPos
+public struct CharPos // move this
 {
-    public double x { get; init; }
-    public double y { get; init; }
-    public char c { get; init; }
+    public double XPos { get; init; }
+    public double YPos { get; init; }
+    public char Char { get; init; }
     public override string ToString()
     {
-        return $"{c} {x:00} {y:00}";
+        return $"{Char} {XPos:00} {YPos:00}";
+    }
+}
+
+public struct CharPos<T> where T : struct, IFloatingPoint<T>
+{
+    public T XPos { get; init; }
+    public T YPos { get; init; }
+    public char Char { get; init; }
+    public override string ToString()
+    {
+        return $"{Char} {XPos:00} {YPos:00}";
     }
 }
 
@@ -384,9 +396,9 @@ public ref struct TextScanner
             {
                 yield return new CharPos
                 {
-                    c = c,
-                    x = x,
-                    y = y
+                    Char = c,
+                    XPos = x,
+                    YPos = y
                 };
             }
         }
@@ -394,29 +406,17 @@ public ref struct TextScanner
         {
             yield return new CharPos
             {
-                c = glyph.Char,
-                x = x,
-                y = y
+                Char = glyph.Char,
+                XPos = x,
+                YPos = y
             };
         }
     }
 
     public (double x, double y) GetCurrentTextPos()
     {
+        
         return (GraphicsState.Text.TextRenderingMatrix.E, GraphicsState.Text.TextRenderingMatrix.F);
-    }
-
-    internal CharPosition GetCurrentInfo()
-    {
-        return new CharPosition
-        {
-            c = Glyph.Char,
-            s = Glyph.MultiChar,
-            x = GraphicsState.Text.TextRenderingMatrix.E,
-            y = GraphicsState.Text.TextRenderingMatrix.F,
-            Pos = Scanner.Scanner.Position,
-            OpPos = CurrentTextPos
-        };
     }
 
     public PdfRect<double> GetCurrentBoundingBox()

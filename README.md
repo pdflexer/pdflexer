@@ -5,8 +5,9 @@ pdflexer is a PDF parsing library. It is focused on efficient parsing and modifi
 pdflexer differs from existing .net libraries in that it:
 
 - Is primarly designed for PDF modification (not just reading). Any object / page read from a PDF can be modified and written to others PDFs.
+- Mutable model for page contents. Move, delete, modify existing text and graphics on page (note: in active development)
 - Has lazy parsing features which allow objects to be parsed on demand increasing performance in many cases.
-- Modern .net features (nullable enabled, Span, ArrayPool)
+- Modern .net features (nullable enabled, Span, ArrayPool, Generic math)
 - Designed for direct access to the native PDF objects types. Any higher level objects are simple wrappers areound the native pdf object types (eg `PdfPage` is a wrapper around a `PdfDictionary`. The `PdfDictionary` can be directly modified for features not implemented on `PdfPage`)
 - Attempts to be performant / efficient. Not a ton of effort has been put in here but it is a goal to keep this in mind.
 
@@ -31,6 +32,11 @@ pdflexer differs from existing .net libraries in that it:
 - [ ] Public API cleanup / documentation. Lots of classes / properties exposed that will likely be internalized.
 - [ ] Documentation / examples
 
-### PdfName Breaking Change
+### Examples
 
-Warning: PdfLexers PdfName had a major breaking change in v0.0.9-preview. Previously the string value of a PdfName on property PdfName.Value included a leading "/". This has been removed. This will silenty break any comparisons made on PdfName.Value. Comparisons on PdfName should continue working.
+Some examples are available as polyglot notebooks in the /examples/ folder.
+
+- [General pdf loading](examples/loading.ipynb)
+- [PDF creation](examples/pdf-creation.ipynb)
+- [Text Extraction](examples/text-extraction.ipynb)
+- [Mutable Content](examples/mutable-content.ipynb)

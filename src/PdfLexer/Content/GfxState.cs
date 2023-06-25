@@ -17,7 +17,10 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
 
     internal GfxState<T>? Prev { get; init; }
     internal IReadableFont? Font { get; init; }
+    internal IWritableFont? WritableFont { get; init; }
     internal PdfName? FontResourceName { get; init; }
+    
+    public PdfDictionary? FontObject { get; init; }
 
     public GfxMatrix<T> CTM { get; init; }
 
@@ -49,7 +52,6 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
     public IPdfObject? ColorSpaceStroking { get; init; } = PdfName.DeviceGray;
     public IPdfOperation? Color { get; init; }
     public IPdfOperation? ColorStroking { get; init; }
-    public PdfDictionary? FontObject { get; init; }
     public ExtGraphicsDict<T>? ExtDict { get; init; }
     internal List<IClippingSection<T>>? Clipping { get; init; }
 
@@ -157,6 +159,50 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
 
         ShiftTextMatrix(tx, ty);
     }
+
+    internal void ApplyCharShift(T w, bool isWordSpace)
+    {
+        // shift
+        T tx = T.Zero;
+        T ty = T.Zero;
+        if (!(Font?.IsVertical ?? false))
+        {
+            var s = w * FontSize + CharSpacing;
+            if (isWordSpace)
+            {
+                s += WordSpacing;
+            }
+            tx = s * TextHScale;
+        }
+        else
+        {
+            var s = w * FontSize + CharSpacing;
+            if (isWordSpace) { s += WordSpacing; }
+            ty = s;
+        }
+
+        ShiftTextMatrix(tx, ty);
+    }
+
+    internal (T x, T y) CalculateCharShift(T w)
+    {
+        // shift
+        T tx = T.Zero;
+        T ty = T.Zero;
+        if (!(Font?.IsVertical ?? false))
+        {
+            var s = w * FontSize + CharSpacing;
+            tx = s * TextHScale;
+        }
+        else
+        {
+            var s = w * FontSize + CharSpacing;
+            ty = s;
+        }
+
+        return (tx, ty);
+    }
+
 
     internal void ApplyTj(T tj)
     {

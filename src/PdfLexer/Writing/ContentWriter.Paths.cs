@@ -24,7 +24,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
-    public ContentWriter<T> Fill(bool evenOdd = false)
+    public ContentWriter<T> Fill(bool evenOdd = true)
     {
         if (evenOdd)
         {
@@ -37,7 +37,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
-    public ContentWriter<T> FillAndStroke(bool evenOdd = false)
+    public ContentWriter<T> FillAndStroke(bool evenOdd = true)
     {
         if (evenOdd)
         {
@@ -51,7 +51,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
-    public ContentWriter<T> CloseFillAndStroke(bool evenOdd = false)
+    public ContentWriter<T> CloseFillAndStroke(bool evenOdd = true)
     {
         if (evenOdd)
         {
@@ -65,7 +65,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
-    public ContentWriter<T> Clip(bool evenOdd = false)
+    public ContentWriter<T> Clip(bool evenOdd = true)
     {
         if (evenOdd)
         {
@@ -147,6 +147,12 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     {
         if (scale != T.One) { var s = scale; x *= s; y *= s; w *= s; h *= s; }
         re_Op<T>.WriteLn(x, y, w, h, Writer.Stream);
+        return this;
+    }
+
+    public ContentWriter<T> RoundedRect(PdfRect<T> rect, T radius)
+    {
+        RoundedRect(rect.LLx, rect.LLy, rect.URx - rect.LLx, rect.URy - rect.LLy, radius);
         return this;
     }
 

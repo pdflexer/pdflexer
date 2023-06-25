@@ -1,14 +1,10 @@
 ﻿using PdfLexer.DOM;
-using PdfLexer.Lexing;
-using System.Buffers.Text;
 using System.Numerics;
-using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace PdfLexer.Content;
 
 public record class PdfRect : PdfRect<double> { }
-public record class PdfRect<T> where T : IFloatingPoint<T>
+public record class PdfRect<T> where T : struct, IFloatingPoint<T>
 {
     public required T LLx { get; init; }
     public required T LLy { get; init; }
@@ -53,6 +49,11 @@ public record class PdfRect<T> where T : IFloatingPoint<T>
         var y2 = FPC<T>.Util.FromDecimal<T>(rect.URy);
         return new PdfRect<T> { LLx = x1, LLy = y1, URx = x2, URy = y2 };
     }
+
+    public override string ToString()
+    {
+        return $"[{LLx} {LLy} {URx} {URy}]";
+    }
 }
 
 public enum EncloseType
@@ -62,12 +63,4 @@ public enum EncloseType
     None
 }
 
-internal enum ContentType
-{
-    Text,
-    Paths,
-    Image,
-    Form,
-    Shading,
-    // MarkedPoint
-}
+

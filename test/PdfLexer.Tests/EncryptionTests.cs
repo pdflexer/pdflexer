@@ -62,7 +62,7 @@ public class EncryptionTests
 
         var pg = doc.Pages.First();
 
-        var words = SimpleWordReader.GetWords(doc.Context, pg);
+        var words = SimpleWordScanner.GetWords(doc.Context, pg);
         Assert.Contains("Personal", words);
     }
 
@@ -87,7 +87,7 @@ public class EncryptionTests
 
         using var d3 = PdfDocument.Open(result);
 
-        var words = SimpleWordReader.GetWords(d3.Context, d3.Pages.First());
+        var words = SimpleWordScanner.GetWords(d3.Context, d3.Pages.First());
         Assert.Contains("Hello", words);
         Assert.Contains("World!", words);
     }
@@ -121,7 +121,7 @@ public class EncryptionTests
 
         var pg = doc.Pages.First();
 
-        var words = SimpleWordReader.GetWords(doc.Context, pg);
+        var words = SimpleWordScanner.GetWords(doc.Context, pg);
         Assert.Contains("Hello", words);
         Assert.Contains("World!", words);
     }

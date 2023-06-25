@@ -162,7 +162,7 @@ internal class StringSerializer : ISerializer<PdfString>
         }
     }
 
-    public int GetBytes(PdfTextEncodingType encoding, PdfStringType type, string value, Span<byte> data)
+    public static int GetBytes(PdfTextEncodingType encoding, PdfStringType type, string value, Span<byte> data)
     {
         // TODO perf analysis
         var rented = ArrayPool<byte>.Shared.Rent(data.Length); // todo clean up... don't need this much
@@ -199,7 +199,7 @@ internal class StringSerializer : ISerializer<PdfString>
     private static byte[] hexVals = { (byte) '0',(byte) '1',(byte) '2', (byte) '3',(byte) '4', (byte)'5',(byte) '6',(byte) '7', (byte)'8',(byte) '9',
                 (byte)'A', (byte)'B', (byte)'C', (byte)'D', (byte)'E', (byte)'F' };
 
-    private int ConvertHexBytes(ReadOnlySpan<byte> data, Span<byte> output)
+    private static int ConvertHexBytes(ReadOnlySpan<byte> data, Span<byte> output)
     {
         var di = 0;
         output[di++] = (byte)'<';

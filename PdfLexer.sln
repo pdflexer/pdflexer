@@ -36,7 +36,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.Powershell", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.Benchmarks", "util\PdfLexer.Benchmarks\PdfLexer.Benchmarks.csproj", "{C68F91F5-F936-4DE0-998D-10438B518B47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfLexer.Validation", "src\PdfLexer.Validation\PdfLexer.Validation.csproj", "{5FD5ABE8-A473-42C5-974B-A46D76E33703}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PdfLexer.Validation", "src\PdfLexer.Validation\PdfLexer.Validation.csproj", "{5FD5ABE8-A473-42C5-974B-A46D76E33703}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PdfLexer.Interactive", "src\PdfLexer.Interactive\PdfLexer.Interactive.csproj", "{4F7C56E4-F02F-4F90-80B4-3E479BB81AC1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,6 +94,10 @@ Global
 		{5FD5ABE8-A473-42C5-974B-A46D76E33703}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FD5ABE8-A473-42C5-974B-A46D76E33703}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FD5ABE8-A473-42C5-974B-A46D76E33703}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F7C56E4-F02F-4F90-80B4-3E479BB81AC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F7C56E4-F02F-4F90-80B4-3E479BB81AC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F7C56E4-F02F-4F90-80B4-3E479BB81AC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F7C56E4-F02F-4F90-80B4-3E479BB81AC1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

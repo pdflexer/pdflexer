@@ -21,7 +21,7 @@ public partial interface IPdfOperation<T> : IPdfOperation where T : struct, IFlo
 }
 
 
-internal interface IPathCreatingOp<T> : IPdfOperation<T> where T : struct, IFloatingPoint<T>
+public interface IPathCreatingOp<T> : IPdfOperation<T> where T : struct, IFloatingPoint<T>
 {
     public PdfRect<T> GetApproximateBoundingBox(T xpos, T ypos);
     public (T, T) GetFinishingPoint();

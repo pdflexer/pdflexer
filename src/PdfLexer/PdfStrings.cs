@@ -1,4 +1,7 @@
 ﻿using PdfLexer.Parsers;
+using PdfLexer.Serializers;
+using System.Buffers;
+using System.IO;
 
 namespace PdfLexer;
 
@@ -90,6 +93,15 @@ public class PdfString : PdfObject, IEquatable<PdfString>
         {
             return System.Text.Encoding.Unicode.GetBytes(Value);
         }
+    }
+
+    public override string ToString()
+    {
+        var buffer = ArrayPool<byte>.Shared.Rent(Value.Length * 8 + 16); // overkill find better solution
+        var i = StringSerializer.GetBytes(Encoding, StringType, Value, buffer);
+        var val = System.Text.Encoding.ASCII.GetString(buffer, 0, i);
+        ArrayPool<byte>.Shared.Return(buffer);
+        return val;
     }
 }
 

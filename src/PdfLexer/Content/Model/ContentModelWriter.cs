@@ -1,10 +1,5 @@
 ﻿using PdfLexer.Writing;
-using System;
-using System.Collections.Generic;
 using System.Numerics;
-using System.Text;
-using System.Xml.Schema;
-using static DotNext.Threading.Tasks.DynamicTaskAwaitable;
 
 namespace PdfLexer.Content.Model;
 
@@ -48,12 +43,10 @@ internal class ContentModelWriter<T> where T : struct, IFloatingPoint<T>
             writer.Restore();
         }
 
-
         if (catalog != null)
         {
             HandleOCGs(catalog, writer);
         }
-
     }
 
     private static void HandleOCGs(PdfDictionary catalog, ContentWriter<T> writer)

@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Text;
+﻿using PdfLexer.Content;
+using System.Numerics;
 
 namespace PdfLexer.DOM
 {
@@ -16,8 +14,8 @@ namespace PdfLexer.DOM
         {
             NativeObject = array;
             var c = 4 - NativeObject.Count;
-            if (c<1){ return; }
-            for (;c>0;c--)
+            if (c < 1) { return; }
+            for (; c > 0; c--)
             {
                 NativeObject.Add(PdfCommonNumbers.Zero);
             }
@@ -81,5 +79,21 @@ namespace PdfLexer.DOM
         public static PdfRectangle Zeros { get; } = new PdfRectangle();
 
         public PdfRectangle CloneShallow() => NativeObject.CloneShallow()!;
+
+        public PdfRect<T> ToContentModel<T>() where T : struct, IFloatingPoint<T>
+        {
+            return new PdfRect<T>
+            {
+                LLx = FPC<T>.Util.FromDouble<T>(LLx),
+                URx = FPC<T>.Util.FromDouble<T>(URx),
+                LLy = FPC<T>.Util.FromDouble<T>(LLy),
+                URy = FPC<T>.Util.FromDouble<T>(URy),
+            };
+        }
+
+        public override string ToString()
+        {
+            return $"[{LLx} {LLy} {URx} {URy}]";
+        }
     }
 }

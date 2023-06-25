@@ -4,9 +4,20 @@ using PdfLexer.Serializers;
 using System.Numerics;
 
 namespace PdfLexer.Writing;
-
 public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 {
+    public ContentWriter<T> AddContent(IContentGroup<T> group, PdfDocument? document=null)
+    {
+        ContentModelWriter<T>.WriteContent(this, new List<IContentGroup<T>> { group }, document?.Catalog);
+        return this;
+    }
+
+    public ContentWriter<T> AddContent(List<IContentGroup<T>> groups, PdfDocument? document = null)
+    {
+        ContentModelWriter<T>.WriteContent(this, groups, document?.Catalog);
+        return this;
+    }
+
     internal ContentWriter<T> SetGS(GfxState<T> state, bool wrapExtDicts = true)
     {
         var stream = Writer.Stream;
@@ -486,7 +497,6 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             }
         }
     }
-
 
     internal void ReconcileCompatibility(bool compat)
     {

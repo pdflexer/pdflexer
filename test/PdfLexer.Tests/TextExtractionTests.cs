@@ -201,7 +201,52 @@ namespace PdfLexer.Tests
                 Assert.Equal(15f, scanner.GraphicsState.FontSize);
             }
         }
+        [Fact]
+        public void It_Wraps_Text()
+        {
+            using var doc = PdfDocument.Create();
+            var pg = doc.AddPage();
+            {
+                using var writer = pg.GetWriter();
+                writer
+                    .WordSpacing(10)
+                    .Font(Base14.Helvetica, 40)
+                    .TextShift(50, 100)
+                    .Text("H e l l o  W o r l d  ").Text("Lower");
+                var tp = writer.GetCurrentTextPos();
+                writer.TextMove(0, 100)
+                    .Text("A little higher")
+                    .NewLine()
+                    .Font(Base14.HelveticaBoldItalic, 20)
+                    .TextWrapCenter("Text Align More", 200)
+                    .TextWrapCenter("Text Align More Wraps A A", 200)
+                    .TextMove(PdfPoint.Create(50.0, -100.0).NormalizeToTopLeft(pg))
+                    .Text("Relative to top");
 
+                writer.Circle(tp.X, tp.Y, 3).FillAndStroke();
+
+            }
+
+            var txt = pg.GetTextVisually();
+        }
+
+        [Fact]
+        public void It_Wraps_Text_Box()
+        {
+            using var doc = PdfDocument.Create();
+            var pg = doc.AddPage();
+            {
+                var rect = new PdfRect<double> { LLx = 10, LLy = 10, URx = 210, URy = 110 };
+                using var writer = pg.GetWriter();
+
+                writer.Font(Base14.HelveticaBold, 20);
+                writer.TextBox(rect, TextAlign.Center)
+                      .TextBoxWrite("Text Center")
+                      // .TextBoxFontSize(40)
+                      .TextBoxWrite("Larger text")
+                      .TextBoxComplete();
+            }
+        }
 
         [Fact]
         public void It_Reads_Visually()
@@ -214,6 +259,142 @@ namespace PdfLexer.Tests
 
             var text = pdf.Pages[0].GetTextVisually(pdf.Context);
             Assert.NotEqual(' ', text[text.Length - 2]);
+        }
+
+
+        [Fact]
+        public void It_Reads_Visually_Lines()
+        {
+            using var ctx = new ParsingContext();
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdfFile = Path.Combine(pdfRoot, "calgray.pdf");
+            using var pdf = PdfDocument.Open(pdfFile);
+
+            var text = pdf.Pages[0].GetTextVisually(pdf.Context);
+            var lc = text.Split('\n').Count();
+            Assert.Equal(7, lc);
+        }
+
+        [Fact]
+        public void It_Reads_Visually_Rows()
+        {
+            using var ctx = new ParsingContext();
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdfFile = Path.Combine(pdfRoot, "basicapi.pdf");
+            using var pdf = PdfDocument.Open(pdfFile);
+
+            var text = pdf.Pages[0].GetTextVisually(pdf.Context);
+            var cc = text.Split('\n').Select(x => x.Length).Max();
+            Assert.True(90 > cc);
+            
+        }
+
+
+        [Fact]
+        public void It_Moves_Forms()
+        {
+            using var doc = PdfDocument.Create();
+            var pg = doc.AddPage();
+            {
+
+                var f1 = new FormWriter();
+                f1.Font(Base14.Helvetica, 40)
+                    .Text("A")
+                    .NewLine()
+                    .Text("B")
+                    .TextShift(0, -40)
+                    .Text("C")
+                    .NewLine()
+                    .Text("D")
+                    .ResetText()
+                    .Translate(0, -160)
+                    .Text("E")
+                    .NewLine()
+                    .Text("F");
+                var form = f1.Complete();
+
+                var f2 = new FormWriter();
+                f2.Font(Base14.Helvetica, 40)
+                    .Translate(50, 0)
+                    .Save()
+                    .Text("A")
+                    .NewLine()
+                    .Text("B")
+                    .TextShift(0, -40)
+                    .Text("C")
+                    .NewLine()
+                    .Text("D")
+                    .ResetText()
+                    .Translate(0, -160)
+                    .Text("E")
+                    .NewLine()
+                    .Text("F")
+                    .Restore()
+                    .Translate(50, 0)
+                    .Form(form);
+                var form2 = f2.Complete();
+
+                using var writer = pg.GetWriter();
+                writer.Font(Base14.Helvetica, 40)
+                    .Save()
+                    .Translate(300, 300)
+                    .Text("A")
+                    .NewLine()
+                    .Text("B")
+                    .TextShift(0, -40)
+                    .Text("C")
+                    .NewLine()
+                    .Text("D")
+                    .ResetText()
+                    .Translate(0, -160)
+                    .Text("E")
+                    .NewLine()
+                    .Text("F")
+                    .Restore()
+                    .Translate(300, 300)
+                    .Form(form2);
+            }
+
+
+            var formReader = new CachedContentMutation(f => {
+                var bb = f.GetBoundingBox();
+
+                if (bb.LLy > 200)
+                {
+                    f.Transform(new GfxMatrix<double> { E = -200, F = 40 });
+                }
+                else
+                {
+                    f.Transform(new GfxMatrix<double> { E = 200, F = -40 });
+                }
+                return f;
+            });
+
+
+            var pg2 = formReader.Mutate(pg);
+
+
+            var count = 0;
+            var text = pg2.GetTextScanner();
+            while (text.Advance())
+            {
+                foreach (var info in text.EnumerateCharacters())
+                {
+                    count++;
+                    if (info.Char == 'A' || info.Char == 'B' || info.Char == 'C')
+                    {
+                        Assert.True(info.XPos < 290);
+                    } else
+                    {
+                        Assert.True(info.XPos > 390);
+                    }
+                }
+            }
+            Assert.Equal(18, count);
+
+            var content = pg2.DumpDecodedContents();
         }
 
         private void RunSingle(string name, bool runCom = true)
@@ -319,9 +500,9 @@ namespace PdfLexer.Tests
 
             for (var i = 0; i < candidate.Count; i++)
             {
-                candidate[i] = candidate[i].Select(x=> new CharPos { c = x.c, x = Math.Round(x.x, 2), y = Math.Round(x.y,2) })
-                                           .OrderBy(x => x.x)
-                                           .ThenBy(x => x.y)
+                candidate[i] = candidate[i].Select(x=> new CharPos { Char = x.Char, XPos = Math.Round(x.XPos, 2), YPos = Math.Round(x.YPos,2) })
+                                           .OrderBy(x => x.XPos)
+                                           .ThenBy(x => x.YPos)
                                            .ToList();
             }
 
@@ -349,17 +530,17 @@ namespace PdfLexer.Tests
                     }
                     if (segs.Length == 6)
                     {
-                        baseLine[pgNum - 1].Add(new CharPos { c = segs[3][0], x = double.Parse(segs[1]), y = double.Parse(segs[2]) });
+                        baseLine[pgNum - 1].Add(new CharPos { Char = segs[3][0], XPos = double.Parse(segs[1]), YPos = double.Parse(segs[2]) });
                     }
                     else
                     {
-                        baseLine[pgNum - 1].Add(new CharPos { c = ' ', x = double.Parse(segs[1]), y = double.Parse(segs[2]) });
+                        baseLine[pgNum - 1].Add(new CharPos { Char = ' ', XPos = double.Parse(segs[1]), YPos = double.Parse(segs[2]) });
                     }
                 }
             }
             for (var i = 0; i < baseLine.Count;i++)
             {
-                baseLine[i] = baseLine[i].OrderBy(x => x.x).ThenBy(x => x.y).ToList();
+                baseLine[i] = baseLine[i].OrderBy(x => x.XPos).ThenBy(x => x.YPos).ToList();
             }
 
             for (var i = 0; i < baseLine.Count; i++)
@@ -374,9 +555,9 @@ namespace PdfLexer.Tests
                     }
                     var bc = basePage[c];
                     var cc = candPage[c];
-                    Assert.Equal(bc.c, cc.c);
-                    var dx = Math.Abs(bc.x - cc.x);
-                    var dy = Math.Abs(bc.y - cc.y);
+                    Assert.Equal(bc.Char, cc.Char);
+                    var dx = Math.Abs(bc.XPos - cc.XPos);
+                    var dy = Math.Abs(bc.YPos - cc.YPos);
                     Assert.True(dx < 0.1);
                     Assert.True(dy < 0.1);
                 }
