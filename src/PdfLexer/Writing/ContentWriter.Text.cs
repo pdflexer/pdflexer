@@ -269,7 +269,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
                 }
                 else
                 {
-                    TextMove(T.Round(xform.E, 6), T.Round(xform.F, 6));
+                    TextShift(T.Round(xform.E, 6), T.Round(xform.F, 6));
                 }
             }
             else
