@@ -291,6 +291,112 @@ namespace PdfLexer.Tests
             
         }
 
+
+        [Fact]
+        public void It_Moves_Forms()
+        {
+            using var doc = PdfDocument.Create();
+            var pg = doc.AddPage();
+            {
+
+                var f1 = new FormWriter();
+                f1.Font(Base14.Helvetica, 40)
+                    .Text("A")
+                    .NewLine()
+                    .Text("B")
+                    .TextShift(0, -40)
+                    .Text("C")
+                    .NewLine()
+                    .Text("D")
+                    .ResetText()
+                    .Translate(0, -160)
+                    .Text("E")
+                    .NewLine()
+                    .Text("F");
+                var form = f1.Complete();
+
+                var f2 = new FormWriter();
+                f2.Font(Base14.Helvetica, 40)
+                    .Translate(50, 0)
+                    .Save()
+                    .Text("A")
+                    .NewLine()
+                    .Text("B")
+                    .TextShift(0, -40)
+                    .Text("C")
+                    .NewLine()
+                    .Text("D")
+                    .ResetText()
+                    .Translate(0, -160)
+                    .Text("E")
+                    .NewLine()
+                    .Text("F")
+                    .Restore()
+                    .Translate(50, 0)
+                    .Form(form);
+                var form2 = f2.Complete();
+
+                using var writer = pg.GetWriter();
+                writer.Font(Base14.Helvetica, 40)
+                    .Save()
+                    .Translate(300, 300)
+                    .Text("A")
+                    .NewLine()
+                    .Text("B")
+                    .TextShift(0, -40)
+                    .Text("C")
+                    .NewLine()
+                    .Text("D")
+                    .ResetText()
+                    .Translate(0, -160)
+                    .Text("E")
+                    .NewLine()
+                    .Text("F")
+                    .Restore()
+                    .Translate(300, 300)
+                    .Form(form2);
+            }
+
+
+            var formReader = new CachedContentMutation(f => {
+                var bb = f.GetBoundingBox();
+
+                if (bb.LLy > 200)
+                {
+                    f.Transform(new GfxMatrix<double> { E = -200, F = 40 });
+                }
+                else
+                {
+                    f.Transform(new GfxMatrix<double> { E = 200, F = -40 });
+                }
+                return f;
+            });
+
+
+            var pg2 = formReader.Mutate(pg);
+
+
+            var count = 0;
+            var text = pg2.GetTextScanner();
+            while (text.Advance())
+            {
+                foreach (var info in text.EnumerateCharacters())
+                {
+                    count++;
+                    if (info.Char == 'A' || info.Char == 'B' || info.Char == 'C')
+                    {
+                        Assert.True(info.XPos < 290);
+                    } else
+                    {
+                        Assert.True(info.XPos > 390);
+                    }
+                }
+            }
+            Assert.Equal(18, count);
+
+            var content = pg2.DumpDecodedContents();
+        }
+
         private void RunSingle(string name, bool runCom = true)
         {
             {

@@ -18,10 +18,21 @@ internal class CharPosition
     public int OpPos { get; set; }
 }
 
-public struct CharPos
+public struct CharPos // move this
 {
     public double XPos { get; init; }
     public double YPos { get; init; }
+    public char Char { get; init; }
+    public override string ToString()
+    {
+        return $"{Char} {XPos:00} {YPos:00}";
+    }
+}
+
+public struct CharPos<T> where T : struct, IFloatingPoint<T>
+{
+    public T XPos { get; init; }
+    public T YPos { get; init; }
     public char Char { get; init; }
     public override string ToString()
     {

@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
-internal class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
+public record class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Paths;
     public List<MarkedContent>? Markings { get; set; }
@@ -71,8 +71,13 @@ internal class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingP
         }
     }
 
+    public void Transform(GfxMatrix<T> transformation)
+    {
+        GraphicsState = GraphicsState with { CTM = transformation * GraphicsState.CTM };
+    }
 
-    public ISinglePartCopy<T> Clone()
+
+    ISinglePartCopy<T> ISinglePartCopy<T>.Clone()
     {
         return (ISinglePartCopy<T>)this.MemberwiseClone();
     }
@@ -82,7 +87,7 @@ internal class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingP
     (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
 }
 
-internal class SubPath<T> where T : struct, IFloatingPoint<T>
+public class SubPath<T> where T : struct, IFloatingPoint<T>
 {
     public required T XPos { get; set; }
     public required T YPos { get; set; }

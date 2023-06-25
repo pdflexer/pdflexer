@@ -6,8 +6,6 @@ using System.Numerics;
 
 namespace PdfLexer.Writing.TextLayout;
 
-
-
 internal class TextBox<T> where T : struct, IFloatingPoint<T>
 {
     public T Width { get; }

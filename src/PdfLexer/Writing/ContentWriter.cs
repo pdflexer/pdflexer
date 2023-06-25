@@ -76,7 +76,6 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     }
 
     public ContentWriter<T> Form(XObjForm form)
-
     {
         var nm = AddResource(form.NativeObject, "F");
         return Do(nm);

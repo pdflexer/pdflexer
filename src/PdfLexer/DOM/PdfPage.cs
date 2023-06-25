@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Content;
+using PdfLexer.Content.Model;
 using PdfLexer.Writing;
 using System.Numerics;
 
@@ -34,13 +35,15 @@ public sealed class PdfPage
     }
 
     [return: NotNullIfNotNull("dict")]
-    public static implicit operator PdfPage?(PdfDictionary? dict) => dict == null ? null :new PdfPage(dict);
+    public static implicit operator PdfPage?(PdfDictionary? dict) => dict == null ? null : new PdfPage(dict);
     [return: NotNullIfNotNull("page")]
     public static implicit operator PdfDictionary?(PdfPage? page) => page?.NativeObject;
 
-    public PdfDictionary Resources { 
+    public PdfDictionary Resources
+    {
         get => NativeObject.GetOrCreateValue<PdfDictionary>(PdfName.Resources);
-        set => NativeObject[PdfName.Resources] = value; }
+        set => NativeObject[PdfName.Resources] = value;
+    }
     public PdfRectangle MediaBox { get => NativeObject.GetOrCreateValue<PdfArray>(PdfName.MediaBox); set => NativeObject[PdfName.MediaBox] = value.NativeObject; }
     public PdfRectangle CropBox { get => GetWithDefault(PdfName.CropBox, PdfName.MediaBox); set => NativeObject[PdfName.CropBox] = value.NativeObject; }
     public PdfRectangle BleedBox { get => GetWithDefault(PdfName.BleedBox, PdfName.CropBox); set => NativeObject[PdfName.BleedBox] = value.NativeObject; }
@@ -69,9 +72,11 @@ public sealed class PdfPage
     }
 
 
-    public IEnumerable<PdfStream> Contents { get
+    public IEnumerable<PdfStream> Contents
+    {
+        get
         {
-            
+
             var cnt = NativeObject?.Get(PdfName.Contents)?.Resolve();
             if (cnt == null) { yield break; }
             if (cnt.Type == PdfObjectType.ArrayObj)
@@ -81,11 +86,12 @@ public sealed class PdfPage
                 {
                     yield return item.GetAs<PdfStream>();
                 }
-            } else
+            }
+            else
             {
                 yield return cnt.GetAs<PdfStream>();
             }
-                
+
         }
     }
 
@@ -104,7 +110,7 @@ public sealed class PdfPage
         return s;
     }
 
-    public PageWriter<double> GetWriter(PageWriteMode mode=PageWriteMode.Append)
+    public PageWriter<double> GetWriter(PageWriteMode mode = PageWriteMode.Append)
     {
         return new PageWriter<double>(this, mode);
     }
@@ -129,10 +135,23 @@ public sealed class PdfPage
         return new SimpleWordScanner(ParsingContext.Current, this);
     }
 
+    public List<IContentGroup<double>> GetContentModel(bool flattenForms = false) => GetContentModel<double>(flattenForms);
+    public List<IContentGroup<T>> GetContentModel<T>(bool flattenForms = false) where T : struct, IFloatingPoint<T>
+    {
+        var parser = new ContentModelParser<T>(ParsingContext.Current, this.NativeObject, flattenForms);
+        return parser.Parse();
+    }
+
 
     public string DumpDecodedContents()
     {
         return string.Join('\n', Contents.Select(x => System.Text.Encoding.UTF8.GetString(x.Contents.GetDecodedData())));
+    }
+
+    public string DumpFormContents(string name)
+    {
+        var form = Resources[PdfName.XObject].GetAs<PdfDictionary>()[name].GetAs<PdfStream>();
+        return System.Text.Encoding.UTF8.GetString(form.Contents.GetDecodedData());
     }
 
 }

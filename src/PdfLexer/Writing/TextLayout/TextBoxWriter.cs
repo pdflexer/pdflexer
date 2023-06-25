@@ -27,7 +27,8 @@ internal class TextBoxWriter<T> : ITextBoxWriter<T> where T : struct, IFloatingP
     {
         var dict = Writer.GetOrCreateFontObj(font);
         Box.CurrentFont = font;
-        Box.CurrentState = Box.CurrentState with { 
+        Box.CurrentState = Box.CurrentState with
+        {
             FontSize = fontSize,
             FontObject = dict,
             TextLeading = setTextLeading ? fontSize : Box.CurrentState.TextLeading
@@ -43,20 +44,42 @@ internal class TextBoxWriter<T> : ITextBoxWriter<T> where T : struct, IFloatingP
 
     public void TextBoxComplete() => TextBoxCompleteImpl(Position);
 
+    public void TextBoxComplete(VerticalAlign align) => TextBoxCompleteImpl(Position, align);
+
     public void TextBoxComplete(PdfRect<T> rect) => TextBoxCompleteImpl(new PdfPoint<T> { X = rect.LLx, Y = rect.URy });
 
+    public void TextBoxComplete(PdfRect<T> rect, VerticalAlign align) => TextBoxCompleteImpl(new PdfPoint<T> { X = rect.LLx, Y = rect.URy }, align);
+
     public void TextBoxComplete(PdfPoint<T> point) => TextBoxCompleteImpl(point);
-    private void TextBoxCompleteImpl(PdfPoint<T>? point)
+    private void TextBoxCompleteImpl(PdfPoint<T>? point, VerticalAlign align = VerticalAlign.Top)
     {
         Writer.EnsureInTextState();
         var existing = Writer.GfxState;
         if (point.HasValue)
         {
             var pt = point.Value;
-            Writer.TextMove(pt.X, pt.Y - Box.FirstLineSize ?? T.Zero);
+            var extraHeight = Box.Height - Box.YPos - (Box.FirstLineSize ?? T.Zero);
+            var y = align switch
+            {
+                VerticalAlign.Center => extraHeight > T.Zero ? 
+                                            (pt.Y - Box.FirstLineSize ?? T.Zero) - extraHeight/(T.One + T.One)
+                                            : pt.Y - Box.FirstLineSize ?? T.Zero,
+                VerticalAlign.Bottom => (pt.Y - Box.FirstLineSize ?? T.Zero) - extraHeight,
+                VerticalAlign.Top => pt.Y - Box.FirstLineSize ?? T.Zero,
+                _ => pt.Y - Box.FirstLineSize ?? T.Zero
+
+            };
+            Writer.TextMove(pt.X, y);
         }
         Box.Apply(Writer);
         Writer.SetGS(existing);
         Writer.TextTransform(existing.Text.TextLineMatrix);
     }
+}
+
+public enum VerticalAlign
+{
+    Top,
+    Center,
+    Bottom
 }

@@ -63,12 +63,4 @@ public enum EncloseType
     None
 }
 
-internal enum ContentType
-{
-    Text,
-    Paths,
-    Image,
-    Form,
-    Shading,
-    // MarkedPoint
-}
+

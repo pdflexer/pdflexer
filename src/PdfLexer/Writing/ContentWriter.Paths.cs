@@ -150,6 +150,12 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
+    public ContentWriter<T> RoundedRect(PdfRect<T> rect, T radius)
+    {
+        RoundedRect(rect.LLx, rect.LLy, rect.URx - rect.LLx, rect.URy - rect.LLy, radius);
+        return this;
+    }
+
     public ContentWriter<T> RoundedRect(T x, T y, T w, T h, T r)
     {
         var half = FPC<T>.V0_5;

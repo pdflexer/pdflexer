@@ -12,4 +12,5 @@ public interface ITextBoxWriter<T> where T : struct, IFloatingPoint<T>
     void TextBoxComplete();
     void TextBoxComplete(PdfPoint<T> pt);
     void TextBoxComplete(PdfRect<T> pt);
+    void TextBoxComplete(VerticalAlign align);
 }

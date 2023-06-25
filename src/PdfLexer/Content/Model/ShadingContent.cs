@@ -3,7 +3,7 @@ using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
-internal class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T : struct, IFloatingPoint<T>
+public class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Shading;
     public required GfxState<T> GraphicsState { get; set; }
@@ -18,7 +18,7 @@ internal class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T 
 
     // TODO bounding box
 
-    public ISinglePartCopy<T> Clone()
+    ISinglePartCopy<T> ISinglePartCopy<T>.Clone()
     {
         return (ISinglePartCopy<T>)this.MemberwiseClone();
     }
@@ -34,6 +34,11 @@ internal class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T 
             URx = x + GraphicsState.CTM.A,
             URy = y + GraphicsState.CTM.D
         };
+    }
+
+    public void Transform(GfxMatrix<T> transformation)
+    {
+        GraphicsState = GraphicsState with { CTM = transformation * GraphicsState.CTM };
     }
 
     IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);

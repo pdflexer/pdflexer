@@ -75,10 +75,13 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
-    public ContentWriter<T> NewLine()
+    public ContentWriter<T> NewLine(int count=1)
     {
-        T_Star_Op<T>.WriteLn(Writer.Stream);
-        T_Star_Op<T>.Value.Apply(ref GfxState);
+        for (var i = 0; i < count;i++)
+        {
+            T_Star_Op<T>.WriteLn(Writer.Stream);
+            T_Star_Op<T>.Value.Apply(ref GfxState);
+        }
         return this;
     }
 
@@ -93,6 +96,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     public ContentWriter<T> Text(string text)
     {
         if (writableFont == null) { throw new NotSupportedException("Must set current font before writing."); }
+        EnsureInTextState();
         // very inefficient just experimenting
         var b = new byte[2];
         Span<byte> buf = new byte[text.Length];
@@ -140,9 +144,17 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         tb.Alignment = align;
         tb.AddText(text);
         tb.Apply(this);
+        NewLine();
         return this;
     }
 
+    /// <summary>
+    /// EXPERIMENTAL, BEHAVIOR MAY CHANGE
+    /// </summary>
+    /// <param name="area"></param>
+    /// <param name="align"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException"></exception>
     public ITextBoxWriter<T> TextBox(PdfRect<T> area, TextAlign align = TextAlign.Left)
     {
         if (writableFont == null)
@@ -157,23 +169,8 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return tbw;
     }
 
-    public ContentWriter<T> TextWrapCenter(string text, T width, bool scaled = true)
-    {
-        EnsureInTextState();
-        if (writableFont == null) { throw new NotSupportedException("Must set current font before writing."); }
-        if (scaled)
-        {
-            GfxState.CTM.Invert(out var iv);
-            width = iv.GetTransformedPoint(new PdfPoint<T> { X = width, Y = T.Zero }).X;
-        }
-
-        var tb = new TextBox<T>(GfxState, writableFont, width);
-        tb.Alignment = TextAlign.Center;
-        tb.AddText(text);
-        tb.Apply(this);
-        NewLine();
-        return this;
-    }
+    public ContentWriter<T> TextWrapCenter(string text, T width, bool userSpace = true)
+        => TextWrap(text, width, TextAlign.Center, userSpace);
 
     internal void AddNewLineShift()
     {
@@ -223,7 +220,18 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         GfxState.UpdateTRM();
         return this;
     }
-
+    public ContentWriter<T> ResetText()
+    {
+        if (State == PageState.Text)
+        {
+            TextTransform(GfxMatrix<T>.Identity);
+        } else
+        {
+            BeginText();
+        }
+       
+        return this;
+    }
     public ContentWriter<T> EndText()
     {
         State = PageState.Page;

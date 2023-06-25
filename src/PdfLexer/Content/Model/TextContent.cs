@@ -14,7 +14,7 @@ namespace PdfLexer.Content.Model;
 /// likely be broken into multiple TextContent
 /// sections.
 /// </summary>
-internal class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
+public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Text;
     public GfxState<T> GraphicsState { get => Segments[0].GraphicsState; }
@@ -29,6 +29,7 @@ internal class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoin
         var lm = LineMatrix;
         for (var i = 0; i < Segments.Count; i++)
         {
+            var reset = false;
             var group = Segments[i];
             if (i != 0)
             {
@@ -38,13 +39,15 @@ internal class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoin
                 if (writer.State != PageState.Text)
                 {
                     writer.BeginText();
+                    reset = true;
                 }
                 if (lm != writer.GS.Text.TextMatrix) // in case GFX state reset
                 {
                     writer.TextTransform(lm);
+                    reset = true;
                 }
             }
-            group.Write(writer);
+            group.Write(writer, i == 0 || reset);
             lm = writer.GS.Text.TextMatrix;
         }
     }
@@ -79,7 +82,8 @@ internal class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoin
         {
             return new PdfRect<T> { LLx = T.Zero, LLy = T.Zero, URx = T.Zero, URy = T.Zero };
         }
-        return GraphicsState.CTM.GetTransformedBoundingBox(new PdfRect<T> { LLx = xmin, LLy = ymin, URx = xmax, URy = ymax });
+        return new PdfRect<T> { LLx = xmin, LLy = ymin, URx = xmax, URy = ymax };
+        // return GraphicsState.CTM.GetTransformedBoundingBox(new PdfRect<T> { LLx = xmin, LLy = ymin, URx = xmax, URy = ymax });
     }
 
     public IEnumerable<PdfRect<T>> GetGlyphBoundingBoxes()
@@ -114,6 +118,71 @@ internal class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoin
                 }
             }
         }
+    }
+
+    public IEnumerable<CharPos<T>> EnumerateCharacters()
+    {
+        var gfx = GraphicsState with { Text = new TxtState<T> { TextLineMatrix = LineMatrix, TextMatrix = LineMatrix } };
+        foreach (var seg in Segments)
+        {
+            gfx = seg.GraphicsState with { Text = gfx.Text };
+            if (seg.NewLine)
+            {
+                T_Star_Op<T>.Value.Apply(ref gfx);
+            }
+            else
+            {
+                gfx.UpdateTRM();
+            }
+            GlyphOrShift<T> prev = default;
+            foreach (var glyph in seg.Glyphs)
+            {
+                if (prev.Glyph != null)
+                {
+                    gfx.ApplyCharShift(prev);
+                }
+                else if (prev.Shift != T.Zero)
+                {
+                    gfx.ApplyTj(prev.Shift);
+                }
+                prev = glyph;
+                if (glyph.Glyph != null)
+                {
+                    var x = GraphicsState.Text.TextRenderingMatrix.E;
+                    var y = GraphicsState.Text.TextRenderingMatrix.F;
+                    if (glyph.Glyph.MultiChar != null)
+                    {
+                        foreach (var c in glyph.Glyph.MultiChar)
+                        {
+                            yield return new CharPos<T>
+                            {
+                                Char = c,
+                                XPos = x,
+                                YPos = y
+                            };
+                        }
+                    }
+                    else
+                    {
+                        yield return new CharPos<T>
+                        {
+                            Char = glyph.Glyph.Char,
+                            XPos = x,
+                            YPos = y
+                        };
+                    }
+                }
+            }
+        }
+    }
+
+    public void Transform(GfxMatrix<T> transformation)
+    {
+        foreach (var item in Segments)
+        {
+            item.GraphicsState = item.GraphicsState with { CTM = transformation * item.GraphicsState.CTM };
+        }
+        
     }
 
     public TextContent<T>? CopyArea(PdfRect<T> rect) => SplitInternal(rect, true, false).Inside;
@@ -284,7 +353,6 @@ internal class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoin
         }
     }
 
-
     IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => CopyArea(rect);
 
     (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => Split(rect);
@@ -295,7 +363,7 @@ internal class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoin
 /// <summary>
 /// A sequence of glyphs
 /// </summary>
-internal record class TextSegment<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
+public record class TextSegment<T> where T : struct, IFloatingPoint<T> //: IContentGroup<T> 
 {
     public ContentType Type { get; } = ContentType.Text;
     public required GfxState<T> GraphicsState { get; set; }
@@ -304,27 +372,12 @@ internal record class TextSegment<T> : IContentGroup<T> where T : struct, IFloat
     public required List<GlyphOrShift<T>> Glyphs { get; set; }
     public bool NewLine { get; set; }
 
-    public void Write(ContentWriter<T> writer)
+    public void Write(ContentWriter<T> writer, bool lineReset)
     {
-        if (NewLine)
+        if (!lineReset && NewLine)
         {
             writer.Op(T_Star_Op<T>.Value);
         }
         writer.WriteGlyphs(Glyphs);
-    }
-
-    public PdfRect<T> GetBoundingBox()
-    {
-        throw new NotSupportedException();
-    }
-
-    public IContentGroup<T>? CopyArea(PdfRect<T> rect)
-    {
-        throw new NotSupportedException();
-    }
-
-    public (IContentGroup<T>? Inside, IContentGroup<T>? Outside) Split(PdfRect<T> rect)
-    {
-        throw new NotSupportedException();
     }
 }

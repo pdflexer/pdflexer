@@ -1,14 +1,9 @@
-﻿using PdfLexer.DOM;
-using PdfLexer.Writing;
-using System;
+﻿using PdfLexer.Writing;
 using System.Numerics;
-using System.Runtime.CompilerServices;
 
 namespace PdfLexer.Content.Model;
 
-
-
-internal interface IContentGroup<T> where T : struct, IFloatingPoint<T>
+public interface IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
     public GfxState<T> GraphicsState { get; }
     public ContentType Type { get; }
@@ -18,9 +13,36 @@ internal interface IContentGroup<T> where T : struct, IFloatingPoint<T>
 
     public PdfRect<T> GetBoundingBox();
 
-    // public IContentGroup Shift(decimal dx, decimal dy);
-
+    /// <summary>
+    /// Applies the transformation to the content group.
+    /// </summary>
+    /// <param name="transformation"></param>
+    public void Transform(GfxMatrix<T> transformation);
+    /// <summary>
+    /// Creates a new content group that represents the area of the existing
+    /// content group that intersects the given rectangle.
+    /// 
+    /// If no content intersects, null is returned.
+    /// 
+    /// NOTE: Content that is partially inside of the rectangle will be included fully
+    /// and then masked out to be visually correct. For vector curves their bounding
+    /// box is approximated and may be innacturate.
+    /// </summary>
+    /// <param name="rect"></param>
+    /// <returns></returns>
     public IContentGroup<T>? CopyArea(PdfRect<T> rect);
+    /// <summary>
+    /// Creates two new content groups one representation content from this content group
+    /// that is inside of the specified rectangle and one that has countent outside of the rectangle.
+    /// 
+    /// Null will be returned if no content is contained in the resulting content groups.
+    /// 
+    /// NOTE: Content that is partially inside/outside of the rectangle will be included fully
+    /// in both new content groups and then masked out to be visually correct. For vector curves 
+    /// their bounding box is approximated and may be innacturate.
+    /// </summary>
+    /// <param name="rect"></param>
+    /// <returns></returns>
     public (IContentGroup<T>? Inside, IContentGroup<T>? Outside) Split(PdfRect<T> rect);
 }
 
