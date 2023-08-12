@@ -144,22 +144,22 @@ internal class ReadCmd
         }
 
 
-        var tww = words.Sum(x => Math.Abs(x.urx - x.llx));
-        var twh = words.Sum(x => Math.Abs(x.ury - x.lly));
+        var tww = words.Sum(x => Math.Abs(x.BoundingBox.URx - x.BoundingBox.LLx));
+        var twh = words.Sum(x => Math.Abs(x.BoundingBox.URy - x.BoundingBox.LLy));
         var wc = words.Count();
-        var cc = words.Sum(x => x.word.Length);
+        var cc = words.Sum(x => x.Text.Length);
         var wpc = tww / cc;
         var hpc = twh / wc;
         var tc = (int)Math.Ceiling(pw / wpc);
 
-        var wordByPosition = words.GroupBy(x => x.lly).OrderByDescending(x => x.Key).ToList();
+        var wordByPosition = words.GroupBy(x => x.BoundingBox.LLy).OrderByDescending(x => x.Key).ToList();
 
         var regions = new List<Region>();
         var current = new Region();
 
         foreach (var group in wordByPosition)
         {
-            var lineSizes = group.GroupBy(x => Math.Round(x.ury - x.lly)).Select(x => x.Key).ToHashSet();
+            var lineSizes = group.GroupBy(x => Math.Round(x.BoundingBox.URy - x.BoundingBox.LLy)).Select(x => x.Key).ToHashSet();
             if (current.Sizes == null)
             {
                 current.Sizes = lineSizes;
@@ -172,7 +172,7 @@ internal class ReadCmd
             }
             else
             {
-                current.End = current.Words.Min(x=>x.lly);
+                current.End = current.Words.Min(x=>x.BoundingBox.LLy);
                 regions.Add(current);
                 current = new Region();
                 current.Sizes = lineSizes;
@@ -192,20 +192,20 @@ internal class ReadCmd
             {
                 sb.Append('\n');
             }
-            region.Start = region.Words.Max(x => x.lly);
-            region.End = region.Words.Min(x => x.lly);
+            region.Start = region.Words.Max(x => x.BoundingBox.LLy);
+            region.End = region.Words.Min(x => x.BoundingBox.LLy);
             var rh = region.Start - region.End;
             var maxLines = 0;
-            var sizes = region.Words.GroupBy(x => Math.Round(x.ury - x.lly)).OrderBy(x => x.Key).ToList();
+            var sizes = region.Words.GroupBy(x => Math.Round(x.BoundingBox.URy - x.BoundingBox.LLy)).OrderBy(x => x.Key).ToList();
             foreach (var size in sizes)
             {
                 // var possibleLineCount = Math.Ceiling((rh+size.Key) / size.Key);
-                //var linesInRegion = size.GroupBy(x => (int)Math.Round(((region.Start - x.lly)/(rh + size.Key)) * possibleLineCount)).OrderBy(x=>x.Key).ToList();
+                //var linesInRegion = size.GroupBy(x => (int)Math.Round(((region.Start - x.BoundingBox.LLy)/(rh + size.Key)) * possibleLineCount)).OrderBy(x=>x.Key).ToList();
                 
                 
                 int lines = 1;
                 double? llp = null;
-                foreach (var line in size.GroupBy(x=>x.lly).OrderByDescending(x=>x.Key))
+                foreach (var line in size.GroupBy(x=>x.BoundingBox.LLy).OrderByDescending(x=>x.Key))
                 {
                     llp ??= line.Key;
                     var dy = llp - line.Key;
@@ -232,20 +232,20 @@ internal class ReadCmd
                 var lineWords = new List<WordInfo>();
                 foreach (var size in sizes)
                 {
-                    lineWords.AddRange(size.Where(x => (int)Math.Round((region.Start - x.lly) / (rh + size.Key) * maxLines) == i));
+                    lineWords.AddRange(size.Where(x => (int)Math.Round((region.Start - x.BoundingBox.LLy) / (rh + size.Key) * maxLines) == i));
                 }
 
                 int lc = 0;
-                foreach (var w in lineWords.OrderBy(x => x.llx))
+                foreach (var w in lineWords.OrderBy(x => x.BoundingBox.LLx))
                 {
-                    var sp = (int)Math.Ceiling(w.llx / wpc);
+                    var sp = (int)Math.Ceiling(w.BoundingBox.LLx / wpc);
                     while (sp > lc)
                     {
                         sb.Append(' ');
                         lc += 1;
                     }
-                    sb.Append(w.word + ' ');
-                    lc += w.word.Length + 1;
+                    sb.Append(w.Text + ' ');
+                    lc += w.Text.Length + 1;
                 }
                 sb.Append('\n');
             }
@@ -255,7 +255,7 @@ internal class ReadCmd
         return;
         // float lh = 0;
         int chars = 0;
-        foreach (var line in words.GroupBy(x => (int)Math.Round((ph - x.lly) / hpc)).OrderBy(x => x.Key))
+        foreach (var line in words.GroupBy(x => (int)Math.Round((ph - x.BoundingBox.LLy) / hpc)).OrderBy(x => x.Key))
         {
             // if (lh != 0 && lh - line.Key.y > 0.25*hpc)
             // {
@@ -300,16 +300,16 @@ internal class ReadCmd
                 // pl += 1;
             }
 
-            foreach (var w in line.OrderBy(x => x.llx))
+            foreach (var w in line.OrderBy(x => x.BoundingBox.LLx))
             {
-                var sp = (int)Math.Ceiling(w.llx / wpc);
+                var sp = (int)Math.Ceiling(w.BoundingBox.LLx / wpc);
                 while (sp > chars)
                 {
                     sb.Append(' ');
                     chars += 1;
                 }
-                sb.Append(w.word + ' ');
-                chars += w.word.Length + 1;
+                sb.Append(w.Text + ' ');
+                chars += w.Text.Length + 1;
             }
 
         }

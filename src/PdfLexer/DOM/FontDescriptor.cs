@@ -85,7 +85,8 @@ namespace PdfLexer.DOM
                 if (value.HasValue)
                 {
                     NativeObject[PdfName.Flags] = (PdfNumber)(int)value;
-                } else
+                }
+                else
                 {
                     NativeObject[PdfName.Flags] = null!;
                 }
@@ -230,6 +231,34 @@ namespace PdfLexer.DOM
         {
             get => NativeObject?.Get<PdfString>(PdfName.CharSet);
             set => NativeObject.Set(PdfName.CharSet, value);
+        }
+
+        internal PdfRectangle? GetBBoxOrEstimate()
+        {
+            var bbox = FontBBox;
+            if (bbox == null)
+            {
+                bbox = new PdfRectangle();
+            }
+            if (bbox.URy == null || bbox.LLy == null || (bbox.URy - bbox.LLy == 0))
+            {
+                bbox.URy ??= Ascent ?? 0;
+                bbox.LLy ??= Descent ?? 0;
+            }
+            if (bbox.URx == null || bbox.URy == null || (bbox.URx - bbox.URy == 0))
+            {
+                if (MissingWidth != null)
+                {
+
+                }
+                bbox.URy ??= Ascent ?? 0;
+                bbox.LLy ??= Descent ?? 0;
+            }
+            if (bbox.Width > 0 || bbox.Height > 0)
+            {
+                return bbox;
+            }
+            return null;
         }
     }
 

@@ -1,16 +1,12 @@
 ﻿using PdfLexer.DOM;
-using System.Numerics;
 using System.Text;
 
 namespace PdfLexer.Content;
 
 public struct WordInfo
 {
-    public string word;
-    public double llx;
-    public double lly;
-    public double urx;
-    public double ury;
+    public string Text;
+    public PdfRect<double> BoundingBox;
 }
 
 /// <summary>
@@ -38,8 +34,11 @@ public ref struct SimpleWordScanner
         Position = default;
         sb = new StringBuilder();
         last = null;
+        lastPt = null;
         first = null;
+        firstPt = null;
         prevbb = null;
+        prevPt = null;
         prev = default;
         pw = 0;
         customDelims = wordDelimiters;
@@ -54,8 +53,11 @@ public ref struct SimpleWordScanner
     private TextScanner Scanner;
     private HashSet<char>? customDelims;
     private PdfRect<double>? last;
+    private PdfPoint<double>? lastPt;
     private PdfRect<double>? first;
+    private PdfPoint<double>? firstPt;
     private PdfRect<double>? prevbb;
+    private PdfPoint<double>? prevPt;
     private double pw;
     private GfxMatrix<double> prev;
     private readonly StringBuilder sb;
@@ -78,10 +80,30 @@ public ref struct SimpleWordScanner
          };
     }
 
+    public PdfRect<double> GetWordPositionBox()
+    {
+        return CurrentWord.Length == 1 ?
+         new PdfRect<double>
+         {
+             LLx = (firstPt?.X ?? 0),
+             LLy = (firstPt?.Y ?? 0),
+             URx = (firstPt?.X ?? 0),
+             URy = (firstPt?.Y ?? 0)
+         } : new PdfRect<double>
+         {
+             LLx = (firstPt?.X ?? 0),
+             LLy = (firstPt?.Y ?? 0),
+             URx = (lastPt?.X ?? 0),
+             URy = (lastPt?.Y ?? 0)
+         };
+    }
+
     public bool Advance()
     {
         last = null;
+        lastPt = null;
         first = prevbb;
+        firstPt = prevPt;
         bool returnWord = false;
         while (Scanner.Advance())
         {
@@ -91,6 +113,7 @@ public ref struct SimpleWordScanner
             {
                 Position = current;
                 first ??= Scanner.GetCurrentBoundingBox();
+                firstPt ??= Scanner.GetCurrentTextPoint();
             }
             else
             {
@@ -100,6 +123,7 @@ public ref struct SimpleWordScanner
                     CurrentWord = sb.ToString();
                     sb.Clear();
                     last = prevbb;
+                    lastPt = prevPt;
                     returnWord = true;
                 }
                 else
@@ -113,6 +137,7 @@ public ref struct SimpleWordScanner
                         CurrentWord = sb.ToString();
                         sb.Clear();
                         last = prevbb;
+                        lastPt = prevPt;
                         returnWord = true;
                     }
                 }
@@ -138,12 +163,15 @@ public ref struct SimpleWordScanner
                         CurrentWord = sb.ToString();
                         sb.Clear();
                         last = prevbb;
+                        lastPt = prevPt;
                         prevbb = null;
+                        prevPt = null;
                         return true;
                     }
                     else
                     {
                         first = null;
+                        firstPt = null;
                         continue;
                     }
                 }
@@ -157,6 +185,7 @@ public ref struct SimpleWordScanner
             pw = pw * Scanner.GraphicsState.FontSize + Scanner.GraphicsState.CharSpacing;
             prev = current;
             prevbb = Scanner.GetCurrentBoundingBox();
+            prevPt = Scanner.GetCurrentTextPoint();
             if (returnWord)
             {
                 if (CurrentWord.Length > 0)
@@ -171,6 +200,7 @@ public ref struct SimpleWordScanner
             CurrentWord = sb.ToString();
             sb.Clear();
             last = prevbb;
+            lastPt = prevPt;
             return true;
         }
 
@@ -182,11 +212,8 @@ public ref struct SimpleWordScanner
         var pos = GetWordBoundingBox();
         return new WordInfo
         {
-            word = CurrentWord,
-            llx = pos.LLx,
-            lly = pos.LLy,
-            urx = pos.URx,
-            ury = pos.URy
+            Text = CurrentWord,
+            BoundingBox = pos,
         };
     }
 }
