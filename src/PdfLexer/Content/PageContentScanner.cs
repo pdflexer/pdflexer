@@ -296,10 +296,16 @@ public ref struct PageContentScanner
                     return Advance();
                 }
             }
-            CurrentBuffer?.Dispose();
+            
+            if (!completed)
+            {
+                CurrentBuffer?.Dispose();
+            }
+            completed = true;
             return false;
         }
     }
+    private bool completed = false;
 
     public PdfOperatorType CurrentOperator;
 

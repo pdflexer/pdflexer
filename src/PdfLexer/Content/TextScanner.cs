@@ -415,8 +415,11 @@ public ref struct TextScanner
 
     public (double x, double y) GetCurrentTextPos()
     {
-        
         return (GraphicsState.Text.TextRenderingMatrix.E, GraphicsState.Text.TextRenderingMatrix.F);
+    }
+    public PdfPoint<double> GetCurrentTextPoint()
+    {
+        return new PdfPoint<double> { X = GraphicsState.Text.TextRenderingMatrix.E, Y = GraphicsState.Text.TextRenderingMatrix.F };
     }
 
     public PdfRect<double> GetCurrentBoundingBox()

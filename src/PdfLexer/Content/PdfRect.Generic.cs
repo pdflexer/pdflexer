@@ -38,6 +38,9 @@ public record class PdfRect<T> where T : struct, IFloatingPoint<T>
     public T Width() => URx - LLx;
     public T Height() => URy - LLy;
 
+    public PdfPoint<T> LL() => new() { X = LLx, Y = LLy };
+    public PdfPoint<T> UR() => new() { X = URx, Y = URy };
+
     public bool Intersects(PdfRect<T> rect)
     {
         if (rect.LLx > URx) return false;
@@ -45,6 +48,11 @@ public record class PdfRect<T> where T : struct, IFloatingPoint<T>
         if (rect.URx < LLx) return false;
         if (rect.URy < LLy) return false;
         return true;
+    }
+
+    public PdfRect<T> Expand(T size)
+    {
+        return new PdfRect<T> { LLx = LLx-size, LLy = LLy-size, URx = URx+size, URy = URy + size };
     }
 
     public EncloseType CheckEnclosure(PdfRect<T> rect)

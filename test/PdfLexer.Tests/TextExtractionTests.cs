@@ -288,9 +288,8 @@ namespace PdfLexer.Tests
             var text = pdf.Pages[0].GetTextVisually(pdf.Context);
             var cc = text.Split('\n').Select(x => x.Length).Max();
             Assert.True(90 > cc);
-            
-        }
 
+        }
 
         [Fact]
         public void It_Moves_Forms()
@@ -357,7 +356,6 @@ namespace PdfLexer.Tests
                     .Form(form2);
             }
 
-
             var formReader = new CachedContentMutation(Mutation);
 
             IEnumerable<IContentGroup<double>> Mutation(IContentGroup<double> input)
@@ -389,13 +387,16 @@ namespace PdfLexer.Tests
                     if (info.Char == 'A' || info.Char == 'B' || info.Char == 'C')
                     {
                         Assert.True(info.XPos < 290);
-                    } else
+                    }
+                    else
                     {
                         Assert.True(info.XPos > 390);
                     }
                 }
             }
             Assert.Equal(18, count);
+
+            var text2 = pg2.GetTextScanner();
 
             var content = pg2.DumpDecodedContents();
         }
@@ -498,12 +499,12 @@ namespace PdfLexer.Tests
                 }
                 pg++;
                 candidate.Add(charPos);
-                
+
             }
 
             for (var i = 0; i < candidate.Count; i++)
             {
-                candidate[i] = candidate[i].Select(x=> new CharPos { Char = x.Char, XPos = Math.Round(x.XPos, 2), YPos = Math.Round(x.YPos,2) })
+                candidate[i] = candidate[i].Select(x => new CharPos { Char = x.Char, XPos = Math.Round(x.XPos, 2), YPos = Math.Round(x.YPos, 2) })
                                            .OrderBy(x => x.XPos)
                                            .ThenBy(x => x.YPos)
                                            .ToList();
@@ -541,7 +542,7 @@ namespace PdfLexer.Tests
                     }
                 }
             }
-            for (var i = 0; i < baseLine.Count;i++)
+            for (var i = 0; i < baseLine.Count; i++)
             {
                 baseLine[i] = baseLine[i].OrderBy(x => x.XPos).ThenBy(x => x.YPos).ToList();
             }

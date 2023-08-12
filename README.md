@@ -23,8 +23,14 @@ pdflexer differs from existing .net libraries in that it:
 | [Text extraction](docs/text_extraction.md)                                         |                    |                    | :heavy_check_mark: |                    |
 | [Image extraction](docs/image_extraction.md)                                       |                    |                    | :heavy_check_mark: |                    |
 | [Resource dedup](docs/streaming_writer.md#resource-deduplication)                  |                    | :heavy_check_mark: |                    |                    |
-| [Content creation ](docs/content_creation.md)                                      | :heavy_check_mark: |                    |                    |                    |
-| [Content redaction ](docs/redaction.md)                                            | :heavy_check_mark: |                    |                    |                    |
+| [Content creation ](docs/content_creation.md)                                      |                    | :heavy_check_mark: |                    |                    |
+| [Content redaction ](docs/redaction.md)                                            |                    | :heavy_check_mark: |                    |                    |
+| Mutable Content                                                                    | :heavy_check_mark: |                    |                    |                    |
+
+- Release - API stable and few breaking changes are expected. Feature has significant test coverage and has been used in real use cases on a wide variety of pdfs
+- Beta - API stable but some breaking changes are expected. Feature has some test coverage and has been used in some real use cased.
+- Alpha - API unstable and breaking changes are expected. Feature generally functional but may lack test coverage and may not have any real use.
+- WIP - API unstable and many breaking changes are expected. Feature may have significant bugs, may lack test coverage and may not have any real use.
 
 ### Major Gaps
 
@@ -39,4 +45,5 @@ Some examples are available as polyglot notebooks in the /examples/ folder.
 - [General pdf loading](examples/loading.ipynb)
 - [PDF creation](examples/pdf-creation.ipynb)
 - [Text Extraction](examples/text-extraction.ipynb)
+- [Redaction](examples/redaction.ipynb)
 - [Mutable Content](examples/mutable-content.ipynb)

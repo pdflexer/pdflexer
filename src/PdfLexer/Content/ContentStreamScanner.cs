@@ -186,7 +186,7 @@ public ref struct ContentStreamScanner
         var oplen = CurrentInfo.Type switch
         {
             < 256 => 1,
-            < 6553 => 2,
+            < 65536 => 2,
             _ => 3
         };
 

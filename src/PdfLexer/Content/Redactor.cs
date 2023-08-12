@@ -1,8 +1,6 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.Fonts;
-using System.Resources;
-using System.Transactions;
 
 namespace PdfLexer.Content;
 
@@ -12,6 +10,14 @@ public ref struct SinglePassRedactor
     private Random RNG;
     private PdfPage Page;
     private ParsingContext Ctx;
+
+    public SinglePassRedactor(PdfPage page, bool randomize = false)
+    {
+        Ctx = ParsingContext.Current;
+        Page = page.NativeObject.CloneShallow();
+        Randomize = randomize;
+        RNG = randomize ? new Random() : null!;
+    }
 
     public SinglePassRedactor(ParsingContext ctx, PdfPage page, bool randomize = false)
     {
@@ -99,18 +105,27 @@ public ref struct SinglePassRedactor
 
         var writers = new List<ZLibLexerStream>() { new ZLibLexerStream() };
 
+        var prevStart = 0;
+
         while (true)
         {
+            var data = text.Scanner.Scanner.Data;
             var content = text.Advance();
             if (!content)
             {
-                CompleteStatement(text.Scanner.Scanner.Data);
-                return Finish(text.Scanner.Scanner.Data);
+                CompleteStatement(data);
+                return Finish(data);
             }
+            
+            if (text.TxtOpStart < prevStart)
+            {
+                data = text.Scanner.Scanner.Data;
+            }
+            prevStart = text.TxtOpStart;
 
             if (text.WasNewStatement)
             {
-                CompleteStatement(text.Scanner.Scanner.Data);
+                CompleteStatement(data);
                 start = text.TxtOpStart;
                 length = text.TxtOpLength;
                 seqs.Clear();
@@ -119,7 +134,8 @@ public ref struct SinglePassRedactor
             }
 
 
-            var (x, y) = text.GetCurrentTextPos();
+            var pt = text.GetCurrentTextPoint();
+            var bb = text.GetCurrentBoundingBox();
             bool redactCurrent = false;
             if (text.Glyph!.MultiChar != null)
             {
@@ -129,8 +145,8 @@ public ref struct SinglePassRedactor
                         new CharInfo
                         {
                             Char = c,
-                            X = x,
-                            Y = y,
+                            Position = pt,
+                            BoundingBox = bb,
                             OpPos = text.CurrentTextPos,
                             Pos = text.Scanner.Scanner.Position,
                             Stream = text.Scanner.CurrentStreamId
@@ -144,8 +160,8 @@ public ref struct SinglePassRedactor
             else if (shouldRedact(new CharInfo
             {
                 Char = text.Glyph.Char,
-                X = x,
-                Y = y,
+                Position = pt,
+                BoundingBox = bb,
                 OpPos = text.CurrentTextPos,
                 Pos = text.Scanner.Scanner.Position,
                 Stream = text.Scanner.CurrentStreamId
@@ -356,8 +372,8 @@ public ref struct SinglePassRedactor
 public struct CharInfo
 {
     public char Char;
-    public double X;
-    public double Y;
+    public PdfPoint<double> Position;
+    public PdfRect<double> BoundingBox;
     internal ulong Stream;
     internal int Pos;
     internal int OpPos;
