@@ -29,7 +29,7 @@ pdflexer differs from existing .net libraries in that it:
 
 - Release - API stable and few breaking changes are expected. Feature has significant test coverage and has been used in real use cases on a wide variety of pdfs
 - Beta - API stable but some breaking changes are expected. Feature has some test coverage and has been used in some real use cased.
-- Alpha - API unstable and breaking changes are expected. Feature general functional but may lack test coverage and may not have any real use.
+- Alpha - API unstable and breaking changes are expected. Feature generally functional but may lack test coverage and may not have any real use.
 - WIP - API unstable and many breaking changes are expected. Feature may have significant bugs, may lack test coverage and may not have any real use.
 
 ### Major Gaps
