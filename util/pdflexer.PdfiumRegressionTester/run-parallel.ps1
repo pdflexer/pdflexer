@@ -18,7 +18,7 @@ function Slice-Array {
     }
 }
 
-$testType = "model-rebuild"
+$testType = "quicksave"
 
 Push-Location $PSScriptRoot; # 453
 

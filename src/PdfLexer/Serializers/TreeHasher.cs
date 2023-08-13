@@ -70,6 +70,7 @@ class FNVStreamComparison : IEqualityComparer<PdfStreamHash>
         {
             return false;
         }
+        if (Object.ReferenceEquals(x.Stream, y.Stream)) { return true; }
 
         x.Stream.Seek(0, SeekOrigin.Begin);
         y.Stream.Seek(0, SeekOrigin.Begin);
@@ -88,6 +89,8 @@ class FNVStreamComparison : IEqualityComparer<PdfStreamHash>
     }
 
     public int GetHashCode(PdfStreamHash obj) => obj.Hash;
+
+    public static FNVStreamComparison Default = new FNVStreamComparison();
 }
 
 struct PdfStreamHash
@@ -106,6 +109,19 @@ struct PdfStreamHash
     }
     public Stream Stream { get; internal set; }
     public int Hash { get; }
+
+    public override bool Equals([NotNullWhen(true)] object? obj)
+    {
+        if (obj == null) return false;
+        if (obj is PdfStreamHash hash)
+        {
+            if (hash.Hash != Hash) return false;
+            return FNVStreamComparison.Default.Equals(hash, this);
+        }
+        return false;
+    }
+
+    public override int GetHashCode() => Hash;
 }
 
 /// <summary>

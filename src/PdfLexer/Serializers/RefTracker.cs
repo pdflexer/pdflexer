@@ -38,6 +38,8 @@ internal class RefTracker
         localizedObjects.Clear();
     }
 
+    public void AddSavedObject(IPdfObject obj, PdfIndirectRef xref) => localizedObjects.AddOrUpdate(obj, xref);
+
     public bool TryGetLocalRef(PdfIndirectRef ir, [NotNullWhen(true)]out PdfIndirectRef? local, bool attemptOwnership)
     {
         if (TryLocalizeExisting(ir, attemptOwnership))

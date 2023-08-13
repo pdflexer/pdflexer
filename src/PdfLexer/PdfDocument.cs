@@ -1,9 +1,8 @@
-﻿using PdfLexer.DOM;
+﻿using PdfLexer.Content;
+using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.IO;
 using PdfLexer.Parsers.Structure;
-using PdfLexer.Serializers;
-using System.Threading.Tasks.Sources;
 
 namespace PdfLexer;
 
@@ -100,6 +99,12 @@ public sealed partial class PdfDocument : IDisposable
         pg.MediaBox = new PdfArray { PdfCommonNumbers.Zero, PdfCommonNumbers.Zero, new PdfDoubleNumber(width), new PdfDoubleNumber(height) };
         Pages.Add(pg);
         return pg;
+    }
+
+    public void DeduplicateResources()
+    {
+        var dedup = new Deduplication(this);
+        dedup.RunDeduplication();
     }
 
 

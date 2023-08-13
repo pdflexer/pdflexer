@@ -17,7 +17,9 @@ writer.Complete(new PdfDictionary()); // trailer
 
 ## Resource Deduplication
 
-Note: Alpha quality
+### Note this is no longer the suggested method for resource deduplication due to poor performance on large documents
+
+If using `StreamingWriter` it better to save the document without deduplication and then re-open (as a memory mapped file) and deduplicate using `PdfDocument.DeduplicateResources()` and resaving.
 
 An alternative constructor `StreamingWriter(Stream stream, bool dedupXobj, bool inMemoryDedup)` is provided that allows resource deduplication to be enabled while writing. This tracks all `XObject` and `Font` resources as they are written and will deduplicate resources that are exactly the same. Object deduplication is complicated and reduces performance significantly but may be useful under certain circumstances (eg. combining a large number of like documents).
 
