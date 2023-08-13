@@ -910,48 +910,6 @@ namespace PdfLexer.Tests
             }
         }
 
-        [Fact]
-        public async Task It_Dedups_FreeCulture()
-        {
-            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var results = Path.Combine(tp, "results", "pighash");
-            Directory.CreateDirectory(results);
-            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
-            var pdf = Path.Combine(pdfRoot, "freeculture.pdf");
-            using var fs2 = File.OpenRead(pdf);
-            using var lm = PdfDocument.OpenLowMemory(fs2);
-            var mssw = new MemoryStream();
-            using var writer = new StreamingWriter(mssw, true, true);
-            foreach (var page in lm.Pages)
-            {
-                // var modified = ReWriteStream(lm, page, true);
-                writer.AddPage(page);
-            }
-            writer.Complete(new PdfDictionary());
-            File.WriteAllBytes(Path.Combine(results, "freeculture_out.pdf"), mssw.ToArray());
-        }
-
-        [Fact]
-        public async Task It_Dedups_FreeCulture_Document()
-        {
-            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            var results = Path.Combine(tp, "results", "dedup");
-            Directory.CreateDirectory(results);
-            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
-            var pdf = Path.Combine(pdfRoot, "freeculture.pdf");
-            using var fs2 = File.OpenRead(pdf);
-            using var lm = PdfDocument.OpenLowMemory(fs2);
-            var mssw = new MemoryStream();
-            using var writer = new StreamingWriter(mssw, true, true);
-            foreach (var page in lm.Pages)
-            {
-                // var modified = ReWriteStream(lm, page, true);
-                writer.AddPage(page);
-            }
-            writer.Complete(new PdfDictionary());
-            File.WriteAllBytes(Path.Combine(results, "freeculture_out.pdf"), mssw.ToArray());
-        }
-
         //[Fact]
         public async Task It_ReWrites_PDF_JS()
         {

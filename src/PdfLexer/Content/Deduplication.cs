@@ -148,14 +148,27 @@ internal class Deduplication
         }
     }
 
+    private Dictionary<IPdfObject, PdfIndirectRef?> evaluated = new Dictionary<IPdfObject, PdfIndirectRef?>();
+
     private bool EvaluateCaching(Dictionary<int, List<CachableItem>> cache, CachableItem current)
     {
+        if (evaluated.TryGetValue(current.Item, out var ir))
+        {
+            if (ir != null)
+            {
+                current.Parent[current.Key] = ir;
+            }
+            return true;
+        }
+
         if (!cache.TryGetValue(current.Length, out var items))
         {
             items = new List<CachableItem> { current };
             cache[current.Length] = items;
+            evaluated[current.Item] = null;
             return false;
         }
+
 
         foreach (var cached in items)
         {
@@ -170,10 +183,13 @@ internal class Deduplication
         if (match == null)
         {
             items.Add(current);
+            evaluated[current.Item] = null;
             return false;
         }
 
-        current.Parent[current.Key] = match.Item.Indirect();
+        ir = match.Item.Indirect();
+        current.Parent[current.Key] = ir;
+        evaluated[current.Item] = ir;
         return true;
     }
 
