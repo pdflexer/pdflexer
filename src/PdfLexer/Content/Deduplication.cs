@@ -1,5 +1,7 @@
 ﻿using PdfLexer.DOM;
 using PdfLexer.Serializers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.IO.Pipelines;
 
 namespace PdfLexer.Content;
 
@@ -129,6 +131,25 @@ internal class Deduplication
         var frm = (XObjForm)form;
         var length = frm.Contents?.Length ?? 0;
         if (length == 0) { return; }
+        if (frm.Resources != null )
+        {
+            if (frm.Resources.Count > 0)
+            {
+                unchecked
+                {
+                    length ^= frm.Resources.Count;
+                }
+            }
+            
+            if (frm.Resources.TryGetValue<PdfDictionary>(PdfName.XObject, out var dict) && dict.Count > 0)
+            {
+                unchecked
+                {
+                    length ^= dict.Count;
+                }
+            }
+        }
+
         var item = new CachableItem
         {
             Item = form,
