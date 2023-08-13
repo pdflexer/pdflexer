@@ -49,6 +49,8 @@ public class WritingContext
         Stream.WriteByte((byte)'\n');
     }
 
+    internal void AddSavedObject(IPdfObject obj, PdfIndirectRef xref) => Tracker.AddSavedObject(obj, xref);
+
     private byte[] miniBuff = new byte[20];
     public void Complete(PdfDictionary trailer)
     {

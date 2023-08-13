@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -687,6 +688,53 @@ namespace PdfLexer.Tests
             Assert.True(deDuped.Length < nonDeDuped.Length);
         }
 
+
+        [Fact]
+        public void It_Dedups_Same_Images_Document()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue1905.pdf");
+            var origData = File.ReadAllBytes(pdf);
+
+            // create object with duplicate resources
+            using var single = PdfDocument.Open(origData);
+            using var single2 = PdfDocument.Open(origData);
+            using var doc = PdfDocument.Create();
+            doc.Pages.AddRange(single.Pages);
+            doc.Pages.AddRange(single2.Pages);
+            var dup = doc.Save();
+
+            // deduplicate after copying to new doc
+            using var doc2 = PdfDocument.Open(dup);
+            using var doc3 = PdfDocument.Create();
+            doc3.Pages.AddRange(doc2.Pages);
+            doc3.DeduplicateResources();
+            var deDupedNewDoc = doc3.Save();
+
+            // deduplicate in existing doc
+            doc2.DeduplicateResources();
+            var deDupedSameDoc = doc2.Save();
+
+            // save results
+            var results = Path.Combine(tp, "results", "dedup");
+            Directory.CreateDirectory(results);
+            File.WriteAllBytes(Path.Combine(results, "issue1905_dedup.pdf"), deDupedNewDoc);
+            File.WriteAllBytes(Path.Combine(results, "issue1905_dedupsame.pdf"), deDupedSameDoc);
+            File.WriteAllBytes(Path.Combine(results, "issue1905_dup.pdf"), dup);
+
+            // ensure size smaller
+            Assert.True(deDupedNewDoc.Length < dup.Length);
+            Assert.True(deDupedSameDoc.Length < dup.Length);
+
+            // ensure half as many resources
+            var or = Util.CountResources(origData);
+            var ddr = Util.CountResources(deDupedNewDoc);
+            var nddr = Util.CountResources(dup);
+            Assert.Equal(or, ddr);
+            Assert.Equal(nddr, ddr * 2);
+            
+        }
+
         [InlineData(true)]
         [InlineData(false)]
         [Theory]
@@ -867,6 +915,27 @@ namespace PdfLexer.Tests
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var results = Path.Combine(tp, "results", "pighash");
+            Directory.CreateDirectory(results);
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
+            var pdf = Path.Combine(pdfRoot, "freeculture.pdf");
+            using var fs2 = File.OpenRead(pdf);
+            using var lm = PdfDocument.OpenLowMemory(fs2);
+            var mssw = new MemoryStream();
+            using var writer = new StreamingWriter(mssw, true, true);
+            foreach (var page in lm.Pages)
+            {
+                // var modified = ReWriteStream(lm, page, true);
+                writer.AddPage(page);
+            }
+            writer.Complete(new PdfDictionary());
+            File.WriteAllBytes(Path.Combine(results, "freeculture_out.pdf"), mssw.ToArray());
+        }
+
+        [Fact]
+        public async Task It_Dedups_FreeCulture_Document()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var results = Path.Combine(tp, "results", "dedup");
             Directory.CreateDirectory(results);
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             var pdf = Path.Combine(pdfRoot, "freeculture.pdf");

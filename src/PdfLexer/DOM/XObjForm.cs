@@ -16,6 +16,9 @@ public class XObjForm
         NativeObject.Dictionary[PdfName.Subtype] = PdfName.Form;
     }
 
+    public static implicit operator XObjForm(PdfStream str) => new XObjForm(str);
+    public static implicit operator PdfStream(XObjForm form) => form.NativeObject;
+
     public PdfRectangle? BBox
     {
         get => NativeObject.Dictionary.Get<PdfArray>(PdfName.BBox);

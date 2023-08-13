@@ -38,7 +38,16 @@ public sealed partial class PdfDocument
         ctx.Initialize(wv);
         if (XrefEntries?.Count > 0)
         {
-            SaveExistingObjects(ctx);
+            // save previously read xref objs that may have a new indirect reference to them
+            foreach (var (k, v) in IndirectCache)
+            {
+                if (v.TryGetTarget(out var xobj))
+                {
+                    ctx.AddSavedObject(xobj, new ExistingIndirectRef(this, XRef.FromId(k)));
+                }
+            }
+
+             SaveExistingObjects(ctx);
         }
         // create clones of these in case they were
         // copied from another doc, don't want to modify existing
@@ -95,8 +104,13 @@ public sealed partial class PdfDocument
 
     private void SaveExistingObjects(WritingContext ctx)
     {
-        foreach (var obj in XrefEntries.Values)
+        foreach (var (key, obj) in XrefEntries)
         {
+            if (IndirectCache.ContainsKey(key)) // has been loaded and could be modified don't quick copy
+            {
+                continue;
+            }
+
             if (obj.IsFree)
             {
                 continue;

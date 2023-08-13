@@ -1,5 +1,6 @@
 ﻿using PdfLexer.IO;
 using PdfLexer.Serializers;
+using static DotNext.Collections.Generic.Sequence;
 
 namespace PdfLexer.Parsers.Structure;
 
@@ -40,6 +41,13 @@ public struct XRef
 
     public ulong GetId() => ((ulong)ObjectNumber << 16) | ((uint)Generation & 0xFFFF);
     public static ulong GetId(int objectNumber, int generation) => ((ulong)objectNumber << 16) | ((uint)generation & 0xFFFF);
+    public static XRef FromId(ulong id)
+    {
+        var gen = id & 0xFFFF;
+        var on = id >> 16;
+        return new XRef((int)on, (int)gen);
+
+    }
 
     public static bool operator ==(XRef left, XRef right)
     {
