@@ -207,6 +207,16 @@ foreach (var op in operators)
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is <#= name #>_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);

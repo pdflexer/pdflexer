@@ -1,7 +1,9 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Content.Model;
+using PdfLexer.Graphics;
 using PdfLexer.Serializers;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace PdfLexer.Writing;
 public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
@@ -18,6 +20,62 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
+    private bool NeedsGSReset(ExtGraphicsDict<T>? a, ExtGraphicsDict<T>? b) 
+    {
+        if (a == null && b == null) return false;
+        if (a == null || b == null) return true;
+        if (a.CTM != b.CTM)
+        {
+            return true;
+        }
+        if (a.Dict.Count != b.Dict.Count)
+        {
+            return true;
+        }
+        foreach (var (k,v) in a.Dict)
+        {
+            if (!b.Dict.TryGetValue(k, out var v2))
+            {
+                return true;
+            }
+
+            if (v != v2) 
+            { 
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private bool NeedsClippingReset(List<IClippingSection<T>>? a, List<IClippingSection<T>>? b)
+    {
+        if (a == null && b == null) return false;
+        if (a == null || b == null) return true;
+        if (a.Count != b.Count) return true;
+
+        for (var i = 0; i < a.Count;i++)
+        {
+            var c1 = a[i];
+            var c2 = b[i];
+            if (c1.GetType() != c2.GetType())
+            {
+                return true;
+            }
+            if (c1 is ClippingInfo<T> ci)
+            {
+                var ci2 = (ClippingInfo<T>)c2;
+                if (c1.TM != c2.TM) { return true; }
+                if (ci.EvenOdd != ci2.EvenOdd) { return true; }
+                if (ci.Path.Count != ci2.Path.Count) return true;
+                if (!ci.Path.SequenceEqual(ci2.Path))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     internal ContentWriter<T> SetGS(GfxState<T> state, bool wrapExtDicts = true)
     {
         var stream = Writer.Stream;
@@ -26,7 +84,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             return this;
         }
 
-        if (wrapExtDicts && state.ExtDict != GfxState.ExtDict) // actual changes done at end
+        if (wrapExtDicts && NeedsGSReset(GfxState.ExtDict, state.ExtDict)) // actual changes done at end
         {
             while (GfxState.ExtDict != null)
             {
@@ -35,11 +93,11 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         }
 
         // want to reset to default using gfx restore
+        var clippingReset = NeedsClippingReset(GfxState.Clipping, state.Clipping);
         var ctmIdentity = (state.CTM != GfxState.CTM && state.CTM.IsIdentity)
-            || (state.Clipping != GfxState.Clipping);
-        var clippingReset = ((state.Clipping == null || GfxState.Clipping == null) && state.Clipping != GfxState.Clipping)
-            || (state.Clipping != null && GfxState.Clipping != null && !state.Clipping.SequenceEqual(GfxState.Clipping));
-        if (ctmIdentity || clippingReset)
+            || clippingReset;
+
+        if (clippingReset || ctmIdentity)
         {
             EnsureInPageState();
             if (clippingReset && GfxState.Clipping != null)
@@ -114,7 +172,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             GfxState = GfxState with { FontSize = state.FontSize };
         }
 
-        if (state.Clipping != null && !(GfxState.Clipping?.SequenceEqual(state.Clipping) ?? false))
+        if (state.Clipping != null && NeedsClippingReset(GfxState.Clipping, state.Clipping))
         {
             EnsureInPageState();
             Save();

@@ -47,4 +47,9 @@ public class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T : 
     IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
 
     (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
+
+    public void ClipExcept(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).ClipExceptImpl(rect);
+
+    public void ClipFrom(GfxState<T> other) => ((ISinglePartCopy<T>)this).ClipFromImpl(other);
+
 }

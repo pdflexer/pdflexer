@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Lexing;
+using System.Buffers;
 using System.Buffers.Text;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -124,12 +125,12 @@ internal class DoubleFPConverter : IFloatingPointConverter
         var val = (double)value;
         return Unsafe.As<double, T>(ref val);
     }
-
+    private static StandardFormat fmt = new StandardFormat('F', 10);
     public void Write<T>(T value, Stream stream) where T : IFloatingPoint<T>
     {
         var val = Unsafe.As<T, double>(ref value);
         Span<byte> buffer = stackalloc byte[35];
-        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes))
+        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes, fmt))
         {
             throw new ApplicationException("TODO: Unable to write double: " + val.ToString());
         }

@@ -598,6 +598,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is b_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -629,6 +639,16 @@ namespace PdfLexer.Operators
         public B_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is B_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -664,6 +684,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is b_Star_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -695,6 +725,16 @@ namespace PdfLexer.Operators
         public B_Star_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is B_Star_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -744,6 +784,16 @@ namespace PdfLexer.Operators
         public BI_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is BI_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -831,6 +881,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is BT_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -862,6 +922,16 @@ namespace PdfLexer.Operators
         public BX_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is BX_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -1405,6 +1475,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is EI_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -1436,6 +1516,16 @@ namespace PdfLexer.Operators
         public EMC_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is EMC_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -1471,6 +1561,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is ET_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -1502,6 +1602,16 @@ namespace PdfLexer.Operators
         public EX_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is EX_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -1537,6 +1647,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is f_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -1570,6 +1690,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is F_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -1601,6 +1731,16 @@ namespace PdfLexer.Operators
         public f_Star_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is f_Star_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -1792,6 +1932,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is h_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -1875,6 +2025,16 @@ namespace PdfLexer.Operators
         public ID_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is ID_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -2382,6 +2542,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is n_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -2415,6 +2585,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is q_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -2446,6 +2626,16 @@ namespace PdfLexer.Operators
         public Q_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is Q_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -2738,6 +2928,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is s_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -2769,6 +2969,16 @@ namespace PdfLexer.Operators
         public S_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is S_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -2914,6 +3124,16 @@ namespace PdfLexer.Operators
         public T_Star_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is T_Star_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 
@@ -3678,6 +3898,16 @@ namespace PdfLexer.Operators
 
         }
 
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is W_Op<T>) 
+            {
+                return true;
+            }
+            return false;
+        }
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -3709,6 +3939,16 @@ namespace PdfLexer.Operators
         public W_Star_Op()
         {
 
+        }
+
+        public override bool Equals(object? obj) 
+        {
+            if (obj == null) return false;
+            if (obj is W_Star_Op<T>) 
+            {
+                return true;
+            }
+            return false;
         }
 
         public static void WriteLn(Stream stream) 

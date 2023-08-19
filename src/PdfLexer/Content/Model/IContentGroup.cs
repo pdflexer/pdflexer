@@ -83,6 +83,9 @@ public interface IContentGroup<T> where T : struct, IFloatingPoint<T>
     /// <param name="rect"></param>
     /// <returns></returns>
     public (IContentGroup<T>? Inside, IContentGroup<T>? Outside) Split(PdfRect<T> rect);
+
+    void ClipExcept(PdfRect<T> rect);
+    void ClipFrom(GfxState<T> other);
 }
 
 internal interface ISinglePartCopy<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
@@ -131,25 +134,40 @@ internal interface ISinglePartCopy<T> : IContentGroup<T> where T : struct, IFloa
 
     public void TransformImpl(GfxMatrix<T> transformation)
     {
-        GraphicsState = GraphicsState with { CTM = transformation * GraphicsState.CTM };
-        if (GraphicsState.Clipping != null)
+        GraphicsState = GraphicsState with
         {
-            foreach (var item in GraphicsState.Clipping)
-            {
-                item.TM = transformation * item.TM;
-            }
-        }
+            CTM = transformation * GraphicsState.CTM,
+            Clipping = GraphicsState.Clipping == null ? null :
+                GraphicsState.Clipping.Select(x => { var c = x.ShallowClone(); c.TM = transformation * c.TM; return c; }).ToList()
+        };
     }
 
     public void TransformInitialImpl(GfxMatrix<T> transformation)
     {
-        GraphicsState = GraphicsState with { CTM = GraphicsState.CTM * transformation };
+        GraphicsState = GraphicsState with
+        {
+            CTM = GraphicsState.CTM * transformation,
+            Clipping = GraphicsState.Clipping == null ? null :
+                GraphicsState.Clipping.Select(x => { var c = x.ShallowClone(); c.TM = c.TM * transformation; return c; }).ToList()
+        };
+    }
+
+    public void ClipExceptImpl(PdfRect<T> rect)
+    {
+        GraphicsState = GraphicsState.ClipExcept(rect);
+    }
+
+    public void ClipFromImpl(GfxState<T> other)
+    {
+        if (other.Clipping == null) { return; }
         if (GraphicsState.Clipping != null)
         {
-            foreach (var item in GraphicsState.Clipping)
-            {
-                item.TM = item.TM * transformation;
-            }
+            GraphicsState = GraphicsState with { Clipping = GraphicsState.Clipping.ToList() };
+        } else
+        {
+            GraphicsState = GraphicsState with { Clipping = new List<IClippingSection<T>>() };
         }
+        GraphicsState.Clipping.AddRange(other.Clipping);
     }
+
 }

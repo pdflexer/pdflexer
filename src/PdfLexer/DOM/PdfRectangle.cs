@@ -91,6 +91,17 @@ namespace PdfLexer.DOM
             };
         }
 
+        public static PdfRectangle FromContentModel<T>(PdfRect<T> rect) where T : struct, IFloatingPoint<T>
+        {
+            return new PdfRectangle
+            {
+                LLx = FPC<T>.Util.ToDecimal<T>(rect.LLx),
+                URx = FPC<T>.Util.ToDecimal<T>(rect.URx),
+                LLy = FPC<T>.Util.ToDecimal<T>(rect.LLy),
+                URy = FPC<T>.Util.ToDecimal<T>(rect.URy),
+            };
+        }
+
         public override string ToString()
         {
             return $"[{LLx} {LLy} {URx} {URy}]";

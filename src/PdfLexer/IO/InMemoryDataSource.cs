@@ -29,11 +29,11 @@ internal class InMemoryDataSource : IPdfDataSource
 
     public void CopyData(long startPosition, int requiredBytes, Stream stream)
     {
-        if (startPosition > int.MaxValue)
-        {
-            throw new PdfLexerException(
-                "In memory data source does not support offsets greater than Int32.MaxValue");
-        }
+        // if (startPosition > int.MaxValue)
+        // {
+        //     throw new PdfLexerException(
+        //         "In memory data source does not support offsets greater than Int32.MaxValue");
+        // }
 
         var start = (int)(startPosition - _os);
         if (requiredBytes > _data.Length - start)
@@ -46,11 +46,11 @@ internal class InMemoryDataSource : IPdfDataSource
     public void GetData(ParsingContext ctx, long startPosition, int requiredBytes, out ReadOnlySpan<byte> buffer)
     {
         ReadOnlySpan<byte> span = _data;
-        if (startPosition > int.MaxValue)
-        {
-            throw new NotSupportedException(
-                "In memory data source does not support offsets greater than Int32.MaxValue");
-        }
+        // if (startPosition > int.MaxValue)
+        // {
+        //     throw new NotSupportedException(
+        //         "In memory data source does not support offsets greater than Int32.MaxValue");
+        // }
         var start = (int)(startPosition - _os);
         if (requiredBytes > _data.Length - start)
         {

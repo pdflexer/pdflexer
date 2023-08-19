@@ -1,4 +1,5 @@
-﻿using PdfLexer.Writing;
+﻿using PdfLexer.DOM;
+using PdfLexer.Writing;
 using System.Numerics;
 
 namespace PdfLexer.Content.Model;
@@ -35,15 +36,21 @@ public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
 
     public PdfRect<T> GetBoundingBox()
     {
-        var x = GraphicsState.CTM.E;
-        var y = GraphicsState.CTM.F;
-        return new PdfRect<T>
+        var form = (XObjForm)Stream;
+        if (form.BBox == null)
         {
-            LLx = x,
-            LLy = y,
-            URx = x + GraphicsState.CTM.A,
-            URy = y + GraphicsState.CTM.D
-        };
+            var x = GraphicsState.CTM.E;
+            var y = GraphicsState.CTM.F;
+            return new PdfRect<T>
+            {
+                LLx = x,
+                LLy = y,
+                URx = x + GraphicsState.CTM.A,
+                URy = y + GraphicsState.CTM.D
+            };
+        }
+        var bb = form.BBox.ToContentModel<T>();
+        return GraphicsState.CTM.GetTransformedBoundingBox(bb);
     }
 
     // not able to accurately get bounding box for form
@@ -62,25 +69,34 @@ public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
 
     public void Transform(GfxMatrix<T> transformation)
     {
-        GraphicsState = GraphicsState with { CTM = transformation * GraphicsState.CTM };
-        if (GraphicsState.Clipping != null)
+        GraphicsState = GraphicsState with
         {
-            foreach (var item in GraphicsState.Clipping)
-            {
-                item.TM = transformation * item.TM;
-            }
-        }
+            CTM = transformation * GraphicsState.CTM,
+            Clipping = GraphicsState.Clipping == null ? null :
+                GraphicsState.Clipping.Select(x => { var c = x.ShallowClone(); c.TM = transformation * c.TM; return c; }).ToList()
+
+        };
     }
 
     public void TransformInitial(GfxMatrix<T> transformation)
     {
-        GraphicsState = GraphicsState with { CTM = GraphicsState.CTM * transformation };
-        if (GraphicsState.Clipping != null)
+        GraphicsState = GraphicsState with
         {
-            foreach (var item in GraphicsState.Clipping)
-            {
-                item.TM = item.TM * transformation;
-            }
-        }
+            CTM = GraphicsState.CTM * transformation,
+            Clipping = GraphicsState.Clipping == null ? null :
+                GraphicsState.Clipping.Select(x => { var c = x.ShallowClone(); c.TM = c.TM * transformation; return c; }).ToList()
+
+        };
+    }
+
+
+    public void ClipExcept(PdfRect<T> rect)
+    {
+        throw new NotImplementedException("ClipExcept not supported for forms. Complete action on individual content items inside form.");
+    }
+
+    public void ClipFrom(GfxState<T> other)
+    {
+        throw new NotImplementedException("ClipFrom not supported for forms. Complete action on individual content items inside form.");
     }
 }

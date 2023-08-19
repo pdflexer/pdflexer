@@ -42,14 +42,15 @@ public record class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloa
                         ymin = T.Min(ymin, current.LLy);
                         xmax = T.Max(xmax, current.URx);
                         ymax = T.Max(ymax, current.URy);
-                    } else
+                    }
+                    else
                     {
                         xmin = current.LLx;
                         ymin = current.LLy;
                         xmax = current.URx;
                         ymax = current.URy;
                     }
-                    
+
                     triggered = true;
                 }
             }
@@ -72,7 +73,8 @@ public record class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloa
         if (Closing != null)
         {
             writer.Op(Closing);
-        } else
+        }
+        else
         {
             writer.Op(n_Op<T>.Value);
         }
@@ -88,9 +90,13 @@ public record class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloa
         return (ISinglePartCopy<T>)this.MemberwiseClone();
     }
 
+    public void ClipExcept(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).ClipExceptImpl(rect);
+
     IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
 
     (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
+
+    public void ClipFrom(GfxState<T> other) => ((ISinglePartCopy<T>)this).ClipFromImpl(other);
 }
 
 public class SubPath<T> where T : struct, IFloatingPoint<T>
@@ -99,4 +105,19 @@ public class SubPath<T> where T : struct, IFloatingPoint<T>
     public required T YPos { get; set; }
     public required List<IPathCreatingOp<T>> Operations { get; set; }
     public bool Closed { get; set; }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == null) return false;
+        if (!(obj is SubPath<T> other))
+        {
+            return false;
+        }
+        if (XPos != other.XPos) { return false; }
+        if (YPos != other.YPos) { return false; }
+        if (Closed != other.Closed) { return false; }
+        if (!Operations.SequenceEqual(other.Operations)) { return false; }
+        return true;
+    }
+
 }

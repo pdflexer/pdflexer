@@ -233,7 +233,7 @@ public sealed partial class PdfDocument : IDisposable
         var doc = new PdfDocument();
         doc.UserPass = options?.UserPass;
         doc.OwnerPass = options?.OwnerPass;
-#if NET6_0_OR_GREATER
+
         try
         {
             source = new MemoryMappedDataSource(doc, file);
@@ -243,20 +243,15 @@ public sealed partial class PdfDocument : IDisposable
             var fs = File.OpenRead(file);
             source = new StreamDataSource(doc, fs, false);
         }
-#else
-        var fs = File.OpenRead(file);
-        source = new StreamDataSource(doc, fs, false);
-#endif
 
         doc.Initialize(ctx, source);
         return doc;
     }
 
 
-#if NET6_0_OR_GREATER
     [Obsolete()]
     public static PdfDocument OpenMapped(string file, DocumentOptions? options = null) => Open(file, options);
-#endif
+
 
 
     private static int docId = 0;

@@ -4,8 +4,6 @@ using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
-
-
 internal record ClippingInfo<T> : IClippingSection<T> where T : struct, IFloatingPoint<T>
 {
     public ClippingInfo(GfxMatrix<T> tm, List<SubPath<T>> path, bool evenOdd)
@@ -35,6 +33,8 @@ internal record ClippingInfo<T> : IClippingSection<T> where T : struct, IFloatin
         }
         n_Op.WriteLn(writer.Writer.Stream);
     }
+
+    public IClippingSection<T> ShallowClone() => this with { };
 }
 internal interface IClippingSection : IClippingSection<double>
 {
@@ -43,6 +43,7 @@ internal interface IClippingSection<T> where T : struct, IFloatingPoint<T>
 {
     void Apply(ContentWriter<T> writer);
     GfxMatrix<T> TM { get; set; }
+    IClippingSection<T> ShallowClone();
 }
 internal record TextClippingInfo<T> : IClippingSection<T> where T : struct, IFloatingPoint<T>
 {
@@ -63,4 +64,6 @@ internal record TextClippingInfo<T> : IClippingSection<T> where T : struct, IFlo
         }
         writer.WriteGlyphs(Glyphs);
     }
+
+    public IClippingSection<T> ShallowClone() => this with { };
 }
