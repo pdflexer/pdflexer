@@ -52,6 +52,7 @@ internal class MemoryMappedDataSource : IPdfDataSource
 
     private (MemoryMappedDirectAccessor, long) GetAccessor(long startPosition, int requiredBytes)
     {
+        if (_accessors.Count == 1) { return (_accessors[0], 0); }
         var i = (int)(startPosition / 1500000000L);
         return (_accessors[i], i * 1500000000L);
     }
