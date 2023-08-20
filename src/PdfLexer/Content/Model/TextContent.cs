@@ -180,33 +180,36 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
     {
         foreach (var item in Segments)
         {
-            item.GraphicsState = item.GraphicsState with { CTM = transformation * item.GraphicsState.CTM };
-            if (GraphicsState.Clipping != null)
-            {
-                foreach (var clip in GraphicsState.Clipping)
-                {
-                    clip.TM = transformation * clip.TM;
-                }
-            }
+            item.GraphicsState = item.GraphicsState with { 
+                CTM = transformation * item.GraphicsState.CTM,
+                Clipping = item.GraphicsState.Clipping == null ? null :
+                    item.GraphicsState.Clipping.Select(x=> { var c = x.ShallowClone(); c.TM = transformation * c.TM; return c; }).ToList()
+
+            };
         }
-
-
     }
 
     public void TransformInitial(GfxMatrix<T> transformation)
     {
         foreach (var item in Segments)
         {
-            item.GraphicsState = item.GraphicsState with { CTM = item.GraphicsState.CTM * transformation };
-            if (GraphicsState.Clipping != null)
+            item.GraphicsState = item.GraphicsState with
             {
-                foreach (var clip in GraphicsState.Clipping)
-                {
-                    clip.TM = clip.TM * transformation;
-                }
-            }
+                CTM = item.GraphicsState.CTM * transformation,
+                Clipping = item.GraphicsState.Clipping == null ? null :
+                     item.GraphicsState.Clipping.Select(x => { var c = x.ShallowClone(); c.TM = c.TM * transformation; return c; }).ToList()
+
+            };
         }
 
+    }
+
+    public void ClipExcept(PdfRect<T> rect)
+    {
+        foreach (var item in Segments)
+        {
+            item.GraphicsState = item.GraphicsState.ClipExcept(rect);
+        }
     }
 
     public TextContent<T>? CopyArea(PdfRect<T> rect) => SplitInternal(rect, true, false).Inside;
@@ -352,7 +355,7 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
                         TextLineMatrix = current.TextMatrix,
                         TextMatrix = current.TextMatrix
                     },
-                    Clipping = GraphicsState.Clipping.ClipExcept(rect)
+                    Clipping = seg.GraphicsState.Clipping.ClipExcept(rect)
                 },
                 Glyphs = new List<GlyphOrShift<T>> { }
             };
@@ -380,6 +383,23 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
     IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => CopyArea(rect);
 
     (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => Split(rect);
+
+    public void ClipFrom(GfxState<T> other)
+    {
+        if (other.Clipping == null) { return; }
+        foreach (var seg in Segments)
+        {
+            if (seg.GraphicsState.Clipping != null)
+            {
+                seg.GraphicsState = seg.GraphicsState with { Clipping = seg.GraphicsState.Clipping.ToList() };
+            }
+            else
+            {
+                seg.GraphicsState = seg.GraphicsState with { Clipping = new List<IClippingSection<T>>() };
+            }
+            seg.GraphicsState.Clipping.AddRange(other.Clipping);
+        }
+    }
 }
 
 

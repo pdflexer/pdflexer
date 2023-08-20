@@ -28,8 +28,8 @@ public class CachedContentMutation : CachedContentMutation<double>
 public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
 {
     private Func<IContentGroup<T>, IEnumerable<IContentGroup<T>>> _mutation;
-    private ConditionalWeakTable<PdfStream, Dictionary<GfxMatrix<T>, XObjForm>> _cache =
-        new ConditionalWeakTable<PdfStream, Dictionary<GfxMatrix<T>, XObjForm>>();
+    private ConditionalWeakTable<PdfStream, Dictionary<GfxMatrix<T>, XObjForm?>> _cache =
+        new ConditionalWeakTable<PdfStream, Dictionary<GfxMatrix<T>, XObjForm?>>();
 
     /// <summary>
     /// Create mutation helper with func that applies mutation to content group returning enumerable result.
@@ -64,11 +64,16 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
         {
             if (item is FormContent<T> nested)
             {
-                newContents.Add(RecursivelyApply(nested));
+                var frm = RecursivelyApply(nested);
+                if (frm != null)
+                {
+                    newContents.Add(frm);
+                }
+                
             }
             else
             {
-                newContents.AddRange(_mutation(item));
+                newContents.AddRange(_mutation(item).Where(x=> x != null));
             }
 
         }
@@ -93,10 +98,11 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
         return newPage;
     }
 
-    private FormContent<T> RecursivelyApply(FormContent<T> form)
+    private FormContent<T>? RecursivelyApply(FormContent<T> form)
     {
-        if (_cache.TryGetValue(form.Stream, out var result) && result.TryGetValue(form.GraphicsState.CTM, out var match))
+        if (_cache.TryGetValue(form.Stream, out var result) && result.TryGetValue(form.GraphicsState.CTM, out var match) && false)
         {
+            if (match == null) { return null; }
             return new FormContent<T>
             {
                 GraphicsState = form.GraphicsState,
@@ -106,7 +112,30 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
 
         var parser = new ContentModelParser<T>(ParsingContext.Current, form.ParentPage ?? new PdfDictionary(), form.Stream, new GfxState<T> { CTM = form.GraphicsState.CTM });
         var content = parser.Parse();
+
+        // clip items to form bbox to match existing clipping from form bbox
+        // -> we need to adjust bbox for moved items so can't use that
+        var bbox = form.Stream.Dictionary.Get<PdfArray>(PdfName.BBox);
+        if (bbox == null) { bbox = PageSizeHelpers.GetMediaBox(PageSize.LETTER); }
+        var formBox = ((PdfRectangle)bbox).ToContentModel<T>();
+        formBox = form.GraphicsState.CTM.GetTransformedBoundingBox(formBox);
+        foreach (var item in content)
+        {
+            if (!(item is FormContent<T>))
+            {
+                item.ClipFrom(form.GraphicsState);
+                item.ClipExcept(formBox);
+            }
+        }
+
         var newContents = Apply(content);
+
+        if (newContents.Count == 0)
+        {
+            AddToCache(null);
+            return null;
+        }
+
         // these were in a form, need to "undo" the applied CTM
         if (!form.GraphicsState.CTM.IsIdentity)
         {
@@ -117,33 +146,67 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
 
             foreach (var item in newContents)
             {
-                item.Transform(inv);
+                item.TransformInitial(inv);
             }
         }
 
+        PdfRect<T>? bb = default;
+
+        foreach (var item in newContents)
+        {
+            var cbb = item.GetBoundingBox();
+            if (bb == null)
+            {
+                bb = cbb;
+            }
+            else
+            {
+                bb = new PdfRect<T>
+                {
+                    LLx = T.Min(bb.LLx, cbb.LLx),
+                    URx = T.Max(bb.URx, cbb.URx),
+                    LLy = T.Min(bb.LLy, cbb.LLy),
+                    URy = T.Max(bb.URy, cbb.URy),
+                };
+            }
+        }
 
         var xObj = new XObjForm();
         var resources = new PdfDictionary();
+
+        // TODO revisit this, do we need to expand?
+        xObj.BBox = PdfRectangle.FromContentModel(bb! with {
+            LLx = bb.LLx - FPC<T>.V100, 
+            LLy = bb.LLy - FPC<T>.V100, 
+            URx = bb.URx + FPC<T>.V100, 
+            URy = bb.URy + FPC<T>.V100
+        });
         xObj.NativeObject.Dictionary[PdfName.Resources] = resources;
         var writer = new ContentWriter<T>(resources);
         writer.AddContent(newContents);
         xObj.NativeObject.Contents = writer.Complete();
-        if (result == null)
-        {
-            result = new Dictionary<GfxMatrix<T>, XObjForm>();
-            result[form.GraphicsState.CTM] = xObj;
-            _cache.Add(form.Stream, result);
-        }
-        else
-        {
-            result[form.GraphicsState.CTM] = xObj;
-        }
+
+        AddToCache(xObj);
 
         return new FormContent<T>
         {
-            GraphicsState = form.GraphicsState,
+            GraphicsState = form.GraphicsState with { Clipping = null },
             Stream = xObj.NativeObject
         };
+
+        void AddToCache(XObjForm? value)
+        {
+            if (result == null)
+            {
+                result = new Dictionary<GfxMatrix<T>, XObjForm?>();
+                result[form.GraphicsState.CTM] = value;
+                _cache.Add(form.Stream, result);
+            }
+            else
+            {
+                result[form.GraphicsState.CTM] = value;
+            }
+        }
     }
 
     private static Func<IContentGroup<T>, IEnumerable<IContentGroup<T>>> Wrap(Func<IContentGroup<T>, IContentGroup<T>?> single)

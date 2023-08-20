@@ -1,4 +1,5 @@
 ﻿using PdfLexer.Lexing;
+using System.Buffers;
 using System.Buffers.Text;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -10,6 +11,7 @@ internal interface IFloatingPointConverter
 {
     decimal ToDecimal<T>(T value) where T : IFloatingPoint<T>;
     double ToDouble<T>(T value) where T : IFloatingPoint<T>;
+    PdfNumber ToPdfNumber<T>(T value) where T : IFloatingPoint<T>;
     T FromDecimal<T>(decimal value) where T : IFloatingPoint<T>;
     T FromDouble<T>(double value) where T : IFloatingPoint<T>;
     T FromPdfNumber<T>(PdfNumber value) where T : IFloatingPoint<T>;
@@ -52,11 +54,13 @@ internal class DecimalFPConverter : IFloatingPointConverter
         return Unsafe.As<decimal, T>(ref val);
     }
 
+
+    private static StandardFormat fmt = new StandardFormat('F', 10);
     public void Write<T>(T value, Stream stream) where T : IFloatingPoint<T>
     {
         var val = Unsafe.As<T, decimal>(ref value);
         Span<byte> buffer = stackalloc byte[35];
-        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes))
+        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes, fmt))
         {
             throw new ApplicationException("TODO: Unable to write decimal: " + val.ToString());
         }
@@ -85,6 +89,12 @@ internal class DecimalFPConverter : IFloatingPointConverter
             ctx.Error("Bad decimal found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
         }
         return Unsafe.As<decimal, T>(ref val);
+    }
+
+    public PdfNumber ToPdfNumber<T>(T value) where T : IFloatingPoint<T>
+    {
+        var val = Unsafe.As<T, decimal>(ref value);
+        return new PdfDecimalNumber(val);
     }
 }
 
@@ -124,12 +134,12 @@ internal class DoubleFPConverter : IFloatingPointConverter
         var val = (double)value;
         return Unsafe.As<double, T>(ref val);
     }
-
+    private static StandardFormat fmt = new StandardFormat('F', 10);
     public void Write<T>(T value, Stream stream) where T : IFloatingPoint<T>
     {
         var val = Unsafe.As<T, double>(ref value);
         Span<byte> buffer = stackalloc byte[35];
-        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes))
+        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes, fmt))
         {
             throw new ApplicationException("TODO: Unable to write double: " + val.ToString());
         }
@@ -158,6 +168,12 @@ internal class DoubleFPConverter : IFloatingPointConverter
             ctx.Error("Bad decimal found in content stream: " + Encoding.ASCII.GetString(data.Slice(op.StartAt, op.Length)));
         }
         return Unsafe.As<double, T>(ref val);
+    }
+
+    public PdfNumber ToPdfNumber<T>(T value) where T : IFloatingPoint<T>
+    {
+        var val = Unsafe.As<T, double>(ref value);
+        return new PdfDoubleNumber(val);
     }
 }
 internal class FloatFPConverter : IFloatingPointConverter
@@ -197,11 +213,18 @@ internal class FloatFPConverter : IFloatingPointConverter
         return Unsafe.As<float, T>(ref val);
     }
 
+    public PdfNumber ToPdfNumber<T>(T value) where T : IFloatingPoint<T>
+    {
+        var val = Unsafe.As<T, float>(ref value);
+        return new PdfDoubleNumber(val);
+    }
+
+    private static StandardFormat fmt = new StandardFormat('F', 10);
     public void Write<T>(T value, Stream stream) where T : IFloatingPoint<T>
     {
         var val = Unsafe.As<T, float>(ref value);
         Span<byte> buffer = stackalloc byte[35];
-        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes))
+        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes, fmt))
         {
             throw new ApplicationException("TODO: Unable to write double: " + val.ToString());
         }

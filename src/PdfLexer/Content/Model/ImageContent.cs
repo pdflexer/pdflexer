@@ -52,7 +52,9 @@ public record class ImageContent<T> : ISinglePartCopy<T> where T : struct, IFloa
 
     (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
 
+    public void ClipExcept(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).ClipExceptImpl(rect);
 
+    public void ClipFrom(GfxState<T> other) => ((ISinglePartCopy<T>)this).ClipFromImpl(other);
 }
 
 // Old inline image, implementation not possible without changes since

@@ -69,5 +69,27 @@ public partial class re_Op<T> : IPathCreatingOp<T> where T : struct, IFloatingPo
         return new PdfRect<T> { LLx = T.Min(x, x2), LLy = T.Min(y, y2), URx = T.Max(x, x2), URy = T.Max(y, y2) };
     }
 
+    public override bool Equals(object? obj)
+    {
+        if (obj == null) return false;
+        if (ReferenceEquals(this, obj)) { return true; }
+        if (!(obj is re_Op<T> other)) return false;
+        if (x != other.x) return false;
+        if (width != other.width) return false;
+        if (y != other.y) return false;
+        if (height != other.height) return false;
+        return true;
+    }
+
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(x);
+        hash.Add(y);
+        hash.Add(height);
+        hash.Add(width);
+        return hash.ToHashCode();
+    }
+
     public (T, T) GetFinishingPoint() => (x, y);
 }

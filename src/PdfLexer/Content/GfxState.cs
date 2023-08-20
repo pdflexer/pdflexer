@@ -72,6 +72,11 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
           T.Zero, TextRise) * Text.TextMatrix * CTM;
     }
 
+    public GfxState<T> RemoveClipping()
+    {
+        return this with { Clipping = null };
+    }
+
     internal PdfRect<T> GetGlyphBoundingBox(Glyph glyph)
     {
 
@@ -248,6 +253,11 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
     internal GfxState<T> ClipExcept(PdfRect<T> rect)
     {
         return this with { Clipping = Clipping.ClipExcept(rect) };
+    }
+
+    public GfxState<T> UnClipped()
+    {
+        return this with { Clipping = null };
     }
 
     internal GfxState<T> Clip(PdfRect<T> rect, PdfRect<T> boundary)

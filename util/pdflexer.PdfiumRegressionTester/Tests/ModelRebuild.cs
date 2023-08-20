@@ -43,7 +43,6 @@ internal class ModelRebuild : ITest
         var updatedStr = new PdfStream(new PdfDictionary(), content);
         page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
         page.Resources = resources;
-        
         return page;
     }
 }

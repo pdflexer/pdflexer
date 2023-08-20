@@ -19,6 +19,7 @@ internal class QuickSave : ITest
         using var doc2 = PdfDocument.Open(modified);
         doc2.Pages.RemoveAt(doc2.Pages.Count - 1);
         using var fo = File.Create(outputPath);
+        doc2.DeduplicateResources();
         doc2.SaveTo(fo);
 
         // pdfium results should be identical

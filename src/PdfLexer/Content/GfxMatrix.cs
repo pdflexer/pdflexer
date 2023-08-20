@@ -139,10 +139,10 @@ public record struct GfxMatrix<T> where T : struct, IFloatingPoint<T>
             var y2 = D * rect.URy + F;
             return new PdfRect<T>
             {
-                LLx = x1,
-                LLy = y1,
-                URx = x2,
-                URy = y2,
+                LLx = T.Min(x1, x2),
+                LLy = T.Min(y1, y2),
+                URx = T.Max(x1, x2),
+                URy = T.Max(y1, y2)
             };
         }
 
