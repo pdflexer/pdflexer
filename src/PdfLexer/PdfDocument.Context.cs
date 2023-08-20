@@ -21,6 +21,7 @@ public sealed partial class PdfDocument
     internal string? UserPass { get; set; }
     internal Dictionary<ulong, WeakReference<IPdfObject>> IndirectCache = new Dictionary<ulong, WeakReference<IPdfObject>>();
     internal ConditionalWeakTable<IPdfObject, XRefEntry> IndirectLookup = new ConditionalWeakTable<IPdfObject, XRefEntry>();
+    internal Dictionary<int, IPdfDataSource> LoadedStreams = new Dictionary<int, IPdfDataSource>();
     internal Dictionary<ulong, XRefEntry> XRefs = null!;
     internal bool IsEncrypted { get; set; } = false;
     internal IDecryptionHandler Decryption { get; private set; }

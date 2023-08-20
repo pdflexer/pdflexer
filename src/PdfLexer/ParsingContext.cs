@@ -292,12 +292,17 @@ public class ParsingContext : IDisposable
         return obj;
     }
 
+    
     internal void LoadObjectStream(PdfDocument doc, XRefEntry entry)
     {
+        if (doc.LoadedStreams.TryGetValue(entry.ObjectStreamNumber, out var match))
+        {
+            entry.Source = match;
+            return;
+        }
+
         var stream = GetIndirectObject(doc, XRef.GetId(entry.ObjectStreamNumber, 0)).GetValue<PdfStream>();
         var start = stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
-
-        var ctx = this;
 
         IPdfDataSource? source;
         if (Options.LowMemoryMode)
@@ -323,10 +328,8 @@ public class ParsingContext : IDisposable
 
         doc.disposables.Add(source);
 
-        foreach (var item in doc.XRefs.Values.Where(x => x.ObjectStreamNumber == entry.ObjectStreamNumber))
-        {
-            item.Source = source;
-        }
+        doc.LoadedStreams[entry.ObjectStreamNumber] = source;
+        entry.Source = source;
     }
 
     private List<int> GetOffsets(ReadOnlySpan<byte> data, int count)
