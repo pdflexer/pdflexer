@@ -1,14 +1,12 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Content.Model;
-using PdfLexer.Graphics;
 using PdfLexer.Serializers;
 using System.Numerics;
-using System.Runtime.InteropServices;
 
 namespace PdfLexer.Writing;
 public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 {
-    public ContentWriter<T> AddContent(IContentGroup<T> group, PdfDocument? document=null)
+    public ContentWriter<T> AddContent(IContentGroup<T> group, PdfDocument? document = null)
     {
         ContentModelWriter<T>.WriteContent(this, new List<IContentGroup<T>> { group }, document?.Catalog);
         return this;
@@ -20,8 +18,9 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
-    private bool NeedsGSReset(ExtGraphicsDict<T>? a, ExtGraphicsDict<T>? b) 
+    private bool NeedsGSReset(ExtGraphicsDict<T>? a, ExtGraphicsDict<T>? b)
     {
+        // TODO -> cleanup equality check (add to ExtGraphicsDict)
         if (a == null && b == null) return false;
         if (a == null || b == null) return true;
         if (a.CTM != b.CTM)
@@ -32,48 +31,63 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         {
             return true;
         }
-        foreach (var (k,v) in a.Dict)
+        foreach (var (k, v) in a.Dict)
         {
             if (!b.Dict.TryGetValue(k, out var v2))
             {
                 return true;
             }
 
-            if (v != v2) 
-            { 
+            if (v != v2)
+            {
                 return true;
             }
         }
         return false;
     }
 
-    private bool NeedsClippingReset(List<IClippingSection<T>>? a, List<IClippingSection<T>>? b)
+    private bool ClippingEqual(List<IClippingSection<T>>? b)
     {
-        if (a == null && b == null) return false;
-        if (a == null || b == null) return true;
-        if (a.Count != b.Count) return true;
+        // TODO -> cleanup equality check (add to IClippingSection)
+        if (GfxState.Clipping == null && b == null) return true;
+        if (GfxState.Clipping == null || b == null) return false;
+        if (GfxState.Clipping.Count != b.Count) return false;
 
-        for (var i = 0; i < a.Count;i++)
+        for (var i = 0; i < GfxState.Clipping.Count; i++)
         {
-            var c1 = a[i];
+            var c1 = GfxState.Clipping[i];
             var c2 = b[i];
             if (c1.GetType() != c2.GetType())
             {
-                return true;
+                return false;
             }
             if (c1 is ClippingInfo<T> ci)
             {
                 var ci2 = (ClippingInfo<T>)c2;
-                if (c1.TM != c2.TM) { return true; }
-                if (ci.EvenOdd != ci2.EvenOdd) { return true; }
-                if (ci.Path.Count != ci2.Path.Count) return true;
+                if (c1.TM != c2.TM) { return false; }
+                if (ci.EvenOdd != ci2.EvenOdd) { return false; }
+                if (ci.Path.Count != ci2.Path.Count) return false;
                 if (!ci.Path.SequenceEqual(ci2.Path))
                 {
-                    return true;
+                    return false;
+                }
+            } else if (c1 is TextClippingInfo<T> ct)
+            {
+                var ci2 = (TextClippingInfo<T>)c2;
+                if (ct.LineMatrix != ci2.LineMatrix) { return false; }
+                if (ct.NewLine != ci2.NewLine) { return false; }
+                if (ct.TM != ci2.TM) { return false; }
+                if (ct.Glyphs.Count != ci2.Glyphs.Count) return false;
+                
+                for (var g = 0; g < ct.Glyphs.Count; g++)
+                {
+                    var ag = ct.Glyphs[g];
+                    var bg = ci2.Glyphs[g];
+                    if (ag.Glyph != bg.Glyph || ag.Shift != bg.Shift) { return false; }
                 }
             }
         }
-        return false;
+        return true;
     }
 
     internal ContentWriter<T> SetGS(GfxState<T> state, bool wrapExtDicts = true)
@@ -93,7 +107,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         }
 
         // want to reset to default using gfx restore
-        var clippingReset = NeedsClippingReset(GfxState.Clipping, state.Clipping);
+        var clippingReset = !ClippingEqual(state.Clipping) && GfxState.Clipping != null;
         var ctmIdentity = (state.CTM != GfxState.CTM && state.CTM.IsIdentity)
             || clippingReset;
 
@@ -172,7 +186,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             GfxState = GfxState with { FontSize = state.FontSize };
         }
 
-        if (state.Clipping != null && NeedsClippingReset(GfxState.Clipping, state.Clipping))
+        if (state.Clipping != null && !ClippingEqual(state.Clipping))
         {
             EnsureInPageState();
             Save();
@@ -217,9 +231,6 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             cm_Op<T>.WriteLn(cm.Round(), stream);
             GfxState = GfxState with { CTM = state.CTM };
         }
-
-
-
 
         if (state.CharSpacing != GfxState.CharSpacing)
         {
@@ -421,7 +432,6 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             }
 
 
-
             GfxState = GfxState with { ExtDict = state.ExtDict };
         }
 
@@ -571,7 +581,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             isCompatSection = compat;
         }
     }
-    
+
     internal ContentWriter<T> MarkedContent(MarkedContent mc)
     {
         EnsureInPageState(); // make sure in page state to simplify making sure we don't have

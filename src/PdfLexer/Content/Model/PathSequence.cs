@@ -10,7 +10,7 @@ namespace PdfLexer.Content.Model;
 /// path drawing operation.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public record class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
+public class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Paths;
     public List<MarkedContent>? Markings { get; set; }
@@ -120,4 +120,16 @@ public class SubPath<T> where T : struct, IFloatingPoint<T>
         return true;
     }
 
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(XPos);
+        hash.Add(YPos);
+        hash.Add(Closed);
+        foreach (var item in Operations)
+        {
+            hash.Add(item);
+        }
+        return hash.ToHashCode();
+    }
 }

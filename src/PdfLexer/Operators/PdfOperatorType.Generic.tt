@@ -217,6 +217,8 @@ foreach (var op in operators)
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);

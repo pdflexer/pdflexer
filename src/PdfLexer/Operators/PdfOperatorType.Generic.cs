@@ -608,6 +608,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -650,6 +652,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -694,6 +698,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -736,6 +742,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -795,6 +803,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -891,6 +901,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -933,6 +945,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -1485,6 +1499,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -1527,6 +1543,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -1571,6 +1589,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -1613,6 +1633,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -1657,6 +1679,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -1700,6 +1724,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -1742,6 +1768,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -1942,6 +1970,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -2036,6 +2066,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -2552,6 +2584,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -2595,6 +2629,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -2637,6 +2673,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -2938,6 +2976,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -2980,6 +3020,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -3135,6 +3177,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {
@@ -3908,6 +3952,8 @@ namespace PdfLexer.Operators
             return false;
         }
 
+        public override int GetHashCode() => 1;
+
         public static void WriteLn(Stream stream) 
         {
             Write(stream);
@@ -3950,6 +3996,8 @@ namespace PdfLexer.Operators
             }
             return false;
         }
+
+        public override int GetHashCode() => 1;
 
         public static void WriteLn(Stream stream) 
         {

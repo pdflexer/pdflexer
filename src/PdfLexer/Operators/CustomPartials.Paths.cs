@@ -81,5 +81,15 @@ public partial class re_Op<T> : IPathCreatingOp<T> where T : struct, IFloatingPo
         return true;
     }
 
+    public override int GetHashCode()
+    {
+        var hash = new HashCode();
+        hash.Add(x);
+        hash.Add(y);
+        hash.Add(height);
+        hash.Add(width);
+        return hash.ToHashCode();
+    }
+
     public (T, T) GetFinishingPoint() => (x, y);
 }

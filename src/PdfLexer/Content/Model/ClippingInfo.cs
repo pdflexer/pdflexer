@@ -33,7 +33,7 @@ internal record ClippingInfo<T> : IClippingSection<T> where T : struct, IFloatin
         }
         n_Op.WriteLn(writer.Writer.Stream);
     }
-
+    
     public IClippingSection<T> ShallowClone() => this with { };
 }
 internal interface IClippingSection : IClippingSection<double>

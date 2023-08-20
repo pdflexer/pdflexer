@@ -53,11 +53,13 @@ internal class DecimalFPConverter : IFloatingPointConverter
         return Unsafe.As<decimal, T>(ref val);
     }
 
+
+    private static StandardFormat fmt = new StandardFormat('F', 10);
     public void Write<T>(T value, Stream stream) where T : IFloatingPoint<T>
     {
         var val = Unsafe.As<T, decimal>(ref value);
         Span<byte> buffer = stackalloc byte[35];
-        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes))
+        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes, fmt))
         {
             throw new ApplicationException("TODO: Unable to write decimal: " + val.ToString());
         }
@@ -198,11 +200,12 @@ internal class FloatFPConverter : IFloatingPointConverter
         return Unsafe.As<float, T>(ref val);
     }
 
+    private static StandardFormat fmt = new StandardFormat('F', 10);
     public void Write<T>(T value, Stream stream) where T : IFloatingPoint<T>
     {
         var val = Unsafe.As<T, float>(ref value);
         Span<byte> buffer = stackalloc byte[35];
-        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes))
+        if (!Utf8Formatter.TryFormat(val, buffer, out int bytes, fmt))
         {
             throw new ApplicationException("TODO: Unable to write double: " + val.ToString());
         }

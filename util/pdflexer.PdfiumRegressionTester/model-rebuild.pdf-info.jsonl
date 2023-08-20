@@ -55,7 +55,7 @@
 {"PdfName":"ZapfDingbats.pdf","Errs":[],"ErrCount":0,"FailedPages":[1],"Failure":false,"FailureMsg":null,"Status":2}
 {"PdfName":"zero_descent.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"zerowidthline.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"bug1020226.pdf","Errs":["Found end of data before dictionary end\r\n","Unknown token encountered parsing nested item:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Parsing ended unexpectedly for looking nested item end:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Unknown token encountered parsing nested item:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Parsing ended unexpectedly for looking nested item end:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Indirect object not followed by endobj token: 1 0 obj \r\n\u003C\u003C\r\n/Pages 2 0 ","Indirect object not followed by endobj token: /Contents 811 0 R\r\n811 0 "],"ErrCount":12,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":3}
+{"PdfName":"bug1020226.pdf","Errs":["Found end of data before dictionary end\r\n\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000\u0000","Unknown token encountered parsing nested item:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Parsing ended unexpectedly for looking nested item end:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Unknown token encountered parsing nested item:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Parsing ended unexpectedly for looking nested item end:  obj \r\n\u003C\u003C\r\n/Resources \r\n\u003E","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Pdf dictionary was malformed, expected PdfName for key, got NumericObj","Indirect object not followed by endobj token: 1 0 obj \r\n\u003C\u003C\r\n/Pages 2 0 ","Indirect object not followed by endobj token: /Contents 811 0 R\r\n811 0 "],"ErrCount":12,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":3}
 {"PdfName":"bug1250079.pdf","Errs":["Error during crossref parsing: Unable to find startxref token.","Found end of data before dictionary end904e5a162f03815bfbf836e31","Parsing ended unexpectedly for looking nested item end: \u003C904e5a162f03815bfbf836e3"],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":3}
 {"PdfName":"bug1606566.pdf","Errs":["Error during crossref parsing: Invalid token found at xref offset: Unknown","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":3}
 {"PdfName":"close-path-bug.pdf","Errs":["Error during crossref parsing: XRef offset larger than document size, 1556 (1520 size)","Endstream not found at end of stream when parsing indirect object.","Found endstream in contents, using repaired length."],"ErrCount":3,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -112,7 +112,7 @@
 {"PdfName":"__bug1142033.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1199237.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__bug1260585.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__bug1292316.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__bug1292316.pdf","Errs":[],"ErrCount":0,"FailedPages":[0],"Failure":false,"FailureMsg":null,"Status":2}
 {"PdfName":"__issue3062.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue3064.pdf","Errs":[],"ErrCount":0,"FailedPages":[0],"Failure":false,"FailureMsg":null,"Status":2}
 {"PdfName":"__issue3248.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"Stream decoding of type DCTDecode has not been implemented.","Status":0}
@@ -398,7 +398,7 @@
 {"PdfName":"issue3207r.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue3263r.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue3323.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__hudsonsurvey.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__hudsonsurvey.pdf","Errs":[],"ErrCount":0,"FailedPages":[3,4,5,7],"Failure":false,"FailureMsg":null,"Status":2}
 {"PdfName":"__i9.pdf","Errs":null,"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":"The input data is not a complete block.","Status":0}
 {"PdfName":"__ichiji.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"issue3405r.pdf","Errs":["Error reading tt font file (7E9ba1WenQuanYiZenHei,Medium): Specified argument was out of the range of valid values."],"ErrCount":1,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
@@ -527,7 +527,7 @@
 {"PdfName":"issue7426.pdf","Errs":[],"ErrCount":0,"FailedPages":[0],"Failure":false,"FailureMsg":null,"Status":2}
 {"PdfName":"issue7439.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue10614.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
-{"PdfName":"__issue10717.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
+{"PdfName":"__issue10717.pdf","Errs":[],"ErrCount":0,"FailedPages":[0,1],"Failure":false,"FailureMsg":null,"Status":2}
 {"PdfName":"__issue10880.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue10989.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
 {"PdfName":"__issue11004.pdf","Errs":[],"ErrCount":0,"FailedPages":[],"Failure":false,"FailureMsg":null,"Status":4}
