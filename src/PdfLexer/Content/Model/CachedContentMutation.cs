@@ -115,7 +115,9 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
 
         // clip items to form bbox to match existing clipping from form bbox
         // -> we need to adjust bbox for moved items so can't use that
-        var formBox = ((PdfRectangle)form.Stream.Dictionary.Get<PdfArray>(PdfName.BBox)).ToContentModel<T>();
+        var bbox = form.Stream.Dictionary.Get<PdfArray>(PdfName.BBox);
+        if (bbox == null) { bbox = PageSizeHelpers.GetMediaBox(PageSize.LETTER); }
+        var formBox = ((PdfRectangle)bbox).ToContentModel<T>();
         formBox = form.GraphicsState.CTM.GetTransformedBoundingBox(formBox);
         foreach (var item in content)
         {
@@ -127,11 +129,6 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
         }
 
         var newContents = Apply(content);
-
-        if (newContents.Count == 6)
-        {
-
-        }
 
         if (newContents.Count == 0)
         {
@@ -151,7 +148,6 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
             {
                 item.TransformInitial(inv);
             }
-            // bb = inv.GetTransformedBoundingBox(bb);
         }
 
         PdfRect<T>? bb = default;
@@ -177,8 +173,13 @@ public class CachedContentMutation<T> where T : struct, IFloatingPoint<T>
 
         var xObj = new XObjForm();
         var resources = new PdfDictionary();
-        // xObj.BBox = form.Stream.Dictionary.Get<PdfArray>(PdfName.BBox);
-        xObj.BBox = PdfRectangle.FromContentModel(bb with { LLx = bb.LLx - FPC<T>.V100, LLy = bb.LLy - FPC<T>.V100, URx = bb.URx + FPC<T>.V100, URy = bb.URy + FPC<T>.V100
+
+        // TODO revisit this, do we need to expand?
+        xObj.BBox = PdfRectangle.FromContentModel(bb! with {
+            LLx = bb.LLx - FPC<T>.V100, 
+            LLy = bb.LLy - FPC<T>.V100, 
+            URx = bb.URx + FPC<T>.V100, 
+            URy = bb.URy + FPC<T>.V100
         });
         xObj.NativeObject.Dictionary[PdfName.Resources] = resources;
         var writer = new ContentWriter<T>(resources);

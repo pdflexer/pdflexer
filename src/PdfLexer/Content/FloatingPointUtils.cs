@@ -11,6 +11,7 @@ internal interface IFloatingPointConverter
 {
     decimal ToDecimal<T>(T value) where T : IFloatingPoint<T>;
     double ToDouble<T>(T value) where T : IFloatingPoint<T>;
+    PdfNumber ToPdfNumber<T>(T value) where T : IFloatingPoint<T>;
     T FromDecimal<T>(decimal value) where T : IFloatingPoint<T>;
     T FromDouble<T>(double value) where T : IFloatingPoint<T>;
     T FromPdfNumber<T>(PdfNumber value) where T : IFloatingPoint<T>;
@@ -89,6 +90,12 @@ internal class DecimalFPConverter : IFloatingPointConverter
         }
         return Unsafe.As<decimal, T>(ref val);
     }
+
+    public PdfNumber ToPdfNumber<T>(T value) where T : IFloatingPoint<T>
+    {
+        var val = Unsafe.As<T, decimal>(ref value);
+        return new PdfDecimalNumber(val);
+    }
 }
 
 // TODO -> inlining probably does nothing the way it's used
@@ -162,6 +169,12 @@ internal class DoubleFPConverter : IFloatingPointConverter
         }
         return Unsafe.As<double, T>(ref val);
     }
+
+    public PdfNumber ToPdfNumber<T>(T value) where T : IFloatingPoint<T>
+    {
+        var val = Unsafe.As<T, double>(ref value);
+        return new PdfDoubleNumber(val);
+    }
 }
 internal class FloatFPConverter : IFloatingPointConverter
 {
@@ -198,6 +211,12 @@ internal class FloatFPConverter : IFloatingPointConverter
     {
         var val = (float)value;
         return Unsafe.As<float, T>(ref val);
+    }
+
+    public PdfNumber ToPdfNumber<T>(T value) where T : IFloatingPoint<T>
+    {
+        var val = Unsafe.As<T, float>(ref value);
+        return new PdfDoubleNumber(val);
     }
 
     private static StandardFormat fmt = new StandardFormat('F', 10);

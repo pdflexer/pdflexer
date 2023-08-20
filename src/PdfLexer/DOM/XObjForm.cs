@@ -1,4 +1,5 @@
-﻿using PdfLexer.Filters;
+﻿using PdfLexer.Content;
+using PdfLexer.Filters;
 
 namespace PdfLexer.DOM;
 
@@ -10,10 +11,34 @@ public class XObjForm
         NativeObject = dict;
     }
 
-    public XObjForm()
+    internal XObjForm()
     {
         NativeObject = new PdfStream();
         NativeObject.Dictionary[PdfName.Subtype] = PdfName.Form;
+    }
+
+    public XObjForm(PageSize size)
+    {
+        NativeObject = new PdfStream();
+        NativeObject.Dictionary[PdfName.Subtype] = PdfName.Form;
+        NativeObject.Dictionary[PdfName.BBox] = PageSizeHelpers.GetMediaBox(size);
+    }
+
+    public XObjForm(PdfRect<double> bbox)
+    {
+        NativeObject = new PdfStream();
+        NativeObject.Dictionary[PdfName.Subtype] = PdfName.Form;
+        NativeObject.Dictionary[PdfName.BBox] = PdfRectangle.FromContentModel(bbox).NativeObject;
+    }
+
+    public XObjForm(double width, double height)
+    {
+        NativeObject = new PdfStream();
+        NativeObject.Dictionary[PdfName.Subtype] = PdfName.Form;
+        NativeObject.Dictionary[PdfName.BBox] = new PdfArray { 
+            PdfCommonNumbers.Zero, PdfCommonNumbers.Zero,
+            new PdfDoubleNumber(width), new PdfDoubleNumber(height) 
+        };
     }
 
     public static implicit operator XObjForm(PdfStream str) => new XObjForm(str);

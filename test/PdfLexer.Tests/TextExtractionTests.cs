@@ -298,7 +298,7 @@ namespace PdfLexer.Tests
             var pg = doc.AddPage();
             {
 
-                var f1 = new FormWriter();
+                var f1 = new FormWriter(DOM.PageSize.LETTER);
                 f1.Font(Base14.Helvetica, 40)
                     .Text("A")
                     .NewLine()
@@ -314,7 +314,7 @@ namespace PdfLexer.Tests
                     .Text("F");
                 var form = f1.Complete();
 
-                var f2 = new FormWriter();
+                var f2 = new FormWriter(DOM.PageSize.LETTER);
                 f2.Font(Base14.Helvetica, 40)
                     .Translate(50, 0)
                     .Save()
