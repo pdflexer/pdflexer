@@ -36,19 +36,21 @@ public sealed partial class PdfDocument
         wv = Math.Max(wv, PdfVersion);
         if (wv == 0) { wv = 1.7m; } // default to 1.7
         ctx.Initialize(wv);
-        if (XrefEntries?.Count > 0)
-        {
-            // save previously read xref objs that may have a new indirect reference to them
-            foreach (var (k, v) in IndirectCache)
-            {
-                if (v.TryGetTarget(out var xobj))
-                {
-                    ctx.AddSavedObject(xobj, new ExistingIndirectRef(this, XRef.FromId(k)));
-                }
-            }
-
-             SaveExistingObjects(ctx);
-        }
+        
+        // disable quicksaving until strategy determined for process to not copy extra data
+        // if (XrefEntries?.Count > 0)
+        // {
+        //     // save previously read xref objs that may have a new indirect reference to them
+        //     foreach (var (k, v) in IndirectCache)
+        //     {
+        //         if (v.TryGetTarget(out var xobj))
+        //         {
+        //             ctx.AddSavedObject(xobj, new ExistingIndirectRef(this, XRef.FromId(k)));
+        //         }
+        //     }
+        // 
+        //      SaveExistingObjects(ctx);
+        // }
         // create clones of these in case they were
         // copied from another doc, don't want to modify existing
         var catalog = Catalog.CloneShallow();

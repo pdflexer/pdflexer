@@ -152,7 +152,7 @@ internal static class StructuralRepairs
                         if (scanner.ScanToToken(IndirectSequences.endstream))
                         {
                             scanner.SkipCurrent();
-                            repaired.MaxLength = (int)(scanner.GetOffset() - repaired.Offset);
+                            repaired.MaxLength = (int)scanner.GetOffset();
                             return true;
                         }
                         else
@@ -167,13 +167,13 @@ internal static class StructuralRepairs
                         if (eos == PdfTokenType.EndStream)
                         {
                             scanner.SkipCurrent();
-                            repaired.MaxLength = (int)(scanner.GetOffset() - repaired.Offset);
+                            repaired.MaxLength = (int)scanner.GetOffset();
                             return true;
                         }
                         else
                         {
                             var fake = Math.Min(scanner.GetOffset() + 100, stream.Length);
-                            repaired.MaxLength = (int)(fake - repaired.Offset);
+                            repaired.MaxLength = (int)(fake);
                             return true;
                         }
                     }
