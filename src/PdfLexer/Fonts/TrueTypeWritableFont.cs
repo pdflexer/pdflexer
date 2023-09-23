@@ -108,11 +108,10 @@ internal class TrueTypeWritableFont : IWritableFont
             }
 
         }
-        f.Encoding = PdfName.MacRomanEncoding;
+        f.Encoding = _info.Encoding;
         f.FirstChar = min;
         f.LastChar = max;
         f.Widths = widths;
-
 
 
         var fd = new FontDescriptor
@@ -130,7 +129,7 @@ internal class TrueTypeWritableFont : IWritableFont
             CapHeight = _info.CapHeight,
             Ascent = _info.Ascent,
             Descent = _info.Descent,
-            StemV = 70,
+            StemV = 0,
             FontFile2 = _fontFile
         };
         if (_info.Bold)

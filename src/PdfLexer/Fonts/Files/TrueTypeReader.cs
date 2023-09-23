@@ -117,7 +117,7 @@ public ref struct TrueTypeReader
 
     }
 
-    // GetPdfFontInfo PORTED FROM pdfcpu (https://github.com/pdfcpu/pdfcpu)
+    // GetPdfFontInfo table reading ported from pdfcpu (https://github.com/pdfcpu/pdfcpu)
     // pdfcpu is licensed as follows:
     /* Copyright 2019 The pdfcpu Authors.
      *
@@ -149,6 +149,8 @@ public ref struct TrueTypeReader
 
         var cmaps = ReadCMapTables();
         var cmap = GetPdfCmap(cmaps, false, false);
+
+        info.Encoding = cmap.PlatformId == 3 ? PdfName.WinAnsiEncoding : PdfName.MacRomanEncoding;
         var glyphs = cmap.PlatformId == 3 ? Encodings.GetPartialGlyphs(Encodings.WinAnsiEncoding, cmap.Mappings!)
                 : Encodings.GetPartialGlyphs(Encodings.MacRomanEncoding, cmap.Mappings!);
 
@@ -1091,6 +1093,7 @@ internal ref struct DataView
 public class TrueTypePdfFontInfo
 {
     public string PostScriptName { get; internal set; } = null!;
+    public PdfName Encoding { get; internal set; } = null!;
     public int UnitsPerEm { get; internal set; }
     public double LLx { get; internal set; }
     public double LLy { get; internal set; }
