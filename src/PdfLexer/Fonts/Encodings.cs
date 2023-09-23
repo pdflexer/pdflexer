@@ -343,7 +343,7 @@ namespace PdfLexer.Fonts
             }
         }
 
-        public static Glyph[] GetPartialGlyphs(string[] charNames)
+        public static Glyph[] GetPartialGlyphs(string?[] charNames)
         {
             var glyphs = new Glyph[charNames.Length];
             for (var i = 0; i < glyphs.Length; i++)
@@ -358,6 +358,33 @@ namespace PdfLexer.Fonts
                         CodePoint = (uint)i,
                         Char = c,
                         IsWordSpace = i == 32
+                    };
+                }
+            }
+            return glyphs;
+        }
+
+        public static Dictionary<char, Glyph> GetPartialGlyphs(string?[] charNames, Dictionary<uint, uint> cmap, bool singleByte=true)
+        {
+            var glyphs = new Dictionary<char, Glyph>();
+            for (var i = 0; i < charNames.Length; i++)
+            {
+                var nm = charNames[i];
+                if (nm == null) { continue; }
+
+                if (!cmap.ContainsKey((uint)i))
+                {
+                    continue;
+                }
+
+                if (GlyphNames.Lookup.TryGetValue(nm, out var c))
+                {
+                    glyphs[c] = new Glyph
+                    {
+                        Name = nm,
+                        CodePoint = (uint)i,
+                        Char = c,
+                        IsWordSpace = i == 32 && singleByte
                     };
                 }
             }

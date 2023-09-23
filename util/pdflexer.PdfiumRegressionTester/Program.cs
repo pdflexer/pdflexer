@@ -172,6 +172,8 @@ async Task<int> RunBase(string data, string type, string pdfRoot, string[] pdfPa
                 var rb = new QuickSave();
                 foreach (var file in pdfPaths)
                 {
+                    Console.WriteLine($"Starting {file}");
+                    writer.WriteLine($"[{Path.GetFileName(file)}] Start"); writer.Flush();
                     var result = runner.RunTest(rb, file, output);
                     writer.WriteLine($"[{Path.GetFileName(file)}] {result.Status} {result.Message}");
                     errInfo.WriteLine(JsonSerializer.Serialize(result.Info));
