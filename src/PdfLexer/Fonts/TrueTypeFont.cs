@@ -6,21 +6,34 @@ namespace PdfLexer.Fonts;
 
 public class TrueTypeFont
 {
+    /// <summary>
+    /// Creates a simple writable font with default encoding of the truetype font.
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
     public static IWritableFont CreateWritableFont(ReadOnlySpan<byte> data)
+    {
+        var info = CreateEmbeddableFont(data);
+        return info.GetDefaultEncodedFont();
+    }
+
+    /// <summary>
+    /// Creates an embeddable font from a truetype font file. 
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static IPdfEmbeddableFont CreateEmbeddableFont(ReadOnlySpan<byte> data)
     {
         var ttr = new TrueTypeReader(ParsingContext.Current, data);
 
         var ot = TrueTypeReader.IsOpenTypeFile(data);
-        var info = ttr.GetPdfFontInfo();
-        var str = new PdfStream();
+        if (ot)
         {
-            var flate = new ZLibLexerStream();
-            flate.Write(data);
-            str.Contents = flate.Complete();
+            throw new PdfLexerException("Invalid true type font. OpenType not supported.");
         }
-        str.Dictionary[PdfName.Length1] = new PdfIntNumber(data.Length);
+        var info = ttr.GetPdfFontInfo();
 
-        return new TrueTypeWritableFont(info, str);
+        return info;
     }
 
     internal static IReadableFont CreateReadable(ParsingContext ctx, FontType1 t1)

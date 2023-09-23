@@ -1,6 +1,9 @@
-﻿using System;
+﻿using PdfLexer.DOM;
+using PdfLexer.Filters;
+using System;
 using System.Net.Http.Headers;
 using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PdfLexer.Fonts.Files;
 
@@ -134,9 +137,9 @@ public ref struct TrueTypeReader
      * limitations under the License.
      */
 
-    public TrueTypePdfFontInfo GetPdfFontInfo()
+    internal TrueTypeEmbeddedFont GetPdfFontInfo()
     {
-        var info = new TrueTypePdfFontInfo();
+        var info = new TrueTypeEmbeddedFont();
 
         // "head", "OS/2", "post", "name", "hhea", "maxp", "hmtx", "cmap"
         AddFontHeaderTable(info);
@@ -150,22 +153,54 @@ public ref struct TrueTypeReader
         var cmaps = ReadCMapTables();
         var cmap = GetPdfCmap(cmaps, false, false);
 
-        info.Encoding = cmap.PlatformId == 3 ? PdfName.WinAnsiEncoding : PdfName.MacRomanEncoding;
+        info.DefaultEncoding = cmap.PlatformId == 3 ? PdfName.WinAnsiEncoding : PdfName.MacRomanEncoding;
         var glyphs = cmap.PlatformId == 3 ? Encodings.GetPartialGlyphs(Encodings.WinAnsiEncoding, cmap.Mappings!)
                 : Encodings.GetPartialGlyphs(Encodings.MacRomanEncoding, cmap.Mappings!);
 
         foreach (var glyph in glyphs.Values)
         {
             var gid = cmap.Mappings![glyph.CodePoint!.Value];
-            glyph.w0 = info.GlyphWidths[gid]/1000f;
+            glyph.w0 = info.GlyphWidths[gid] / 1000f;
         }
 
         info.Glyphs = glyphs;
 
+        var str = new PdfStream();
+        {
+            var flate = new ZLibLexerStream();
+            flate.Write(Data);
+            str.Contents = flate.Complete();
+        }
+        str.Dictionary[PdfName.Length1] = new PdfIntNumber(Data.Length);
+
+        var fd = new FontDescriptor
+        {
+            FontName = info.PostScriptName,
+            Flags = FontFlags.Nonsymbolic,
+            FontBBox = new PdfRectangle
+            {
+                LLx = new PdfDoubleNumber(info.LLx),
+                LLy = new PdfDoubleNumber(info.LLy),
+                URx = new PdfDoubleNumber(info.URx),
+                URy = new PdfDoubleNumber(info.URy),
+            },
+            ItalicAngle = new PdfDoubleNumber(info.ItalicAngle),
+            CapHeight = info.CapHeight,
+            Ascent = info.Ascent,
+            Descent = info.Descent,
+            StemV = info.ApproxStemV,
+            FontFile2 = str,
+        };
+        if (info.Bold)
+        {
+            fd.Flags = fd.Flags | FontFlags.ForceBold;
+        }
+        info.Descriptor = fd;
+
         return info;
     }
 
-    private void AddHorizontalMetricsTable(TrueTypePdfFontInfo fd)
+    private void AddHorizontalMetricsTable(TrueTypeEmbeddedFont fd)
     {
         if (!Headers.TryGetValue("hmtx", out var table))
         {
@@ -175,18 +210,18 @@ public ref struct TrueTypeReader
         var t = new DataView(Data.Slice(table.Offset));
 
         fd.GlyphWidths = new int[fd.GlyphCount];
-        for (var i =0; i< fd.HorizontalMetricsCount; i++)
+        for (var i = 0; i < fd.HorizontalMetricsCount; i++)
         {
             fd.GlyphWidths[i] = (int)fd.ToPDFGlyphSpace(t.GetUInt16(i * 4));
         }
 
-        for (var i =fd.HorizontalMetricsCount; i<fd.GlyphCount; i++)
+        for (var i = fd.HorizontalMetricsCount; i < fd.GlyphCount; i++)
         {
             fd.GlyphWidths[i] = fd.GlyphWidths[fd.HorizontalMetricsCount - 1];
         }
     }
 
-    private void AddMaxProfileTable(TrueTypePdfFontInfo fd)
+    private void AddMaxProfileTable(TrueTypeEmbeddedFont fd)
     {
         if (!Headers.TryGetValue("maxp", out var table))
         {
@@ -198,7 +233,7 @@ public ref struct TrueTypeReader
         fd.GlyphCount = t.GetUInt16(4);
     }
 
-    private void AddHorizontalHeaderTable(TrueTypePdfFontInfo fd)
+    private void AddHorizontalHeaderTable(TrueTypeEmbeddedFont fd)
     {
         if (!Headers.TryGetValue("hhea", out var table))
         {
@@ -219,7 +254,7 @@ public ref struct TrueTypeReader
         fd.HorizontalMetricsCount = t.GetUInt16(34);
     }
 
-    private void AddPostTable(TrueTypePdfFontInfo fd)
+    private void AddPostTable(TrueTypeEmbeddedFont fd)
     {
         if (!Headers.TryGetValue("post", out var table))
         {
@@ -231,7 +266,7 @@ public ref struct TrueTypeReader
         fd.FixedPitch = t.GetUInt16(16) != 0;
     }
 
-    private void AddFontHeaderTable(TrueTypePdfFontInfo fd)
+    private void AddFontHeaderTable(TrueTypeEmbeddedFont fd)
     {
         if (!Headers.TryGetValue("head", out var table))
         {
@@ -250,7 +285,7 @@ public ref struct TrueTypeReader
         fd.URy = fd.ToPDFGlyphSpace(yMax);
     }
 
-    private void AddWindowsMetricsTable(TrueTypePdfFontInfo fd)
+    private void AddWindowsMetricsTable(TrueTypeEmbeddedFont fd)
     {
         if (!Headers.TryGetValue("OS/2", out var table))
         {
@@ -277,16 +312,19 @@ public ref struct TrueTypeReader
         var fdUnicodeRange2 = uniCodeRange3;
         var uniCodeRange4 = t.GetUInt32(54);
         var fdUnicodeRange3 = uniCodeRange4;
-        
+
         var sTypoAscender = t.GetInt16(68);
         fd.Ascent = (int)fd.ToPDFGlyphSpace(sTypoAscender);
         var sTypoDescender = t.GetInt16(70);
         fd.Descent = (int)fd.ToPDFGlyphSpace(sTypoDescender);
 
-        if (version >= 2) {
+        if (version >= 2)
+        {
             var sCapHeight = t.GetInt16(88);
             fd.CapHeight = (int)fd.ToPDFGlyphSpace(sCapHeight);
-        } else {
+        }
+        else
+        {
             fd.CapHeight = fd.Ascent;
         }
 
@@ -1093,36 +1131,4 @@ internal ref struct DataView
         return ((double)GetUInt32(pos)) / 65536.0;
     }
 
-}
-
-public class TrueTypePdfFontInfo
-{
-    public string PostScriptName { get; internal set; } = null!;
-    public PdfName Encoding { get; internal set; } = null!;
-    public int UnitsPerEm { get; internal set; }
-    public double LLx { get; internal set; }
-    public double LLy { get; internal set; }
-    public double URx { get; internal set; }
-    public double URy { get; internal set; }
-
-    public int ApproxStemV { get; internal set; }
-    public int Ascent { get; internal set; }
-    public int Descent { get; internal set; }
-    public int CapHeight { get; internal set; }
-    public bool Bold { get; internal set; }
-    public int FirstChar { get; internal set; }
-    public int LastChar { get; internal set; }
-
-    public double ItalicAngle { get; internal set; }
-    public bool FixedPitch { get; internal set; }
-
-    public int HorizontalMetricsCount { get; internal set; }
-
-    public int GlyphCount { get; internal set; }
-
-    public int[] GlyphWidths { get; internal set; } = null!;
-
-    public Dictionary<char, Glyph> Glyphs { get; internal set; } = null!;
-
-    public double ToPDFGlyphSpace(double value) => (value * 1000) / UnitsPerEm;
 }

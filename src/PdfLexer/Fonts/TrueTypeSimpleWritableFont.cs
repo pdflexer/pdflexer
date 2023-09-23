@@ -4,21 +4,21 @@ using PdfLexer.Fonts.Files;
 
 namespace PdfLexer.Fonts;
 
-internal class TrueTypeWritableFont : IWritableFont
+internal class TrueTypeSimpleWritableFont : IWritableFont
 {
-    private readonly TrueTypePdfFontInfo _info;
-    private readonly PdfStream _fontFile;
+    private readonly TrueTypeEmbeddedFont _info;
     private readonly Dictionary<char, Glyph> _glyphs;
     private readonly Glyph[] _fastLookup;
     private readonly int _fastStart;
     private readonly int? _fastEnd;
+    private readonly UnknownCharHandling _charHandling;
 
     public double LineHeight => throw new NotImplementedException();
 
-    public TrueTypeWritableFont(TrueTypePdfFontInfo info, PdfStream fontFile, Glyph[]? fastLookup = null, int fastStart = 0)
+    public TrueTypeSimpleWritableFont(TrueTypeEmbeddedFont info, UnknownCharHandling charHandling, Glyph[]? fastLookup = null, int fastStart = 0)
     {
+        _charHandling = charHandling;
         _info = info;
-        _fontFile = fontFile;
         _glyphs = info.Glyphs;
         if (fastLookup == null)
         {
@@ -48,6 +48,22 @@ internal class TrueTypeWritableFont : IWritableFont
         {
             var c = text[i];
             var g = GetGlyph(c);
+            if (g == null)
+            {
+                if (_charHandling == UnknownCharHandling.Error)
+                {
+                    throw new PdfLexerException($"Char {c} not part of encoding for embedded true type font {_info.PostScriptName}");
+                } else if (_charHandling == UnknownCharHandling.Skip)
+                {
+                    continue;
+                } else
+                {
+                    buffer[0] = 0;
+                    yield return new SizedChar { ByteCount = 1, Width = g.w0, PrevKern = 0 };
+                    lc = null;
+                    continue;
+                }
+            }
             buffer[0] = (byte)(g.CodePoint ?? 0); // 1 byte only
             var k = lc == null ? 0 : Getkerning(lc, c);
             yield return new SizedChar { ByteCount = 1, Width = g.w0, PrevKern = k };
@@ -55,7 +71,7 @@ internal class TrueTypeWritableFont : IWritableFont
         }
     }
 
-    private Glyph GetGlyph(char c)
+    private Glyph? GetGlyph(char c)
     {
         if (_fastLookup != null && c >= _fastStart && c <= _fastEnd)
         {
@@ -65,10 +81,9 @@ internal class TrueTypeWritableFont : IWritableFont
                 return b;
             }
         }
-        if (!_glyphs.TryGetValue(c, out var bb))
-        {
-            throw new PdfLexerException($"Char {c} not part of default Times-Roman encoding.");
-        }
+        if (c > 255) { return null; } // single byte only for simple
+
+        _glyphs.TryGetValue(c, out var bb);
         return bb;
     }
 
@@ -90,7 +105,7 @@ internal class TrueTypeWritableFont : IWritableFont
         f.NativeObject[PdfName.Subtype] = PdfName.TrueType;
         f.BaseFont = _info.PostScriptName;
 
-        var list = _glyphs.Values.Where(x => x.CodePoint.HasValue).OrderBy(x => x.CodePoint).ToList();
+        var list = _glyphs.Values.Where(x => x.CodePoint.HasValue && x.CodePoint.Value < 256).OrderBy(x => x.CodePoint).ToList(); // simple 1 byte only
         int min = (int)(list.First().CodePoint ?? 0);
         int max = (int)(list.Last().CodePoint ?? 0);
         var widths = new PdfArray(new List<IPdfObject>(max - min + 1));
@@ -108,35 +123,12 @@ internal class TrueTypeWritableFont : IWritableFont
             }
 
         }
-        f.Encoding = _info.Encoding;
+        f.Encoding = _info.DefaultEncoding;
         f.FirstChar = min;
         f.LastChar = max;
         f.Widths = widths;
-
-
-        var fd = new FontDescriptor
-        {
-            FontName = _info.PostScriptName,
-            Flags = FontFlags.Nonsymbolic,
-            FontBBox = new PdfRectangle
-            {
-                LLx = new PdfDoubleNumber(_info.LLx),
-                LLy = new PdfDoubleNumber(_info.LLy),
-                URx = new PdfDoubleNumber(_info.URx),
-                URy = new PdfDoubleNumber(_info.URy),
-            },
-            ItalicAngle = new PdfDoubleNumber(_info.ItalicAngle),
-            CapHeight = _info.CapHeight,
-            Ascent = _info.Ascent,
-            Descent = _info.Descent,
-            StemV = _info.ApproxStemV,
-            FontFile2 = _fontFile
-        };
-        if (_info.Bold)
-        {
-            fd.Flags = fd.Flags | FontFlags.ForceBold;
-        }
-        f.FontDescriptor = fd;
+       
+        f.FontDescriptor = _info.Descriptor;
         return f;
     }
 
