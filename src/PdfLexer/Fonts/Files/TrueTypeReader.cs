@@ -1,4 +1,6 @@
-﻿using System.Text;
+﻿using System;
+using System.Net.Http.Headers;
+using System.Text;
 
 namespace PdfLexer.Fonts.Files;
 
@@ -26,6 +28,10 @@ public ref struct TrueTypeReader
 {
     private readonly ReadOnlySpan<byte> Data;
     private readonly Dictionary<string, Tab> Headers;
+    public IReadOnlyDictionary<string, Tab> Tables
+    {
+        get => Headers;
+    }
     private int Position;
     public TrueTypeReader(ParsingContext ctx, ReadOnlySpan<byte> data)
     {
@@ -111,6 +117,220 @@ public ref struct TrueTypeReader
 
     }
 
+    // GetPdfFontInfo PORTED FROM pdfcpu (https://github.com/pdfcpu/pdfcpu)
+    // pdfcpu is licensed as follows:
+    /* Copyright 2019 The pdfcpu Authors.
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+
+    public TrueTypePdfFontInfo GetPdfFontInfo()
+    {
+        var info = new TrueTypePdfFontInfo();
+
+        // "head", "OS/2", "post", "name", "hhea", "maxp", "hmtx", "cmap"
+        AddFontHeaderTable(info);
+        AddWindowsMetricsTable(info);
+        AddPostTable(info);
+        info.PostScriptName = GetPostscriptName() ?? "Unknown";
+        AddHorizontalHeaderTable(info);
+        AddMaxProfileTable(info);
+        AddHorizontalMetricsTable(info);
+
+        var cmaps = ReadCMapTables();
+        var cmap = GetPdfCmap(cmaps, false, false);
+        var glyphs = cmap.PlatformId == 3 ? Encodings.GetPartialGlyphs(Encodings.WinAnsiEncoding, cmap.Mappings!)
+                : Encodings.GetPartialGlyphs(Encodings.MacRomanEncoding, cmap.Mappings!);
+
+        foreach (var glyph in glyphs.Values)
+        {
+            var gid = cmap.Mappings![glyph.CodePoint!.Value];
+            glyph.w0 = info.GlyphWidths[gid]/1000f;
+        }
+
+        info.Glyphs = glyphs;
+
+        return info;
+    }
+
+    private void AddHorizontalMetricsTable(TrueTypePdfFontInfo fd)
+    {
+        if (!Headers.TryGetValue("hmtx", out var table))
+        {
+            throw new PdfLexerException("No hmtx table in TTF font");
+        }
+
+        var t = new DataView(Data.Slice(table.Offset));
+
+        fd.GlyphWidths = new int[fd.GlyphCount];
+        for (var i =0; i< fd.HorizontalMetricsCount; i++)
+        {
+            fd.GlyphWidths[i] = (int)fd.ToPDFGlyphSpace(t.GetUInt16(i * 4));
+        }
+
+        for (var i =fd.HorizontalMetricsCount; i<fd.GlyphCount; i++)
+        {
+            fd.GlyphWidths[i] = fd.GlyphWidths[fd.HorizontalMetricsCount - 1];
+        }
+    }
+
+    private void AddMaxProfileTable(TrueTypePdfFontInfo fd)
+    {
+        if (!Headers.TryGetValue("maxp", out var table))
+        {
+            throw new PdfLexerException("No maxp table in TTF font");
+        }
+
+        var t = new DataView(Data.Slice(table.Offset));
+
+        fd.GlyphCount = t.GetUInt16(4);
+    }
+
+    private void AddHorizontalHeaderTable(TrueTypePdfFontInfo fd)
+    {
+        if (!Headers.TryGetValue("hhea", out var table))
+        {
+            throw new PdfLexerException("No hhea table in TTF font");
+        }
+
+        var t = new DataView(Data.Slice(table.Offset));
+
+        if (fd.Ascent == 0)
+        {
+            fd.Ascent = (int)fd.ToPDFGlyphSpace(t.GetInt16(4));
+        }
+        if (fd.Descent == 0)
+        {
+            fd.Descent = (int)fd.ToPDFGlyphSpace(t.GetInt16(6));
+        }
+
+        fd.HorizontalMetricsCount = t.GetUInt16(34);
+    }
+
+    private void AddPostTable(TrueTypePdfFontInfo fd)
+    {
+        if (!Headers.TryGetValue("post", out var table))
+        {
+            throw new PdfLexerException("No post table in TTF font");
+        }
+
+        var t = new DataView(Data.Slice(table.Offset));
+        fd.ItalicAngle = t.GetDouble(4);
+        fd.FixedPitch = t.GetUInt16(16) != 0;
+    }
+
+    private void AddFontHeaderTable(TrueTypePdfFontInfo fd)
+    {
+        if (!Headers.TryGetValue("head", out var table))
+        {
+            throw new PdfLexerException("No head table in TTF font");
+        }
+
+        var t = new DataView(Data.Slice(table.Offset));
+        fd.UnitsPerEm = t.GetUInt16(18);
+        var xMin = t.GetInt16(36);
+        fd.LLx = fd.ToPDFGlyphSpace(xMin);
+        var yMin = t.GetInt16(38);
+        fd.LLy = fd.ToPDFGlyphSpace(yMin);
+        var xMax = t.GetInt16(40);
+        fd.URx = fd.ToPDFGlyphSpace(xMax);
+        var yMax = t.GetInt16(42);
+        fd.URy = fd.ToPDFGlyphSpace(yMax);
+    }
+
+    private void AddWindowsMetricsTable(TrueTypePdfFontInfo fd)
+    {
+        if (!Headers.TryGetValue("OS/2", out var table))
+        {
+            return;
+        }
+
+        var t = new DataView(Data.Slice(table.Offset));
+
+        var version = t.GetUInt16(0);
+        var fsType = t.GetUInt16(8);
+
+        var prot = (fsType & 2) > 0;
+
+        var uniCodeRange1 = t.GetUInt32(42);
+        var fdUnicodeRange0 = uniCodeRange1;
+        var uniCodeRange2 = t.GetUInt32(46);
+        var fdUnicodeRange1 = uniCodeRange2;
+        var uniCodeRange3 = t.GetUInt32(50);
+        var fdUnicodeRange2 = uniCodeRange3;
+        var uniCodeRange4 = t.GetUInt32(54);
+        var fdUnicodeRange3 = uniCodeRange4;
+        
+        var sTypoAscender = t.GetInt16(68);
+        fd.Ascent = (int)fd.ToPDFGlyphSpace(sTypoAscender);
+        var sTypoDescender = t.GetInt16(70);
+        fd.Descent = (int)fd.ToPDFGlyphSpace(sTypoDescender);
+
+        if (version >= 2) {
+            var sCapHeight = t.GetInt16(88);
+            fd.CapHeight = (int)fd.ToPDFGlyphSpace(sCapHeight);
+        } else {
+            fd.CapHeight = fd.Ascent;
+        }
+
+        var fsSelection = t.GetUInt16(62);
+        fd.Bold = (fsSelection & 0x40) > 0;
+
+
+        var fsFirstCharIndex = t.GetUInt16(64);
+        fd.FirstChar = fsFirstCharIndex;
+        var fsLastCharIndex = t.GetUInt16(66);
+        fd.LastChar = fsLastCharIndex;
+    }
+
+
+    private string? GetPostscriptName()
+    {
+        if (!Headers.TryGetValue("name", out var table))
+        {
+            return null;
+        }
+
+        var t = new DataView(Data.Slice(table.Offset));
+        var count = t.GetUInt16(2);
+        var stringOffset = t.GetUInt16(4);
+        var baseOff = 6;
+        for (var i = 0; i < count; i++)
+        {
+            var recOff = baseOff + i * 12;
+            var pf = t.GetUInt16(recOff);
+            var enc = t.GetUInt16(recOff + 2);
+            var lang = t.GetUInt16(recOff + 4);
+            var nameID = t.GetUInt16(recOff + 6);
+            var l = t.GetUInt16(recOff + 8);
+            var o = t.GetUInt16(recOff + 10);
+            var soff = stringOffset + o;
+            var s = t.Data.Slice(soff, l);
+            if (nameID == 6)
+            {
+                if (pf == 3 && enc == 1 && lang == 0x0409)
+                {
+                    return Encoding.BigEndianUnicode.GetString(s);
+                }
+                if (pf == 1 && enc == 0 && lang == 0)
+                {
+                    return Encoding.UTF8.GetString(s);
+                }
+            }
+        }
+        return null;
+    }
+
     private int ReadOpenTypeHeader()
     {
         var version = GetString(4);
@@ -156,28 +376,7 @@ public ref struct TrueTypeReader
         public int Length;
     }
 
-    public class TTCMap
-    {
-        public int PlatformId { get; set; }
-        public int EncodingId { get; set; }
-        public int Offset { get; set; }
-        public Dictionary<uint, uint>? Mappings { get; set; }
-    }
 
-    public class TTSubHeader
-    {
-        public int FirstCode { get; set; }
-        public int EntryCount { get; set; }
-        public int IdDelta { get; set; }
-        public int IdRangePos { get; set; }
-    }
-    public class TTSegMent
-    {
-        public int Start { get; set; }
-        public int End { get; set; }
-        public int Delta { get; set; }
-        public int OffsetIndex { get; set; }
-    }
     public bool HasCMapTable()
     {
         return Headers.ContainsKey("cmap");
@@ -205,7 +404,7 @@ public ref struct TrueTypeReader
         return tables;
     }
 
-    public bool TryGetNameMap(List<TTCMap> maps, [NotNullWhen(true)]out Dictionary<uint,string>? gidToUnicode)
+    public bool TryGetNameMap(List<TTCMap> maps, [NotNullWhen(true)] out Dictionary<uint, string>? gidToUnicode)
     {
         foreach (var map in maps)
         {
@@ -216,10 +415,11 @@ public ref struct TrueTypeReader
                 var enc = Encodings.WinAnsiEncoding;
                 gidToUnicode = GetDict(mapping, enc);
                 return true;
-            } else if (map.PlatformId == 1)
+            }
+            else if (map.PlatformId == 1)
             {
                 var mapping = GetSingleMap(map);
-                // map winansi to glyph id
+                // map macroman to glyph id
                 var enc = Encodings.MacRomanEncoding;
                 gidToUnicode = GetDict(mapping, enc);
                 return true;
@@ -229,7 +429,7 @@ public ref struct TrueTypeReader
         gidToUnicode = null;
         return false;
 
-        Dictionary<uint, string> GetDict(Dictionary<uint,uint> cmap, string?[] enc)
+        Dictionary<uint, string> GetDict(Dictionary<uint, uint> cmap, string?[] enc)
         {
             var dict = new Dictionary<uint, string>();
             foreach (var item in cmap)
@@ -351,7 +551,7 @@ public ref struct TrueTypeReader
         return potentialTable;
     }
 
-    public Dictionary<uint,uint> GetSingleMap(TTCMap map)
+    public Dictionary<uint, uint> GetSingleMap(TTCMap map)
     {
         Position = map.Offset;
         var format = GetUint16();
@@ -802,14 +1002,14 @@ public ref struct TrueTypeReader
         var results = new bool[numGlyphs];
         var loca = new DataView(Data.Slice(locaTab.Offset, locaTab.Length));
         var offsetSize = isLong ? 4 : 2;
-        var prev = isLong ? loca.GetUInt32(0) : 2 * (uint)loca.GetUint16(0);
+        var prev = isLong ? loca.GetUInt32(0) : 2 * (uint)loca.GetUInt16(0);
         var pos = 0;
         for (var i = 0; i < numGlyphs; i++)
         {
             pos += offsetSize;
             var next = isLong
               ? loca.GetUInt32(pos)
-              : 2 * (uint)loca.GetUint16(pos);
+              : 2 * (uint)loca.GetUInt16(pos);
             if (next == prev)
             {
                 results[i] = false;
@@ -821,31 +1021,99 @@ public ref struct TrueTypeReader
         }
         return results;
     }
+
+    public class TTCMap
+    {
+        public int PlatformId { get; set; }
+        public int EncodingId { get; set; }
+        public int Offset { get; set; }
+        public Dictionary<uint, uint>? Mappings { get; set; }
+    }
+
+    public class TTSubHeader
+    {
+        public int FirstCode { get; set; }
+        public int EntryCount { get; set; }
+        public int IdDelta { get; set; }
+        public int IdRangePos { get; set; }
+    }
+    public class TTSegMent
+    {
+        public int Start { get; set; }
+        public int End { get; set; }
+        public int Delta { get; set; }
+        public int OffsetIndex { get; set; }
+    }
 }
 
 internal ref struct DataView
 {
-private ReadOnlySpan<byte> Data;
-private int Pos;
-public DataView(ReadOnlySpan<byte> data)
-{
-    Data = data;
-    Pos = 0;
+    internal ReadOnlySpan<byte> Data;
+    private int Pos;
+    public DataView(ReadOnlySpan<byte> data)
+    {
+        Data = data;
+        Pos = 0;
+    }
+
+    public int GetUInt16(int pos)
+    {
+        Pos = pos;
+        return Data[Pos++] << 8 | Data[Pos++];
+    }
+
+    public int GetInt16(int pos)
+    {
+        Pos = pos;
+        var b0 = Data[Pos++];
+        var b1 = Data[Pos++];
+        var value = (b0 << 8) + b1;
+        return (value & (1 << 15)) != 0 ? value - 0x10000 : value;
+    }
+
+    public uint GetUInt32(int pos)
+    {
+        Pos = pos;
+        uint b0 = Data[Pos++];
+        uint b1 = Data[Pos++];
+        uint b2 = Data[Pos++];
+        uint b3 = Data[Pos++];
+        return (b0 << 24) + (b1 << 16) + (b2 << 8) + b3;
+    }
+
+    public double GetDouble(int pos)
+    {
+        return ((double)GetUInt32(pos)) / 65536.0;
+    }
+
 }
 
-public int GetUint16(int pos)
+public class TrueTypePdfFontInfo
 {
-    Pos = pos;
-    return Data[Pos++] << 8 | Data[Pos++];
-}
-public uint GetUInt32(int pos)
-{
-    Pos = pos;
-    uint b0 = Data[Pos++];
-    uint b1 = Data[Pos++];
-    uint b2 = Data[Pos++];
-    uint b3 = Data[Pos++];
-    return (b0 << 24) + (b1 << 16) + (b2 << 8) + b3;
-}
+    public string PostScriptName { get; internal set; } = null!;
+    public int UnitsPerEm { get; internal set; }
+    public double LLx { get; internal set; }
+    public double LLy { get; internal set; }
+    public double URx { get; internal set; }
+    public double URy { get; internal set; }
 
+    public int Ascent { get; internal set; }
+    public int Descent { get; internal set; }
+    public int CapHeight { get; internal set; }
+    public bool Bold { get; internal set; }
+    public int FirstChar { get; internal set; }
+    public int LastChar { get; internal set; }
+
+    public double ItalicAngle { get; internal set; }
+    public bool FixedPitch { get; internal set; }
+
+    public int HorizontalMetricsCount { get; internal set; }
+
+    public int GlyphCount { get; internal set; }
+
+    public int[] GlyphWidths { get; internal set; } = null!;
+
+    public Dictionary<char, Glyph> Glyphs { get; internal set; } = null!;
+
+    public double ToPDFGlyphSpace(double value) => (value * 1000) / UnitsPerEm;
 }
