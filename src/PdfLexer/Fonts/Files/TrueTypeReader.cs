@@ -260,6 +260,11 @@ public ref struct TrueTypeReader
         var t = new DataView(Data.Slice(table.Offset));
 
         var version = t.GetUInt16(0);
+
+        var weightClass = t.GetUInt16(4);
+        var w = weightClass / 65.0;
+        fd.ApproxStemV = (int)(50 + w * w + 0.5);
+
         var fsType = t.GetUInt16(8);
 
         var prot = (fsType & 2) > 0;
@@ -1100,6 +1105,7 @@ public class TrueTypePdfFontInfo
     public double URx { get; internal set; }
     public double URy { get; internal set; }
 
+    public int ApproxStemV { get; internal set; }
     public int Ascent { get; internal set; }
     public int Descent { get; internal set; }
     public int CapHeight { get; internal set; }

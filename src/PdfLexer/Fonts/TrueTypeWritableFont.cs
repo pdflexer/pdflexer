@@ -129,7 +129,7 @@ internal class TrueTypeWritableFont : IWritableFont
             CapHeight = _info.CapHeight,
             Ascent = _info.Ascent,
             Descent = _info.Descent,
-            StemV = 0,
+            StemV = _info.ApproxStemV,
             FontFile2 = _fontFile
         };
         if (_info.Bold)
