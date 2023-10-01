@@ -19,7 +19,7 @@ public class NewPdfPage : PdfCmdlet
         ValueFromPipeline = true,
         HelpMessage = "PDF writing actions. Optional, if none given blank page will be created.")]
     [ValidateNotNullOrEmpty]
-    public IPdfWriteAction[] Actions { get; set; } = null!;
+    public IPdfWriteAction[] Action { get; set; } = null!;
 
     [Parameter(
         Mandatory = false,
@@ -62,10 +62,10 @@ public class NewPdfPage : PdfCmdlet
             pg = new PdfPage(PageSize.LETTER);
         }
 
-        if (Actions != null && Actions.Length > 0)
+        if (Action != null && Action.Length > 0)
         {
             using var writer = new PageWriter<double>(pg, PageWriteMode.Replace);
-            foreach (var action in Actions)
+            foreach (var action in Action)
             {
                 action.Apply(this, writer);
             }

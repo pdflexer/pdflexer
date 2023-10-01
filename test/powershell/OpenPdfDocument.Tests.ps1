@@ -18,6 +18,18 @@ Describe 'Open-PdfDocument' {
         $doc.Pages.Count | Should -Be 1
     }
 
+    It 'From byte array, it opens doc' {
+        $path = Resolve-Path "$PSScriptRoot/../pdfs/pdfjs/asciihexdecode.pdf";
+        $doc = ,[IO.File]::ReadAllBytes($path) | Open-PdfDocument;
+        $doc.Pages.Count | Should -Be 1
+    }
+
+    It 'From pdf byte output, it opens doc' {
+        $path = Resolve-Path "$PSScriptRoot/../pdfs/pdfjs/asciihexdecode.pdf";
+        $doc = $path | Open-PdfDocument | Out-PdfBytes | Open-PdfDocument;
+        $doc.Pages.Count | Should -Be 1
+    }
+
     It 'From path result' {
         $paths = Get-ChildItem "$PSScriptRoot/../pdfs/pdfjs/asciihexdecode.pdf";
         $doc = $paths[0] | Open-PdfDocument

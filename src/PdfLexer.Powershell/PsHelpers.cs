@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -22,6 +23,13 @@ internal class PsHelpers
             Documents.Add(new WeakReference<PdfDocument>(doc));
             return doc;
         }
+    }
+
+    public static PdfDocument OpenDocument(byte[] data, DocumentOptions? options = null)
+    {
+        var doc = PdfDocument.Open(data, options);
+        Documents.Add(new WeakReference<PdfDocument>(doc));
+        return doc;
     }
     private static List<WeakReference<PdfDocument>> Documents = new List<WeakReference<PdfDocument>>();
 

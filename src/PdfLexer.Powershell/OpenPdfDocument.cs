@@ -1,4 +1,5 @@
-﻿using System.Management.Automation;
+﻿using System.IO;
+using System.Management.Automation;
 
 namespace PdfLexer.Powershell;
 
@@ -21,9 +22,21 @@ public class OpenPdfDocument : PathCmdlet
     HelpMessage = "Password to use if document is encrypted.")]
     public string? Password { get; set; }
 
+    [Parameter(
+    Mandatory = false,
+    ValueFromPipeline = true,
+    ValueFromPipelineByPropertyName = false,
+    HelpMessage = "Byte contents of pdf if path not used.",
+    ParameterSetName = "data")]
+    public byte[]? Data { get; set; }
+
     protected override void ProcessRecord()
     {
         var opts = new DocumentOptions { OwnerPass = Password, UserPass = Password };
+        if (Data != null)
+        {
+            WriteObject(PsHelpers.OpenDocument(Data, opts));
+        }
         foreach (var path in GetPaths())
         {
             WriteObject(PsHelpers.OpenDocument(path, opts));

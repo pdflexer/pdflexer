@@ -13,13 +13,13 @@ public class InputOutputPathCmdlet : OutputPathCmdlet
         ValueFromPipeline = true,
         ValueFromPipelineByPropertyName = false,
         HelpMessage = "Pdf page to write.")]
-    public PdfPage? PdfPage { get; set; } = null!;
+    public PdfPage[]? PdfPage { get; set; } = null!;
 
     [Parameter(
         ValueFromPipeline = true,
         ValueFromPipelineByPropertyName = false,
         HelpMessage = "Pdf document to write")]
-    public PdfDocument? Document { get; set; } = null!;
+    public PdfDocument[]? Document { get; set; } = null!;
 
     // need to determine why PdfPages are binding to InputPath
     // [Parameter(
@@ -92,23 +92,20 @@ public class InputOutputPathCmdlet : OutputPathCmdlet
         else if (PdfPage != null)
         {
             WriteVerbose("Using PdfPages for input.");
-            yield return PdfPage;
-            // foreach (var pg in PdfPage)
-            // {
-            //     yield return pg;
-            // }
+            foreach (var pg in PdfPage)
+            {
+                yield return pg;
+            }
         }
         else if (Document != null)
         {
             WriteVerbose("Using PdfDocuments for input.");
-            foreach (var pg in Document.Pages)
-            {
-                yield return pg;
+            foreach (var doc in Document) {
+                foreach (var pg in doc.Pages)
+                {
+                    yield return pg;
+                }
             }
-            // foreach (var doc in Document) {
-            // 
-            // }
-
         }
     }
 }
