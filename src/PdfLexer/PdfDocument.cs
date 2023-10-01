@@ -69,6 +69,7 @@ public sealed partial class PdfDocument : IDisposable
 
     public void Dispose()
     {
+        if (Trailer == null) { return; } // disposed
         foreach (var item in disposables)
         {
             item.Dispose();

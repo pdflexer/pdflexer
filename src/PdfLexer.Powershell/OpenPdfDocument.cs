@@ -14,11 +14,6 @@ namespace PdfLexer.Powershell;
 
 public class OpenPdfDocument : PathCmdlet
 {
-    [Parameter(
-        Mandatory = false,
-        ValueFromPipelineByPropertyName = false,
-        HelpMessage = "If entire file should be read in memory. If false, file is memory mapped.")]
-    public SwitchParameter InMemory { get; set; }
 
     [Parameter(
     Mandatory = false,
@@ -31,14 +26,7 @@ public class OpenPdfDocument : PathCmdlet
         var opts = new DocumentOptions { OwnerPass = Password, UserPass = Password };
         foreach (var path in GetPaths())
         {
-            if (InMemory)
-            {
-                WriteObject(PdfDocument.Open(File.ReadAllBytes(path), opts));
-            }
-            else
-            {
-                WriteObject(PsHelpers.OpenDocument(path, opts));
-            }
+            WriteObject(PsHelpers.OpenDocument(path, opts));
         }
 
     }

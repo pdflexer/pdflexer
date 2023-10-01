@@ -25,6 +25,11 @@ public class OutPdf : InputOutputPathCmdlet, IDisposable
     [ValidateNotNullOrEmpty]
     public SwitchParameter Append { get; set; }
 
+    [Parameter(
+    Mandatory = false,
+    HelpMessage = "If documents passed should be closed / disposed after pages written.")]
+    public SwitchParameter Close { get; set; }
+
     protected override void BeginProcessing()
     {
         var path = GetOutputPath();
@@ -56,6 +61,10 @@ public class OutPdf : InputOutputPathCmdlet, IDisposable
         foreach (var pg in GetInputPages())
         {
             _sw.AddPage(pg);
+        }
+        if (Document != null && Close)
+        {
+            Document.Dispose();
         }
         GC.Collect();
     }

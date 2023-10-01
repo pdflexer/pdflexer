@@ -1,7 +1,4 @@
-﻿using PdfLexer.Content;
-using PdfLexer.DOM;
-using PdfLexer.Parsers;
-using PdfLexer.Serializers;
+﻿using PdfLexer.DOM;
 using System.Management.Automation;
 
 namespace PdfLexer.Powershell;
@@ -38,33 +35,20 @@ public class GetPdfText : PathCmdlet
                 using var pdf = PsHelpers.OpenDocument(path);
                 foreach (var pg in pdf.Pages)
                 {
-                    WriteObject(pg.GetTextVisually(pdf.Context));
-                }
-                foreach (var err in pdf.Context.ParsingErrors)
-                {
-                    WriteWarning(err);
+                    WriteObject(pg.GetTextVisually(_ctx));
                 }
             }
         }
         else if (PdfPage != null)
         {
-            var ctx = new ParsingContext();
-            WriteObject(PdfPage.GetTextVisually(ctx));
-            foreach (var err in ctx.ParsingErrors)
-            {
-                WriteWarning(err);
-            }
+            WriteObject(PdfPage.GetTextVisually(_ctx));
+
         }
         else if (Document != null)
         {
-            var ctx = new ParsingContext();
             foreach (var pg in Document.Pages)
             {
-                WriteObject(pg.GetTextVisually(ctx));
-            }
-            foreach (var err in ctx.ParsingErrors)
-            {
-                WriteWarning(err);
+                WriteObject(pg.GetTextVisually(_ctx));
             }
         }
     }

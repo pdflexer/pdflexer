@@ -68,10 +68,7 @@ internal class MergePdfObjects : InputOutputPathCmdlet
             }
         } else if (PdfPage != null)
         {
-            foreach (var pg in PdfPage)
-            {
-                
-            }
+            
         }
     }
 }
