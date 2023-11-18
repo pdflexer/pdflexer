@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFrameworks>net7.0;net8.0</TargetFrameworks>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<PsModuleName>PdfLexer</PsModuleName>
@@ -18,7 +18,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
+		<PackageReference Include="PowerShellStandard.Library" Version="5.1.1" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -25,14 +25,6 @@ namespace PdfLexer.Benchmarks.Benchmarks
             data2 = File.ReadAllBytes("C:\\temp\\test-pdfs\\kjped-53-661.pdf");
         }
 
-
-        //[Benchmark()]
-        public int PdfPig()
-        {
-            var doc = UglyToad.PdfPig.PdfDocument.Open(data);
-            return WalkTree(doc.Structure.Catalog.PageTree, null).Count();
-        }
-
         private MemoryStream ms = new MemoryStream();
         [Benchmark(Baseline = true)]
         public int PdfPigCopy()
@@ -103,19 +95,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             writer.Complete(doc.Trailer);
             return 0;
         }
-        //[Benchmark()]
-        public int PdfPigNoLoad()
-        {
-            var doc = UglyToad.PdfPig.PdfDocument.Open(data);
-            return 0;
-        }
 
-        //[Benchmark()]
-        public int PdfPigSmall()
-        {
-            var doc = UglyToad.PdfPig.PdfDocument.Open(data2);
-            return WalkTree(doc.Structure.Catalog.PageTree, null).Count();
-        }
         internal static IEnumerable<(DictionaryToken, IReadOnlyList<DictionaryToken>)> WalkTree(PageTreeNode node, List<DictionaryToken> parents = null)
         {
             if (parents == null)

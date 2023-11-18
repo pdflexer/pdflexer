@@ -61,7 +61,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             }
         }
 
-        [Benchmark(Baseline = true)]
+        // [Benchmark(Baseline = true)]
         public MemoryStream MergePdfSharp()
         {
             var finished = new PdfSharp.Pdf.PdfDocument();
@@ -79,7 +79,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             return ms;
         }
 
-        // [Benchmark()]
+        [Benchmark(Baseline=true)]
         public byte[] MergePdfPig()
         {
             var finished = new UglyToad.PdfPig.Writer.PdfDocumentBuilder();
