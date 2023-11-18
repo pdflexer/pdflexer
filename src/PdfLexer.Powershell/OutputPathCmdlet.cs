@@ -43,7 +43,7 @@ public class OutputPathCmdlet : PSCmdlet
 
     public bool HasPaths() => _path != null;
 
-    internal static string? GetOutputPathFromString(PSCmdlet cmd, string path)
+    internal static string? GetOutputPathFromString(PSCmdlet cmd, string path, bool expand=false)
     {
         ProviderInfo provider;
         PSDriveInfo drive;
@@ -85,7 +85,7 @@ public class OutputPathCmdlet : PSCmdlet
     public string? GetOutputPath()
     {
         if (_path == null) { return null; }
-        return GetOutputPathFromString(this, _path);
+        return GetOutputPathFromString(this, _path, _shouldExpandWildcards);
     }
 
     public string GetCorrectPath(string path)
