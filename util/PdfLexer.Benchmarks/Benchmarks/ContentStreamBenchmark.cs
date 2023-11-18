@@ -275,19 +275,19 @@ Q"
         }
 
 
-        [Benchmark()]
-        public int PdfSharp()
-        {
-            int i = 0;
-            foreach (var item in samples)
-            {
-                var parser = new CParser(item);
-                var content = parser.ReadContent();
-                i += content.Count;
-            }
-            //Console.WriteLine(i);
-            return i;
-        }
+        // [Benchmark()]
+        // public int PdfSharp()
+        // {
+        //     int i = 0;
+        //     foreach (var item in samples)
+        //     {
+        //         var parser = new CParser(item);
+        //         var content = parser.ReadContent();
+        //         i += content.Count;
+        //     }
+        //     //Console.WriteLine(i);
+        //     return i;
+        // }
 
         [Benchmark(Baseline = true)]
         public int PdfPig()
