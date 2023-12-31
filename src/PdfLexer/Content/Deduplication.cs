@@ -40,6 +40,7 @@ internal class Deduplication
         // for now just xobj / font
         // PdfName.XObject
         // PdfName.Font
+
         // PdfName.ColorSpace
         // PdfName.ExtGState
         // PdfName.Shading

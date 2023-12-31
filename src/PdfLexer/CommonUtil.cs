@@ -198,7 +198,7 @@ internal static class CommonUtil
 
     internal static void Recurse(IPdfObject obj, HashSet<PdfIndirectRef> refStack, Action<IPdfObject, PdfIndirectRef?> pre, Action<IPdfObject, PdfIndirectRef?> post, bool ordered = false, PdfIndirectRef? irRef = null)
     {
-        if (refStack.Contains(obj))
+        if (obj is PdfIndirectRef irf && refStack.Contains(irf))
         {
             return;
         }
@@ -257,7 +257,7 @@ internal static class CommonUtil
 
     internal static void Recurse(IPdfObject obj, HashSet<PdfIndirectRef> refStack, Func<IPdfObject, bool> skip, Action<IPdfObject, PdfIndirectRef?> objWork, bool ordered = false, PdfIndirectRef? irRef = null)
     {
-        if (refStack.Contains(obj) || skip(obj))
+        if (skip(obj) || (obj is PdfIndirectRef irf && refStack.Contains(irf)))
         {
             return;
         }

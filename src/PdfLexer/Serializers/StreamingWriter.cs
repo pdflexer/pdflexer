@@ -163,9 +163,43 @@ public class StreamingWriter : IDisposable
         trailer.Remove(PdfName.Length);
         trailer.Remove(PdfName.Prev);
         trailer.Remove(PdfName.XRefStm);
+
+        catalog[PdfName.Pages] = CreateTree();
+        _ctx.Complete(trailer);
+        bags.Clear();
+        if (disposeOnComplete)
+        {
+            _ctx.Stream.Dispose();
+        }
+    }
+
+    private PdfIndirectRef CreateTree()
+    {
+        var levels = (int)Math.Ceiling((Math.Log(bags.Count * 25) / Math.Log(5)) - 2);
+
+        for (var i = 0; i < levels; i++)
+        {
+            var orig = bags.ToList();
+            bags.Clear();
+            IEnumerable<(PdfDictionary Bag, PdfIndirectRef BagRef)> current = orig;
+            while ((current = orig.Take(5)).Any())
+            {
+                orig = orig.Skip(5).ToList();
+                var count = 0;
+                CreateBag();
+                foreach (var (bag, bagRef) in current)
+                {
+                    count += bag.GetRequiredValue<PdfIntNumber>(PdfName.Count).Value;
+                    bag[PdfName.Parent] = currentBagRef;
+                    currentBagArray.Add(bagRef);
+                }
+                CompleteBag(count);
+            }
+        }
+
         if (bags.Count == 1)
         {
-            catalog[PdfName.Pages] = bags[0].BagRef;
+            return bags[0].BagRef;
         }
         else if (bags.Count > 1)
         {
@@ -178,23 +212,25 @@ public class StreamingWriter : IDisposable
                 currentBagArray.Add(bagRef);
             }
             currentBag[PdfName.Count] = new PdfIntNumber(count);
-            catalog[PdfName.Pages] = currentBagRef;
+            var result = currentBagRef;
             currentBag = null!;
             currentBagRef = null!;
             currentBagArray = null!;
+            return result;
         }
-        _ctx.Complete(trailer);
-        bags.Clear();
-        if (disposeOnComplete)
+        else
         {
-            _ctx.Stream.Dispose();   
+            CreateBag();
+            currentBag[PdfName.Count] = new PdfIntNumber(0);
+            return currentBagRef;
         }
     }
 
-    private void CompleteBag()
+    private void CompleteBag(int? count = null)
     {
         if (currentBag == null) { return; }
-        currentBag[PdfName.Count] = new PdfIntNumber(currentBagArray.Count);
+        count ??= currentBagArray.Count;
+        currentBag[PdfName.Count] = new PdfIntNumber(count.Value);
         bags.Add((currentBag, currentBagRef));
         currentBag = null!;
         currentBagArray = null!;
