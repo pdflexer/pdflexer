@@ -10,7 +10,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<LangVersion>10.0</LangVersion>
+		<LangVersion>11.0</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
@@ -24,6 +24,12 @@
 	<ItemGroup>
 		<ProjectReference Include="..\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
 		<ProjectReference Include="..\PdfLexer\PdfLexer.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <None Update="ForEach-PdfDocument.ps1">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 </Project>

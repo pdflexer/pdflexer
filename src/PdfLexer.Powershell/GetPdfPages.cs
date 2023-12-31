@@ -44,11 +44,6 @@ public class GetPdfPages : PathCmdlet
                         WriteObject(pg);
                     }
                 }
-
-                foreach (var err in pdf.Context.ParsingErrors)
-                {
-                    WriteWarning(err);
-                }
             }
         }
         else if (Document != null)
@@ -63,11 +58,6 @@ public class GetPdfPages : PathCmdlet
                     pg.NativeObject.FullyLoad();
                     WriteObject(pg);
                 }
-            }
-
-            foreach (var err in Document.Context.ParsingErrors)
-            {
-                WriteWarning(err);
             }
         }
 

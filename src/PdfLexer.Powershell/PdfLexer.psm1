@@ -17,3 +17,9 @@ $binaryModule = Import-Module -Name $binaryModulePath -PassThru
 $PSModule.OnRemove = {
     Remove-Module -ModuleInfo $binaryModule
 }
+
+foreach ($script in 
+  (Get-ChildItem -File -Recurse -LiteralPath $PSScriptRoot -Filter *.ps1)
+) { 
+  . $script 
+}

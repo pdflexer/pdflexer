@@ -25,10 +25,10 @@ Description = 'PdfLexer is a powershell pdf manipulation library for Powershell 
 PowerShellVersion = '7.0'
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = @()
+FunctionsToExport = @("ForEach-PdfDocument")
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
-CmdletsToExport = @("New-PdfDocument", "Get-PdfPages", "Get-PdfText", "New-PdfWriter", "Open-PdfDocument", "Out-Pdf")
+CmdletsToExport = @("New-PdfDocument", "New-PdfPage", "Get-PdfPages", "Get-PdfText", "New-PdfWriter", "Open-PdfDocument", "Out-Pdf", "Out-PdfBytes", "Close-PdfDocuments")
 
 # Variables to export from this module
 # VariablesToExport = @()

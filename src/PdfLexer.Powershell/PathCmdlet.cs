@@ -10,6 +10,8 @@ public class PathCmdlet : PSCmdlet
 {
     private string[]? _paths;
     private bool _shouldExpandWildcards;
+
+
     [Parameter(
         Mandatory = true,
         ValueFromPipeline = false,
@@ -39,6 +41,20 @@ public class PathCmdlet : PSCmdlet
             _shouldExpandWildcards = true;
             _paths = value;
         }
+    }
+    protected ParsingContext _ctx = null!;
+    protected override void BeginProcessing()
+    {
+        _ctx = ParsingContext.Reset();
+        base.BeginProcessing();
+    }
+    protected override void EndProcessing()
+    {
+        foreach (var err in _ctx.ParsingErrors)
+        {
+            WriteWarning(err);
+        }
+        base.EndProcessing();
     }
 
     public bool HasPaths() => _paths != null;
@@ -83,7 +99,7 @@ public class PathCmdlet : PSCmdlet
         return this.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
                     path, out var provider, out var drive);
     }
-  
+
     private bool IsFileSystemPath(ProviderInfo provider, string path)
     {
         bool isFileSystem = true;

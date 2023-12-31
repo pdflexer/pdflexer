@@ -10,6 +10,5 @@ public class FontLoadTests
     [Fact]
     public void It_Loads_TrueType()
     {
-
     }
 }

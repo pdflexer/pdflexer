@@ -43,9 +43,8 @@ public class OutputPathCmdlet : PSCmdlet
 
     public bool HasPaths() => _path != null;
 
-    public string? GetOutputPath()
+    internal static string? GetOutputPathFromString(PSCmdlet cmd, string path, bool expand=false)
     {
-        if (_path == null) { return null; }
         ProviderInfo provider;
         PSDriveInfo drive;
         List<string> filePaths = new List<string>();
@@ -53,35 +52,40 @@ public class OutputPathCmdlet : PSCmdlet
         {
             // Turn *.txt into foo.txt,foo2.txt etc.
             // if path is just "foo.txt," it will return unchanged.
-            filePaths.AddRange(this.GetResolvedProviderPathFromPSPath(_path, out provider));
+            filePaths.AddRange(cmd.GetResolvedProviderPathFromPSPath(path, out provider));
         }
         else
         {
             // no wildcards, so don't try to expand any * or ? symbols.                    
-            filePaths.Add(this.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
-                _path, out provider, out drive));
+            filePaths.Add(cmd.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
+                path, out provider, out drive));
         }
         // ensure that this path (or set of paths after wildcard expansion)
         // is on the filesystem. A wildcard can never expand to span multiple
         // providers.
-        if (IsFileSystemPath(provider, _path) == false)
+        if (IsFileSystemPath(cmd, provider, path) == false)
         {
             return null;
         }
 
-        foreach (var path in filePaths)
+        foreach (var p in filePaths)
         {
-            WriteVerbose("Resolved output path: " + path);
+            cmd.WriteVerbose("Resolved output path: " + p);
         }
 
         if (filePaths.Count > 1)
         {
             // create a .NET exception wrapping our error text
-            var ex = new ArgumentException(_path +
+            var ex = new ArgumentException(path +
                 " did not resolve to single location.");
-            this.WriteError(new ErrorRecord(ex, "InvalidPath", ErrorCategory.InvalidArgument, _path));
+            cmd.WriteError(new ErrorRecord(ex, "InvalidPath", ErrorCategory.InvalidArgument, path));
         }
         return filePaths[0];
+    }
+    public string? GetOutputPath()
+    {
+        if (_path == null) { return null; }
+        return GetOutputPathFromString(this, _path, _shouldExpandWildcards);
     }
 
     public string GetCorrectPath(string path)
@@ -90,7 +94,7 @@ public class OutputPathCmdlet : PSCmdlet
                     path, out var provider, out var drive);
     }
   
-    protected bool IsFileSystemPath(ProviderInfo provider, string path)
+    protected static bool IsFileSystemPath(PSCmdlet cmd, ProviderInfo provider, string path)
     {
         bool isFileSystem = true;
         // check that this provider is the filesystem
@@ -103,7 +107,7 @@ public class OutputPathCmdlet : PSCmdlet
             ErrorRecord error = new ErrorRecord(ex, "InvalidProvider",
                 ErrorCategory.InvalidArgument, path);
             // write a non-terminating error to pipeline
-            this.WriteError(error);
+            cmd.WriteError(error);
             // tell our caller that the item was not on the filesystem
             isFileSystem = false;
         }

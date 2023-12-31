@@ -1,6 +1,7 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Content.Model;
 using PdfLexer.Writing;
+using System.Drawing;
 using System.Numerics;
 
 namespace PdfLexer.DOM;
@@ -28,6 +29,13 @@ public sealed class PdfPage
         NativeObject = new PdfDictionary();
         NativeObject[PdfName.TypeName] = PdfName.Page;
         MediaBox = PageSizeHelpers.GetMediaBox(size);
+    }
+
+    public PdfPage(double width, double height)
+    {
+        NativeObject = new PdfDictionary();
+        NativeObject[PdfName.TypeName] = PdfName.Page;
+        MediaBox = new PdfArray() { 0, 0, new PdfDoubleNumber(Math.Abs(width)), new PdfDoubleNumber(Math.Abs(height)) };
     }
 
     public PdfPage() : this(new PdfDictionary())

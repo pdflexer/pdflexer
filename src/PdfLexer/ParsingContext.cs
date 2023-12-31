@@ -39,6 +39,12 @@ public class ParsingContext : IDisposable
             return val;
         }
     }
+
+    public static ParsingContext Reset()
+    {
+        var ctx = CurrentCtx.Value = new ParsingContext();
+        return ctx;
+    }
     private static AsyncLocal<ParsingContext?> CurrentCtx = new AsyncLocal<ParsingContext?>();
     // tracked here to support encryption
     internal ulong CurrentReference { get; set; }
