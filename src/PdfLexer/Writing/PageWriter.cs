@@ -54,6 +54,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
                             using var es = existing.Contents.GetDecodedStream();
                             es.CopyTo(fw);
                         }
+                        fw.WriteByte((byte)' '); // ensure space
                         Q_Op.WriteLn(fw);
                         var arr = new PdfArray();
                         arr.Add(PdfIndirectRef.Create(new PdfStream(fw.Complete())));
