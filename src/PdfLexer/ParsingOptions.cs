@@ -42,7 +42,7 @@ public class ParsingOptions
     public int MaxFormDepth { get; set; } = 25;
     public int MaxMemorySegment { get; set; } = 1024*8;
     public int BufferSize { get; set; } = 4096;
-    private StreamPipeReaderOptions opts = new StreamPipeReaderOptions(bufferSize: 1024, leaveOpen: true);
+    private StreamPipeReaderOptions opts = new StreamPipeReaderOptions(bufferSize: 4096, leaveOpen: true);
     internal PipeReader CreateReader(Stream stream)
     {
         return PipeReader.Create(stream, opts);

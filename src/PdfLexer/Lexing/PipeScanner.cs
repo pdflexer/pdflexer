@@ -29,12 +29,23 @@ internal ref struct PipeScanner
     private long CurrentEnd;
     private bool IsCompleted;
 
+    private ReadOnlySequence<byte> LastRead;
+
     private void InitReader()
     {
         // why no sync version? review this
         var result = Pipe.ReadAsync().AsTask().GetAwaiter().GetResult();
         IsCompleted = result.IsCompleted;
+        LastRead = result.Buffer;
         Reader = new SequenceReader<byte>(result.Buffer);
+        
+    }
+    private void InitReader(SequencePosition pos)
+    {
+        var result = Pipe.ReadAsync().AsTask().GetAwaiter().GetResult();
+        IsCompleted = result.IsCompleted;
+        LastRead = result.Buffer;
+        Reader = new SequenceReader<byte>(result.Buffer.Slice(pos));
     }
 
     public long GetOffset()
@@ -54,6 +65,16 @@ internal ref struct PipeScanner
         Pipe.AdvanceTo(pos, Reader.Sequence.End);
         InitReader();
         CurrentStart = 0;
+        return;
+    }
+
+    // read more data and advance reader to start of new data but don't update positioning
+    private void AdvanceBufferSkipReaderToEnd(SequencePosition pos)
+    {
+        var l = LastRead.Length;
+        Pipe.AdvanceTo(pos, Reader.Sequence.End);
+        InitReader(LastRead.End);
+        CurrentStart = l;
         return;
     }
 
@@ -108,7 +129,7 @@ internal ref struct PipeScanner
             SkipDict();
         }
         CurrentTokenType = PdfTokenType.TBD;
-        return Reader.Sequence.Slice(CurrentStart, CurrentEnd-CurrentStart);
+        return Reader.Sequence.Slice(CurrentStart, CurrentEnd - CurrentStart);
     }
 
     public void SkipExpected(PdfTokenType type)
@@ -138,7 +159,8 @@ internal ref struct PipeScanner
             cnt -= (int)Reader.Remaining;
             AdvanceBuffer(Reader.Sequence.End);
         }
-        if (IsCompleted == true && cnt > Reader.Remaining) { 
+        if (IsCompleted == true && cnt > Reader.Remaining)
+        {
             return false;
         }
         Reader.Advance(cnt);
@@ -223,7 +245,7 @@ internal ref struct PipeScanner
         {
             SkipDict();
         }
-        var obj = Context.GetPdfItem((PdfObjectType)CurrentTokenType, Reader.Sequence.Slice(CurrentStart, CurrentEnd-CurrentStart));
+        var obj = Context.GetPdfItem((PdfObjectType)CurrentTokenType, Reader.Sequence.Slice(CurrentStart, CurrentEnd - CurrentStart));
         CurrentTokenType = PdfTokenType.TBD;
         return obj;
     }
@@ -239,7 +261,7 @@ internal ref struct PipeScanner
                 {
                     throw CommonUtil.DisplayDataErrorException(ref Reader, "Sequence not found to read to " + System.Text.Encoding.ASCII.GetString(sequence));
                 }
-                AdvanceBuffer(start);
+                AdvanceBufferSkipReaderToEnd(start);
                 continue;
             }
 
@@ -248,8 +270,8 @@ internal ref struct PipeScanner
                 Reader.Advance(1);
                 continue;
             }
-
-            return Reader.Sequence.Slice(start, Reader.Position);
+            
+            return LastRead.Slice(start, Reader.Position);
         }
     }
 
@@ -407,7 +429,7 @@ internal ref struct PipeScanner
 
             if (cnt >= count)
             {
-                return total-1;
+                return total - 1;
             }
         }
         return -1;
