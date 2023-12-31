@@ -3,6 +3,7 @@ using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using PdfLexer.Benchmarks.Benchmarks;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 

@@ -2,8 +2,6 @@
 using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 using System.IO.MemoryMappedFiles;
-using System;
-using PdfLexer.Fonts.Files;
 
 #if NET6_0_OR_GREATER
 
@@ -14,15 +12,15 @@ namespace PdfLexer.IO;
 internal class MemoryMappedDataSource : IPdfDataSource
 {
     private readonly MemoryMappedFile _mm;
-    private readonly MemoryMappedViewStream _str;
+    private readonly FileStream _str;
     private readonly List<MemoryMappedDirectAccessor> _accessors;
 
     public MemoryMappedDataSource(PdfDocument doc, string filePath)
     {
         Document = doc;
         TotalBytes = new FileInfo(filePath).Length;
-        _mm = MemoryMappedFile.CreateFromFile(filePath, FileMode.Open);
-        _str = _mm.CreateViewStream();
+        _mm = MemoryMappedFile.CreateFromFile(filePath, FileMode.Open, null, TotalBytes, MemoryMappedFileAccess.Read);
+        _str = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite); // .CreateViewStream();
         _accessors = new List<MemoryMappedDirectAccessor>();
         if (TotalBytes <= int.MaxValue)
         {
