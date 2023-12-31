@@ -38,8 +38,7 @@ internal class TreeHasher
           {
               if (ir != null)
               {
-                  Tracker.Localize(ir);
-                  Objs.Add(ir);
+                  Objs.Add(Tracker.Localize(ir));
               }
           }, true);
 
