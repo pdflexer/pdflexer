@@ -39,7 +39,7 @@ internal class WritingUtil
                     {
                         remove = true;
                     }
-                    
+
                 }
                 if (remove)
                 {
@@ -48,11 +48,34 @@ internal class WritingUtil
                 }
             }
         }
+
+        // update P links
+
+        bool cloned = false;
         if (toRemove != null)
         {
+            cloned = true;
             data = data.CloneShallow();
             toRemove.ForEach(x => data.Remove(x));
             page[PdfName.Annots] = data;
         }
+
+        if (!cloned)
+        {
+            data = data.CloneShallow();
+            page[PdfName.Annots] = data;
+        }
+        for (var i = 0; i < data.Count; i++)
+        {
+            var current = data[i].Resolve();
+            if (current is PdfDictionary annot && annot.ContainsKey(PdfName.P))
+            {
+                var copy = annot.CloneShallow();
+                copy[PdfName.P] = PdfIndirectRef.Create(page);
+                data[i] = copy;
+            }
+        }
     }
+
+
 }
