@@ -186,7 +186,7 @@ public class StreamingWriter : IDisposable
             {
                 orig = orig.Skip(5).ToList();
                 var count = 0;
-                CreateBag();
+                CreateBag(false);
                 foreach (var (bag, bagRef) in current)
                 {
                     count += bag.GetRequiredValue<PdfIntNumber>(PdfName.Count).Value;
@@ -237,14 +237,17 @@ public class StreamingWriter : IDisposable
         currentBagRef = null!;
     }
 
-    private (PdfDictionary, PdfArray, PdfIndirectRef) CreateBag()
+    private (PdfDictionary, PdfArray, PdfIndirectRef) CreateBag(bool completed=false)
     {
         currentBag = new PdfDictionary();
         currentBagArray = new PdfArray();
         currentBag[PdfName.Kids] = currentBagArray;
         currentBag[PdfName.TypeName] = PdfName.Pages;
         currentBagRef = PdfIndirectRef.Create(currentBag);
-        currentBagRef.DeferWriting = true;
+        if (!completed) // will still add items to this bag and it's ref'd by pages as parent
+        {
+            currentBagRef.DeferWriting = true;
+        }
         return (currentBag, currentBagArray, currentBagRef);
     }
 

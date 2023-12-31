@@ -160,7 +160,7 @@ internal class RefTracker
 
     private PdfIndirectRef CreateAndSetDummyPointer(IPdfObject obj)
     {
-        var dummy = PdfIndirectRef.Create(PdfNull.Value); // TODO look into this, can maybe hold actual ref
+        var dummy = PdfIndirectRef.Create(obj);
         dummy.SourceId = ThisDocId;
         dummy.Reference = new XRef { ObjectNumber = NextId++ };
         localizedObjects.AddOrUpdate(obj, dummy);

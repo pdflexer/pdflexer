@@ -304,6 +304,10 @@ public class WritingContext
     {
         foreach (var (obj, local) in deferredObjects)
         {
+            if (writtenObjs.ContainsKey(local.Reference.ObjectNumber))
+            {
+                continue;
+            }
             writtenObjs[local.Reference.ObjectNumber] = (Stream.Position, local.Reference);
             WriteObjStart(local.Reference);
             SerializeObject(obj);

@@ -60,7 +60,7 @@ $all | Slice-Array -Size $size | ForEach-Object -Throttle $threads  -Parallel {
         }
     }
     Write-Host $iv;
-    $outputPath = $using:outputPath; $a = @('--strict', '--data', $PSScriptRoot,'--index', $iv, '--type', $t, '--output', $outputPath, $_ ); .\bin\Release\net7.0\publish\pdflexer.PdfiumRegressionTester.exe @a; if (!$?) { Write-Host "HAD FAILURES"; $failures = $true }; }
+    $outputPath = $using:outputPath; $a = @('--strict', '--data', $PSScriptRoot,'--index', $iv, '--type', $t, '--output', $outputPath, $_ ); .\bin\Release\net8.0\publish\pdflexer.PdfiumRegressionTester.exe @a; if (!$?) { Write-Host "HAD FAILURES"; $failures = $true }; }
 if ($failures) {
     Write-Error "HAD A FAILURE";
 }

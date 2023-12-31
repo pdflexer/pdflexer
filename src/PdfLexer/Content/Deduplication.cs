@@ -297,9 +297,6 @@ internal class Deduplication
         return true;
     }
 
-
-
-
     internal abstract class CachableItem
     {
         public required IPdfObject Item { get; set; }

@@ -12,8 +12,9 @@ internal class Rebuild : ITest
     {
         using var ctx = new ParsingContext(new ParsingOptions { MaxErrorRetention = 10, ThrowOnErrors = false });
         using var doc = PdfDocument.Open(inputPath);
+        doc.DeduplicateResources();
         using var fo = File.Create(outputPath);
-        using var sw = new StreamingWriter(fo, true, true);
+        using var sw = new StreamingWriter(fo);
         foreach (var pg in doc.Pages)
         {
             var np = ReWriteStream(doc, pg);
