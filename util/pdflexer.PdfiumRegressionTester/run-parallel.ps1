@@ -18,11 +18,11 @@ function Slice-Array {
     }
 }
 
-$testType = "quicksave"
+$testType = "rebuild"
 
 Push-Location $PSScriptRoot; # 453
 
-dotnet publish -c release -f net7.0
+dotnet publish -c release -f net8.0
 
 $pdfs = "$PSScriptRoot/../../test/pdfs/pdfjs/*.pdf"
 # $pdfs = "C:\source\Github\pdfium\testing\resources\*.pdf"
@@ -30,7 +30,7 @@ $pdfs = "$PSScriptRoot/../../test/pdfs/pdfjs/*.pdf"
 $outputPath = "$PSScriptRoot/../../test/results/$testType"
 $outputPath = [IO.Path]::GetFullPath($outputPath);
 rm $outputPath/*.jsonl
-$threads = 24;
+$threads = 12;
 [System.Collections.ArrayList]$all = @()
 gci $pdfs | % { $all.Add($_) | Out-Null; }
 gci "$PSScriptRoot/../../test/pdfs/pdfjs/need_repair/*.pdf" | % { $all.Add($_) | Out-Null; }
