@@ -31,6 +31,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     {
         EnsureinPathState();
         S_Op.WriteLn(Writer.Stream);
+        State = PageState.Page;
         return this;
     }
 
@@ -45,6 +46,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         {
             f_Op.WriteLn(Writer.Stream);
         }
+        State = PageState.Page;
         return this;
     }
 
@@ -59,6 +61,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         {
             B_Op.WriteLn(Writer.Stream);
         }
+        State = PageState.Page;
 
         return this;
     }
@@ -74,7 +77,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         {
             b_Op.WriteLn(Writer.Stream);
         }
-
+        State = PageState.Page;
         return this;
     }
 
@@ -96,6 +99,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     {
         EnsureinPathState();
         n_Op.WriteLn(Writer.Stream);
+        State = PageState.Page;
         return this;
     }
 
