@@ -246,8 +246,8 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> BeginText()
     {
-        EnsureInPageState(); 
-        EnsureInTextState();
+        EnsureNotPathState();
+        if (State == PageState.Text) { return this; }
         State = PageState.Text;
         BT_Op.WriteLn(Writer.Stream);
         GfxState.Text.TextLineMatrix = GfxMatrix<T>.Identity;
@@ -372,6 +372,10 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         {
             BeginText();
             return;
+        }
+        if (State == PageState.Path)
+        {
+            throw new PdfLexerException("Path construction started but not completed before writing non-path constructing items");
         }
     }
     private IWritableFont? writableFont;
