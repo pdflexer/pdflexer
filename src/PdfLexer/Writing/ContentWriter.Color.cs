@@ -21,6 +21,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> SetStrokingRGB(int r, int g, int b)
     {
+        EnsureNotPathState();
         RG_Op.WriteLn((r & 0xFF) / 255.0, (g & 0xFF) / 255.0, (b & 0xFF) / 255.0, Writer.Stream);
         return this;
     }
@@ -34,6 +35,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     /// <returns></returns>
     public ContentWriter<T> SetFillRGB(int r, int g, int b)
     {
+        EnsureNotPathState();
         rg_Op.WriteLn((r & 0xFF) / 255.0, (g & 0xFF) / 255.0, (b & 0xFF) / 255.0, Writer.Stream);
         return this;
     }
@@ -47,6 +49,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     /// <returns></returns>
     public ContentWriter<T> SetStrokingRGB(T r, T g, T b)
     {
+        EnsureNotPathState();
         r = T.Clamp(r, T.Zero, T.One);
         g = T.Clamp(g, T.Zero, T.One);
         b = T.Clamp(b, T.Zero, T.One);
@@ -63,6 +66,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     /// <returns></returns>
     public ContentWriter<T> SetFillRGB(T r, T g, T b)
     {
+        EnsureNotPathState();
         r = T.Clamp(r, T.Zero, T.One);
         g = T.Clamp(g, T.Zero, T.One);
         b = T.Clamp(b, T.Zero, T.One);
@@ -78,6 +82,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> SetStrokingGray(T v)
     {
+        EnsureNotPathState();
         v = T.Clamp(v, T.Zero, T.One);
         G_Op<T>.WriteLn(v, Writer.Stream);
         return this;
@@ -90,6 +95,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     /// <returns></returns>
     public ContentWriter<T> SetFillGray(T v)
     {
+        EnsureNotPathState();
         v = T.Clamp(v, T.Zero, T.One);
         g_Op<T>.WriteLn(v, Writer.Stream);
         return this;
@@ -107,6 +113,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     /// <returns></returns>
     public ContentWriter<T> SetStrokingCMYK(T c, T m, T y, T k)
     {
+        EnsureNotPathState();
         c = T.Clamp(c, T.Zero, T.One);
         m = T.Clamp(m, T.Zero, T.One);
         y = T.Clamp(y, T.Zero, T.One);
@@ -117,6 +124,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> SetFillCMYK(T c, T m, T y, T k)
     {
+        EnsureNotPathState();
         c = T.Clamp(c, T.Zero, T.One);
         m = T.Clamp(m, T.Zero, T.One);
         y = T.Clamp(y, T.Zero, T.One);

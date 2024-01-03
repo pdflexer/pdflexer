@@ -12,20 +12,31 @@ namespace PdfLexer.Writing;
 
 public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 {
+    private void EnsureinPathState()
+    {
+        if (State != PageState.Path)
+        {
+            throw new PdfLexerException("Attempted to write pathing before starting path");
+        }
+    }
+
     public ContentWriter<T> ClosePath()
     {
+        EnsureinPathState();
         h_Op.WriteLn(Writer.Stream);
         return this;
     }
 
     public ContentWriter<T> Stroke()
     {
+        EnsureinPathState();
         S_Op.WriteLn(Writer.Stream);
         return this;
     }
 
     public ContentWriter<T> Fill(bool evenOdd = true)
     {
+        EnsureinPathState();
         if (evenOdd)
         {
             f_Star_Op.WriteLn(Writer.Stream);
@@ -39,6 +50,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> FillAndStroke(bool evenOdd = true)
     {
+        EnsureinPathState();
         if (evenOdd)
         {
             B_Star_Op.WriteLn(Writer.Stream);
@@ -53,6 +65,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> CloseFillAndStroke(bool evenOdd = true)
     {
+        EnsureinPathState();
         if (evenOdd)
         {
             b_Star_Op.WriteLn(Writer.Stream);
@@ -67,6 +80,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> Clip(bool evenOdd = true)
     {
+        EnsureinPathState();
         if (evenOdd)
         {
             W_Star_Op.WriteLn(Writer.Stream);
@@ -80,6 +94,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> EndPathNoOp()
     {
+        EnsureinPathState();
         n_Op.WriteLn(Writer.Stream);
         return this;
     }
@@ -110,7 +125,11 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> MoveTo(T x, T y)
     {
-        EnsureInPageState();
+        if (State != PageState.Path)
+        {
+            EnsureInPageState();
+        }
+        State = PageState.Path;
         if (scale != T.One) { x *= scale; y *= scale; }
         m_Op<T>.WriteLn(x, y, Writer.Stream);
         return this;
@@ -118,6 +137,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> LineTo(T x, T y)
     {
+        EnsureinPathState();
         if (scale != T.One) { x *= scale; y *= scale; }
         l_Op<T>.WriteLn(x, y, Writer.Stream);
         return this;
@@ -125,6 +145,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> BezierCurveTo(T x1, T y1, T x2, T y2, T x3, T y3)
     {
+        EnsureinPathState();
         if (scale != T.One) { var s = scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; x3 *= s; y3 *= s; }
         c_Op<T>.WriteLn(x1, y1, x2, y2, x3, y3, Writer.Stream);
         return this;
@@ -132,6 +153,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> QuadraticCurveTo(T x1, T y1, T x2, T y2)
     {
+        EnsureinPathState();
         if (scale != T.One) { var s = scale; x1 *= s; y1 *= s; x2 *= s; y2 *= s; }
         v_Op<T>.WriteLn(x1, y1, x2, y2, Writer.Stream);
         return this;
@@ -139,12 +161,22 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> Rect(PdfRect<T> rect)
     {
+        if (State != PageState.Path)
+        {
+            EnsureInPageState();
+        }
+        State = PageState.Path;
         re_Op<T>.WriteLn(rect.LLx, rect.LLy, rect.URx - rect.LLx, rect.URy-rect.LLy, Writer.Stream);
         return this;
     }
 
     public ContentWriter<T> Rect(T x, T y, T w, T h)
     {
+        if (State != PageState.Path)
+        {
+            EnsureInPageState();
+        }
+        State = PageState.Path;
         if (scale != T.One) { var s = scale; x *= s; y *= s; w *= s; h *= s; }
         re_Op<T>.WriteLn(x, y, w, h, Writer.Stream);
         return this;

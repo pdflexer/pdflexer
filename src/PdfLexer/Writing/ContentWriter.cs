@@ -54,6 +54,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         Patterns = resources.GetOrCreateValue<PdfDictionary>(PdfName.Pattern);
         Writer = new ZLibLexerStream();
     }
+
     public ContentWriter<T> Image(XObjImage img, T x, T y, T w, T h)
     {
         var nm = AddResource(img.Stream, "I");
@@ -133,12 +134,14 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     }
     public ContentWriter<T> LineJoin(JoinStyle c)
     {
+        EnsureNotPathState();
         j_Op<T>.WriteLn((int)c, Writer.Stream);
         return this;
     }
 
     public ContentWriter<T> LineWidth(T w)
     {
+        EnsureNotPathState();
         if (scale != T.One) { w *= scale; }
         w_Op<T>.WriteLn(w, Writer.Stream);
         return this;
@@ -146,6 +149,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> LineCap(CapStyle c)
     {
+        EnsureNotPathState();
         J_Op<T>.WriteLn((int)c, Writer.Stream);
         return this;
     }
@@ -223,6 +227,14 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return name;
     }
 
+    private void EnsureNotPathState()
+    {
+        if (State == PageState.Path)
+        {
+            throw new PdfLexerException("Path construction started but not completed before writing non-path constructing items");
+        }
+    }
+
     private void EnsureInPageState()
     {
         if (State == PageState.Page) { return; }
@@ -231,6 +243,10 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             EndText();
             State = PageState.Page;
             return;
+        }
+        if (State == PageState.Path)
+        {
+            throw new PdfLexerException("Path construction started but not completed before writing non-path constructing items");
         }
     }
 
