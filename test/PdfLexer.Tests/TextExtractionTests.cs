@@ -447,7 +447,7 @@ namespace PdfLexer.Tests
                     expected = File.ReadAllText(txtFile);
                 }
 
-                Assert.Equal(expected, result);
+                Assert.Equal(expected.Replace("\r\n", "\n"), result);
             }
 
             if (runCom)

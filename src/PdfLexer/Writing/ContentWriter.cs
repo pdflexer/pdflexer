@@ -261,10 +261,16 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> Op(IPdfOperation<T> op)
     {
+        // TODO check op type and set state
         op.Apply(ref GfxState);
         op.Serialize(Writer.Stream);
         Writer.Stream.WriteByte((byte)'\n');
         return this;
+    }
+
+    internal void SetToPageState()
+    {
+        State = PageState.Page;
     }
 
     [Obsolete("Use .Op(op) instead")]
