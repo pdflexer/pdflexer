@@ -78,6 +78,7 @@ public class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingPoi
         {
             writer.Op(n_Op<T>.Value);
         }
+        writer.SetToPageState();
     }
 
     public void Transform(GfxMatrix<T> transformation) => ((ISinglePartCopy<T>)this).TransformImpl(transformation);

@@ -16,6 +16,8 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             return this;
         }
 
+        EnsureNotPathState();
+
         var nm = AddFont(font);
         writableFont = font;
         Tf_Op<T>.WriteLn(nm, size, Writer.Stream);
@@ -27,6 +29,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> Font(Base14 font, T size, bool setTextLeading = true)
     {
+        EnsureNotPathState();
         var wf = GetBase14Font(font);
         Font(wf, size);
         if (setTextLeading)
@@ -70,6 +73,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> WordSpacing(T w)
     {
+        EnsureNotPathState();
         Tw_Op<T>.WriteLn(w, Writer.Stream);
         GfxState = GfxState with { WordSpacing = w };
         return this;
@@ -77,6 +81,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> NewLine(int count=1)
     {
+        EnsureInTextState();
         for (var i = 0; i < count;i++)
         {
             T_Star_Op<T>.WriteLn(Writer.Stream);
@@ -88,6 +93,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     public ContentWriter<T> TextLeading(T spacing) => LineSpacing(spacing);
     public ContentWriter<T> LineSpacing(T spacing)
     {
+        EnsureNotPathState();
         TL_Op<T>.WriteLn(spacing, Writer.Stream);
         new TL_Op<T>(spacing).Apply(ref GfxState);
         return this;
@@ -140,6 +146,8 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             width = iv.GetTransformedPoint(new PdfPoint<T> { X = width, Y = T.Zero }).X;
         }
 
+        EnsureInTextState();
+
         var tb = new TextBox<T>(GfxState, writableFont, width);
         tb.Alignment = align;
         tb.AddText(text);
@@ -172,10 +180,6 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     public ContentWriter<T> TextWrapCenter(string text, T width, bool userSpace = true)
         => TextWrap(text, width, TextAlign.Center, userSpace);
 
-    internal void AddNewLineShift()
-    {
-        T_Star_Op<T>.Value.Apply(ref GfxState);
-    }
 
     /// <summary>
     /// Moves the text position to the specified point in 
@@ -234,6 +238,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     }
     public ContentWriter<T> EndText()
     {
+        EnsureInTextState();
         State = PageState.Page;
         ET_Op.WriteLn(Writer.Stream);
         return this;
@@ -241,6 +246,8 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     public ContentWriter<T> BeginText()
     {
+        EnsureNotPathState();
+        if (State == PageState.Text) { return this; }
         State = PageState.Text;
         BT_Op.WriteLn(Writer.Stream);
         GfxState.Text.TextLineMatrix = GfxMatrix<T>.Identity;
@@ -365,6 +372,10 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         {
             BeginText();
             return;
+        }
+        if (State == PageState.Path)
+        {
+            throw new PdfLexerException("Path construction started but not completed before writing non-path constructing items");
         }
     }
     private IWritableFont? writableFont;
