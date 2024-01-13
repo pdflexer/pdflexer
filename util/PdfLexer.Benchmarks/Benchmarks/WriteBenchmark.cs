@@ -1,14 +1,8 @@
 ﻿using BenchmarkDotNet.Attributes;
-using PdfLexer.IO;
-using PdfLexer.Parsers;
 using PdfLexer.Serializers;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using UglyToad.PdfPig.Content;
 using UglyToad.PdfPig.Tokens;
 

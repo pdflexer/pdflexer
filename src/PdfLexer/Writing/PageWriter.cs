@@ -28,14 +28,16 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
                 break;
             case PageWriteMode.Pre:
                 {
-                    var arr = new PdfArray();
-                    arr.Add(PdfIndirectRef.Create(new PdfStream(data)));
+                    var arr = new PdfArray
+                    {
+                        new PdfStream(data).Indirect()
+                    };
                     foreach (var existing in Page.Contents)
                     {
-                        arr.Add(existing);
+                        arr.Add(existing.Indirect());
                     }
                     Page.NativeObject[PdfName.Contents] = arr;
-                    break; ;
+                    break;
                 }
             case PageWriteMode.Append:
                 {
@@ -43,7 +45,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
                     if (content == null)
                     {
                         Page.NativeObject[PdfName.Contents] = new PdfStream(data).Indirect();
-                    } else // if (content.Type == PdfObjectType.ArrayObj)
+                    } else
                     {
                         // can't make form without rewritting to single stream so just write
                         // with Q q
@@ -60,20 +62,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
                         arr.Add(PdfIndirectRef.Create(new PdfStream(fw.Complete())));
                         arr.Add(PdfIndirectRef.Create(new PdfStream(data)));
                         Page.NativeObject[PdfName.Contents] = arr;
-                    } 
-                    // else
-                    // {
-                    //     var fm = XObjForm.FromPage(Page);
-                    //     var fm2 = new XObjForm(new PdfStream(data));
-                    //     fm2.Resources = this.Resources;
-                    //     var fw = new FlateWriter();
-                    //     Do_Op.WriteLn("F1", fw);
-                    //     Do_Op.WriteLn("F2", fw);
-                    //     Page.Resources = new PdfDictionary();
-                    //     Page.AddXObj("F1", fm.NativeObject);
-                    //     Page.AddXObj("F1", fm2.NativeObject);
-                    //     Page.NativeObject[PdfName.Contents] = new PdfStream(fw.Complete()).Indirect();
-                    // }
+                    }
                    
                     break;
                 }
