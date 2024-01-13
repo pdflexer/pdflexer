@@ -20,13 +20,16 @@ public sealed partial class PdfDocument
     /// <param name="stream"></param>
     public void SaveTo(Stream stream)
     {
-        var nums = XrefEntries?.Values.Select(x => x.Reference.ObjectNumber).ToList();
-        var nextId = 1;
-        if (nums != null && nums.Any())
-        {
-            nextId = nums.Max() + 1;
-        }
-        var ctx = new WritingContext(stream, nextId, DocumentId);
+        // var nums = XrefEntries?.Values.Select(x => x.Reference.ObjectNumber).ToList();
+        // var nextId = 1;
+        // if (nums != null && nums.Any())
+        // {
+        //     nextId = nums.Max() + 1;
+        // }
+        // disable XRef re-use -> had collissions when double saving a doc
+        // this can be fixed by not caching docId / obj num on xref entries
+        // but for now just always create new doc.
+        var ctx = new WritingContext(stream, 1, GetNextId());
 
         var wv = 0m;
         if (Pages != null && Pages.Count > 0)
