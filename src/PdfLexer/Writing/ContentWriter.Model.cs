@@ -502,7 +502,13 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     }
     internal void SubPath(SubPath<T> subPath)
     {
-        EnsureInPageState();
+        if (State == PageState.Text)
+        {
+            EndText();
+        } else if (State == PageState.Page)
+        {
+            State = PageState.Path;
+        }
         if (subPath.Operations.Count > 0 && subPath.Operations[0].Type != PdfOperatorType.re)
         {
             MoveTo(subPath.XPos, subPath.YPos);
