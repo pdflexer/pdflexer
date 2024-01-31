@@ -21,6 +21,7 @@ public class PdfStream : PdfObject
     {
         Dictionary = new PdfDictionary();
         _contents = contents;
+        contents.UpdateStreamDictionary(Dictionary);
         streamModified = true;
     }
 
@@ -28,6 +29,7 @@ public class PdfStream : PdfObject
     {
         Dictionary = dictionary;
         _contents = contents;
+        contents.UpdateStreamDictionary(Dictionary);
         streamModified = true;
     }
     /// <summary>
@@ -43,6 +45,7 @@ public class PdfStream : PdfObject
         set
         {
             streamModified = true;
+            value.UpdateStreamDictionary(Dictionary);
             _contents = value;
         }
     }
@@ -109,17 +112,34 @@ public abstract class PdfStreamContents
     /// <param name="dict"></param>
     internal virtual void UpdateStreamDictionary(PdfDictionary dict)
     {
-        dict.Remove(PdfName.DecodeParms);
-        dict.Remove(PdfName.Filter);
-        if (DecodeParams != null)
+        IPdfObject? dcp = null;
+        dict.TryGetValue(PdfName.DecodeParms, out dcp);
+        IPdfObject? fv = null;
+        dict.TryGetValue(PdfName.Filter, out fv);
+        IPdfObject? fl = null;
+        dict.TryGetValue(PdfName.Length, out fl);
+
+        if (DecodeParams != dcp || Filters != fv || Length != (fl?.GetAs<PdfNumber>() ?? 0))
         {
-            dict[PdfName.DecodeParms] = DecodeParams;
+            if (DecodeParams != null)
+            {
+                dict[PdfName.DecodeParms] = DecodeParams;
+            }
+            else if (dcp != null)
+            {
+                dict.Remove(PdfName.DecodeParms);
+            }
+
+            if (Filters != null)
+            {
+                dict[PdfName.Filter] = Filters;
+            }
+            else if (fv != null)
+            {
+                dict.Remove(PdfName.Filter);
+            }
+            dict[PdfName.Length] = new PdfIntNumber(Length);
         }
-        if (Filters != null)
-        {
-            dict[PdfName.Filter] = Filters;
-        }
-        dict[PdfName.Length] = new PdfIntNumber(Length);
     }
 
     public DecodedStreamContents GetDecodedBuffer() => GetDecodedBuffer(true);
@@ -129,7 +149,7 @@ public abstract class PdfStreamContents
     /// </summary>
     /// <param name="ctx"></param>
     /// <returns></returns>
-    internal DecodedStreamContents GetDecodedBuffer(bool cache=false)
+    internal DecodedStreamContents GetDecodedBuffer(bool cache = false)
     {
         if (cache && StreamContentsCache.StaticCache.Value != null)
         {
@@ -155,7 +175,7 @@ public abstract class PdfStreamContents
             Buffer.BlockCopy(rented, 0, second, 0, rented.Length);
             ArrayPool<byte>.Shared.Return(rented);
             ms.Position = 0;
-            ms.TryFillArray(second, (int) ms.Length, l);
+            ms.TryFillArray(second, (int)ms.Length, l);
             return new RentedArrayContents(second, totalLength);
         }
         return new RentedArrayContents(rented, l);
@@ -240,7 +260,7 @@ public abstract class PdfStreamContents
             var arr = obj.GetValue<PdfArray>();
 
             // decrypt only if no crypt filter
-            if (!arr.Any(x=> x.GetAsOrNull<PdfName>() == "Crypt"))
+            if (!arr.Any(x => x.GetAsOrNull<PdfName>() == "Crypt"))
             {
                 if (Source?.IsEncrypted ?? false)
                 {
@@ -292,7 +312,8 @@ public abstract class PdfStreamContents
             if (ctx != null)
             {
                 return decode.Decode(input, decodeParams, ctx.Error);
-            } else
+            }
+            else
             {
                 return decode.Decode(input, decodeParams);
             }
@@ -492,7 +513,7 @@ internal class RentedArrayContents : DecodedStreamContents
 
     public override bool TryGetLexInfo(ParsingContext ctx, [NotNullWhen(true)] out RentedStreamLexInfo? contents)
     {
-        if (_cached != null) { contents = _cached;  return true; }
+        if (_cached != null) { contents = _cached; return true; }
         var data = GetData();
         var span = ContentStreamScanner.FillListWithLexedItems(ctx, data, out var arr);
         _cached = new RentedStreamLexInfo(arr, span.Length);
@@ -502,7 +523,7 @@ internal class RentedArrayContents : DecodedStreamContents
 
     public override ReadOnlySpan<byte> GetData()
     {
-        if (_data == null) { throw new ObjectDisposedException("GetData() called on disposed DecodedStreamContents.");  }
+        if (_data == null) { throw new ObjectDisposedException("GetData() called on disposed DecodedStreamContents."); }
         ReadOnlySpan<byte> spanned = _data;
         return spanned.Slice(0, _length);
     }
