@@ -205,9 +205,22 @@ internal class TextBox<T> where T : struct, IFloatingPoint<T>
                         total -= c.PrevKern / 1000;
                     }
                     buf[os++] = letterBuffer[0];
+                    for (var t = 0; t < c.ByteCount; t++)
+                    {
+                        buf[os++] = letterBuffer[i];
+                    }
+
                     total += c.Width;
                     if (c.ByteCount == 1 && letterBuffer[0] == 32)
                     {
+                        total += ws / fs;
+                    }
+
+                    if (c.AddWordSpace && ws != 0)
+                    {
+                        StringSerializer.WriteToStream(buf.Slice(0, os), ms);
+                        PdfOperator.Writedecimal((decimal)(ws / fs), ms);
+                        os = 0;
                         total += ws / fs;
                     }
                 }
