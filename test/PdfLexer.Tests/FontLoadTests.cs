@@ -1,5 +1,7 @@
-﻿using PdfLexer.Fonts;
+﻿using PdfLexer.Content;
+using PdfLexer.Fonts;
 using PdfLexer.Writing;
+using System.Collections.Generic;
 using System.IO;
 using Xunit;
 
@@ -10,5 +12,101 @@ public class FontLoadTests
     [Fact]
     public void It_Loads_TrueType()
     {
+        var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var fontPath = Path.Combine(tp, "Roboto-Regular.ttf");
+
+        var ttf = TrueTypeFont.CreateWritableFont(File.ReadAllBytes(fontPath));
+
+        using var doc = PdfDocument.Create();
+        var pg = doc.AddPage();
+        {
+            using var writer = pg.GetWriter();
+            writer
+                .Save()
+                .Font(ttf, 12)
+                .Text("Hello World")
+                .Restore();
+        }
+
+        var first = doc.Save();
+        Assert.Empty(SyntaxValidation.Validate(first));
+
+        Assert.Contains("Hello World", pg.GetTextVisually());
+    }
+
+    [Fact]
+    public void It_Loads_TrueType_Type0()
+    {
+        var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var fontPath = Path.Combine(tp, "Roboto-Regular.ttf");
+
+        var ttf = TrueTypeFont.CreateType0WritableFont(File.ReadAllBytes(fontPath));
+
+        using var doc = PdfDocument.Create();
+        var pg = doc.AddPage();
+        {
+            using var writer = pg.GetWriter();
+            writer
+                .Save()
+                .Font(ttf, 12)
+                .Text("Hello World Φ")
+                .Restore();
+        }
+
+        var first = doc.Save();
+        Assert.Empty(SyntaxValidation.Validate(first));
+        Assert.Contains("Hello World Φ", pg.GetTextVisually());
+    }
+
+    [Fact]
+    public void It_Uses_Both_Types()
+    {
+        var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var fontPath = Path.Combine(tp, "Roboto-Regular.ttf");
+
+        var ttf0 = TrueTypeFont.CreateType0WritableFont(File.ReadAllBytes(fontPath));
+        var ttf1 = TrueTypeFont.CreateWritableFont(File.ReadAllBytes(fontPath));
+
+        using var doc = PdfDocument.Create();
+        var pg = doc.AddPage();
+        {
+            using var writer = pg.GetWriter();
+            writer
+                .Save()
+                .Font(ttf0, 12)
+                .Text("ABCDEFGHIJKLMNOP abcdefghijklmnop")
+                .Restore()
+                .Save()
+                .Font(ttf1, 12)
+                .Text("ABCDEFGHIJKLMNOP abcdefghijklmnop")
+                .Restore();
+        }
+
+        var first = doc.Save();
+        Assert.Empty(SyntaxValidation.Validate(first));
+        var scanner = pg.GetTextScanner();
+        var dict = new Dictionary<char, List<PdfRect<double>>>();
+        while (scanner.Advance())
+        {
+            if (dict.TryGetValue(scanner.Glyph.Char, out var list))
+            {
+                list.Add(scanner.GetCurrentBoundingBox());
+            }
+            else
+            {
+                dict[scanner.Glyph.Char] = new List<PdfRect<double>> { scanner.GetCurrentBoundingBox() };
+            }
+        }
+
+        foreach (var (c,v) in dict)
+        {
+            Assert.Equal(2, v.Count);
+            var c1 = v[0];
+            var c2 = v[1];
+            Assert.Equal(c1.LLx, c2.LLx);
+            Assert.Equal(c1.LLy, c2.LLy);
+            Assert.Equal(c1.URx, c2.URx);
+            Assert.Equal(c1.URy, c2.URy);
+        }
     }
 }

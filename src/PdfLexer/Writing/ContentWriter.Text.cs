@@ -105,7 +105,8 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         EnsureInTextState();
         // very inefficient just experimenting
         var b = new byte[2];
-        Span<byte> buf = new byte[text.Length];
+        byte[] rented = ArrayPool<byte>.Shared.Rent(text.Length*2);
+        Span<byte> buf = rented;
         int os = 0;
         double total = 0;
         double fs = FPC<T>.Util.ToDouble(GfxState.FontSize);
@@ -121,10 +122,21 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
                 os = 0;
                 total -= c.PrevKern / 1000;
             }
-            buf[os++] = b[0];
+            for (var i=0;i<c.ByteCount;i++)
+            {
+                buf[os++] = b[i];
+            }
             total += c.Width;
             if (c.ByteCount == 1 && b[0] == 32)
             {
+                total += ws / fs;
+            }
+
+            if (c.AddWordSpace && ws != 0)
+            {
+                StringSerializer.WriteToStream(buf.Slice(0, os), Writer.Stream);
+                PdfOperator.Writedecimal((decimal)(ws / fs), Writer.Stream);
+                os = 0;
                 total += ws / fs;
             }
         }
@@ -134,6 +146,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         Writer.Stream.Write(TJ_Op.OpData);
         Writer.Stream.WriteByte((byte)'\n');
         GfxState.ApplyCharShift(FPC<T>.Util.FromDouble<T>(total), false);
+        ArrayPool<byte>.Shared.Return(rented);
         return this;
     }
 

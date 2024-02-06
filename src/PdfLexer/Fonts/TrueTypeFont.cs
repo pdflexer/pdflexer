@@ -1,5 +1,4 @@
 ﻿using PdfLexer.DOM;
-using PdfLexer.Filters;
 using PdfLexer.Fonts.Files;
 
 namespace PdfLexer.Fonts;
@@ -15,6 +14,24 @@ public class TrueTypeFont
     {
         var info = CreateEmbeddableFont(data);
         return info.GetDefaultEncodedFont();
+    }
+
+    /// <summary>
+    /// Creates a simple writable font with default encoding of the truetype font.
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static IWritableFont CreateType0WritableFont(ReadOnlySpan<byte> data)
+    {
+        var ttr = new TrueTypeReader(ParsingContext.Current, data);
+
+        var ot = TrueTypeReader.IsOpenTypeFile(data);
+        if (ot)
+        {
+            throw new PdfLexerException("Invalid true type font. OpenType not supported.");
+        }
+        var info = ttr.GetCIDPdfFontInfo();
+        return info.GetType0EncodedFont();
     }
 
     /// <summary>
