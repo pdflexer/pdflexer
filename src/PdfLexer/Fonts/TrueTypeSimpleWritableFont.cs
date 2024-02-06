@@ -59,7 +59,7 @@ internal class TrueTypeSimpleWritableFont : IWritableFont
                 } else
                 {
                     buffer[0] = 0;
-                    yield return new SizedChar { ByteCount = 1, Width = g.w0, PrevKern = 0 };
+                    yield return new SizedChar { ByteCount = 1, Width = 0, PrevKern = 0 };
                     lc = null;
                     continue;
                 }

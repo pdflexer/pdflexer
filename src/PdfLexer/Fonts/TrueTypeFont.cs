@@ -18,6 +18,24 @@ public class TrueTypeFont
     }
 
     /// <summary>
+    /// Creates a simple writable font with default encoding of the truetype font.
+    /// </summary>
+    /// <param name="data"></param>
+    /// <returns></returns>
+    public static IWritableFont CreateType0WritableFont(ReadOnlySpan<byte> data)
+    {
+        var ttr = new TrueTypeReader(ParsingContext.Current, data);
+
+        var ot = TrueTypeReader.IsOpenTypeFile(data);
+        if (ot)
+        {
+            throw new PdfLexerException("Invalid true type font. OpenType not supported.");
+        }
+        var info = ttr.GetCIDPdfFontInfo();
+        return info.GetType0EncodedFont();
+    }
+
+    /// <summary>
     /// Creates an embeddable font from a truetype font file. 
     /// </summary>
     /// <param name="data"></param>

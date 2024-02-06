@@ -11,6 +11,7 @@ public class TrueTypeEmbeddedFont : IPdfEmbeddableFont
     public FontDescriptor Descriptor { get; set; } = null!;
 
     public IWritableFont GetDefaultEncodedFont(UnknownCharHandling handling = default) => new TrueTypeSimpleWritableFont(this, handling);
+    public IWritableFont GetType0EncodedFont(UnknownCharHandling handling = default) => new TrueTypeWritableFont(this, handling);
     public IWritableFont GetCustomEncodedFont(IEnumerable<char> characters, UnknownCharHandling handling = UnknownCharHandling.Error)
     {
         throw new NotImplementedException("Custom encoding not yet implemented for true type fonts");

@@ -200,6 +200,87 @@ public ref struct TrueTypeReader
         return info;
     }
 
+    internal TrueTypeEmbeddedFont GetCIDPdfFontInfo()
+    {
+        var info = new TrueTypeEmbeddedFont();
+
+        // "head", "OS/2", "post", "name", "hhea", "maxp", "hmtx", "cmap"
+        AddFontHeaderTable(info);
+        AddWindowsMetricsTable(info);
+        AddPostTable(info);
+        info.PostScriptName = GetPostscriptName() ?? "Unknown";
+        AddHorizontalHeaderTable(info);
+        AddMaxProfileTable(info);
+        AddHorizontalMetricsTable(info);
+
+        var cmaps = ReadCMapTables();
+
+        // read unicode tables
+        var map = cmaps.FirstOrDefault(x => x.PlatformId == 0 && x.EncodingId == 4);
+        map ??= cmaps.FirstOrDefault(x => x.PlatformId == 0 && x.EncodingId == 3);
+        map ??= cmaps.FirstOrDefault(x => x.PlatformId == 3 && x.EncodingId == 10);
+        map ??= cmaps.FirstOrDefault(x => x.PlatformId == 3 && x.EncodingId == 1);
+
+        if (map == null)
+        {
+            throw new NotImplementedException("No unicode cmap found in TTF file");
+            // todo fallback to names
+        }
+        //
+        var cmap = GetSingleMap(map);
+        var invMap = new Dictionary<uint, uint>();
+        foreach (var item in cmap)
+        {
+            invMap[item.Value] = item.Key;
+        }
+
+
+        var glyphs = new Dictionary<char, Glyph>(info.GlyphCount);
+        for (var i = 1; i < info.GlyphCount; i++)
+        {
+            if (!invMap.TryGetValue((uint)i, out var unicode))
+            {
+                continue;
+            }
+            glyphs[(char)unicode] = new Glyph { Char = (char)unicode, CodePoint = (uint)i };
+        }
+
+        var str = new PdfStream();
+        {
+            var flate = new ZLibLexerStream();
+            flate.Write(Data);
+            str.Contents = flate.Complete();
+        }
+        str.Dictionary[PdfName.Length1] = new PdfIntNumber(Data.Length);
+
+        var fd = new FontDescriptor
+        {
+            FontName = info.PostScriptName,
+            Flags = FontFlags.Nonsymbolic,
+            FontBBox = new PdfRectangle
+            {
+                LLx = new PdfDoubleNumber(info.LLx),
+                LLy = new PdfDoubleNumber(info.LLy),
+                URx = new PdfDoubleNumber(info.URx),
+                URy = new PdfDoubleNumber(info.URy),
+            },
+            ItalicAngle = new PdfDoubleNumber(info.ItalicAngle),
+            CapHeight = info.CapHeight,
+            Ascent = info.Ascent,
+            Descent = info.Descent,
+            StemV = info.ApproxStemV,
+            FontFile2 = str,
+        };
+        if (info.Bold)
+        {
+            fd.Flags = fd.Flags | FontFlags.ForceBold;
+        }
+        info.Descriptor = fd;
+        info.Glyphs = glyphs;
+
+        return info;
+    }
+
     private void AddHorizontalMetricsTable(TrueTypeEmbeddedFont fd)
     {
         if (!Headers.TryGetValue("hmtx", out var table))

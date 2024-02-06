@@ -19,6 +19,13 @@ public interface IPdfEmbeddableFont
     /// <param name="handling"></param>
     /// <returns></returns>
     IWritableFont GetDefaultEncodedFont(UnknownCharHandling handling = default);
+
+    /// <summary>
+    /// Creates a writable font using indentity encoding of the font file.
+    /// </summary>
+    /// <param name="handling"></param>
+    /// <returns></returns>
+    IWritableFont GetType0EncodedFont(UnknownCharHandling handling = default);
     /// <summary>
     /// Creates a writable font using a custom encoding that is based on the provided characters.
     /// </summary>
