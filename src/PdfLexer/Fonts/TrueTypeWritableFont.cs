@@ -293,7 +293,7 @@ internal class TrueTypeWritableFont : IWritableFont
         foreach (var g in _glyphs.Values)
         {
             var u = g.CodePoint;
-            if (u != null)
+            if (u != null && !lu.ContainsKey(u.Value))
             {
                 lu.Add(u.Value, g.Char);
             }

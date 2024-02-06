@@ -229,21 +229,11 @@ public ref struct TrueTypeReader
         }
         //
         var cmap = GetSingleMap(map);
-        var invMap = new Dictionary<uint, uint>();
-        foreach (var item in cmap)
-        {
-            invMap[item.Value] = item.Key;
-        }
-
-
         var glyphs = new Dictionary<char, Glyph>(info.GlyphCount);
-        for (var i = 1; i < info.GlyphCount; i++)
+
+        foreach (var (uc, gid) in cmap)
         {
-            if (!invMap.TryGetValue((uint)i, out var unicode))
-            {
-                continue;
-            }
-            glyphs[(char)unicode] = new Glyph { Char = (char)unicode, CodePoint = (uint)i, w0 = info.GlyphWidths[i] / 1000f };
+            glyphs[(char)uc] = new Glyph { Char = (char)uc, CodePoint = (uint)gid, w0 = info.GlyphWidths[gid] / 1000f };
         }
 
         var str = new PdfStream();
