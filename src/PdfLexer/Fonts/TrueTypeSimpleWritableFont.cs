@@ -30,8 +30,8 @@ internal class TrueTypeSimpleWritableFont : IWritableFont
                 {
                     _fastLookup[v] = item;
                 }
-                _fastEnd = 255;
             }
+            _fastEnd = 255;
         }
         else
         {

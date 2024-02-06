@@ -372,13 +372,13 @@ namespace PdfLexer.Fonts
                 var nm = charNames[i];
                 if (nm == null) { continue; }
 
-                if (!cmap.ContainsKey((uint)i))
-                {
-                    continue;
-                }
-
                 if (GlyphNames.Lookup.TryGetValue(nm, out var c))
                 {
+                    if (!cmap.ContainsKey((uint)c))
+                    {
+                        continue;
+                    }
+
                     glyphs[c] = new Glyph
                     {
                         Name = nm,

@@ -2,7 +2,6 @@
 
 namespace PdfLexer.Fonts;
 
-
 public class TrueTypeEmbeddedFont : IPdfEmbeddableFont
 {
     public string PostScriptName { get; internal set; } = null!;
@@ -21,7 +20,6 @@ public class TrueTypeEmbeddedFont : IPdfEmbeddableFont
     internal double LLy { get; set; }
     internal double URx { get; set; }
     internal double URy { get; set; }
-
     internal int ApproxStemV { get; set; }
     internal int Ascent { get; set; }
     internal int Descent { get; set; }
@@ -35,6 +33,4 @@ public class TrueTypeEmbeddedFont : IPdfEmbeddableFont
     public int GlyphCount { get; set; }
     internal int[] GlyphWidths { get; set; } = null!;
     internal double ToPDFGlyphSpace(double value) => (value * 1000) / UnitsPerEm;
-
-
 }

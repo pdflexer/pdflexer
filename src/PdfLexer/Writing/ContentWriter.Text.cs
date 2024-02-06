@@ -126,10 +126,17 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
             {
                 buf[os++] = b[i];
             }
-            // buf[os++] = b[0];
             total += c.Width;
             if (c.ByteCount == 1 && b[0] == 32)
             {
+                total += ws / fs;
+            }
+
+            if (c.AddWordSpace && ws != 0)
+            {
+                StringSerializer.WriteToStream(buf.Slice(0, os), Writer.Stream);
+                PdfOperator.Writedecimal((decimal)(ws / fs), Writer.Stream);
+                os = 0;
                 total += ws / fs;
             }
         }

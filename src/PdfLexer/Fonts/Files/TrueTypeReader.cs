@@ -2,6 +2,7 @@
 using PdfLexer.Filters;
 using System;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -159,7 +160,7 @@ public ref struct TrueTypeReader
 
         foreach (var glyph in glyphs.Values)
         {
-            var gid = cmap.Mappings![glyph.CodePoint!.Value];
+            var gid = cmap.Mappings![glyph.Char];
             glyph.w0 = info.GlyphWidths[gid] / 1000f;
         }
 
@@ -242,7 +243,7 @@ public ref struct TrueTypeReader
             {
                 continue;
             }
-            glyphs[(char)unicode] = new Glyph { Char = (char)unicode, CodePoint = (uint)i };
+            glyphs[(char)unicode] = new Glyph { Char = (char)unicode, CodePoint = (uint)i, w0 = info.GlyphWidths[i] / 1000f };
         }
 
         var str = new PdfStream();

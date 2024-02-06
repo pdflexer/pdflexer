@@ -32,8 +32,8 @@ internal class TrueTypeWritableFont : IWritableFont
                 {
                     _fastLookup[v] = item;
                 }
-                _fastEnd = 255;
             }
+            _fastEnd = 255;
         }
         else
         {
@@ -75,7 +75,8 @@ internal class TrueTypeWritableFont : IWritableFont
             {
                 buffer[0] = (byte)(cp >> 8);
                 buffer[1] = (byte)(cp & 0xFF);
-                yield return new SizedChar { ByteCount = 2, Width = g.w0, PrevKern = k };
+                yield return new SizedChar { ByteCount = 2, Width = g.w0, PrevKern = k, AddWordSpace = c == ' ' };
+
             }
             else
             {
@@ -119,8 +120,6 @@ internal class TrueTypeWritableFont : IWritableFont
         f.BaseFont = _info.PostScriptName;
         f.Encoding = PdfName.IdentityH;
 
-        // f.ToUnicode
-
         var cid = new FontCID(true);
         cid.BaseFont = _info.PostScriptName;
         cid.CIDSystemInfo = new CIDSystemInfo
@@ -137,16 +136,124 @@ internal class TrueTypeWritableFont : IWritableFont
         cid.FontDescriptor = _info.Descriptor;
 
         // build widths
-        // cid.W
-
+        var w = new List<IPdfObject>();
+        CalcWidthArray(w);
+        cid.W = new PdfArray(w);
 
         f.DescendantFont = cid;
 
+        {
+            using var writer = new ZLibLexerStream();
+            var bytes = CreateToUnicodeCMap(writer);
+            var str = new PdfStream(writer.Complete());
+            str.Dictionary[PdfName.TYPE] = PdfName.CMap;
+            f.ToUnicode = str;
+        }
 
         return f;
     }
 
-    private void Create(Stream output)
+    private void CalcWidthArray(List<IPdfObject> a)
+    {
+        // [ CID1 [W1 W2 ... Wn] (individual widths for CID1-n
+        //   CIDX CIDY W1 (range of CIDs from CIDX to CIDY with width W1)
+        // ]
+
+        bool inSingles = false;
+        int groupStart = 0;
+        foreach (var (start, value, count) in GetWidthSegments())
+        {
+            if (count == 1)
+            {
+                if (inSingles)
+                {
+                    continue;
+                } else
+                {
+                    groupStart = start;
+                    inSingles = true;
+                }
+            }
+            else
+            {
+                if (inSingles)
+                {
+                    // finished a singles section
+                    Add(groupStart);
+                    AppendRange(groupStart, start - 1);
+                }
+                inSingles = false;
+                Add(start);
+                Add(start + count - 1);
+                Add(_info.GlyphWidths[start]);
+            }
+        }
+
+        void Add(int v)
+        {
+            a.Add(new PdfIntNumber(v));
+        }
+
+        void AppendRange(int from, int thru)
+        {
+            var r = new PdfArray();
+            for (var i = from; i <= thru; i++)
+            {
+                r.Add(new PdfIntNumber(_info.GlyphWidths[i]));
+            }
+            a.Add(r);
+        }
+    }
+
+    private IEnumerable<(int start, int value, int count)> GetWidthSegments()
+    {
+        int cnt = 0;
+        int? last = null;
+        int start = 0;
+
+        for (int i = 0; i < _info.GlyphWidths.Length; i++)
+        {
+            var v = _info.GlyphWidths[i];
+            if (last.HasValue)
+            {
+                if (last == v)
+                {
+                    cnt++;
+                    continue;
+                } else
+                {
+                    yield return (start, last.Value, cnt);
+                    start = i;
+                    cnt = 1;
+                    last = v;
+                }
+            } else
+            {
+                start = i;
+                last = v;
+                cnt++;
+            }
+        }
+    }
+
+    // CreateToUnicodeCMap conversion ported from pdfcpu
+    // (https://github.com/pdfcpu/pdfcpu/blob/865e6b7b49fb3ca732516c964db7ddde5022242f/pkg/pdfcpu/font/fontDict.go#L544)
+    // pdfcpu is licensed as follows:
+    /* Copyright 2012 Mozilla Foundation
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
+     */
+    private int CreateToUnicodeCMap(Stream output)
     {
         var start = output.Position;
         var pfx = """
@@ -160,12 +267,14 @@ internal class TrueTypeWritableFont : IWritableFont
             >> def
             /CMapName /Adobe-Identity-UCS def
             /CMapType 2 def
+
             """u8;
 
         var r = """
             1 begincodespacerange
             <0000> <FFFF>
             endcodespacerange
+
             """u8;
 
         var epi = """
@@ -180,6 +289,7 @@ internal class TrueTypeWritableFont : IWritableFont
 
 
         var lu = new Dictionary<uint, uint>();
+        lu[0] = 0;
         foreach (var g in _glyphs.Values)
         {
             var u = g.CodePoint;
@@ -188,7 +298,7 @@ internal class TrueTypeWritableFont : IWritableFont
                 lu.Add(u.Value, g.Char);
             }
         }
-        List<uint> gids = lu.Values.ToList();
+        List<uint> gids = lu.Keys.ToList();
         gids.Sort();
 
         int c = 100;
@@ -196,7 +306,7 @@ internal class TrueTypeWritableFont : IWritableFont
         {
             c = gids.Count;
         }
-        int l = c;
+        int l = gids.Count;
 
         var b = new StringBuilder();
 
@@ -206,11 +316,19 @@ internal class TrueTypeWritableFont : IWritableFont
         {
             uint gid = gids[i];
             b.AppendFormat("<{0:X4}> <", gid);
-            int u = (int)lu[gid];
-            string s = char.ConvertFromUtf32(u);
-            foreach (char v in s)
+            if (lu.TryGetValue(gid, out var u))
             {
-                b.AppendFormat("{0:X4}", Convert.ToUInt16(v));
+
+                string s = char.ConvertFromUtf32((int)u);
+                foreach (char v in s)
+                {
+                    b.AppendFormat("{0:X4}", (int)v);
+                }
+            }
+            else
+            {
+
+                b.AppendFormat("{0:X4}", 0);
             }
             b.Append(">\n");
             if (j % 100 == 0)
@@ -218,7 +336,7 @@ internal class TrueTypeWritableFont : IWritableFont
                 b.Append("endbfchar\n");
                 if (l - i < 100)
                 {
-                    c = l - i;
+                    c = l - i - 1;
                 }
                 b.AppendFormat("{0} beginbfchar\n", c);
             }
@@ -229,8 +347,8 @@ internal class TrueTypeWritableFont : IWritableFont
         output.Write(epi);
 
         var e = output.Position;
-        var totalBytes = e - start;
+        return (int)(e - start);
     }
 
-    public bool SpaceIsWordSpace() => true;
+    public bool SpaceIsWordSpace() => false;
 }
