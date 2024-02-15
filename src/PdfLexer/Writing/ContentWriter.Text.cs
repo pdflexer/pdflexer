@@ -9,7 +9,7 @@ namespace PdfLexer.Writing;
 
 public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 {
-    public ContentWriter<T> Font(IWritableFont font, T size)
+    public ContentWriter<T> Font(IWritableFont font, T size, bool setTextLeading = true)
     {
         if (writableFont == font && size == GfxState.FontSize)
         {
@@ -22,6 +22,12 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         writableFont = font;
         Tf_Op<T>.WriteLn(nm, size, Writer.Stream);
         GfxState = GfxState with { FontSize = size }; // font handled already
+
+        if (setTextLeading)
+        {
+            TextLeading(size);
+        }
+
         return this;
     }
 
@@ -31,11 +37,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     {
         EnsureNotPathState();
         var wf = GetBase14Font(font);
-        Font(wf, size);
-        if (setTextLeading)
-        {
-            TextLeading(size);
-        }
+        Font(wf, size, setTextLeading);
         return this;
     }
 
@@ -187,6 +189,27 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         var tbw = new TextBoxWriter<T>(this, writableFont, sized.X, sized.Y);
         tbw.Box.Alignment = align;
         tbw.Position = new PdfPoint<T>(area.LLx, area.URy);
+        return tbw;
+    }
+
+    /// <summary>
+    /// EXPERIMENTAL, BEHAVIOR MAY CHANGE
+    /// </summary>
+    /// <param name="width">Width in text space</param>
+    /// <param name="height">Height in text space</param>
+    /// <param name="align"></param>
+    /// <returns></returns>
+    /// <exception cref="NotSupportedException"></exception>
+    public ITextBoxWriter<T> TextBox(T width, T height, TextAlign align = TextAlign.Left)
+    {
+        if (writableFont == null)
+        {
+            throw new NotSupportedException("Must set current font before creating text box");
+        }
+
+        var tbw = new TextBoxWriter<T>(this, writableFont, width, height);
+        tbw.Box.Alignment = align;
+        tbw.Position = new PdfPoint<T>(width, height);
         return tbw;
     }
 

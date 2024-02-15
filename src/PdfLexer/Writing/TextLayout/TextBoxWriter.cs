@@ -57,6 +57,9 @@ internal class TextBoxWriter<T> : ITextBoxWriter<T> where T : struct, IFloatingP
         var existing = Writer.GfxState;
         if (point.HasValue)
         {
+            var x = existing.Text.TextMatrix.E;
+            var iy = existing.Text.TextMatrix.F;
+
             var pt = point.Value;
             var extraHeight = Box.Height - Box.YPos - (Box.FirstLineSize ?? T.Zero);
             var y = align switch
@@ -69,7 +72,7 @@ internal class TextBoxWriter<T> : ITextBoxWriter<T> where T : struct, IFloatingP
                 _ => pt.Y - Box.FirstLineSize ?? T.Zero
 
             };
-            Writer.TextMove(pt.X, y);
+            Writer.TextMove(x, iy + y);
         }
         Box.Apply(Writer);
         Writer.SetGS(existing);
