@@ -204,7 +204,7 @@ internal class TextBox<T> where T : struct, IFloatingPoint<T>
                         os = 0;
                         total -= c.PrevKern / 1000;
                     }
-                    buf[os++] = letterBuffer[0];
+
                     for (var t = 0; t < c.ByteCount; t++)
                     {
                         buf[os++] = letterBuffer[i];
