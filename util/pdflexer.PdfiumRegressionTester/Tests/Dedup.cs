@@ -14,6 +14,7 @@ internal class Dedup : ITest
         using var sw = new StreamingWriter(fo);
         foreach (var pg in doc.Pages)
         {
+            pg.RemoveUnusedResources();
             sw.AddPage(pg);
         }
         var tr = doc.Trailer.CloneShallow();

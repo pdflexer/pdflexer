@@ -1,5 +1,4 @@
-﻿using PdfLexer.DOM;
-using PdfLexer.Encryption;
+﻿using PdfLexer.Encryption;
 using PdfLexer.Filters;
 using PdfLexer.IO;
 using PdfLexer.Parsers;

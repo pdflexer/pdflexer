@@ -1,7 +1,6 @@
 ﻿using PdfLexer.Content;
 using PdfLexer.Content.Model;
 using PdfLexer.Writing;
-using System.Drawing;
 using System.Numerics;
 
 namespace PdfLexer.DOM;
@@ -160,6 +159,16 @@ public sealed class PdfPage
     {
         var form = Resources[PdfName.XObject].GetAs<PdfDictionary>()[name].GetAs<PdfStream>();
         return System.Text.Encoding.UTF8.GetString(form.Contents.GetDecodedData());
+    }
+
+    /// <summary>
+    /// Removes unused resources from the page.
+    /// Currently top-level fonts / xobjects only but will be expanded.
+    /// </summary>
+    public void RemoveUnusedResources()
+    {
+        var cleaner = new ResourceCleaner(this);
+        cleaner.CleanUnusedResources();
     }
 
 }
