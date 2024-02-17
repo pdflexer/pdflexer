@@ -29,6 +29,13 @@ internal class ResourceCleaner
                 case PdfOperatorType.Tf:
                     if (scanner.TryGetCurrentOperation(out var tfOp) && tfOp is Tf_Op tf)
                     {
+                        if (scanner.TryGetFont(tf.font, out var dict) 
+                            && dict.TryGetValue<PdfName>(PdfName.Subtype, out var st) 
+                            && st == PdfName.Type3)
+                        {
+                            // type 3 have content streams, haven't implemented logic so short circuit for now
+                            return;
+                        }
                         usedFonts.Add(tf.font);
                     }
                     break;
@@ -41,19 +48,19 @@ internal class ResourceCleaner
         var fonts = res.GetOrCreateValue<PdfDictionary>(PdfName.Font).CloneShallow();
         res[PdfName.Font] = fonts;
 
-        foreach (var key in xobj.Keys)
-        {
-            if (!xObjs.Contains(key))
-            {
-                xobj.Remove(key);
-            }
-        }
-
         foreach (var key in fonts.Keys)
         {
             if (!usedFonts.Contains(key))
             {
                 fonts.Remove(key);
+            }
+        }
+
+        foreach (var key in xobj.Keys)
+        {
+            if (!xObjs.Contains(key))
+            {
+                xobj.Remove(key);
             }
         }
 
