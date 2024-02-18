@@ -36,7 +36,7 @@ public ref struct PageContentScanner
 
     private int SkipOps;
     private DecodedStreamContents? CurrentBuffer;
-    private Action? NewForm;
+    private Action<PdfName, PdfStream>? NewForm;
 
     internal List<ScannerInfo> stack;
     internal ulong CurrentStreamId;
@@ -54,7 +54,7 @@ public ref struct PageContentScanner
     /// <param name="ctx"></param>
     /// <param name="page"></param>
     /// <param name="flattenForms"></param>
-    public PageContentScanner(ParsingContext ctx, PdfDictionary page, bool flattenForms = false, Action? newForm = null)
+    public PageContentScanner(ParsingContext ctx, PdfDictionary page, bool flattenForms = false, Action<PdfName, PdfStream>? newForm = null)
     {
         NewForm = newForm;
         CurrentOperator = PdfOperatorType.Unknown;
@@ -228,7 +228,7 @@ public ref struct PageContentScanner
                 NextForm = form;
                 NextFormName = doOp.name.Value;
                 State = MultiPageState.StartForm;
-                NewForm?.Invoke();
+                NewForm?.Invoke(doOp.name, form);
                 CurrentOperator = PdfOperatorType.q;
                 return true;
             }

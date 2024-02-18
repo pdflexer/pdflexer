@@ -31,6 +31,13 @@ public class ParsingOptions
     /// Default: true
     /// </summary>
     public bool CacheNames { get; set; } = true;
+    /// <summary>
+    /// If indirect references should keep a reference to their target objects
+    /// Increases performance on repeated indirect reference traversal but
+    /// prevents garbage collection of loaded objects
+    /// Default: true
+    /// </summary>
+    public bool CacheIndirectRefObjs { get; set; } = true;
 
     public bool ThrowOnErrors { get;set;} = false;
     public bool AttemptOperatorRepair { get; set; } = true;
