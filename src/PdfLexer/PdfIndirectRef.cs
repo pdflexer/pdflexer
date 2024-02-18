@@ -64,6 +64,7 @@ internal class ExistingIndirectRef : PdfIndirectRef
     }
     public override IPdfObject GetObject(ParsingContext ctx) 
     {
+        if (!ctx.Options.CacheIndirectRefObjs) { return ctx.GetIndirectObject(Document, Reference); }
         if (Object == null)
         {
             Object = ctx.GetIndirectObject(Document, Reference);
