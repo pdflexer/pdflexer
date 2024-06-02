@@ -1,5 +1,7 @@
 ﻿using PDFiumCore;
 using PdfLexer.DOM;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Channels;

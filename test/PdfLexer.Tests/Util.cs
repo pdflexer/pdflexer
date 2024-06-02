@@ -128,9 +128,9 @@ namespace PdfLexer.Tests
                 hc = unchecked(hc + (decimal)letter.Location.X);
                 hc = unchecked(hc + (decimal)letter.Location.Y);
                 var (r, b, g) = letter.Color.ToRGBValues();
-                hc = unchecked(hc + r);
-                hc = unchecked(hc + b);
-                hc = unchecked(hc + g);
+                hc = unchecked(hc + (decimal)r);
+                hc = unchecked(hc + (decimal)b);
+                hc = unchecked(hc + (decimal)g);
                 hc = unchecked(hc + (decimal)letter.Width);
                 hc = unchecked(hc + (decimal)letter.PointSize);
                 hc = unchecked(hc + (decimal)letter.Font.Name.GetHashCode());

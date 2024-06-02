@@ -1,7 +1,13 @@
 ﻿using pdflexer.PdfiumRegressionTester;
 using PdfLexer.Content;
 using PdfLexer.DOM;
+using PdfLexer.Images;
+using PdfLexer.Writing;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 using System.IO;
+using System.Linq;
 using Xunit;
 
 namespace PdfLexer.Tests;
@@ -54,6 +60,75 @@ public class PageToFormTests
         }
 
         RunScenario(pg);
+    }
+
+    [Fact]
+    public void It_Creates_From_Nested_Form()
+    {
+        using var doc = PdfDocument.Create();
+        var pg = doc.AddPage();
+        XObjForm xForm1;
+        pg.CropBox = PdfRectangle.FromContentModel(new PdfRect<double>(100, 100, 200, 200));
+        {
+            using var writer = pg.GetWriter();
+            {
+                var img = new Image<Rgba32>(50, 50);
+                img.Mutate(ctx => ctx.BackgroundColor(Color.Black));
+                var xImg = img.CreatePdfImage();
+
+                var fm1 = new FormWriter(100, 100);
+                fm1.Font(Base14.TimesRoman, 10)
+                   .Text("Text")
+                   .Image(xImg, 75, 75, 10, 10);
+
+                xForm1 = fm1.Complete();
+
+                var fm2 = new FormWriter(100, 100);
+                fm2.Form(xForm1);
+
+                var xobj = fm2.Complete();
+                writer.Form(xobj, 100, 100);
+            }
+        }
+
+        // move image to page resources and then delete
+        var fXObj = xForm1.NativeObject.Dictionary.Get<PdfDictionary>(PdfName.Resources)
+                              .Get<PdfDictionary>(PdfName.XObject);
+        var origImg = fXObj.Get("I2");
+        pg.Resources[PdfName.XObject].GetAs<PdfDictionary>()["I2"] = origImg.Indirect();
+        fXObj.Remove("I2");
+        Assert.Null(fXObj.Get("I2"));
+
+        var pg2 = RunScenario(pg);
+
+        // make sure original form image is still missing
+        // this makes sure we shallow copied correctly
+        Assert.Null(fXObj.Get("I2"));
+
+        // get nested form
+        var origPage = GetFirstForm(pg2.NativeObject);
+        var origForm1 = GetFirstForm(origPage.Dictionary);
+        var origForm2 = GetFirstForm(origForm1.Dictionary);
+
+        // find image from nested
+        var copied = origForm2.Dictionary
+                        .Get<PdfDictionary>(PdfName.Resources)
+                        .Get<PdfDictionary>(PdfName.XObject)
+                        .Get("I2");
+
+        // should exist now
+        Assert.NotNull(copied);
+        // show be equal to original
+        Assert.Equal(origImg, copied);
+
+        PdfStream GetFirstForm(PdfDictionary pgOrForm)
+        {
+            var match = pgOrForm
+                .Get<PdfDictionary>(PdfName.Resources)
+                .Get<PdfDictionary>(PdfName.XObject)
+                .First(x => x.Value.GetAsOrNull<PdfStream>()?.Dictionary?.Get<PdfName>(PdfName.Subtype) == PdfName.Form).Value;
+            return match.GetAs<PdfStream>();
+        }
     }
 
     [InlineData(-270)]
@@ -151,7 +226,7 @@ public class PageToFormTests
     }
 
 
-    private void RunScenario(PdfPage pg)
+    private PdfPage RunScenario(PdfPage pg)
     {
         PdfRect<double> nbb;
         GfxMatrix<double> ctm;
@@ -188,5 +263,6 @@ public class PageToFormTests
         // rotation
         Assert.Equal(ctm.B, ctm2.B);
         Assert.Equal(ctm.C, ctm2.C);
+        return pg2;
     }
 }
