@@ -162,11 +162,11 @@ public class XObjForm
             {
                 var copy = x.CloneShallow();
                 MergeDicts(copy, PdfName.ExtGState, gs);
-                MergeDicts(copy, PdfName.ColorSpace, gs);
-                MergeDicts(copy, PdfName.Pattern, gs);
-                MergeDicts(copy, PdfName.Shading, gs);
-                MergeDicts(copy, PdfName.XObject, gs);
-                MergeDicts(copy, PdfName.Font, gs);
+                MergeDicts(copy, PdfName.ColorSpace, cs);
+                MergeDicts(copy, PdfName.Pattern, patterns);
+                MergeDicts(copy, PdfName.Shading, shading);
+                MergeDicts(copy, PdfName.XObject, xobj);
+                MergeDicts(copy, PdfName.Font, fonts);
 
                 return copy;
             }, new HashSet<PdfDictionary>());
@@ -194,7 +194,7 @@ public class XObjForm
         {
             if (!dest.ContainsKey(key))
             {
-                dest[key] = value;
+                dest[key] = value.Indirect();
             }
         }
         parent[type] = dest;
@@ -202,12 +202,6 @@ public class XObjForm
 
     private static void EnumerateForms(PdfDictionary pg, Func<PdfDictionary, PdfDictionary> resourceMutation, HashSet<PdfDictionary> seen)
     {
-        if (seen.Contains(pg))
-        {
-            return;
-        }
-        seen.Add(pg);
-
         if (pg.TryGetValue<PdfDictionary>(PdfName.Resources, out var res, false))
         {
             res = res.CloneShallow();
@@ -218,9 +212,18 @@ public class XObjForm
                 res[PdfName.XObject] = xobj;
                 foreach (var (key, value) in xobj)
                 {
-                    if (value is PdfDictionary dict && dict.Get<PdfName>(PdfName.Subtype) == PdfName.Form)
+                    if (value.Resolve() is PdfStream str && str.Dictionary.Get<PdfName>(PdfName.Subtype) == PdfName.Form)
                     {
-                        EnumerateForms(dict, resourceMutation, seen);
+                        if (seen.Contains(str.Dictionary))
+                        {
+                            continue;
+                        }
+                        seen.Add(str.Dictionary);
+                        str = str.CloneShallow();
+                        seen.Add(str.Dictionary);
+
+                        xobj[key] = str.Indirect();
+                        EnumerateForms(str.Dictionary, resourceMutation, seen);
                     }
                 }
             }
