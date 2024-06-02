@@ -102,6 +102,17 @@ namespace PdfLexer.DOM
             };
         }
 
+        public static PdfRectangle Create(double llx, double lly, double urx, double ury)
+        {
+            return new PdfRectangle
+            {
+                LLx = new PdfDoubleNumber(llx),
+                LLy = new PdfDoubleNumber(lly),
+                URx = new PdfDoubleNumber(urx),
+                URy = new PdfDoubleNumber(ury),
+            };
+        }
+
         public override string ToString()
         {
             return $"[{LLx} {LLy} {URx} {URy}]";
