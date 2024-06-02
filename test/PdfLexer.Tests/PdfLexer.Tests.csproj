@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\src\PdfLexer.Powershell\PdfLexer.Powershell.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer.Validation\PdfLexer.Validation.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer\PdfLexer.csproj" />
+    <ProjectReference Include="..\..\util\pdflexer.PdfiumRegressionTester\pdflexer.PdfiumRegressionTester.csproj" />
   </ItemGroup>
 
 </Project>
