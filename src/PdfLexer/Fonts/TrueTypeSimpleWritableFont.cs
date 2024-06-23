@@ -12,6 +12,7 @@ internal class TrueTypeSimpleWritableFont : IWritableFont
     private readonly int _fastStart;
     private readonly int? _fastEnd;
     private readonly UnknownCharHandling _charHandling;
+    private readonly PdfDictionary _xobjDictionary;
 
     public double LineHeight => throw new NotImplementedException();
 
@@ -39,6 +40,7 @@ internal class TrueTypeSimpleWritableFont : IWritableFont
             _fastStart = fastStart;
             _fastEnd = fastStart + fastLookup?.Length - 1;
         }
+        _xobjDictionary = CreatePdfDictionary();
     }
 
     public IEnumerable<SizedChar> ConvertFromUnicode(string text, int start, int length, byte[] buffer)
@@ -99,7 +101,8 @@ internal class TrueTypeSimpleWritableFont : IWritableFont
         return k;
     }
 
-    public PdfDictionary GetPdfFont()
+    public PdfDictionary GetPdfFont() => _xobjDictionary;
+    private PdfDictionary CreatePdfDictionary()
     {
         var f = new FontType1();
         f.NativeObject[PdfName.Subtype] = PdfName.TrueType;
@@ -127,7 +130,7 @@ internal class TrueTypeSimpleWritableFont : IWritableFont
         f.FirstChar = min;
         f.LastChar = max;
         f.Widths = widths;
-       
+
         f.FontDescriptor = _info.Descriptor;
         return f;
     }
