@@ -57,7 +57,13 @@ internal struct ObjParseState
                     name = nm;
                 } else
                 {
-                    ctx.Error($"Pdf dictionary was malformed, expected PdfName for key, got {item.Type}");
+                    if (item is IndirectRefToken)
+                    {
+                        ctx.Error($"Pdf dictionary was malformed, expected PdfName for key, got R token.");
+                    } else
+                    {
+                        ctx.Error($"Pdf dictionary was malformed, expected PdfName for key, got {item.Type}");
+                    }                    
                     continue;
                 }
             } else if (name != null)
