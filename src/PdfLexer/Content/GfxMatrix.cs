@@ -172,6 +172,62 @@ public record struct GfxMatrix<T> where T : struct, IFloatingPoint<T>
         };
     }
 
+    public T GetRotation()
+    {
+        /*
+         *    probably much easier way to do this...
+         * 
+         *          c
+         *          
+         *      b   a
+         * 
+         *    calculate rotation of x and y axis
+         *    return minimum of the two, rest is skew
+         * 
+         */
+        var a = new PdfPoint<T>(T.One, T.Zero);
+        var b = new PdfPoint<T>(T.Zero, T.Zero);
+        var c = new PdfPoint<T>(T.One, T.One);
+        var a1 = GetTransformedPoint(a);
+        var b1 = GetTransformedPoint(b);
+        var c1 = GetTransformedPoint(c);
+
+
+        var dVx = FPC<T>.Util.ToDouble(c1.X - a1.X);
+        var dVy = FPC<T>.Util.ToDouble(c1.Y - a1.Y);
+
+        var dhx = FPC<T>.Util.ToDouble(a1.X - b1.X);
+        var dhy = -FPC<T>.Util.ToDouble(a1.Y - b1.Y);
+
+        var rY = Rotate(dVx, dVy);
+        var rX = Rotate(dhy, dhx);
+
+        return FPC<T>.Util.FromDouble<T>(Math.Min(rX, rY));
+
+        double Rotate(double x, double y)
+        {
+            if (y == 0)
+            {
+                return x > 0 ? 90 : 270;
+            }
+            if (x == 0)
+            {
+                return y > 0 ? 0 : 180;
+            }
+            var r = Math.Abs(x / y);
+            var segR = (180 * Math.PI) * Math.Atan(r);
+            var px = x > 0;
+            var py = y > 0;
+            return (px, py) switch
+            {
+                (true, true) => segR,
+                (true, false) => 180 - segR,
+                (false, false) => 180 + segR,
+                (false, true) => 360 - segR
+            };
+        }
+    }
+
 
     /// <summary>
     /// Multiplies two matrices together and returns the resulting matrix.
