@@ -40,6 +40,8 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
     public d_Op<T>? Dashing { get; init; }
     public PdfName? RenderingIntent { get; init; }
 
+    public GfxMatrix<T> TRM { get => Text.TextRenderingMatrix; }
+
 
     // TODO color model and replace existing
     internal IColorSpace ColorSpaceModel { get; init; } = DeviceGray.Instance;
