@@ -66,7 +66,7 @@ internal class Ascii85Stream : MinBufferStream
             for (i = 1; i < 5; ++i)
             {
                 var r = inner.ReadByte();
-                while (CommonUtil.IsWhiteSpace(c))
+                while (r != -1 && CommonUtil.IsWhiteSpace((byte)r))
                 {
                     r = inner.ReadByte();
                 }

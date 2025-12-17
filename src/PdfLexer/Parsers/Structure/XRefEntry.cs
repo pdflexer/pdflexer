@@ -1,6 +1,5 @@
 ﻿using PdfLexer.IO;
 using PdfLexer.Serializers;
-using static DotNext.Collections.Generic.Sequence;
 
 namespace PdfLexer.Parsers.Structure;
 
