@@ -25,7 +25,7 @@ jobs:
         } else {
           throw "Unable to extract semver from tag: $vr"
         }
-        $version = $justVersion + "-preview"
+        $version = $justVersion
         dotnet build PdfLexer.sln -c release /p:Version=$version  /p:FileVersion=$justVersion /p:AssemblyVersion=$justVersion
 
         ./create-module.ps1

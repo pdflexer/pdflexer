@@ -48,6 +48,7 @@ public ref struct ImageScanner
                     }
                     continue;
                 case PdfOperatorType.BI:
+                case PdfOperatorType.EI:
                     return true;
                 case PdfOperatorType.Do:
                     if (TryGetXObjImage(out lastDoImg))
@@ -63,7 +64,7 @@ public ref struct ImageScanner
 
     public bool TryGetImage([NotNullWhen(true)] out PdfImage image)
     {
-        if (Scanner.CurrentOperator == PdfOperatorType.BI)
+        if (Scanner.CurrentOperator == PdfOperatorType.BI || Scanner.CurrentOperator == PdfOperatorType.EI)
         {
             if (!Scanner.TryGetCurrentOperation(out var gso))
             {

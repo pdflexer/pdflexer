@@ -14,8 +14,8 @@
 
 
 	<ItemGroup>
-		<PackageReference Include="PDFiumCore" Version="115.0.5758" />
-		<PackageReference Include="SixLabors.ImageSharp" Version="3.0.1" />
+		<PackageReference Include="PDFiumCore" Version="126.0.6462" />
+		<PackageReference Include="SixLabors.ImageSharp" Version="3.1.4" />
 	</ItemGroup>
 
 	<ItemGroup>

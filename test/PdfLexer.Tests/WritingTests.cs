@@ -1,4 +1,6 @@
-﻿using PdfLexer.Content;
+﻿using DotNext.Collections.Generic;
+using PdfLexer.Content;
+using PdfLexer.DOM;
 using PdfLexer.Fonts;
 using System;
 using System.Collections.Generic;
@@ -217,5 +219,52 @@ public class WritingTests
         Assert.True(Math.Abs(x - bb.LLx) < 1);
         var y = dy + 100 - bb.Height();
         Assert.True(Math.Abs(y - bb.URy) < 5);
+    }
+
+    [Fact]
+    public void It_Handles_Popup_Annots()
+    {
+        using var doc = PdfDocument.Create();
+        var pg = doc.AddPage();
+        {
+            using var writer = pg.GetWriter();
+            writer
+                .Save()
+                .Font(Writing.Base14.TimesRoman, 12)
+                .Text("Hello World")
+                .Restore();
+        }
+        var annots = new PdfArray();
+        pg.NativeObject[PdfName.Annots] = annots;
+        var popup = new PdfDictionary
+        {
+            [PdfName.P] = pg.NativeObject.Indirect(),
+            [PdfName.Subtype] = PdfName.Popup,
+            ["Rect"] = new PdfArray() { 0, 0, 1, 1 }
+        };
+        var main = new PdfDictionary
+        {
+            [PdfName.P] = pg.NativeObject.Indirect(),
+            [PdfName.Subtype] = PdfName.Text,
+            [PdfName.Popup] = popup.Indirect(),
+            ["Rect"] = new PdfArray() { 0, 0, 1, 1 }
+        };
+        annots.Add(main.Indirect());
+        annots.Add(popup.Indirect());
+        var data = doc.Save();
+
+        Assert.Empty(SyntaxValidation.Validate(data));
+        using var doc2 = PdfDocument.Open(data);
+        var pg2 = doc2.Pages[0];
+        var annots2 = pg2.NativeObject[PdfName.Annots].GetAs<PdfArray>();
+        Assert.Equal(2, annots2.Count);
+        var a1 = annots2[0].Resolve().GetAs<PdfDictionary>();
+        var a2 = annots2[1].Resolve().GetAs<PdfDictionary>();
+        var a1p = a1[PdfName.P].Resolve();
+        var a2p = a2[PdfName.P].Resolve();
+        Assert.True(Object.ReferenceEquals(pg2.NativeObject, a1p));
+        Assert.True(Object.ReferenceEquals(pg2.NativeObject, a2p));
+        var pref = a1[PdfName.Popup].Resolve();
+        Assert.True(Object.ReferenceEquals(a2, pref));
     }
 }

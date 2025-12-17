@@ -60,6 +60,8 @@ public ref struct SimpleWordScanner
     private PdfPoint<double>? prevPt;
     private double pw;
     private GfxMatrix<double> prev;
+    private GfxMatrix<double> prevTTM;
+    private GfxMatrix<double> lastTTM;
     private readonly StringBuilder sb;
 
     public PdfRect<double> GetWordBoundingBox()
@@ -109,9 +111,10 @@ public ref struct SimpleWordScanner
         {
             var vert = Scanner.GraphicsState.Font?.IsVertical ?? false;
             var current = Scanner.GraphicsState.Text.TextMatrix;
+            
             if (first == null)
             {
-                Position = current;
+                Position = Scanner.GraphicsState.Text.TextRenderingMatrix;
                 first ??= Scanner.GetCurrentBoundingBox();
                 firstPt ??= Scanner.GetCurrentTextPoint();
             }
@@ -124,6 +127,7 @@ public ref struct SimpleWordScanner
                     sb.Clear();
                     last = prevbb;
                     lastPt = prevPt;
+                    lastTTM = prevTTM;
                     returnWord = true;
                 }
                 else
@@ -164,6 +168,7 @@ public ref struct SimpleWordScanner
                         sb.Clear();
                         last = prevbb;
                         lastPt = prevPt;
+                        lastTTM = prevTTM;
                         prevbb = null;
                         prevPt = null;
                         return true;
@@ -186,6 +191,7 @@ public ref struct SimpleWordScanner
             prev = current;
             prevbb = Scanner.GetCurrentBoundingBox();
             prevPt = Scanner.GetCurrentTextPoint();
+            prevTTM = Scanner.GraphicsState.Text.TextMatrix;
             if (returnWord)
             {
                 if (CurrentWord.Length > 0)
@@ -201,6 +207,7 @@ public ref struct SimpleWordScanner
             sb.Clear();
             last = prevbb;
             lastPt = prevPt;
+            lastTTM = prevTTM;
             return true;
         }
 
@@ -216,4 +223,6 @@ public ref struct SimpleWordScanner
             BoundingBox = pos,
         };
     }
+
+    public GfxMatrix<double> GetCurrentWordMatrix() => lastTTM;
 }

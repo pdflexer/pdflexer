@@ -1,11 +1,10 @@
 ﻿using PDFiumCore;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
-using System.Security.Cryptography;
 
 namespace pdflexer.PdfiumRegressionTester;
 
-internal class Compare
+public class Compare
 {
     private readonly int _ppp;
     private readonly string _prefix;

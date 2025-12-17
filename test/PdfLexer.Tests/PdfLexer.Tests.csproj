@@ -6,15 +6,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
-    <PackageReference Include="PdfPig" Version="0.1.7" />
-    <PackageReference Include="xunit" Version="2.4.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageReference Include="PdfPig" Version="0.1.8" />
+    <PackageReference Include="xunit" Version="2.8.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="CliWrap" Version="3.6.0" />
-    <PackageReference Include="coverlet.collector" Version="3.2.0">
+    <PackageReference Include="CliWrap" Version="3.6.6" />
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -26,6 +26,7 @@
     <ProjectReference Include="..\..\src\PdfLexer.Powershell\PdfLexer.Powershell.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer.Validation\PdfLexer.Validation.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer\PdfLexer.csproj" />
+    <ProjectReference Include="..\..\util\pdflexer.PdfiumRegressionTester\pdflexer.PdfiumRegressionTester.csproj" />
   </ItemGroup>
 
 </Project>
