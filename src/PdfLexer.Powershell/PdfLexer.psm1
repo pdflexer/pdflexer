@@ -9,7 +9,7 @@ if ($mv -lt [version]'7.3') {
     throw "PdfLexer is not supported on your powershell version. PS 7.3+ is required."
 
 }
-$binaryModuleRoot = Join-Path -Path $PSModuleRoot -ChildPath 'net7.0'
+$binaryModuleRoot = Join-Path -Path $PSModuleRoot -ChildPath 'net8.0'
 
 $binaryModulePath = Join-Path -Path $binaryModuleRoot -ChildPath 'PdfLexer.Powershell.dll'
 $binaryModule = Import-Module -Name $binaryModulePath -PassThru
