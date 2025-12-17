@@ -15,7 +15,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 10.0.x
       - name: pdfcpu
         run: |
           curl -sL https://github.com/pdfcpu/pdfcpu/releases/download/v0.6.0/pdfcpu_0.6.0_Linux_x86_64.tar.xz | tar xJ
@@ -28,3 +28,4 @@ jobs:
         run: |
           export PDFCPU_PATH=$(pwd)/pdfcpu_0.6.0_Linux_x86_64/pdfcpu
           dotnet test --no-build --verbosity normal --filter FullyQualifiedName\!~ImageTests
+
