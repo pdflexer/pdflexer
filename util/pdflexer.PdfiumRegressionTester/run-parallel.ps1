@@ -18,7 +18,7 @@ function Slice-Array {
     }
 }
 
-$testType = "rebuild"
+$testType = "dedup"
 
 Push-Location $PSScriptRoot; # 453
 

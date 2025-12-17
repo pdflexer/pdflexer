@@ -1,4 +1,4 @@
 
 $outputPath = "$PSScriptRoot/../../test/results/txt"
 $pdf = "$PSScriptRoot/../../test/pdfs/pdfjs/issue6387.pdf"
-.\bin\Release\net7.0\publish\pdflexer.PdfiumRegressionTester.exe --strict --type text --output $outputPath --pdf $pdf
+.\bin\Release\net8.0\publish\pdflexer.PdfiumRegressionTester.exe --strict --type text --output $outputPath --pdf $pdf

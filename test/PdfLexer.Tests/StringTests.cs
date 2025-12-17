@@ -21,8 +21,8 @@ namespace PdfLexer.Tests
         [InlineData("(Test \\\nNextLine)", "Test NextLine")] // allows split strings by line
         [InlineData("(Test \\\rNextLine)", "Test NextLine")]
         [InlineData("(Test \\\r\nNextLine)", "Test NextLine")]
-        [InlineData("(Test Test\rTest )", "Test Test\rTest ")] // keeps new lines
-        [InlineData("(Test Test\r\nTest )", "Test Test\r\nTest ")]
+        [InlineData("(Test Test\rTest )", "Test Test\nTest ")] // keeps new lines
+        [InlineData("(Test Test\r\nTest )", "Test Test\nTest ")]
         [InlineData("(Test Test\nTest )", "Test Test\nTest ")]
         [InlineData("(Test Test Test )", "Test Test Test ")]
         [InlineData("(Test (Test) Test )", "Test (Test) Test ")]
@@ -39,6 +39,20 @@ namespace PdfLexer.Tests
         {
             var bytes = Encoding.ASCII.GetBytes(input);
             var ms = new MemoryStream(bytes);
+            var parser = new StringParser(new ParsingContext());
+            var span = new Span<byte>(bytes);
+            var result = parser.Parse(span);
+            Assert.Equal(output, result.Value);
+        }
+
+        [InlineData("(Line1\rLine2)", "Line1\nLine2")]
+        [InlineData("(Line1\nLine2)", "Line1\nLine2")]
+        [InlineData("(Line1\r\nLine2)", "Line1\nLine2")]
+        [InlineData("(Line1\\\rLine2)", "Line1Line2")] // Escaped should still be skipped (existing logic handles this)
+        [Theory]
+        public void It_Normalizes_EOLs(string input, string output)
+        {
+            var bytes = Encoding.ASCII.GetBytes(input);
             var parser = new StringParser(new ParsingContext());
             var span = new Span<byte>(bytes);
             var result = parser.Parse(span);

@@ -44,7 +44,7 @@ internal class StringParser : Parser<PdfString>
     private int stringDepth = 0;
     private static byte[] stringLiteralTerms = new byte[]
     {
-        (byte) '(', (byte) ')', (byte) '\\'
+        (byte) '(', (byte) ')', (byte) '\\', (byte)'\r', (byte)'\n'
     };
 
     public StringParser(ParsingContext ctx)
@@ -368,6 +368,26 @@ internal class StringParser : Parser<PdfString>
                     pos += 1;
                     buffer.Slice(0, pos).CopyTo(data.Slice(total));
                     total += pos;
+                    buffer = buffer.Slice(pos);
+                    continue;
+                case (byte)'\r':
+                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                    total += pos;
+                    data[total++] = (byte)'\n';
+                    if (buffer.Length > pos + 1 && buffer[pos+1] == (byte)'\n')
+                    {
+                        pos += 2;
+                    } else
+                    {
+                        pos += 1;
+                    }
+                    buffer = buffer.Slice(pos);
+                    continue;
+                case (byte)'\n':
+                    buffer.Slice(0, pos).CopyTo(data.Slice(total));
+                    total += pos;
+                    data[total++] = (byte)'\n';
+                    pos += 1;
                     buffer = buffer.Slice(pos);
                     continue;
             }

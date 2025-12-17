@@ -14,6 +14,8 @@ namespace PdfLexer.Tests
     {
         [InlineData("<+U,m+D#G#De*R\"B-:W(@qfW~>", "Test encoding ascii", true)]
         [InlineData("<+U,m+D#G#De*R\"B-:W(@qfW~>", "Test encoding ascii", false)]
+        [InlineData("<+U,m+D #G#De*R\"B-:W (@qfW~>", "Test encoding ascii", true)] // whitespace
+        [InlineData("<+U,m+D #G#De*R\"B-:W (@qfW~>", "Test encoding ascii", false)] // whitespace
         [Theory]
         public void It_Decodes(string encoded, string decoded, bool singleByte)
         {

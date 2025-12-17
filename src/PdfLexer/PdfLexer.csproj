@@ -33,11 +33,11 @@
 
 	<ItemGroup>
 		<PackageReference Include="DotNext.Unsafe">
-			<Version>4.14.0</Version>
+			<Version>5.26.1</Version>
 		</PackageReference>
 		<PackageReference Include="Microsoft.IO.RecyclableMemoryStream" Version="3.0.1" />
-		<PackageReference Include="System.IO.Pipelines" Version="8.0.0" />
-		<PackageReference Include="System.Numerics.Vectors" Version="4.6.0" />
+		<PackageReference Include="System.IO.Pipelines" Version="10.0.1" />
+		<PackageReference Include="System.Numerics.Vectors" Version="4.6.1" />
 	</ItemGroup>
 
 	<ItemGroup>
