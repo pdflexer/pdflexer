@@ -47,4 +47,20 @@ public class PageOutlineTests
         Assert.IsType<PdfOutline>(page.Outlines[0]);
         Assert.Equal("Test", page.Outlines[0].Title);
     }
+
+    [Fact]
+    public void AddBookmark_helper_should_work()
+    {
+        var page = new PdfPage();
+        page.AddBookmark("Chapter 1");
+        page.AddBookmark("Section 1.1", "Chapter 1");
+        
+        Assert.Equal(2, page.Outlines.Count);
+        Assert.Equal("Chapter 1", page.Outlines[0].Title);
+        Assert.Null(page.Outlines[0].Section);
+        
+        Assert.Equal("Section 1.1", page.Outlines[1].Title);
+        Assert.Single(page.Outlines[1].Section);
+        Assert.Equal("Chapter 1", page.Outlines[1].Section[0]);
+    }
 }

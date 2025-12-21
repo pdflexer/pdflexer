@@ -80,6 +80,16 @@ public sealed class PdfPage
 
     public List<PdfOutline> Outlines { get; } = new List<PdfOutline>();
 
+    public void AddBookmark(string title, params string[] section)
+    {
+        var outline = new PdfOutline
+        {
+            Title = title,
+            Section = section.Length > 0 ? section.ToList() : null
+        };
+        Outlines.Add(outline);
+    }
+
     public IEnumerable<PdfStream> Contents
     {
         get
