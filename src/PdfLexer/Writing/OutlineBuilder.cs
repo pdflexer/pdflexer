@@ -61,7 +61,38 @@ public class OutlineBuilder
                 current.Children.Add(new OutlineNode { Title = item.Outline.Title, Data = item });
             }
         }
+        
+        SortNodes(root);
         return root;
+    }
+
+    private void SortNodes(OutlineNode node)
+    {
+        if (node.Children.Count == 0) return;
+        
+        node.Children.Sort((a, b) => {
+            int aOrder = a.Data?.Outline.Order ?? int.MaxValue;
+            int bOrder = b.Data?.Outline.Order ?? int.MaxValue;
+            
+            if (aOrder != bOrder) return aOrder.CompareTo(bOrder);
+            
+            int aPage = a.Data?.PageIndex ?? GetMinPageIndex(a);
+            int bPage = b.Data?.PageIndex ?? GetMinPageIndex(b);
+            
+            return aPage.CompareTo(bPage);
+        });
+        
+        foreach (var child in node.Children)
+        {
+            SortNodes(child);
+        }
+    }
+
+    private int GetMinPageIndex(OutlineNode node)
+    {
+        if (node.Data != null) return node.Data.PageIndex;
+        if (node.Children.Count == 0) return int.MaxValue;
+        return node.Children.Min(GetMinPageIndex);
     }
 }
 

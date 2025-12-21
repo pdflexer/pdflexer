@@ -37,7 +37,7 @@ public class OutlineBuilderTests
         var p2 = doc.AddPage();
         
         p1.AddBookmark("Chapter 1");
-        p2.AddBookmark("Section 1.1", "Chapter 1");
+        p2.AddBookmark("Section 1.1", null, "Chapter 1");
         
         var builder = new OutlineBuilder(doc);
         var tree = builder.BuildTree(builder.Aggregate());
@@ -47,5 +47,31 @@ public class OutlineBuilderTests
         Assert.Equal("Chapter 1", c1.Title);
         Assert.Single(c1.Children);
         Assert.Equal("Section 1.1", c1.Children[0].Title);
+    }
+
+    [Fact]
+    public void It_should_sort_outlines_correctly()
+    {
+        var doc = PdfDocument.Create();
+        var p1 = doc.AddPage(); // Index 0
+        var p2 = doc.AddPage(); // Index 1
+        
+        p1.AddBookmark("Second", order: 10);
+        p2.AddBookmark("First", order: 5);
+        p2.AddBookmark("Third");
+        
+        // Aggregated (page order): [Second (10, p0), First (5, p1), Third (null, p1)]
+        // Expected Sorted:
+        // 1. First (5, p1)
+        // 2. Second (10, p0)
+        // 3. Third (null, p1)
+        
+        var builder = new OutlineBuilder(doc);
+        var tree = builder.BuildTree(builder.Aggregate());
+        
+        Assert.Equal(3, tree.Children.Count);
+        Assert.Equal("First", tree.Children[0].Title);
+        Assert.Equal("Second", tree.Children[1].Title);
+        Assert.Equal("Third", tree.Children[2].Title);
     }
 }
