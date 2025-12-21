@@ -74,4 +74,24 @@ public class OutlineBuilderTests
         Assert.Equal("Second", tree.Children[1].Title);
         Assert.Equal("Third", tree.Children[2].Title);
     }
+
+    [Fact]
+    public void It_should_convert_tree_to_pdf_objects()
+    {
+        var doc = PdfDocument.Create();
+        var p1 = doc.AddPage();
+        p1.AddBookmark("Chapter 1");
+        
+        var builder = new OutlineBuilder(doc);
+        var tree = builder.BuildTree(builder.Aggregate());
+        
+        var root = builder.ConvertToPdf(tree);
+        
+        Assert.NotNull(root);
+        var rootObj = root.GetPdfObject();
+        
+        var first = root.First;
+        Assert.NotNull(first);
+        Assert.Equal("Chapter 1", first.Title);
+    }
 }

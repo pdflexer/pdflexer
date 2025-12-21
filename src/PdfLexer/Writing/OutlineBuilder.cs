@@ -94,6 +94,44 @@ public class OutlineBuilder
         if (node.Children.Count == 0) return int.MaxValue;
         return node.Children.Min(GetMinPageIndex);
     }
+
+    public PdfOutlineRoot ConvertToPdf(OutlineNode rootNode)
+    {
+        var root = new PdfOutlineRoot();
+        foreach (var childNode in rootNode.Children)
+        {
+            var item = CreateItem(childNode);
+            root.Add(item);
+        }
+        return root;
+    }
+
+    private PdfOutlineItem CreateItem(OutlineNode node)
+    {
+        var item = new PdfOutlineItem();
+        item.Title = node.Title;
+        
+        if (node.Data != null)
+        {
+            var page = _doc.Pages[node.Data.PageIndex];
+            item.GetPdfObject()[PdfName.Dest] = new PdfArray 
+            { 
+                page.NativeObject, 
+                PdfName.XYZ, 
+                new PdfNull(), 
+                new PdfNull(), 
+                new PdfNull() 
+            };
+        }
+        
+        foreach (var childNode in node.Children)
+        {
+            var childItem = CreateItem(childNode);
+            item.Add(childItem);
+        }
+        
+        return item;
+    }
 }
 
 public class AggregatedOutline
