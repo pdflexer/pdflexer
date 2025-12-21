@@ -1,7 +1,7 @@
 # Track Plan: Modernized Outline API and Builder
 
 ## Phase 1: Deconstruction & Basic Models
-- [ ] Task: Remove legacy outline implementation classes (`PdfOutlineItem.cs`, `PdfOutlineRoot.cs`, and existing `PdfOutline.cs` if incompatible).
+- [x] Task: Remove legacy outline implementation classes (`PdfOutlineItem.cs`, `PdfOutlineRoot.cs`, and existing `PdfOutline.cs` if incompatible). [b3207a7]
 - [ ] Task: Create new minimalist `BookmarkNode` model (Title, Destination, Color, Style, IsOpen, Children).
 - [ ] Task: Update `PdfPage.Outlines` and `PdfDocument.Outlines` to use the new model.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Deconstruction & Basic Models' (Protocol in workflow.md)
@@ -9,7 +9,7 @@
 ## Phase 2: Fluent OutlineBuilder Implementation
 - [ ] Task: Implement `OutlineBuilder` class with a fluent interface.
 - [ ] Task: Implement `AddSection(string title)` and `AddBookmark(string title, PdfPage? page = null)` with chaining support.
-- [ ] Task: Implement internal tree traversal helpers (e.g., `FindNode`, `MoveToParent`, `GetRoot`).
+- [ ] Task: Implement internal tree traversal helpers (e.g., `FindNode`, `MoveToParent`, `GetRoot`, `EnumerateLeaves`).
 - [ ] Task: Write TDD tests for fluent tree construction and traversal.
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Fluent OutlineBuilder Implementation' (Protocol in workflow.md)
 
