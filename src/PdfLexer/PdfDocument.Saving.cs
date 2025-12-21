@@ -79,73 +79,7 @@ public sealed partial class PdfDocument
             catalog[PdfName.Pages] = BuildPageTree(ctx);
         }
 
-        if (Outlines != null)
-        {
-            catalog[PdfName.Outlines] = BuildOutlineTree(ctx);
-        }
-
         ctx.Complete(trailer);
-    }
-
-    private IPdfObject BuildOutlineTree(WritingContext ctx)
-    {
-        var root = Outlines.GetPdfObject();
-        var rootRef = PdfIndirectRef.Create(root);
-        
-        var items = new List<PdfOutlineItem>();
-        CollectItems(Outlines, items);
-
-        var irs = new Dictionary<PdfOutlineItem, PdfIndirectRef>();
-
-        foreach (var item in items)
-        {
-            irs[item] = PdfIndirectRef.Create(item.GetPdfObject());
-        }
-        
-        root[PdfName.First] = irs[Outlines.First];
-        root[PdfName.Last] = irs[Outlines.Last];
-
-
-        foreach (var item in items)
-        {
-            var dict = item.GetPdfObject();
-            if (item.Parent != null)
-            {
-                dict[PdfName.Parent] = irs[item.Parent];
-            } else 
-            {
-                dict[PdfName.Parent] = rootRef;
-            }
-
-            if (item.Prev != null)
-            {
-                dict[PdfName.Prev] = irs[item.Prev];
-            }
-
-            if (item.Next != null)
-            {
-                dict[PdfName.Next] = irs[item.Next];
-            }
-            if (item.First != null)
-            {
-                dict[PdfName.First] = irs[item.First];
-            }
-            if (item.Last != null)
-            {
-                dict[PdfName.Last] = irs[item.Last];
-            }
-        }
-        
-        return rootRef;
-    }
-
-    private void CollectItems(IEnumerable<PdfOutlineItem> items, List<PdfOutlineItem> collected)
-    {
-        foreach (var item in items)
-        {
-            collected.Add(item);
-            CollectItems(item.Children, collected);
-        }
     }
 
     private IPdfObject BuildPageTree(WritingContext ctx)

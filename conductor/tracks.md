@@ -4,5 +4,5 @@ This file tracks all major tracks for the project. Each track has its own detail
 
 ---
 
-## [ ] Track: Enhance Outline/Bookmark Support and API Refinement
+## [~] Track: Enhance Outline/Bookmark Support and API Refinement
 *Link: [./conductor/tracks/outline_refinement_20251221/](./conductor/tracks/outline_refinement_20251221/)*
