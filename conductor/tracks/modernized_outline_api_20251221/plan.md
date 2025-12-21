@@ -13,11 +13,11 @@
 - [x] Task: Write TDD tests for fluent tree construction and traversal. [d146791]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Fluent OutlineBuilder Implementation' (Protocol in workflow.md) [e657a02]
 
-## Phase 3: Serialization Engine Refactor
+## Phase 3: Serialization Engine Refactor [checkpoint: 86a46d8]
 - [x] Task: Refactor `PdfLexer.Writing.OutlineBuilder` (the internal serialization engine) to consume the new `BookmarkNode` tree. [54639ee]
 - [x] Task: Update `PdfDocument.Saving.cs` to correctly hook the new builder into the save process. [f58c96f]
-- [~] Task: Write tests for end-to-end saving of complex hierarchies.
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Serialization Engine Refactor' (Protocol in workflow.md)
+- [x] Task: Write tests for end-to-end saving of complex hierarchies. [e657a02]
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Serialization Engine Refactor' (Protocol in workflow.md) [86a46d8]
 
 ## Phase 4: Parser & Final Integration
 - [ ] Task: Update `OutlineParser` to parse existing PDF outlines into the new `BookmarkNode` tree.
