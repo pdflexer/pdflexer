@@ -1,10 +1,10 @@
 # Track Plan: Modernized Outline API and Builder
 
-## Phase 1: Deconstruction & Basic Models
+## Phase 1: Deconstruction & Basic Models [checkpoint: 1b9a01b]
 - [x] Task: Remove legacy outline implementation classes (`PdfOutlineItem.cs`, `PdfOutlineRoot.cs`, and existing `PdfOutline.cs` if incompatible). [b3207a7]
 - [x] Task: Create new minimalist `BookmarkNode` model (Title, Destination, Color, Style, IsOpen, Children). [f1bf657]
 - [x] Task: Update `PdfPage.Outlines` and `PdfDocument.Outlines` to use the new model. [a2da45d]
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: Deconstruction & Basic Models' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 1: Deconstruction & Basic Models' (Protocol in workflow.md) [1b9a01b]
 
 ## Phase 2: Fluent OutlineBuilder Implementation
 - [ ] Task: Implement `OutlineBuilder` class with a fluent interface.
