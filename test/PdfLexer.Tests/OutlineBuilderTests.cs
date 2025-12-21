@@ -89,6 +89,7 @@ public class OutlineBuilderTests
         
         Assert.NotNull(root);
         var rootObj = root.GetPdfObject();
+        Assert.Equal(PdfName.Outlines, rootObj.Get<PdfName>(PdfName.TypeName));
         
         var first = root.First;
         Assert.NotNull(first);
