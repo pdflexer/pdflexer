@@ -848,6 +848,9 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Index = new("Index", false);
     public static readonly PdfName XRefStm = new("XRefStm", false);
     public static readonly PdfName Parent = new("Parent", false);
+    public static readonly PdfName Next = new("Next", false);
+    public static readonly PdfName Last = new("Last", false);
+    public static readonly PdfName Title = new("Title", false);
     public static readonly PdfName Subtype = new("Subtype", false);
     public static readonly PdfName ProcSet = new("ProcSet", false);
     public static readonly PdfName Shading = new("Shading", false);

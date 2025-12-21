@@ -37,6 +37,29 @@ public sealed partial class PdfDocument : IDisposable
     /// List of pages in the document. May be null if <see cref="ParsingOptions.LoadPageTree"/> is false.
     /// </summary>
     public List<PdfPage> Pages { get; set; }
+
+    private PdfOutlineRoot? _outlines;
+    private bool _outlinesRead;
+
+    public PdfOutlineRoot? Outlines
+    {
+        get
+        {
+            if (_outlinesRead)
+            {
+                return _outlines;
+            }
+
+            _outlines = Parsers.OutlineParser.Parse(this);
+            _outlinesRead = true;
+            return _outlines;
+        }
+        set
+        {
+            _outlines = value;
+            _outlinesRead = true;
+        }
+    }
     /// <summary>
     /// XRef entries of this document. May be internalized at some point.
     /// Will be null on new documents.
