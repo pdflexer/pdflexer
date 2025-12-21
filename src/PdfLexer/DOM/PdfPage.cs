@@ -78,6 +78,7 @@ public sealed class PdfPage
         set => NativeObject.Set(PdfName.Parent, value?.Dictionary.Indirect());
     }
 
+    public List<PdfOutline> Outlines { get; } = new List<PdfOutline>();
 
     public IEnumerable<PdfStream> Contents
     {

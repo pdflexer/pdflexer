@@ -33,4 +33,18 @@ public class PageOutlineTests
         Assert.Single(outline.Section);
         Assert.Equal("Chapter 1", outline.Section[0]);
     }
+
+    [Fact]
+    public void Page_should_hold_pdf_outlines()
+    {
+        var page = new PdfPage();
+        var outline = new PdfOutline { Title = "Test" };
+        
+        // This will fail compilation if Outlines is List<PdfOutlineItem>
+        page.Outlines.Add(outline);
+        
+        Assert.Single(page.Outlines);
+        Assert.IsType<PdfOutline>(page.Outlines[0]);
+        Assert.Equal("Test", page.Outlines[0].Title);
+    }
 }
