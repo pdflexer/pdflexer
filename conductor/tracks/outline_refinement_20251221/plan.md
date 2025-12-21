@@ -9,7 +9,7 @@
 
 ## Phase 2: Serialization Logic (The "Build-on-Save" Engine)
 - [x] Task: Create `OutlineBuilder` (or method in `PdfDocument.Saving.cs`) to aggregate `PdfOutline`s from all pages. [cab90b2]
-- [ ] Task: Implement logic to group outlines by `Section` path.
+- [x] Task: Implement logic to group outlines by `Section` path. [57039d3]
 - [ ] Task: Implement sorting logic: First by `Order` (if present), then by Page Index.
 - [ ] Task: Implement conversion from the grouped/sorted model to the low-level `PdfOutlineItem` tree (dictionaries).
 - [ ] Task: Hook this logic into `PdfDocument.SaveTo`.
