@@ -12,7 +12,7 @@
 - [x] Task: Implement logic to group outlines by `Section` path. [57039d3]
 - [x] Task: Implement sorting logic: First by `Order` (if present), then by Page Index. [034e7e6]
 - [x] Task: Implement conversion from the grouped/sorted model to the low-level `PdfOutlineItem` tree (dictionaries). [3d3e078]
-- [ ] Task: Hook this logic into `PdfDocument.SaveTo`.
+- [x] Task: Hook this logic into `PdfDocument.SaveTo`. [a360435]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Serialization Logic' (Protocol in workflow.md)
 
 ## Phase 3: Integration & Validation
