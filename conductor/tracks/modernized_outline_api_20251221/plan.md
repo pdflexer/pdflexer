@@ -3,7 +3,7 @@
 ## Phase 1: Deconstruction & Basic Models
 - [x] Task: Remove legacy outline implementation classes (`PdfOutlineItem.cs`, `PdfOutlineRoot.cs`, and existing `PdfOutline.cs` if incompatible). [b3207a7]
 - [x] Task: Create new minimalist `BookmarkNode` model (Title, Destination, Color, Style, IsOpen, Children). [f1bf657]
-- [ ] Task: Update `PdfPage.Outlines` and `PdfDocument.Outlines` to use the new model.
+- [x] Task: Update `PdfPage.Outlines` and `PdfDocument.Outlines` to use the new model. [a2da45d]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Deconstruction & Basic Models' (Protocol in workflow.md)
 
 ## Phase 2: Fluent OutlineBuilder Implementation
