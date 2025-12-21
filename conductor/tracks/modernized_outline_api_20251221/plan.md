@@ -6,12 +6,12 @@
 - [x] Task: Update `PdfPage.Outlines` and `PdfDocument.Outlines` to use the new model. [a2da45d]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Deconstruction & Basic Models' (Protocol in workflow.md) [1b9a01b]
 
-## Phase 2: Fluent OutlineBuilder Implementation [checkpoint: e41237a]
+## Phase 2: Fluent OutlineBuilder Implementation [checkpoint: e657a02]
 - [x] Task: Implement `OutlineBuilder` class with a fluent interface. [d146791]
 - [x] Task: Implement `AddSection(string title)` and `AddBookmark(string title, PdfPage? page = null)` with chaining support. [d146791]
 - [x] Task: Implement internal tree traversal helpers (e.g., `FindNode`, `MoveToParent`, `GetRoot`, `EnumerateLeaves`). [d146791]
 - [x] Task: Write TDD tests for fluent tree construction and traversal. [d146791]
-- [x] Task: Conductor - User Manual Verification 'Phase 2: Fluent OutlineBuilder Implementation' (Protocol in workflow.md) [e41237a]
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Fluent OutlineBuilder Implementation' (Protocol in workflow.md) [e657a02]
 
 ## Phase 3: Serialization Engine Refactor
 - [x] Task: Refactor `PdfLexer.Writing.OutlineBuilder` (the internal serialization engine) to consume the new `BookmarkNode` tree. [54639ee]
