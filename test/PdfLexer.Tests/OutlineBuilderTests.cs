@@ -28,4 +28,24 @@ public class OutlineBuilderTests
         Assert.Equal("B2", aggregated[1].Outline.Title);
         Assert.Equal(1, aggregated[1].PageIndex);
     }
+
+    [Fact]
+    public void It_should_build_tree_structure_from_sections()
+    {
+        var doc = PdfDocument.Create();
+        var p1 = doc.AddPage();
+        var p2 = doc.AddPage();
+        
+        p1.AddBookmark("Chapter 1");
+        p2.AddBookmark("Section 1.1", "Chapter 1");
+        
+        var builder = new OutlineBuilder(doc);
+        var tree = builder.BuildTree(builder.Aggregate());
+        
+        Assert.Single(tree.Children);
+        var c1 = tree.Children[0];
+        Assert.Equal("Chapter 1", c1.Title);
+        Assert.Single(c1.Children);
+        Assert.Equal("Section 1.1", c1.Children[0].Title);
+    }
 }
