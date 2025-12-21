@@ -82,6 +82,7 @@ public sealed partial class PdfDocument
             pageRefs = refs;
         }
 
+        /*
         var ob = new Writing.OutlineBuilder(this);
         var aggregated = ob.Aggregate();
         if (aggregated.Count > 0)
@@ -89,6 +90,7 @@ public sealed partial class PdfDocument
             var tree = ob.BuildTree(aggregated);
             catalog[PdfName.Outlines] = ob.ConvertToPdf(tree, pageRefs).GetPdfObject();
         }
+        */
 
         ctx.Complete(trailer);
     }
