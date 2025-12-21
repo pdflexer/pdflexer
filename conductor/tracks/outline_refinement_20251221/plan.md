@@ -7,13 +7,13 @@
 - [x] Task: Update `OutlineParser` to parse existing PDF outlines into the new `PdfOutline` model and attach them to pages. [452a0a6]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: High-Level Data Model & Parsing' (Protocol in workflow.md) [d6e6620]
 
-## Phase 2: Serialization Logic (The "Build-on-Save" Engine)
+## Phase 2: Serialization Logic (The "Build-on-Save" Engine) [checkpoint: ebf3934]
 - [x] Task: Create `OutlineBuilder` (or method in `PdfDocument.Saving.cs`) to aggregate `PdfOutline`s from all pages. [cab90b2]
 - [x] Task: Implement logic to group outlines by `Section` path. [57039d3]
 - [x] Task: Implement sorting logic: First by `Order` (if present), then by Page Index. [034e7e6]
 - [x] Task: Implement conversion from the grouped/sorted model to the low-level `PdfOutlineItem` tree (dictionaries). [3d3e078]
 - [x] Task: Hook this logic into `PdfDocument.SaveTo`. [a360435]
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Serialization Logic' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: Serialization Logic' (Protocol in workflow.md) [ebf3934]
 
 ## Phase 3: Integration & Validation
 - [ ] Task: Write tests for **Page Copying**: Verify that copying a `PdfPage` to a new `PdfDocument` preserves its bookmarks in the correct hierarchy.
