@@ -38,10 +38,10 @@ public sealed partial class PdfDocument : IDisposable
     /// </summary>
     public List<PdfPage> Pages { get; set; }
 
-    private PdfOutlineRoot? _outlines;
+    private BookmarkNode? _outlines;
     private bool _outlinesRead;
 
-    public PdfOutlineRoot? Outlines
+    public BookmarkNode? Outlines
     {
         get
         {
@@ -50,7 +50,7 @@ public sealed partial class PdfDocument : IDisposable
                 return _outlines;
             }
 
-            _outlines = Parsers.OutlineParser.Parse(this);
+            // _outlines = Parsers.OutlineParser.Parse(this); // OutlineParser is currently broken/removed
             _outlinesRead = true;
             return _outlines;
         }
