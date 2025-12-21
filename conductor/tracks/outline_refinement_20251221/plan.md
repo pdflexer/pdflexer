@@ -1,17 +1,22 @@
 # Track Plan: Enhance Outline/Bookmark Support and API Refinement
 
-## Phase 1: API Refinement and Relationship Validation
-- [ ] Task: Write tests for deep nested outline creation and validation of internal pointers (Next, Prev, Parent)
-- [ ] Task: Improve `PdfOutlineItem.Add` and relationship management to ensure tree integrity during modification
-- [ ] Task: Conductor - User Manual Verification 'Phase 1: API Refinement and Relationship Validation' (Protocol in workflow.md)
+## Phase 1: High-Level Data Model & Parsing
+- [x] Task: Create `PdfOutline` class (Title, Section, Order, Style, Color). [6c920a6]
+- [ ] Task: Update `PdfPage` to hold `List<PdfOutline>` instead of `PdfOutlineItem`.
+- [ ] Task: Implement `PdfPage.AddBookmark` helper methods.
+- [ ] Task: Update `OutlineParser` to parse existing PDF outlines into the new `PdfOutline` model and attach them to pages.
+- [ ] Task: Conductor - User Manual Verification 'Phase 1: High-Level Data Model & Parsing' (Protocol in workflow.md)
 
-## Phase 2: Destination Resolution Enhancements
-- [ ] Task: Write tests for resolving named destinations within the context of outline items
-- [ ] Task: Refactor `OutlineParser.ResolveNamedDest` into a more accessible utility within the DOM or Parsers namespace
-- [ ] Task: Implement support for `GoToR` (Remote GoTo) actions in outlines
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: Destination Resolution Enhancements' (Protocol in workflow.md)
+## Phase 2: Serialization Logic (The "Build-on-Save" Engine)
+- [ ] Task: Create `OutlineBuilder` (or method in `PdfDocument.Saving.cs`) to aggregate `PdfOutline`s from all pages.
+- [ ] Task: Implement logic to group outlines by `Section` path.
+- [ ] Task: Implement sorting logic: First by `Order` (if present), then by Page Index.
+- [ ] Task: Implement conversion from the grouped/sorted model to the low-level `PdfOutlineItem` tree (dictionaries).
+- [ ] Task: Hook this logic into `PdfDocument.SaveTo`.
+- [ ] Task: Conductor - User Manual Verification 'Phase 2: Serialization Logic' (Protocol in workflow.md)
 
-## Phase 3: Serialization and Persistence
-- [ ] Task: Write tests for saving and then loading deep, complex outline trees to verify serialization
-- [ ] Task: Optimize `BuildOutlineTree` in `PdfDocument.Saving.cs` to ensure efficient memory usage for large trees
-- [ ] Task: Conductor - User Manual Verification 'Phase 3: Serialization and Persistence' (Protocol in workflow.md)
+## Phase 3: Integration & Validation
+- [ ] Task: Write tests for **Page Copying**: Verify that copying a `PdfPage` to a new `PdfDocument` preserves its bookmarks in the correct hierarchy.
+- [ ] Task: Write tests for **Mixed Ordering**: Verify behavior when some items have `Order` and others don't.
+- [ ] Task: Write tests for **Deep Nesting**: Verify deeply nested sections `["A", "B", "C", "D"]`.
+- [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Validation' (Protocol in workflow.md)
