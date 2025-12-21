@@ -16,7 +16,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: Serialization Logic' (Protocol in workflow.md) [ebf3934]
 
 ## Phase 3: Integration & Validation
-- [ ] Task: Write tests for **Page Copying**: Verify that copying a `PdfPage` to a new `PdfDocument` preserves its bookmarks in the correct hierarchy.
-- [ ] Task: Write tests for **Mixed Ordering**: Verify behavior when some items have `Order` and others don't.
-- [ ] Task: Write tests for **Deep Nesting**: Verify deeply nested sections `["A", "B", "C", "D"]`.
+- [x] Task: Write tests for **Page Copying**: Verify that copying a `PdfPage` to a new `PdfDocument` preserves its bookmarks in the correct hierarchy.
+- [x] Task: Write tests for **Mixed Ordering**: Verify behavior when some items have `Order` and others don't.
+- [~] Task: Write tests for **Deep Nesting**: Verify deeply nested sections `["A", "B", "C", "D"]`.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Integration & Validation' (Protocol in workflow.md)
