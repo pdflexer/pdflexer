@@ -93,7 +93,7 @@ internal class OutlineBuilder
 
             if (node.Color != null && node.Color.Length == 3)
             {
-                dict[PdfName.C] = new PdfArray(node.Color.Select(c => new PdfDoubleNumber(c)));
+                dict[PdfName.C] = new PdfArray(node.Color.Select(c => (IPdfObject)new PdfDoubleNumber(c)).ToList());
             }
 
             if (node.Style.HasValue)

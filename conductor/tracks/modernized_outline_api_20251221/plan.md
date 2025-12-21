@@ -16,7 +16,7 @@
 ## Phase 3: Serialization Engine Refactor
 - [x] Task: Refactor `PdfLexer.Writing.OutlineBuilder` (the internal serialization engine) to consume the new `BookmarkNode` tree. [54639ee]
 - [x] Task: Update `PdfDocument.Saving.cs` to correctly hook the new builder into the save process. [f58c96f]
-- [ ] Task: Write tests for end-to-end saving of complex hierarchies.
+- [~] Task: Write tests for end-to-end saving of complex hierarchies.
 - [ ] Task: Conductor - User Manual Verification 'Phase 3: Serialization Engine Refactor' (Protocol in workflow.md)
 
 ## Phase 4: Parser & Final Integration
