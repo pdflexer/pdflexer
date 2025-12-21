@@ -8,7 +8,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 1: High-Level Data Model & Parsing' (Protocol in workflow.md) [d6e6620]
 
 ## Phase 2: Serialization Logic (The "Build-on-Save" Engine)
-- [ ] Task: Create `OutlineBuilder` (or method in `PdfDocument.Saving.cs`) to aggregate `PdfOutline`s from all pages.
+- [x] Task: Create `OutlineBuilder` (or method in `PdfDocument.Saving.cs`) to aggregate `PdfOutline`s from all pages. [cab90b2]
 - [ ] Task: Implement logic to group outlines by `Section` path.
 - [ ] Task: Implement sorting logic: First by `Order` (if present), then by Page Index.
 - [ ] Task: Implement conversion from the grouped/sorted model to the low-level `PdfOutlineItem` tree (dictionaries).
