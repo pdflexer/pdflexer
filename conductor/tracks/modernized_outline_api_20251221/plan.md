@@ -6,11 +6,11 @@
 - [x] Task: Update `PdfPage.Outlines` and `PdfDocument.Outlines` to use the new model. [a2da45d]
 - [x] Task: Conductor - User Manual Verification 'Phase 1: Deconstruction & Basic Models' (Protocol in workflow.md) [1b9a01b]
 
-## Phase 2: Fluent OutlineBuilder Implementation
-- [ ] Task: Implement `OutlineBuilder` class with a fluent interface.
-- [ ] Task: Implement `AddSection(string title)` and `AddBookmark(string title, PdfPage? page = null)` with chaining support.
-- [ ] Task: Implement internal tree traversal helpers (e.g., `FindNode`, `MoveToParent`, `GetRoot`, `EnumerateLeaves`).
-- [ ] Task: Write TDD tests for fluent tree construction and traversal.
+## Phase 2: Fluent OutlineBuilder Implementation [checkpoint: pending]
+- [x] Task: Implement `OutlineBuilder` class with a fluent interface. [d146791]
+- [x] Task: Implement `AddSection(string title)` and `AddBookmark(string title, PdfPage? page = null)` with chaining support. [d146791]
+- [x] Task: Implement internal tree traversal helpers (e.g., `FindNode`, `MoveToParent`, `GetRoot`, `EnumerateLeaves`). [d146791]
+- [x] Task: Write TDD tests for fluent tree construction and traversal. [d146791]
 - [ ] Task: Conductor - User Manual Verification 'Phase 2: Fluent OutlineBuilder Implementation' (Protocol in workflow.md)
 
 ## Phase 3: Serialization Engine Refactor
