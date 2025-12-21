@@ -3,7 +3,7 @@
 ## Phase 1: High-Level Data Model & Parsing
 - [x] Task: Create `PdfOutline` class (Title, Section, Order, Style, Color). [6c920a6]
 - [x] Task: Update `PdfPage` to hold `List<PdfOutline>` instead of `PdfOutlineItem`. [e0712f9]
-- [ ] Task: Implement `PdfPage.AddBookmark` helper methods.
+- [x] Task: Implement `PdfPage.AddBookmark` helper methods. [04d82ed]
 - [ ] Task: Update `OutlineParser` to parse existing PDF outlines into the new `PdfOutline` model and attach them to pages.
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: High-Level Data Model & Parsing' (Protocol in workflow.md)
 
