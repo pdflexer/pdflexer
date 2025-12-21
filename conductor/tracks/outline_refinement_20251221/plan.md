@@ -4,7 +4,7 @@
 - [x] Task: Create `PdfOutline` class (Title, Section, Order, Style, Color). [6c920a6]
 - [x] Task: Update `PdfPage` to hold `List<PdfOutline>` instead of `PdfOutlineItem`. [e0712f9]
 - [x] Task: Implement `PdfPage.AddBookmark` helper methods. [04d82ed]
-- [ ] Task: Update `OutlineParser` to parse existing PDF outlines into the new `PdfOutline` model and attach them to pages.
+- [x] Task: Update `OutlineParser` to parse existing PDF outlines into the new `PdfOutline` model and attach them to pages. [452a0a6]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: High-Level Data Model & Parsing' (Protocol in workflow.md)
 
 ## Phase 2: Serialization Logic (The "Build-on-Save" Engine)
