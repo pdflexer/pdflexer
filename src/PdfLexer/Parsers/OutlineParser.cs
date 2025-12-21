@@ -1,14 +1,25 @@
 using PdfLexer.DOM;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PdfLexer.Parsers;
 
 internal class OutlineParser
 {
     private readonly PdfDocument _doc;
+    private readonly Dictionary<IPdfObject, PdfPage> _pageMap;
 
     public OutlineParser(PdfDocument doc)
     {
         _doc = doc;
+        _pageMap = new Dictionary<IPdfObject, PdfPage>();
+        if (doc.Pages != null)
+        {
+            foreach (var page in doc.Pages)
+            {
+                _pageMap[page.NativeObject] = page;
+            }
+        }
     }
 
     public static PdfOutlineRoot? Parse(PdfDocument doc)
@@ -16,13 +27,98 @@ internal class OutlineParser
         if (doc.Catalog.TryGetValue<PdfDictionary>(PdfName.Outlines, out var outlines))
         {
             var parser = new OutlineParser(doc);
+            if (outlines.TryGetValue<PdfDictionary>(PdfName.First, out var first))
+            {
+                parser.ParseItem(first, null);
+            }
             return new PdfOutlineRoot(outlines);
         }
 
         return null;
     }
-    
-    // TODO move this to a better spot
+
+    private void ParseItem(PdfDictionary item, List<string>? parentPath)
+    {
+        var title = item.GetOptionalValue<PdfString>(PdfName.Title)?.Value ?? "";
+        
+        IPdfObject? dest = null;
+        if (item.TryGetValue(PdfName.Dest, out var d))
+        {
+            dest = d.Resolve();
+        }
+        else if (item.TryGetValue<PdfDictionary>(PdfName.A, out var action))
+        {
+            if (action.GetOptionalValue<PdfName>(PdfName.TypeName) == PdfName.GoTo 
+                || action.GetOptionalValue<PdfName>(PdfName.Subtype) == PdfName.GoTo
+                || action.GetOptionalValue<PdfName>(PdfName.S) == PdfName.GoTo)
+            {
+                if (action.TryGetValue(PdfName.D, out var ad))
+                {
+                    dest = ad.Resolve();
+                }
+            }
+        }
+
+        if (dest != null)
+        {
+            var pageObj = ResolvePage(dest);
+            if (pageObj != null)
+            {
+                if (_pageMap.TryGetValue(pageObj, out var page))
+                {
+                    var outline = new PdfOutline
+                    {
+                        Title = title,
+                        Section = parentPath != null ? new List<string>(parentPath) : null
+                    };
+                    page.Outlines.Add(outline);
+                }
+            }
+        }
+
+        if (item.TryGetValue<PdfDictionary>(PdfName.First, out var firstChild))
+        {
+            var currentPath = parentPath != null ? new List<string>(parentPath) : new List<string>();
+            currentPath.Add(title);
+            ParseItem(firstChild, currentPath);
+        }
+
+        if (item.TryGetValue<PdfDictionary>(PdfName.Next, out var nextSibling))
+        {
+            ParseItem(nextSibling, parentPath);
+        }
+    }
+
+    private IPdfObject? ResolvePage(IPdfObject dest)
+    {
+        dest = dest.Resolve();
+        if (dest.Type == PdfObjectType.NameObj || dest.Type == PdfObjectType.StringObj)
+        {
+            var resolved = ResolveNamedDest(dest);
+            if (resolved == null) { return null; }
+            dest = resolved.Resolve();
+        }
+
+        if (dest.Type == PdfObjectType.DictionaryObj)
+        {
+            var dict = (PdfDictionary)dest;
+            if (dict.TryGetValue(PdfName.D, out var d))
+            {
+                dest = d.Resolve();
+            }
+        }
+
+        if (dest.Type == PdfObjectType.ArrayObj)
+        {
+            var arr = (PdfArray)dest;
+            if (arr.Count > 0)
+            {
+                return arr[0].Resolve();
+            }
+        }
+        return null;
+    }
+
     internal IPdfObject? ResolveNamedDest(IPdfObject dest)
     {
         string? name = null;
@@ -31,14 +127,11 @@ internal class OutlineParser
 
         if (name == null) return null;
 
-        // 1. Dests Dictionary (PDF 1.1)
-        // Standard name Dests
         if (_doc.Catalog.TryGetValue<PdfDictionary>(new PdfName("Dests"), out var dests)) 
         {
             if (dests.TryGetValue(new PdfName(name), out var val)) return val;
         }
 
-        // 2. Names Tree (PDF 1.2)
         if (_doc.Catalog.TryGetValue<PdfDictionary>(new PdfName("Names"), out var names))
         {
             if (names.TryGetValue<PdfDictionary>(new PdfName("Dests"), out var destsTree))
@@ -52,7 +145,6 @@ internal class OutlineParser
 
     private IPdfObject? ResolveInNameTree(PdfDictionary tree, string key)
     {
-        // Check Limits
         if (tree.TryGetValue<PdfArray>(new PdfName("Limits"), out var limits) && limits.Count == 2)
         {
             var min = limits[0] as PdfString;

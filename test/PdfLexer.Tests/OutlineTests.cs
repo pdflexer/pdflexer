@@ -9,18 +9,17 @@ namespace PdfLexer.Tests;
 public class OutlineTests
 {
     [Fact]
-    public void It_should_read_outlines()
+    public void It_should_read_outlines_and_attach_to_pages()
     {
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
         var pdf = Path.Combine(tp, "pdfs", "pdfjs", "freeculture.pdf");
         using var doc = PdfDocument.Open(pdf);
         var outlines = doc.Outlines;
         Assert.NotNull(outlines);
-        Assert.NotEmpty(outlines.Children);
         
-        var first = outlines.First;
-        Assert.NotNull(first);
-        Assert.Equal("COVER", first.Title);
+        var page1 = doc.Pages[0];
+        Assert.NotEmpty(page1.Outlines);
+        Assert.Equal("COVER", page1.Outlines[0].Title);
     }
 
     [Fact]
