@@ -13,6 +13,7 @@ pdflexer is a high-performance .NET library designed for efficient PDF parsing a
 # Core Goals
 - **Superior Performance:** Provide significantly faster execution for common PDF tasks such as splitting, merging, and text extraction compared to existing .NET alternatives.
 - **Mutable Content Model:** Enable developers to directly modify, move, or delete existing text and graphics on a PDF page through an intuitive object model.
+- **Simplified Document Outlines:** Move away from low-level tree structures to a page-centric bookmark model that automatically builds the PDF hierarchy on save.
 
 # Key Features & Differentiators
 - **Native PDF Object Access:** High-level abstractions (like `PdfPage`) are designed as thin wrappers around native PDF dictionaries, allowing for raw access when the higher-level API doesn't cover a specific use case.
