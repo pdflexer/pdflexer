@@ -53,7 +53,7 @@ public class PageOutlineTests
     {
         var page = new PdfPage();
         page.AddBookmark("Chapter 1");
-        page.AddBookmark("Section 1.1", "Chapter 1");
+        page.AddBookmark("Section 1.1", null, "Chapter 1");
         
         Assert.Equal(2, page.Outlines.Count);
         Assert.Equal("Chapter 1", page.Outlines[0].Title);
