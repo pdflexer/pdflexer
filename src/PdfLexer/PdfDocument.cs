@@ -50,7 +50,7 @@ public sealed partial class PdfDocument : IDisposable
                 return _outlines;
             }
 
-            // _outlines = Parsers.OutlineParser.Parse(this); // OutlineParser is currently broken/removed
+            _outlines = Parsers.OutlineParser.Parse(this);
             _outlinesRead = true;
             return _outlines;
         }

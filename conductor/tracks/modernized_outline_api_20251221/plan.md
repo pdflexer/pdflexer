@@ -20,7 +20,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 3: Serialization Engine Refactor' (Protocol in workflow.md) [86a46d8]
 
 ## Phase 4: Parser & Final Integration
-- [ ] Task: Update `OutlineParser` to parse existing PDF outlines into the new `BookmarkNode` tree.
+- [~] Task: Update `OutlineParser` to parse existing PDF outlines into the new `BookmarkNode` tree.
 - [ ] Task: Final cleanup of any remaining legacy outline code or obsolete properties.
 - [ ] Task: Write integration tests for page copying and mixed bookmark types (Remote/Action).
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Parser & Final Integration' (Protocol in workflow.md)
