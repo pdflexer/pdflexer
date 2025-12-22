@@ -6,13 +6,13 @@
 - [x] Task: Create unit tests for building complex logical trees in memory. [7f0b276]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Simple Model & Core Builder' (Protocol in workflow.md)
 
-## Phase 2: PageWriter & Content Marking
+## Phase 2: PageWriter & Content Marking [checkpoint: ebe2076]
 - [x] Task: Update `PageWriter` to track MCIDs and maintain a mapping of current structural context. [121db5f]
 - [x] Task: Implement `pageWriter.BeginMarkedContent(StructureNode node)` and `pageWriter.EndMarkedContent()`. [121db5f]
 - [x] Task: Implement automatic registration of (Page, MCID) within the `StructureNode` simple model. [121db5f]
 - [x] Task: Add support for marking content as 'Artifact' (non-structural) via `pageWriter`. [121db5f]
 - [x] Task: Write TDD tests verifying generated content streams contain correct `BDC` and `EMC` operators. [121db5f]
-- [~] Task: Conductor - User Manual Verification 'Phase 2: PageWriter & Content Marking' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 2: PageWriter & Content Marking' (Protocol in workflow.md) [ebe2076]
 
 ## Phase 3: Serialization & PDF Mapping
 - [ ] Task: Implement `StructureNode` to PDF dictionary conversion logic.
