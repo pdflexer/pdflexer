@@ -60,6 +60,20 @@ public sealed partial class PdfDocument : IDisposable
             _outlinesRead = true;
         }
     }
+
+    private StructuralBuilder? _structure;
+    public StructuralBuilder Structure
+    {
+        get
+        {
+            if (_structure == null)
+            {
+                _structure = new StructuralBuilder();
+            }
+            return _structure;
+        }
+        set => _structure = value;
+    }
     /// <summary>
     /// XRef entries of this document. May be internalized at some point.
     /// Will be null on new documents.

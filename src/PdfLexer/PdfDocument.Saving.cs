@@ -61,8 +61,8 @@ public sealed partial class PdfDocument
         var trailer = Trailer.CloneShallow();
 
         // remove page tree specific items
-        catalog.Remove("Names");
-        catalog.Remove("StructTreeRoot");
+        catalog.Remove(PdfName.Names);
+        catalog.Remove(PdfName.StructTreeRoot);
 
         var cir = PdfIndirectRef.Create(catalog);
         trailer[PdfName.Root] = cir;
@@ -74,6 +74,18 @@ public sealed partial class PdfDocument
         trailer.Remove(PdfName.Length);
         trailer.Remove(PdfName.Prev);
         trailer.Remove(PdfName.XRefStm);
+
+        if (_structure != null)
+        {
+            var serializer = new Writing.StructuralSerializer();
+            var rootDict = serializer.ConvertToPdf(_structure.GetRoot());
+            catalog[PdfName.StructTreeRoot] = PdfIndirectRef.Create(rootDict);
+
+            // For Tagged PDF, we also need to set the MarkInfo in Catalog
+            var markInfo = catalog.GetOrCreateValue<PdfDictionary>(PdfName.MarkInfo);
+            markInfo[PdfName.Marked] = PdfBoolean.True;
+        }
+
         List<PdfIndirectRef>? pageRefs = null;
         if (Pages != null)
         {

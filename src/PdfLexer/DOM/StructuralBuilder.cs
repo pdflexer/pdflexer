@@ -29,6 +29,8 @@ public class StructuralBuilder : IStructureContext
 
     public IStructureContext MoveToParent() => this;
 
+    public StructureNode GetCurrentNode() => _root;
+
     public void CreateBookmark(string title, IOutlineContext outlineBuilder)
     {
         outlineBuilder.AddBookmark(title);
@@ -43,6 +45,7 @@ public interface IStructureContext
     IStructureContext AddHeader(int level, string? title = null);
     IStructureContext MoveToParent();
     StructureNode GetRoot();
+    StructureNode GetCurrentNode();
     void CreateBookmark(string title, IOutlineContext outlineBuilder);
 }
 
@@ -78,6 +81,8 @@ public class StructuralContext : IStructureContext
     public IStructureContext MoveToParent() => _parent;
     
     public StructureNode GetRoot() => _builder.GetRoot();
+
+    public StructureNode GetCurrentNode() => _node;
 
     public void CreateBookmark(string title, IOutlineContext outlineBuilder)
     {

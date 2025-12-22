@@ -15,7 +15,7 @@
 - [x] Task: Conductor - User Manual Verification 'Phase 2: PageWriter & Content Marking' (Protocol in workflow.md) [ebe2076]
 
 ## Phase 3: Serialization & PDF Mapping
-- [ ] Task: Implement `StructureNode` to PDF dictionary conversion logic.
+- [~] Task: Implement `StructureNode` to PDF dictionary conversion logic.
 - [ ] Task: Implement the `ParentTree` builder to map page MCIDs back to structure element indirect references.
 - [ ] Task: Hook `StructuralBuilder` into the `PdfDocument.Save` process to generate `StructTreeRoot`.
 - [ ] Task: Write end-to-end tests for a basic tagged PDF and verify with external tools (e.g., pdfcpu or structural validators).

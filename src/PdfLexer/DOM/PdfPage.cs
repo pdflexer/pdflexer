@@ -78,6 +78,12 @@ public sealed class PdfPage
         set => NativeObject.Set(PdfName.Parent, value?.Dictionary.Indirect());
     }
 
+    public PdfNumber? StructParents
+    {
+        get => NativeObject.Get<PdfNumber>(PdfName.StructParents);
+        set => NativeObject.Set(PdfName.StructParents, value);
+    }
+
     public List<BookmarkNode> Outlines { get; } = new List<BookmarkNode>();
 
     public void AddBookmark(string title, int? order = null, params string[] section)
