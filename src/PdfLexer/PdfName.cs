@@ -442,6 +442,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Matte = new("Matte", false);
     public static readonly PdfName max = new("max", false);
     public static readonly PdfName Max = new("Max", false);
+    public static readonly PdfName MCID = new("MCID", false);
     public static readonly PdfName MCD = new("MCD", false);
     public static readonly PdfName MCR = new("MCR", false);
     public static readonly PdfName MCS = new("MCS", false);

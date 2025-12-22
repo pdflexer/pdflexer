@@ -1,4 +1,6 @@
-﻿using PdfLexer.DOM;
+﻿using PdfLexer.Content;
+using PdfLexer.Content.Model;
+using PdfLexer.DOM;
 using PdfLexer.Filters;
 using System.Numerics;
 
@@ -15,6 +17,53 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
     {
         Page = page;
         Mode = mode;
+    }
+
+    /// <summary>
+    /// Current Marked Content Identifier (MCID) for this page.
+    /// </summary>
+    internal int CurrentMCID { get; set; } = 0;
+
+    /// <summary>
+    /// Begins a marked-content sequence associated with a structure node.
+    /// </summary>
+    /// <param name="node">The structure node to associate with the content.</param>
+    /// <returns>The PageWriter instance.</returns>
+    public PageWriter<T> BeginMarkedContent(StructureNode node)
+    {
+        var mcid = CurrentMCID++;
+        var props = new PdfDictionary();
+        props[PdfName.MCID] = new PdfIntNumber(mcid);
+        var mc = new MarkedContent(node.Type) { InlineProps = props };
+        MarkedContent(mc);
+        node.ContentItems.Add((Page, mcid));
+        return this;
+    }
+
+    /// <summary>
+    /// Ends the current marked-content sequence.
+    /// </summary>
+    /// <returns>The PageWriter instance.</returns>
+    public new PageWriter<T> EndMarkedContent()
+    {
+        base.EndMarkedContent();
+        return this;
+    }
+
+    /// <summary>
+    /// Begins an Artifact marked-content sequence (non-structural content).
+    /// </summary>
+    /// <param name="type">Optional type of artifact (e.g. Pagination, Layout, Page, Background).</param>
+    /// <returns>The PageWriter instance.</returns>
+    public PageWriter<T> BeginArtifact(PdfName? type = null)
+    {
+        var mc = new MarkedContent(PdfName.Artifact);
+        if (type != null)
+        {
+            mc.InlineProps = new PdfDictionary { [PdfName.TYPE] = type };
+        }
+        MarkedContent(mc);
+        return this;
     }
 
     public void Dispose()
