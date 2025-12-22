@@ -18,3 +18,4 @@ pdflexer is a high-performance .NET library designed for efficient PDF parsing a
 # Key Features & Differentiators
 - **Native PDF Object Access:** High-level abstractions (like `PdfPage`) are designed as thin wrappers around native PDF dictionaries, allowing for raw access when the higher-level API doesn't cover a specific use case.
 - **Performance-First Architecture:** Built from the ground up using modern .NET performance features, including `Span<T>`, `ArrayPool<T>`, and Generic Math, to minimize memory allocations and maximize processing throughput.
+- **Fluent Document Construction:** New APIs, such as the `OutlineBuilder`, utilize fluent patterns to simplify the creation of complex document structures like nested bookmarks.
