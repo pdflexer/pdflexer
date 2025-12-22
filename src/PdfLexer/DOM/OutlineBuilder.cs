@@ -6,26 +6,28 @@ namespace PdfLexer.DOM;
 public class OutlineBuilder : IOutlineContext
 {
     private readonly BookmarkNode _root = new BookmarkNode { Title = "ROOT" };
+    public BookmarkNode LastNode { get; internal set; }
 
     public BookmarkNode GetRoot() => _root;
 
     public IOutlineContext AddSection(string title, bool isOpen = true, double[]? color = null, int? style = null)
     {
         var section = new BookmarkNode 
-        { 
+        {
             Title = title,
             IsOpen = isOpen,
             Color = color,
             Style = style
         };
         _root.Children.Add(section);
+        LastNode = section;
         return new OutlineContext(this, section, this);
     }
 
     public IOutlineContext AddBookmark(string title, PdfPage? page = null, double[]? color = null, int? style = null)
     {
         var bookmark = new BookmarkNode 
-        { 
+        {
             Title = title,
             Color = color,
             Style = style
@@ -35,6 +37,7 @@ public class OutlineBuilder : IOutlineContext
             bookmark.Destination = page.NativeObject;
         }
         _root.Children.Add(bookmark);
+        LastNode = bookmark;
         return this;
     }
 
@@ -86,6 +89,7 @@ public interface IOutlineContext
     BookmarkNode GetRoot();
     BookmarkNode? FindNode(string title);
     IEnumerable<BookmarkNode> EnumerateLeaves();
+    BookmarkNode LastNode { get; }
 }
 
 public class OutlineContext : IOutlineContext
@@ -93,6 +97,7 @@ public class OutlineContext : IOutlineContext
     private readonly OutlineBuilder _builder;
     private readonly BookmarkNode _node;
     private readonly IOutlineContext _parent;
+    public BookmarkNode LastNode => _builder.LastNode;
 
     internal OutlineContext(OutlineBuilder builder, BookmarkNode node, IOutlineContext parent)
     {
@@ -111,6 +116,7 @@ public class OutlineContext : IOutlineContext
             Style = style
         };
         _node.Children.Add(section);
+        _builder.LastNode = section;
         return new OutlineContext(_builder, section, this);
     }
 
@@ -127,6 +133,7 @@ public class OutlineContext : IOutlineContext
             bookmark.Destination = page.NativeObject;
         }
         _node.Children.Add(bookmark);
+        _builder.LastNode = bookmark;
         return this;
     }
 
