@@ -7,12 +7,12 @@
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Simple Model & Core Builder' (Protocol in workflow.md)
 
 ## Phase 2: PageWriter & Content Marking
-- [ ] Task: Update `PageWriter` to track MCIDs and maintain a mapping of current structural context.
-- [ ] Task: Implement `pageWriter.BeginMarkedContent(StructureNode node)` and `pageWriter.EndMarkedContent()`.
-- [ ] Task: Implement automatic registration of (Page, MCID) within the `StructureNode` simple model.
-- [ ] Task: Add support for marking content as 'Artifact' (non-structural) via `pageWriter`.
-- [ ] Task: Write TDD tests verifying generated content streams contain correct `BDC` and `EMC` operators.
-- [ ] Task: Conductor - User Manual Verification 'Phase 2: PageWriter & Content Marking' (Protocol in workflow.md)
+- [x] Task: Update `PageWriter` to track MCIDs and maintain a mapping of current structural context. [121db5f]
+- [x] Task: Implement `pageWriter.BeginMarkedContent(StructureNode node)` and `pageWriter.EndMarkedContent()`. [121db5f]
+- [x] Task: Implement automatic registration of (Page, MCID) within the `StructureNode` simple model. [121db5f]
+- [x] Task: Add support for marking content as 'Artifact' (non-structural) via `pageWriter`. [121db5f]
+- [x] Task: Write TDD tests verifying generated content streams contain correct `BDC` and `EMC` operators. [121db5f]
+- [~] Task: Conductor - User Manual Verification 'Phase 2: PageWriter & Content Marking' (Protocol in workflow.md)
 
 ## Phase 3: Serialization & PDF Mapping
 - [ ] Task: Implement `StructureNode` to PDF dictionary conversion logic.
