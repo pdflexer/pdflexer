@@ -14,12 +14,12 @@
 - [x] Task: Write TDD tests verifying generated content streams contain correct `BDC` and `EMC` operators. [121db5f]
 - [x] Task: Conductor - User Manual Verification 'Phase 2: PageWriter & Content Marking' (Protocol in workflow.md) [ebe2076]
 
-## Phase 3: Serialization & PDF Mapping
+## Phase 3: Serialization & PDF Mapping [checkpoint: 9a0ddda]
 - [x] Task: Implement `StructureNode` to PDF dictionary conversion logic. [623ad4c]
 - [x] Task: Implement the `ParentTree` builder to map page MCIDs back to structure element indirect references. [623ad4c]
 - [x] Task: Hook `StructuralBuilder` into the `PdfDocument.Save` process to generate `StructTreeRoot`. [623ad4c]
 - [x] Task: Write end-to-end tests for a basic tagged PDF and verify with external tools (e.g., pdfcpu or structural validators). [623ad4c]
-- [~] Task: Conductor - User Manual Verification 'Phase 3: Serialization & PDF Mapping' (Protocol in workflow.md)
+- [x] Task: Conductor - User Manual Verification 'Phase 3: Serialization & PDF Mapping' (Protocol in workflow.md) [9a0ddda]
 
 ## Phase 4: Integration & Advanced Attributes
 - [ ] Task: Implement `structureNode.CreateBookmark(string title, OutlineBuilder builder)` for direct structural linking.
