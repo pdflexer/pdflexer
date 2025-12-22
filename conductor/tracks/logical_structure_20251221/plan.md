@@ -1,9 +1,9 @@
 # Track Plan: User-Friendly PDF Logical Structure (Tagged PDF)
 
-## Phase 1: Simple Model & Core Builder
-- [ ] Task: Define the `StructureNode` class (Type, ID, Title, Lang, Attributes, Children).
-- [ ] Task: Implement `StructuralBuilder` for hierarchical tree construction with fluent methods.
-- [ ] Task: Create unit tests for building complex logical trees in memory.
+## Phase 1: Simple Model & Core Builder [checkpoint: 9f86552]
+- [x] Task: Define the `StructureNode` class (Type, ID, Title, Lang, Attributes, Children). [df58d29]
+- [x] Task: Implement `StructuralBuilder` for hierarchical tree construction with fluent methods. [327877e]
+- [x] Task: Create unit tests for building complex logical trees in memory. [7f0b276]
 - [ ] Task: Conductor - User Manual Verification 'Phase 1: Simple Model & Core Builder' (Protocol in workflow.md)
 
 ## Phase 2: PageWriter & Content Marking
