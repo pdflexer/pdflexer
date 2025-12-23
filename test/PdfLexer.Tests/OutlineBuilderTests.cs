@@ -14,7 +14,7 @@ public class OutlineBuilderTests
         builder.AddSection("Section 1")
                .AddBookmark("Bookmark 1.1")
                .AddBookmark("Bookmark 1.2")
-               .MoveToParent()
+               .Back()
                .AddSection("Section 2")
                .AddBookmark("Bookmark 2.1");
 
@@ -32,7 +32,7 @@ public class OutlineBuilderTests
         var builder = new OutlineBuilder();
         builder.AddSection("S1")
                .AddBookmark("B1")
-               .MoveToParent()
+               .Back()
                .AddSection("S2")
                .AddBookmark("B2");
 

@@ -20,7 +20,8 @@ public class StructuralSerializationTests
         p.ContentItems.Add((page, 0));
 
         var serializer = new StructuralSerializer();
-        var structTreeRoot = serializer.ConvertToPdf(root);
+        var result = serializer.ConvertToPdf(root);
+        var structTreeRoot = result.Root;
 
         Assert.Equal(PdfName.StructTreeRoot, structTreeRoot[PdfName.TYPE]);
         

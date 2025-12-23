@@ -41,7 +41,7 @@ public class OutlineBuilder : IOutlineContext
         return this;
     }
 
-    public IOutlineContext MoveToParent() => this;
+    public IOutlineContext Back() => this;
 
     public BookmarkNode? FindNode(string title)
     {
@@ -83,12 +83,39 @@ public class OutlineBuilder : IOutlineContext
 
 public interface IOutlineContext
 {
+    /// <summary>
+    /// Adds a section bookmark which can contain children.
+    /// </summary>
     IOutlineContext AddSection(string title, bool isOpen = true, double[]? color = null, int? style = null);
+
+    /// <summary>
+    /// Adds a leaf bookmark.
+    /// </summary>
     IOutlineContext AddBookmark(string title, PdfPage? page = null, double[]? color = null, int? style = null);
-    IOutlineContext MoveToParent();
+
+    /// <summary>
+    /// Moves back to the parent bookmark context.
+    /// </summary>
+    IOutlineContext Back();
+
+    /// <summary>
+    /// Gets the root bookmark node.
+    /// </summary>
     BookmarkNode GetRoot();
+
+    /// <summary>
+    /// Finds a bookmark node by title.
+    /// </summary>
     BookmarkNode? FindNode(string title);
+
+    /// <summary>
+    /// Enumerates all leaf bookmarks in the tree.
+    /// </summary>
     IEnumerable<BookmarkNode> EnumerateLeaves();
+
+    /// <summary>
+    /// Gets the last added bookmark node.
+    /// </summary>
     BookmarkNode LastNode { get; }
 }
 
@@ -137,7 +164,7 @@ public class OutlineContext : IOutlineContext
         return this;
     }
 
-    public IOutlineContext MoveToParent() => _parent;
+    public IOutlineContext Back() => _parent;
     
     public BookmarkNode GetRoot() => _builder.GetRoot();
 

@@ -11,8 +11,8 @@ public class StructuralBuilderTests
     {
         var builder = new StructuralBuilder();
         builder.AddElement("Part")
-               .AddHeader(1, "Main Header").MoveToParent()
-               .AddParagraph("Intro paragraph").MoveToParent()
+               .AddHeader(1, "Main Header").Back()
+               .AddParagraph("Intro paragraph").Back()
                .AddElement("Section")
                    .AddParagraph("Section content");
 

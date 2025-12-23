@@ -13,7 +13,7 @@ internal class OutlineBuilder
         _doc = doc;
     }
 
-    public PdfDictionary ConvertToPdf(BookmarkNode rootNode)
+    public PdfDictionary ConvertToPdf(BookmarkNode rootNode, Dictionary<StructureNode, PdfIndirectRef>? structureMap = null)
     {
         var rootDict = new PdfDictionary();
         rootDict[PdfName.TypeName] = PdfName.Outlines;
@@ -65,7 +65,6 @@ internal class OutlineBuilder
             
             if (node.Destination != null)
             {
-                // Simple page destination
                 if (node.Destination is PdfDictionary pageDict)
                 {
                      dict[PdfName.Dest] = new PdfArray 
@@ -88,7 +87,18 @@ internal class OutlineBuilder
                         new PdfNull() 
                     };
                 }
-                // TODO: Support other destination types
+                else
+                {
+                    dict[PdfName.Dest] = node.Destination;
+                }
+            }
+
+            if (node.StructureElement != null && structureMap != null)
+            {
+                if (structureMap.TryGetValue(node.StructureElement, out var seRef))
+                {
+                    dict[PdfName.SE] = seRef;
+                }
             }
 
             if (node.Color != null && node.Color.Length == 3)

@@ -19,20 +19,20 @@ public class TaggedPdfTests
 
         var root = doc.Structure;
         Assert.NotNull(root);
-        root.AddParagraph("Page 1 Text");
-        root.AddParagraph("Page 2 Text");
+        var p1 = root.AddParagraph("Page 1 Text");
+        var p2 = root.AddParagraph("Page 2 Text");
         Assert.Equal(2, root.GetRoot().Children.Count);
 
         using (var writer = page1.GetWriter())
         {
-            writer.BeginMarkedContent(root.GetRoot().Children[0]); // P1
+            writer.BeginMarkedContent(p1.GetNode()); // P1
             writer.Font(Base14.Helvetica, 12).TextMove(100, 700).Text("Hello Page 1");
             writer.EndMarkedContent();
         }
 
         using (var writer = page2.GetWriter())
         {
-            writer.BeginMarkedContent(root.GetRoot().Children[1]); // P2
+            writer.BeginMarkedContent(p2.GetNode()); // P2
             writer.Font(Base14.Helvetica, 12).TextMove(100, 700).Text("Hello Page 2");
             writer.EndMarkedContent();
         }

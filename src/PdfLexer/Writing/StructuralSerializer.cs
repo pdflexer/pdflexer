@@ -10,17 +10,14 @@ internal class StructuralSerializer
     {
     }
 
-    public PdfDictionary ConvertToPdf(StructureNode rootNode)
+    public (PdfDictionary Root, Dictionary<StructureNode, PdfIndirectRef> Map) ConvertToPdf(StructureNode rootNode)
     {
         // 1. Flatten the tree and create dictionaries for all nodes
         var items = new List<(StructureNode Node, PdfDictionary Dict, PdfIndirectRef Ref)>();
         
-        // Root node is often a "Document" type but in StructTreeRoot /K it's the first child or array of children
-        // We will treat rootNode as the top level StructElem if it has a type, otherwise we skip it.
-        // Actually, StructuralBuilder initializes root with "Document".
-        
         CollectNodes(rootNode, items);
 
+        var nodeMap = items.ToDictionary(x => x.Node, x => x.Ref);
         var map = items.ToDictionary(x => x.Node, x => (x.Dict, x.Ref));
 
         // 2. Populate dictionaries and link hierarchy
@@ -75,10 +72,6 @@ internal class StructuralSerializer
             }
 
             // Add content items (MCIDs)
-            // Simplified: if all MCIDs are on the same page, we can use /Pg and just integers in /K
-            // For now, let's always use MCR dictionaries for robustness if multiple pages, 
-            // but if single page we can optimize.
-            
             var pages = node.ContentItems.Select(x => x.Page).Distinct().ToList();
             if (pages.Count == 1)
             {
@@ -137,7 +130,7 @@ internal class StructuralSerializer
         // 4. Build ParentTree
         root[PdfName.ParentTree] = BuildParentTree(items);
 
-        return root;
+        return (root, nodeMap);
     }
 
     private void CollectNodes(StructureNode node, List<(StructureNode Node, PdfDictionary Dict, PdfIndirectRef Ref)> collected)

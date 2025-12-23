@@ -75,11 +75,13 @@ public sealed partial class PdfDocument
         trailer.Remove(PdfName.Prev);
         trailer.Remove(PdfName.XRefStm);
 
+        Dictionary<StructureNode, PdfIndirectRef>? structureMap = null;
         if (_structure != null)
         {
             var serializer = new Writing.StructuralSerializer();
-            var rootDict = serializer.ConvertToPdf(_structure.GetRoot());
-            catalog[PdfName.StructTreeRoot] = PdfIndirectRef.Create(rootDict);
+            var result = serializer.ConvertToPdf(_structure.GetRoot());
+            catalog[PdfName.StructTreeRoot] = PdfIndirectRef.Create(result.Root);
+            structureMap = result.Map;
 
             // For Tagged PDF, we also need to set the MarkInfo in Catalog
             var markInfo = catalog.GetOrCreateValue<PdfDictionary>(PdfName.MarkInfo);
@@ -97,7 +99,7 @@ public sealed partial class PdfDocument
         if (Outlines != null)
         {
             var builder = new Writing.OutlineBuilder(this);
-            var rootDict = builder.ConvertToPdf(Outlines);
+            var rootDict = builder.ConvertToPdf(Outlines, structureMap);
             catalog[PdfName.Outlines] = PdfIndirectRef.Create(rootDict);
         }
 
