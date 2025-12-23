@@ -24,6 +24,6 @@
 ## Phase 4: Integration & Advanced Attributes
 - [x] Task: Implement `structureNode.CreateBookmark(string title, OutlineBuilder builder)` for direct structural linking. [7efdf08]
 - [x] Task: Add support for complex attributes (Tables, Layout) in the model and serialization. [83486d0]
-- [~] Task: Final API refinement and cleanup of low-level structure internal types if any.
+- [x] Task: Final API refinement and cleanup of low-level structure internal types if any. [8b8fee2]
 - [ ] Task: Comprehensive integration tests for multi-page tagged documents with nested structures and bookmarks.
 - [ ] Task: Conductor - User Manual Verification 'Phase 4: Integration & Advanced Attributes' (Protocol in workflow.md)
