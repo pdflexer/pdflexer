@@ -97,11 +97,11 @@ internal class StructuralSerializer
             {
                 if (kids.Count == 1)
                 {
-                    dict[PdfName.Kids] = kids[0];
+                    dict[PdfName.K] = kids[0];
                 }
                 else
                 {
-                    dict[PdfName.Kids] = kids;
+                    dict[PdfName.K] = kids;
                 }
             }
         }
@@ -112,7 +112,7 @@ internal class StructuralSerializer
         
         if (map.TryGetValue(rootNode, out var rootInfo))
         {
-            root[PdfName.Kids] = rootInfo.Ref;
+            root[PdfName.K] = rootInfo.Ref;
         }
         else if (rootNode.Children.Count > 0)
         {
@@ -124,7 +124,7 @@ internal class StructuralSerializer
                     rootKids.Add(childInfo.Ref);
                 }
             }
-            root[PdfName.Kids] = rootKids;
+            root[PdfName.K] = rootKids;
         }
 
         // 4. Build ParentTree

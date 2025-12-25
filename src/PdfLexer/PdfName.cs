@@ -845,6 +845,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName TypeName = new("Type", false);
     public static readonly PdfName Count = new("Count", false);
     public static readonly PdfName Kids = new("Kids", false);
+    public static readonly PdfName K = new("K", false);
     public static readonly PdfName Contents = new("Contents", false);
     public static readonly PdfName Resources = new("Resources", false);
     public static readonly PdfName Rotate = new("Rotate", false);
