@@ -89,13 +89,17 @@ public sealed partial class PdfDocument : IDisposable
         CryptFilter = new CryptFilter(this);
     }
 
+#pragma warning disable CS8618
     internal PdfDocument(int id)
+#pragma warning restore CS8618
     {
         DocumentId = id;
         CryptFilter = new CryptFilter(this);
     }
 
+#pragma warning disable CS8618
     internal PdfDocument(int id, PdfDictionary catalog, PdfDictionary trailer, List<PdfPage> pages)
+#pragma warning restore CS8618
     {
         DocumentId = id;
         Trailer = trailer;

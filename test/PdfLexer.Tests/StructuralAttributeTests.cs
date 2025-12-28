@@ -62,8 +62,8 @@ public class StructuralAttributeTests
         var serializer = new StructuralSerializer();
         var result = serializer.ConvertToPdf(builder.GetRoot());
         
-        var rootElem = result.Root.Get<PdfDictionary>(PdfName.Kids);
-        var pElem = rootElem.Get<PdfDictionary>(PdfName.Kids);
+        var rootElem = result.Root.Get<PdfDictionary>(PdfName.K);
+        var pElem = rootElem.Get<PdfDictionary>(PdfName.K);
         
         var attr = pElem.Get<PdfDictionary>(PdfName.A);
         Assert.NotNull(attr);

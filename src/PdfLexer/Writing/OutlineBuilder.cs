@@ -52,8 +52,7 @@ internal class OutlineBuilder
         }
 
         // Link items
-        PdfIndirectRef? prevRef = null;
-        BookmarkNode? prevNode = null;
+
 
         // We need to iterate the top level separately to link to root parent
         LinkSiblings(rootNode.Children, rootRef, map);

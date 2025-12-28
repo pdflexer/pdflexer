@@ -477,28 +477,26 @@ public ref struct PageContentScanner
 
     internal bool TryGetForm(PdfName name, [NotNullWhen(true)] out PdfStream? found)
     {
-        if (CurrentForm != null && TryGetForm(CurrentForm, out found, out var isForm))
+        found = null;
+        if (CurrentForm != null && TryGetForm(CurrentForm, out var formFound, out var isForm))
         {
-            if (isForm)
+            if (isForm && formFound != null)
             {
+                found = formFound;
                 return true;
             }
-            else
-            {
-                found = null;
-                return false;
-            }
+            return false;
         }
 
-        if (TryGetForm(Page, out found, out isForm) && isForm)
+        if (TryGetForm(Page, out var pageFound, out isForm) && isForm && pageFound != null)
         {
+            found = pageFound;
             return true;
         }
 
-        found = null;
         return false;
 
-        bool TryGetForm(PdfDictionary obj, [NotNullWhen(true)] out PdfStream? form, out bool isForm)
+        bool TryGetForm(PdfDictionary obj, out PdfStream? form, out bool isForm)
         {
             form = null;
             isForm = false;

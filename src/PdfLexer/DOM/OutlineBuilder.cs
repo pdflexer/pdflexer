@@ -8,6 +8,11 @@ public class OutlineBuilder : IOutlineContext
     private readonly BookmarkNode _root = new BookmarkNode { Title = "ROOT" };
     public BookmarkNode LastNode { get; internal set; }
 
+    public OutlineBuilder()
+    {
+        LastNode = _root;
+    }
+
     public BookmarkNode GetRoot() => _root;
 
     public IOutlineContext AddSection(string title, bool isOpen = true, double[]? color = null, int? style = null)

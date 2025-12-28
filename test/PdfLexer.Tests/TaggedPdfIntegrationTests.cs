@@ -54,6 +54,9 @@ public class TaggedPdfIntegrationTests
             writer.EndMarkedContent();
         }
 
+
+        Util.Save(doc, "MultiPage_TaggedPdf_Should_Be_Valid");
+
         var bytes = doc.Save();
         
         // Verification

@@ -69,6 +69,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
     public void Dispose()
     {
         if (Page == null) { return; }
+        if (Page.NativeObject == null) { throw new InvalidOperationException("Page dictionary is null"); }
         var data = base.Complete();
         switch (Mode)
         {
@@ -93,7 +94,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
                     var content = Page.NativeObject?.Get(PdfName.Contents)?.Resolve();
                     if (content == null)
                     {
-                        Page.NativeObject[PdfName.Contents] = new PdfStream(data).Indirect();
+                        Page.NativeObject![PdfName.Contents] = new PdfStream(data).Indirect();
                     } else
                     {
                         // can't make form without rewritting to single stream so just write
@@ -110,7 +111,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
                         var arr = new PdfArray();
                         arr.Add(PdfIndirectRef.Create(new PdfStream(fw.Complete())));
                         arr.Add(PdfIndirectRef.Create(new PdfStream(data)));
-                        Page.NativeObject[PdfName.Contents] = arr;
+                        Page.NativeObject![PdfName.Contents] = arr;
                     }
                    
                     break;

@@ -65,7 +65,6 @@ internal class TextSampler
 
                     var read = new HashSet<PdfDictionary>();
 
-                    int i = 0;
                     foreach (var page in doc.Pages)
                     {
                         foreach (var font in ReadFonts(page))

@@ -25,14 +25,14 @@ public class StructuralSerializationTests
 
         Assert.Equal(PdfName.StructTreeRoot, structTreeRoot[PdfName.TYPE]);
         
-        var rootElem = structTreeRoot.Get<PdfDictionary>(PdfName.Kids);
+        var rootElem = structTreeRoot.Get<PdfDictionary>(PdfName.K);
         Assert.Equal(PdfName.StructElem, rootElem[PdfName.TYPE]);
         Assert.Equal(PdfName.Document, rootElem[PdfName.S]);
 
-        var pElem = rootElem.Get<PdfDictionary>(PdfName.Kids);
+        var pElem = rootElem.Get<PdfDictionary>(PdfName.K);
         Assert.Equal(PdfName.StructElem, pElem[PdfName.TYPE]);
         Assert.Equal(PdfName.P, pElem[PdfName.S]);
-        Assert.Equal(0, (PdfIntNumber)pElem[PdfName.Kids]);
+        Assert.Equal(0, (PdfIntNumber)pElem[PdfName.K]);
         Assert.Equal(page.NativeObject.Indirect(), pElem[PdfName.Pg]);
 
         var parentTree = structTreeRoot.Get<PdfDictionary>(PdfName.ParentTree);
@@ -41,8 +41,8 @@ public class StructuralSerializationTests
         
         var pageArray = ((PdfIndirectRef)nums[1]).GetObject().GetValue<PdfArray>();
         // We need to find the indirect ref for P element again to compare
-        // but we can just check it's an array for now or get it from rootElem[PdfName.Kids]
-        var pRef = rootElem[PdfName.Kids];
+        // but we can just check it's an array for now or get it from rootElem[PdfName.K]
+        var pRef = rootElem[PdfName.K];
         Assert.Equal(pRef, pageArray[0]);
 
         Assert.Equal(0, (PdfIntNumber)page.NativeObject[PdfName.StructParents]);

@@ -129,7 +129,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             var sw = new StreamingWriter(ms);
             foreach (var pdf in paths)
             {
-                using var doc = PdfDocument.OpenMapped(pdf);
+                using var doc = PdfDocument.Open(pdf);
                 doc.Pages.ForEach(p => sw.AddPage(p));
             }
             sw.Complete(new PdfDictionary());

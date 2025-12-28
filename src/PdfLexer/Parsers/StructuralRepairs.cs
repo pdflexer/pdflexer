@@ -367,7 +367,7 @@ internal static class StructuralRepairs
             }
             scanner.SkipCurrent(); // obj
 
-            entries.Add(new XRefEntry { Offset = offset + scanStart, Reference = new XRef { ObjectNumber = n, Generation = g }, Source = ctx.CurrentSource });
+            entries.Add(new XRefEntry { Offset = offset + scanStart, Reference = new XRef { ObjectNumber = n, Generation = g }, Source = ctx.CurrentSource! });
             if (scanner.Peek() == PdfTokenType.DictionaryStart)
             {
                 var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
@@ -406,7 +406,7 @@ internal static class StructuralRepairs
 
                 var current = GetOSOffsets(ctx, data, str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N), n);
                 var first = str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
-                var source = new ObjectStreamDataSource(ctx.CurrentSource.Document, n, data, current.Select(x => (int)x.Offset).ToList(), first);
+                var source = new ObjectStreamDataSource(ctx.CurrentSource!.Document, n, data, current.Select(x => (int)x.Offset).ToList(), first);
                 foreach (var item in current)
                 {
                     item.Source = source;

@@ -12,7 +12,7 @@ namespace PdfLexer.pdfctl.Inspect;
 
 internal class ReadCmd
 {
-    public string File { get; set; } = null;
+    public string File { get; set; } = null!;
     public static System.CommandLine.Command Create()
     {
         var cmd = new System.CommandLine.Command("read", "Reads text from pdf")
@@ -184,7 +184,6 @@ internal class ReadCmd
             regions.Add(current);
         }
 
-        var pl = 0;
         var prev = regions[0];
         foreach (var region in regions)
         {
@@ -253,75 +252,13 @@ internal class ReadCmd
 
         tv.Text = sb.ToString();
         return;
-        // float lh = 0;
-        int chars = 0;
-        foreach (var line in words.GroupBy(x => (int)Math.Round((ph - x.BoundingBox.LLy) / hpc)).OrderBy(x => x.Key))
-        {
-            // if (lh != 0 && lh - line.Key.y > 0.25*hpc)
-            // {
-            //     
-            // }
-            // lh = line.Key;
-
-            if (chars < tc)
-            {
-                // sb.Append(new string(' ', tc - chars - 1) + '|');
-            }
-            else
-            {
-                //sb.Append(" |");
-            }
-            chars = 0;
-            sb.Append('\n');
-            pl += 1;
-
-            if (line.Key - 3 > pl)
-            {
-                // sb.Append($"{new string(' ', tc - 1)}|\n");
-                // sb.Append($">{new string(' ', tc - 2)}|\n");
-                // sb.Append($"{new string(' ', tc - 1)}|\n");
-                sb.Append($"\n");
-                sb.Append($">\n");
-                sb.Append($"\n");
-                pl = line.Key;
-            }
-            else if (line.Key > pl)
-            {
-                while (line.Key > pl)
-                {
-                    // sb.Append($"{new string(' ', tc - 1)}|\n");
-                    sb.Append($"\n");
-                    pl += 1;
-                }
-            }
-            else // if (lh - line.Key > 1.25 * hpc)
-            {
-                // sb.Append($"{new string(' ', tc - 1)}|\n");
-                // pl += 1;
-            }
-
-            foreach (var w in line.OrderBy(x => x.BoundingBox.LLx))
-            {
-                var sp = (int)Math.Ceiling(w.BoundingBox.LLx / wpc);
-                while (sp > chars)
-                {
-                    sb.Append(' ');
-                    chars += 1;
-                }
-                sb.Append(w.Text + ' ');
-                chars += w.Text.Length + 1;
-            }
-
-        }
-
-        tv.Text = sb.ToString();
     }
 }
 
-internal class Region
+public class Region
 {
     public double Start { get; set; }
     public double End { get; set; }
-    public HashSet<double> Sizes { get; set; }
-    public List<WordInfo> Words { get; set; }
+    public HashSet<double>? Sizes { get; set; }
+    public List<WordInfo> Words { get; set; } = new List<WordInfo>();
 }

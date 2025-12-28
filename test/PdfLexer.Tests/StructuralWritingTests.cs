@@ -28,9 +28,7 @@ public class StructuralWritingTests
         
         Assert.Single(node.ContentItems);
         Assert.Equal(0, node.ContentItems[0].MCID);
-        var contents = page.Contents.First().Contents.GetDecodedStream();
-        using var reader = new StreamReader(contents);
-        var text = reader.ReadToEnd();
+        var text = page.DumpDecodedContents();
         
         Assert.Contains("/P <</MCID 0>> BDC", text);
         Assert.Contains("EMC", text);

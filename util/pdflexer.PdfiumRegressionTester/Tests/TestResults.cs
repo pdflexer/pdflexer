@@ -12,8 +12,7 @@ namespace pdflexer.PdfiumRegressionTester.Tests;
 
 internal class TestResults : IDisposable
 {
-    private FileStream lo; 
-    private FileStream er;
+
     public TestResults(string namePrefix)
     {
         // lo = File.OpenWrite(namePrefix + ".log");

@@ -75,18 +75,7 @@ public sealed partial class PdfDocument
         trailer.Remove(PdfName.Prev);
         trailer.Remove(PdfName.XRefStm);
 
-        Dictionary<StructureNode, PdfIndirectRef>? structureMap = null;
-        if (_structure != null)
-        {
-            var serializer = new Writing.StructuralSerializer();
-            var result = serializer.ConvertToPdf(_structure.GetRoot());
-            catalog[PdfName.StructTreeRoot] = PdfIndirectRef.Create(result.Root);
-            structureMap = result.Map;
 
-            // For Tagged PDF, we also need to set the MarkInfo in Catalog
-            var markInfo = catalog.GetOrCreateValue<PdfDictionary>(PdfName.MarkInfo);
-            markInfo[PdfName.Marked] = PdfBoolean.True;
-        }
 
         List<PdfIndirectRef>? pageRefs = null;
         if (Pages != null)
@@ -94,14 +83,38 @@ public sealed partial class PdfDocument
             var (pagesRef, refs) = BuildPageTree(ctx);
             catalog[PdfName.Pages] = pagesRef;
             pageRefs = refs;
+
+            Dictionary<StructureNode, PdfIndirectRef>? structureMap = null;
+            if (_structure != null)
+            {
+                var pageMap = new Dictionary<PdfPage, PdfIndirectRef>();
+                if (pageRefs != null && Pages.Count == pageRefs.Count)
+                {
+                    for (int i = 0; i < Pages.Count; i++)
+                    {
+                        pageMap[Pages[i]] = pageRefs[i];
+                    }
+                }
+
+                var serializer = new Writing.StructuralSerializer(pageMap);
+                var result = serializer.ConvertToPdf(_structure.GetRoot());
+                catalog[PdfName.StructTreeRoot] = PdfIndirectRef.Create(result.Root);
+                structureMap = result.Map;
+
+                // For Tagged PDF, we also need to set the MarkInfo in Catalog
+                var markInfo = catalog.GetOrCreateValue<PdfDictionary>(PdfName.MarkInfo);
+                markInfo[PdfName.Marked] = PdfBoolean.True;
+            }
+
+            if (Outlines != null)
+            {
+                var builder = new Writing.OutlineBuilder(this);
+                var rootDict = builder.ConvertToPdf(Outlines, structureMap);
+                catalog[PdfName.Outlines] = PdfIndirectRef.Create(rootDict);
+            }
         }
 
-        if (Outlines != null)
-        {
-            var builder = new Writing.OutlineBuilder(this);
-            var rootDict = builder.ConvertToPdf(Outlines, structureMap);
-            catalog[PdfName.Outlines] = PdfIndirectRef.Create(rootDict);
-        }
+      
 
         ctx.Complete(trailer);
     }

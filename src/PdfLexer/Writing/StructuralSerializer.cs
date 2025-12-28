@@ -6,8 +6,20 @@ namespace PdfLexer.Writing;
 
 internal class StructuralSerializer
 {
-    public StructuralSerializer()
+    private readonly Dictionary<PdfPage, PdfIndirectRef>? _pageMap;
+
+    public StructuralSerializer(Dictionary<PdfPage, PdfIndirectRef>? pageMap = null)
     {
+        _pageMap = pageMap;
+    }
+
+    private PdfIndirectRef GetPageRef(PdfPage page)
+    {
+        if (_pageMap != null && _pageMap.TryGetValue(page, out var ir))
+        {
+            return ir;
+        }
+        return page.NativeObject.Indirect();
     }
 
     public (PdfDictionary Root, Dictionary<StructureNode, PdfIndirectRef> Map) ConvertToPdf(StructureNode rootNode)
@@ -75,7 +87,7 @@ internal class StructuralSerializer
             var pages = node.ContentItems.Select(x => x.Page).Distinct().ToList();
             if (pages.Count == 1)
             {
-                dict[PdfName.Pg] = pages[0].NativeObject.Indirect();
+                dict[PdfName.Pg] = GetPageRef(pages[0]);
                 foreach (var item in node.ContentItems)
                 {
                     kids.Add(new PdfIntNumber(item.MCID));
@@ -87,7 +99,7 @@ internal class StructuralSerializer
                 {
                     var mcr = new PdfDictionary();
                     mcr[PdfName.TYPE] = PdfName.MCR;
-                    mcr[PdfName.Pg] = item.Page.NativeObject.Indirect();
+                    mcr[PdfName.Pg] = GetPageRef(item.Page);
                     mcr[PdfName.MCID] = new PdfIntNumber(item.MCID);
                     kids.Add(mcr);
                 }
@@ -171,7 +183,18 @@ internal class StructuralSerializer
             var page = entry.Key;
             var mcids = entry.Value;
 
-            page.NativeObject[PdfName.StructParents] = new PdfIntNumber(pageIndex);
+            if (_pageMap != null && _pageMap.TryGetValue(page, out var ir))
+            {
+                var pageObj = ir.GetObject();
+                if (pageObj is PdfDictionary pageDict)
+                {
+                    pageDict[PdfName.StructParents] = new PdfIntNumber(pageIndex);
+                }
+            }
+            else
+            {
+                page.NativeObject[PdfName.StructParents] = new PdfIntNumber(pageIndex);
+            }
 
             // The value in ParentTree for this page is an array of StructElem refs, 
             // indexed by MCID.
@@ -190,7 +213,7 @@ internal class StructuralSerializer
             }
 
             nums.Add(new PdfIntNumber(pageIndex));
-            nums.Add(PdfIndirectRef.Create(mcidArray));
+            nums.Add(mcidArray);
             pageIndex++;
         }
 

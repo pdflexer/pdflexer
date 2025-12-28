@@ -19,14 +19,19 @@ public class TaggedPdfTests
 
         var root = doc.Structure;
         Assert.NotNull(root);
-        var p1 = root.AddParagraph("Page 1 Text");
+        var p1 = root.AddHeader(1, "Main Header");
+        var p1_2 = root.AddParagraph("Page 1 Text");
         var p2 = root.AddParagraph("Page 2 Text");
-        Assert.Equal(2, root.GetRoot().Children.Count);
+        Assert.Equal(3, root.GetRoot().Children.Count);
 
         using (var writer = page1.GetWriter())
         {
+            writer.Font(Base14.Helvetica, 16).TextMove(100, 700);
             writer.BeginMarkedContent(p1.GetNode()); // P1
-            writer.Font(Base14.Helvetica, 12).TextMove(100, 700).Text("Hello Page 1");
+            writer.Text("Page 1 Title").NewLine().NewLine();
+            writer.EndMarkedContent();
+            writer.BeginMarkedContent(p1_2.GetNode()); // P1_2
+            writer.Font(Base14.Helvetica, 12).Text("Hello Page 1");
             writer.EndMarkedContent();
         }
 
@@ -37,6 +42,7 @@ public class TaggedPdfTests
             writer.EndMarkedContent();
         }
 
+        Util.Save(doc, "Create_Basic_Tagged_Pdf");
         var data = doc.Save();
         
         // Re-open and verify

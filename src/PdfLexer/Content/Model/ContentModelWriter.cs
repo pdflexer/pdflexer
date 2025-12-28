@@ -9,13 +9,7 @@ internal class ContentModelWriter<T> where T : struct, IFloatingPoint<T>
     {
         var writer = new ContentWriter<T>(resources);
         writer.Save();
-        foreach (var group in groups)
-        {
-            writer.ReconcileCompatibility(group.CompatibilitySection);
-            writer.ReconcileMC(group.Markings);
-            writer.SetGS(group.GraphicsState);
-            group.Write(writer);
-        }
+        WriteGroups(writer, groups);
 
         if (catalog != null)
         {
@@ -30,13 +24,7 @@ internal class ContentModelWriter<T> where T : struct, IFloatingPoint<T>
     {
         var orig = writer.GraphicsStackSize;
         writer.Save();
-        foreach (var group in groups)
-        {
-            writer.ReconcileCompatibility(group.CompatibilitySection);
-            writer.ReconcileMC(group.Markings);
-            writer.SetGS(group.GraphicsState);
-            group.Write(writer);
-        }
+        WriteGroups(writer, groups);
         writer.ReconcileCompatibility(false);
         while (writer.GraphicsStackSize > orig)
         {
@@ -46,6 +34,17 @@ internal class ContentModelWriter<T> where T : struct, IFloatingPoint<T>
         if (catalog != null)
         {
             HandleOCGs(catalog, writer);
+        }
+    }
+
+    internal static void WriteGroups(ContentWriter<T> writer, List<IContentGroup<T>> groups)
+    {
+        foreach (var group in groups)
+        {
+            writer.ReconcileCompatibility(group.CompatibilitySection);
+            // writer.ReconcileMC(group.Markings); // Removed, structure handles this
+            writer.SetGS(group.GraphicsState);
+            group.Write(writer);
         }
     }
 

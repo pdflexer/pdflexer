@@ -23,7 +23,6 @@ namespace PdfLexer.ImageTests
             var pdfRoot = Path.Combine(tp, "pdfs", "pdfjs");
             using var doc = PdfDocument.Open(Path.Combine(pdfRoot, pdf));
 
-            int i = 0;
             foreach (var page in doc.Pages)
             {
                 var reader = new TextScanner(doc.Context, page);

@@ -112,8 +112,8 @@ internal static class Defer
 }
 internal class WrappedChannel
 {
-    public CancellationTokenSource CTS { get; set; }
-    public Channel<Func<CancellationToken, ValueTask>> Queue { get; set; }
+    public CancellationTokenSource CTS { get; set; } = null!;
+    public Channel<Func<CancellationToken, ValueTask>> Queue { get; set; } = null!;
 }
 internal class PdfiumActor
 {
@@ -130,7 +130,7 @@ internal class PdfiumActor
             else if (Actor?.Work?.IsCompleted ?? true)
             {
                 Actor?._channel?.CTS?.Cancel();
-                Actor.Start();
+                Actor!.Start();
                 _ = Actor.Run(() => fpdfview.FPDF_InitLibrary());
             }
         }
@@ -202,7 +202,7 @@ internal class PdfiumActor
 
     private async Task Loop(CancellationToken token)
     {
-        await foreach (var item in _channel.Queue.Reader.ReadAllAsync(token))
+        await foreach (var item in _channel!.Queue.Reader.ReadAllAsync(token))
         {
 
             try
