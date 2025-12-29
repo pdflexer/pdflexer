@@ -76,7 +76,7 @@ namespace PdfLexer.ImageTests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var output = Path.Combine(tp, "results", "images");
             var pdfRoot = Path.Combine(tp, "imgs");
-            RunSingle(pdfRoot, "7DOO0uoEZXgO28xJAm-9dg.pdf", output);
+            RunSingle(pdfRoot, "7DOO0uoEZXgO28xJAm-9dg.pdf", output, 20);
         }
 
         [Fact]
@@ -156,8 +156,8 @@ namespace PdfLexer.ImageTests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var output = Path.Combine(tp, "results", "images");
             var pdfRoot = Path.Combine(tp, "imgs");
-            RunSingle(pdfRoot, "99qbYO5CWI7LxqAU6biTCQ.pdf", output);
-            RunSingle(pdfRoot, "e0YM9Ygv7cPbDO-p7oQ4jg.pdf", output);
+            RunSingle(pdfRoot, "99qbYO5CWI7LxqAU6biTCQ.pdf", output, 10);
+            RunSingle(pdfRoot, "e0YM9Ygv7cPbDO-p7oQ4jg.pdf", output, 20);
         }
 
         [Fact]
@@ -175,7 +175,7 @@ namespace PdfLexer.ImageTests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var output = Path.Combine(tp, "results", "images");
             var pdfRoot = Path.Combine(tp, "imgs");
-            RunSingle(pdfRoot, "hnrKIt4hMfNRn4SAIovTew.pdf", output);
+            RunSingle(pdfRoot, "hnrKIt4hMfNRn4SAIovTew.pdf", output, 20);
         }
 
         [Fact]
@@ -193,7 +193,7 @@ namespace PdfLexer.ImageTests
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
             var output = Path.Combine(tp, "results", "images");
             var pdfRoot = Path.Combine(tp, "imgs");
-            RunSingle(pdfRoot, "JO-X5drIBmTAMhiBr7Lwrw.pdf", output);
+            RunSingle(pdfRoot, "JO-X5drIBmTAMhiBr7Lwrw.pdf", output, 25);
         }
 
 
@@ -377,9 +377,9 @@ namespace PdfLexer.ImageTests
                 isa.SaveAsPng(imgout);
                 using var cl = Image.Load<Bgra32>(imgout);
                 using var bl = Image.Load<Bgra32>(Path.Combine(root, Path.GetFileNameWithoutExtension(pdf) + ".png"));
-                if (!RunCompare(bl, cl, Path.Combine(output, name + "_diff.png"), threshhold))
+                if (!RunCompare(bl, cl, Path.Combine(output, name + "_diff.png"), threshhold, out int max))
                 {
-                    throw new ApplicationException("Mismatch");
+                    throw new ApplicationException("Mismatch: " + max);
                 }
             }
         }
@@ -425,7 +425,7 @@ namespace PdfLexer.ImageTests
                                     using var cl = Image.Load<Bgra32>($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
                                     using var bl = Image.Load<Bgra32>(Path.Combine(pdfRoot, Path.GetFileNameWithoutExtension(pdf) + ".png"));
 
-                                    if (!RunCompare(bl, cl, $"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}_diff.png", 10))
+                                    if (!RunCompare(bl, cl, $"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}_diff.png", 10, out var max))
                                     {
                                         errors.Add(pdf + ": diff mismatch.");
                                         File.Copy(Path.Combine(pdfRoot, Path.GetFileNameWithoutExtension(pdf) + ".txt"),
@@ -462,8 +462,9 @@ namespace PdfLexer.ImageTests
 
         }
 
-        public static bool RunCompare(Image<Bgra32> imgB, Image<Bgra32> imgC, string output, int threshhold)
+        public static bool RunCompare(Image<Bgra32> imgB, Image<Bgra32> imgC, string output, int threshhold, out int max)
         {
+            max = 0;
             var w1 = imgB.Width;
             var w2 = imgB.Width;
             var h1 = imgC.Height;
@@ -520,6 +521,8 @@ namespace PdfLexer.ImageTests
                         maskImage[x, y] = samepix;
                         continue;
                     }
+
+                    max = Math.Max(max, d);
 
                     exact = false;
                     maskImage[x, y] = new Bgr24

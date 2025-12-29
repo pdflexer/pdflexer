@@ -1,4 +1,5 @@
-﻿using PdfLexer.Parsers.Structure;
+﻿using PdfLexer.DOM;
+using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 
 namespace PdfLexer;
@@ -61,7 +62,6 @@ public sealed partial class PdfDocument
 
         // remove page tree specific items
         catalog.Remove("Names");
-        catalog.Remove("Outlines");
         catalog.Remove("StructTreeRoot");
 
         var cir = PdfIndirectRef.Create(catalog);
@@ -74,20 +74,33 @@ public sealed partial class PdfDocument
         trailer.Remove(PdfName.Length);
         trailer.Remove(PdfName.Prev);
         trailer.Remove(PdfName.XRefStm);
+        List<PdfIndirectRef>? pageRefs = null;
         if (Pages != null)
         {
-            catalog[PdfName.Pages] = BuildPageTree(ctx);
+            var (pagesRef, refs) = BuildPageTree(ctx);
+            catalog[PdfName.Pages] = pagesRef;
+            pageRefs = refs;
         }
+
+        var ob = new Writing.OutlineBuilder(this);
+        var aggregated = ob.Aggregate();
+        if (aggregated.Count > 0)
+        {
+            var tree = ob.BuildTree(aggregated);
+            catalog[PdfName.Outlines] = ob.ConvertToPdf(tree, pageRefs).GetPdfObject();
+        }
+
         ctx.Complete(trailer);
     }
 
-    private IPdfObject BuildPageTree(WritingContext ctx)
+    private (IPdfObject, List<PdfIndirectRef>) BuildPageTree(WritingContext ctx)
     {
         // TODO page tree
         var dict = new PdfDictionary();
         var arr = new PdfArray();
         var ir = PdfIndirectRef.Create(dict);
         var pageDicts = Pages.Select(x => x.NativeObject).ToList();
+        var pageRefs = new List<PdfIndirectRef>();
         foreach (var page in Pages)
         {
             var pg = page.NativeObject.CloneShallow();
@@ -99,12 +112,13 @@ public sealed partial class PdfDocument
             }
             var nir = PdfIndirectRef.Create(pg);
             arr.Add(nir);
+            pageRefs.Add(nir);
             // ctx.WriteIndirectObject(nir);
         }
         dict[PdfName.Kids] = arr;
         dict[PdfName.TypeName] = PdfName.Pages;
         dict[PdfName.Count] = new PdfIntNumber(Pages.Count);
-        return PdfIndirectRef.Create(dict);
+        return (PdfIndirectRef.Create(dict), pageRefs);
     }
 
     private void SaveExistingObjects(WritingContext ctx)
