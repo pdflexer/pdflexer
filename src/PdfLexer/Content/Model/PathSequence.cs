@@ -13,7 +13,7 @@ namespace PdfLexer.Content.Model;
 public class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Paths;
-    public List<MarkedContent>? Markings { get; set; }
+
     public bool CompatibilitySection { get; set; }
     public required GfxState<T> GraphicsState { get; set; }
     public required List<SubPath<T>> Paths { get; set; }

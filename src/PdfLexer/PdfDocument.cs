@@ -37,6 +37,43 @@ public sealed partial class PdfDocument : IDisposable
     /// List of pages in the document. May be null if <see cref="ParsingOptions.LoadPageTree"/> is false.
     /// </summary>
     public List<PdfPage> Pages { get; set; }
+
+    private BookmarkNode? _outlines;
+    private bool _outlinesRead;
+
+    public BookmarkNode? Outlines
+    {
+        get
+        {
+            if (_outlinesRead)
+            {
+                return _outlines;
+            }
+
+            _outlines = Parsers.OutlineParser.Parse(this);
+            _outlinesRead = true;
+            return _outlines;
+        }
+        set
+        {
+            _outlines = value;
+            _outlinesRead = true;
+        }
+    }
+
+    private StructuralBuilder? _structure;
+    public StructuralBuilder Structure
+    {
+        get
+        {
+            if (_structure == null)
+            {
+                _structure = new StructuralBuilder();
+            }
+            return _structure;
+        }
+        set => _structure = value;
+    }
     /// <summary>
     /// XRef entries of this document. May be internalized at some point.
     /// Will be null on new documents.
@@ -52,13 +89,17 @@ public sealed partial class PdfDocument : IDisposable
         CryptFilter = new CryptFilter(this);
     }
 
+#pragma warning disable CS8618
     internal PdfDocument(int id)
+#pragma warning restore CS8618
     {
         DocumentId = id;
         CryptFilter = new CryptFilter(this);
     }
 
+#pragma warning disable CS8618
     internal PdfDocument(int id, PdfDictionary catalog, PdfDictionary trailer, List<PdfPage> pages)
+#pragma warning restore CS8618
     {
         DocumentId = id;
         Trailer = trailer;

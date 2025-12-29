@@ -222,8 +222,10 @@ public class Standard14Font : IWritableFont
         }
     }
 
+    private PdfDictionary? font;
     public PdfDictionary GetPdfFont()
     {
+        if (font != null) return font;
         var f = new FontType1();
         f.BaseFont = _metrics.BaseFont;
         var list = _glyphs.Values.Where(x => x.CodePoint.HasValue).OrderBy(x => x.CodePoint).ToList();
@@ -248,6 +250,7 @@ public class Standard14Font : IWritableFont
         f.LastChar = max;
         f.Widths = widths;
         f.FontDescriptor = _metrics.Descriptor;
+        font = f;
         return f;
     }
 
@@ -261,6 +264,24 @@ public class Standard14Font : IWritableFont
             buffer[0] = (byte)(g.CodePoint ?? 0); // 1 byte only
             var k = lc == null ? 0 : Getkerning(lc, c);
             yield return new SizedChar { ByteCount = 1, Width = g.w0, PrevKern = k };
+            lc = g;
+        }
+    }
+
+    public IEnumerable<GlyphOrShift> GetGlyphs(string text)
+    {
+        Glyph? lc = null;
+        for (var i = 0; i < text.Length; i++)
+        {
+            var c = text[i];
+            var g = GetGlyph(c);
+
+            var k = lc == null ? 0 : Getkerning(lc, c);
+            if (k != 0)
+            {
+                yield return new GlyphOrShift(k);
+            }
+            yield return new GlyphOrShift(g, 0, 1);
             lc = g;
         }
     }

@@ -393,8 +393,9 @@ public class KnownCMaps : ICMapProvider
         CMapData? complete = null;
         while (true)
         {
-            using (Stream stream = assembly.GetManifestResourceStream(current))
+            using (Stream? stream = assembly.GetManifestResourceStream(current))
             {
+                if (stream == null) { break; }
                 int total = (int)stream.Length;
                 var rented = ArrayPool<byte>.Shared.Rent((int)total);
                 int totalRead = 0;
@@ -439,6 +440,7 @@ public class KnownCMaps : ICMapProvider
             }
         }
 
+        if (complete == null) { return null; }
         return new CMapData(complete.Ranges, complete.Mapping, complete.Vertical);
     }
 

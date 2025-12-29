@@ -11,7 +11,7 @@ public class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T : 
 {
     public ContentType Type { get; } = ContentType.Shading;
     public required GfxState<T> GraphicsState { get; set; }
-    public List<MarkedContent>? Markings { get; set; }
+
     public required IPdfObject Shading { get; set; }
     public bool CompatibilitySection { get; set; }
 

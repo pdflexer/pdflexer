@@ -10,7 +10,7 @@ internal class EFunc_BitClear : EFunBase
         sb.Append("BitsClear(");
         sb.Append(VariableContext.VarSub);
         sb.Append(",");
-        var op = Children[0] as EValue;
+        var op = (EValue)Children[0];
         var i = int.Parse(op.Text);
         i = 33 - i;
         sb.Append("0b" + "".PadLeft(i-1,'0') + "1" + "".PadLeft(32-i, '0'));
@@ -27,10 +27,10 @@ internal class EFunc_BitsClear : EFunBase
         sb.Append("BitsClear(");
         sb.Append(VariableContext.VarSub);
         sb.Append(",");
-        var sop = Children[0] as EValue;
+        var sop = (EValue)Children[0];
         var s = int.Parse(sop.Text);
         s = 33 - s;
-        var eop = Children[1] as EValue;
+        var eop = (EValue)Children[1];
         var e = int.Parse(eop.Text);
         e = 33 - e;
         sb.Append("0b" + ("".PadLeft(e - 1, '0') + "".PadLeft(s-e+1, '1') + "".PadLeft(32 - s, '0')));
@@ -46,7 +46,7 @@ internal class EFunc_BitSet : EFunBase
         sb.Append("BitsSet(");
         sb.Append(VariableContext.VarSub);
         sb.Append(",");
-        var op = Children[0] as EValue;
+        var op = (EValue)Children[0];
         var i = int.Parse(op.Text);
         i = 33 - i;
         sb.Append("0b" + "".PadLeft(i - 1, '0') + "1" + "".PadLeft(32 - i, '0'));
@@ -63,10 +63,10 @@ internal class EFunc_BitsSet : EFunBase
         sb.Append("BitsSet(");
         sb.Append(VariableContext.VarSub);
         sb.Append(",");
-        var sop = Children[0] as EValue;
+        var sop = (EValue)Children[0];
         var s = int.Parse(sop.Text);
         s = 33 - s;
-        var eop = Children[1] as EValue;
+        var eop = (EValue)Children[1];
         var e = int.Parse(eop.Text);
         e = 33 - e;
         sb.Append("0b" + ("".PadLeft(e - 1, '0') + "".PadLeft(s - e + 1, '1') + "".PadLeft(32 - s, '0')));

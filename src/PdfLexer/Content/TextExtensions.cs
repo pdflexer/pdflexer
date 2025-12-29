@@ -52,15 +52,14 @@ public static class TextExtensions
         var wordByPosition = words.GroupBy(x => x.BoundingBox.LLy).OrderByDescending(x => x.Key).ToList();
 
         var regions = new List<Region>();
-        var current = new Region();
+        Region? current = null;
 
         foreach (var group in wordByPosition)
         {
             var lineSizes = group.GroupBy(x => Math.Round(x.BoundingBox.URy - x.BoundingBox.LLy)).Select(x => x.Key).ToHashSet();
-            if (current.Sizes == null)
+            if (current == null)
             {
-                current.Sizes = lineSizes;
-                current.Words = group.ToList();
+                current = new Region { Sizes = lineSizes, Words = group.ToList() };
                 continue;
             }
             else if (current.Sizes.SetEquals(lineSizes) || group.Key + hpc > current.Words.Min(x => x.BoundingBox.LLy))
@@ -71,12 +70,10 @@ public static class TextExtensions
             {
                 current.End = current.Words.Min(x => x.BoundingBox.LLy);
                 regions.Add(current);
-                current = new Region();
-                current.Sizes = lineSizes;
-                current.Words = group.ToList();
+                current = new Region { Sizes = lineSizes, Words = group.ToList() };
             }
         }
-        if (current.Words?.Any() ?? false)
+        if (current?.Words?.Any() ?? false)
         {
             regions.Add(current);
         }
@@ -84,11 +81,11 @@ public static class TextExtensions
         var prev = regions[0];
         foreach (var region in regions)
         {
-
             if (prev.Start - region.Start > 6)
             {
                 sb.Append('\n');
             }
+
             region.Start = region.Words.Max(x => x.BoundingBox.LLy);
             region.End = region.Words.Min(x => x.BoundingBox.LLy);
             var rh = region.Start - region.End;
@@ -139,7 +136,7 @@ public static class TextExtensions
                         sb.Append(' ');
                         lc += 1;
                     }
-                    
+
                     sb.Append(w.Text);
                     if (cwc < lineWords.Count)
                     {
@@ -163,7 +160,7 @@ public static class TextExtensions
     {
         public double Start { get; set; }
         public double End { get; set; }
-        public HashSet<double> Sizes { get; set; }
-        public List<WordInfo> Words { get; set; }
+        public required HashSet<double> Sizes { get; set; }
+        public required List<WordInfo> Words { get; set; }
     }
 }

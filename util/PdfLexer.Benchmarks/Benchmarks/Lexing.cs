@@ -27,8 +27,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             "<</FormType 1/Subtype/Form/BBox[0 0 612 792]/Resources<</XObject<</Xf19186 20 0 R>>/ProcSet[/PDF/Text/ImageB/ImageC/ImageI]>>/Type/XObject/Filter/FlateDecode/Length 53/Matrix[1 0 0 1 0 0]>>"
         };
         private List<byte[]> samples = new List<byte[]>();
-        private List<MemoryStream> mss = new List<MemoryStream>();
-        private MemoryStream allMs;
+        
         public LexingBenchmark()
         {
             foreach (var item in data)
@@ -42,7 +41,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
             var all = string.Join("", data);
             // allMs = new MemoryStream(Encoding.ASCII.GetBytes(all));
         }
-        private StringParser parser = new StringParser(new ParsingContext());
+
         private List<PdfString> results = new List<PdfString>(10);
 
 

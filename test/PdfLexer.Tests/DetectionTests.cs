@@ -43,6 +43,7 @@ namespace PdfLexer.Tests
         {
             var bytes = Encoding.ASCII.GetBytes(input);
             var buffer = new ReadOnlySpan<byte>(bytes);
+            _ = completed;
 
             var start = PdfSpanLexer.TryReadNextToken(buffer, out var tokenType, out int length);
 

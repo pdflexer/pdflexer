@@ -13,7 +13,7 @@ public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
     public ContentType Type { get; } = ContentType.Form;
     public required GfxState<T> GraphicsState { get; set; }
     public required PdfStream Stream { get; set; }
-    public List<MarkedContent>? Markings { get; set; }
+
     public bool CompatibilitySection { get; set; }
     
     /// <summary>

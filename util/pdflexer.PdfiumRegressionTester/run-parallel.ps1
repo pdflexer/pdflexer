@@ -18,11 +18,11 @@ function Slice-Array {
     }
 }
 
-$testType = "dedup"
+$testType = "rebuild"
 
 Push-Location $PSScriptRoot; # 453
 
-dotnet publish -c release -f net8.0
+dotnet publish -c release -f net10.0
 
 $pdfs = "$PSScriptRoot/../../test/pdfs/pdfjs/*.pdf"
 # $pdfs = "C:\source\Github\pdfium\testing\resources\*.pdf"
@@ -60,7 +60,7 @@ $all | Slice-Array -Size $size | ForEach-Object -Throttle $threads  -Parallel {
         }
     }
     Write-Host $iv;
-    $outputPath = $using:outputPath; $a = @('--strict', '--data', $PSScriptRoot,'--index', $iv, '--type', $t, '--output', $outputPath, $_ ); .\bin\Release\net8.0\publish\pdflexer.PdfiumRegressionTester.exe @a; if (!$?) { Write-Host "HAD FAILURES"; $failures = $true }; }
+    $outputPath = $using:outputPath; $a = @('--strict', '--data', $PSScriptRoot,'--index', $iv, '--type', $t, '--output', $outputPath, $_ ); .\bin\Release\net10.0\publish\pdflexer.PdfiumRegressionTester.exe @a; if (!$?) { Write-Host "HAD FAILURES"; $failures = $true }; }
 if ($failures) {
     Write-Error "HAD A FAILURE";
 }

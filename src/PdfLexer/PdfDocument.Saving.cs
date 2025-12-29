@@ -1,4 +1,5 @@
-﻿using PdfLexer.Parsers.Structure;
+﻿using PdfLexer.DOM;
+using PdfLexer.Parsers.Structure;
 using PdfLexer.Serializers;
 
 namespace PdfLexer;
@@ -60,9 +61,8 @@ public sealed partial class PdfDocument
         var trailer = Trailer.CloneShallow();
 
         // remove page tree specific items
-        catalog.Remove("Names");
-        catalog.Remove("Outlines");
-        catalog.Remove("StructTreeRoot");
+        catalog.Remove(PdfName.Names);
+        catalog.Remove(PdfName.StructTreeRoot);
 
         var cir = PdfIndirectRef.Create(catalog);
         trailer[PdfName.Root] = cir;
@@ -74,20 +74,59 @@ public sealed partial class PdfDocument
         trailer.Remove(PdfName.Length);
         trailer.Remove(PdfName.Prev);
         trailer.Remove(PdfName.XRefStm);
+
+
+
+        List<PdfIndirectRef>? pageRefs = null;
         if (Pages != null)
         {
-            catalog[PdfName.Pages] = BuildPageTree(ctx);
+            var (pagesRef, refs) = BuildPageTree(ctx);
+            catalog[PdfName.Pages] = pagesRef;
+            pageRefs = refs;
+
+            Dictionary<StructureNode, PdfIndirectRef>? structureMap = null;
+            if (_structure != null)
+            {
+                var pageMap = new Dictionary<PdfPage, PdfIndirectRef>();
+                if (pageRefs != null && Pages.Count == pageRefs.Count)
+                {
+                    for (int i = 0; i < Pages.Count; i++)
+                    {
+                        pageMap[Pages[i]] = pageRefs[i];
+                    }
+                }
+
+                var serializer = new Writing.StructuralSerializer(pageMap);
+                var result = serializer.ConvertToPdf(_structure.GetRoot());
+                catalog[PdfName.StructTreeRoot] = PdfIndirectRef.Create(result.Root);
+                structureMap = result.Map;
+
+                // For Tagged PDF, we also need to set the MarkInfo in Catalog
+                var markInfo = catalog.GetOrCreateValue<PdfDictionary>(PdfName.MarkInfo);
+                markInfo[PdfName.Marked] = PdfBoolean.True;
+            }
+
+            if (Outlines != null)
+            {
+                var builder = new Writing.OutlineBuilder(this);
+                var rootDict = builder.ConvertToPdf(Outlines, structureMap);
+                catalog[PdfName.Outlines] = PdfIndirectRef.Create(rootDict);
+            }
         }
+
+      
+
         ctx.Complete(trailer);
     }
 
-    private IPdfObject BuildPageTree(WritingContext ctx)
+    private (IPdfObject, List<PdfIndirectRef>) BuildPageTree(WritingContext ctx)
     {
         // TODO page tree
         var dict = new PdfDictionary();
         var arr = new PdfArray();
         var ir = PdfIndirectRef.Create(dict);
         var pageDicts = Pages.Select(x => x.NativeObject).ToList();
+        var pageRefs = new List<PdfIndirectRef>();
         foreach (var page in Pages)
         {
             var pg = page.NativeObject.CloneShallow();
@@ -99,12 +138,13 @@ public sealed partial class PdfDocument
             }
             var nir = PdfIndirectRef.Create(pg);
             arr.Add(nir);
+            pageRefs.Add(nir);
             // ctx.WriteIndirectObject(nir);
         }
         dict[PdfName.Kids] = arr;
         dict[PdfName.TypeName] = PdfName.Pages;
         dict[PdfName.Count] = new PdfIntNumber(Pages.Count);
-        return PdfIndirectRef.Create(dict);
+        return (PdfIndirectRef.Create(dict), pageRefs);
     }
 
     private void SaveExistingObjects(WritingContext ctx)

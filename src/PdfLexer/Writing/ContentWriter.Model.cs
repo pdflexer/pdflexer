@@ -530,7 +530,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         {
             if (mcState == null)
             {
-                for (var i = 0; i < desired.Count; i++)
+                for (var i = 0; i < desired!.Count; i++)
                 {
                     MarkedContent(desired[i]);
                 }
@@ -590,8 +590,8 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     internal ContentWriter<T> MarkedContent(MarkedContent mc)
     {
-        EnsureInPageState(); // make sure in page state to simplify making sure we don't have
-                             // uneven operators eg. BT BMC ET EMC
+        // EnsureInPageState(); // make sure in page state to simplify making sure we don't have
+                               // uneven operators eg. BT BMC ET EMC
         if (mc.PropList != null)
         {
             if (!propertyLists.TryGetValue(mc.PropList, out var name))
@@ -632,7 +632,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 
     internal ContentWriter<T> EndMarkedContent()
     {
-        EnsureInPageState();
+        // EnsureInPageState();
         if (mcState == null || mcState.Count == 0)
         {
             throw new PdfLexerException("EMC called without MC state");
@@ -650,7 +650,7 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
-    private PdfName? emptyGS;
+
     private Dictionary<PdfDictionary, PdfName> extGraphics = new Dictionary<PdfDictionary, PdfName>();
     internal PdfName AddExtGS(PdfDictionary gs)
     {

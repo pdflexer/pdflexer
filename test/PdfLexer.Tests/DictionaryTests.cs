@@ -10,6 +10,7 @@ using PdfLexer.IO;
 using PdfLexer.Lexing;
 using PdfLexer.Parsers;
 using PdfLexer.Parsers.Nested;
+using PdfLexer.Serializers;
 using Xunit;
 
 namespace PdfLexer.Tests
@@ -19,15 +20,29 @@ namespace PdfLexer.Tests
         [InlineData("<</Test false>>  ", true, "<</Test false>>")]
         [InlineData("<</Test 1 0 R>>  ", true, "<</Test 1 0 R>>")]
         [InlineData("<</Test 1>>  ", true, "<</Test 1>>")]
-        [InlineData("<</Test (string)>>  ", true, "<</Test (string)>>")]
-        [InlineData("<</Test <AAAFF>>>  ", true, "<</Test <AAAFF>>>")]
+        [InlineData("<</Test (string)>>  ", true, "<</Test(string)>>")]
+        [InlineData("<</Test <AAAFF>>>  ", true, "<</Test<AAAFF0>>>")]
         [InlineData("<</Test 1.0>>  ", true, "<</Test 1.0>>")]
         [InlineData("<</Test false>", false, "")]
-        [InlineData("<</Test [false]>>", true, "<</Test [false]>>")]
+        [InlineData("<</Test [false]>>", true, "<</Test[false]>>")]
         [InlineData("<</Test null>>", true, "<</Test null>>")]
-        [InlineData("<</Test false/Test2 /Name >>  ", true, "<</Test false/Test2 /Name >>")]
+        [InlineData("<</Test false/Test2 /Name >>  ", true, "<</Test false/Test2/Name>>")]
         [Theory]
         public void It_Gets_Dict_Basic(string data, bool found, string expected)
+        {
+            Do_Get_Dict(data, found, expected);
+        }
+
+        [InlineData("<</Test <</Internal false>>>>  ", true, "<</Test<</Internal false>>>>")]
+        [InlineData("<</Test <</Internal false>>", false, "")]
+        [InlineData("<</Test <</Internal <</Name /Value>>>>>>", true, "<</Test<</Internal<</Name/Value>>>>>>")]
+        [Theory]
+        public void It_Gets_Nested_Dict(string data, bool found, string expected)
+        {
+            Do_Get_Dict(data, found, expected);
+        }
+
+        private void Do_Get_Dict(string data, bool found, string expected)
         {
             var buffer = Encoding.ASCII.GetBytes(data);
             var ctx = new ParsingContext(new ParsingOptions { Eagerness = Eagerness.FullEager, ThrowOnErrors = true });
@@ -39,18 +54,12 @@ namespace PdfLexer.Tests
             else
             {
                 var result = ctx.DictionaryParser.Parse(buffer);
+                var ser = new PdfLexer.Serializers.Serializers();
+                var ms = new MemoryStream();
+                ser.DictionarySerializer.WriteToStream(result, ms);
+                var encoded = Encoding.ASCII.GetString(ms.ToArray());
+                Assert.Equal(expected, encoded);
             }
-
-            // Do_Get_Dict(data, found, expected);
-        }
-
-        [InlineData("<</Test <</Internal false>>>>  ", true, "<</Test <</Internal false>>>>")]
-        [InlineData("<</Test <</Internal false>>", false, "")]
-        [InlineData("<</Test <</Internal <</Name /Value>>>>>>", true, "<</Test <</Internal <</Name /Value>>>>>>")]
-        [Theory]
-        public void It_Gets_Nested_Dict(string data, bool found, string expected)
-        {
-            // Do_Get_Dict(data, found, expected);
         }
 
 
@@ -87,7 +96,6 @@ namespace PdfLexer.Tests
             var parser2 = new DictionaryParser(ctx);
             var dict2 = parser2.Parse(buffer);
             var dict4 = parser2.Parse(seq);
-            // Do_Get_Dict(data, true, data);
         }
 
         [InlineData("<</SubData <</Data 1/SubData<</Data1 1/Data2 10 /Data3 [1 10 1 25 100 500 1 2 4 8 9]>>>>>>", 673)]
@@ -267,7 +275,6 @@ namespace PdfLexer.Tests
             var ms = new MemoryStream(buffer);
             var reader = PipeReader.Create(ms, new StreamPipeReaderOptions(bufferSize: 10, minimumReadSize: 5));
             var scanner = new PipeScanner(new ParsingContext(), reader);
-            int cnt = 0;
             var oss = new List<long>();
             while (true)
             {
@@ -443,5 +450,8 @@ namespace PdfLexer.Tests
             scanner.SkipCurrent();
             Assert.Equal(PdfTokenType.StartObj, scanner.Peek());
         }
+
+
+
     }
 }

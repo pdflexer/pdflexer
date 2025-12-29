@@ -25,7 +25,7 @@ namespace pdflexer.PdfiumRegressionTester
         public float lly { get; set; }
         public float urx { get; set; }
         public float ury { get; set; }
-        public string Font { get; set; }
+        public string Font { get; set; } = null!;
 
     }
     

@@ -11,7 +11,7 @@ namespace PdfLexer.Powershell;
    ]
 public class OutPdfBytes : Cmdlet, IDisposable
 {
-    private PdfDocument _doc = PdfDocument.Create();
+    private PdfDocument? _doc = PdfDocument.Create();
 
     [Parameter(
         Mandatory = false,
@@ -40,6 +40,7 @@ public class OutPdfBytes : Cmdlet, IDisposable
     {
         foreach (var pg in GetInputPages())
         {
+            if (_doc == null) { _doc = PdfDocument.Create(); }
             _doc.Pages.Add(pg);
         }
         base.ProcessRecord();
@@ -53,11 +54,14 @@ public class OutPdfBytes : Cmdlet, IDisposable
 
     protected override void EndProcessing()
     {
-        var bytes = _doc.Save();
-        _doc.Dispose();
-        _doc = null;
-        WriteObject(bytes, false);
-        GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
+        if (_doc != null)
+        {
+            var bytes = _doc.Save();
+            _doc.Dispose();
+            _doc = null;
+            WriteObject(bytes, false);
+            GC.Collect(GC.MaxGeneration, GCCollectionMode.Aggressive, true, true);
+        }
         base.EndProcessing();
     }
 

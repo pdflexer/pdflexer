@@ -78,6 +78,28 @@ public sealed class PdfPage
         set => NativeObject.Set(PdfName.Parent, value?.Dictionary.Indirect());
     }
 
+    public PdfNumber? StructParents
+    {
+        get => NativeObject.Get<PdfNumber>(PdfName.StructParents);
+        set => NativeObject.Set(PdfName.StructParents, value);
+    }
+
+    public List<BookmarkNode> Outlines { get; } = new List<BookmarkNode>();
+
+    public void AddBookmark(string title, int? order = null, params string[] section)
+    {
+        var outline = new BookmarkNode
+        {
+            Title = title,
+            // Order logic is now handled during tree building, simple property setter here isn't enough
+            // For this phase, we just capture the title. Order support will be re-added in fluent API.
+        };
+        // NOTE: The previous AddBookmark logic was tied to PdfOutline which had Order/Section.
+        // BookmarkNode is a simple tree node.
+        // We will need to revisit helper methods in the next phase.
+        // For now, we just add to the list to satisfy the type change.
+        Outlines.Add(outline);
+    }
 
     public IEnumerable<PdfStream> Contents
     {

@@ -88,6 +88,40 @@ internal class TrueTypeWritableFont : IWritableFont
         }
     }
 
+    public IEnumerable<GlyphOrShift> GetGlyphs(string text)
+    {
+        Glyph? lc = null;
+        for (var i = 0; i < text.Length; i++)
+        {
+            var c = text[i];
+            var g = GetGlyph(c);
+            if (g == null)
+            {
+                if (_charHandling == UnknownCharHandling.Error)
+                {
+                    throw new PdfLexerException($"Char {c} not part of encoding for embedded true type font {_info.PostScriptName}");
+                }
+                else if (_charHandling == UnknownCharHandling.Skip)
+                {
+                    continue;
+                }
+                else
+                {
+                    lc = null;
+                    yield return new GlyphOrShift(0);
+                    continue;
+                }
+            }
+            var k = lc == null ? 0 : Getkerning(lc, c);
+            if (k != 0)
+            {
+                yield return new GlyphOrShift(k);
+            }
+            yield return new GlyphOrShift(g, 0, 2);
+            lc = g;
+        }
+    }
+
     private Glyph? GetGlyph(char c)
     {
         if (_fastLookup != null && c >= _fastStart && c <= _fastEnd)

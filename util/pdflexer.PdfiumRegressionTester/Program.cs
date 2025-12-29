@@ -75,7 +75,7 @@ async Task<int> RunBase(string data, string type, string pdfRoot, string[] pdfPa
         {
             if (string.IsNullOrEmpty(line)) { continue; }
             var info = JsonSerializer.Deserialize<ErrInfo>(line);
-            corrupt[info.PdfName] = info;
+            if (info != null) { corrupt[info.PdfName] = info; }
         }
         Console.WriteLine("Loaded error info.");
     }
@@ -314,166 +314,16 @@ bool RunMergeTests(string[] pdfs, string output)
     return success;
 }
 
-static PdfPage FlattenStream(PdfDocument doc, PdfPage page)
-{
-    var res = page.NativeObject.GetOptionalValue<PdfDictionary>(PdfName.Resources);
-    var fonts = res?.GetOptionalValue<PdfDictionary>(PdfName.Font);
-    fonts = new();
-    var xobjs = res?.GetOptionalValue<PdfDictionary>(PdfName.XObject);
-    xobjs = new();
 
-    var oc = 0;
-
-    var scanner = new PageContentScanner(doc.Context, page, true);
-    var ms = new MemoryStream();
-
-    PdfDictionary currentForm = null;
-    var fontReplacements = new Dictionary<PdfName, PdfName>();
-    var xObjReplacements = new Dictionary<PdfName, PdfName>();
-    var gsReplacements = new Dictionary<PdfName, PdfName>();
-
-    while (scanner.Advance())
-    {
-        if (scanner.TryGetCurrentOperation(out var op))
-        {
-            if (scanner.CurrentForm == null)
-            {
-
-                op.Serialize(ms);
-                ms.WriteByte((byte)'\n');
-            }
-            else
-            {
-                if (!Object.ReferenceEquals(currentForm, scanner.CurrentForm))
-                {
-                    fontReplacements = new();
-                    xObjReplacements = new();
-                    gsReplacements = new();
-                    currentForm = scanner.CurrentForm;
-                }
-                switch (op.Type)
-                {
-                    // font
-                    case PdfOperatorType.Tf:
-                        {
-                            var orig = (Tf_Op)op;
-
-                            var rn = GetReplacedName(
-                                orig.font,
-                                fonts,
-                                currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.Font),
-                                fontReplacements);
-
-                            var co = new Tf_Op(rn, orig.size);
-
-                            co.Serialize(ms);
-                            ms.WriteByte((byte)'\n');
-                            break;
-                        }
-                    // gs
-                    case PdfOperatorType.gs:
-                        op.Serialize(ms);
-                        ms.WriteByte((byte)'\n');
-                        break;
-                    // color state
-                    case PdfOperatorType.CS:
-                        op.Serialize(ms);
-                        ms.WriteByte((byte)'\n');
-                        break;
-                    // color state
-                    case PdfOperatorType.cs:
-                        op.Serialize(ms);
-                        ms.WriteByte((byte)'\n');
-                        break;
-                    // do
-                    case PdfOperatorType.Do:
-                        {
-                            var orig = (Do_Op)op;
-
-
-                            var rn = GetReplacedName(
-                                orig.name,
-                                xobjs,
-                                currentForm.GetOptionalValue<PdfDictionary>(PdfName.Resources)?.GetOptionalValue<PdfDictionary>(PdfName.XObject),
-                                xObjReplacements);
-
-                            var co = new Do_Op(rn);
-
-                            co.Serialize(ms);
-                            ms.WriteByte((byte)'\n');
-                            break;
-                        }
-                    default:
-                        op.Serialize(ms);
-                        ms.WriteByte((byte)'\n');
-                        break;
-                }
-            }
-        }
-    }
-
-    page = page.NativeObject.CloneShallow();
-    var fl = new ZLibLexerStream();
-    ms.Seek(0, SeekOrigin.Begin);
-    ms.CopyTo(fl);
-
-    var updatedStr = new PdfStream(new PdfDictionary(), fl.Complete());
-    page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
-    return page;
-
-    PdfName GetReplacedName(PdfName name, PdfDictionary pageSubDict, PdfDictionary? formSubDict, Dictionary<PdfName, PdfName> replacement)
-    {
-        if (!replacement.TryGetValue(name, out var nm))
-        {
-            if (!pageSubDict.ContainsKey(name))
-            {
-                replacement[name] = name;
-                nm = name;
-            }
-            else
-            {
-                var newName = new PdfName(name.Value + oc);
-                while (pageSubDict.ContainsKey(newName))
-                {
-                    oc++;
-                    newName = new PdfName(name.Value + oc);
-                }
-                replacement[name] = newName;
-                nm = newName;
-            }
-
-            IPdfObject fd = null;
-            formSubDict?.TryGetValue(name, out fd);
-            pageSubDict[nm] = fd ?? PdfNull.Value;
-        }
-        return nm;
-    }
-}
-
-static string ExePath()
-{
-    var directory = Path.GetDirectoryName(
-        System.Reflection.Assembly.GetExecutingAssembly().GetName().CodeBase);
-    if (directory?.StartsWith("file:\\", StringComparison.InvariantCultureIgnoreCase) ?? false)
-    {
-        directory = directory.Substring(6); // windows
-    }
-    else if (directory?.StartsWith("file:", StringComparison.InvariantCultureIgnoreCase) ?? false)
-    {
-        directory = directory.Substring(5); // linux
-    }
-
-    return directory;
-}
 
 public class ErrInfo
 {
-    public string PdfName { get; set; }
-    public List<string> Errs { get; set; }
+    public string PdfName { get; set; } = null!;
+    public List<string>? Errs { get; set; }
     public int ErrCount { get; set; }
-    public List<int> FailedPages { get; set; }
+    public List<int>? FailedPages { get; set; }
     public bool Failure { get; set; }
-    public string FailureMsg { get; set; }
+    public string? FailureMsg { get; set; }
     public TestStatus Status { get; set; }
 }
 

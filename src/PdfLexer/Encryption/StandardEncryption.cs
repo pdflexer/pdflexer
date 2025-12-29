@@ -300,7 +300,7 @@ internal class StandardEncryption : IDecryptionHandler
                 sha.TransformFinalBlock(empty, 0, 0);
             }
 
-            return sha.Hash;
+            return sha.Hash ?? throw new InvalidOperationException("SHA256 hash was null");
         }
     }
 
@@ -321,7 +321,7 @@ internal class StandardEncryption : IDecryptionHandler
                     md5.TransformBlock(padding, 0, padding.Length, null, 0);
                     md5.TransformBlock(_id, 0, _id.Length, null, 0);
                     md5.TransformFinalBlock(empty, 0, 0);
-                    u = md5.Hash;
+                    u = md5.Hash ?? throw new InvalidOperationException("MD5 hash was null");
                     u = Rc4Encrypt(key, u);
                     for (var i = 1; i <= 19; i++)
                     {
@@ -500,7 +500,7 @@ internal class StandardEncryption : IDecryptionHandler
                 md5.TransformBlock(new byte[4] { 0xff, 0xff, 0xff, 0xff }, 0, 4, null, 0);
             }
             md5.TransformFinalBlock(empty, 0, 0);
-            var k = md5.Hash;
+            var k = md5.Hash ?? throw new InvalidOperationException("MD5 hash was null");
 
             if (info.R >= 3)
             {

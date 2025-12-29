@@ -17,7 +17,6 @@ public record GfxState<T> where T : struct, IFloatingPoint<T>
 
     internal GfxState<T>? Prev { get; init; }
     internal IReadableFont? Font { get; init; }
-    internal IWritableFont? WritableFont { get; init; }
     internal PdfName? FontResourceName { get; init; }
     
     public PdfDictionary? FontObject { get; init; }

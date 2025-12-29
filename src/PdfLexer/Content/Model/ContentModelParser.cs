@@ -60,10 +60,23 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
         {
             // grabbing defaults
         }
-        var mc = new List<MarkedContent>();
-        var bx = false;
-        var content = new List<IContentGroup<T>> { };
 
+        var content = new List<IContentGroup<T>> { };
+        var groupStack = new Stack<MarkedContentGroup<T>>();
+
+        void AddContent(IContentGroup<T> item)
+        {
+            if (groupStack.Count > 0)
+            {
+                groupStack.Peek().Children.Add(item);
+            }
+            else
+            {
+                content.Add(item);
+            }
+        }
+
+        var bx = false;
         // BX -> EX compatibility section
         // BDC / BMC -> EMC marked-content
         // MP marked-content point
@@ -105,6 +118,13 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                 case PdfOperatorType.BMC:
                     {
                         CompleteCurrent(GraphicsState, false);
+                        if (Scanner.TryGetCurrentOperation<T>(out var bmc))
+                        {
+                            var op = (BMC_Op<T>)bmc;
+                            var group = new MarkedContentGroup<T>(new MarkedContent(op.tag)) { GraphicsState =  GraphicsState };
+                            AddContent(group);
+                            groupStack.Push(group);
+                        }
                         continue;
                     }
                 case PdfOperatorType.BDC:
@@ -116,51 +136,55 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             continue;
                         }
                         var bdcOp = (BDC_Op<T>)bdc;
+                        MarkedContent mcItem;
                         if (bdcOp.props is PdfName nm)
                         {
                             if (!Scanner.TryGetPropertyList(nm, out var found))
                             {
-                                // turn into BMC
-                                mc.Add(new MarkedContent(bdcOp.tag));
+                                // turn into BMC if prop list missing
+                                mcItem = new MarkedContent(bdcOp.tag);
                             }
                             else
                             {
-                                mc.Add(new MarkedContent(bdcOp.tag) { PropList = found });
+                                mcItem = new MarkedContent(bdcOp.tag) { PropList = found };
                             }
                         }
                         else if (bdcOp.props is PdfDictionary dict)
                         {
-                            mc.Add(new MarkedContent(bdcOp.tag) { InlineProps = dict });
+                            mcItem = new MarkedContent(bdcOp.tag) { InlineProps = dict };
                         }
                         else
                         {
-                            mc.Add(new MarkedContent(bdcOp.tag));
+                            mcItem = new MarkedContent(bdcOp.tag);
                         }
+
                         if (ocgdOff != null)
                         {
-                            var ocg = mc.Last();
-                            var dv = ocg.PropList ?? ocg.InlineProps;
+                            var dv = mcItem.PropList ?? mcItem.InlineProps;
                             if (dv != null && dv.TryGetValue<PdfName>(PdfName.TYPE, out var val, false) && val == PdfName.OCG
                                 && bdcOp.props is PdfName nm2 && Scanner.TryGetPropertyRef(nm2, out var ir))
                             {
                                 if (ocgdOff.Contains(ir))
                                 {
-                                    ocg.OCGDefault = false;
+                                    mcItem.OCGDefault = false;
                                 } else
                                 {
-                                    ocg.OCGDefault = true;
+                                    mcItem.OCGDefault = true;
                                 }
                             }
                         }
 
+                        var group = new MarkedContentGroup<T>(mcItem) { GraphicsState = GraphicsState };
+                        AddContent(group);
+                        groupStack.Push(group);
                         continue;
                     }
                 case PdfOperatorType.EMC:
                     {
                         CompleteCurrent(GraphicsState);
-                        if (mc.Count > 0)
+                        if (groupStack.Count > 0)
                         {
-                            mc.RemoveAt(mc.Count - 1);
+                            groupStack.Pop();
                         }
                         continue;
                     }
@@ -187,12 +211,11 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         {
                             continue;
                         }
-                        content.Add(new ShadingContent<T>
+                        AddContent(new ShadingContent<T>
                         {
                             Shading = shObj,
                             GraphicsState = GraphicsState,
-                            CompatibilitySection = bx,
-                            Markings = mc.Count > 0 ? mc.ToList() : null
+                            CompatibilitySection = bx
                         });
                         break;
                     }
@@ -208,23 +231,21 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                     }
                     if (isForm)
                     {
-                        content.Add(new FormContent<T>
+                        AddContent(new FormContent<T>
                         {
                             Stream = obj,
                             GraphicsState = GraphicsState,
                             CompatibilitySection = bx,
-                            ParentPage = Page,
-                            Markings = mc.Count > 0 ? mc.ToList() : null
+                            ParentPage = Page
                         });
                     }
                     else
                     {
-                        content.Add(new ImageContent<T>
+                        AddContent(new ImageContent<T>
                         {
                             Stream = obj,
                             GraphicsState = GraphicsState,
-                            CompatibilitySection = bx,
-                            Markings = mc.Count > 0 ? mc.ToList() : null
+                            CompatibilitySection = bx
                         });
                     }
                     continue;
@@ -236,12 +257,11 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         }
                         var img = (InlineImage_Op<T>)iiop;
                         var ximg = img.ConvertToStream(Scanner.Resources);
-                        content.Add(new ImageContent<T>
+                        AddContent(new ImageContent<T>
                         {
                             Stream = ximg,
                             GraphicsState = GraphicsState,
-                            CompatibilitySection = bx,
-                            Markings = mc.Count > 0 ? mc.ToList() : null
+                            CompatibilitySection = bx
                         });
                         continue;
                     }
@@ -623,7 +643,6 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
                         var seg = CreateTextSegment(slice);
                         seg.CompatibilitySection = bx;
-                        seg.Markings = mc.Count > 0 ? mc.ToList() : null;
                         if (currentText == null)
                         {
                             currentText = new TextContent<T>
@@ -633,7 +652,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             };
                             if (GraphicsState.TextMode != 7)
                             {
-                                content.Add(currentText);
+                                AddContent(currentText);
                             }
                         }
                         else
@@ -661,7 +680,6 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         T_Star_Op<T>.Value.Apply(ref GraphicsState);
                         var seg = CreateTextSegment(slice);
                         seg.CompatibilitySection = bx;
-                        seg.Markings = mc.Count > 0 ? mc.ToList() : null;
                         if (currentText == null)
                         {
                             currentText = new TextContent<T>
@@ -671,7 +689,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             };
                             if (GraphicsState.TextMode != 7)
                             {
-                                content.Add(currentText);
+                                AddContent(currentText);
                             }
                         }
                         else
@@ -694,7 +712,6 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
                         var seg = CreateTextSegment(slice);
                         seg.CompatibilitySection = bx;
-                        seg.Markings = mc.Count > 0 ? mc.ToList() : null;
                         if (currentText == null)
                         {
                             currentText = new TextContent<T>
@@ -704,7 +721,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             };
                             if (GraphicsState.TextMode != 7)
                             {
-                                content.Add(currentText);
+                                AddContent(currentText);
                             }
                         }
                         else
@@ -727,8 +744,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         {
                             Glyphs = new List<GlyphOrShift<T>>(),
                             GraphicsState = GraphicsState.TextMode > 3 ? GraphicsState with { TextMode = GraphicsState.TextMode - 4 } : GraphicsState,
-                            CompatibilitySection = bx,
-                            Markings = mc.Count > 0 ? mc.ToList() : null
+                            CompatibilitySection = bx
                         };
                         PdfOperator.ParseTJLazy<T>(Context, Scanner.Scanner.Data, ops, TJCache);
                         foreach (var item in TJCache)
@@ -755,7 +771,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             };
                             if (GraphicsState.TextMode != 7)
                             {
-                                content.Add(currentText);
+                                AddContent(currentText);
                             }
                         }
                         else
@@ -798,9 +814,8 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                 if (currentPath!.Closing != n_Op<T>.Value)
                 {
                     currentPath.GraphicsState = gs; // catch GS changes for final stroking
-                    currentPath.Markings = mc?.ToList();
                     currentPath.CompatibilitySection = bx;
-                    content.Add(currentPath!);
+                    AddContent(currentPath!);
                 }
                 if (reset)
                 {
@@ -874,6 +889,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
         ApplyAll(seq.Glyphs);
         return seq;
     }
+
 
     public enum TextReadState
     {

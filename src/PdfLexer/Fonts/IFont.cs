@@ -26,6 +26,12 @@ public interface IWritableFont
     /// <returns></returns>
     IEnumerable<SizedChar> ConvertFromUnicode(string text, int start, int length, byte[] buffer);
     /// <summary>
+    /// Returns the glyphs for the given characters
+    /// </summary>
+    /// <param name="c"></param>
+    /// <returns></returns>
+    IEnumerable<GlyphOrShift> GetGlyphs(string text);
+    /// <summary>
     /// Determines if unicode space ' ' is considered a word space according to
     /// pdf spec.
     /// </summary>

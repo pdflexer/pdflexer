@@ -48,18 +48,11 @@ public class OutputPathCmdlet : PSCmdlet
         ProviderInfo provider;
         PSDriveInfo drive;
         List<string> filePaths = new List<string>();
-        if (false)
-        {
-            // Turn *.txt into foo.txt,foo2.txt etc.
-            // if path is just "foo.txt," it will return unchanged.
-            filePaths.AddRange(cmd.GetResolvedProviderPathFromPSPath(path, out provider));
-        }
-        else
-        {
-            // no wildcards, so don't try to expand any * or ? symbols.                    
-            filePaths.Add(cmd.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
-                path, out provider, out drive));
-        }
+        // Turn *.txt into foo.txt,foo2.txt etc.
+        // if path is just "foo.txt," it will return unchanged.
+        // no wildcards, so don't try to expand any * or ? symbols.                    
+        filePaths.Add(cmd.SessionState.Path.GetUnresolvedProviderPathFromPSPath(
+            path, out provider, out drive));
         // ensure that this path (or set of paths after wildcard expansion)
         // is on the filesystem. A wildcard can never expand to span multiple
         // providers.

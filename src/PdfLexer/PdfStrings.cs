@@ -74,7 +74,7 @@ public class PdfString : PdfObject, IEquatable<PdfString>
         return n1.Equals(n2);
     }
 
-    public static bool operator !=(PdfString n1, PdfString n2) => !(n1 == n2);
+    public static bool operator !=(PdfString? n1, PdfString? n2) => !(n1 == n2);
 
     public byte[] GetRawBytes()
     {

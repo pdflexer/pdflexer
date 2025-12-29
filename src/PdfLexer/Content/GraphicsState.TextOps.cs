@@ -48,7 +48,7 @@ public partial class Tf_Op<T>
         throw new NotSupportedException();
     }
 
-    public static void Apply(ref GfxState<T> state, PdfName name,  PdfDictionary font, IReadableFont readable, T size)
+    public static void Apply(ref GfxState<T> state, PdfName name,  PdfDictionary font, IReadableFont? readable, T size)
     {
         state = state with { FontSize = size, FontObject = font, Font = readable, FontResourceName = name };
         state.UpdateTRM();
