@@ -119,7 +119,9 @@ public abstract class PdfStreamContents
         IPdfObject? fl = null;
         dict.TryGetValue(PdfName.Length, out fl);
 
-        if (DecodeParams != dcp || Filters != fv || Length != (fl?.GetAs<PdfNumber>() ?? 0))
+        if (DecodeParams != dcp || Filters != fv || Length != (fl?.GetAs<PdfNumber>() ?? 0)
+            || (fl == null && Length == 0)
+            )
         {
             if (DecodeParams != null)
             {
@@ -662,4 +664,5 @@ public class StreamUsageBasedCache : IStreamContentsCache
         public DateTime LastRead { get; set; }
         public DecodedStreamContents Contents { get; set; }
     }
+
 }
