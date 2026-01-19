@@ -8,7 +8,7 @@ namespace PdfLexer.pdfctl.Inspect;
 
 internal class InspectCmd
 {
-    public string File { get; set; } = null;
+    public string File { get; set; } = null!;
     public static System.CommandLine.Command Create()
     {
         var cmd = new System.CommandLine.Command("inspect", "Inspects internal pdf structure")
@@ -105,6 +105,7 @@ internal class InspectCmd
 
             var current = stack.Last();
             var nm = (string)dt.Rows[tv.SelectedRow].ItemArray[0];
+            if (nm == null) { return; }
             IPdfObject next;
             if (current.Type == PdfObjectType.ArrayObj)
             {

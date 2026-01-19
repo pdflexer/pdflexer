@@ -244,7 +244,7 @@ namespace PdfLexer.Tests
                         var read = new HashSet<PdfStream>();
                         var hashes = new HashSet<string>();
 
-                        int i = 0;
+                        
                         foreach (var page in doc.Pages)
                         {
                             var reader = new TextScanner(doc.Context, page);
@@ -285,7 +285,7 @@ namespace PdfLexer.Tests
             }
         }
 
-        // [Fact]
+        [Fact(Skip = "Manual")]
         public void Too_Many_Images()
         {
             var errors = new List<string>();
@@ -312,7 +312,7 @@ namespace PdfLexer.Tests
                         isa.SaveAsPng($"c:\\temp\\imgout\\{Path.GetFileNameWithoutExtension(pdf)}_{i}.png");
                         i++;
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         throw;
                     }
@@ -321,7 +321,7 @@ namespace PdfLexer.Tests
 
         }
 
-        //[Fact]
+        [Fact(Skip = "Manual")]
         public void Manual_Test()
         {
             using var doc = PdfDocument.Open(File.ReadAllBytes("C:\\Users\\plamic01\\Downloads\\issue1111.pdf"));
@@ -629,7 +629,8 @@ namespace PdfLexer.Tests
 
 
             using var fs2 = File.OpenRead(pdf);
-            using var lm = PdfDocument.OpenLowMemory(fs2);
+            using var ctx = ParsingContext.CreateLowMemory();
+            using var lm = PdfDocument.Open(fs2);
             var mssw = new MemoryStream();
             using var writer = new StreamingWriter(mssw, true, true);
             foreach (var page in lm.Pages)
@@ -658,7 +659,8 @@ namespace PdfLexer.Tests
 
             // write same file twice
             using var fs = File.OpenRead(pdf);
-            using var lm = PdfDocument.OpenLowMemory(fs);
+            using var ctx = ParsingContext.CreateLowMemory();
+            using var lm = PdfDocument.Open(fs);
             foreach (var page in lm.Pages)
             {
                 writer.AddPage(page);
@@ -838,7 +840,8 @@ namespace PdfLexer.Tests
                     if (!skipStream)
                     {
                         using var fs2 = File.OpenRead(pdf);
-                        using var lm = PdfDocument.OpenLowMemory(fs2);
+                        using var ctx = ParsingContext.CreateLowMemory();
+            using var lm = PdfDocument.Open(fs2);
                         var mssw = new MemoryStream();
                         using var writer = new StreamingWriter(mssw);
                         foreach (var page in lm.Pages)
@@ -901,7 +904,7 @@ namespace PdfLexer.Tests
                     File.WriteAllBytes(bp + "_cstreams.pdf", d5 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_fromStream.pdf", d6 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_fromLMStream.pdf", d7 ?? new byte[0]);
-                    errors.Add(pdf + ": " + e.Message);
+                    errors.Add(pdf + ": " + e.ToString());
                 }
             }
             if (errors.Any())
@@ -910,7 +913,7 @@ namespace PdfLexer.Tests
             }
         }
 
-        //[Fact]
+        [Fact(Skip = "Requires Node")]
         public async Task It_ReWrites_PDF_JS()
         {
             bool copyPages = true;
@@ -1156,7 +1159,7 @@ namespace PdfLexer.Tests
             EnumerateObjects(doc2.Trailer, new HashSet<int>());
         }
 
-        // [Fact]
+        [Fact]
         public void It_Rebuilds_PDF_JS()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -1178,7 +1181,7 @@ namespace PdfLexer.Tests
                     var missing = normal.Item1.Where(x => !x.IsFree && !rebuilt.Item1.Any(y => y.Reference.Equals(x.Reference))).ToList();
                     Assert.True(nm.SequenceEqual(rb));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
 
                 }
@@ -1243,7 +1246,7 @@ namespace PdfLexer.Tests
             // }
         }
 
-        // [Fact]
+        [Fact]
         public async Task It_Handles12()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");

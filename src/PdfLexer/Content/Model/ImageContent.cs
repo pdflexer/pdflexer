@@ -15,7 +15,7 @@ public record class ImageContent<T> : ISinglePartCopy<T> where T : struct, IFloa
     public ContentType Type { get; } = ContentType.Image;
     public required GfxState<T> GraphicsState { get; set; }
     public required PdfStream Stream { get; set; }
-    public List<MarkedContent>? Markings { get; set; }
+
     public bool CompatibilitySection { get; set; }
 
     // TODO inline support

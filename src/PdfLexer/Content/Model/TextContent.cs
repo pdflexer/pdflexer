@@ -1,6 +1,8 @@
 ﻿using PdfLexer.Fonts;
 using PdfLexer.Writing;
 using System.Numerics;
+using System.Text;
+using PdfLexer.Content;
 
 namespace PdfLexer.Content.Model;
 
@@ -18,10 +20,84 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
 {
     public ContentType Type { get; } = ContentType.Text;
     public GfxState<T> GraphicsState { get => Segments[0].GraphicsState; }
-    public List<MarkedContent>? Markings { get => Segments[0].Markings; }
     public bool CompatibilitySection { get => Segments[0].CompatibilitySection; }
     public required List<TextSegment<T>> Segments { get; set; }
     public required GfxMatrix<T> LineMatrix { get; set; }
+
+    public string Text
+    {
+        get
+        {
+            var sb = new StringBuilder();
+            foreach (var seg in Segments)
+            {
+                if (seg.NewLine)
+                {
+                    sb.Append('\n');
+                }
+                foreach (var g in seg.Glyphs)
+                {
+                    if (g.Glyph != null)
+                    {
+                        if (g.Glyph.MultiChar != null)
+                        {
+                            sb.Append(g.Glyph.MultiChar);
+                        }
+                        else
+                        {
+                            sb.Append(g.Glyph.Char);
+                        }
+                    }
+                }
+            }
+            return sb.ToString();
+        }
+    }
+
+    public static TextContent<T> Create(string text, IWritableFont font, T fontSize, PdfPoint<T>? location = null)
+    {
+        var glyphs = new List<GlyphOrShift<T>>();
+        foreach (var g in font.GetGlyphs(text))
+        {
+             if (g.Glyph != null) 
+             {
+                 glyphs.Add(new GlyphOrShift<T>(g.Glyph, T.Zero, g.Bytes));
+             }
+             else
+             {
+                 glyphs.Add(new GlyphOrShift<T>(FPC<T>.Util.FromDouble<T>(g.Shift)));
+             }
+        }
+        
+        var gs = new GfxState<T>
+        {
+             FontSize = fontSize,
+             FontResourceName = new PdfName("F" + Guid.NewGuid().ToString("N").Substring(0, 6)), // Placeholder name?
+             // We need to associate the font object. 
+             // But GfxState holds IReadableFont/IWritableFont?
+             FontObject = font.GetPdfFont(),
+             Text = new TxtState<T>
+             {
+                  TextLineMatrix = location.HasValue ? new GfxMatrix<T>(T.One, T.Zero, T.Zero, T.One, location.Value.X, location.Value.Y) : GfxMatrix<T>.Identity,
+                  TextMatrix = location.HasValue ? new GfxMatrix<T>(T.One, T.Zero, T.Zero, T.One, location.Value.X, location.Value.Y) : GfxMatrix<T>.Identity
+             }
+        };
+        gs.UpdateTRM();
+
+        return new TextContent<T>
+        {
+            LineMatrix = gs.Text.TextLineMatrix,
+            Segments = new List<TextSegment<T>>
+            {
+                new TextSegment<T>
+                {
+                    GraphicsState = gs,
+                    Glyphs = glyphs
+                }
+            }
+        };
+    }
+
 
     public void Write(ContentWriter<T> writer)
     {
@@ -34,7 +110,7 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
             if (i != 0)
             {
                 writer.ReconcileCompatibility(group.CompatibilitySection);
-                writer.ReconcileMC(group.Markings);
+
                 writer.SetGS(group.GraphicsState);
                 if (writer.State != PageState.Text)
                 {
@@ -332,13 +408,13 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
             }
             if (hadInside)
             {
-                inside.Segments.Add(ci);
+                inside!.Segments.Add(ci!);
             }
             if (hadOutside)
             {
-                co.GraphicsState = co.GraphicsState.Clip(rect, 
+                co!.GraphicsState = co!.GraphicsState.Clip(rect, 
                     new PdfRect<T> { LLx = bbx1 - T.One, LLy = bby1 - T.One, URx = bbx1 + T.One, URy = bby1 + T.One });
-                outside.Segments.Add(co);
+                outside!.Segments.Add(co!);
             }
         }
         return (inside?.Segments.Count > 0 ? inside : null, outside?.Segments.Count > 0 ? outside : null);
@@ -411,7 +487,7 @@ public record class TextSegment<T> where T : struct, IFloatingPoint<T> //: ICont
 {
     public ContentType Type { get; } = ContentType.Text;
     public required GfxState<T> GraphicsState { get; set; }
-    public List<MarkedContent>? Markings { get; set; }
+
     public bool CompatibilitySection { get; set; }
     public required List<GlyphOrShift<T>> Glyphs { get; set; }
     public bool NewLine { get; set; }

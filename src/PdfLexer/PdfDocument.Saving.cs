@@ -61,8 +61,8 @@ public sealed partial class PdfDocument
         var trailer = Trailer.CloneShallow();
 
         // remove page tree specific items
-        catalog.Remove("Names");
-        catalog.Remove("StructTreeRoot");
+        catalog.Remove(PdfName.Names);
+        catalog.Remove(PdfName.StructTreeRoot);
 
         var cir = PdfIndirectRef.Create(catalog);
         trailer[PdfName.Root] = cir;
@@ -74,21 +74,47 @@ public sealed partial class PdfDocument
         trailer.Remove(PdfName.Length);
         trailer.Remove(PdfName.Prev);
         trailer.Remove(PdfName.XRefStm);
+
+
+
         List<PdfIndirectRef>? pageRefs = null;
         if (Pages != null)
         {
             var (pagesRef, refs) = BuildPageTree(ctx);
             catalog[PdfName.Pages] = pagesRef;
             pageRefs = refs;
+
+            Dictionary<StructureNode, PdfIndirectRef>? structureMap = null;
+            if (_structure != null)
+            {
+                var pageMap = new Dictionary<PdfPage, PdfIndirectRef>();
+                if (pageRefs != null && Pages.Count == pageRefs.Count)
+                {
+                    for (int i = 0; i < Pages.Count; i++)
+                    {
+                        pageMap[Pages[i]] = pageRefs[i];
+                    }
+                }
+
+                var serializer = new Writing.StructuralSerializer(pageMap);
+                var result = serializer.ConvertToPdf(_structure.GetRoot());
+                catalog[PdfName.StructTreeRoot] = PdfIndirectRef.Create(result.Root);
+                structureMap = result.Map;
+
+                // For Tagged PDF, we also need to set the MarkInfo in Catalog
+                var markInfo = catalog.GetOrCreateValue<PdfDictionary>(PdfName.MarkInfo);
+                markInfo[PdfName.Marked] = PdfBoolean.True;
+            }
+
+            if (Outlines != null)
+            {
+                var builder = new Writing.OutlineBuilder(this);
+                var rootDict = builder.ConvertToPdf(Outlines, structureMap);
+                catalog[PdfName.Outlines] = PdfIndirectRef.Create(rootDict);
+            }
         }
 
-        var ob = new Writing.OutlineBuilder(this);
-        var aggregated = ob.Aggregate();
-        if (aggregated.Count > 0)
-        {
-            var tree = ob.BuildTree(aggregated);
-            catalog[PdfName.Outlines] = ob.ConvertToPdf(tree, pageRefs).GetPdfObject();
-        }
+      
 
         ctx.Complete(trailer);
     }

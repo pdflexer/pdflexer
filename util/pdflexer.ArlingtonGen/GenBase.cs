@@ -59,7 +59,7 @@ internal abstract class GenBase
 
         // temp workaround
         var exp = new Exp(row.SinceVersion);
-        var mv = exp.GetAll().Where(x => x is EValue val &&  decimal.TryParse(val.Text, out _)).Select(x => decimal.Parse((x as EValue).Text)).ToList();
+        var mv = exp.GetAll().Where(x => x is EValue val &&  decimal.TryParse(val.Text, out _)).Select(x => decimal.Parse(((EValue)x).Text)).ToList();
         if (mv.Any())
         {
             return version >= mv.Min();
@@ -300,7 +300,7 @@ if (({{req.GetComplex()}}) && val == null) {
             }
         }
 
-        foreach (var type in types.Where(x => x.Contains("fn:")).GroupBy(x => typemap[GetFnType(x)]))
+        foreach (var type in types.Where(x => x.Contains("fn:")).GroupBy(x => typemap[GetFnType(x) ?? ""]))
         {
             VariableContext.Vars = orig.ToDictionary(x => x.Key, x => x.Value);
             var vals = type.ToList();
@@ -317,7 +317,7 @@ if (({{req.GetComplex()}}) && val == null) {
         return txt;
     }
 
-    private string GetFnType(string type)
+    private string? GetFnType(string type)
     {
         var exp = new Exp(type);
         var nm = exp.Children[0].Children[1] as EValue;
@@ -334,9 +334,9 @@ if (({{req.GetComplex()}}) && val == null) {
             // revisit if functions get more complex
             var exp = new Exp(type);
             var nm = exp.Children[0].Children[1] as EValue;
-            type = nm.Text;
+            type = nm?.Text ?? type;
             var func = exp.Children[0] as EFunBase;
-            func.Children.RemoveAt(1);
+            func?.Children.RemoveAt(1);
             check += $$"""
 if (!({{exp.GetText()}})) 
 {

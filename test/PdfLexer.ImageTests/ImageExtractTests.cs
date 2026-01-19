@@ -328,7 +328,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, name, output, 20);
         }
 
-        // [Fact] img mask, bad png
+        [Fact]
         public void It_Reads_1bit_Gray_Decode()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -384,7 +384,7 @@ namespace PdfLexer.ImageTests
             }
         }
 
-        // [Fact]
+        [Fact]
         public void It_Reads_Images()
         {
             var errors = new List<string>();
@@ -433,7 +433,7 @@ namespace PdfLexer.ImageTests
                                     }
                                     i++;
                                 }
-                                catch (Exception ex)
+                                catch (Exception)
                                 {
                                     // dont fail for now
                                     // throw;

@@ -38,10 +38,10 @@ public sealed partial class PdfDocument : IDisposable
     /// </summary>
     public List<PdfPage> Pages { get; set; }
 
-    private PdfOutlineRoot? _outlines;
+    private BookmarkNode? _outlines;
     private bool _outlinesRead;
 
-    public PdfOutlineRoot? Outlines
+    public BookmarkNode? Outlines
     {
         get
         {
@@ -60,6 +60,20 @@ public sealed partial class PdfDocument : IDisposable
             _outlinesRead = true;
         }
     }
+
+    private StructuralBuilder? _structure;
+    public StructuralBuilder Structure
+    {
+        get
+        {
+            if (_structure == null)
+            {
+                _structure = new StructuralBuilder();
+            }
+            return _structure;
+        }
+        set => _structure = value;
+    }
     /// <summary>
     /// XRef entries of this document. May be internalized at some point.
     /// Will be null on new documents.
@@ -75,13 +89,17 @@ public sealed partial class PdfDocument : IDisposable
         CryptFilter = new CryptFilter(this);
     }
 
+#pragma warning disable CS8618
     internal PdfDocument(int id)
+#pragma warning restore CS8618
     {
         DocumentId = id;
         CryptFilter = new CryptFilter(this);
     }
 
+#pragma warning disable CS8618
     internal PdfDocument(int id, PdfDictionary catalog, PdfDictionary trailer, List<PdfPage> pages)
+#pragma warning restore CS8618
     {
         DocumentId = id;
         Trailer = trailer;

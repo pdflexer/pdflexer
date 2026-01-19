@@ -15,6 +15,7 @@ public enum ContentType
     Paths,
     Image,
     Form,
-    Shading,
+    Shading = 4,
+    MarkedContent = 100
     // MarkedPoint
 }

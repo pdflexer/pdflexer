@@ -76,7 +76,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         {
             foreach (var pdf in paths)
             {
-                using var doc = PdfDocument.OpenMapped(pdf);
+                using var doc = PdfDocument.Open(pdf);
                 Read(doc);
             }
         }

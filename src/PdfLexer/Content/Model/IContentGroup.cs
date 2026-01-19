@@ -17,10 +17,7 @@ public interface IContentGroup<T> where T : struct, IFloatingPoint<T>
     /// Type of content represented by this content group
     /// </summary>
     public ContentType Type { get; }
-    /// <summary>
-    /// Marked content associated with this group
-    /// </summary>
-    public List<MarkedContent>? Markings { get; }
+
     /// <summary>
     /// Denotes if this group is drawn as a compatibility section
     /// </summary>

@@ -41,6 +41,7 @@ internal class GenStdGlyph
             output.Append($"\tinternal class {name}Glyphs {{\n");
             foreach (var g in glyphs)
             {
+                if (g == null) { continue; }
                 if (g.CodePoint.HasValue)
                 {
                     def[(int)g.CodePoint] = g;
@@ -51,7 +52,7 @@ internal class GenStdGlyph
                 output.Append($"Name = \"{g.Name}\", ");
                 output.Append($"Undefined = {g.Undefined.ToString().ToLower()}, ");
                 output.Append($"BBox = new decimal[] {{ {g.BBox[0].ToString()}m, {g.BBox[1].ToString()}m, {g.BBox[2].ToString()}m, {g.BBox[3].ToString()}m }}");
-                if (g.Kernings != null)
+                if (g != null && g.Kernings != null)
                 {
                     output.Append($", Kernings = new Dictionary<char,float> {{ ");
                     foreach (var kvp in g.Kernings)

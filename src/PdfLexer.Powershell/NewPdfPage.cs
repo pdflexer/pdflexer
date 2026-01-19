@@ -77,7 +77,7 @@ public class NewPdfPage : PdfCmdlet
 
 public class PdfTextAction : IPdfWriteAction
 {
-    public string Text { get; set; }
+    public string Text { get; set; } = null!;
     public double Size { get; set; } = 10;
     public string Font { get; set; } = "TimesRoman";
     public double X { get; set; }
