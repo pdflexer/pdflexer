@@ -1,7 +1,5 @@
 using PdfLexer.DOM;
-using PdfLexer.Writing;
 using Xunit;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace PdfLexer.Tests;
