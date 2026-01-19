@@ -37,7 +37,7 @@ internal class OutlineBuilder
 
         // Link root to first/last
         if (rootNode.Children.Count > 0)
-        {
+            {
             rootDict[PdfName.First] = map[rootNode.Children.First()].Ref;
             rootDict[PdfName.Last] = map[rootNode.Children.Last()].Ref;
             
@@ -45,11 +45,13 @@ internal class OutlineBuilder
             // Assuming all open for now
             int totalOpen = 0;
             foreach (var child in rootNode.Children)
-            {
+                {
                 totalOpen += GetOpenCount(child);
             }
             rootDict[PdfName.Count] = new PdfIntNumber(totalOpen);
         }
+        return result;
+    }
 
         // Link items
 
@@ -58,25 +60,25 @@ internal class OutlineBuilder
         LinkSiblings(rootNode.Children, rootRef, map);
 
         foreach (var (node, dict, ir) in items)
-        {
+    {
             // Set properties
             dict[PdfName.Title] = new PdfString(node.Title);
             
             if (node.Destination != null)
-            {
+        {
                 if (node.Destination is PdfDictionary pageDict)
-                {
+            {
                      dict[PdfName.Dest] = new PdfArray 
-                    { 
+                {
                         PdfIndirectRef.Create(pageDict), 
                         PdfName.XYZ, 
                         new PdfNull(), 
                         new PdfNull(), 
                         new PdfNull() 
                     };
-                }
+                    }
                 else if (node.Destination is PdfIndirectRef pageRef)
-                {
+            {
                      dict[PdfName.Dest] = new PdfArray 
                     { 
                         pageRef, 
@@ -85,47 +87,47 @@ internal class OutlineBuilder
                         new PdfNull(), 
                         new PdfNull() 
                     };
-                }
-                else
-                {
-                    dict[PdfName.Dest] = node.Destination;
-                }
             }
-
-            if (node.StructureElement != null && structureMap != null)
+            else
             {
-                if (structureMap.TryGetValue(node.StructureElement, out var seRef))
-                {
-                    dict[PdfName.SE] = seRef;
-                }
+                    dict[PdfName.Dest] = node.Destination;
             }
+        }
+        
+            if (node.StructureElement != null && structureMap != null)
+    {
+                if (structureMap.TryGetValue(node.StructureElement, out var seRef))
+        {
+                    dict[PdfName.SE] = seRef;
+        }
+    }
 
             if (node.Color != null && node.Color.Length == 3)
-            {
+    {
                 dict[PdfName.C] = new PdfArray(node.Color.Select(c => (IPdfObject)new PdfDoubleNumber(c)).ToList());
-            }
+    }
 
             if (node.Style.HasValue)
-            {
+    {
                 dict[PdfName.F] = new PdfIntNumber(node.Style.Value);
             }
 
             // Link children if any
             if (node.Children.Count > 0)
-            {
+        {
                 dict[PdfName.First] = map[node.Children.First()].Ref;
                 dict[PdfName.Last] = map[node.Children.Last()].Ref;
                 LinkSiblings(node.Children, ir, map);
-                
+            
                 // Calculate count
                 int count = 0;
                 foreach (var child in node.Children)
                 {
                     count += GetOpenCount(child);
                 }
-                
+
                 if (!node.IsOpen)
-                {
+                { 
                     count = -count; // Negative count means closed
                 }
                 dict[PdfName.Count] = new PdfIntNumber(count);
@@ -136,16 +138,16 @@ internal class OutlineBuilder
     }
 
     private void LinkSiblings(List<BookmarkNode> siblings, PdfIndirectRef parentRef, Dictionary<BookmarkNode, (PdfDictionary Dict, PdfIndirectRef Ref)> map)
-    {
-        for (int i = 0; i < siblings.Count; i++)
         {
+        for (int i = 0; i < siblings.Count; i++)
+    {
             var node = siblings[i];
             var (dict, ir) = map[node];
-            
+
             dict[PdfName.Parent] = parentRef;
-            
+
             if (i > 0)
-            {
+        {
                 var prev = siblings[i - 1];
                 dict[PdfName.Prev] = map[prev].Ref;
             }
@@ -155,11 +157,14 @@ internal class OutlineBuilder
                 var next = siblings[i + 1];
                 dict[PdfName.Next] = map[next].Ref;
             }
+            }
+            
+            LinkNodes(childNode, dict, ir, map);
+            prevRef = ir;
         }
-    }
 
     private void CollectItems(BookmarkNode parent, List<(BookmarkNode Node, PdfDictionary Dict, PdfIndirectRef Ref)> collected)
-    {
+        {
         foreach (var child in parent.Children)
         {
             var dict = new PdfDictionary();
@@ -173,12 +178,26 @@ internal class OutlineBuilder
     {
         int count = 1; // Self
         if (node.IsOpen)
+    {
+        int count = node.Children.Count;
+        foreach (var child in node.Children)
         {
-            foreach (var child in node.Children)
-            {
-                count += GetOpenCount(child);
-            }
+            count += GetOpenCount(child);
+        }
         }
         return count;
     }
+}
+
+public class AggregatedOutline
+{
+    public required PdfOutline Outline { get; init; }
+    public int PageIndex { get; init; }
+}
+
+public class OutlineNode
+{
+    public string Title { get; set; } = string.Empty;
+    public List<OutlineNode> Children { get; } = new();
+    public AggregatedOutline? Data { get; set; }
 }

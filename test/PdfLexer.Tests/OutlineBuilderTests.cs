@@ -1,4 +1,5 @@
 using PdfLexer.DOM;
+using PdfLexer.Writing;
 using Xunit;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ public class OutlineBuilderTests
                .Back()
                .AddSection("Section 2")
                .AddBookmark("Bookmark 2.1");
-
+        
         var root = builder.GetRoot();
         Assert.Equal(2, root.Children.Count);
         Assert.Equal("Section 1", root.Children[0].Title);
@@ -35,11 +36,11 @@ public class OutlineBuilderTests
                .Back()
                .AddSection("S2")
                .AddBookmark("B2");
-
+        
         var found = builder.FindNode("B2");
         Assert.NotNull(found);
         Assert.Equal("B2", found.Title);
-
+        
         var leaves = builder.EnumerateLeaves().ToList();
         Assert.Equal(2, leaves.Count);
         Assert.Contains(leaves, x => x.Title == "B1");

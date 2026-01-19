@@ -177,6 +177,9 @@ public class ParsingContext : IDisposable
             case "LZW":
             case "LZWDecode":
                 return LZWFilter.Instance;
+            case "DCT":
+            case "DCTDecode":
+                return DCTFilter.Instance;
             case "Crypt":
                 if (doc == null)
                 {

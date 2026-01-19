@@ -45,7 +45,7 @@ internal class OutlineParser
         {
             var node = ParseItem(current);
             parent.Children.Add(node);
-            
+        
             if (current.TryGetValue<PdfDictionary>(PdfName.Next, out var next))
             {
                 current = next;
@@ -76,7 +76,10 @@ internal class OutlineParser
 
             if ((type == PdfName.GoTo || subtype == PdfName.GoTo || s == PdfName.GoTo) && action.TryGetValue(PdfName.D, out var ad))
             {
-                dest = ad.Resolve();
+                if (action.TryGetValue(PdfName.D, out var ad))
+                {
+                    dest = ad.Resolve();
+                }
             }
         }
 
@@ -93,16 +96,16 @@ internal class OutlineParser
                 }
             }
             else
-            {
+                    {
                 node.Destination = dest; // Keep raw destination if resolution fails or it's not a page
             }
-        }
+                }
 
         // Color
         if (item.TryGetValue<PdfArray>(PdfName.C, out var cArr) && cArr.Count == 3)
         {
             node.Color = cArr.Select(x => (double)(PdfDoubleNumber)x).ToArray();
-        }
+            }
 
         // Style
         if (item.TryGetValue<PdfIntNumber>(PdfName.F, out var style))
