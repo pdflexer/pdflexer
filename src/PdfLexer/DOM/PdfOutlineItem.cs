@@ -27,9 +27,21 @@ public class PdfOutlineItem : IEnumerable<PdfOutlineItem>
     public string? Title
     {
         get => _dictionary.Get<PdfString>(PdfName.Title)?.Value;
-        set => _dictionary[PdfName.Title] = new PdfString(value);
+        set
+        {
+            if (value == null)
+            {
+                _dictionary.Remove(PdfName.Title);
+            }
+            else
+            {
+                _dictionary[PdfName.Title] = new PdfString(value);
+            }
+
+        }
     }
-    
+
+
     public PdfOutlineItem? Parent
     {
         get
@@ -77,7 +89,7 @@ public class PdfOutlineItem : IEnumerable<PdfOutlineItem>
             _next = value;
         }
     }
-    
+
     public PdfOutlineItem? First
     {
         get
@@ -115,7 +127,7 @@ public class PdfOutlineItem : IEnumerable<PdfOutlineItem>
         get => _dictionary.Get<PdfIntNumber>(PdfName.Count)?.Value;
         set => _dictionary[PdfName.Count] = new PdfIntNumber(value ?? 0);
     }
-    
+
     public IPdfObject? Dest => _dictionary.Get(PdfName.Dest);
     public IPdfObject? Action => _dictionary.Get(PdfName.A);
 

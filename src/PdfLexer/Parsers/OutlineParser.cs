@@ -101,19 +101,20 @@ internal class OutlineParser
         // Color
         if (item.TryGetValue<PdfArray>(PdfName.C, out var cArr) && cArr.Count == 3)
         {
-            node.Color = cArr.Select(x => (double)(PdfDoubleNumber)x).ToArray();
+            node.Color = cArr.Select(x => (double)(PdfNumber)x).ToArray();
         }
 
         // Style
-        if (item.TryGetValue<PdfIntNumber>(PdfName.F, out var style))
+        if (item.TryGetValue<PdfNumber>(PdfName.F, out var style))
         {
-            node.Style = style.Value;
+            node.Style = (int?)style;
         }
 
         // Count (Open/Closed state)
-        if (item.TryGetValue<PdfIntNumber>(PdfName.Count, out var count))
+        if (item.TryGetValue<PdfNumber>(PdfName.Count, out var count))
         {
-            node.IsOpen = count.Value > 0;
+            var cnt = (int?)count;
+            node.IsOpen = cnt != null && cnt.Value > 0;
         }
         else
         {

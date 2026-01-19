@@ -904,7 +904,7 @@ namespace PdfLexer.Tests
                     File.WriteAllBytes(bp + "_cstreams.pdf", d5 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_fromStream.pdf", d6 ?? new byte[0]);
                     File.WriteAllBytes(bp + "_fromLMStream.pdf", d7 ?? new byte[0]);
-                    errors.Add(pdf + ": " + e.Message);
+                    errors.Add(pdf + ": " + e.ToString());
                 }
             }
             if (errors.Any())
