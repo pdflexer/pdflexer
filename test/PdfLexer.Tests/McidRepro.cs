@@ -20,6 +20,7 @@ public class McidRepro
         using (var writer = new PageWriter<double>(page, PageWriteMode.Append))
         {
             writer.BeginMarkedContent(p1);
+            writer.Font(Base14.TimesRoman, 10);
             writer.Text("Hello");
             writer.EndMarkedContent();
         }
@@ -28,7 +29,9 @@ public class McidRepro
         var p2 = new StructureNode { Type = "P" };
         using (var writer = new PageWriter<double>(page, PageWriteMode.Append))
         {
+            
             writer.BeginMarkedContent(p2);
+            writer.Font(Base14.TimesRoman, 10);
             writer.Text("World");
             writer.EndMarkedContent();
         }

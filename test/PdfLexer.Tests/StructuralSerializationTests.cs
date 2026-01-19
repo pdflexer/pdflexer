@@ -39,7 +39,7 @@ public class StructuralSerializationTests
         var nums = parentTree.Get<PdfArray>(PdfName.Nums);
         Assert.Equal(0, (PdfIntNumber)nums[0]);
         
-        var pageArray = ((PdfIndirectRef)nums[1]).GetObject().GetValue<PdfArray>();
+        var pageArray = nums[1].GetValue<PdfArray>();
         // We need to find the indirect ref for P element again to compare
         // but we can just check it's an array for now or get it from rootElem[PdfName.K]
         var pRef = rootElem[PdfName.K];
