@@ -67,15 +67,15 @@ namespace PdfLexer.Tests
                     switch (val.GetPdfObjType())
                     {
                         case PdfObjectType.ArrayObj:
-                            var arr = val.GetValue<PdfArray>();
+                            var arr = val.GetAs<PdfArray>();
                             foreach (var str in arr)
                             {
-                                var stream = str.GetValue<PdfStream>();
+                                var stream = str.GetAs<PdfStream>();
                                 total += stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
                             }
                             break;
                         case PdfObjectType.StreamObj:
-                            var single = val.GetValue<PdfStream>();
+                            var single = val.GetAs<PdfStream>();
                             total += single.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
                             break;
                         default:
@@ -86,7 +86,7 @@ namespace PdfLexer.Tests
                         case PdfArray arr:
                             foreach (var str in arr)
                             {
-                                var stream = str.GetValue<PdfStream>();
+                                var stream = str.GetAs<PdfStream>();
                                 total += stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
                             }
                             break;
@@ -103,13 +103,13 @@ namespace PdfLexer.Tests
                     {
                         foreach (var str in contentArray)
                         {
-                            var stream = str.GetValue<PdfStream>();
+                            var stream = str.GetAs<PdfStream>();
                             total += stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
                         }
                     }
                     else
                     {
-                        total += content.GetValue<PdfStream>().Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
+                        total += content.GetAs<PdfStream>().Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
                     }
                 }
                 return total;

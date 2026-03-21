@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace PdfLexer;
 
@@ -18,7 +19,7 @@ public interface IPdfObject
     /// <summary>
     /// Signifies if this pdf object has been lazy parsed.
     /// Not needed by library users if access to objects
-    /// is performed through IPdfObject.GetValue<T>()
+    /// is performed through IPdfObject.GetAs<T>()
     /// </summary>
     public bool IsLazy { get; }
     /// <summary>
@@ -58,7 +59,32 @@ public static class PdfObjectExtensions
     /// <param name="item"></param>
     /// <returns></returns>
     /// <exception cref="PdfLexerObjectMismatchException">Excetion if <see cref="item"/> is not of type <see cref="T"/></exception>
-    public static T GetValue<T>(this IPdfObject item) where T : IPdfObject
+    [Obsolete("Use GetAs<T>() for object-level typed access.")]
+    public static T GetValue<T>(this IPdfObject item) where T : IPdfObject => item.GetAs<T>();
+
+    /// <summary>
+    /// Returns the underlying PdfObject type.
+    /// If <see cref="item"/> is an indirect reference
+    /// the direct object is returned.
+    /// </summary>
+    /// <typeparam name="T">Type of PdfObject</typeparam>
+    /// <param name="item"></param>
+    /// <returns></returns>
+    /// <exception cref="PdfLexerObjectMismatchException">Excetion if <see cref="item"/> is not of type <see cref="T"/></exception>
+    [Obsolete("Use GetAsOrNull<T>() for object-level optional typed access.")]
+    public static T? GetValueOrNull<T>(this IPdfObject item) where T : IPdfObject => item.GetAsOrNull<T>();
+
+    /// <summary>
+    /// Resolves the current object if needed and returns it as <typeparamref name="T"/>.
+    /// Use this for object-level typed access after you already have an <see cref="IPdfObject"/>.
+    /// </summary>
+    /// <typeparam name="T">Expected direct PDF object type.</typeparam>
+    /// <param name="item">The current PDF object.</param>
+    /// <returns>The resolved object cast to <typeparamref name="T"/>.</returns>
+    /// <exception cref="PdfLexerObjectMismatchException">
+    /// Thrown when the resolved object is not of type <typeparamref name="T"/>.
+    /// </exception>
+    public static T GetAs<T>(this IPdfObject item) where T : IPdfObject
     {
         item = item.Resolve();
 
@@ -70,15 +96,17 @@ public static class PdfObjectExtensions
     }
 
     /// <summary>
-    /// Returns the underlying PdfObject type.
-    /// If <see cref="item"/> is an indirect reference
-    /// the direct object is returned.
+    /// Resolves the current object if needed and returns it as <typeparamref name="T"/>,
+    /// or <see langword="null"/> when the resolved object is not of that type.
+    /// Use this for optional object-level typed access after you already have an <see cref="IPdfObject"/>.
     /// </summary>
-    /// <typeparam name="T">Type of PdfObject</typeparam>
-    /// <param name="item"></param>
-    /// <returns></returns>
-    /// <exception cref="PdfLexerObjectMismatchException">Excetion if <see cref="item"/> is not of type <see cref="T"/></exception>
-    public static T? GetValueOrNull<T>(this IPdfObject item) where T : IPdfObject
+    /// <typeparam name="T">Expected direct PDF object type.</typeparam>
+    /// <param name="item">The current PDF object.</param>
+    /// <returns>
+    /// The resolved object cast to <typeparamref name="T"/>, or <see langword="null"/>
+    /// if the resolved object is not of that type.
+    /// </returns>
+    public static T? GetAsOrNull<T>(this IPdfObject item) where T : IPdfObject
     {
         item = item.Resolve();
 
@@ -89,18 +117,6 @@ public static class PdfObjectExtensions
         return default(T);
     }
 
-    public static T GetAs<T>(this IPdfObject item) where T : IPdfObject => item.GetValue<T>();
-    public static T? GetAsOrNull<T>(this IPdfObject item) where T : IPdfObject => item.GetValueOrNull<T>();
-
-
-    /// <summary>
-    /// ADVANCED USAGE
-    /// MAY BECOME INTERNAL
-    /// Resolves a lazy or indirect object to the parsed direct object.
-    /// If object is not lazy or indirect, the object is returned.
-    /// </summary>
-    /// <param name="item"></param>
-    /// <returns></returns>
     public static IPdfObject Resolve(this IPdfObject item)
     {
         if (item.IsLazy)

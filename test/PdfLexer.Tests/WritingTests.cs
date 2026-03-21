@@ -14,7 +14,7 @@ namespace PdfLexer.Tests;
 
 public class WritingTests
 {
-    [Fact]
+    [PdfCpuFact]
     public void It_PrePends_Data()
     {
         using var doc = PdfDocument.Create();
@@ -44,7 +44,7 @@ public class WritingTests
         Assert.Empty(SyntaxValidation.Validate(second));
     }
 
-    [Fact]
+    [PdfCpuFact]
     public void It_Writes_Text_Box()
     {
         using var doc = PdfDocument.Create();
@@ -74,7 +74,7 @@ public class WritingTests
         Assert.True(dict["Hello"] > dict["World"]);
     }
 
-    [Fact]
+    [PdfCpuFact]
     public void It_Writes_MultiByte_Text_Box()
     {
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -109,7 +109,7 @@ public class WritingTests
         Assert.True(dict["Hello"] > dict["World"]);
     }
 
-    [Fact]
+    [PdfCpuFact]
     public void It_Writes_Text_Box_Center()
     {
         using var doc = PdfDocument.Create();
@@ -147,7 +147,7 @@ public class WritingTests
     }
 
 
-    [Fact]
+    [PdfCpuFact]
     public void It_Writes_Text_Box_LB()
     {
         using var doc = PdfDocument.Create();
@@ -184,7 +184,7 @@ public class WritingTests
         Assert.True(Math.Abs(y - bb.LLy) < 5);
     }
 
-    [Fact]
+    [PdfCpuFact]
     public void It_Writes_Text_Box_RT()
     {
         using var doc = PdfDocument.Create();
@@ -221,7 +221,7 @@ public class WritingTests
         Assert.True(Math.Abs(y - bb.URy) < 5);
     }
 
-    [Fact]
+    [PdfCpuFact]
     public void It_Handles_Popup_Annots()
     {
         using var doc = PdfDocument.Create();

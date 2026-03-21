@@ -99,7 +99,7 @@ internal static class StructuralRepairs
             {
                 continue;
             }
-            var on = scanner.GetCurrentObject().GetValue<PdfNumber>();
+            var on = scanner.GetCurrentObject().GetAs<PdfNumber>();
             if (on != entry.Reference.ObjectNumber)
             {
                 continue;
@@ -108,7 +108,7 @@ internal static class StructuralRepairs
             {
                 continue;
             }
-            var gen = scanner.GetCurrentObject().GetValue<PdfNumber>();
+            var gen = scanner.GetCurrentObject().GetAs<PdfNumber>();
             if (gen != entry.Reference.Generation)
             {
                 continue;
@@ -145,7 +145,7 @@ internal static class StructuralRepairs
             var ot = scanner.Peek();
             if (ot == PdfTokenType.DictionaryStart)
             {
-                var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+                var dict = scanner.GetCurrentObject().GetAs<PdfDictionary>();
                 // scanner.SkipCurrent();
                 var after = scanner.Peek();
                 if (after == PdfTokenType.StartStream)
@@ -166,7 +166,7 @@ internal static class StructuralRepairs
                     }
                     else
                     {
-                        scanner.Advance(l.GetValue<PdfNumber>());
+                        scanner.Advance(l.GetAs<PdfNumber>());
                         var eos = scanner.Peek();
                         if (eos == PdfTokenType.EndStream)
                         {
@@ -219,12 +219,12 @@ internal static class StructuralRepairs
             {
                 continue;
             }
-            var on = scanner.GetCurrentObject().GetValue<PdfNumber>();
+            var on = scanner.GetCurrentObject().GetAs<PdfNumber>();
             if (scanner.Peek() != PdfTokenType.NumericObj)
             {
                 continue;
             }
-            var gen = scanner.GetCurrentObject().GetValue<PdfNumber>();
+            var gen = scanner.GetCurrentObject().GetAs<PdfNumber>();
             if (scanner.Peek() != PdfTokenType.StartObj)
             {
                 continue;
@@ -331,7 +331,7 @@ internal static class StructuralRepairs
                 continue;
             }
 
-            var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+            var dict = scanner.GetCurrentObject().GetAs<PdfDictionary>();
             // TODO need determine ordering
             foreach (var item in dict)
             {
@@ -355,12 +355,12 @@ internal static class StructuralRepairs
             { if (scanner.GetOffset() - start > maxScan) { return; } }
 
             offset = scanner.GetStartOffset();
-            var n = scanner.GetCurrentObject().GetValue<PdfNumber>(); // N
+            var n = scanner.GetCurrentObject().GetAs<PdfNumber>(); // N
             if (scanner.Peek() != PdfTokenType.NumericObj)
             {
                 continue;
             }
-            var g = scanner.GetCurrentObject().GetValue<PdfNumber>(); // G
+            var g = scanner.GetCurrentObject().GetAs<PdfNumber>(); // G
             if (scanner.Peek() != PdfTokenType.StartObj)
             {
                 continue;
@@ -370,7 +370,7 @@ internal static class StructuralRepairs
             entries.Add(new XRefEntry { Offset = offset + scanStart, Reference = new XRef { ObjectNumber = n, Generation = g }, Source = ctx.CurrentSource! });
             if (scanner.Peek() == PdfTokenType.DictionaryStart)
             {
-                var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+                var dict = scanner.GetCurrentObject().GetAs<PdfDictionary>();
                 var type = dict.GetOptionalValue<PdfName>(PdfName.TypeName);
                 if (type == null)
                 {
@@ -424,8 +424,8 @@ internal static class StructuralRepairs
         var scanner = new Scanner(ctx, data, 0);
         while (c < count)
         {
-            var num = scanner.GetCurrentObject().GetValue<PdfNumber>(); // don't use object numbers currently
-            var os = scanner.GetCurrentObject().GetValue<PdfNumber>();
+            var num = scanner.GetCurrentObject().GetAs<PdfNumber>(); // don't use object numbers currently
+            var os = scanner.GetCurrentObject().GetAs<PdfNumber>();
             entries.Add(new XRefEntry
             {
                 Type = XRefType.Compressed,

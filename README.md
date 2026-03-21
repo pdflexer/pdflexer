@@ -38,6 +38,25 @@ pdflexer differs from existing .net libraries in that it:
 - [ ] Public API cleanup / documentation. Lots of classes / properties exposed that will likely be internalized.
 - [ ] Documentation / examples
 
+### Current Save Behavior
+
+`PdfDocument.SaveTo()` currently rewrites the document with a page-centric focus to make page copying, page re-ordering, and related production workflows simpler.
+
+Important implications of the current save path:
+
+- Existing catalog `/Names` content is not preserved on save
+- Existing `/StructTreeRoot` content is not preserved unless rebuilt through the current structural tree support
+- Encrypted PDFs are rewritten without preserving original encryption settings
+
+This means an open/save cycle may remove or alter features such as:
+
+- named destinations
+- embedded files / attachments referenced through name trees
+- JavaScript and other name-tree-backed catalog features
+- existing tagged PDF structure that is not reconstructed in memory
+
+If these features matter for your workflow, validate the saved output carefully before using pdflexer as a general round-trip rewrite tool.
+
 ### Examples
 
 Some examples are available as polyglot notebooks in the /examples/ folder.

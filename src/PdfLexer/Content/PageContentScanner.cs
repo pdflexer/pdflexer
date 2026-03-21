@@ -81,10 +81,10 @@ public ref struct PageContentScanner
 
         if (contents.GetPdfObjType() == PdfObjectType.ArrayObj)
         {
-            var array = contents.GetValue<PdfArray>();
+            var array = contents.GetAs<PdfArray>();
             foreach (var item in array)
             {
-                var str = item.GetValueOrNull<PdfStream>();
+                var str = item.GetAsOrNull<PdfStream>();
                 if (str == null)
                 {
                     ctx.Error("Page scanning encounted missing or null content reference: " + str?.Type);
@@ -95,7 +95,7 @@ public ref struct PageContentScanner
         }
         else
         {
-            var str = contents.GetValueOrNull<PdfStream>();
+            var str = contents.GetAsOrNull<PdfStream>();
             if (str == null)
             {
                 ctx.Error("Page scanning encounted missing or null content reference: " + str?.Type);

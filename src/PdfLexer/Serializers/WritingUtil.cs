@@ -85,7 +85,7 @@ internal class WritingUtil
                 continue;
             }
             
-            var pi = FindIndex(data, x => x.GetValueOrNull<PdfDictionary>() == popup);
+            var pi = FindIndex(data, x => x.GetAsOrNull<PdfDictionary>() == popup);
             if (pi == -1)
             {
                 annot.Remove(PdfName.Popup);

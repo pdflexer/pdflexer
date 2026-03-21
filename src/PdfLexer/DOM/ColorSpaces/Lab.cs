@@ -133,7 +133,7 @@ internal class Lab : IColorSpace
         {
             throw new PdfLexerException("No whitepoint entry for Lab colorspace");
         }
-        var wps = wp.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
+        var wps = wp.Select(x => x.GetAsOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
         if (wps.Count != 3)
         {
             throw new PdfLexerException($"Invalid WhitePoint entry for Lab:" + wp.ToString());
@@ -148,7 +148,7 @@ internal class Lab : IColorSpace
         var bp = dict.Get<PdfArray>("BlackPoint");
         if (bp != null)
         {
-            var bps = bp.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
+            var bps = bp.Select(x => x.GetAsOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
             if (wps.Count == 3)
             {
                 (xb, yb, zb) = (bps[0], bps[1], bps[2]);
@@ -163,7 +163,7 @@ internal class Lab : IColorSpace
         var range = dict.Get<PdfArray>("Range");
         if (range != null)
         {
-            var rng = range.Select(x => x.GetValueOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
+            var rng = range.Select(x => x.GetAsOrNull<PdfNumber>()).Where(x => x != null).Select(x => (float)x!).ToList();
             if (rng.Count == 4 && rng[0] < rng[1] && rng[2] < rng[3])
             {
                 amin = rng[0];

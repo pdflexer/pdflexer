@@ -9,7 +9,7 @@ namespace PdfLexer.Tests;
 
 public class FontLoadTests
 {
-    [Fact]
+    [PdfCpuFact]
     public void It_Loads_TrueType()
     {
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -34,7 +34,7 @@ public class FontLoadTests
         Assert.Contains("Hello World", pg.GetTextVisually());
     }
 
-    [Fact]
+    [PdfCpuFact]
     public void It_Loads_TrueType_Type0()
     {
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -58,7 +58,7 @@ public class FontLoadTests
         Assert.Contains("Hello World Φ", pg.GetTextVisually());
     }
 
-    [Fact]
+    [PdfCpuFact]
     public void It_Uses_Both_Types()
     {
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");

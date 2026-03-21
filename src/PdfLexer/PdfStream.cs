@@ -259,7 +259,7 @@ public abstract class PdfStreamContents
         var parms = DecodeParams?.Resolve();
         if (obj.Type == PdfObjectType.ArrayObj)
         {
-            var arr = obj.GetValue<PdfArray>();
+            var arr = obj.GetAs<PdfArray>();
 
             // decrypt only if no crypt filter
             if (!arr.Any(x => x.GetAsOrNull<PdfName>() == "Crypt"))
@@ -271,19 +271,19 @@ public abstract class PdfStreamContents
                 }
             }
 
-            var parmArray = parms?.GetValue<PdfArray>();
+            var parmArray = parms?.GetAs<PdfArray>();
             for (var i = 0; i < arr.Count; i++)
             {
-                var filter = arr[i].GetValue<PdfName>();
+                var filter = arr[i].GetAs<PdfName>();
                 var dict = parmArray != null && parmArray.Count > i ? parmArray[i] : null;
                 source = DecodeSingle(filter, source,
-                    dict?.Type == PdfObjectType.NullObj ? null : dict?.GetValue<PdfDictionary>());
+                    dict?.Type == PdfObjectType.NullObj ? null : dict?.GetAs<PdfDictionary>());
             }
             return source;
         }
         else
         {
-            var filter = obj.GetValue<PdfName>();
+            var filter = obj.GetAs<PdfName>();
             if (filter != "Crypt" && (Source?.IsEncrypted ?? false))
             {
                 var es = (PdfExistingStreamContents)this;
@@ -295,13 +295,13 @@ public abstract class PdfStreamContents
             switch (DecodeParams?.Type)
             {
                 case PdfObjectType.DictionaryObj:
-                    currentParms = DecodeParams.GetValue<PdfDictionary>();
+                    currentParms = DecodeParams.GetAs<PdfDictionary>();
                     break;
                 case PdfObjectType.ArrayObj:
-                    var arr = DecodeParams.GetValue<PdfArray>();
+                    var arr = DecodeParams.GetAs<PdfArray>();
                     if (arr.Resolve().Type == PdfObjectType.DictionaryObj)
                     {
-                        currentParms = arr.GetValue<PdfDictionary>();
+                        currentParms = arr.GetAs<PdfDictionary>();
                     }
                     break;
             }
