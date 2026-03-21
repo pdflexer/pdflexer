@@ -1319,7 +1319,7 @@ namespace PdfLexer.Tests
             var pdf = Path.Combine(tp, "pdfs", "pdfjs", "issue8823.pdf");
 
             var p = 0;
-            for (var i =0;i<10;i++)
+            for (var i = 0; i < 10; i++)
             {
                 using var doc = PdfDocument.Open(pdf);
                 p += doc.Pages.Count;
@@ -1328,5 +1328,92 @@ namespace PdfLexer.Tests
             Assert.Equal(10, p);
         }
 
+        [Fact]
+        public void Save_Removes_StructTreeRoot_WhenNotRebuilt()
+        {
+            using var doc = PdfDocument.Create();
+            doc.AddPage();
+            doc.Catalog[PdfName.StructTreeRoot] = new PdfDictionary().Indirect();
+
+            var saved = doc.Save();
+            using var doc2 = PdfDocument.Open(saved);
+            Assert.False(doc2.Catalog.ContainsKey(PdfName.StructTreeRoot));
+        }
+
+        [Fact]
+        public void Save_Rebuilds_PageTree_AfterInsertAndDelete()
+        {
+            using var doc = PdfDocument.Create();
+            doc.AddPage();
+            doc.AddPage();
+            doc.AddPage();
+
+            doc.Pages.RemoveAt(1);
+            doc.Pages.Insert(0, new PdfPage(DOM.PageSize.A4));
+
+            var saved = doc.Save();
+            using var doc2 = PdfDocument.Open(saved);
+            Assert.Equal(3, doc2.Pages.Count);
+
+            var pagesDict = doc2.Catalog.GetRequiredValue<PdfDictionary>(PdfName.Pages).Resolve().GetAs<PdfDictionary>();
+            Assert.Equal(3, (int)pagesDict.GetRequiredValue<PdfNumber>(PdfName.Count));
+            var kids = pagesDict.GetRequiredValue<PdfArray>(PdfName.Kids);
+            Assert.Equal(3, kids.Count);
+        }
+
+        [Fact]
+        public void EncryptedStream_Copy_ThrowsExpectedNotSupportedException()
+        {
+            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
+            var pdfRoot = Path.Combine(tp, "pdfs", "pdfrs");
+            var pdf = Path.Combine(pdfRoot, "passwords_aes_256_hardened.pdf");
+            using var doc = PdfDocument.Open(File.ReadAllBytes(pdf), new DocumentOptions
+            {
+                OwnerPass = "ownerpassword",
+                UserPass = "userpassword"
+            });
+
+            var stream = Assert.Single(doc.Pages[0].Contents);
+            using var dest = new MemoryStream();
+            Assert.Throws<NotSupportedException>(() => stream.Contents.CopyEncodedData(dest));
+        }
+
+        [Fact]
+        public void PdfPage_CropAndBleedAccess_DocumentsMaterializationBehavior()
+        {
+            using var doc = PdfDocument.Create();
+            var page = doc.AddPage();
+            page.MediaBox = new PdfArray { 0, 0, 612, 792 };
+
+            Assert.False(page.NativeObject.ContainsKey(PdfName.CropBox));
+
+            var crop = page.CropBox;
+            Assert.True(page.NativeObject.ContainsKey(PdfName.CropBox));
+            Assert.Equal(page.MediaBox.LLx, crop.LLx);
+
+            Assert.False(page.NativeObject.ContainsKey(PdfName.BleedBox));
+            _ = page.BleedBox;
+            Assert.True(page.NativeObject.ContainsKey(PdfName.BleedBox));
+        }
+
+        [Fact]
+        public async Task PdfDocument_Context_ConcurrentReads_RespectCurrentScope()
+        {
+            var t1 = Task.Run(() =>
+            {
+                using var ctx = new ParsingContext(new ParsingOptions { MaxErrorRetention = 10 });
+                System.Threading.Thread.Sleep(50);
+                Assert.Equal(10, ParsingContext.Current.Options.MaxErrorRetention);
+            });
+
+            var t2 = Task.Run(() =>
+            {
+                using var ctx = new ParsingContext(new ParsingOptions { MaxErrorRetention = 20 });
+                System.Threading.Thread.Sleep(50);
+                Assert.Equal(20, ParsingContext.Current.Options.MaxErrorRetention);
+            });
+
+            await Task.WhenAll(t1, t2);
+        }
     }
 }

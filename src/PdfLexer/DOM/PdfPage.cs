@@ -161,6 +161,12 @@ public sealed class PdfPage
     public List<IContentGroup<double>> GetContentModel(bool flattenForms = false) => GetContentModel<double>(flattenForms);
     public List<IContentGroup<T>> GetContentModel<T>(bool flattenForms = false) where T : struct, IFloatingPoint<T>
     {
+        return GetContentNodes<T>(flattenForms).Cast<IContentGroup<T>>().ToList();
+    }
+
+    public List<IContentNode<double>> GetContentNodes(bool flattenForms = false) => GetContentNodes<double>(flattenForms);
+    public List<IContentNode<T>> GetContentNodes<T>(bool flattenForms = false) where T : struct, IFloatingPoint<T>
+    {
         var parser = new ContentModelParser<T>(ParsingContext.Current, this.NativeObject, flattenForms);
         return parser.Parse();
     }

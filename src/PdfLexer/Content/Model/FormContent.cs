@@ -1,4 +1,4 @@
-﻿using PdfLexer.DOM;
+using PdfLexer.DOM;
 using PdfLexer.Writing;
 using System.Numerics;
 
@@ -28,7 +28,7 @@ public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
         writer.Form(Stream);
     }
 
-    public List<IContentGroup<T>> Parse()
+    public List<IContentNode<T>> Parse()
     {
         var parser = new ContentModelParser<T>(ParsingContext.Current, ParentPage ?? new PdfDictionary(), Stream, GraphicsState);
         return parser.Parse();
@@ -57,14 +57,14 @@ public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
     // without fully processing it
 
 
-    IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect)
+    IContentNode<T>? IContentItem<T>.CopyArea(PdfRect<T> rect)
     {
-        throw new NotImplementedException("Area copying not supported for forms. Complete action on individual content items inside form.");
+        throw new NotSupportedException("Area copying not supported for forms. Complete action on individual content items inside form.");
     }
 
-    (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect)
+    (IContentNode<T>? Inside, IContentNode<T>? Outside) IContentItem<T>.Split(PdfRect<T> rect)
     {
-        throw new NotImplementedException("Area splitting not supported for forms. Complete action on individual content items inside form.");
+        throw new NotSupportedException("Area splitting not supported for forms. Complete action on individual content items inside form.");
     }
 
     public void Transform(GfxMatrix<T> transformation)
@@ -92,11 +92,11 @@ public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
 
     public void ClipExcept(PdfRect<T> rect)
     {
-        throw new NotImplementedException("ClipExcept not supported for forms. Complete action on individual content items inside form.");
+        throw new NotSupportedException("ClipExcept not supported for forms. Complete action on individual content items inside form.");
     }
 
     public void ClipFrom(GfxState<T> other)
     {
-        throw new NotImplementedException("ClipFrom not supported for forms. Complete action on individual content items inside form.");
+        throw new NotSupportedException("ClipFrom not supported for forms. Complete action on individual content items inside form.");
     }
 }

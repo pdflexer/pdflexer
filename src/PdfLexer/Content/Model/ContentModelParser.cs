@@ -1,4 +1,4 @@
-﻿using PdfLexer.Fonts;
+using PdfLexer.Fonts;
 using System.Numerics;
 
 namespace PdfLexer.Content.Model;
@@ -49,7 +49,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
 
     }
 
-    public List<IContentGroup<T>> Parse(PdfDictionary? catalog=null)
+    public List<IContentNode<T>> Parse(PdfDictionary? catalog=null)
     {
         PdfArray? ocgdOff = null;
         PdfDictionary? ocgd = null;
@@ -61,10 +61,10 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
             // grabbing defaults
         }
 
-        var content = new List<IContentGroup<T>> { };
+        var content = new List<IContentNode<T>> { };
         var groupStack = new Stack<MarkedContentGroup<T>>();
 
-        void AddContent(IContentGroup<T> item)
+        void AddContent(IContentNode<T> item)
         {
             if (groupStack.Count > 0)
             {
@@ -121,7 +121,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         if (Scanner.TryGetCurrentOperation<T>(out var bmc))
                         {
                             var op = (BMC_Op<T>)bmc;
-                            var group = new MarkedContentGroup<T>(new MarkedContent(op.tag)) { GraphicsState =  GraphicsState };
+                            var group = new MarkedContentGroup<T>(new MarkedContent(op.tag)) { GraphicsState = GraphicsState };
                             AddContent(group);
                             groupStack.Push(group);
                         }

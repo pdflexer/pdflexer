@@ -1,4 +1,4 @@
-﻿using PdfLexer.Content;
+using PdfLexer.Content;
 using PdfLexer.Content.Model;
 using System;
 using System.Collections.Generic;
@@ -22,10 +22,19 @@ public static class Extensions
 
     public static List<IContentGroup<T>> Shift<T>(this List<IContentGroup<T>> content, T dx, T dy) where T : struct, IFloatingPoint<T>
     {
+        Shift(content.Cast<IContentNode<T>>().ToList(), dx, dy);
+        return content;
+    }
+
+    public static List<IContentNode<T>> Shift<T>(this List<IContentNode<T>> content, T dx, T dy) where T : struct, IFloatingPoint<T>
+    {
         var mtx = GfxMatrix<T>.Identity with { E = dx, F = dy };
-        foreach (var item in content)
+        foreach (var item in content.Flatten())
         {
-            item.TransformInitial(mtx);
+            if (item is IContentItem<T> leaf)
+            {
+                leaf.TransformInitial(mtx);
+            }
         }
         return content;
     }

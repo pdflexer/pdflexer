@@ -10,7 +10,7 @@ namespace PdfLexer.Content.Model;
 /// Inlines images are currently always converted to XObj images.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public record class ImageContent<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
+public record class ImageContent<T> : IContentGroup<T>, ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Image;
     public required GfxState<T> GraphicsState { get; set; }
@@ -48,9 +48,9 @@ public record class ImageContent<T> : ISinglePartCopy<T> where T : struct, IFloa
 
     public void TransformInitial(GfxMatrix<T> transformation) => ((ISinglePartCopy<T>)this).TransformInitialImpl(transformation);
 
-    IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
+    IContentNode<T>? IContentItem<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
 
-    (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
+    (IContentNode<T>? Inside, IContentNode<T>? Outside) IContentItem<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
 
     public void ClipExcept(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).ClipExceptImpl(rect);
 

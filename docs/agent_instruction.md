@@ -1,142 +1,216 @@
 # PdfLexer AI Usage Guide
 
-**Summary**: PdfLexer is a high-performance .NET PDF library balancing low-level DOM access with high-level helpers. It supports lazy parsing, efficient low-allocation operations, and PDF 2.0 features.
+**Summary**: PdfLexer is a high-performance .NET PDF library with two complementary access layers:
 
-## 1. Setup & NuGets
-*   **PdfLexer**: Core library.
-*   **PdfLexer.CMaps**: Required for accurate text extraction. Call `PdfLexer.CMaps.CMaps.AddKnownPdfCMaps()` at startup.
-*   **PdfLexer.ImageSharpExts**: Extensions for converting `XObjImage` to `ImageSharp` images.
+- a high-level wrapper layer built around `PdfDocument` and `PdfPage`
+- a low-level native PDF object layer built around `PdfDictionary`, `PdfArray`, `IPdfObject`, and `PdfIndirectRef`
 
-## 2. Opening & Creating
-**Lazy Parsing**: Default behavior. Parses structure only when accessed.
-**Creation**:
+Preferred guidance:
+
+- use wrappers for common tasks
+- use `NativeObject` as the raw escape hatch
+
+## 1. Setup and NuGets
+
+- `PdfLexer`: core library
+- `PdfLexer.CMaps`: recommended for accurate text extraction
+- `PdfLexer.ImageSharpExts`: ImageSharp conversions for extracted PDF images
+
+```csharp
+PdfLexer.CMaps.CMaps.AddKnownPdfCMaps(); // once at startup if doing text extraction
+```
+
+## 2. Opening and Creating
+
 ```csharp
 using PdfLexer;
 
-// Create new
-using var doc = PdfDocument.Create();
-
-// Open (File path uses MemoryMappedFile - recommended)
-using var existing = PdfDocument.Open("path.pdf");
-// Open (Stream / Byte[])
-using var streamDoc = PdfDocument.Open(stream);
-
-// Configuration
-var opts = new ParsingOptions { 
-    ThrowOnErrors = true, 
-    Eagerness = Eagerness.FullEager // Parse everything upfront
-};
-using var reliableDoc = PdfDocument.Open("path.pdf", new DocumentOptions { UserPass = "pass" });
+using var doc = PdfDocument.Open("path.pdf");
+using var created = PdfDocument.Create();
+using var protectedDoc = PdfDocument.Open("protected.pdf", new DocumentOptions
+{
+    UserPass = "pass"
+});
 ```
 
-## 3. DOM & Objects
-The PDF DOM is exposed as `IPdfObject`.
-*   **Key Types**: `PdfDictionary`, `PdfArray`, `PdfName`, `PdfString`, `PdfStream`, `PdfIndirectRef`, `PdfNumber` (`PdfIntNumber`, `PdfDoubleNumber`).
-*   **Resolving**: Objects fetched from dicts/arrays might be `PdfIndirectRef`. usage of `.Resolve()` is critical.
-    *   `obj.Resolve()`: Returns the direct object.
-    *   `dict.GetRequiredValue<T>(key)`: Auto-resolves.
-    *   `dict.Get<T>(key)`: Auto-resolves, returns null if missing/wrong type.
+## 3. Preferred Access Style
+
+For common operations, start with wrappers:
 
 ```csharp
 var page = doc.Pages[0];
-// Low-level DOM access
-var resources = page.NativeObject.Get<PdfDictionary>(PdfName.Resources);
-// Traverse
-if (resources.TryGetValue(PdfName.Font, out var fontsObj)) {
-    var fonts = fontsObj.Resolve() as PdfDictionary;
+var mediaBox = page.MediaBox;
+var contents = page.Contents.ToList();
+```
+
+For unsupported or low-level features, drop down to the raw PDF dictionary:
+
+```csharp
+var pageDict = page.NativeObject;
+var resources = pageDict.Get<PdfDictionary>(PdfName.Resources);
+var rawContents = pageDict.GetRequiredValue(PdfName.Contents);
+```
+
+## 4. Raw DOM and Object Traversal
+
+The main low-level types are:
+
+- `PdfDictionary`
+- `PdfArray`
+- `PdfName`
+- `PdfString`
+- `PdfStream`
+- `PdfIndirectRef`
+- `PdfNumber`
+
+Typed dictionary access auto-resolves indirect references:
+
+```csharp
+var pageDict = page.NativeObject;
+
+var resources = pageDict.Get<PdfDictionary>(PdfName.Resources);
+var mediaBox = pageDict.GetRequiredValue<PdfArray>(PdfName.MediaBox);
+```
+
+Other available low-level helpers:
+
+- `pageDict.TryGetValue(PdfName.Resources, out var rawValue)` for optional raw access
+- `pageDict.TryGetValue<PdfDictionary>(PdfName.Resources, out var typedValue, errorOnMismatch: false)` for optional typed access
+
+`Get*`/`GetRequiredValue*` remain the preferred accessors for most examples. Note that `TryGetValue<T>` defaults `errorOnMismatch` to `true`, so it can throw if the key exists but resolves to a different type. Use `errorOnMismatch: false` if you want it to simply return `false` on mismatch.
+
+Once you already have an `IPdfObject`, prefer `GetAs<T>()` and `GetAsOrNull<T>()` for object-level typed access rather than the older `GetValue<T>()` aliases.
+
+When you do not know the underlying type, use raw access and resolve explicitly:
+
+```csharp
+var obj = page.NativeObject.GetRequiredValue(PdfName.Contents).Resolve();
+
+if (obj is PdfArray arr)
+{
+    foreach (var item in arr)
+    {
+        var stream = item.GetAs<PdfStream>();
+    }
 }
 ```
 
-## 4. Page Operations
-**Access**: `doc.Pages` is a `List<PdfPage>`.
-**Merge/Split**: Efficiently copy pages between documents.
+## 5. Page Operations
+
+`doc.Pages` is a `List<PdfPage>`.
+
 ```csharp
 using var src = PdfDocument.Open("a.pdf");
 using var dest = PdfDocument.Create();
-dest.Pages.AddRange(src.Pages); // Zero-copy, lazy merge
+dest.Pages.AddRange(src.Pages);
 ```
-**Page Properties**:
-*   `page.MediaBox`: `PdfRectangle` (x, y, w, h).
-*   `page.Rotate`: Int (0, 90, 180, 270).
-*   `page.Resources`: `PdfDictionary`.
 
-## 5. Writing Content (`PageWriter`)
-Use `PageWriter<T>` (T: `float` or `double`).
+Useful `PdfPage` members:
+
+- `page.MediaBox`
+- `page.Resources`
+- `page.Contents`
+- `page.GetWriter()`
+- `page.GetTextScanner()`
+- `page.GetWordScanner()`
+- `page.GetContentModel<T>()`
+
+## 6. Writing Content
+
+Use `page.GetWriter()` for page content generation or modification.
+
 ```csharp
 using PdfLexer.Writing;
 
-using var writer = new PageWriter<double>(page); // Auto-updates content on Dispose
+var page = doc.AddPage();
 
-// Graphics State
-writer.Save()      // q
-      .Restore();  // Q
-
-// Drawing
-writer.SetStrokeColor(1, 0, 0) // RGB Red
-      .SetLineWidth(2)
-      .DrawRect(10, 10, 100, 50)
-      .Stroke();
-
-// Text
-writer.Text("Simple text", 50, 500);
-
-// Images
-// using PdfLexer.ImageSharpExts;
-// var xObj = XObjImage.FromImageSharp(doc, imageSharpImage);
-// writer.Image(xObj, x, y, w, h);
+using var writer = page.GetWriter();
+writer
+    .SetStrokingRGB(255, 0, 0)
+    .Rect(10, 10, 100, 50)
+    .Stroke()
+    .BeginText()
+    .Font(Base14.Helvetica, 12)
+    .TextMove(50, 500)
+    .Text("Simple text")
+    .EndText();
 ```
 
-## 6. Text Extraction
-**Requirement**: Load CMaps first.
-**Classes**: `TextScanner` (chars), `SimpleWordScanner` (words).
-```csharp
-PdfLexer.CMaps.CMaps.AddKnownPdfCMaps(); // Once per app domain
+## 7. Text Extraction
 
+Use the page scanning helpers:
+
+```csharp
+PdfLexer.CMaps.CMaps.AddKnownPdfCMaps();
+
+using var doc = PdfDocument.Open("input.pdf");
 var page = doc.Pages[0];
+
 var scanner = page.GetWordScanner();
-while (scanner.Advance()) {
+while (scanner.Advance())
+{
     var word = scanner.CurrentWord;
-    var bbox = scanner.GetWordBoundingBox(); // (llx, lly, urx, ury)
+    var bbox = scanner.GetWordBoundingBox();
 }
 ```
 
-## 7. Structure & Accessibility (`StructuralBuilder`)
-Create Tagged PDFs (PDF 2.0).
+## 8. Structure and Tagged PDF Writing
+
 ```csharp
 using PdfLexer.DOM;
+
+var page = doc.AddPage();
+using var writer = page.GetWriter();
 
 var builder = new StructuralBuilder();
 builder.AddSection("Main")
        .AddParagraph("Intro")
-           .WriteContent(writer, w => w.Text("Hello")) // Links content to tag
-       .Back();
+       .WriteContent(writer, w =>
+       {
+           w.BeginText()
+            .Font(Base14.Helvetica, 12)
+            .TextMove(50, 700)
+            .Text("Hello")
+            .EndText();
+       });
+
 doc.Structure = builder;
 ```
 
-## 8. Images Extraction
-Use `ImageScanner`.
+## 9. Image Extraction
+
 ```csharp
+using var doc = PdfDocument.Open("input.pdf");
+var page = doc.Pages[0];
+
 var scanner = new ImageScanner(doc.Context, page);
-while (scanner.Advance()) {
-    if (scanner.TryGetImage(out var pdfImg)) {
-        // Convert to ImageSharp (requires PdfLexer.ImageSharpExts)
+while (scanner.Advance())
+{
+    if (scanner.TryGetImage(out var pdfImg))
+    {
+        // Requires PdfLexer.ImageSharpExts
         using var img = pdfImg.GetImageSharp(doc.Context);
     }
 }
 ```
 
-## 9. Advanced / Content Modification
-Parse and modify content streams using `ContentModel`.
+## 10. Advanced Content Access
+
+For advanced editing or inspection, the content model is the higher-level API over raw content operators:
+
 ```csharp
-// Load content model
 var model = page.GetContentModel<double>();
-// Modify operations (e.g. remove text)
-model.RemoveAll(x => x is PdfLexer.Content.Model.TextOp);
-// Save back
-page.SetContentModel(model);
+
+foreach (var item in model)
+{
+    Console.WriteLine(item.Type);
+}
 ```
 
+If you need exact PDF content stream structure, use `PageContentScanner` or raw page dictionaries instead.
+
 ## Tips
-*   **Dispose**: `PdfDocument` holds file locks (if mapped). Dispose it.
-*   **Cloning**: Use `obj.CloneShallow()` when sharing mutable objects (like Dicts) across pages to avoid unintended side effects.
-*   **PdfName**: `PdfName.Create("Key")` caches names.
+
+- Dispose `PdfDocument` promptly, especially when opening by file path.
+- Use wrappers first; drop to `NativeObject` only when needed.
+- Use `CloneShallow()` before editing shared dictionaries/arrays.

@@ -8,11 +8,21 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
 {
     public ContentWriter<T> AddContent(IContentGroup<T> group, PdfDocument? document = null)
     {
-        ContentModelWriter<T>.WriteContent(this, new List<IContentGroup<T>> { group }, document?.Catalog);
-        return this;
+        return AddContent((IContentNode<T>)group, document);
     }
 
     public ContentWriter<T> AddContent(List<IContentGroup<T>> groups, PdfDocument? document = null)
+    {
+        return AddContent(groups.Cast<IContentNode<T>>().ToList(), document);
+    }
+
+    public ContentWriter<T> AddContent(IContentNode<T> group, PdfDocument? document = null)
+    {
+        ContentModelWriter<T>.WriteContent(this, new List<IContentNode<T>> { group }, document?.Catalog);
+        return this;
+    }
+
+    public ContentWriter<T> AddContent(List<IContentNode<T>> groups, PdfDocument? document = null)
     {
         ContentModelWriter<T>.WriteContent(this, groups, document?.Catalog);
         return this;

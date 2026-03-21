@@ -62,4 +62,30 @@ public class TaggedPdfTests
         Assert.Equal(0, (PdfIntNumber)doc2.Pages[0].NativeObject[PdfName.StructParents]);
         Assert.Equal(1, (PdfIntNumber)doc2.Pages[1].NativeObject[PdfName.StructParents]);
     }
+
+    [Fact]
+    public void TaggedPdf_Save_RoundTripsStructureWhenBuilderPresent()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        var root = doc.Structure;
+        var p = root.AddParagraph("P1");
+        
+        using (var writer = page.GetWriter())
+        {
+            writer.BeginMarkedContent(p.GetNode());
+            writer.Font(Base14.Helvetica, 12).TextMove(10, 700).Text("P1 content");
+            writer.EndMarkedContent();
+        }
+        
+        var saved = doc.Save();
+        using var doc2 = PdfDocument.Open(saved);
+        
+        Assert.True(doc2.Catalog.ContainsKey(PdfName.StructTreeRoot));
+        var structRoot = doc2.Catalog.Get<PdfDictionary>(PdfName.StructTreeRoot);
+        Assert.NotNull(structRoot);
+
+        Assert.True(structRoot.ContainsKey(PdfName.K));
+        Assert.True(structRoot.ContainsKey(PdfName.ParentTree));
+    }
 }

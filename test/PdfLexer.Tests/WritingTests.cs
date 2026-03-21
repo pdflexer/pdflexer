@@ -267,4 +267,5 @@ public class WritingTests
         var pref = a1[PdfName.Popup].Resolve();
         Assert.True(Object.ReferenceEquals(a2, pref));
     }
+
 }

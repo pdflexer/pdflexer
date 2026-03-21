@@ -10,7 +10,7 @@ namespace PdfLexer.Content.Model;
 /// path drawing operation.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
+public class PathSequence<T> : IContentGroup<T>, ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Paths;
 
@@ -93,9 +93,9 @@ public class PathSequence<T> : ISinglePartCopy<T> where T : struct, IFloatingPoi
 
     public void ClipExcept(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).ClipExceptImpl(rect);
 
-    IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
+    IContentNode<T>? IContentItem<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
 
-    (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
+    (IContentNode<T>? Inside, IContentNode<T>? Outside) IContentItem<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
 
     public void ClipFrom(GfxState<T> other) => ((ISinglePartCopy<T>)this).ClipFromImpl(other);
 }
