@@ -131,8 +131,8 @@ public static class ImageSharpExts
         List<float>? colourMask = null;
         if (!isMasked && mask != null && mask.Type == PdfObjectType.ArrayObj)
         {
-            var arr = mask.GetValue<PdfArray>();
-            colourMask = arr.Select(x => (float)x.GetValue<PdfNumber>()).ToList();
+            var arr = mask.GetAs<PdfArray>();
+            colourMask = arr.Select(x => (float)x.GetAs<PdfNumber>()).ToList();
         }
 
         List<float>? decode = null;

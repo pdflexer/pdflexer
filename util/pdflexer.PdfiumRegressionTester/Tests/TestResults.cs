@@ -270,7 +270,7 @@ internal class TestRunner
             case PdfArray arr:
                 foreach (var item in arr)
                 {
-                    var str = item.GetValueOrNull<PdfStream>();
+                    var str = item.GetAsOrNull<PdfStream>();
                     if (str != null)
                     {
                         using var wo = str.Contents.GetDecodedStream();

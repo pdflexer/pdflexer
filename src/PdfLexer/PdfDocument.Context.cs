@@ -88,13 +88,13 @@ public sealed partial class PdfDocument
                 {
                     return false;
                 }
-                var dict = x.GetValue<PdfDictionary>();
+                var dict = x.GetAs<PdfDictionary>();
                 if (dict.GetOptionalValue<PdfName>(PdfName.TypeName)?.Value == PdfName.Catalog.Value)
                 {
                     return true;
                 }
                 return false;
-            })?.GetValue<PdfDictionary>();
+            })?.GetAs<PdfDictionary>();
             if (matched != null && cat == null)
             {
                 cat = matched;

@@ -28,7 +28,7 @@ internal class ColorSpace
                 }
             case PdfArray arr:
                 if (arr.Count == 0) { throw new PdfLexerException($"Array colorspace had no entries."); }
-                var mode = arr[0].GetValue<PdfName>();
+                var mode = arr[0].GetAs<PdfName>();
                 switch (mode.Value)
                 {
                     case "DeviceGray":
@@ -40,13 +40,13 @@ internal class ColorSpace
                         return DeviceCMYK.Instance;
                     case "CalGray":
                         if (arr.Count < 2) { throw new PdfLexerException($"CalGray colorspace had no dictionary."); }
-                        return CalGray.FromObject(arr[1].GetValue<PdfDictionary>());
+                        return CalGray.FromObject(arr[1].GetAs<PdfDictionary>());
                     case "CalRGB":
                         if (arr.Count < 2) { throw new PdfLexerException($"CalRGB colorspace had no dictionary."); }
-                        return CalRGB.FromObject(arr[1].GetValue<PdfDictionary>());
+                        return CalRGB.FromObject(arr[1].GetAs<PdfDictionary>());
                     case "Lab":
                         if (arr.Count < 2) { throw new PdfLexerException($"Lab colorspace had no dictionary."); }
-                        return Lab.FromObject(arr[1].GetValue<PdfDictionary>());
+                        return Lab.FromObject(arr[1].GetAs<PdfDictionary>());
                     case "ICCBased":
                     case "Pattern":
                     case "Separation":

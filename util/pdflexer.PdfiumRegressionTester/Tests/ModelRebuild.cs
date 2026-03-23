@@ -5,6 +5,7 @@ using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.Serializers;
 using PdfLexer.Writing;
+using System.Xml.Linq;
 
 namespace pdflexer.PdfiumRegressionTester.Tests;
 
@@ -32,7 +33,7 @@ internal class ModelRebuild : ITest
     {
         var parser = new ContentModelParser<decimal>(doc.Context, page, false);
         var data = parser.Parse(doc.Catalog);
-        var resources = data.Any(x => x.Type == ContentType.Form) ? page.Resources.CloneShallow() : new PdfDictionary();
+        var resources = ContainsForm(data) ? page.Resources.CloneShallow() : new PdfDictionary();
         var writer = new ContentWriter<decimal>(resources);
 
         ContentModelWriter<decimal>.WriteContent(writer, data, catalog);
@@ -44,5 +45,22 @@ internal class ModelRebuild : ITest
         page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(updatedStr);
         page.Resources = resources;
         return page;
+
+
+        static bool ContainsForm(IEnumerable<IContentNode<decimal>> nodes)
+        {
+            foreach (var node in nodes)
+            {
+                if (node.Type == ContentType.Form)
+                {
+                    return true;
+                }
+                if (node is IContentContainer<decimal> container && ContainsForm(container.Children))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
 }

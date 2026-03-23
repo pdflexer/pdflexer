@@ -358,17 +358,23 @@ namespace PdfLexer.Tests
 
             var formReader = new CachedContentMutation(Mutation);
 
-            IEnumerable<IContentGroup<double>> Mutation(IContentGroup<double> input)
+            IEnumerable<IContentNode<double>> Mutation(IContentNode<double> input)
             {
                 var bb = input.GetBoundingBox();
 
                 if (bb.LLy > 200)
                 {
-                    input.Transform(new GfxMatrix<double> { E = -200, F = 40 });
+                    if (input is IContentItem<double> leaf)
+                    {
+                        leaf.Transform(new GfxMatrix<double> { E = -200, F = 40 });
+                    }
                 }
                 else
                 {
-                    input.Transform(new GfxMatrix<double> { E = 200, F = -40 });
+                    if (input is IContentItem<double> leaf)
+                    {
+                        leaf.Transform(new GfxMatrix<double> { E = 200, F = -40 });
+                    }
                 }
                 yield return input;
             }

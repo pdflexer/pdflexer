@@ -45,7 +45,7 @@ internal class Indexed : IColorSpace
     {
         if (arr.Count < 4) { throw new PdfLexerException($"Indexed colorspace had less than 4 entries."); }
         var baseCs = ColorSpace.Get(ctx, arr[1]);
-        var hival = arr[2].GetValue<PdfNumber>();
+        var hival = arr[2].GetAs<PdfNumber>();
         var data = arr[3].Resolve();
         byte[]? lookup;
         if (data.Type == PdfObjectType.StringObj)

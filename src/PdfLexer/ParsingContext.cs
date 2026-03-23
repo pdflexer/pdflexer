@@ -310,7 +310,7 @@ public class ParsingContext : IDisposable
             return;
         }
 
-        var stream = GetIndirectObject(doc, XRef.GetId(entry.ObjectStreamNumber, 0)).GetValue<PdfStream>();
+        var stream = GetIndirectObject(doc, XRef.GetId(entry.ObjectStreamNumber, 0)).GetAs<PdfStream>();
         var start = stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
 
         IPdfDataSource? source;
@@ -349,7 +349,7 @@ public class ParsingContext : IDisposable
         while (c < count)
         {
             scanner.SkipObject(); // don't use object numbers currently
-            offsets.Add(scanner.GetCurrentObject().GetValue<PdfNumber>());
+            offsets.Add(scanner.GetCurrentObject().GetAs<PdfNumber>());
             c++;
         }
         return offsets;

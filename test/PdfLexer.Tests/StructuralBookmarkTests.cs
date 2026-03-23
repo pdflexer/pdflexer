@@ -38,17 +38,17 @@ public class StructuralBookmarkTests
         
         Assert.True(catalog.ContainsKey(PdfName.Outlines), "Catalog missing Outlines");
         var outlineObj = catalog[PdfName.Outlines];
-        var outlineDict = outlineObj.Resolve().GetValue<PdfDictionary>();
+        var outlineDict = outlineObj.Resolve().GetAs<PdfDictionary>();
         
         Assert.True(outlineDict.ContainsKey(PdfName.First), "Outlines missing First link");
         var firstObj = outlineDict[PdfName.First];
-        var firstBookmark = firstObj.Resolve().GetValue<PdfDictionary>();
+        var firstBookmark = firstObj.Resolve().GetAs<PdfDictionary>();
         
         Assert.Equal("Section 1", firstBookmark.GetRequiredValue<PdfString>(PdfName.Title).Value);
         Assert.True(firstBookmark.ContainsKey(PdfName.SE), "Bookmark missing /SE link");
         
         var seObj = firstBookmark[PdfName.SE];
-        var seDict = seObj.Resolve().GetValue<PdfDictionary>();
+        var seDict = seObj.Resolve().GetAs<PdfDictionary>();
         Assert.Equal(PdfName.P, seDict[PdfName.S]);
     }
 }

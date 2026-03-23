@@ -106,7 +106,7 @@ internal static class CommonUtil
         switch (filter)
         {
             case PdfArray arr:
-                filterName = arr.FirstOrDefault()?.GetValue<PdfName>();
+                filterName = arr.FirstOrDefault()?.GetAs<PdfName>();
                 break;
             case PdfName nm:
                 filterName = nm;
@@ -122,7 +122,7 @@ internal static class CommonUtil
         switch (filters)
         {
             case PdfArray arr:
-                filterName = arr.FirstOrDefault()?.GetValue<PdfName>();
+                filterName = arr.FirstOrDefault()?.GetAs<PdfName>();
                 break;
             case PdfName nm:
                 filterName = nm;
@@ -362,7 +362,7 @@ internal static class CommonUtil
                         // TODO warn
                         continue;
                     }
-                    var instance = pg.GetValue<PdfDictionary>();
+                    var instance = pg.GetAs<PdfDictionary>();
                     if (read.Contains(instance))
                     {
                         // TODO warn

@@ -115,7 +115,7 @@ public class Util
             {
                 foreach (var kvp in res.Where(x => x.Key == PdfName.Font || x.Key == PdfName.XObject))
                 {
-                    var inner = kvp.Value.GetValue<PdfDictionary>();
+                    var inner = kvp.Value.GetAs<PdfDictionary>();
                     foreach (var kvpRes in inner)
                     {
                         var ir = kvpRes.Value as PdfIndirectRef;

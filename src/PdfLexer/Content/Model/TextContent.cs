@@ -224,8 +224,8 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
                 prev = glyph;
                 if (glyph.Glyph != null)
                 {
-                    var x = GraphicsState.Text.TextRenderingMatrix.E;
-                    var y = GraphicsState.Text.TextRenderingMatrix.F;
+                    var x = gfx.Text.TextRenderingMatrix.E;
+                    var y = gfx.Text.TextRenderingMatrix.F;
                     if (glyph.Glyph.MultiChar != null)
                     {
                         foreach (var c in glyph.Glyph.MultiChar)
@@ -456,9 +456,13 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
         }
     }
 
-    IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => CopyArea(rect);
+    IContentNode<T>? IContentItem<T>.CopyArea(PdfRect<T> rect) => CopyArea(rect);
 
-    (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => Split(rect);
+    (IContentNode<T>? Inside, IContentNode<T>? Outside) IContentItem<T>.Split(PdfRect<T> rect)
+    {
+        var (i, o) = Split(rect);
+        return (i, o);
+    }
 
     public void ClipFrom(GfxState<T> other)
     {

@@ -7,7 +7,7 @@ namespace PdfLexer.Content.Model;
 /// Shading content.
 /// </summary>
 /// <typeparam name="T"></typeparam>
-public class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T : struct, IFloatingPoint<T>
+public class ShadingContent<T> : IContentGroup<T>, ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Shading;
     public required GfxState<T> GraphicsState { get; set; }
@@ -44,9 +44,9 @@ public class ShadingContent<T> : ISinglePartCopy<T>, IContentGroup<T> where T : 
 
     public void TransformInitial(GfxMatrix<T> transformation) => ((ISinglePartCopy<T>)this).TransformInitialImpl(transformation);
 
-    IContentGroup<T>? IContentGroup<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
+    IContentNode<T>? IContentItem<T>.CopyArea(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).CopyAreaByClipping(rect);
 
-    (IContentGroup<T>? Inside, IContentGroup<T>? Outside) IContentGroup<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
+    (IContentNode<T>? Inside, IContentNode<T>? Outside) IContentItem<T>.Split(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).SplitByClipping(rect);
 
     public void ClipExcept(PdfRect<T> rect) => ((ISinglePartCopy<T>)this).ClipExceptImpl(rect);
 

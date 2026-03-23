@@ -104,7 +104,7 @@ internal class XRefParser
         {
             throw new PdfLexerException("Token following startxref was not numeric.");
         }
-        var num = scanner.GetCurrentObject().GetValue<PdfNumber>();
+        var num = scanner.GetCurrentObject().GetAs<PdfNumber>();
         if (num > source.TotalBytes)
         {
             throw new PdfLexerException($"XRef offset larger than document size, {num} ({source.TotalBytes} size)");
@@ -124,7 +124,7 @@ internal class XRefParser
             GetEntries(seq.IsSingleSegment ? seq.FirstSpan : seq.ToArray(), entries);
 
             scanner.SkipExpected(PdfTokenType.Trailer);
-            var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+            var dict = scanner.GetCurrentObject().GetAs<PdfDictionary>();
             var original = dict;
             while (true)
             {
@@ -146,7 +146,7 @@ internal class XRefParser
                 seq = scanner.ReadTo(Trailer);
                 GetEntries(seq.IsSingleSegment ? seq.FirstSpan : seq.ToArray(), entries);
                 scanner.SkipExpected(PdfTokenType.Trailer);
-                dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+                dict = scanner.GetCurrentObject().GetAs<PdfDictionary>();
                 foreach (var item in dict)
                 {
                     if (!original.ContainsKey(item.Key))
@@ -178,7 +178,7 @@ internal class XRefParser
                     throw new PdfLexerException("Xref offset pointed to object that was not dictionary.");
                 }
 
-                var dict = scanner.GetCurrentObject().GetValue<PdfDictionary>();
+                var dict = scanner.GetCurrentObject().GetAs<PdfDictionary>();
 
                 var nxt = scanner.Peek();
                 if (nxt != PdfTokenType.StartStream)
@@ -250,9 +250,9 @@ internal class XRefParser
 
     private void AddEntries(Span<byte> xd, PdfArray w, PdfArray? index, List<XRefEntry> entries)
     {
-        int l1 = w[0].GetValue<PdfNumber>();
-        int l2 = w[1].GetValue<PdfNumber>();
-        int l3 = w[2].GetValue<PdfNumber>();
+        int l1 = w[0].GetAs<PdfNumber>();
+        int l2 = w[1].GetAs<PdfNumber>();
+        int l3 = w[2].GetAs<PdfNumber>();
         var lt = l1 + l2 + l3;
         var recCount = xd.Length / lt;
         var section = 0;
@@ -265,8 +265,8 @@ internal class XRefParser
         }
         else
         {
-            sectionObjectStart = (int)index[0].GetValue<PdfNumber>();
-            sectionCount = (int)index[1].GetValue<PdfNumber>();
+            sectionObjectStart = (int)index[0].GetAs<PdfNumber>();
+            sectionCount = (int)index[1].GetAs<PdfNumber>();
         }
 
         var total = 0;
@@ -341,8 +341,8 @@ internal class XRefParser
             section++;
             if (index != null && section * 2 < index.Count - 1)
             {
-                sectionObjectStart = (int)index[section * 2].GetValue<PdfNumber>();
-                sectionCount = (int)index[section * 2 + 1].GetValue<PdfNumber>();
+                sectionObjectStart = (int)index[section * 2].GetAs<PdfNumber>();
+                sectionCount = (int)index[section * 2 + 1].GetAs<PdfNumber>();
             }
 
         }

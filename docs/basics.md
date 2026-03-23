@@ -1,130 +1,201 @@
 # Basic PdfLexer Usage
 
-### Opening and Creating Documents
+## Opening and Creating Documents
 
-PDFs can currently be opened from a `string` (file path), `byte[]` or `Stream` using the `PdfDocument.Open()` method. In .Net 6+ file paths are opened using memory mapped files and this is the recommended approach in most cases.
-
-`PdfDocument` data can be accessed by using the `Trailer`, `Catalog` and `Pages` properties on the document.
+PDFs can be opened from a file path, `byte[]`, or `Stream` using `PdfDocument.Open()`.
 
 ```csharp
+using PdfLexer;
+
 using var doc = PdfDocument.Open("input.pdf");
-// doc.Trailer -> pdf dictionary
-// doc.Catalog -> pdf dictionary
 Console.WriteLine($"I have {doc.Pages.Count} pages");
-using var doc2 = PdfDocument.Create();
-Console.WriteLine($"I have {doc2.Pages.Count} pages"); // 0
+
+using var created = PdfDocument.Create();
+Console.WriteLine($"I have {created.Pages.Count} pages"); // 0
 ```
 
 PDFs can be created using `PdfDocument.Create()`. Any objects or pages can be copied from existing PDFs to new documents.
 
-**Important! When copying pages and objects from another document the source document must not be disposed before the destination document is saved / disposed.**
+Important:
 
-If you wish to dispose source documents to reduce memory consuption you have two options:
-
-- Use the `StreamingWriter` which is built for fully flushing PDF pages as they are added and not requiring source documents to be kept open (see [Streaming Writer](streaming_writer.md))
-- Use the `IPdfObject.FullyLoad()` extension method. For pdf pages this is accesible via `PdfPage.NativeObject.FullyLoad()`. Once called the source document may be disposed.
-
-### ParsingContext and Errors
-
-Parsing errors are reported by PdfLexer by the `ParsingContext.ParsingErrors` list. By default PdfLexer does not throw exceptions for most issues with pdf documents and does a best effort to parse malformed documents. This behavior is configurable by adjusting the `ParsingOptions` for the `ParsingContext`:
+- When copying pages and objects from another document, the source document must not be disposed before the destination document is saved or disposed.
+- If you need to dispose the source document early, either:
+  - use `StreamingWriter`, or
+  - call `FullyLoad()` on the objects you want to keep
 
 ```csharp
-using var ctx = new ParsingContext(new ParsingOptions { ThrowOnErrors = true });
-using var doc = PdfDocument.Open("input.pdf");
+using var src = PdfDocument.Open("input.pdf");
+using var dest = PdfDocument.Create();
+
+// zero-copy page reuse
+dest.Pages.AddRange(src.Pages);
 ```
 
-Note: `ParsingContext` is implemented as an asynclocal. If none exists when a document is opened a new context will be created. The context for a document can be accessed using `PdfDocument.Context` if one was not manually created.
+## Parsing Options and Errors
 
-### Traversing Document Structure
+`ParsingOptions` controls how PDFs are parsed. `DocumentOptions` is used for document-open concerns such as passwords.
 
-Documents can be inspected by either accessing the Trailer, Catalog, or individual page dictionaries. Below is an example of grabbing the resource entry on a page using different helper methods for getting values if the Pdf object type is known.
+```csharp
+using var doc = PdfDocument.Open("protected.pdf", new DocumentOptions
+{
+    UserPass = "pass"
+});
+```
+
+## Preferred Access Model
+
+Preferred usage is:
+
+- use `PdfDocument` and `PdfPage` wrappers for common access
+- use `page.NativeObject` when you need raw PDF dictionary traversal
+
+Examples of common high-level access:
 
 ```csharp
 using var doc = PdfDocument.Open("input.pdf");
-var page = doc.Pages.First();
+var page = doc.Pages[0];
 
-// return null if key does not exist or is not a dictionary
-_ = page.Get<PdfDictionary>(PdfName.Resources);
-
-// throws PdfLexerException if key does not exist or is not a dictionary
-_ = page.GetRequiredvalue<PdfDictionary>(PdfName.Resources);
-
-// throws PdfLexerException if key exists and is not PdfDictionary
-// returns existing PdfDictionary if exists
-// creates new empty PdfDictionary if does not exist
-_ = page.GetOrCreateValue<PdfDictionary>(PdfName.Resources);
+var mediaBox = page.MediaBox;
+var streams = page.Contents.ToList();
 ```
 
-In some cases the type of pdf object is not known (eg. content stream can be array or single value). In these cases we can use the non-generic `GetRequiredValue()` that returns an `IPdfObject`. Below is example of calculating total length of content streams on a page. When using non-generic methods that return an `IPdfObject` the returned object may be a PDF indirect reference object. If the direct object is desired `IPdfObject.Resolve()` should be called first.
+Examples of low-level/raw access:
 
 ```csharp
-// note the .Resolve() call which will turn indirect refs into direct objects
-// this is done automatically when using the generic based method shown above
-var val = page.GetRequiredValue(PdfName.Contents).Resolve();
-// since we have direct object after calling resolve, can do type matching in c# for different options
-long total = 0;
+using var doc = PdfDocument.Open("input.pdf");
+var page = doc.Pages[0];
+
+var resources = page.NativeObject.Get<PdfDictionary>(PdfName.Resources);
+var rawContents = page.NativeObject.GetRequiredValue(PdfName.Contents);
+```
+
+Use raw access when:
+
+- the wrapper does not expose the feature you need
+- you are traversing arbitrary PDF objects
+- you need to inspect the exact underlying object shape
+
+## Traversing Raw PDF Objects
+
+`PdfDictionary` provides the main typed access helpers:
+
+- `dict.Get<T>(key)`: optional typed access, returns `null` if missing or wrong type
+- `dict.GetRequiredValue<T>(key)`: required typed access, throws if missing or wrong type
+- `dict.Get(key)`: optional raw `IPdfObject`
+- `dict.GetRequiredValue(key)`: required raw `IPdfObject`
+- `dict.TryGetValue(key, out value)`: optional raw access using an `out` parameter
+- `dict.TryGetValue<T>(key, out value, errorOnMismatch: ...)`: optional typed access using an `out` parameter
+
+Typed dictionary access auto-resolves indirect references.
+
+**important** TryGetValue<T> `errorOnMismatch` parameter defaults to `true`, which means it can throw if the key exists but resolves to the wrong type. Pass `errorOnMismatch: false` when you want classic try-get behavior that will not throw exceptions.
+
+For object-level casting after you already have an `IPdfObject`, prefer:
+
+- `obj.GetAs<T>()`: required typed access on the object itself
+- `obj.GetAsOrNull<T>()`: optional typed access on the object itself
+
+These are distinct from dictionary entry access and are preferred over the older `obj.GetValue<T>()` and `obj.GetValueOrNull<T>()` aliases.
+
+```csharp
+using var doc = PdfDocument.Open("input.pdf");
+var page = doc.Pages[0];
+var pageDict = page.NativeObject;
+
+// optional typed access
+PdfDictionary? resources = pageDict.Get<PdfDictionary>(PdfName.Resources);
+
+// required typed access
+PdfArray mediaBox = pageDict.GetRequiredValue<PdfArray>(PdfName.MediaBox);
+```
+
+When the object type is not known up front, use raw access and resolve explicitly:
+
+```csharp
+var val = page.NativeObject.GetRequiredValue(PdfName.Contents).Resolve();
+
 switch (val)
 {
     case PdfArray arr:
-        foreach (var str in arr)
+        foreach (var item in arr)
         {
-            // note no .Resolve() here since the Get*<T>() automatically resolve
-            // indirect references
-            var stream = str.GetValue<PdfStream>();
-            total += stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
+            var stream = item.GetAs<PdfStream>();
+            Console.WriteLine(stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length));
         }
         break;
     case PdfStream single:
-        total += single.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
+        Console.WriteLine(single.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length));
         break;
     default:
-        throw new ApplicationException("Invalid Contents value in page:" + val.Type);
+        throw new ApplicationException("Invalid Contents value on page");
 }
 ```
 
-Alternatively `IPdfObject.GetPdfObjType()` will return the type of the direct object. The `Resolve()` approach is particularly useful when using c# pattern matching to cast to the appropriate object type but the below example accomplishes the same without `Resolve()` or pattern matching instead relying on `GetObject<T>()`.
+`IPdfObject.GetPdfObjType()` is useful when you want the direct object type without switching manually on indirect references first.
 
 ```csharp
-var val = page.GetRequiredValue(PdfName.Contents);
-long total = 0;
-// GetPdfObjType returns the type on the direct object even if val is an indirect object
+var val = page.NativeObject.GetRequiredValue(PdfName.Contents);
+
 switch (val.GetPdfObjType())
 {
     case PdfObjectType.ArrayObj:
-        var arr = val.GetValue<PdfArray>();
-        foreach (var str in arr)
-        {
-            var stream = str.GetValue<PdfStream>();
-            total += stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
-        }
+        var arr = val.GetAs<PdfArray>();
         break;
     case PdfObjectType.StreamObj:
-        var single = val.GetValue<PdfStream>();
-        total += single.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length);
+        var stream = val.GetAs<PdfStream>();
         break;
-    default:
-        throw new ApplicationException("Invalid Contents value in page");
 }
 ```
 
-### Modifying documents
+## Page Access
 
-The `PdfDocument` class includes a `SaveTo(Stream stream)` method. Pdf documents can be opened and objects modified / replaced and then saved:
+`doc.Pages` is a `List<PdfPage>`.
+
+Common page properties and operations:
+
+```csharp
+var page = doc.Pages[0];
+
+var mediaBox = page.MediaBox;
+var resources = page.Resources;
+
+using var writer = page.GetWriter();
+```
+
+For text/image/content scanning, PdfLexer provides scanner APIs on top of page access:
+
+```csharp
+using var doc = PdfDocument.Open("input.pdf");
+var page = doc.Pages[0];
+
+var textScanner = page.GetTextScanner();
+var wordScanner = page.GetWordScanner();
+```
+
+## Modifying Documents
+
+The `PdfDocument` class includes `Save()` and `SaveTo(...)` methods.
 
 ```csharp
 using var doc = PdfDocument.Open(File.ReadAllBytes("input.pdf"));
-doc.Trailer["NewValue"] = new PdfString("This is a new value added to existing pdf.");
+doc.Trailer[PdfName.Info] = new PdfDictionary
+{
+    [PdfName.Title] = new PdfString("Updated")
+};
+
 using var fs = File.Create("output.pdf");
 doc.SaveTo(fs);
 ```
 
-Objects can also be copied between PDF documents. The below example copies document metadata from one PDF to another.
+Objects can also be copied between documents:
 
 ```csharp
 using var doc = PdfDocument.Open(File.ReadAllBytes("input.pdf"));
 using var doc2 = PdfDocument.Open(File.ReadAllBytes("input2.pdf"));
-doc2.Trailer[PdfName.Info] = doc.Trailer[PdfName.Info]
+
+doc2.Trailer[PdfName.Info] = doc.Trailer[PdfName.Info];
+using var fs = File.Create("output.pdf");
 doc2.SaveTo(fs);
 ```
 
-When modifying objects it will affect all pages / objects referencing the modified object in the document (eg. font referenced by multiple pages, updating on one page will affect all). PdfLexer provides helper methods on PdfDictionary and PdfArray objetcs `CloneShallow()` to create a shallow clone of the object so that modifications to the clone will only affect new references created to the object.
+When modifying objects, remember that shared objects stay shared until you clone them. Use `CloneShallow()` when you want to fork a dictionary or array before editing.

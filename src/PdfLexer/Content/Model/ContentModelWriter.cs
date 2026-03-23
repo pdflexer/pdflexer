@@ -1,11 +1,11 @@
-﻿using PdfLexer.Writing;
+using PdfLexer.Writing;
 using System.Numerics;
 
 namespace PdfLexer.Content.Model;
 
 internal class ContentModelWriter<T> where T : struct, IFloatingPoint<T>
 {
-    public static PdfStreamContents CreateContent(PdfDictionary resources, List<IContentGroup<T>> groups, PdfDictionary? catalog=null)
+    public static PdfStreamContents CreateContent(PdfDictionary resources, List<IContentNode<T>> groups, PdfDictionary? catalog=null)
     {
         var writer = new ContentWriter<T>(resources);
         writer.Save();
@@ -20,7 +20,7 @@ internal class ContentModelWriter<T> where T : struct, IFloatingPoint<T>
         return writer.Complete();
     }
 
-    public static void WriteContent(ContentWriter<T> writer, List<IContentGroup<T>> groups, PdfDictionary? catalog = null)
+    public static void WriteContent(ContentWriter<T> writer, List<IContentNode<T>> groups, PdfDictionary? catalog = null)
     {
         var orig = writer.GraphicsStackSize;
         writer.Save();
@@ -37,14 +37,23 @@ internal class ContentModelWriter<T> where T : struct, IFloatingPoint<T>
         }
     }
 
-    internal static void WriteGroups(ContentWriter<T> writer, List<IContentGroup<T>> groups)
+    internal static void WriteGroups(ContentWriter<T> writer, List<IContentNode<T>> groups)
     {
         foreach (var group in groups)
         {
-            writer.ReconcileCompatibility(group.CompatibilitySection);
-            // writer.ReconcileMC(group.Markings); // Removed, structure handles this
-            writer.SetGS(group.GraphicsState);
-            group.Write(writer);
+            if (group is IContentItem<T> item)
+            {
+                writer.ReconcileCompatibility(item.CompatibilitySection);
+                writer.SetGS(item.GraphicsState);
+            }
+
+            if (group is IContentWritable<T> writable)
+            {
+                writable.Write(writer);
+                continue;
+            }
+
+            throw new InvalidOperationException($"Content node of type {group.GetType().Name} cannot be written because it does not implement {nameof(IContentWritable<T>)}.");
         }
     }
 
