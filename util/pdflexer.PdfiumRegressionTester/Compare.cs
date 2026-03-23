@@ -31,7 +31,7 @@ public class Compare
         var totalBase = fpdfview.FPDF_GetPageCount(docB);
         
         var docC = fpdfview.FPDF_LoadDocument(candidatePath, null);
-        if (docB == null)
+        if (docC == null)
         {
             results.Add(new CompareResult { HadChanges = true, Type = ChangeType.ErrorCandidate, Error = $"unable to open document ({candidatePath}): " + fpdfview.FPDF_GetLastError() });
             return results;
