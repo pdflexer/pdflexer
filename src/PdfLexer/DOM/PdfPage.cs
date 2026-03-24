@@ -158,6 +158,16 @@ public sealed class PdfPage
         return new SimpleWordScanner(ParsingContext.Current, this);
     }
 
+    public SemanticTextPage GetSemanticExtract(ParsingContext ctx, SemanticExtractOptions? options = null)
+    {
+        return SemanticTextBuilder.Build(ctx, this, options);
+    }
+
+    public SemanticTextPage GetSemanticExtract(SemanticExtractOptions? options = null)
+    {
+        return SemanticTextBuilder.Build(ParsingContext.Current, this, options);
+    }
+
     public List<IContentGroup<double>> GetContentModel(bool flattenForms = false) => GetContentModel<double>(flattenForms);
     public List<IContentGroup<T>> GetContentModel<T>(bool flattenForms = false) where T : struct, IFloatingPoint<T>
     {

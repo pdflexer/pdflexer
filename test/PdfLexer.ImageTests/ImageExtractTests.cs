@@ -13,7 +13,7 @@ namespace PdfLexer.ImageTests
 {
     public class ImageExtractTests
     {
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_8_bit_RGB_Large_Decode()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -24,7 +24,7 @@ namespace PdfLexer.ImageTests
 
         [InlineData("0TxRvxWo5wUThisVd6EjFw.pdf")]
         [InlineData("2eHFKUx4drRxfDdv1P_d7g.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_8_bit_CMYK_Large_Decode(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -42,7 +42,7 @@ namespace PdfLexer.ImageTests
         [InlineData("LrUpVnZ0SQZWkawizVTIwQ.pdf")]
         [InlineData("MpEF16rVGGyIIkO-vX24tA.pdf")]
         [InlineData("PPytoMstm4mLsZdJ82hp3Q.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_CCITT(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -52,7 +52,7 @@ namespace PdfLexer.ImageTests
         }
 
         [InlineData("JckBq0XMQZdsM1fgO7XjPQ.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_ICC(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -61,7 +61,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, name, output, 10);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_1bit_Gray()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -70,7 +70,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "5yg9-sgECmJR89OKC2QLeA.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_Combined_DCT()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -79,7 +79,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "7DOO0uoEZXgO28xJAm-9dg.pdf", output, 20);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_Combined_JPX()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -88,7 +88,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "QG2V70Q-V3rvHLve3RzY7Q.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_Combined_CCITT()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -97,7 +97,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "J-qcQC3LeqpK0CAVsUum-A.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_CCITT_Separation()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -106,7 +106,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "KUCSixn8jpaapxFfnOveXA.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_CCITT_CalGray()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -115,7 +115,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "YCWncT6VMiYqBthAvHNTCQ.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_Run_Length()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -124,7 +124,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "eM--8R8Ddfg2EKavFEOmZA.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_DCT_Separation()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -132,7 +132,7 @@ namespace PdfLexer.ImageTests
             var pdfRoot = Path.Combine(tp, "imgs");
             RunSingle(pdfRoot, "EG7LutipHf7UdCK4TsbvQw.pdf", output);
         }
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_DCT_ICCBased()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -141,7 +141,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "fWECJ7bDXYEj8QCAy_ajow.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_Inversed_Decode_RGB()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -150,7 +150,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "41hB3b8_0gw2tJfzaFLXWg.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_DCT_CMYK_Decode()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -160,7 +160,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "e0YM9Ygv7cPbDO-p7oQ4jg.pdf", output, 20);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_ICC_RGB()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -169,7 +169,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "BeYmT2VdZQwaoXn8HNvpLw.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_DCT_CalGray()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -178,7 +178,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "hnrKIt4hMfNRn4SAIovTew.pdf", output, 20);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_DCT_DeviceGray()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -187,7 +187,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "lI-Xx3Tk9KdMqny5kSF2jA.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_DCT_CalRGB()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -199,7 +199,7 @@ namespace PdfLexer.ImageTests
 
         [InlineData("LcDy-GQ2oC0mJ4pDz18ixw.pdf")]
         // [InlineData("SsGZumJPC4cJHwDRzPXmHg.pdf")] // license
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_CalRGB(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -208,7 +208,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, name, output, 10);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_Indexed_CalRGB()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -217,7 +217,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "ho0zlLILRSnotM7m42LRCA.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_1bit_Decode_Gray()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -236,7 +236,7 @@ namespace PdfLexer.ImageTests
         //     RunSingle(pdfRoot, "DQzbG6N-CTyHisNgTKUaKg.pdf", output);
         // }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_1bit_JBIG()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -247,7 +247,7 @@ namespace PdfLexer.ImageTests
 
         [InlineData("4xll9c7JnKbQTu2ri5NxJw.pdf")]
         [InlineData("wPecqvLHknVfAp9vftfBdw.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_4bit_Indexed_RGB(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -257,7 +257,7 @@ namespace PdfLexer.ImageTests
         }
 
         [InlineData("0RwzPoHNznBgJ6lC0cpwVg.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_JPX_CMYK(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -266,7 +266,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, name, output);
         }
         [InlineData("HtTkH99tB4z_clGIQkg7pA.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_JPX_Gray(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -275,7 +275,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, name, output);
         }
         [InlineData("li4DXp5pMEL1XtIGiXG9dA.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_JPX_RGB(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -287,7 +287,7 @@ namespace PdfLexer.ImageTests
         [InlineData("C5c1Gr99aHf2LvAtdm7tnA.pdf")]
         [InlineData("cakcytzO66TdICf494zRJQ.pdf")]
         [InlineData("hHSPtyfXwkECzZP4ot5ahQ.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_SMask(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -299,7 +299,7 @@ namespace PdfLexer.ImageTests
         [InlineData("CGrD8UireJxTcYGKA1p5gA.pdf")]
         [InlineData("FPCORjum9-IgOO8CrsdSng.pdf")]
         [InlineData("o-KEr8zfK9AmEaH6ogf29A.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_Indexed_Lab(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -309,7 +309,7 @@ namespace PdfLexer.ImageTests
         }
 
         [InlineData("ytNxY-dzrqww-EFk6orraA.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_4bit_Indexed_Gray(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -319,7 +319,7 @@ namespace PdfLexer.ImageTests
         }
 
         [InlineData("qIWYAcek_Y90nUQ4533r1Q.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_16bit_CMYK(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -328,7 +328,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, name, output, 20);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_1bit_Gray_Decode()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -337,7 +337,7 @@ namespace PdfLexer.ImageTests
             RunSingle(pdfRoot, "wz0oUd-kdi-W33Q2ViilBQ.pdf", output);
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_8bit_RGB_InvertedDecode()
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -349,7 +349,7 @@ namespace PdfLexer.ImageTests
         [InlineData("wlknxeMey9yhDZqRcqkTpA.pdf")]
         [InlineData("_ghM41_9Ma-nPMMSr7Kbfw.pdf")]
         [InlineData("ZPWJPix1lLiQzx_oayWLAg.pdf")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Reads_8bit_Indexed_CMYK(string pdf)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -384,7 +384,7 @@ namespace PdfLexer.ImageTests
             }
         }
 
-        [Fact]
+        [ImageAssetFact]
         public void It_Reads_Images()
         {
             var errors = new List<string>();
