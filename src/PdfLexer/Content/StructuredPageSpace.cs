@@ -2,7 +2,7 @@ using PdfLexer.DOM;
 
 namespace PdfLexer.Content;
 
-internal sealed class SemanticPageSpace
+internal sealed class StructuredPageSpace
 {
     private readonly double originX;
     private readonly double originY;
@@ -10,7 +10,7 @@ internal sealed class SemanticPageSpace
     private readonly double height;
     private readonly int rotation;
 
-    public SemanticPageSpace(PdfPage page)
+    public StructuredPageSpace(PdfPage page)
     {
         var crop = page.CropBox;
         originX = (double)decimal.Min(crop.LLx, crop.URx);

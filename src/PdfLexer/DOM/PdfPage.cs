@@ -158,14 +158,14 @@ public sealed class PdfPage
         return new SimpleWordScanner(ParsingContext.Current, this);
     }
 
-    public SemanticTextPage GetSemanticExtract(ParsingContext ctx, SemanticExtractOptions? options = null)
+    public StructuredTextPage GetStructuredText(ParsingContext ctx, StructuredTextOptions? options = null)
     {
-        return SemanticTextBuilder.Build(ctx, this, options);
+        return StructuredTextBuilder.Build(ctx, this, options);
     }
 
-    public SemanticTextPage GetSemanticExtract(SemanticExtractOptions? options = null)
+    public StructuredTextPage GetStructuredText(StructuredTextOptions? options = null)
     {
-        return SemanticTextBuilder.Build(ParsingContext.Current, this, options);
+        return StructuredTextBuilder.Build(ParsingContext.Current, this, options);
     }
 
     public List<IContentGroup<double>> GetContentModel(bool flattenForms = false) => GetContentModel<double>(flattenForms);

@@ -38,15 +38,15 @@ internal sealed class SemanticTextTests
         var pageNumber = 1;
         foreach (var page in doc.Pages)
         {
-            var raw = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions
+            var raw = page.GetStructuredText(doc.Context, new StructuredTextOptions
             {
                 Order = TextOrder.Reading,
-                Mode = SemanticTextMode.Raw
+                Mode = StructuredTextMode.Raw
             });
-            var deduplicated = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions
+            var deduplicated = page.GetStructuredText(doc.Context, new StructuredTextOptions
             {
                 Order = TextOrder.Reading,
-                Mode = SemanticTextMode.Deduplicated
+                Mode = StructuredTextMode.Deduplicated
             });
 
             pages.Add(CreateSnapshot(pageNumber, raw, deduplicated));
@@ -79,22 +79,22 @@ internal sealed class SemanticTextTests
         };
     }
 
-    private static SemanticPageSnapshot CreateSnapshot(int pageNumber, SemanticTextPage raw, SemanticTextPage deduplicated)
+    private static SemanticPageSnapshot CreateSnapshot(int pageNumber, StructuredTextPage raw, StructuredTextPage deduplicated)
     {
-        var rawContentText = raw.GetText(TextOrder.Content, SemanticTextMode.Raw);
-        var rawReadingText = raw.GetText(TextOrder.Reading, SemanticTextMode.Raw);
-        var deduplicatedContentText = deduplicated.GetText(TextOrder.Content, SemanticTextMode.Deduplicated);
-        var deduplicatedReadingText = deduplicated.GetText(TextOrder.Reading, SemanticTextMode.Deduplicated);
+        var rawContentText = raw.GetText(TextOrder.Content, StructuredTextMode.Raw);
+        var rawReadingText = raw.GetText(TextOrder.Reading, StructuredTextMode.Raw);
+        var deduplicatedContentText = deduplicated.GetText(TextOrder.Content, StructuredTextMode.Deduplicated);
+        var deduplicatedReadingText = deduplicated.GetText(TextOrder.Reading, StructuredTextMode.Deduplicated);
         var rawWords = raw.RawWords.Select(CreateWordSnapshot).ToList();
         var deduplicatedWords = deduplicated.DeduplicatedWords.Select(CreateWordSnapshot).ToList();
-        var rawContentLines = raw.GetLines(TextOrder.Content, SemanticTextMode.Raw).Select(CreateLineSnapshot).ToList();
-        var rawReadingLines = raw.GetLines(TextOrder.Reading, SemanticTextMode.Raw).Select(CreateLineSnapshot).ToList();
-        var deduplicatedContentLines = deduplicated.GetLines(TextOrder.Content, SemanticTextMode.Deduplicated).Select(CreateLineSnapshot).ToList();
-        var deduplicatedReadingLines = deduplicated.GetLines(TextOrder.Reading, SemanticTextMode.Deduplicated).Select(CreateLineSnapshot).ToList();
-        var rawContentParagraphs = raw.GetParagraphs(TextOrder.Content, SemanticTextMode.Raw).Select(CreateParagraphSnapshot).ToList();
-        var rawReadingParagraphs = raw.GetParagraphs(TextOrder.Reading, SemanticTextMode.Raw).Select(CreateParagraphSnapshot).ToList();
-        var deduplicatedContentParagraphs = deduplicated.GetParagraphs(TextOrder.Content, SemanticTextMode.Deduplicated).Select(CreateParagraphSnapshot).ToList();
-        var deduplicatedReadingParagraphs = deduplicated.GetParagraphs(TextOrder.Reading, SemanticTextMode.Deduplicated).Select(CreateParagraphSnapshot).ToList();
+        var rawContentLines = raw.GetLines(TextOrder.Content, StructuredTextMode.Raw).Select(CreateLineSnapshot).ToList();
+        var rawReadingLines = raw.GetLines(TextOrder.Reading, StructuredTextMode.Raw).Select(CreateLineSnapshot).ToList();
+        var deduplicatedContentLines = deduplicated.GetLines(TextOrder.Content, StructuredTextMode.Deduplicated).Select(CreateLineSnapshot).ToList();
+        var deduplicatedReadingLines = deduplicated.GetLines(TextOrder.Reading, StructuredTextMode.Deduplicated).Select(CreateLineSnapshot).ToList();
+        var rawContentParagraphs = raw.GetParagraphs(TextOrder.Content, StructuredTextMode.Raw).Select(CreateParagraphSnapshot).ToList();
+        var rawReadingParagraphs = raw.GetParagraphs(TextOrder.Reading, StructuredTextMode.Raw).Select(CreateParagraphSnapshot).ToList();
+        var deduplicatedContentParagraphs = deduplicated.GetParagraphs(TextOrder.Content, StructuredTextMode.Deduplicated).Select(CreateParagraphSnapshot).ToList();
+        var deduplicatedReadingParagraphs = deduplicated.GetParagraphs(TextOrder.Reading, StructuredTextMode.Deduplicated).Select(CreateParagraphSnapshot).ToList();
 
         return new SemanticPageSnapshot
         {
@@ -119,7 +119,7 @@ internal sealed class SemanticTextTests
         };
     }
 
-    private static SemanticWordSnapshot CreateWordSnapshot(SemanticWord word)
+    private static SemanticWordSnapshot CreateWordSnapshot(StructuredWord word)
     {
         return new SemanticWordSnapshot
         {
@@ -129,7 +129,7 @@ internal sealed class SemanticTextTests
         };
     }
 
-    private static SemanticLineSnapshot CreateLineSnapshot(SemanticLine line)
+    private static SemanticLineSnapshot CreateLineSnapshot(StructuredLine line)
     {
         return new SemanticLineSnapshot
         {
@@ -139,7 +139,7 @@ internal sealed class SemanticTextTests
         };
     }
 
-    private static SemanticParagraphSnapshot CreateParagraphSnapshot(SemanticParagraph paragraph)
+    private static SemanticParagraphSnapshot CreateParagraphSnapshot(StructuredParagraph paragraph)
     {
         return new SemanticParagraphSnapshot
         {
@@ -149,7 +149,7 @@ internal sealed class SemanticTextTests
         };
     }
 
-    private static SemanticSourceReferenceSnapshot CreateSourceReference(SemanticSourceRef sourceReference)
+    private static SemanticSourceReferenceSnapshot CreateSourceReference(StructuredSourceRef sourceReference)
     {
         return new SemanticSourceReferenceSnapshot
         {
@@ -170,7 +170,7 @@ internal sealed class SemanticTextTests
         };
     }
 
-    private static void AddOverlayPage(PdfDocument overlayDoc, PdfPage sourcePage, SemanticTextPage raw, SemanticTextPage deduplicated)
+    private static void AddOverlayPage(PdfDocument overlayDoc, PdfPage sourcePage, StructuredTextPage raw, StructuredTextPage deduplicated)
     {
         var page = overlayDoc.AddPage();
         page.MediaBox = sourcePage.MediaBox;
@@ -180,8 +180,8 @@ internal sealed class SemanticTextTests
         writer.Form(form);
 
         DrawRects(writer, raw.RawWords.Select(x => x.BoundingBox), 0, 180, 0, 0.35);
-        DrawRects(writer, deduplicated.GetLines(TextOrder.Reading, SemanticTextMode.Deduplicated).Select(x => x.BoundingBox), 255, 140, 0, 0.6);
-        DrawRects(writer, deduplicated.GetParagraphs(TextOrder.Reading, SemanticTextMode.Deduplicated).Select(x => x.BoundingBox), 0, 90, 220, 0.9);
+        DrawRects(writer, deduplicated.GetLines(TextOrder.Reading, StructuredTextMode.Deduplicated).Select(x => x.BoundingBox), 255, 140, 0, 0.6);
+        DrawRects(writer, deduplicated.GetParagraphs(TextOrder.Reading, StructuredTextMode.Deduplicated).Select(x => x.BoundingBox), 0, 90, 220, 0.9);
 
         if (deduplicated.DeduplicatedWords.Count != raw.RawWords.Count)
         {

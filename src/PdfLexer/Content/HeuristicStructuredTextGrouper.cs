@@ -1,64 +1,64 @@
 namespace PdfLexer.Content;
 
-public sealed class HeuristicSemanticTextGrouper : ISemanticTextGrouper
+public sealed class HeuristicStructuredTextGrouper : IStructuredTextGrouper
 {
-    public SemanticTextGroupingResult Group(SemanticTextGroupingInput input)
+    public StructuredTextGroupingResult Group(StructuredTextGroupingInput input)
     {
         var options = input.Options;
         var contentLines = input.ContentLineCandidates != null
-            ? SemanticTextGroupingHelpers.ReconcileLineWords(
-                SemanticTextGroupingHelpers.CreateLines(input.ContentLineCandidates),
+            ? StructuredTextGroupingHelpers.ReconcileLineWords(
+                StructuredTextGroupingHelpers.CreateLines(input.ContentLineCandidates),
                 options)
-            : SemanticTextGroupingHelpers.ReconcileLineWords(
-                SemanticTextGroupingHelpers.GroupLines(input.Words, options),
+            : StructuredTextGroupingHelpers.ReconcileLineWords(
+                StructuredTextGroupingHelpers.GroupLines(input.Words, options),
                 options);
-        var contentParagraphs = SemanticTextGroupingHelpers.GroupParagraphs(contentLines, options);
-        var (readingLines, readingParagraphs) = SemanticTextGroupingHelpers.BuildReadingStructure(contentLines, options);
-        return SemanticTextGroupingHelpers.ToGroupingResult(contentLines, readingLines, contentParagraphs, readingParagraphs);
+        var contentParagraphs = StructuredTextGroupingHelpers.GroupParagraphs(contentLines, options);
+        var (readingLines, readingParagraphs) = StructuredTextGroupingHelpers.BuildReadingStructure(contentLines, options);
+        return StructuredTextGroupingHelpers.ToGroupingResult(contentLines, readingLines, contentParagraphs, readingParagraphs);
     }
 }
 
-public sealed class ContentOrderSemanticTextGrouper : ISemanticTextGrouper
+public sealed class ContentOrderStructuredTextGrouper : IStructuredTextGrouper
 {
-    public SemanticTextGroupingResult Group(SemanticTextGroupingInput input)
+    public StructuredTextGroupingResult Group(StructuredTextGroupingInput input)
     {
         var options = input.Options;
         var contentLines = input.ContentLineCandidates != null
-            ? SemanticTextGroupingHelpers.ReconcileLineWords(
-                SemanticTextGroupingHelpers.CreateLines(input.ContentLineCandidates),
+            ? StructuredTextGroupingHelpers.ReconcileLineWords(
+                StructuredTextGroupingHelpers.CreateLines(input.ContentLineCandidates),
                 options)
-            : SemanticTextGroupingHelpers.ReconcileLineWords(
-                SemanticTextGroupingHelpers.GroupLines(input.Words, options),
+            : StructuredTextGroupingHelpers.ReconcileLineWords(
+                StructuredTextGroupingHelpers.GroupLines(input.Words, options),
                 options);
-        var contentParagraphs = SemanticTextGroupingHelpers.GroupParagraphs(contentLines, options);
-        return SemanticTextGroupingHelpers.ToGroupingResult(contentLines, contentLines, contentParagraphs, contentParagraphs);
+        var contentParagraphs = StructuredTextGroupingHelpers.GroupParagraphs(contentLines, options);
+        return StructuredTextGroupingHelpers.ToGroupingResult(contentLines, contentLines, contentParagraphs, contentParagraphs);
     }
 }
 
-internal static class SemanticTextGroupingHelpers
+internal static class StructuredTextGroupingHelpers
 {
-    public static SemanticTextGroupingResult ToGroupingResult(
-        IReadOnlyList<SemanticLine> contentLines,
-        IReadOnlyList<SemanticLine> readingLines,
-        IReadOnlyList<SemanticParagraph> contentParagraphs,
-        IReadOnlyList<SemanticParagraph> readingParagraphs)
+    public static StructuredTextGroupingResult ToGroupingResult(
+        IReadOnlyList<StructuredLine> contentLines,
+        IReadOnlyList<StructuredLine> readingLines,
+        IReadOnlyList<StructuredParagraph> contentParagraphs,
+        IReadOnlyList<StructuredParagraph> readingParagraphs)
     {
-        return new SemanticTextGroupingResult
+        return new StructuredTextGroupingResult
         {
-            ContentLines = contentLines.Select(x => (IReadOnlyList<SemanticWord>)x.Words).ToList(),
-            ReadingLines = readingLines.Select(x => (IReadOnlyList<SemanticWord>)x.Words).ToList(),
+            ContentLines = contentLines.Select(x => (IReadOnlyList<StructuredWord>)x.Words).ToList(),
+            ReadingLines = readingLines.Select(x => (IReadOnlyList<StructuredWord>)x.Words).ToList(),
             ContentParagraphs = contentParagraphs
-                .Select(x => x.Lines.Select(y => (IReadOnlyList<SemanticWord>)y.Words).ToList() as IReadOnlyList<IReadOnlyList<SemanticWord>>)
+                .Select(x => x.Lines.Select(y => (IReadOnlyList<StructuredWord>)y.Words).ToList() as IReadOnlyList<IReadOnlyList<StructuredWord>>)
                 .ToList(),
             ReadingParagraphs = readingParagraphs
-                .Select(x => x.Lines.Select(y => (IReadOnlyList<SemanticWord>)y.Words).ToList() as IReadOnlyList<IReadOnlyList<SemanticWord>>)
+                .Select(x => x.Lines.Select(y => (IReadOnlyList<StructuredWord>)y.Words).ToList() as IReadOnlyList<IReadOnlyList<StructuredWord>>)
                 .ToList()
         };
     }
 
-    public static List<SemanticLine> CreateLines(IReadOnlyList<IReadOnlyList<SemanticWord>> wordGroups)
+    public static List<StructuredLine> CreateLines(IReadOnlyList<IReadOnlyList<StructuredWord>> wordGroups)
     {
-        var lines = new List<SemanticLine>(wordGroups.Count);
+        var lines = new List<StructuredLine>(wordGroups.Count);
         foreach (var wordGroup in wordGroups)
         {
             if (wordGroup.Count == 0)
@@ -66,23 +66,23 @@ internal static class SemanticTextGroupingHelpers
                 continue;
             }
 
-            lines.Add(new SemanticLine(wordGroup, wordGroup[0].PageSpace));
+            lines.Add(new StructuredLine(wordGroup, wordGroup[0].PageSpace));
         }
 
         return lines;
     }
 
-    public static List<SemanticLine> GroupLines(IReadOnlyList<SemanticWord> words, SemanticExtractOptions options)
+    public static List<StructuredLine> GroupLines(IReadOnlyList<StructuredWord> words, StructuredTextOptions options)
     {
-        var lines = new List<SemanticLine>();
-        var current = new List<SemanticWord>();
-        SemanticWord? previous = null;
+        var lines = new List<StructuredLine>();
+        var current = new List<StructuredWord>();
+        StructuredWord? previous = null;
         foreach (var word in words)
         {
             if (current.Count > 0 && previous != null && ShouldBreakLine(previous, word, options))
             {
-                lines.Add(new SemanticLine(current, current[0].PageSpace));
-                current = new List<SemanticWord>();
+                lines.Add(new StructuredLine(current, current[0].PageSpace));
+                current = new List<StructuredWord>();
             }
 
             current.Add(word);
@@ -91,13 +91,13 @@ internal static class SemanticTextGroupingHelpers
 
         if (current.Count > 0)
         {
-            lines.Add(new SemanticLine(current, current[0].PageSpace));
+            lines.Add(new StructuredLine(current, current[0].PageSpace));
         }
 
         return lines;
     }
 
-    public static List<SemanticLine> OrderLines(IReadOnlyList<SemanticLine> lines)
+    public static List<StructuredLine> OrderLines(IReadOnlyList<StructuredLine> lines)
     {
         return lines
             .OrderByDescending(x => Math.Round(x.BaselineCoordinate, 4))
@@ -106,9 +106,9 @@ internal static class SemanticTextGroupingHelpers
             .ToList();
     }
 
-    public static List<SemanticLine> ReconcileLineWords(IReadOnlyList<SemanticLine> lines, SemanticExtractOptions options)
+    public static List<StructuredLine> ReconcileLineWords(IReadOnlyList<StructuredLine> lines, StructuredTextOptions options)
     {
-        var reconciled = new List<SemanticLine>(lines.Count);
+        var reconciled = new List<StructuredLine>(lines.Count);
         foreach (var line in lines)
         {
             var ordered = line.Words
@@ -126,23 +126,23 @@ internal static class SemanticTextGroupingHelpers
                 continue;
             }
 
-            reconciled.Add(new SemanticLine(visualWords, visualWords[0].PageSpace));
+            reconciled.Add(new StructuredLine(visualWords, visualWords[0].PageSpace));
         }
 
         return reconciled;
     }
 
-    public static List<SemanticParagraph> GroupParagraphs(IReadOnlyList<SemanticLine> lines, SemanticExtractOptions options)
+    public static List<StructuredParagraph> GroupParagraphs(IReadOnlyList<StructuredLine> lines, StructuredTextOptions options)
     {
-        var paragraphs = new List<SemanticParagraph>();
-        var current = new List<SemanticLine>();
-        SemanticLine? previous = null;
+        var paragraphs = new List<StructuredParagraph>();
+        var current = new List<StructuredLine>();
+        StructuredLine? previous = null;
         foreach (var line in lines)
         {
             if (current.Count > 0 && previous != null && ShouldBreakParagraph(previous, line, options))
             {
-                paragraphs.Add(new SemanticParagraph(current, current[0].PageSpace));
-                current = new List<SemanticLine>();
+                paragraphs.Add(new StructuredParagraph(current, current[0].PageSpace));
+                current = new List<StructuredLine>();
             }
 
             current.Add(line);
@@ -151,22 +151,22 @@ internal static class SemanticTextGroupingHelpers
 
         if (current.Count > 0)
         {
-            paragraphs.Add(new SemanticParagraph(current, current[0].PageSpace));
+            paragraphs.Add(new StructuredParagraph(current, current[0].PageSpace));
         }
 
         return paragraphs;
     }
 
-    public static (List<SemanticLine> ReadingLines, List<SemanticParagraph> ReadingParagraphs) BuildReadingStructure(
-        IReadOnlyList<SemanticLine> contentLines,
-        SemanticExtractOptions options)
+    public static (List<StructuredLine> ReadingLines, List<StructuredParagraph> ReadingParagraphs) BuildReadingStructure(
+        IReadOnlyList<StructuredLine> contentLines,
+        StructuredTextOptions options)
     {
         var readingLines = OrderLines(contentLines);
         var readingParagraphs = GroupParagraphs(readingLines, options);
         return (readingLines, readingParagraphs);
     }
 
-    private static bool ShouldBreakLine(SemanticWord previous, SemanticWord current, SemanticExtractOptions options)
+    private static bool ShouldBreakLine(StructuredWord previous, StructuredWord current, StructuredTextOptions options)
     {
         if (current.StartsNewLine)
         {
@@ -190,13 +190,13 @@ internal static class SemanticTextGroupingHelpers
         return gap > (maxFont * options.LineGapMultiplier);
     }
 
-    private static List<SemanticWord> CreateVisualWords(IReadOnlyList<SemanticWord> fragments, SemanticExtractOptions options)
+    private static List<StructuredWord> CreateVisualWords(IReadOnlyList<StructuredWord> fragments, StructuredTextOptions options)
     {
-        var words = new List<SemanticWord>();
-        var currentCharacters = new List<SemanticCharacter>();
+        var words = new List<StructuredWord>();
+        var currentCharacters = new List<StructuredCharacter>();
         var currentHasExplicitBreakBefore = fragments[0].HasExplicitBreakBefore;
-        SemanticCharacter? previous = null;
-        SemanticWord? previousFragment = null;
+        StructuredCharacter? previous = null;
+        StructuredWord? previousFragment = null;
 
         foreach (var fragment in fragments)
         {
@@ -230,7 +230,7 @@ internal static class SemanticTextGroupingHelpers
         return words;
     }
 
-    private static bool ShouldPreserveFragmentBoundary(SemanticWord previous, SemanticWord current, SemanticExtractOptions options)
+    private static bool ShouldPreserveFragmentBoundary(StructuredWord previous, StructuredWord current, StructuredTextOptions options)
     {
         if (!SameRotation(previous.Rotation, current.Rotation, options))
         {
@@ -246,7 +246,7 @@ internal static class SemanticTextGroupingHelpers
         return GetOverlapRatio(previous.BoundingBox, current.BoundingBox) >= options.DuplicateOverlapThreshold;
     }
 
-    private static bool ShouldBreakVisualWord(SemanticCharacter previous, SemanticCharacter current, SemanticExtractOptions options)
+    private static bool ShouldBreakVisualWord(StructuredCharacter previous, StructuredCharacter current, StructuredTextOptions options)
     {
         if (!SameRotation(previous.Rotation, current.Rotation, options))
         {
@@ -274,7 +274,7 @@ internal static class SemanticTextGroupingHelpers
         return gap > gapTolerance;
     }
 
-    private static bool ShouldBreakParagraph(SemanticLine previous, SemanticLine current, SemanticExtractOptions options)
+    private static bool ShouldBreakParagraph(StructuredLine previous, StructuredLine current, StructuredTextOptions options)
     {
         if (!SameRotation(previous.Rotation, current.Rotation, options))
         {
@@ -315,21 +315,21 @@ internal static class SemanticTextGroupingHelpers
         return intersection / minArea;
     }
 
-    private static bool SameRotation(double previous, double current, SemanticExtractOptions options)
+    private static bool SameRotation(double previous, double current, StructuredTextOptions options)
     {
         var delta = Math.Abs(previous - current);
         delta = Math.Min(delta, 360d - delta);
         return delta <= options.RotationToleranceDegrees;
     }
 
-    private static void FlushWord(List<SemanticCharacter> characters, List<SemanticWord> words, bool hasExplicitBreakBefore)
+    private static void FlushWord(List<StructuredCharacter> characters, List<StructuredWord> words, bool hasExplicitBreakBefore)
     {
         if (characters.Count == 0)
         {
             return;
         }
 
-        words.Add(new SemanticWord(characters, characters[0].PageSpace, hasExplicitBreakBefore));
+        words.Add(new StructuredWord(characters, characters[0].PageSpace, hasExplicitBreakBefore));
         characters.Clear();
     }
 }

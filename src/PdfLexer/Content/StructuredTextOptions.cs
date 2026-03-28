@@ -1,10 +1,10 @@
 namespace PdfLexer.Content;
 
-public sealed class SemanticExtractOptions
+public sealed class StructuredTextOptions
 {
     public TextOrder Order { get; init; } = TextOrder.Reading;
-    public SemanticTextMode Mode { get; init; } = SemanticTextMode.Raw;
-    public ISemanticTextGrouper? Grouper { get; init; }
+    public StructuredTextMode Mode { get; init; } = StructuredTextMode.Raw;
+    public IStructuredTextGrouper? Grouper { get; init; }
     public double DuplicateOverlapThreshold { get; init; } = 0.9d;
     public double DuplicateBaselineMultiplier { get; init; } = 0.35d;
     public double WordGapMultiplier { get; init; } = 0.5d;

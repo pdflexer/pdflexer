@@ -2,9 +2,9 @@ using PdfLexer.Fonts;
 
 namespace PdfLexer.Content;
 
-internal readonly struct SemanticGlyphMetrics
+internal readonly struct StructuredGlyphMetrics
 {
-    public SemanticGlyphMetrics(Glyph glyph, bool isVertical)
+    public StructuredGlyphMetrics(Glyph glyph, bool isVertical)
     {
         W0 = glyph.w0;
         W1 = glyph.w1;
@@ -20,9 +20,9 @@ internal readonly struct SemanticGlyphMetrics
     public decimal[]? BBox { get; }
 }
 
-internal readonly struct SemanticGlyphSnapshot
+internal readonly struct StructuredGlyphSnapshot
 {
-    public SemanticGlyphSnapshot(GfxMatrix<double> textRenderingMatrix, SemanticGlyphMetrics metrics, double fontSize)
+    public StructuredGlyphSnapshot(GfxMatrix<double> textRenderingMatrix, StructuredGlyphMetrics metrics, double fontSize)
     {
         TextRenderingMatrix = textRenderingMatrix;
         Metrics = metrics;
@@ -38,7 +38,7 @@ internal readonly struct SemanticGlyphSnapshot
     }
 
     public GfxMatrix<double> TextRenderingMatrix { get; }
-    public SemanticGlyphMetrics Metrics { get; }
+    public StructuredGlyphMetrics Metrics { get; }
     public double FontSize { get; }
     public double Rotation { get; }
     public PdfPoint<double> Origin { get; }
@@ -97,7 +97,7 @@ internal readonly struct SemanticGlyphSnapshot
         return (x / len, y / len);
     }
 
-    private static double GetInlineAdvance(GfxMatrix<double> matrix, SemanticGlyphMetrics metrics)
+    private static double GetInlineAdvance(GfxMatrix<double> matrix, StructuredGlyphMetrics metrics)
     {
         var width = metrics.IsVertical ? metrics.W1 : metrics.W0;
         var x = metrics.IsVertical ? matrix.C : matrix.A;
@@ -112,9 +112,9 @@ internal readonly struct SemanticGlyphSnapshot
     }
 }
 
-internal static class SemanticBounds
+internal static class StructuredBounds
 {
-    public static PdfRect<double> Union(IReadOnlyList<SemanticCharacter> characters)
+    public static PdfRect<double> Union(IReadOnlyList<StructuredCharacter> characters)
     {
         if (characters.Count == 0)
         {

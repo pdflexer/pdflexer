@@ -1,33 +1,33 @@
 namespace PdfLexer.Content;
 
-public sealed class DocstrumLikeSemanticTextGrouper : ISemanticTextGrouper
+public sealed class DocstrumLikeStructuredTextGrouper : IStructuredTextGrouper
 {
-    public SemanticTextGroupingResult Group(SemanticTextGroupingInput input)
+    public StructuredTextGroupingResult Group(StructuredTextGroupingInput input)
     {
         var options = input.Options;
         var contentLines = input.ContentLineCandidates != null
-            ? SemanticTextGroupingHelpers.ReconcileLineWords(
-                SemanticTextGroupingHelpers.CreateLines(input.ContentLineCandidates),
+            ? StructuredTextGroupingHelpers.ReconcileLineWords(
+                StructuredTextGroupingHelpers.CreateLines(input.ContentLineCandidates),
                 options)
             : BuildInferredLines(input.Words, options);
-        var contentParagraphs = SemanticTextGroupingHelpers.GroupParagraphs(contentLines, options);
+        var contentParagraphs = StructuredTextGroupingHelpers.GroupParagraphs(contentLines, options);
         var readingColumns = BuildColumns(contentLines);
-        var readingLines = new List<SemanticLine>(contentLines.Count);
-        var readingParagraphs = new List<SemanticParagraph>();
+        var readingLines = new List<StructuredLine>(contentLines.Count);
+        var readingParagraphs = new List<StructuredParagraph>();
         foreach (var column in readingColumns)
         {
             readingLines.AddRange(column);
-            readingParagraphs.AddRange(SemanticTextGroupingHelpers.GroupParagraphs(column, options));
+            readingParagraphs.AddRange(StructuredTextGroupingHelpers.GroupParagraphs(column, options));
         }
 
-        return SemanticTextGroupingHelpers.ToGroupingResult(contentLines, readingLines, contentParagraphs, readingParagraphs);
+        return StructuredTextGroupingHelpers.ToGroupingResult(contentLines, readingLines, contentParagraphs, readingParagraphs);
     }
 
-    private static List<SemanticLine> BuildInferredLines(IReadOnlyList<SemanticWord> words, SemanticExtractOptions options)
+    private static List<StructuredLine> BuildInferredLines(IReadOnlyList<StructuredWord> words, StructuredTextOptions options)
     {
         if (words.Count == 0)
         {
-            return new List<SemanticLine>();
+            return new List<StructuredLine>();
         }
 
         var medianFontSize = Median(words.Select(x => x.FontSize));
@@ -72,17 +72,17 @@ public sealed class DocstrumLikeSemanticTextGrouper : ISemanticTextGrouper
             .OrderBy(x => x.SequenceIndex)
             .Select(x => x.ToLine())
             .ToList();
-        return SemanticTextGroupingHelpers.ReconcileLineWords(inferredLines, options);
+        return StructuredTextGroupingHelpers.ReconcileLineWords(inferredLines, options);
     }
 
-    private static List<List<SemanticLine>> BuildColumns(IReadOnlyList<SemanticLine> contentLines)
+    private static List<List<StructuredLine>> BuildColumns(IReadOnlyList<StructuredLine> contentLines)
     {
         if (contentLines.Count <= 1)
         {
-            return new List<List<SemanticLine>> { contentLines.ToList() };
+            return new List<List<StructuredLine>> { contentLines.ToList() };
         }
 
-        var orderedByReading = SemanticTextGroupingHelpers.OrderLines(contentLines);
+        var orderedByReading = StructuredTextGroupingHelpers.OrderLines(contentLines);
         var medianLineWidth = Median(orderedByReading.Select(x => x.BoundingBox.Width()));
         var medianLineHeight = Median(orderedByReading.Select(x => x.BoundingBox.Height()));
         var horizontalTolerance = Math.Max(12d, medianLineWidth * 0.18d);
@@ -139,9 +139,9 @@ public sealed class DocstrumLikeSemanticTextGrouper : ISemanticTextGrouper
 
     private sealed class ColumnCluster
     {
-        private readonly List<SemanticLine> lines = new();
+        private readonly List<StructuredLine> lines = new();
 
-        public ColumnCluster(SemanticLine first)
+        public ColumnCluster(StructuredLine first)
         {
             Add(first);
         }
@@ -151,7 +151,7 @@ public sealed class DocstrumLikeSemanticTextGrouper : ISemanticTextGrouper
         public double Top { get; private set; }
         public double Bottom { get; private set; }
 
-        public void Add(SemanticLine line)
+        public void Add(StructuredLine line)
         {
             lines.Add(line);
             if (lines.Count == 1)
@@ -169,7 +169,7 @@ public sealed class DocstrumLikeSemanticTextGrouper : ISemanticTextGrouper
             Bottom = Math.Min(Bottom, line.BoundingBox.LLy);
         }
 
-        public bool CanAccept(SemanticLine line, double horizontalTolerance, double verticalTolerance)
+        public bool CanAccept(StructuredLine line, double horizontalTolerance, double verticalTolerance)
         {
             var box = line.BoundingBox;
             var horizontalGap = box.LLx > Right
@@ -198,17 +198,17 @@ public sealed class DocstrumLikeSemanticTextGrouper : ISemanticTextGrouper
             return topDownGap <= verticalTolerance && centerDelta <= horizontalTolerance * 1.5d;
         }
 
-        public List<SemanticLine> GetReadingLines()
+        public List<StructuredLine> GetReadingLines()
         {
-            return SemanticTextGroupingHelpers.OrderLines(lines);
+            return StructuredTextGroupingHelpers.OrderLines(lines);
         }
     }
 
     private sealed class WordLineCluster
     {
-        private readonly List<SemanticWord> words = new();
+        private readonly List<StructuredWord> words = new();
 
-        public WordLineCluster(SemanticWord first)
+        public WordLineCluster(StructuredWord first)
         {
             Add(first);
         }
@@ -219,87 +219,63 @@ public sealed class DocstrumLikeSemanticTextGrouper : ISemanticTextGrouper
         private double Right { get; set; }
         private double Top { get; set; }
         private double Bottom { get; set; }
+        private double FontSize { get; set; }
         private double Rotation { get; set; }
-        private double AverageFontSize { get; set; }
 
-        public void Add(SemanticWord word)
+        public void Add(StructuredWord word)
         {
             words.Add(word);
-            if (words.Count == 1)
+            words.Sort(static (a, b) =>
             {
-                SequenceIndex = word.SequenceIndex;
-                Baseline = word.BaselineCoordinate;
-                Left = word.BoundingBox.LLx;
-                Right = word.BoundingBox.URx;
-                Top = word.BoundingBox.URy;
-                Bottom = word.BoundingBox.LLy;
-                Rotation = word.Rotation;
-                AverageFontSize = word.FontSize;
-                return;
-            }
+                var inline = Math.Round(a.InlineStart, 4).CompareTo(Math.Round(b.InlineStart, 4));
+                return inline != 0 ? inline : a.SequenceIndex.CompareTo(b.SequenceIndex);
+            });
 
-            SequenceIndex = Math.Min(SequenceIndex, word.SequenceIndex);
+            SequenceIndex = words.Min(x => x.SequenceIndex);
             Baseline = words.Average(x => x.BaselineCoordinate);
-            Left = Math.Min(Left, word.BoundingBox.LLx);
-            Right = Math.Max(Right, word.BoundingBox.URx);
-            Top = Math.Max(Top, word.BoundingBox.URy);
-            Bottom = Math.Min(Bottom, word.BoundingBox.LLy);
-            AverageFontSize = words.Average(x => x.FontSize);
+            Left = words.Min(x => x.BoundingBox.LLx);
+            Right = words.Max(x => x.BoundingBox.URx);
+            Top = words.Max(x => x.BoundingBox.URy);
+            Bottom = words.Min(x => x.BoundingBox.LLy);
+            FontSize = words.Average(x => x.FontSize);
+            Rotation = words[0].Rotation;
         }
 
-        public bool CanAccept(SemanticWord word, double baselineTolerance, double neighborGapTolerance, SemanticExtractOptions options)
+        public bool CanAccept(StructuredWord word, double baselineTolerance, double neighborGapTolerance, StructuredTextOptions options)
         {
-            if (!SameRotation(Rotation, word.Rotation, options))
+            if (Math.Abs(word.Rotation - Rotation) > options.RotationToleranceDegrees)
             {
                 return false;
             }
 
-            var effectiveBaselineTolerance = Math.Max(baselineTolerance, Math.Max(AverageFontSize, word.FontSize) * options.LineMergeMultiplier);
-            if (Math.Abs(Baseline - word.BaselineCoordinate) > effectiveBaselineTolerance)
+            if (Math.Abs(word.BaselineCoordinate - Baseline) > baselineTolerance)
             {
                 return false;
             }
 
+            var box = word.BoundingBox;
+            var horizontalGap = box.LLx > Right
+                ? box.LLx - Right
+                : Left > box.URx
+                    ? Left - box.URx
+                    : 0d;
+            return horizontalGap <= neighborGapTolerance;
+        }
+
+        public double GetScore(StructuredWord word)
+        {
+            var baselineDelta = Math.Abs(word.BaselineCoordinate - Baseline);
             var horizontalGap = word.BoundingBox.LLx > Right
                 ? word.BoundingBox.LLx - Right
                 : Left > word.BoundingBox.URx
                     ? Left - word.BoundingBox.URx
                     : 0d;
-            if (horizontalGap > neighborGapTolerance)
-            {
-                return false;
-            }
-
-            var centerDelta = Math.Abs((((Left + Right) / 2d)) - (((word.BoundingBox.LLx + word.BoundingBox.URx) / 2d)));
-            var verticalOverlap = Math.Min(Top, word.BoundingBox.URy) - Math.Max(Bottom, word.BoundingBox.LLy);
-            return verticalOverlap >= -Math.Max(2d, AverageFontSize * 0.4d) || centerDelta <= neighborGapTolerance;
+            return baselineDelta + (horizontalGap * 0.5d);
         }
 
-        public double GetScore(SemanticWord word)
+        public StructuredLine ToLine()
         {
-            var baselineDelta = Math.Abs(Baseline - word.BaselineCoordinate);
-            var horizontalGap = word.BoundingBox.LLx > Right
-                ? word.BoundingBox.LLx - Right
-                : Left > word.BoundingBox.URx
-                    ? Left - word.BoundingBox.URx
-                    : 0d;
-            return baselineDelta * 10d + horizontalGap;
-        }
-
-        public SemanticLine ToLine()
-        {
-            var ordered = words
-                .OrderBy(x => Math.Round(x.InlineStart, 4))
-                .ThenBy(x => x.SequenceIndex)
-                .ToList();
-            return new SemanticLine(ordered, ordered[0].PageSpace);
-        }
-
-        private static bool SameRotation(double previous, double current, SemanticExtractOptions options)
-        {
-            var delta = Math.Abs(previous - current);
-            delta = Math.Min(delta, 360d - delta);
-            return delta <= options.RotationToleranceDegrees;
+            return new StructuredLine(words, words[0].PageSpace);
         }
     }
 }

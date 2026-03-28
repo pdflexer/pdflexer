@@ -10,15 +10,15 @@ using Xunit;
 
 namespace PdfLexer.Tests;
 
-public class SemanticExtractTests
+public class StructuredTextTests
 {
-    public SemanticExtractTests()
+    public StructuredTextTests()
     {
         CMaps.AddKnownPdfCMaps();
     }
 
     [Fact]
-    public void SemanticExtract_GroupsLinesAndParagraphs()
+    public void StructuredText_GroupsLinesAndParagraphs()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -33,17 +33,17 @@ public class SemanticExtractTests
                 .Text("Second paragraph");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context);
+        var structured = page.GetStructuredText(doc.Context);
 
-        Assert.Equal(3, semantic.Lines.Count);
-        Assert.Equal(2, semantic.Paragraphs.Count);
-        Assert.Equal("First paragraph line one", semantic.Lines[0].Text);
-        Assert.Equal("First paragraph line two", semantic.Lines[1].Text);
-        Assert.Equal("Second paragraph", semantic.Paragraphs[1].Text);
+        Assert.Equal(3, structured.Lines.Count);
+        Assert.Equal(2, structured.Paragraphs.Count);
+        Assert.Equal("First paragraph line one", structured.Lines[0].Text);
+        Assert.Equal("First paragraph line two", structured.Lines[1].Text);
+        Assert.Equal("Second paragraph", structured.Paragraphs[1].Text);
     }
 
     [Fact]
-    public void SemanticExtract_PreservesCompactSourceReferences()
+    public void StructuredText_PreservesCompactSourceReferences()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -54,11 +54,11 @@ public class SemanticExtractTests
                 .Text("Alpha Beta");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context);
-        var character = semantic.Characters.First();
-        var word = semantic.Words.First();
-        var line = semantic.Lines.First();
-        var paragraph = semantic.Paragraphs.First();
+        var structured = page.GetStructuredText(doc.Context);
+        var character = structured.Characters.First();
+        var word = structured.Words.First();
+        var line = structured.Lines.First();
+        var paragraph = structured.Paragraphs.First();
 
         Assert.True(character.SourceReference.OperatorLength > 0);
         Assert.Single(word.SourceReferences);
@@ -73,7 +73,7 @@ public class SemanticExtractTests
     }
 
     [Fact]
-    public void SemanticExtract_KeepsSequenceOrderingSeparateFromCompactSourceReferences()
+    public void StructuredText_KeepsSequenceOrderingSeparateFromCompactSourceReferences()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -84,18 +84,18 @@ public class SemanticExtractTests
                 .Text("Alpha");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context);
-        var characterRefs = semantic.Characters.Select(x => x.SourceReference).Distinct().ToList();
-        var characterOrder = semantic.Characters.Select(x => x.Position).ToList();
+        var structured = page.GetStructuredText(doc.Context);
+        var characterRefs = structured.Characters.Select(x => x.SourceReference).Distinct().ToList();
+        var characterOrder = structured.Characters.Select(x => x.Position).ToList();
 
         Assert.Single(characterRefs);
         Assert.Equal(5, characterOrder.Count);
-        Assert.Equal("Alpha", semantic.Words.Single().Text);
-        Assert.Single(semantic.Words.Single().SourceReferences);
+        Assert.Equal("Alpha", structured.Words.Single().Text);
+        Assert.Single(structured.Words.Single().SourceReferences);
     }
 
     [Fact]
-    public void SemanticExtract_CanReturnContentAndReadingOrderText()
+    public void StructuredText_CanReturnContentAndReadingOrderText()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -108,15 +108,15 @@ public class SemanticExtractTests
                 .Text("Upper line second");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions { Order = TextOrder.Reading });
+        var structured = page.GetStructuredText(doc.Context, new StructuredTextOptions { Order = TextOrder.Reading });
 
-        Assert.StartsWith("Lower line first", semantic.GetText(TextOrder.Content));
-        Assert.StartsWith("Upper line second", semantic.GetText(TextOrder.Reading));
-        Assert.Equal("Upper line second", semantic.Lines[0].Text);
+        Assert.StartsWith("Lower line first", structured.GetText(TextOrder.Content));
+        Assert.StartsWith("Upper line second", structured.GetText(TextOrder.Reading));
+        Assert.Equal("Upper line second", structured.Lines[0].Text);
     }
 
     [Fact]
-    public void SemanticExtract_AllowsCustomGrouperToOverrideLayout()
+    public void StructuredText_AllowsCustomGrouperToOverrideLayout()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -127,19 +127,19 @@ public class SemanticExtractTests
                 .Text("Alpha Beta");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions
+        var structured = page.GetStructuredText(doc.Context, new StructuredTextOptions
         {
             Grouper = new OneWordPerLineGrouper()
         });
 
-        Assert.Equal(2, semantic.Lines.Count);
-        Assert.Equal("Alpha", semantic.Lines[0].Text);
-        Assert.Equal("Beta", semantic.Lines[1].Text);
-        Assert.Equal("Alpha" + Environment.NewLine + Environment.NewLine + "Beta", semantic.GetText());
+        Assert.Equal(2, structured.Lines.Count);
+        Assert.Equal("Alpha", structured.Lines[0].Text);
+        Assert.Equal("Beta", structured.Lines[1].Text);
+        Assert.Equal("Alpha" + Environment.NewLine + Environment.NewLine + "Beta", structured.GetText());
     }
 
     [Fact]
-    public void SemanticExtract_ContentOrderGrouperKeepsReadingCollectionsInContentOrder()
+    public void StructuredText_ContentOrderGrouperKeepsReadingCollectionsInContentOrder()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -152,18 +152,18 @@ public class SemanticExtractTests
                 .Text("Upper line second");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions
+        var structured = page.GetStructuredText(doc.Context, new StructuredTextOptions
         {
             Order = TextOrder.Reading,
-            Grouper = new ContentOrderSemanticTextGrouper()
+            Grouper = new ContentOrderStructuredTextGrouper()
         });
 
-        Assert.StartsWith("Lower line first", semantic.GetText(TextOrder.Reading));
-        Assert.Equal("Lower line first", semantic.GetLines(TextOrder.Reading, SemanticTextMode.Raw)[0].Text);
+        Assert.StartsWith("Lower line first", structured.GetText(TextOrder.Reading));
+        Assert.Equal("Lower line first", structured.GetLines(TextOrder.Reading, StructuredTextMode.Raw)[0].Text);
     }
 
     [Fact]
-    public void SemanticExtract_DocstrumLikeGrouperReadsColumnsBeforeMovingRight()
+    public void StructuredText_DocstrumLikeGrouperReadsColumnsBeforeMovingRight()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -180,23 +180,23 @@ public class SemanticExtractTests
                 .Text("Right two");
         }
 
-        var heuristic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions { Order = TextOrder.Reading });
-        var docstrumLike = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions
+        var heuristic = page.GetStructuredText(doc.Context, new StructuredTextOptions { Order = TextOrder.Reading });
+        var docstrumLike = page.GetStructuredText(doc.Context, new StructuredTextOptions
         {
             Order = TextOrder.Reading,
-            Grouper = new DocstrumLikeSemanticTextGrouper()
+            Grouper = new DocstrumLikeStructuredTextGrouper()
         });
 
         Assert.Equal(
             new[] { "Left one", "Right one", "Left two", "Right two" },
-            heuristic.GetLines(TextOrder.Reading, SemanticTextMode.Raw).Select(x => x.Text).ToArray());
+            heuristic.GetLines(TextOrder.Reading, StructuredTextMode.Raw).Select(x => x.Text).ToArray());
         Assert.Equal(
             new[] { "Left one", "Left two", "Right one", "Right two" },
-            docstrumLike.GetLines(TextOrder.Reading, SemanticTextMode.Raw).Select(x => x.Text).ToArray());
+            docstrumLike.GetLines(TextOrder.Reading, StructuredTextMode.Raw).Select(x => x.Text).ToArray());
     }
 
     [Fact]
-    public void SemanticExtract_RebuildsReadingParagraphsFromReadingOrderedLines()
+    public void StructuredText_RebuildsReadingParagraphsFromReadingOrderedLines()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -211,8 +211,8 @@ public class SemanticExtractTests
                 .Text("Top paragraph line two");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions { Order = TextOrder.Reading });
-        var readingParagraphs = semantic.GetParagraphs(TextOrder.Reading, SemanticTextMode.Raw);
+        var structured = page.GetStructuredText(doc.Context, new StructuredTextOptions { Order = TextOrder.Reading });
+        var readingParagraphs = structured.GetParagraphs(TextOrder.Reading, StructuredTextMode.Raw);
 
         Assert.Equal(2, readingParagraphs.Count);
         Assert.Equal("Top paragraph line one" + Environment.NewLine + "Top paragraph line two", readingParagraphs[0].Text);
@@ -220,7 +220,7 @@ public class SemanticExtractTests
     }
 
     [Fact]
-    public void SemanticExtract_LazilyCachesBoundingBoxes()
+    public void StructuredText_LazilyCachesBoundingBoxes()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -232,10 +232,10 @@ public class SemanticExtractTests
                 .Text("A");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context);
-        var character = semantic.Characters.Single();
-        var word = semantic.Words.Single();
-        var line = semantic.Lines.Single();
+        var structured = page.GetStructuredText(doc.Context);
+        var character = structured.Characters.Single();
+        var word = structured.Words.Single();
+        var line = structured.Lines.Single();
 
         var charBox = character.BoundingBox;
         var wordBox = word.BoundingBox;
@@ -250,7 +250,7 @@ public class SemanticExtractTests
     }
 
     [Fact]
-    public void SemanticExtract_ExposesRelativeCoordinatesUsingCropBoxAndRotation()
+    public void StructuredText_ExposesRelativeCoordinatesUsingCropBoxAndRotation()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -263,21 +263,21 @@ public class SemanticExtractTests
                 .Text("A");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context);
-        var character = semantic.Characters.Single();
+        var structured = page.GetStructuredText(doc.Context);
+        var character = structured.Characters.Single();
 
-        Assert.Equal(300d, semantic.RelativePageBox.Width(), 6);
-        Assert.Equal(200d, semantic.RelativePageBox.Height(), 6);
+        Assert.Equal(300d, structured.RelativePageBox.Width(), 6);
+        Assert.Equal(200d, structured.RelativePageBox.Height(), 6);
         Assert.InRange(character.RelativePosition.X, 39d, 41d);
         Assert.InRange(character.RelativePosition.Y, 177d, 179d);
         Assert.True(character.RelativeBoundingBox.LLx >= 0d);
         Assert.True(character.RelativeBoundingBox.LLy >= 0d);
-        Assert.True(character.RelativeBoundingBox.URx <= semantic.RelativePageBox.URx + 0.001d);
-        Assert.True(character.RelativeBoundingBox.URy <= semantic.RelativePageBox.URy + 0.001d);
+        Assert.True(character.RelativeBoundingBox.URx <= structured.RelativePageBox.URx + 0.001d);
+        Assert.True(character.RelativeBoundingBox.URy <= structured.RelativePageBox.URy + 0.001d);
     }
 
     [Fact]
-    public void SemanticExtract_MergesOutOfOrderWordFragmentsWithinALine()
+    public void StructuredText_MergesOutOfOrderWordFragmentsWithinALine()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -290,16 +290,16 @@ public class SemanticExtractTests
                 .Text("Wor");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions { Order = TextOrder.Reading });
+        var structured = page.GetStructuredText(doc.Context, new StructuredTextOptions { Order = TextOrder.Reading });
 
-        Assert.Single(semantic.Lines);
-        Assert.Single(semantic.Words);
-        Assert.Equal("World", semantic.Words[0].Text);
-        Assert.Equal("World", semantic.Lines[0].Text);
+        Assert.Single(structured.Lines);
+        Assert.Single(structured.Words);
+        Assert.Equal("World", structured.Words[0].Text);
+        Assert.Equal("World", structured.Lines[0].Text);
     }
 
     [Fact]
-    public void SemanticExtract_CanExposeRawAndDeduplicatedWords()
+    public void StructuredText_CanExposeRawAndDeduplicatedWords()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -312,17 +312,17 @@ public class SemanticExtractTests
                 .Text("Echo");
         }
 
-        var raw = page.GetSemanticExtract(doc.Context);
-        var deduplicated = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions { Mode = SemanticTextMode.Deduplicated });
+        var raw = page.GetStructuredText(doc.Context);
+        var deduplicated = page.GetStructuredText(doc.Context, new StructuredTextOptions { Mode = StructuredTextMode.Deduplicated });
 
         Assert.Equal(2, raw.RawWords.Count);
         Assert.Single(deduplicated.DeduplicatedWords);
-        Assert.Equal("Echo Echo", raw.GetText(TextOrder.Reading, SemanticTextMode.Raw));
-        Assert.Equal("Echo", deduplicated.GetText(TextOrder.Reading, SemanticTextMode.Deduplicated));
+        Assert.Equal("Echo Echo", raw.GetText(TextOrder.Reading, StructuredTextMode.Raw));
+        Assert.Equal("Echo", deduplicated.GetText(TextOrder.Reading, StructuredTextMode.Deduplicated));
     }
 
     [Fact]
-    public void SemanticExtract_DoesNotDeduplicateSeparatedRepeatedWords()
+    public void StructuredText_DoesNotDeduplicateSeparatedRepeatedWords()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -335,14 +335,14 @@ public class SemanticExtractTests
                 .Text("Echo");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions { Mode = SemanticTextMode.Deduplicated });
+        var structured = page.GetStructuredText(doc.Context, new StructuredTextOptions { Mode = StructuredTextMode.Deduplicated });
 
-        Assert.Equal(2, semantic.DeduplicatedWords.Count);
-        Assert.Equal("Echo Echo", semantic.GetText(TextOrder.Reading, SemanticTextMode.Deduplicated));
+        Assert.Equal(2, structured.DeduplicatedWords.Count);
+        Assert.Equal("Echo Echo", structured.GetText(TextOrder.Reading, StructuredTextMode.Deduplicated));
     }
 
     [Fact]
-    public void SemanticExtract_DeduplicatedModeStillUsesSelectedGrouper()
+    public void StructuredText_DeduplicatedModeStillUsesSelectedGrouper()
     {
         using var doc = PdfDocument.Create();
         var page = doc.AddPage();
@@ -355,28 +355,28 @@ public class SemanticExtractTests
                 .Text("Echo");
         }
 
-        var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions
+        var structured = page.GetStructuredText(doc.Context, new StructuredTextOptions
         {
-            Mode = SemanticTextMode.Deduplicated,
+            Mode = StructuredTextMode.Deduplicated,
             Grouper = new OneWordPerLineGrouper()
         });
 
-        Assert.Single(semantic.DeduplicatedWords);
-        Assert.Single(semantic.GetLines(TextOrder.Reading, SemanticTextMode.Deduplicated));
-        Assert.Equal("Echo", semantic.GetText(TextOrder.Reading, SemanticTextMode.Deduplicated));
+        Assert.Single(structured.DeduplicatedWords);
+        Assert.Single(structured.GetLines(TextOrder.Reading, StructuredTextMode.Deduplicated));
+        Assert.Equal("Echo", structured.GetText(TextOrder.Reading, StructuredTextMode.Deduplicated));
     }
 
     [Fact]
-    public void SemanticExtract_HandlesTracemonkeyPageOneMoreReasonably()
+    public void StructuredText_HandlesTracemonkeyPageOneMoreReasonably()
     {
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
         var pdf = Path.Combine(tp, "pdfs", "pdfjs", "tracemonkey.pdf");
         using var doc = PdfDocument.Open(File.ReadAllBytes(pdf));
         var page = doc.Pages[0];
 
-        var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions { Order = TextOrder.Reading });
-        var readingLines = semantic.GetLines(TextOrder.Reading, SemanticTextMode.Raw);
-        var readingParagraphs = semantic.GetParagraphs(TextOrder.Reading, SemanticTextMode.Raw);
+        var structured = page.GetStructuredText(doc.Context, new StructuredTextOptions { Order = TextOrder.Reading });
+        var readingLines = structured.GetLines(TextOrder.Reading, StructuredTextMode.Raw);
+        var readingParagraphs = structured.GetParagraphs(TextOrder.Reading, StructuredTextMode.Raw);
 
         Assert.True(readingLines[0].Words.Count > 1);
         Assert.NotEmpty(readingParagraphs);
@@ -384,17 +384,17 @@ public class SemanticExtractTests
         Assert.Contains(readingParagraphs, x => x.Text.Contains("Abstract", StringComparison.Ordinal));
     }
 
-    private sealed class OneWordPerLineGrouper : ISemanticTextGrouper
+    private sealed class OneWordPerLineGrouper : IStructuredTextGrouper
     {
-        public SemanticTextGroupingResult Group(SemanticTextGroupingInput input)
+        public StructuredTextGroupingResult Group(StructuredTextGroupingInput input)
         {
             var lines = input.Words
-                .Select(x => (IReadOnlyList<SemanticWord>)new[] { x })
+                .Select(x => (IReadOnlyList<StructuredWord>)new[] { x })
                 .ToList();
             var paragraphs = lines
-                .Select(x => (IReadOnlyList<IReadOnlyList<SemanticWord>>)new[] { x })
+                .Select(x => (IReadOnlyList<IReadOnlyList<StructuredWord>>)new[] { x })
                 .ToList();
-            return new SemanticTextGroupingResult
+            return new StructuredTextGroupingResult
             {
                 ContentLines = lines,
                 ReadingLines = lines,

@@ -123,7 +123,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         }
 
         [Benchmark()]
-        public int ReadSemanticTxtPdfLexer()
+        public int ReadStructuredTxtPdfLexer()
         {
             int total = 0;
             int chars = 0;
@@ -132,9 +132,9 @@ namespace PdfLexer.Benchmarks.Benchmarks
                 using var doc = PdfDocument.Open(pdf);
                 foreach (var page in doc.Pages)
                 {
-                    var semantic = page.GetSemanticExtract(doc.Context);
-                    total += semantic.Lines.Count;
-                    foreach (var c in semantic.Characters)
+                    var structured = page.GetStructuredText(doc.Context);
+                    total += structured.Lines.Count;
+                    foreach (var c in structured.Characters)
                     {
                         unchecked { chars += c.Char; }
                     }
@@ -145,7 +145,7 @@ namespace PdfLexer.Benchmarks.Benchmarks
         }
 
         [Benchmark()]
-        public int ReadSemanticTxtPdfLexerDeduplicated()
+        public int ReadStructuredTxtPdfLexerDeduplicated()
         {
             int total = 0;
             int chars = 0;
@@ -154,12 +154,12 @@ namespace PdfLexer.Benchmarks.Benchmarks
                 using var doc = PdfDocument.Open(pdf);
                 foreach (var page in doc.Pages)
                 {
-                    var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions
+                    var structured = page.GetStructuredText(doc.Context, new StructuredTextOptions
                     {
-                        Mode = SemanticTextMode.Deduplicated
+                        Mode = StructuredTextMode.Deduplicated
                     });
-                    total += semantic.DeduplicatedLines.Count;
-                    foreach (var c in semantic.Characters)
+                    total += structured.DeduplicatedLines.Count;
+                    foreach (var c in structured.Characters)
                     {
                         unchecked { chars += c.Char; }
                     }

@@ -1,14 +1,14 @@
 namespace PdfLexer.Content;
 
-public sealed class SemanticCharacter
+public sealed class StructuredCharacter
 {
     private PdfRect<double>? boundingBox;
     private PdfRect<double>? relativeBoundingBox;
     private PdfPoint<double>? relativePosition;
     private readonly int sequenceIndex;
-    private readonly SemanticPageSpace pageSpace;
+    private readonly StructuredPageSpace pageSpace;
 
-    internal SemanticCharacter(char value, SemanticGlyphSnapshot snapshot, SemanticSourceRef sourceReference, int sequenceIndex, bool startsNewLine, SemanticPageSpace pageSpace)
+    internal StructuredCharacter(char value, StructuredGlyphSnapshot snapshot, StructuredSourceRef sourceReference, int sequenceIndex, bool startsNewLine, StructuredPageSpace pageSpace)
     {
         Char = value;
         Snapshot = snapshot;
@@ -18,11 +18,11 @@ public sealed class SemanticCharacter
         this.pageSpace = pageSpace;
     }
 
-    internal SemanticGlyphSnapshot Snapshot { get; }
+    internal StructuredGlyphSnapshot Snapshot { get; }
     internal bool StartsNewLine { get; }
 
     public char Char { get; }
-    public SemanticSourceRef SourceReference { get; }
+    public StructuredSourceRef SourceReference { get; }
     public PdfPoint<double> Position => Snapshot.Origin;
     public PdfPoint<double> RelativePosition => relativePosition ??= pageSpace.Normalize(Position);
     public double Rotation => Snapshot.Rotation;
@@ -30,7 +30,7 @@ public sealed class SemanticCharacter
     public PdfRect<double> BoundingBox => boundingBox ??= Snapshot.CreateBoundingBox();
     public PdfRect<double> RelativeBoundingBox => relativeBoundingBox ??= pageSpace.Normalize(BoundingBox);
 
-    internal SemanticPageSpace PageSpace => pageSpace;
+    internal StructuredPageSpace PageSpace => pageSpace;
     internal int SequenceIndex => sequenceIndex;
     internal double InlineStart => Snapshot.InlineCoordinate(Position);
     internal double InlineEnd => InlineStart + Snapshot.InlineAdvance;

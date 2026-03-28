@@ -1,6 +1,6 @@
 namespace PdfLexer.Content;
 
-public enum SemanticTextMode
+public enum StructuredTextMode
 {
     Raw,
     Deduplicated

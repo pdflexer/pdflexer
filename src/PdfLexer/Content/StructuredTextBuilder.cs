@@ -3,21 +3,21 @@ using PdfLexer.DOM;
 
 namespace PdfLexer.Content;
 
-internal static class SemanticTextBuilder
+internal static class StructuredTextBuilder
 {
-    private static readonly ISemanticTextGrouper DefaultGrouper = new HeuristicSemanticTextGrouper();
+    private static readonly IStructuredTextGrouper DefaultGrouper = new HeuristicStructuredTextGrouper();
 
-    public static SemanticTextPage Build(ParsingContext ctx, PdfPage page, SemanticExtractOptions? options)
+    public static StructuredTextPage Build(ParsingContext ctx, PdfPage page, StructuredTextOptions? options)
     {
-        options ??= new SemanticExtractOptions();
+        options ??= new StructuredTextOptions();
         var grouper = options.Grouper ?? DefaultGrouper;
-        var pageSpace = new SemanticPageSpace(page);
+        var pageSpace = new StructuredPageSpace(page);
         var characters = ProjectCharacters(ctx, page, pageSpace);
         var fragments = GroupWords(characters, options);
         var rawLayout = GroupWordsIntoLayout(fragments, options, grouper);
         var rawWords = rawLayout.ContentLines.SelectMany(x => x.Words).ToList();
 
-        return new SemanticTextPage(
+        return new StructuredTextPage(
             characters,
             pageSpace,
             rawWords,
@@ -30,9 +30,9 @@ internal static class SemanticTextBuilder
             () => BuildDeduplicated(rawLayout.ContentLines, options, grouper));
     }
 
-    private static List<SemanticCharacter> ProjectCharacters(ParsingContext ctx, PdfPage page, SemanticPageSpace pageSpace)
+    private static List<StructuredCharacter> ProjectCharacters(ParsingContext ctx, PdfPage page, StructuredPageSpace pageSpace)
     {
-        var characters = new List<SemanticCharacter>();
+        var characters = new List<StructuredCharacter>();
         var scanner = new TextScanner(ctx, page);
         var sequenceIndex = 0;
         while (scanner.Advance())
@@ -40,16 +40,16 @@ internal static class SemanticTextBuilder
             var textRenderingMatrix = scanner.GraphicsState.Text.TextRenderingMatrix;
             var glyph = scanner.Glyph;
             var isVertical = scanner.GraphicsState.Font?.IsVertical ?? false;
-            var metrics = new SemanticGlyphMetrics(glyph, isVertical);
-            var snapshot = new SemanticGlyphSnapshot(textRenderingMatrix, metrics, scanner.GraphicsState.FontSize);
+            var metrics = new StructuredGlyphMetrics(glyph, isVertical);
+            var snapshot = new StructuredGlyphSnapshot(textRenderingMatrix, metrics, scanner.GraphicsState.FontSize);
             var emitted = glyph.MultiChar ?? glyph.Char.ToString();
             for (var i = 0; i < emitted.Length; i++)
             {
-                var sourceReference = new SemanticSourceRef(
+                var sourceReference = new StructuredSourceRef(
                     scanner.Scanner.CurrentStreamId,
                     scanner.TxtOpStart,
                     scanner.TxtOpLength);
-                characters.Add(new SemanticCharacter(
+                characters.Add(new StructuredCharacter(
                     emitted[i],
                     snapshot,
                     sourceReference,
@@ -63,11 +63,11 @@ internal static class SemanticTextBuilder
         return characters;
     }
 
-    private static List<SemanticWord> GroupWords(IReadOnlyList<SemanticCharacter> characters, SemanticExtractOptions options)
+    private static List<StructuredWord> GroupWords(IReadOnlyList<StructuredCharacter> characters, StructuredTextOptions options)
     {
-        var words = new List<SemanticWord>();
-        var current = new List<SemanticCharacter>();
-        SemanticCharacter? previous = null;
+        var words = new List<StructuredWord>();
+        var current = new List<StructuredCharacter>();
+        StructuredCharacter? previous = null;
         var hasExplicitBreakBefore = false;
         foreach (var character in characters)
         {
@@ -93,13 +93,13 @@ internal static class SemanticTextBuilder
         return words;
     }
 
-    private static SemanticTextLayout GroupWordsIntoLayout(
-        IReadOnlyList<SemanticWord> words,
-        SemanticExtractOptions options,
-        ISemanticTextGrouper grouper,
-        IReadOnlyList<IReadOnlyList<SemanticWord>>? contentLineCandidates = null)
+    private static StructuredTextLayout GroupWordsIntoLayout(
+        IReadOnlyList<StructuredWord> words,
+        StructuredTextOptions options,
+        IStructuredTextGrouper grouper,
+        IReadOnlyList<IReadOnlyList<StructuredWord>>? contentLineCandidates = null)
     {
-        var grouped = grouper.Group(new SemanticTextGroupingInput
+        var grouped = grouper.Group(new StructuredTextGroupingInput
         {
             Words = words,
             ContentLineCandidates = contentLineCandidates,
@@ -108,13 +108,13 @@ internal static class SemanticTextBuilder
         return CreateLayout(grouped);
     }
 
-    private static List<SemanticLine> DeduplicateLines(IReadOnlyList<SemanticLine> lines, SemanticExtractOptions options)
+    private static List<StructuredLine> DeduplicateLines(IReadOnlyList<StructuredLine> lines, StructuredTextOptions options)
     {
-        var deduplicated = new List<SemanticLine>(lines.Count);
-        var duplicateIndex = new Dictionary<string, List<SemanticWord>>(StringComparer.Ordinal);
+        var deduplicated = new List<StructuredLine>(lines.Count);
+        var duplicateIndex = new Dictionary<string, List<StructuredWord>>(StringComparer.Ordinal);
         foreach (var line in lines)
         {
-            var filtered = new List<SemanticWord>(line.Words.Count);
+            var filtered = new List<StructuredWord>(line.Words.Count);
             foreach (var word in line.Words)
             {
                 if (TryGetDuplicate(word, duplicateIndex, options))
@@ -128,80 +128,80 @@ internal static class SemanticTextBuilder
 
             if (filtered.Count > 0)
             {
-                deduplicated.Add(new SemanticLine(filtered, filtered[0].PageSpace));
+                deduplicated.Add(new StructuredLine(filtered, filtered[0].PageSpace));
             }
         }
 
         return deduplicated;
     }
 
-    private static SemanticTextDedupData BuildDeduplicated(
-        IReadOnlyList<SemanticLine> rawContentLines,
-        SemanticExtractOptions options,
-        ISemanticTextGrouper grouper)
+    private static StructuredTextDedupData BuildDeduplicated(
+        IReadOnlyList<StructuredLine> rawContentLines,
+        StructuredTextOptions options,
+        IStructuredTextGrouper grouper)
     {
         var deduplicatedContentLines = DeduplicateLines(rawContentLines, options);
         var layout = GroupWordsIntoLayout(
             deduplicatedContentLines.SelectMany(x => x.Words).ToList(),
             options,
             grouper,
-            deduplicatedContentLines.Select(x => (IReadOnlyList<SemanticWord>)x.Words).ToList());
+            deduplicatedContentLines.Select(x => (IReadOnlyList<StructuredWord>)x.Words).ToList());
 
-        return new SemanticTextDedupData
+        return new StructuredTextDedupData
         {
-            Words = new ReadOnlyCollection<SemanticWord>(layout.ContentLines.SelectMany(x => x.Words).ToList()),
-            ContentLines = new ReadOnlyCollection<SemanticLine>(layout.ContentLines.ToList()),
-            ReadingLines = new ReadOnlyCollection<SemanticLine>(layout.ReadingLines.ToList()),
-            ContentParagraphs = new ReadOnlyCollection<SemanticParagraph>(layout.ContentParagraphs.ToList()),
-            ReadingParagraphs = new ReadOnlyCollection<SemanticParagraph>(layout.ReadingParagraphs.ToList())
+            Words = new ReadOnlyCollection<StructuredWord>(layout.ContentLines.SelectMany(x => x.Words).ToList()),
+            ContentLines = new ReadOnlyCollection<StructuredLine>(layout.ContentLines.ToList()),
+            ReadingLines = new ReadOnlyCollection<StructuredLine>(layout.ReadingLines.ToList()),
+            ContentParagraphs = new ReadOnlyCollection<StructuredParagraph>(layout.ContentParagraphs.ToList()),
+            ReadingParagraphs = new ReadOnlyCollection<StructuredParagraph>(layout.ReadingParagraphs.ToList())
         };
     }
 
-    private static SemanticTextLayout CreateLayout(SemanticTextGroupingResult grouped)
+    private static StructuredTextLayout CreateLayout(StructuredTextGroupingResult grouped)
     {
-        return new SemanticTextLayout(
+        return new StructuredTextLayout(
             CreateLines(grouped.ContentLines, "content line"),
             CreateLines(grouped.ReadingLines, "reading line"),
             CreateParagraphs(grouped.ContentParagraphs, "content paragraph"),
             CreateParagraphs(grouped.ReadingParagraphs, "reading paragraph"));
     }
 
-    private static List<SemanticLine> CreateLines(IReadOnlyList<IReadOnlyList<SemanticWord>> lineWordGroups, string scope)
+    private static List<StructuredLine> CreateLines(IReadOnlyList<IReadOnlyList<StructuredWord>> lineWordGroups, string scope)
     {
-        var lines = new List<SemanticLine>(lineWordGroups.Count);
+        var lines = new List<StructuredLine>(lineWordGroups.Count);
         foreach (var wordGroup in lineWordGroups)
         {
             if (wordGroup.Count == 0)
             {
-                throw new InvalidOperationException($"Semantic grouper returned an empty {scope}.");
+                throw new InvalidOperationException($"Structured text grouper returned an empty {scope}.");
             }
 
-            lines.Add(new SemanticLine(wordGroup, wordGroup[0].PageSpace));
+            lines.Add(new StructuredLine(wordGroup, wordGroup[0].PageSpace));
         }
 
         return lines;
     }
 
-    private static List<SemanticParagraph> CreateParagraphs(
-        IReadOnlyList<IReadOnlyList<IReadOnlyList<SemanticWord>>> paragraphLineWordGroups,
+    private static List<StructuredParagraph> CreateParagraphs(
+        IReadOnlyList<IReadOnlyList<IReadOnlyList<StructuredWord>>> paragraphLineWordGroups,
         string scope)
     {
-        var paragraphs = new List<SemanticParagraph>(paragraphLineWordGroups.Count);
+        var paragraphs = new List<StructuredParagraph>(paragraphLineWordGroups.Count);
         foreach (var paragraphLineGroups in paragraphLineWordGroups)
         {
             var lines = CreateLines(paragraphLineGroups, scope + " line");
             if (lines.Count == 0)
             {
-                throw new InvalidOperationException($"Semantic grouper returned an empty {scope}.");
+                throw new InvalidOperationException($"Structured text grouper returned an empty {scope}.");
             }
 
-            paragraphs.Add(new SemanticParagraph(lines, lines[0].PageSpace));
+            paragraphs.Add(new StructuredParagraph(lines, lines[0].PageSpace));
         }
 
         return paragraphs;
     }
 
-    private static bool ShouldBreakWord(SemanticCharacter previous, SemanticCharacter current, SemanticExtractOptions options)
+    private static bool ShouldBreakWord(StructuredCharacter previous, StructuredCharacter current, StructuredTextOptions options)
     {
         if (current.StartsNewLine)
         {
@@ -226,9 +226,9 @@ internal static class SemanticTextBuilder
     }
 
     private static bool TryGetDuplicate(
-        SemanticWord candidate,
-        IReadOnlyDictionary<string, List<SemanticWord>> duplicateIndex,
-        SemanticExtractOptions options)
+        StructuredWord candidate,
+        IReadOnlyDictionary<string, List<StructuredWord>> duplicateIndex,
+        StructuredTextOptions options)
     {
         if (!duplicateIndex.TryGetValue(candidate.Text, out var effectiveWords))
         {
@@ -259,11 +259,11 @@ internal static class SemanticTextBuilder
         return false;
     }
 
-    private static void AddToDuplicateIndex(SemanticWord word, Dictionary<string, List<SemanticWord>> duplicateIndex)
+    private static void AddToDuplicateIndex(StructuredWord word, Dictionary<string, List<StructuredWord>> duplicateIndex)
     {
         if (!duplicateIndex.TryGetValue(word.Text, out var bucket))
         {
-            bucket = new List<SemanticWord>();
+            bucket = new List<StructuredWord>();
             duplicateIndex[word.Text] = bucket;
         }
 
@@ -293,32 +293,32 @@ internal static class SemanticTextBuilder
         return intersection / minArea;
     }
 
-    private static bool SameRotation(double previous, double current, SemanticExtractOptions options)
+    private static bool SameRotation(double previous, double current, StructuredTextOptions options)
     {
         var delta = Math.Abs(previous - current);
         delta = Math.Min(delta, 360d - delta);
         return delta <= options.RotationToleranceDegrees;
     }
 
-    private static void FlushWord(List<SemanticCharacter> characters, List<SemanticWord> words, bool hasExplicitBreakBefore)
+    private static void FlushWord(List<StructuredCharacter> characters, List<StructuredWord> words, bool hasExplicitBreakBefore)
     {
         if (characters.Count == 0)
         {
             return;
         }
 
-        words.Add(new SemanticWord(characters, characters[0].PageSpace, hasExplicitBreakBefore));
+        words.Add(new StructuredWord(characters, characters[0].PageSpace, hasExplicitBreakBefore));
         characters.Clear();
     }
 }
 
-internal sealed class SemanticTextLayout
+internal sealed class StructuredTextLayout
 {
-    public SemanticTextLayout(
-        IReadOnlyList<SemanticLine> contentLines,
-        IReadOnlyList<SemanticLine> readingLines,
-        IReadOnlyList<SemanticParagraph> contentParagraphs,
-        IReadOnlyList<SemanticParagraph> readingParagraphs)
+    public StructuredTextLayout(
+        IReadOnlyList<StructuredLine> contentLines,
+        IReadOnlyList<StructuredLine> readingLines,
+        IReadOnlyList<StructuredParagraph> contentParagraphs,
+        IReadOnlyList<StructuredParagraph> readingParagraphs)
     {
         ContentLines = contentLines;
         ReadingLines = readingLines;
@@ -326,8 +326,8 @@ internal sealed class SemanticTextLayout
         ReadingParagraphs = readingParagraphs;
     }
 
-    public IReadOnlyList<SemanticLine> ContentLines { get; }
-    public IReadOnlyList<SemanticLine> ReadingLines { get; }
-    public IReadOnlyList<SemanticParagraph> ContentParagraphs { get; }
-    public IReadOnlyList<SemanticParagraph> ReadingParagraphs { get; }
+    public IReadOnlyList<StructuredLine> ContentLines { get; }
+    public IReadOnlyList<StructuredLine> ReadingLines { get; }
+    public IReadOnlyList<StructuredParagraph> ContentParagraphs { get; }
+    public IReadOnlyList<StructuredParagraph> ReadingParagraphs { get; }
 }
