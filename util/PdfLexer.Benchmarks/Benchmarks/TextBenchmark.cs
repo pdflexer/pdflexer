@@ -123,6 +123,53 @@ namespace PdfLexer.Benchmarks.Benchmarks
         }
 
         [Benchmark()]
+        public int ReadSemanticTxtPdfLexer()
+        {
+            int total = 0;
+            int chars = 0;
+            foreach (var pdf in pdfs)
+            {
+                using var doc = PdfDocument.Open(pdf);
+                foreach (var page in doc.Pages)
+                {
+                    var semantic = page.GetSemanticExtract(doc.Context);
+                    total += semantic.Lines.Count;
+                    foreach (var c in semantic.Characters)
+                    {
+                        unchecked { chars += c.Char; }
+                    }
+                }
+            }
+
+            unchecked { return chars + total; }
+        }
+
+        [Benchmark()]
+        public int ReadSemanticTxtPdfLexerDeduplicated()
+        {
+            int total = 0;
+            int chars = 0;
+            foreach (var pdf in pdfs)
+            {
+                using var doc = PdfDocument.Open(pdf);
+                foreach (var page in doc.Pages)
+                {
+                    var semantic = page.GetSemanticExtract(doc.Context, new SemanticExtractOptions
+                    {
+                        Mode = SemanticTextMode.Deduplicated
+                    });
+                    total += semantic.DeduplicatedLines.Count;
+                    foreach (var c in semantic.Characters)
+                    {
+                        unchecked { chars += c.Char; }
+                    }
+                }
+            }
+
+            unchecked { return chars + total; }
+        }
+
+        [Benchmark()]
         public unsafe uint ReadTxtPdfiumCore()
         {
 

@@ -165,6 +165,91 @@ async Task<int> RunBase(string data, string type, string pdfRoot, string[] pdfPa
 
             }
             return success ? 0 : 1;
+        case "SEMANTIC-TEXT":
+        case "SEMANTIC":
+            {
+                var semanticTester = new SemanticTextTests();
+                var semanticSuccess = true;
+                foreach (var file in pdfPaths)
+                {
+                    var nm = Path.GetFileName(file);
+                    try
+                    {
+                        Console.WriteLine($"Starting {file}");
+                        writer.WriteLine($"[{nm}] Start");
+                        writer.Flush();
+
+                        var semanticResult = semanticTester.RunOne(file, output);
+                        var baselinePath = Path.Combine(data, Path.GetFileName(semanticResult.SnapshotPath));
+                        var info = new ErrInfo
+                        {
+                            PdfName = nm,
+                            FailedPages = new List<int>(),
+                            Errs = new List<string>()
+                        };
+
+                        RunResult result;
+                        string message;
+                        if (!File.Exists(baselinePath))
+                        {
+                            result = RunResult.NewTest;
+                            message = "No semantic baseline snapshot found.";
+                            info.Status = TestStatus.Match;
+                        }
+                        else if (SemanticSnapshotsMatch(baselinePath, semanticResult.SnapshotPath))
+                        {
+                            result = RunResult.Match;
+                            message = "";
+                            info.Status = TestStatus.Match;
+                        }
+                        else
+                        {
+                            result = RunResult.Regression;
+                            message = "Semantic snapshot differs from baseline.";
+                            info.Status = TestStatus.Differences;
+                            info.Errs.Add(message);
+                            info.ErrCount = 1;
+                            WriteSemanticDiffHint(baselinePath, semanticResult.SnapshotPath, output);
+                            semanticSuccess = false;
+                        }
+
+                        if (semanticResult.ReviewWarnings.Count > 0)
+                        {
+                            var reviewMessage = $"Review flagged: {semanticResult.ReviewWarnings.Count} heuristic warning(s).";
+                            message = string.IsNullOrEmpty(message) ? reviewMessage : $"{message} {reviewMessage}";
+                        }
+
+                        writer.WriteLine($"[{nm}] {result} {message}");
+                        errInfo.WriteLine(JsonSerializer.Serialize(info));
+                        summary.WriteLine(JsonSerializer.Serialize(new
+                        {
+                            Result = result.ToString(),
+                            PdfName = nm,
+                            Message = message,
+                            ReviewWarnings = semanticResult.ReviewWarnings.Count,
+                            ReviewPath = semanticResult.ReviewPath
+                        }));
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine("Failure: " + e.Message);
+                        writer.WriteLine($"[{nm}] Regression {e.Message}");
+                        errInfo.WriteLine(JsonSerializer.Serialize(new ErrInfo
+                        {
+                            PdfName = nm,
+                            Status = TestStatus.PdfLexerError,
+                            Failure = true,
+                            FailureMsg = e.Message,
+                            ErrCount = 1,
+                            Errs = new List<string> { e.Message }
+                        }));
+                        summary.WriteLine(JsonSerializer.Serialize(new { Result = RunResult.Regression.ToString(), PdfName = nm, Message = e.Message }));
+                        semanticSuccess = false;
+                    }
+                }
+
+                return semanticSuccess ? 0 : 1;
+            }
         case "MERGE":
             return RunMergeTests(pdfPaths, output) ? 0 : 1;
         case "QUICKSAVE":
@@ -231,6 +316,107 @@ async Task<int> RunBase(string data, string type, string pdfRoot, string[] pdfPa
         default:
             Console.WriteLine("Unknown test type: " + type);
             return 1;
+    }
+}
+
+static bool SemanticSnapshotsMatch(string baselinePath, string candidatePath)
+{
+    using var baseline = JsonDocument.Parse(File.ReadAllText(baselinePath));
+    using var candidate = JsonDocument.Parse(File.ReadAllText(candidatePath));
+    return JsonElementsEqual(baseline.RootElement, candidate.RootElement);
+}
+
+static void WriteSemanticDiffHint(string baselinePath, string candidatePath, string output)
+{
+    var baseName = Path.GetFileNameWithoutExtension(candidatePath);
+    var diffPath = Path.Combine(output, $"{baseName}_semantic.diff.txt");
+
+    var baselineLines = File.ReadAllLines(baselinePath);
+    var candidateLines = File.ReadAllLines(candidatePath);
+    var max = Math.Max(baselineLines.Length, candidateLines.Length);
+
+    using var writer = new StreamWriter(diffPath, false);
+    writer.WriteLine($"baseline: {baselinePath}");
+    writer.WriteLine($"candidate: {candidatePath}");
+
+    for (var i = 0; i < max; i++)
+    {
+        var baseline = i < baselineLines.Length ? baselineLines[i] : "<missing>";
+        var candidate = i < candidateLines.Length ? candidateLines[i] : "<missing>";
+        if (string.Equals(baseline, candidate, StringComparison.Ordinal))
+        {
+            continue;
+        }
+
+        writer.WriteLine();
+        writer.WriteLine($"line {i + 1}");
+        writer.WriteLine($"baseline:  {baseline}");
+        writer.WriteLine($"candidate: {candidate}");
+        break;
+    }
+}
+
+static bool JsonElementsEqual(JsonElement left, JsonElement right)
+{
+    if (left.ValueKind != right.ValueKind)
+    {
+        return false;
+    }
+
+    switch (left.ValueKind)
+    {
+        case JsonValueKind.Object:
+            var rightProperties = right.EnumerateObject().ToDictionary(x => x.Name, x => x.Value);
+            var propertyCount = 0;
+            foreach (var leftProperty in left.EnumerateObject())
+            {
+                propertyCount++;
+                if (!rightProperties.TryGetValue(leftProperty.Name, out var rightValue))
+                {
+                    return false;
+                }
+
+                if (!JsonElementsEqual(leftProperty.Value, rightValue))
+                {
+                    return false;
+                }
+            }
+
+            return propertyCount == rightProperties.Count;
+        case JsonValueKind.Array:
+            var leftItems = left.EnumerateArray();
+            var rightItems = right.EnumerateArray();
+            while (true)
+            {
+                var hasLeft = leftItems.MoveNext();
+                var hasRight = rightItems.MoveNext();
+                if (hasLeft != hasRight)
+                {
+                    return false;
+                }
+
+                if (!hasLeft)
+                {
+                    return true;
+                }
+
+                if (!JsonElementsEqual(leftItems.Current, rightItems.Current))
+                {
+                    return false;
+                }
+            }
+        case JsonValueKind.String:
+            return string.Equals(left.GetString(), right.GetString(), StringComparison.Ordinal);
+        case JsonValueKind.Number:
+            return string.Equals(left.GetRawText(), right.GetRawText(), StringComparison.Ordinal);
+        case JsonValueKind.True:
+        case JsonValueKind.False:
+            return left.GetBoolean() == right.GetBoolean();
+        case JsonValueKind.Null:
+        case JsonValueKind.Undefined:
+            return true;
+        default:
+            return string.Equals(left.GetRawText(), right.GetRawText(), StringComparison.Ordinal);
     }
 }
 

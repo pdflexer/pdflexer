@@ -12,7 +12,7 @@ namespace PdfLexer.ImageTests
     public class ImageInsertTests
     {
         [InlineData("0TxRvxWo5wUThisVd6EjFw.png")]
-        [Theory]
+        [ImageAssetTheory]
         public void It_Inserts(string name)
         {
             var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -58,8 +58,6 @@ namespace PdfLexer.ImageTests
                 doc.SaveTo(fso);
             }
         }
-
-
 
     }
 }
