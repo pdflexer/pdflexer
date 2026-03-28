@@ -286,7 +286,7 @@ $interestingTransitions = $transitionCounts.GetEnumerator() |
 
 $transitionSummary = [System.Collections.ArrayList]@()
 foreach ($transition in $interestingTransitions) {
-    $transitionSummary.Add("{0} = {1}" -f $transition.Key, $transition.Value) | Out-Null
+    $transitionSummary.Add(("{0} = {1}" -f $transition.Key, $transition.Value)) | Out-Null
     foreach ($pdfName in Get-DisplayEntries -Values $transitionFiles[$transition.Key] -MaxItems 12) {
         $transitionSummary.Add("  $pdfName") | Out-Null
     }

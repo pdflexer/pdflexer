@@ -5,6 +5,7 @@ using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.Serializers;
 using PdfLexer.Writing;
+using System.Xml.Linq;
 
 namespace pdflexer.PdfiumRegressionTester.Tests;
 
@@ -45,6 +46,7 @@ internal class ModelRebuild : ITest
         page.Resources = resources;
         return page;
 
+
         static bool ContainsForm(IEnumerable<IContentNode<decimal>> nodes)
         {
             foreach (var node in nodes)
@@ -53,13 +55,11 @@ internal class ModelRebuild : ITest
                 {
                     return true;
                 }
-
                 if (node is IContentContainer<decimal> container && ContainsForm(container.Children))
                 {
                     return true;
                 }
             }
-
             return false;
         }
     }

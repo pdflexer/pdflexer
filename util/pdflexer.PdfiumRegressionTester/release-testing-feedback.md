@@ -29,6 +29,8 @@ But the process does not make those outcomes prominent enough for a human review
 
 ### 2. Visual comparison sensitivity is probably too low for print workflows
 
+**note** this is OKAY, ignore
+
 The current comparison path runs with a low page scale (`ppp = 1` in the main regression runner). For print-production validation, that is likely too weak to catch some meaningful differences in:
 
 - fine vector detail
