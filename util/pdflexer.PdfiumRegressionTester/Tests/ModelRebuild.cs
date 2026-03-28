@@ -5,6 +5,7 @@ using PdfLexer.DOM;
 using PdfLexer.Filters;
 using PdfLexer.Serializers;
 using PdfLexer.Writing;
+using System.Xml.Linq;
 
 namespace pdflexer.PdfiumRegressionTester.Tests;
 
