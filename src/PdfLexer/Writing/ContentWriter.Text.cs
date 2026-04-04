@@ -81,6 +81,14 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         return this;
     }
 
+    public ContentWriter<T> CharSpacing(T w)
+    {
+        EnsureNotPathState();
+        Tc_Op<T>.WriteLn(w, Writer.Stream);
+        GfxState = GfxState with { CharSpacing = w };
+        return this;
+    }
+
     public ContentWriter<T> NewLine(int count=1)
     {
         EnsureInTextState();

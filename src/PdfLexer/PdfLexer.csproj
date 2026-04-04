@@ -76,4 +76,8 @@
 		</Compile>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\PdfLexer.TextLayout\PdfLexer.TextLayout.csproj" />
+	</ItemGroup>
+
 </Project>
