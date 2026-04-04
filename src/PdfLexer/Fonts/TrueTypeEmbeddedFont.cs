@@ -2,6 +2,26 @@
 
 namespace PdfLexer.Fonts;
 
+public enum FontLayoutMetricSource
+{
+    None,
+    Typographic,
+    HorizontalHeader,
+    Windows
+}
+
+public readonly record struct FontLayoutMetrics(
+    int UnitsPerEm,
+    double Ascent,
+    double Descent,
+    double LineGap,
+    FontLayoutMetricSource Source);
+
+public readonly record struct FontMetricSourceSet(
+    FontLayoutMetrics Typographic,
+    FontLayoutMetrics HorizontalHeader,
+    FontLayoutMetrics Windows);
+
 public class TrueTypeEmbeddedFont : IPdfEmbeddableFont
 {
     public string PostScriptName { get; internal set; } = null!;
@@ -23,6 +43,15 @@ public class TrueTypeEmbeddedFont : IPdfEmbeddableFont
     internal int ApproxStemV { get; set; }
     internal int Ascent { get; set; }
     internal int Descent { get; set; }
+    internal int LineGap { get; set; }
+    internal int TypoAscent { get; set; }
+    internal int TypoDescent { get; set; }
+    internal int TypoLineGap { get; set; }
+    internal int WindowsAscent { get; set; }
+    internal int WindowsDescent { get; set; }
+    internal int HorizontalHeaderAscent { get; set; }
+    internal int HorizontalHeaderDescent { get; set; }
+    internal int HorizontalHeaderLineGap { get; set; }
     internal int CapHeight { get; set; }
     internal bool Bold { get; set; }
     internal int FirstChar { get; set; }
@@ -33,4 +62,30 @@ public class TrueTypeEmbeddedFont : IPdfEmbeddableFont
     public int GlyphCount { get; set; }
     internal int[] GlyphWidths { get; set; } = null!;
     internal double ToPDFGlyphSpace(double value) => (value * 1000) / UnitsPerEm;
+
+    public FontLayoutMetrics GetLayoutMetrics()
+    {
+        if (TypoAscent > 0 && TypoDescent < 0)
+        {
+            return new FontLayoutMetrics(UnitsPerEm, TypoAscent, TypoDescent, TypoLineGap, FontLayoutMetricSource.Typographic);
+        }
+
+        if (HorizontalHeaderAscent > 0 && HorizontalHeaderDescent < 0)
+        {
+            return new FontLayoutMetrics(UnitsPerEm, HorizontalHeaderAscent, HorizontalHeaderDescent, HorizontalHeaderLineGap, FontLayoutMetricSource.HorizontalHeader);
+        }
+
+        if (WindowsAscent > 0 && WindowsDescent < 0)
+        {
+            return new FontLayoutMetrics(UnitsPerEm, WindowsAscent, WindowsDescent, 0, FontLayoutMetricSource.Windows);
+        }
+
+        return new FontLayoutMetrics(UnitsPerEm, 0, 0, 0, FontLayoutMetricSource.None);
+    }
+
+    public FontMetricSourceSet GetMetricSources()
+        => new(
+            new FontLayoutMetrics(UnitsPerEm, TypoAscent, TypoDescent, TypoLineGap, FontLayoutMetricSource.Typographic),
+            new FontLayoutMetrics(UnitsPerEm, HorizontalHeaderAscent, HorizontalHeaderDescent, HorizontalHeaderLineGap, FontLayoutMetricSource.HorizontalHeader),
+            new FontLayoutMetrics(UnitsPerEm, WindowsAscent, WindowsDescent, 0, FontLayoutMetricSource.Windows));
 }

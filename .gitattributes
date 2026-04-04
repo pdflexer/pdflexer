@@ -1,0 +1,51 @@
+* text=auto
+
+# Default to LF for source, docs, and data that are routinely edited cross-platform.
+*.cs text eol=lf
+*.csproj text eol=lf
+*.props text eol=lf
+*.targets text eol=lf
+*.tt text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.txt text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.jsx text eol=lf
+*.razor text eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.ipynb text eol=lf
+
+# Keep Windows-native tooling files on CRLF where that is still the path of least surprise.
+*.sln text eol=crlf
+*.ps1 text eol=crlf
+*.psm1 text eol=crlf
+*.psd1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Never apply line-ending normalization to binary assets.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+*.wasm binary
+*.gz binary
+*.br binary
+*.dll binary
+*.so binary
+*.dylib binary
+*.zip binary

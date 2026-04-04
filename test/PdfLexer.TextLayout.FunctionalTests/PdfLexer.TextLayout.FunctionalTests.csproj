@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\PdfLexer.TextLayout\PdfLexer.TextLayout.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer\PdfLexer.csproj" />
+    <ProjectReference Include="..\..\util\pdflexer.TestCaseGen\pdflexer.TestCaseGen.csproj" />
   </ItemGroup>
 
 </Project>

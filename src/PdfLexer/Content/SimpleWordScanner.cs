@@ -33,12 +33,12 @@ public ref struct SimpleWordScanner
         CurrentWord = "";
         Position = default;
         sb = new StringBuilder();
-        last = null;
-        lastPt = null;
-        first = null;
-        firstPt = null;
         prevbb = null;
         prevPt = null;
+        returnedBounds = null;
+        returnedPositionBounds = null;
+        currentBounds = null;
+        currentPositionBounds = null;
         prev = default;
         pw = 0;
         customDelims = wordDelimiters;
@@ -52,12 +52,12 @@ public ref struct SimpleWordScanner
 
     private TextScanner Scanner;
     private HashSet<char>? customDelims;
-    private PdfRect<double>? last;
-    private PdfPoint<double>? lastPt;
-    private PdfRect<double>? first;
-    private PdfPoint<double>? firstPt;
     private PdfRect<double>? prevbb;
     private PdfPoint<double>? prevPt;
+    private PdfRect<double>? returnedBounds;
+    private PdfRect<double>? returnedPositionBounds;
+    private PdfRect<double>? currentBounds;
+    private PdfRect<double>? currentPositionBounds;
     private double pw;
     private GfxMatrix<double> prev;
     private GfxMatrix<double> prevTTM;
@@ -66,68 +66,34 @@ public ref struct SimpleWordScanner
 
     public PdfRect<double> GetWordBoundingBox()
     {
-        return CurrentWord.Length == 1 ?
-         new PdfRect<double>
-         {
-             LLx = (first?.LLx ?? 0),
-             LLy = (first?.LLy ?? 0),
-             URx = (first?.URx ?? 0),
-             URy = (first?.URy ?? 0)
-         } : new PdfRect<double>
-         {
-             LLx = (first?.LLx ?? 0),
-             LLy = (first?.LLy ?? 0),
-             URx = (last?.URx ?? 0),
-             URy = (last?.URy ?? 0)
-         };
+        return returnedBounds ?? new PdfRect<double> { LLx = 0, LLy = 0, URx = 0, URy = 0 };
     }
 
     public PdfRect<double> GetWordPositionBox()
     {
-        return CurrentWord.Length == 1 ?
-         new PdfRect<double>
-         {
-             LLx = (firstPt?.X ?? 0),
-             LLy = (firstPt?.Y ?? 0),
-             URx = (firstPt?.X ?? 0),
-             URy = (firstPt?.Y ?? 0)
-         } : new PdfRect<double>
-         {
-             LLx = (firstPt?.X ?? 0),
-             LLy = (firstPt?.Y ?? 0),
-             URx = (lastPt?.X ?? 0),
-             URy = (lastPt?.Y ?? 0)
-         };
+        return returnedPositionBounds ?? new PdfRect<double> { LLx = 0, LLy = 0, URx = 0, URy = 0 };
     }
 
     public bool Advance()
     {
-        last = null;
-        lastPt = null;
-        first = prevbb;
-        firstPt = prevPt;
+        returnedBounds = null;
+        returnedPositionBounds = null;
         bool returnWord = false;
         while (Scanner.Advance())
         {
             var vert = Scanner.GraphicsState.Font?.IsVertical ?? false;
             var current = Scanner.GraphicsState.Text.TextMatrix;
             
-            if (first == null)
+            if (currentBounds == null)
             {
                 Position = Scanner.GraphicsState.Text.TextRenderingMatrix;
-                first ??= Scanner.GetCurrentBoundingBox();
-                firstPt ??= Scanner.GetCurrentTextPoint();
             }
             else
             {
                 if (prev.A != current.A || prev.B != current.B
                 || prev.C != current.C || prev.D != current.D)
                 {
-                    CurrentWord = sb.ToString();
-                    sb.Clear();
-                    last = prevbb;
-                    lastPt = prevPt;
-                    lastTTM = prevTTM;
+                    FinalizeCurrentWord();
                     returnWord = true;
                 }
                 else
@@ -138,10 +104,7 @@ public ref struct SimpleWordScanner
                     var dh = vert ? change.E : change.F;
                     if (Math.Abs(pw - dw) > 0.25 * pw || Math.Abs(dh) > pw * 0.25)
                     {
-                        CurrentWord = sb.ToString();
-                        sb.Clear();
-                        last = prevbb;
-                        lastPt = prevPt;
+                        FinalizeCurrentWord();
                         returnWord = true;
                     }
                 }
@@ -164,19 +127,13 @@ public ref struct SimpleWordScanner
                 {
                     if (sb.Length > 0)
                     {
-                        CurrentWord = sb.ToString();
-                        sb.Clear();
-                        last = prevbb;
-                        lastPt = prevPt;
-                        lastTTM = prevTTM;
+                        FinalizeCurrentWord();
                         prevbb = null;
                         prevPt = null;
                         return true;
                     }
                     else
                     {
-                        first = null;
-                        firstPt = null;
                         continue;
                     }
                 }
@@ -186,6 +143,7 @@ public ref struct SimpleWordScanner
                 }
             }
 
+            AppendBounds(Scanner.GetCurrentBoundingBox(), Scanner.GetCurrentTextPoint());
             pw = vert ? Scanner.Glyph.w1 : Scanner.Glyph.w0;
             pw = pw * Scanner.GraphicsState.FontSize + Scanner.GraphicsState.CharSpacing;
             prev = current;
@@ -203,15 +161,53 @@ public ref struct SimpleWordScanner
 
         if (sb.Length > 0)
         {
-            CurrentWord = sb.ToString();
-            sb.Clear();
-            last = prevbb;
-            lastPt = prevPt;
-            lastTTM = prevTTM;
+            FinalizeCurrentWord();
             return true;
         }
 
         return false;
+    }
+
+    private void FinalizeCurrentWord()
+    {
+        CurrentWord = sb.ToString();
+        sb.Clear();
+        returnedBounds = currentBounds;
+        returnedPositionBounds = currentPositionBounds;
+        currentBounds = null;
+        currentPositionBounds = null;
+        lastTTM = prevTTM;
+    }
+
+    private void AppendBounds(PdfRect<double> box, PdfPoint<double> point)
+    {
+        currentBounds = currentBounds == null
+            ? box
+            : new PdfRect<double>
+            {
+                LLx = Math.Min(currentBounds.LLx, box.LLx),
+                LLy = Math.Min(currentBounds.LLy, box.LLy),
+                URx = Math.Max(currentBounds.URx, box.URx),
+                URy = Math.Max(currentBounds.URy, box.URy)
+            };
+
+        var pointRect = new PdfRect<double>
+        {
+            LLx = point.X,
+            LLy = point.Y,
+            URx = point.X,
+            URy = point.Y
+        };
+
+        currentPositionBounds = currentPositionBounds == null
+            ? pointRect
+            : new PdfRect<double>
+            {
+                LLx = Math.Min(currentPositionBounds.LLx, pointRect.LLx),
+                LLy = Math.Min(currentPositionBounds.LLy, pointRect.LLy),
+                URx = Math.Max(currentPositionBounds.URx, pointRect.URx),
+                URy = Math.Max(currentPositionBounds.URy, pointRect.URy)
+            };
     }
 
     public WordInfo GetInfo()

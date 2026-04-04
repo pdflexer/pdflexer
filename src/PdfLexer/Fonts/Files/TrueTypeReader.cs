@@ -157,11 +157,16 @@ public ref struct TrueTypeReader
         info.DefaultEncoding = cmap.PlatformId == 3 ? PdfName.WinAnsiEncoding : PdfName.MacRomanEncoding;
         var glyphs = cmap.PlatformId == 3 ? Encodings.GetPartialGlyphs(Encodings.WinAnsiEncoding, cmap.Mappings!)
                 : Encodings.GetPartialGlyphs(Encodings.MacRomanEncoding, cmap.Mappings!);
+        var glyphBBoxes = ReadGlyphBoundingBoxes(info, info.GlyphCount);
 
         foreach (var glyph in glyphs.Values)
         {
             var gid = cmap.Mappings![glyph.Char];
             glyph.w0 = info.GlyphWidths[gid] / 1000f;
+            if (gid < glyphBBoxes.Length && glyphBBoxes[gid] is { } bbox)
+            {
+                glyph.BBox = bbox;
+            }
         }
 
         info.Glyphs = glyphs;
@@ -230,10 +235,17 @@ public ref struct TrueTypeReader
         //
         var cmap = GetSingleMap(map);
         var glyphs = new Dictionary<char, Glyph>(info.GlyphCount);
+        var glyphBBoxes = ReadGlyphBoundingBoxes(info, info.GlyphCount);
 
         foreach (var (uc, gid) in cmap)
         {
-            glyphs[(char)uc] = new Glyph { Char = (char)uc, CodePoint = (uint)gid, w0 = info.GlyphWidths[gid] / 1000f };
+            glyphs[(char)uc] = new Glyph
+            {
+                Char = (char)uc,
+                CodePoint = (uint)gid,
+                w0 = info.GlyphWidths[gid] / 1000f,
+                BBox = gid < glyphBBoxes.Length ? glyphBBoxes[gid] : null
+            };
         }
 
         var str = new PdfStream();
@@ -314,13 +326,21 @@ public ref struct TrueTypeReader
 
         var t = new DataView(Data.Slice(table.Offset));
 
+        fd.HorizontalHeaderAscent = (int)fd.ToPDFGlyphSpace(t.GetInt16(4));
+        fd.HorizontalHeaderDescent = (int)fd.ToPDFGlyphSpace(t.GetInt16(6));
+        fd.HorizontalHeaderLineGap = (int)fd.ToPDFGlyphSpace(t.GetInt16(8));
+
         if (fd.Ascent == 0)
         {
-            fd.Ascent = (int)fd.ToPDFGlyphSpace(t.GetInt16(4));
+            fd.Ascent = fd.HorizontalHeaderAscent;
         }
         if (fd.Descent == 0)
         {
-            fd.Descent = (int)fd.ToPDFGlyphSpace(t.GetInt16(6));
+            fd.Descent = fd.HorizontalHeaderDescent;
+        }
+        if (fd.LineGap == 0)
+        {
+            fd.LineGap = fd.HorizontalHeaderLineGap;
         }
 
         fd.HorizontalMetricsCount = t.GetUInt16(34);
@@ -386,9 +406,15 @@ public ref struct TrueTypeReader
         var fdUnicodeRange3 = uniCodeRange4;
 
         var sTypoAscender = t.GetInt16(68);
-        fd.Ascent = (int)fd.ToPDFGlyphSpace(sTypoAscender);
+        fd.TypoAscent = (int)fd.ToPDFGlyphSpace(sTypoAscender);
         var sTypoDescender = t.GetInt16(70);
-        fd.Descent = (int)fd.ToPDFGlyphSpace(sTypoDescender);
+        fd.TypoDescent = (int)fd.ToPDFGlyphSpace(sTypoDescender);
+        fd.TypoLineGap = (int)fd.ToPDFGlyphSpace(t.GetInt16(72));
+        fd.WindowsAscent = (int)fd.ToPDFGlyphSpace(t.GetUInt16(74));
+        fd.WindowsDescent = -(int)fd.ToPDFGlyphSpace(t.GetUInt16(76));
+        fd.Ascent = fd.TypoAscent;
+        fd.Descent = fd.TypoDescent;
+        fd.LineGap = fd.TypoLineGap;
 
         if (version >= 2)
         {
@@ -1138,6 +1164,59 @@ public ref struct TrueTypeReader
         }
         return results;
     }
+
+    private decimal[]?[] ReadGlyphBoundingBoxes(TrueTypeEmbeddedFont font, int numGlyphs)
+    {
+        var boxes = new decimal[]?[numGlyphs];
+        if (numGlyphs <= 0 || !Headers.ContainsKey("loca") || !Headers.ContainsKey("glyf") || !Headers.ContainsKey("head"))
+        {
+            return boxes;
+        }
+
+        var head = new DataView(Data.Slice(Headers["head"].Offset, Headers["head"].Length));
+        var isLong = head.GetInt16(50) != 0;
+
+        var locaTab = Headers["loca"];
+        var glyfTab = Headers["glyf"];
+        var loca = new DataView(Data.Slice(locaTab.Offset, locaTab.Length));
+        var offsetSize = isLong ? 4 : 2;
+
+        for (var i = 0; i < numGlyphs; i++)
+        {
+            var current = ReadGlyphOffset(loca, i, isLong);
+            var next = ReadGlyphOffset(loca, i + 1, isLong);
+            if (next <= current)
+            {
+                continue;
+            }
+
+            var glyphOffset = glyfTab.Offset + (int)current;
+            if (glyphOffset < 0 || glyphOffset + 10 > Data.Length)
+            {
+                continue;
+            }
+
+            var glyph = new DataView(Data.Slice(glyphOffset, Math.Min(glyfTab.Length - (int)current, Data.Length - glyphOffset)));
+            var xMin = ToGlyphBoxUnit(font, glyph.GetInt16(2));
+            var yMin = ToGlyphBoxUnit(font, glyph.GetInt16(4));
+            var xMax = ToGlyphBoxUnit(font, glyph.GetInt16(6));
+            var yMax = ToGlyphBoxUnit(font, glyph.GetInt16(8));
+            boxes[i] = new[] { xMin, yMin, xMax, yMax };
+        }
+
+        return boxes;
+    }
+
+    private uint ReadGlyphOffset(DataView loca, int index, bool isLong)
+    {
+        var offset = index * (isLong ? 4 : 2);
+        return isLong
+            ? loca.GetUInt32(offset)
+            : 2u * (uint)loca.GetUInt16(offset);
+    }
+
+    private static decimal ToGlyphBoxUnit(TrueTypeEmbeddedFont font, int value)
+        => (decimal)(font.ToPDFGlyphSpace(value) / 1000d);
 
     public class TTCMap
     {

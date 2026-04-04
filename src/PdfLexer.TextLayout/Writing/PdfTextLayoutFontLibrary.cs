@@ -1,5 +1,6 @@
 using PdfLexer.Fonts;
 using PdfLexer.TextLayout;
+using PdfLexer.Writing;
 
 namespace PdfLexer.Writing;
 
@@ -10,6 +11,7 @@ public sealed record PdfTextLayoutFontFace(
 public sealed class PdfTextLayoutFontLibrary
 {
     private readonly Dictionary<string, PdfTextLayoutFontFace> _faces;
+    private IWritableFont? _unorderedListMarkerFont;
 
     public PdfTextLayoutFontLibrary(IEnumerable<PdfTextLayoutFontFace> faces)
     {
@@ -25,6 +27,12 @@ public sealed class PdfTextLayoutFontLibrary
         if (_faces.TryGetValue(faceId, out var face))
         {
             font = face.WritableFont;
+            return true;
+        }
+
+        if (string.Equals(faceId, TextLayoutBuiltInFaces.UnorderedListMarkerFaceId, StringComparison.Ordinal))
+        {
+            font = _unorderedListMarkerFont ??= Standard14Font.GetHelvetica();
             return true;
         }
 

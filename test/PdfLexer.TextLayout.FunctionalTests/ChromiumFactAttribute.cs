@@ -5,6 +5,22 @@ namespace PdfLexer.TextLayout.FunctionalTests;
 
 public sealed class ChromiumFactAttribute : FactAttribute
 {
+    public ChromiumFactAttribute()
+    {
+        Skip = ChromiumFactAttributeHelper.GetSkipReason();
+    }
+}
+
+public sealed class ChromiumTheoryAttribute : TheoryAttribute
+{
+    public ChromiumTheoryAttribute()
+    {
+        Skip = ChromiumFactAttributeHelper.GetSkipReason();
+    }
+}
+
+internal static class ChromiumFactAttributeHelper
+{
     private static readonly string[] LinuxLibraries =
     {
         "libglib-2.0.so.0",
@@ -28,12 +44,7 @@ public sealed class ChromiumFactAttribute : FactAttribute
         "libasound.so.2"
     };
 
-    public ChromiumFactAttribute()
-    {
-        Skip = GetSkipReason();
-    }
-
-    private static string? GetSkipReason()
+    internal static string? GetSkipReason()
     {
         if (!OperatingSystem.IsLinux())
         {
