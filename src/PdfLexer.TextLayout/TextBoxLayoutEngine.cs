@@ -410,7 +410,7 @@ public sealed class TextBoxLayoutEngine
                     token.X,
                     token.BaselineY,
                     token.Width,
-                    token.Kind == PreparedTokenKind.Whitespace && !request.PreserveTrailingWhitespaceInWidth ? 0d : token.MeasuredWidth,
+                    token.MeasuredWidth,
                     token.LineHeight,
                     token.Glyphs)).ToArray()))
             .ToArray();

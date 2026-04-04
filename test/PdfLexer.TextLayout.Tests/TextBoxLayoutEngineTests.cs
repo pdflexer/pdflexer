@@ -145,6 +145,23 @@ public class TextBoxLayoutEngineTests
         Assert.True(words["Hello"] > words["World"]);
     }
 
+    [Fact]
+    public void Layout_PreservesMeasuredWhitespace_ForUnderlinedText()
+    {
+        var request = CreateRequest(
+            width: 200,
+            height: 100,
+            new TextSegment("Hello world", new TextSegmentStyle("Roboto", 400, 12, Underline: true)));
+
+        var engine = new TextBoxLayoutEngine();
+        var result = engine.Layout(request);
+
+        Assert.True(result.Success);
+        var spaceRun = Assert.Single(result.Lines[0].Runs.Where(x => x.Text == " "));
+        Assert.True(spaceRun.Underline);
+        Assert.True(spaceRun.MeasuredWidth > 0);
+    }
+
     private static TextBoxLayoutRequest CreateRequest(double width, double height, params TextSegment[] segments)
     {
         return new TextBoxLayoutRequest(
