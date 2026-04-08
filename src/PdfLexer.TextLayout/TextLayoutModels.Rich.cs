@@ -1,29 +1,88 @@
 namespace PdfLexer.TextLayout;
 
+public readonly record struct NodeId(string Value)
+{
+    public static NodeId New()
+        => new(Guid.NewGuid().ToString("N"));
+
+    public override string ToString()
+        => Value;
+}
+
 public sealed record RichContent(
     IReadOnlyList<RichTextBlock> Blocks);
 
 public sealed record RichSliceCut(
     string Path,
+    string? NodeId,
     TextBreakKind Kind,
     bool IsStartBoundary,
-    bool IsEndBoundary);
+    bool IsEndBoundary)
+{
+    public RichSliceCut(
+        string Path,
+        TextBreakKind Kind,
+        bool IsStartBoundary,
+        bool IsEndBoundary)
+        : this(Path, null, Kind, IsStartBoundary, IsEndBoundary)
+    {
+    }
+}
 
 public record RichLayoutSplitMetadata(
     string Path,
+    string? NodeId,
     TextBreakKind Kind,
     TextFragmentBreakReason BreakReason = TextFragmentBreakReason.Overflow,
-    bool IsForced = false);
+    bool IsForced = false)
+{
+    public RichLayoutSplitMetadata(
+        string Path,
+        TextBreakKind Kind,
+        TextFragmentBreakReason BreakReason = TextFragmentBreakReason.Overflow,
+        bool IsForced = false)
+        : this(Path, null, Kind, BreakReason, IsForced)
+    {
+    }
+}
 
 public sealed record TableSplitMetadata(
     string TableBlockPath,
+    string? TableBlockNodeId,
     int FittedBodyRowCount,
     int RemainingBodyRowCount,
     bool UsedContinuationHeader,
     bool UsedContinuationFooter,
     TextLayoutContinuationKind ContinuationKind = TextLayoutContinuationKind.TableRow,
     string? BoundaryParentPath = null,
-    string? ContinuationParentPath = null) : RichLayoutSplitMetadata(TableBlockPath, TextBreakKind.TableRow, TextFragmentBreakReason.Overflow, false);
+    string? BoundaryParentNodeId = null,
+    string? ContinuationParentPath = null,
+    string? ContinuationParentNodeId = null) : RichLayoutSplitMetadata(TableBlockPath, TableBlockNodeId, TextBreakKind.TableRow, TextFragmentBreakReason.Overflow, false)
+{
+    public TableSplitMetadata(
+        string TableBlockPath,
+        int FittedBodyRowCount,
+        int RemainingBodyRowCount,
+        bool UsedContinuationHeader,
+        bool UsedContinuationFooter,
+        TextLayoutContinuationKind ContinuationKind = TextLayoutContinuationKind.TableRow,
+        string? BoundaryParentPath = null,
+        string? ContinuationParentPath = null)
+        : this(
+            TableBlockPath,
+            null,
+            FittedBodyRowCount,
+            RemainingBodyRowCount,
+            UsedContinuationHeader,
+            UsedContinuationFooter,
+            ContinuationKind,
+            BoundaryParentPath,
+            null,
+            ContinuationParentPath,
+            null)
+    {
+    }
+}
 
 public sealed record RichContentSlice(
     IReadOnlyList<RichTextBlock> Blocks,
@@ -77,6 +136,7 @@ public sealed record TextStyle(
     bool StrikeThrough = false);
 
 public sealed record ParagraphStyle(
+    TextStyle? BaseTextStyle = null,
     TextHorizontalAlignment TextAlign = TextHorizontalAlignment.Left,
     double? LineHeight = null,
     TextLineBoxSizing LineBoxSizing = TextLineBoxSizing.AtLeastLineHeight,
@@ -194,44 +254,196 @@ public sealed record LayoutContainerStyle(
         => new(BackgroundColor, BorderColor, BorderWidth, 0, Padding);
 }
 
-public abstract record InlineNode;
+public abstract record InlineMark;
+
+public sealed record BoldMark(int Weight = 700) : InlineMark;
+
+public sealed record ItalicMark(bool Value = true) : InlineMark;
+
+public sealed record UnderlineMark(bool Value = true) : InlineMark;
+
+public sealed record StrikeThroughMark(bool Value = true) : InlineMark;
+
+public sealed record FontFamilyMark(string FamilyName) : InlineMark;
+
+public sealed record FontWeightMark(int Weight) : InlineMark;
+
+public sealed record FontSizeMark(double FontSize) : InlineMark;
+
+public sealed record ForegroundColorMark(TextColor? Color) : InlineMark;
+
+public sealed record BackgroundColorMark(TextColor? Color) : InlineMark;
+
+public sealed record CharacterSpacingMark(double Value) : InlineMark;
+
+public sealed record WordSpacingMark(double Value) : InlineMark;
+
+public sealed record LinkMark(string Href) : InlineMark;
+
+public abstract record InlineNode(IReadOnlyList<InlineMark>? Marks = null)
+{
+    public IReadOnlyList<InlineMark> Marks { get; init; } = InlineMarkSet.Normalize(Marks);
+}
+
+public record TextInline(
+    string Text,
+    IReadOnlyList<InlineMark>? Marks = null) : InlineNode(Marks)
+{
+    public TextInline(string Text, TextStyle style)
+        : this(Text, InlineMarkSet.FromTextStyle(style))
+    {
+    }
+}
 
 public sealed record TextRunNode(
     string Text,
-    TextStyle Style) : InlineNode;
+    TextStyle Style) : TextInline(Text, Style);
 
-public sealed record LineBreakNode() : InlineNode;
+public record BreakInline(
+    IReadOnlyList<InlineMark>? Marks = null) : InlineNode(Marks);
 
-public abstract record RichTextBlock
+public sealed record LineBreakNode() : BreakInline();
+
+public sealed record TabInline(
+    IReadOnlyList<InlineMark>? Marks = null) : InlineNode(Marks);
+
+public sealed record FieldInline(
+    NodeId Id,
+    string FieldKind,
+    string? FieldRef = null,
+    string? DisplayText = null,
+    IReadOnlyList<InlineMark>? Marks = null) : InlineNode(Marks)
+{
+    public FieldInline(string FieldKind, string? FieldRef = null, string? DisplayText = null, IReadOnlyList<InlineMark>? Marks = null)
+        : this(NodeId.New(), FieldKind, FieldRef, DisplayText, Marks)
+    {
+    }
+}
+
+public sealed record ReferenceInline(
+    NodeId Id,
+    string ReferenceKind,
+    string Target,
+    string? DisplayText = null,
+    IReadOnlyList<InlineMark>? Marks = null) : InlineNode(Marks)
+{
+    public ReferenceInline(string ReferenceKind, string Target, string? DisplayText = null, IReadOnlyList<InlineMark>? Marks = null)
+        : this(NodeId.New(), ReferenceKind, Target, DisplayText, Marks)
+    {
+    }
+}
+
+public readonly record struct BlockPayloadMeasureContext(
+    double AvailableWidth,
+    double AvailableHeight,
+    TextFontLibrary FontLibrary);
+
+public interface IBlockPayload
+{
+    TextLayoutSize Measure(BlockPayloadMeasureContext context);
+
+    string Serialize();
+}
+
+public interface IInlinePayload
+{
+    string DisplayText { get; }
+
+    string Serialize();
+}
+
+public sealed record InlineObjectInline(
+    NodeId Id,
+    string ObjectKind,
+    IInlinePayload Payload,
+    IReadOnlyList<InlineMark>? Marks = null) : InlineNode(Marks)
+{
+    public InlineObjectInline(string ObjectKind, IInlinePayload Payload, IReadOnlyList<InlineMark>? Marks = null)
+        : this(NodeId.New(), ObjectKind, Payload, Marks)
+    {
+    }
+}
+
+public abstract record RichTextBlock(NodeId Id)
 {
     public TextFlowBreakBefore BreakBefore { get; init; } = TextFlowBreakBefore.Auto;
     public TextFlowBreakAfter BreakAfter { get; init; } = TextFlowBreakAfter.Auto;
     public TextFlowBreakInside BreakInside { get; init; } = TextFlowBreakInside.Auto;
+    public bool KeepTogether { get; init; }
+    public bool KeepWithNext { get; init; }
 }
 
 public sealed record ParagraphBlock(
+    NodeId Id,
     IReadOnlyList<InlineNode> Inlines,
-    ParagraphStyle? Style = null) : RichTextBlock;
+    ParagraphStyle? Style = null) : RichTextBlock(Id)
+{
+    public ParagraphBlock(
+        IReadOnlyList<InlineNode> Inlines,
+        ParagraphStyle? Style = null)
+        : this(NodeId.New(), InlineMarkSet.NormalizeAdjacentText(Inlines), Style)
+    {
+    }
+}
 
 public sealed record HeadingBlock(
+    NodeId Id,
     int Level,
     IReadOnlyList<InlineNode> Inlines,
-    ParagraphStyle? Style = null) : RichTextBlock;
+    ParagraphStyle? Style = null) : RichTextBlock(Id)
+{
+    public HeadingBlock(
+        int Level,
+        IReadOnlyList<InlineNode> Inlines,
+        ParagraphStyle? Style = null)
+        : this(NodeId.New(), Level, InlineMarkSet.NormalizeAdjacentText(Inlines), Style)
+    {
+    }
+}
 
 public sealed record ListItemBlock(
-    IReadOnlyList<RichTextBlock> Blocks);
+    NodeId Id,
+    IReadOnlyList<RichTextBlock> Blocks)
+{
+    public ListItemBlock(IReadOnlyList<RichTextBlock> Blocks)
+        : this(NodeId.New(), Blocks)
+    {
+    }
+}
 
 public sealed record UnorderedListBlock(
+    NodeId Id,
     IReadOnlyList<ListItemBlock> Items,
     double MarginBlockEnd = 0,
     string Marker = "\u2022",
-    ListMarkerStyle MarkerStyle = ListMarkerStyle.Disc) : RichTextBlock;
+    ListMarkerStyle MarkerStyle = ListMarkerStyle.Disc) : RichTextBlock(Id)
+{
+    public UnorderedListBlock(
+        IReadOnlyList<ListItemBlock> Items,
+        double MarginBlockEnd = 0,
+        string Marker = "\u2022",
+        ListMarkerStyle MarkerStyle = ListMarkerStyle.Disc)
+        : this(NodeId.New(), Items, MarginBlockEnd, Marker, MarkerStyle)
+    {
+    }
+}
 
 public sealed record OrderedListBlock(
+    NodeId Id,
     IReadOnlyList<ListItemBlock> Items,
     int StartIndex = 1,
     double MarginBlockEnd = 0,
-    ListMarkerStyle MarkerStyle = ListMarkerStyle.Decimal) : RichTextBlock;
+    ListMarkerStyle MarkerStyle = ListMarkerStyle.Decimal) : RichTextBlock(Id)
+{
+    public OrderedListBlock(
+        IReadOnlyList<ListItemBlock> Items,
+        int StartIndex = 1,
+        double MarginBlockEnd = 0,
+        ListMarkerStyle MarkerStyle = ListMarkerStyle.Decimal)
+        : this(NodeId.New(), Items, StartIndex, MarginBlockEnd, MarkerStyle)
+    {
+    }
+}
 
 public sealed record LayoutChild(
     IReadOnlyList<RichTextBlock> Blocks,
@@ -241,42 +453,93 @@ public sealed record LayoutChild(
     TextBoxStyle? BoxStyle = null);
 
 public abstract record TableCellBlock(
+    NodeId Id,
     IReadOnlyList<RichTextBlock> Blocks,
     int ColSpan = 1,
     int RowSpan = 1,
     TableCellStyle? Style = null);
 
 public sealed record TableDataCellBlock(
+    NodeId Id,
     IReadOnlyList<RichTextBlock> Blocks,
     int ColSpan = 1,
     int RowSpan = 1,
-    TableCellStyle? Style = null) : TableCellBlock(Blocks, ColSpan, RowSpan, Style);
+    TableCellStyle? Style = null) : TableCellBlock(Id, Blocks, ColSpan, RowSpan, Style)
+{
+    public TableDataCellBlock(
+        IReadOnlyList<RichTextBlock> Blocks,
+        int ColSpan = 1,
+        int RowSpan = 1,
+        TableCellStyle? Style = null)
+        : this(NodeId.New(), Blocks, ColSpan, RowSpan, Style)
+    {
+    }
+}
 
 public sealed record TableHeaderCellBlock(
+    NodeId Id,
     IReadOnlyList<RichTextBlock> Blocks,
     int ColSpan = 1,
     int RowSpan = 1,
-    TableCellStyle? Style = null) : TableCellBlock(Blocks, ColSpan, RowSpan, Style);
+    TableCellStyle? Style = null) : TableCellBlock(Id, Blocks, ColSpan, RowSpan, Style)
+{
+    public TableHeaderCellBlock(
+        IReadOnlyList<RichTextBlock> Blocks,
+        int ColSpan = 1,
+        int RowSpan = 1,
+        TableCellStyle? Style = null)
+        : this(NodeId.New(), Blocks, ColSpan, RowSpan, Style)
+    {
+    }
+}
 
 public sealed record TableSectionBlock(
+    NodeId Id,
     TableSectionKind Kind,
-    IReadOnlyList<TableRowBlock> Rows);
+    IReadOnlyList<TableRowBlock> Rows)
+{
+    public TableSectionBlock(
+        TableSectionKind Kind,
+        IReadOnlyList<TableRowBlock> Rows)
+        : this(NodeId.New(), Kind, Rows)
+    {
+    }
+}
 
 public sealed record TableRowBlock(
+    NodeId Id,
     IReadOnlyList<TableCellBlock> Cells,
-    TableRowStyle? Style = null);
+    TableRowStyle? Style = null)
+{
+    public TableRowBlock(
+        IReadOnlyList<TableCellBlock> Cells,
+        TableRowStyle? Style = null)
+        : this(NodeId.New(), Cells, Style)
+    {
+    }
+}
 
 public sealed record TableBlock(
+    NodeId Id,
     IReadOnlyList<TableColumnDefinition> Columns,
     IReadOnlyList<TableSectionBlock> Sections,
     TableStyle? Style = null,
-    TableLayoutSpec? Layout = null) : RichTextBlock
+    TableLayoutSpec? Layout = null) : RichTextBlock(Id)
 {
     public TableBlock(
         IReadOnlyList<TableRowBlock> rows,
         TableStyle? Style = null,
         TableLayoutSpec? Layout = null)
-        : this(Array.Empty<TableColumnDefinition>(), new[] { new TableSectionBlock(TableSectionKind.Body, rows) }, Style, Layout)
+        : this(NodeId.New(), Array.Empty<TableColumnDefinition>(), new[] { new TableSectionBlock(TableSectionKind.Body, rows) }, Style, Layout)
+    {
+    }
+
+    public TableBlock(
+        IReadOnlyList<TableColumnDefinition> Columns,
+        IReadOnlyList<TableSectionBlock> Sections,
+        TableStyle? Style = null,
+        TableLayoutSpec? Layout = null)
+        : this(NodeId.New(), Columns, Sections, Style, Layout)
     {
     }
 
@@ -288,14 +551,49 @@ public sealed record TableBlock(
 }
 
 public sealed record RowBlock(
+    NodeId Id,
     IReadOnlyList<LayoutChild> Children,
     double? Height = null,
-    LayoutContainerStyle? Style = null) : RichTextBlock;
+    LayoutContainerStyle? Style = null) : RichTextBlock(Id)
+{
+    public RowBlock(
+        IReadOnlyList<LayoutChild> Children,
+        double? Height = null,
+        LayoutContainerStyle? Style = null)
+        : this(NodeId.New(), Children, Height, Style)
+    {
+    }
+}
 
 public sealed record ColumnBlock(
+    NodeId Id,
     IReadOnlyList<LayoutChild> Children,
     double? Height = null,
-    LayoutContainerStyle? Style = null) : RichTextBlock;
+    LayoutContainerStyle? Style = null) : RichTextBlock(Id)
+{
+    public ColumnBlock(
+        IReadOnlyList<LayoutChild> Children,
+        double? Height = null,
+        LayoutContainerStyle? Style = null)
+        : this(NodeId.New(), Children, Height, Style)
+    {
+    }
+}
+
+public sealed record EmbeddedObjectBlock(
+    NodeId Id,
+    string ObjectKind,
+    IBlockPayload Payload,
+    TextBoxStyle? Style = null) : RichTextBlock(Id)
+{
+    public EmbeddedObjectBlock(
+        string ObjectKind,
+        IBlockPayload Payload,
+        TextBoxStyle? Style = null)
+        : this(NodeId.New(), ObjectKind, Payload, Style)
+    {
+    }
+}
 
 public sealed record RichTextBoxLayoutRequest(
     double Width,
@@ -313,4 +611,127 @@ public sealed record RichTextBoxLayoutRequest(
     public double? ListMarkerGap { get; init; }
     public TextBoxStyle BoxStyle { get; init; } = new();
     public TextFontMetricSource MetricPreference { get; init; } = TextFontMetricSource.None;
+}
+
+public static class InlineMarkSet
+{
+    public static IReadOnlyList<InlineMark> Normalize(IReadOnlyList<InlineMark>? marks)
+    {
+        if (marks is null || marks.Count == 0)
+        {
+            return Array.Empty<InlineMark>();
+        }
+
+        var byType = new Dictionary<Type, InlineMark>();
+        foreach (var mark in marks)
+        {
+            byType[mark.GetType()] = mark;
+        }
+
+        return byType
+            .OrderBy(static x => x.Key.FullName, StringComparer.Ordinal)
+            .Select(static x => x.Value)
+            .ToArray();
+    }
+
+    public static IReadOnlyList<InlineMark> FromTextStyle(TextStyle style, TextStyle? baseStyle = null)
+    {
+        var marks = new List<InlineMark>(10);
+        var b = baseStyle;
+        if (b is null || !string.Equals(b.FamilyName, style.FamilyName, StringComparison.Ordinal))
+            marks.Add(new FontFamilyMark(style.FamilyName));
+        if (b is null || b.Weight != style.Weight)
+            marks.Add(new FontWeightMark(style.Weight));
+        if (b is null || Math.Abs(b.FontSize - style.FontSize) > 0.0001d)
+            marks.Add(new FontSizeMark(style.FontSize));
+        if (style.Italic && (b is null || b.Italic != style.Italic))
+            marks.Add(new ItalicMark(style.Italic));
+        if (style.Underline && (b is null || b.Underline != style.Underline))
+            marks.Add(new UnderlineMark(style.Underline));
+        if (style.StrikeThrough && (b is null || b.StrikeThrough != style.StrikeThrough))
+            marks.Add(new StrikeThroughMark(style.StrikeThrough));
+        if (Math.Abs(style.CharacterSpacing) > 0.0001d && (b is null || Math.Abs(b.CharacterSpacing - style.CharacterSpacing) > 0.0001d))
+            marks.Add(new CharacterSpacingMark(style.CharacterSpacing));
+        if (Math.Abs(style.WordSpacing) > 0.0001d && (b is null || Math.Abs(b.WordSpacing - style.WordSpacing) > 0.0001d))
+            marks.Add(new WordSpacingMark(style.WordSpacing));
+        if (style.ForegroundColor is not null && (b is null || b.ForegroundColor != style.ForegroundColor))
+            marks.Add(new ForegroundColorMark(style.ForegroundColor));
+        if (style.BackgroundColor is not null && (b is null || b.BackgroundColor != style.BackgroundColor))
+            marks.Add(new BackgroundColorMark(style.BackgroundColor));
+        return Normalize(marks);
+    }
+
+    public static TextStyle Apply(TextStyle baseStyle, IReadOnlyList<InlineMark>? marks)
+    {
+        var resolved = baseStyle;
+        foreach (var mark in Normalize(marks))
+        {
+            resolved = mark switch
+            {
+                BoldMark bold => resolved with { Weight = bold.Weight },
+                ItalicMark italic => resolved with { Italic = italic.Value },
+                UnderlineMark underline => resolved with { Underline = underline.Value },
+                StrikeThroughMark strike => resolved with { StrikeThrough = strike.Value },
+                FontFamilyMark family => resolved with { FamilyName = family.FamilyName },
+                FontWeightMark weight => resolved with { Weight = weight.Weight },
+                FontSizeMark size => resolved with { FontSize = size.FontSize },
+                ForegroundColorMark foreground => resolved with { ForegroundColor = foreground.Color },
+                BackgroundColorMark background => resolved with { BackgroundColor = background.Color },
+                CharacterSpacingMark spacing => resolved with { CharacterSpacing = spacing.Value },
+                WordSpacingMark spacing => resolved with { WordSpacing = spacing.Value },
+                _ => resolved
+            };
+        }
+
+        return resolved;
+    }
+
+    public static bool MarksEqual(IReadOnlyList<InlineMark>? left, IReadOnlyList<InlineMark>? right)
+    {
+        var normalizedLeft = Normalize(left);
+        var normalizedRight = Normalize(right);
+        if (normalizedLeft.Count != normalizedRight.Count)
+        {
+            return false;
+        }
+
+        for (var i = 0; i < normalizedLeft.Count; i++)
+        {
+            if (!EqualityComparer<InlineMark>.Default.Equals(normalizedLeft[i], normalizedRight[i]))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public static IReadOnlyList<InlineNode> NormalizeAdjacentText(IReadOnlyList<InlineNode> inlines)
+    {
+        if (inlines.Count <= 1)
+        {
+            return inlines;
+        }
+
+        var normalized = new List<InlineNode>(inlines.Count);
+        foreach (var inline in inlines)
+        {
+            if (inline is TextInline text && string.IsNullOrEmpty(text.Text))
+            {
+                continue;
+            }
+
+            if (inline is TextInline current &&
+                normalized.LastOrDefault() is TextInline previous &&
+                MarksEqual(previous.Marks, current.Marks))
+            {
+                normalized[^1] = previous with { Text = previous.Text + current.Text };
+                continue;
+            }
+
+            normalized.Add(inline);
+        }
+
+        return normalized;
+    }
 }

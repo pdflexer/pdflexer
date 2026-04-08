@@ -6,6 +6,7 @@ internal static class StyleResolver
     {
         var resolved = style ?? new ParagraphStyle();
         return new ComputedParagraphStyle(
+            resolved.BaseTextStyle ?? new TextStyle("Helvetica", 400, 12),
             resolved.TextAlign,
             resolved.LineHeight,
             resolved.LineBoxSizing,
@@ -128,6 +129,9 @@ internal static class StyleResolver
             style.ForegroundColor,
             style.BackgroundColor,
             style.StrikeThrough);
+
+    public static TextStyle ResolveInlineTextStyle(ComputedParagraphStyle paragraph, InlineNode inline)
+        => InlineMarkSet.Apply(paragraph.BaseTextStyle, inline.Marks);
 
     private static bool IsVectorBulletMarker(string markerText, ListMarkerStyle markerStyle)
         => markerStyle == ListMarkerStyle.Disc && string.Equals(markerText, "\u2022", StringComparison.Ordinal);

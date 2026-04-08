@@ -13,6 +13,7 @@ internal readonly record struct ComputedInlineStyle(
     TextColor? BackgroundColor);
 
 internal readonly record struct ComputedParagraphStyle(
+    TextStyle BaseTextStyle,
     TextHorizontalAlignment TextAlign,
     double? LineHeight,
     TextLineBoxSizing LineBoxSizing,

@@ -45,7 +45,8 @@ public sealed record TextSegment(
     TextSegmentStyle Style,
     int? SourceStart = null,
     int? SourceLength = null,
-    string? SourcePath = null);
+    string? SourcePath = null,
+    string? SourceNodeId = null);
 
 public sealed record TextBoxLayoutRequest(
     double Width,
@@ -108,6 +109,7 @@ public sealed record TextLayoutRun(
     int? SourceStart = null,
     int? SourceLength = null,
     string? SourcePath = null,
+    string? SourceNodeId = null,
     double? RequestedLineHeight = null);
 
 public static class TextLayoutBuiltInFaces

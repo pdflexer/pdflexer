@@ -297,7 +297,8 @@ public sealed class TextBoxLayoutEngine
                         Array.Empty<TextLayoutGlyph>(),
                         0,
                         0,
-                        metrics));
+                        metrics,
+                        segment.SourceNodeId ?? (segment.SourcePath ?? $"Segments[{segmentIndex}]")));
                     tokenIndex++;
                     continue;
                 }
@@ -335,6 +336,7 @@ public sealed class TextBoxLayoutEngine
     {
         var style = segment.Style;
         var sourcePath = segment.SourcePath ?? $"Segments[{segmentIndex}]";
+        var sourceNodeId = segment.SourceNodeId ?? sourcePath;
         if (!TryResolveFace(request, style, fonts, out var face, out var faceError))
         {
             issues.Add(faceError!);
@@ -354,7 +356,8 @@ public sealed class TextBoxLayoutEngine
                     Array.Empty<TextLayoutGlyph>(),
                     0,
                     0,
-                    missingMetrics));
+                    missingMetrics,
+                    sourceNodeId));
             }
 
             return;
@@ -381,7 +384,8 @@ public sealed class TextBoxLayoutEngine
                     Array.Empty<TextLayoutGlyph>(),
                     0,
                     0,
-                    fallbackMetrics));
+                    fallbackMetrics,
+                    sourceNodeId));
             }
 
             return;
@@ -412,7 +416,8 @@ public sealed class TextBoxLayoutEngine
                 tokenGlyphs,
                 width,
                 width,
-                metrics));
+                metrics,
+                sourceNodeId));
         }
     }
 
@@ -840,6 +845,7 @@ public sealed class TextBoxLayoutEngine
                     token.SourceStart,
                     token.SourceLength,
                     token.SourcePath,
+                    token.SourceNodeId,
                     token.Style.LineSpacing);
             }
 
@@ -930,6 +936,7 @@ public sealed class TextBoxLayoutEngine
     {
         var contentVersion = new HashCode();
         contentVersion.Add(run.SourcePath, StringComparer.Ordinal);
+        contentVersion.Add(run.SourceNodeId, StringComparer.Ordinal);
         contentVersion.Add(run.SourceStart);
         contentVersion.Add(run.SourceLength);
         contentVersion.Add(run.Text, StringComparer.Ordinal);
@@ -947,7 +954,7 @@ public sealed class TextBoxLayoutEngine
         styleVersion.Add(run.ForegroundColor);
         styleVersion.Add(run.BackgroundColor);
 
-        var nodeId = run.SourcePath ?? $"Segments[{run.SegmentIndex}]";
+        var nodeId = run.SourceNodeId ?? run.SourcePath ?? $"Segments[{run.SegmentIndex}]";
         return new TextLayoutSourceReference(
             run.SourcePath ?? $"Segments[{run.SegmentIndex}]",
             run.SegmentIndex,
@@ -1279,12 +1286,13 @@ public sealed class TextBoxLayoutEngine
 
     private sealed class PreparedToken
     {
-        public PreparedToken(int segmentIndex, int sourceStart, int sourceLength, string sourcePath, string text, TextSegmentStyle style, PreparedTokenKind kind, TextFontFace? face, IReadOnlyList<TextLayoutGlyph> glyphs, double width, double measuredWidth, TokenMetrics metrics)
+        public PreparedToken(int segmentIndex, int sourceStart, int sourceLength, string sourcePath, string text, TextSegmentStyle style, PreparedTokenKind kind, TextFontFace? face, IReadOnlyList<TextLayoutGlyph> glyphs, double width, double measuredWidth, TokenMetrics metrics, string sourceNodeId)
         {
             SegmentIndex = segmentIndex;
             SourceStart = sourceStart;
             SourceLength = sourceLength;
             SourcePath = sourcePath;
+            SourceNodeId = sourceNodeId;
             Text = text;
             Style = style;
             Kind = kind;
@@ -1299,6 +1307,7 @@ public sealed class TextBoxLayoutEngine
         public int SourceStart { get; }
         public int SourceLength { get; }
         public string SourcePath { get; }
+        public string SourceNodeId { get; }
         public string Text { get; }
         public TextSegmentStyle Style { get; }
         public PreparedTokenKind Kind { get; }
@@ -1593,7 +1602,8 @@ public sealed class TextBoxLayoutEngine
                         token.Glyphs,
                         token.Width,
                         token.MeasuredWidth,
-                        token.Metrics));
+                        token.Metrics,
+                        token.SourceNodeId));
                 }
 
                 clone.Add(clonedLine);

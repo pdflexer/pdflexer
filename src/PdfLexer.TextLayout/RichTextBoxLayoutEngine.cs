@@ -57,7 +57,12 @@ public sealed class RichTextBoxLayoutEngine
                 TextLayoutNodeKind.ColumnContainer,
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => ContainerBlockFormatter.AppendColumn(request, (ColumnBlock)block, contentWidth, xOffset, path, ref state),
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => ContainerBlockFormatter.SplitColumnBlock(request, (ColumnBlock)block, contentWidth, availableHeight, path),
-                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLayoutChildNodes(request, rootLayout, ((ColumnBlock)block).Children, path, context))
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLayoutChildNodes(request, rootLayout, ((ColumnBlock)block).Children, path, context)),
+            [typeof(EmbeddedObjectBlock)] = new(
+                TextLayoutNodeKind.EmbeddedObject,
+                static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => AppendEmbeddedObject(request, (EmbeddedObjectBlock)block, contentWidth, xOffset, path, ref state),
+                static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => SplitEmbeddedObjectBlock((EmbeddedObjectBlock)block, path),
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => Array.Empty<TextLayoutPlanNode>())
         };
 
     private static RichBlockFormatterRegistration GetFormatter(RichTextBlock block)
@@ -472,6 +477,32 @@ public sealed class RichTextBoxLayoutEngine
         double availableHeight,
         string path)
         => TableBlockFormatter.SplitTableBlock(request, table, contentWidth, availableHeight, path);
+
+    private static void AppendEmbeddedObject(
+        RichTextBoxLayoutRequest request,
+        EmbeddedObjectBlock embedded,
+        double contentWidth,
+        double xOffset,
+        string path,
+        ref LayoutState state)
+    {
+        var ctx = new BlockPayloadMeasureContext(Math.Max(1d, contentWidth - xOffset), LargeLayoutHeight, request.FontLibrary);
+        var size = embedded.Payload.Measure(ctx);
+        var lineIndex = state.Lines.Count;
+        state.Lines.Add(new TextLayoutLine(
+            lineIndex,
+            xOffset,
+            state.ConsumedHeight + size.Height,
+            size.Width,
+            size.Width,
+            size.Height,
+            size.Height,
+            Array.Empty<TextLayoutRun>()));
+        state.ConsumedHeight += size.Height;
+    }
+
+    private static BlockSplitOutcome SplitEmbeddedObjectBlock(EmbeddedObjectBlock embedded, string path)
+        => new(null, embedded, TextBreakKind.Paragraph, new[] { new RichLayoutSplitMetadata(path, embedded.Id.Value, TextBreakKind.Paragraph) }, false, false);
 
     private static BlockSplitOutcome SplitColumnBlock(
         RichTextBoxLayoutRequest request,
@@ -1894,7 +1925,7 @@ public sealed class RichTextBoxLayoutEngine
             nodes[i] = new TextLayoutPlanNode
             {
                 Kind = TextLayoutNodeKind.ListItem,
-                Source = CreateAggregateSourceReference($"{parentPath}.Items[{i}]", blockChildren),
+                Source = CreateAggregateSourceReference($"{parentPath}.Items[{i}]", blockChildren, item.Id.Value),
                 NaturalSize = childLayout.NaturalSize,
                 VisibleSize = childLayout.VisibleSize,
                 Children = blockChildren,
@@ -1928,7 +1959,7 @@ public sealed class RichTextBoxLayoutEngine
                 cellNodes[cellIndex] = new TextLayoutPlanNode
                 {
                     Kind = TextLayoutNodeKind.TableCell,
-                    Source = CreateAggregateSourceReference($"{parentPath}.Rows[{rowIndex}].Cells[{cellIndex}]", blockChildren),
+                    Source = CreateAggregateSourceReference($"{parentPath}.Rows[{rowIndex}].Cells[{cellIndex}]", blockChildren, cell.Id.Value),
                     NaturalSize = cellLayout.NaturalSize,
                     VisibleSize = cellLayout.VisibleSize,
                     Children = blockChildren,
@@ -1947,7 +1978,7 @@ public sealed class RichTextBoxLayoutEngine
             rowNodes[rowIndex] = new TextLayoutPlanNode
             {
                 Kind = TextLayoutNodeKind.TableRow,
-                Source = CreateAggregateSourceReference($"{parentPath}.Rows[{rowIndex}]", cellNodes),
+                Source = CreateAggregateSourceReference($"{parentPath}.Rows[{rowIndex}]", cellNodes, row.Id.Value),
                 NaturalSize = rowLayout.NaturalSize,
                 VisibleSize = rowLayout.VisibleSize,
                 Children = cellNodes,
@@ -2034,7 +2065,7 @@ public sealed class RichTextBoxLayoutEngine
         return lineNodes;
     }
 
-    private static TextLayoutSourceReference CreateAggregateSourceReference(string path, IReadOnlyList<TextLayoutPlanNode> children)
+    private static TextLayoutSourceReference CreateAggregateSourceReference(string path, IReadOnlyList<TextLayoutPlanNode> children, string? nodeId = null)
     {
         var contentVersion = new HashCode();
         var styleVersion = new HashCode();
@@ -2044,17 +2075,17 @@ public sealed class RichTextBoxLayoutEngine
             styleVersion.Add(child.Source.StyleVersion);
         }
 
-        return new TextLayoutSourceReference(path, NodeId: path, ContentVersion: contentVersion.ToHashCode(), StyleVersion: styleVersion.ToHashCode());
+        return new TextLayoutSourceReference(path, NodeId: nodeId ?? path, ContentVersion: contentVersion.ToHashCode(), StyleVersion: styleVersion.ToHashCode());
     }
 
     private static TextLayoutSourceReference CreateBlockSourceReference(string path, RichTextBlock block, IReadOnlyList<TextLayoutPlanNode> children)
     {
         if (children.Count > 0)
         {
-            return CreateAggregateSourceReference(path, children);
+            return CreateAggregateSourceReference(path, children, block.Id.Value);
         }
 
-        return new TextLayoutSourceReference(path, NodeId: path, ContentVersion: ComputeBlockContentVersion(block), StyleVersion: ComputeBlockStyleVersion(block));
+        return new TextLayoutSourceReference(path, NodeId: block.Id.Value, ContentVersion: ComputeBlockContentVersion(block), StyleVersion: ComputeBlockStyleVersion(block));
     }
 
     private static TextLayoutSourceReference CreateRunSourceReference(TextLayoutRun run)
@@ -2078,7 +2109,7 @@ public sealed class RichTextBoxLayoutEngine
         styleVersion.Add(run.ForegroundColor);
         styleVersion.Add(run.BackgroundColor);
 
-        var nodeId = run.SourcePath ?? $"Segments[{run.SegmentIndex}]";
+        var nodeId = run.SourceNodeId ?? run.SourcePath ?? $"Segments[{run.SegmentIndex}]";
         return new TextLayoutSourceReference(
             run.SourcePath ?? $"Segments[{run.SegmentIndex}]",
             run.SegmentIndex,
@@ -2143,6 +2174,11 @@ public sealed class RichTextBoxLayoutEngine
                         }
                     }
                 }
+                break;
+            case EmbeddedObjectBlock embedded:
+                hash.Add(embedded.Id);
+                hash.Add(embedded.ObjectKind, StringComparer.Ordinal);
+                hash.Add(embedded.Payload.Serialize(), StringComparer.Ordinal);
                 break;
             case RowBlock row:
                 foreach (var child in row.Children)
@@ -2225,6 +2261,10 @@ public sealed class RichTextBoxLayoutEngine
                     }
                 }
                 break;
+            case EmbeddedObjectBlock embedded:
+                hash.Add(embedded.Style);
+                hash.Add(embedded.ObjectKind, StringComparer.Ordinal);
+                break;
             case RowBlock row:
                 hash.Add(row.Style);
                 foreach (var child in row.Children)
@@ -2262,11 +2302,31 @@ public sealed class RichTextBoxLayoutEngine
         {
             switch (inline)
             {
-                case TextRunNode text:
+                case TextInline text:
                     hash.Add(text.Text, StringComparer.Ordinal);
                     break;
-                case LineBreakNode:
+                case BreakInline:
                     hash.Add("\n", StringComparer.Ordinal);
+                    break;
+                case TabInline:
+                    hash.Add("\t", StringComparer.Ordinal);
+                    break;
+                case FieldInline field:
+                    hash.Add(field.Id);
+                    hash.Add(field.FieldKind, StringComparer.Ordinal);
+                    hash.Add(field.FieldRef, StringComparer.Ordinal);
+                    hash.Add(field.DisplayText, StringComparer.Ordinal);
+                    break;
+                case ReferenceInline reference:
+                    hash.Add(reference.Id);
+                    hash.Add(reference.ReferenceKind, StringComparer.Ordinal);
+                    hash.Add(reference.Target, StringComparer.Ordinal);
+                    hash.Add(reference.DisplayText, StringComparer.Ordinal);
+                    break;
+                case InlineObjectInline inlineObject:
+                    hash.Add(inlineObject.Id);
+                    hash.Add(inlineObject.ObjectKind, StringComparer.Ordinal);
+                    hash.Add(inlineObject.Payload.Serialize(), StringComparer.Ordinal);
                     break;
             }
         }
@@ -2276,9 +2336,10 @@ public sealed class RichTextBoxLayoutEngine
     {
         foreach (var inline in inlines)
         {
-            if (inline is TextRunNode text)
+            hash.Add(inline.GetType().FullName, StringComparer.Ordinal);
+            foreach (var mark in inline.Marks)
             {
-                hash.Add(text.Style);
+                hash.Add(mark);
             }
         }
     }
@@ -2435,6 +2496,7 @@ public sealed class RichTextBoxLayoutEngine
             UnorderedListBlock or OrderedListBlock => TextBreakKind.ListItem,
             TableBlock => TextBreakKind.TableRow,
             RowBlock or ColumnBlock => TextBreakKind.ContainerChild,
+            EmbeddedObjectBlock => TextBreakKind.Paragraph,
             _ => TextBreakKind.Line
         };
 
@@ -3471,19 +3533,21 @@ public sealed class RichTextBoxLayoutEngine
             {
                 if (block is ParagraphBlock paragraph)
                 {
-                    var style = paragraph.Inlines.OfType<TextRunNode>().Select(x => x.Style).FirstOrDefault();
-                    if (style is not null)
+                    var resolvedParagraph = StyleResolver.Resolve(paragraph.Style);
+                    var inline = paragraph.Inlines.OfType<TextInline>().FirstOrDefault();
+                    if (inline is not null)
                     {
-                        return StyleResolver.ToSegmentStyle(StyleResolver.Resolve(style), StyleResolver.Resolve(paragraph.Style));
+                        return StyleResolver.ToSegmentStyle(StyleResolver.Resolve(StyleResolver.ResolveInlineTextStyle(resolvedParagraph, inline)), resolvedParagraph);
                     }
                 }
 
                 if (block is HeadingBlock heading)
                 {
-                    var style = heading.Inlines.OfType<TextRunNode>().Select(x => x.Style).FirstOrDefault();
-                    if (style is not null)
+                    var resolvedHeading = StyleResolver.Resolve(heading.Style);
+                    var inline = heading.Inlines.OfType<TextInline>().FirstOrDefault();
+                    if (inline is not null)
                     {
-                        return StyleResolver.ToSegmentStyle(StyleResolver.Resolve(style), StyleResolver.Resolve(heading.Style));
+                        return StyleResolver.ToSegmentStyle(StyleResolver.Resolve(StyleResolver.ResolveInlineTextStyle(resolvedHeading, inline)), resolvedHeading);
                     }
                 }
             }
@@ -3629,7 +3693,7 @@ public sealed class RichTextBoxLayoutEngine
             if (fit.RemainderRequest is null || fit.RemainderRequest.Segments.Count == 0)
             {
                 return new InlineSplitOutcome(
-                    BuildInlineNodesFromSegments(mappedSegments.Select(x => x.Segment).ToArray()),
+                    BuildInlineNodesFromSegments(mappedSegments.Select(x => x.Segment).ToArray(), mappedSegments),
                     Array.Empty<InlineNode>());
             }
 
@@ -3654,8 +3718,8 @@ public sealed class RichTextBoxLayoutEngine
             }
 
             return new InlineSplitOutcome(
-                BuildInlineNodesFromSegments(fittingSegments),
-                BuildInlineNodesFromSegments(remainderSegments));
+                BuildInlineNodesFromSegments(fittingSegments, mappedSegments),
+                BuildInlineNodesFromSegments(remainderSegments, mappedSegments));
         }
 
         private static List<MappedSegment> CreateMappedSegments(IReadOnlyList<InlineNode> inlines, ComputedParagraphStyle style, string path)
@@ -3664,18 +3728,50 @@ public sealed class RichTextBoxLayoutEngine
             for (var inlineIndex = 0; inlineIndex < inlines.Count; inlineIndex++)
             {
                 var inline = inlines[inlineIndex];
+                var sourcePath = $"{path}.Inlines[{inlineIndex}]";
+                var sourceNodeId = inline switch
+                {
+                    FieldInline field => field.Id.Value,
+                    ReferenceInline reference => reference.Id.Value,
+                    InlineObjectInline inlineObject => inlineObject.Id.Value,
+                    _ => sourcePath
+                };
+                var textStyle = StyleResolver.ResolveInlineTextStyle(style, inline);
+                var segmentStyle = StyleResolver.ToSegmentStyle(StyleResolver.Resolve(textStyle), style);
                 switch (inline)
                 {
-                    case TextRunNode text:
-                        segments.Add(new MappedSegment(new TextSegment(text.Text, StyleResolver.ToSegmentStyle(StyleResolver.Resolve(text.Style), style), 0, text.Text.Length, $"{path}.Inlines[{inlineIndex}]")));
+                    case TextInline text:
+                        segments.Add(new MappedSegment(
+                            inline,
+                            new TextSegment(text.Text, segmentStyle, 0, text.Text.Length, sourcePath, sourceNodeId)));
                         break;
-                    case LineBreakNode:
-                        if (segments.Count == 0)
-                        {
-                            continue;
-                        }
-
-                        segments[^1] = segments[^1] with { Segment = segments[^1].Segment with { Text = segments[^1].Segment.Text + "\n" } };
+                    case BreakInline:
+                        segments.Add(new MappedSegment(
+                            inline,
+                            new TextSegment("\n", segmentStyle, 0, 1, sourcePath, sourceNodeId)));
+                        break;
+                    case TabInline:
+                        segments.Add(new MappedSegment(
+                            inline,
+                            new TextSegment("\t", segmentStyle, 0, 1, sourcePath, sourceNodeId)));
+                        break;
+                    case FieldInline field:
+                        var fieldText = ResolveInlineDisplayText(field);
+                        segments.Add(new MappedSegment(
+                            inline,
+                            new TextSegment(fieldText, segmentStyle, 0, fieldText.Length, sourcePath, sourceNodeId)));
+                        break;
+                    case ReferenceInline reference:
+                        var referenceText = ResolveInlineDisplayText(reference);
+                        segments.Add(new MappedSegment(
+                            inline,
+                            new TextSegment(referenceText, segmentStyle, 0, referenceText.Length, sourcePath, sourceNodeId)));
+                        break;
+                    case InlineObjectInline inlineObject:
+                        var objectText = ResolveInlineDisplayText(inlineObject);
+                        segments.Add(new MappedSegment(
+                            inline,
+                            new TextSegment(objectText, segmentStyle, 0, objectText.Length, sourcePath, sourceNodeId)));
                         break;
                 }
             }
@@ -3683,29 +3779,36 @@ public sealed class RichTextBoxLayoutEngine
             return segments;
         }
 
-        private static IReadOnlyList<InlineNode> BuildInlineNodesFromSegments(IReadOnlyList<TextSegment> segments)
+        private static IReadOnlyList<InlineNode> BuildInlineNodesFromSegments(IReadOnlyList<TextSegment> segments, IReadOnlyList<MappedSegment> mappedSegments)
         {
+            var mappedBySource = mappedSegments
+                .GroupBy(static x => x.Segment.SourceNodeId ?? x.Segment.SourcePath ?? string.Empty, StringComparer.Ordinal)
+                .ToDictionary(static x => x.Key, static x => x.First().Inline, StringComparer.Ordinal);
             var inlines = new List<InlineNode>();
             foreach (var segment in segments)
             {
+                var mappedSource = ResolveMappedInline(segment, mappedBySource);
                 var remaining = segment.Text;
                 while (remaining.Length > 0)
                 {
-                    var lineBreakIndex = remaining.IndexOf('\n');
-                    if (lineBreakIndex < 0)
+                    var breakIndex = remaining.IndexOfAny(['\n', '\t']);
+                    if (breakIndex < 0)
                     {
-                        inlines.Add(new TextRunNode(remaining, StyleResolver.ToTextStyle(segment.Style)));
+                        AppendInlineText(inlines, remaining, segment, mappedSource);
                         break;
                     }
 
-                    var text = remaining[..lineBreakIndex];
+                    var text = remaining[..breakIndex];
                     if (text.Length > 0)
                     {
-                        inlines.Add(new TextRunNode(text, StyleResolver.ToTextStyle(segment.Style)));
+                        AppendInlineText(inlines, text, segment, mappedSource);
                     }
 
-                    inlines.Add(new LineBreakNode());
-                    remaining = remaining[(lineBreakIndex + 1)..];
+                    var control = remaining[breakIndex];
+                    inlines.Add(control == '\n'
+                        ? RebuildAtomicInline(segment, mappedSource, new BreakInline())
+                        : RebuildAtomicInline(segment, mappedSource, new TabInline()));
+                    remaining = remaining[(breakIndex + 1)..];
                     if (remaining.Length == 0)
                     {
                         break;
@@ -3717,32 +3820,67 @@ public sealed class RichTextBoxLayoutEngine
         }
 
         private static List<TextSegment> CreateSegments(IReadOnlyList<InlineNode> inlines, ComputedParagraphStyle style, string path)
-        {
-            var segments = new List<TextSegment>();
-            for (var inlineIndex = 0; inlineIndex < inlines.Count; inlineIndex++)
-            {
-                var inline = inlines[inlineIndex];
-                switch (inline)
-                {
-                    case TextRunNode text:
-                        segments.Add(new TextSegment(text.Text, StyleResolver.ToSegmentStyle(StyleResolver.Resolve(text.Style), style), 0, text.Text.Length, $"{path}.Inlines[{inlineIndex}]"));
-                        break;
-                    case LineBreakNode:
-                        if (segments.Count == 0)
-                        {
-                            continue;
-                        }
+            => CreateMappedSegments(inlines, style, path).Select(static x => x.Segment).ToList();
 
-                        var current = segments[^1];
-                        segments[^1] = current with { Text = current.Text + "\n" };
-                        break;
-                    default:
-                        throw new NotSupportedException($"Unsupported inline node type: {inline.GetType().Name}");
-                }
+        private static InlineNode? ResolveMappedInline(TextSegment segment, IReadOnlyDictionary<string, InlineNode> mappedBySource)
+        {
+            var key = segment.SourceNodeId ?? segment.SourcePath;
+            if (key is null)
+            {
+                return null;
             }
 
-            return segments;
+            return mappedBySource.TryGetValue(key, out var inline) ? inline : null;
         }
+
+        private static void AppendInlineText(List<InlineNode> inlines, string text, TextSegment segment, InlineNode? mappedSource)
+        {
+            if (mappedSource is TextInline textInline)
+            {
+                inlines.Add(new TextInline(text, textInline.Marks));
+                return;
+            }
+
+            if (mappedSource is FieldInline field && string.Equals(text, ResolveInlineDisplayText(field), StringComparison.Ordinal))
+            {
+                inlines.Add(field);
+                return;
+            }
+
+            if (mappedSource is ReferenceInline reference && string.Equals(text, ResolveInlineDisplayText(reference), StringComparison.Ordinal))
+            {
+                inlines.Add(reference);
+                return;
+            }
+
+            if (mappedSource is InlineObjectInline inlineObject && string.Equals(text, ResolveInlineDisplayText(inlineObject), StringComparison.Ordinal))
+            {
+                inlines.Add(inlineObject);
+                return;
+            }
+
+            inlines.Add(new TextInline(text, InlineMarkSet.FromTextStyle(StyleResolver.ToTextStyle(segment.Style))));
+        }
+
+        private static InlineNode RebuildAtomicInline(TextSegment segment, InlineNode? mappedSource, InlineNode fallback)
+            => mappedSource switch
+            {
+                BreakInline => mappedSource,
+                TabInline => mappedSource,
+                _ => fallback
+            };
+
+        private static string ResolveInlineDisplayText(InlineNode inline)
+            => inline switch
+            {
+                TextInline text => text.Text,
+                BreakInline => "\n",
+                TabInline => "\t",
+                FieldInline field => field.DisplayText ?? field.FieldRef ?? $"{{{field.FieldKind}}}",
+                ReferenceInline reference => reference.DisplayText ?? reference.Target,
+                InlineObjectInline inlineObject => inlineObject.Payload.DisplayText,
+                _ => string.Empty
+            };
     }
 
     private sealed class RichFitPlanMaterializer : ITextLayoutFitPlanMaterializer
@@ -3810,5 +3948,5 @@ public sealed class RichTextBoxLayoutEngine
         IReadOnlyList<InlineNode> FittingInlines,
         IReadOnlyList<InlineNode> RemainderInlines);
 
-    private sealed record MappedSegment(TextSegment Segment);
+    private sealed record MappedSegment(InlineNode Inline, TextSegment Segment);
 }

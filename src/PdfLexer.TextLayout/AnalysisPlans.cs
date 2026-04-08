@@ -17,6 +17,7 @@ public enum TextLayoutNodeKind
     Table,
     TableRow,
     TableCell,
+    EmbeddedObject,
     RowContainer,
     ColumnContainer,
     LayoutChild,
@@ -122,8 +123,21 @@ public sealed record TextLayoutContinuationReference(
     TextLayoutSourceReference Boundary,
     TextLayoutSourceReference? ContinuationStart = null,
     string? ParentPath = null,
+    string? ParentNodeId = null,
     TextFragmentBreakReason BreakReason = TextFragmentBreakReason.Overflow,
-    bool IsForced = false);
+    bool IsForced = false)
+{
+    public TextLayoutContinuationReference(
+        TextLayoutContinuationKind Kind,
+        TextLayoutSourceReference Boundary,
+        TextLayoutSourceReference? ContinuationStart,
+        string? ParentPath,
+        TextFragmentBreakReason BreakReason,
+        bool IsForced)
+        : this(Kind, Boundary, ContinuationStart, ParentPath, null, BreakReason, IsForced)
+    {
+    }
+}
 
 public sealed record TextLayoutFragmentMetadata(
     TextFragmentBreak Break,
