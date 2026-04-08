@@ -8,11 +8,76 @@ namespace PdfLexer.Writing;
 
 public static class ContentWriterTextLayoutExtensions
 {
-    public static TextBoxLayoutResult MeasureTextBox<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request)
+    public static TextLayoutPlan AnalyzeTextBox<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request)
+        where T : struct, IFloatingPoint<T>
+        => AnalyzeTextBox(writer, request, context: null);
+
+    public static TextLayoutPlan AnalyzeTextBox<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
         where T : struct, IFloatingPoint<T>
     {
         var engine = new TextBoxLayoutEngine();
-        return engine.Layout(request);
+        return engine.Analyze(request, context);
+    }
+
+    public static TextLayoutFitPlan AnalyzeTextBoxFit<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request)
+        where T : struct, IFloatingPoint<T>
+        => AnalyzeTextBoxFit(writer, request, context: null);
+
+    public static TextLayoutFitPlan AnalyzeTextBoxFit<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
+        where T : struct, IFloatingPoint<T>
+    {
+        var engine = new TextBoxLayoutEngine();
+        return engine.AnalyzeFit(request, context);
+    }
+
+    public static TextLayoutFitPlan AnalyzeTextBoxFragment<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request)
+        where T : struct, IFloatingPoint<T>
+        => AnalyzeTextBoxFragment(writer, request, context: null);
+
+    public static TextLayoutFitPlan AnalyzeTextBoxFragment<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
+        where T : struct, IFloatingPoint<T>
+    {
+        var engine = new TextBoxLayoutEngine();
+        return engine.AnalyzeFragment(request, context);
+    }
+
+    public static TextLayoutPlan AnalyzeTextBox<T>(this ContentWriter<T> writer, RichTextBoxLayoutRequest request)
+        where T : struct, IFloatingPoint<T>
+        => AnalyzeTextBox(writer, request, context: null);
+
+    public static TextLayoutPlan AnalyzeTextBox<T>(this ContentWriter<T> writer, RichTextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
+        where T : struct, IFloatingPoint<T>
+    {
+        var engine = new RichTextBoxLayoutEngine();
+        return engine.Analyze(request, context);
+    }
+
+    public static TextLayoutFitPlan AnalyzeTextBoxFit<T>(this ContentWriter<T> writer, RichTextBoxLayoutRequest request)
+        where T : struct, IFloatingPoint<T>
+        => AnalyzeTextBoxFit(writer, request, context: null);
+
+    public static TextLayoutFitPlan AnalyzeTextBoxFit<T>(this ContentWriter<T> writer, RichTextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
+        where T : struct, IFloatingPoint<T>
+    {
+        var engine = new RichTextBoxLayoutEngine();
+        return engine.AnalyzeFit(request, context);
+    }
+
+    public static TextLayoutFitPlan AnalyzeTextBoxFragment<T>(this ContentWriter<T> writer, RichTextBoxLayoutRequest request)
+        where T : struct, IFloatingPoint<T>
+        => AnalyzeTextBoxFragment(writer, request, context: null);
+
+    public static TextLayoutFitPlan AnalyzeTextBoxFragment<T>(this ContentWriter<T> writer, RichTextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
+        where T : struct, IFloatingPoint<T>
+    {
+        var engine = new RichTextBoxLayoutEngine();
+        return engine.AnalyzeFragment(request, context);
+    }
+
+    public static TextBoxLayoutResult MeasureTextBox<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request)
+        where T : struct, IFloatingPoint<T>
+    {
+        return writer.AnalyzeTextBox(request).Layout;
     }
 
     public static TextBoxFitResult MeasureTextBoxFit<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request)
@@ -22,11 +87,17 @@ public static class ContentWriterTextLayoutExtensions
         return engine.Fit(request);
     }
 
+    public static TextBoxFitResult MeasureTextBoxFragment<T>(this ContentWriter<T> writer, TextBoxLayoutRequest request)
+        where T : struct, IFloatingPoint<T>
+    {
+        var engine = new TextBoxLayoutEngine();
+        return engine.Fragment(request);
+    }
+
     public static TextBoxLayoutResult MeasureTextBox<T>(this ContentWriter<T> writer, RichTextBoxLayoutRequest request)
         where T : struct, IFloatingPoint<T>
     {
-        var engine = new RichTextBoxLayoutEngine();
-        return engine.Layout(request);
+        return writer.AnalyzeTextBox(request).Layout;
     }
 
     public static RichTextBoxFitResult MeasureTextBoxFit<T>(this ContentWriter<T> writer, RichTextBoxLayoutRequest request)
@@ -36,22 +107,48 @@ public static class ContentWriterTextLayoutExtensions
         return engine.Fit(request);
     }
 
+    public static RichTextBoxFitResult MeasureTextBoxFragment<T>(this ContentWriter<T> writer, RichTextBoxLayoutRequest request)
+        where T : struct, IFloatingPoint<T>
+    {
+        var engine = new RichTextBoxLayoutEngine();
+        return engine.Fragment(request);
+    }
+
     public static TextBoxLayoutResult WriteTextBox<T>(this ContentWriter<T> writer, PdfRect<T> area, TextBoxLayoutRequest request, PdfTextLayoutFontLibrary fontLibrary)
         where T : struct, IFloatingPoint<T>
     {
         ArgumentNullException.ThrowIfNull(fontLibrary);
-        var engine = new TextBoxLayoutEngine();
-        var layout = engine.Layout(request);
-        return writer.WriteTextBox(area, layout, fontLibrary);
+        var plan = writer.AnalyzeTextBox(request);
+        return writer.WriteTextBox(area, plan, fontLibrary);
     }
 
     public static TextBoxLayoutResult WriteTextBox<T>(this ContentWriter<T> writer, PdfRect<T> area, RichTextBoxLayoutRequest request, PdfTextLayoutFontLibrary fontLibrary)
         where T : struct, IFloatingPoint<T>
     {
         ArgumentNullException.ThrowIfNull(fontLibrary);
-        var engine = new RichTextBoxLayoutEngine();
-        var layout = engine.Layout(request);
-        return writer.WriteTextBox(area, layout, fontLibrary);
+        var plan = writer.AnalyzeTextBox(request);
+        return writer.WriteTextBox(area, plan, fontLibrary);
+    }
+
+    public static TextBoxLayoutResult WriteTextBox<T>(this ContentWriter<T> writer, PdfRect<T> area, TextLayoutPlan plan, PdfTextLayoutFontLibrary fontLibrary)
+        where T : struct, IFloatingPoint<T>
+    {
+        ArgumentNullException.ThrowIfNull(plan);
+        return writer.WriteTextBox(area, plan.Flatten().Layout, fontLibrary);
+    }
+
+    public static TextBoxLayoutResult WriteTextBox<T>(this ContentWriter<T> writer, PdfRect<T> area, TextLayoutFitPlan fitPlan, PdfTextLayoutFontLibrary fontLibrary)
+        where T : struct, IFloatingPoint<T>
+    {
+        ArgumentNullException.ThrowIfNull(fitPlan);
+        return writer.WriteTextBox(area, fitPlan.FittedSelection.Flatten().Layout, fontLibrary);
+    }
+
+    public static TextBoxLayoutResult WriteTextBox<T>(this ContentWriter<T> writer, PdfRect<T> area, TextLayoutPagePlan pagePlan, PdfTextLayoutFontLibrary fontLibrary)
+        where T : struct, IFloatingPoint<T>
+    {
+        ArgumentNullException.ThrowIfNull(pagePlan);
+        return writer.WriteTextBox(area, pagePlan.Flatten().Layout, fontLibrary);
     }
 
     public static TextBoxLayoutResult WriteTextBox<T>(this ContentWriter<T> writer, PdfRect<T> area, TextBoxLayoutResult layout, PdfTextLayoutFontLibrary fontLibrary)
@@ -68,9 +165,10 @@ public static class ContentWriterTextLayoutExtensions
         DrawBoxStyle(writer, area, layout.BoxStyle);
         DrawLayoutDecorations(writer, area, layout.Decorations);
 
-        var underlines = new List<(double X1, double Y, double X2, double Thickness, TextColor Color)>();
-        var backgrounds = new List<(double X, double Y, double Width, double Height, TextColor Color)>();
-        var vectorBullets = new List<(double CenterX, double CenterY, double Radius, TextColor Color)>();
+        var underlines = new List<TextStrokeDecorationIntent>();
+        var strikeThroughs = new List<TextStrokeDecorationIntent>();
+        var backgrounds = new List<InlineHighlightDecorationIntent>();
+        var vectorBullets = new List<VectorBulletDecorationIntent>();
 
         for (var lineIndex = 0; lineIndex < layout.Lines.Count; lineIndex++)
         {
@@ -87,7 +185,7 @@ public static class ContentWriterTextLayoutExtensions
                     var centerX = bulletRectX + (run.MeasuredWidth / 2d);
                     var centerY = bulletRectY + (run.LineHeight / 2d);
                     var radius = Math.Max(0.5d, Math.Min(run.FontSize * 0.18d, Math.Min(run.MeasuredWidth * 0.45d, run.LineHeight * 0.3d)));
-                    vectorBullets.Add((centerX, centerY, radius, foreground));
+                    vectorBullets.Add(new VectorBulletDecorationIntent(centerX, centerY, radius, foreground));
                     continue;
                 }
 
@@ -104,7 +202,7 @@ public static class ContentWriterTextLayoutExtensions
 
                 var rectX = ToDouble(area.LLx) + line.X + run.X;
                 var (rectTop, rectHeight) = GetInlineHighlightMetrics(run);
-                backgrounds.Add((rectX, ToDouble(area.URy) - rectTop - rectHeight, decorationWidth, rectHeight, background));
+                backgrounds.Add(new InlineHighlightDecorationIntent(rectX, ToDouble(area.URy) - rectTop - rectHeight, decorationWidth, rectHeight, background));
             }
         }
 
@@ -219,7 +317,20 @@ public static class ContentWriterTextLayoutExtensions
                     var underlineYOffset = run.FontSize * 0.12d;
                     var underlineY = ToDouble(area.URy) - run.BaselineY - underlineYOffset;
                     var startX = ToDouble(area.LLx) + line.X + run.X;
-                    underlines.Add((startX, underlineY, startX + decorationWidth, GetUnderlineThickness(run), foreground));
+                    underlines.Add(new TextStrokeDecorationIntent(startX, underlineY, startX + decorationWidth, GetUnderlineThickness(run), foreground));
+                }
+
+                if (run.StrikeThrough && run.MeasuredWidth > 0)
+                {
+                    var decorationWidth = GetVisibleDecorationWidth(line, run);
+                    if (decorationWidth <= 0d)
+                    {
+                        continue;
+                    }
+
+                    var strikeThroughY = ToDouble(area.URy) - run.BaselineY - (run.FontSize * 0.32d);
+                    var startX = ToDouble(area.LLx) + line.X + run.X;
+                    strikeThroughs.Add(new TextStrokeDecorationIntent(startX, strikeThroughY, startX + decorationWidth, Math.Max(0.75d, GetUnderlineThickness(run) * 0.9d), foreground));
                 }
             }
         }
@@ -233,6 +344,17 @@ public static class ContentWriterTextLayoutExtensions
             writer.LineWidth(FromDouble<T>(underline.Thickness));
             writer.MoveTo(FromDouble<T>(underline.X1), FromDouble<T>(underline.Y));
             writer.LineTo(FromDouble<T>(underline.X2), FromDouble<T>(underline.Y));
+            writer.Stroke();
+            writer.Restore();
+        }
+
+        foreach (var strikeThrough in strikeThroughs)
+        {
+            writer.Save();
+            writer.SetStrokingRGB(strikeThrough.Color.R, strikeThrough.Color.G, strikeThrough.Color.B);
+            writer.LineWidth(FromDouble<T>(strikeThrough.Thickness));
+            writer.MoveTo(FromDouble<T>(strikeThrough.X1), FromDouble<T>(strikeThrough.Y));
+            writer.LineTo(FromDouble<T>(strikeThrough.X2), FromDouble<T>(strikeThrough.Y));
             writer.Stroke();
             writer.Restore();
         }

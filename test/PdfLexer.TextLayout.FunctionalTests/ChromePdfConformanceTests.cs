@@ -11,6 +11,11 @@ public partial class ChromePdfConformanceTests
 {
     private const double InternalRenderScaleFactor = 1.0;
     private const double PositionTolerance = 6.0;
+    private const double RelativeLineXTolerance = 1.5;
+    private const double RelativeLineYTolerance = 2.25;
+    private const double RelativeWordXTolerance = 4.0;
+    private const double RelativeWordYTolerance = 1.5;
+    private const double LineGroupingTolerance = 1.0;
     private const double SizeTolerance = 8.0;
     private const double ReviewMargin = 24.0;
     private const double ReviewGutter = 24.0;
@@ -165,47 +170,98 @@ public partial class ChromePdfConformanceTests
                 boxHeight: 70));
 
         cases.Add(
-            ConformanceCase.FromBlocks(
+            ConformanceCase.FromHtml(
                 "RichParagraphSpacingAndAlignment",
-                new RichTextBlock[]
-                {
-                    new ParagraphBlock(
-                        new InlineNode[]
-                        {
-                            new TextRunNode("Centered heading line", new TextStyle(SansFamily, 400, 13))
-                        },
-                        new ParagraphStyle(TextAlign: TextHorizontalAlignment.Center, LineHeight: 18, MarginBlockEnd: 10)),
-                    new ParagraphBlock(
-                        new InlineNode[]
-                        {
-                            new TextRunNode("Second paragraph should sit lower because margin block end is explicit.", richStyle)
-                        },
-                        new ParagraphStyle(LineHeight: 16))
-                },
+                $$"""
+                <p style="text-align:center; line-height:18pt; margin-bottom:10pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:13pt;">Centered heading line</span>
+                </p>
+                <p style="line-height:16pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">Second paragraph should sit lower because margin block end is explicit.</span>
+                </p>
+                """,
+                richStyle,
                 boxWidth: 180,
                 boxHeight: 90));
 
         cases.Add(
-            ConformanceCase.FromBlocks(
+            ConformanceCase.FromHtml(
                 "HeadingAndParagraph",
-                new RichTextBlock[]
-                {
-                    new HeadingBlock(
-                        2,
-                        new InlineNode[]
-                        {
-                            new TextRunNode("Section Heading", new TextStyle(SansFamily, 700, 16))
-                        },
-                        new ParagraphStyle(LineHeight: 20, MarginBlockEnd: 8)),
-                    new ParagraphBlock(
-                        new InlineNode[]
-                        {
-                            new TextRunNode("The body paragraph beneath the heading should wrap consistently.", richStyle)
-                        },
-                        new ParagraphStyle(LineHeight: 16))
-                },
+                $$"""
+                <h2 style="line-height:20pt; margin-bottom:8pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:700; font-size:16pt;">Section Heading</span>
+                </h2>
+                <p style="line-height:16pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">The body paragraph beneath the heading should wrap consistently.</span>
+                </p>
+                """,
+                richStyle,
                 boxWidth: 170,
                 boxHeight: 100));
+
+        cases.Add(
+            ConformanceCase.FromHtml(
+                "HtmlInlineFontVariants",
+                $$"""
+                <p style="line-height:18pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">Sans regular. </span>
+                  <span style="font-family:'{{SerifFamily}}'; font-weight:700; font-size:13pt;">Serif bold. </span>
+                  <span style="font-family:'{{CondensedFamily}}'; font-weight:400; font-size:12pt; font-style:italic;">Condensed italic. </span>
+                  <span style="font-family:'{{MonoFamily}}'; font-weight:400; font-size:11pt;">Mono tail.</span>
+                </p>
+                """,
+                richStyle,
+                boxWidth: 188,
+                boxHeight: 88));
+
+        cases.Add(
+            ConformanceCase.FromHtml(
+                "HtmlInlineColorAndDecorationStyles",
+                $$"""
+                <p style="line-height:17pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; color:#b41424;">Color sample</span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;"> with </span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; background-color:#f7e39a;">background highlight</span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;"> plus </span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; text-decoration:underline;">underline</span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;"> and </span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; text-decoration:line-through;">strike</span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;"> styling.</span>
+                </p>
+                """,
+                richStyle,
+                boxWidth: 188,
+                boxHeight: 88));
+
+        cases.Add(
+            ConformanceCase.FromHtml(
+                "HtmlInlineCharacterAndWordSpacing",
+                $$"""
+                <p style="line-height:17pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; letter-spacing:0.8pt;">Tracking sample</span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;"> beside </span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; word-spacing:3.5pt;">wider word spacing across this phrase</span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;"> for comparison.</span>
+                </p>
+                """,
+                richStyle,
+                boxWidth: 192,
+                boxHeight: 88));
+
+        cases.Add(
+            ConformanceCase.FromHtml(
+                "HtmlParagraphMarginsAndRightAlignment",
+                $$"""
+                <p style="line-height:16pt; margin-top:6pt; margin-bottom:10pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">First paragraph uses both top and bottom margins to exercise stacked block spacing.</span>
+                </p>
+                <p style="text-align:right; line-height:16pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">The second paragraph is right aligned and should begin lower because of the prior margins.</span>
+                </p>
+                """,
+                richStyle,
+                boxWidth: 184,
+                boxHeight: 112));
 
         cases.Add(
             ConformanceCase.FromBlocks(
@@ -843,58 +899,60 @@ public partial class ChromePdfConformanceTests
                 boxHeight: 72));
 
         cases.Add(
-            ConformanceCase.FromBlocks(
+            ConformanceCase.FromHtml(
                 "WrappedInlineBackgroundAndUnderline",
-                new RichTextBlock[]
-                {
-                    new ParagraphBlock(
-                        new InlineNode[]
-                        {
-                            new TextRunNode("A wrapped paragraph begins with neutral text, then ", richStyle),
-                            new TextRunNode("a highlighted phrase that should span more than one line in both engines", richStyle with { BackgroundColor = new TextColor(252, 238, 164) }),
-                            new TextRunNode(", and finally ", richStyle),
-                            new TextRunNode("an underlined closing segment that also wraps cleanly", richStyle with { Underline = true })
-                        },
-                        new ParagraphStyle(LineHeight: 16))
-                },
+                $$"""
+                <p style="line-height:16pt;">
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">A wrapped paragraph begins with neutral text, then </span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; background-color:#fceeA4;">a highlighted phrase that should span more than one line in both engines</span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">, and finally </span>
+                  <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; text-decoration:underline;">an underlined closing segment that also wraps cleanly</span>
+                </p>
+                """,
+                richStyle,
                 boxWidth: 175,
                 boxHeight: 105));
 
         cases.Add(
-            ConformanceCase.FromBlocks(
+            ConformanceCase.FromHtml(
                 "UnorderedListWrappedItems",
-                new RichTextBlock[]
-                {
-                    new UnorderedListBlock(
-                        new[]
-                        {
-                            new ListItemBlock(new RichTextBlock[]
-                            {
-                                new ParagraphBlock(
-                                    new InlineNode[]
-                                    {
-                                        new TextRunNode("First unordered item wraps to a second line and verifies the bullet gap against the content column.", richStyle)
-                                    },
-                                    new ParagraphStyle(LineHeight: 16))
-                            }),
-                            new ListItemBlock(new RichTextBlock[]
-                            {
-                                new ParagraphBlock(
-                                    new InlineNode[]
-                                    {
-                                        new TextRunNode("Second unordered item includes ", richStyle),
-                                        new TextRunNode("background emphasis", richStyle with { BackgroundColor = new TextColor(244, 232, 170) }),
-                                        new TextRunNode(" inside the wrapped content.", richStyle)
-                                    },
-                                    new ParagraphStyle(LineHeight: 16))
-                            })
-                        })
-                },
+                $$"""
+                <ul>
+                  <li>
+                    <p style="line-height:16pt;">
+                      <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">First unordered item wraps to a second line and verifies the bullet gap against the content column.</span>
+                    </p>
+                  </li>
+                  <li>
+                    <p style="line-height:16pt;">
+                      <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">Second unordered item includes </span>
+                      <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; background-color:#f4e8aa;">background emphasis</span>
+                      <span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;"> inside the wrapped content.</span>
+                    </p>
+                  </li>
+                </ul>
+                """,
+                richStyle,
                 boxWidth: 182,
                 boxHeight: 118,
                 boxStyle: new TextBoxStyle(
                     BorderColor: new TextColor(170, 170, 170),
                     BorderWidth: 0.75)));
+
+        cases.Add(
+            ConformanceCase.FromHtml(
+                "ListMarkerStyleVariants",
+                $$"""
+                <ul style="list-style-type:disc; margin-bottom:8pt;">
+                  <li><p style="line-height:15pt;"><span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">Disc bullet sample wraps into the next line for spacing review.</span></p></li>
+                </ul>
+                <ol style="list-style-type:upper-alpha;" start="3">
+                  <li><p style="line-height:15pt;"><span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">Ordered alpha marker continues from a custom start index.</span></p></li>
+                </ol>
+                """,
+                richStyle,
+                boxWidth: 188,
+                boxHeight: 126));
 
         cases.Add(
             ConformanceCase.FromBlocks(
@@ -920,106 +978,92 @@ public partial class ChromePdfConformanceTests
                 boxHeight: 132));
 
         cases.Add(
-            ConformanceCase.FromBlocks(
+            ConformanceCase.FromHtml(
                 "BasicTableConformance",
-                new RichTextBlock[]
-                {
-                    new TableBlock(
-                        new[]
-                        {
-                            new TableRowBlock(new TableCellBlock[]
-                            {
-                                new TableHeaderCellBlock(new RichTextBlock[]
-                                {
-                                    new ParagraphBlock(new InlineNode[] { new TextRunNode("Header A", sansBoldStyle) }, new ParagraphStyle(LineHeight: 16))
-                                }),
-                                new TableHeaderCellBlock(new RichTextBlock[]
-                                {
-                                    new ParagraphBlock(new InlineNode[] { new TextRunNode("Header B", sansBoldStyle) }, new ParagraphStyle(LineHeight: 16))
-                                })
-                            }),
-                            new TableRowBlock(new TableCellBlock[]
-                            {
-                                new TableDataCellBlock(new RichTextBlock[]
-                                {
-                                    new ParagraphBlock(
-                                        new InlineNode[] { new TextRunNode("Cell one wraps into multiple words for comparison.", richStyle) },
-                                        new ParagraphStyle(LineHeight: 16))
-                                }, Style: new TableCellStyle(BackgroundColor: new TextColor(250, 245, 190))),
-                                new TableDataCellBlock(new RichTextBlock[]
-                                {
-                                    new ParagraphBlock(new InlineNode[] { new TextRunNode("Cell two", serifStyle) }, new ParagraphStyle(LineHeight: 17))
-                                })
-                            })
-                        },
-                        new TableStyle(
-                            BackgroundColor: new TextColor(245, 245, 245),
-                            BorderColor: new TextColor(80, 80, 80),
-                            BorderWidth: 1,
-                            CellBorderColor: new TextColor(160, 160, 160),
-                            CellBorderWidth: 0.75,
-                            CellPadding: 6,
-                            MarginBlockEnd: 8))
-                },
+                $$"""
+                <table style="background-color:#f5f5f5; border:1pt solid #505050; cell-border-color:#a0a0a0; cell-border-width:0.75pt; cellpadding:6pt; margin-bottom:8pt;">
+                  <tr>
+                    <th style="width:106pt;"><p style="line-height:16pt;"><span style="font-family:'{{SansFamily}}'; font-weight:700; font-size:12pt;">Header A</span></p></th>
+                    <th style="width:54pt;"><p style="line-height:16pt;"><span style="font-family:'{{SansFamily}}'; font-weight:700; font-size:12pt;">Header B</span></p></th>
+                  </tr>
+                  <tr>
+                    <td style="width:106pt; background-color:#faf5be;"><p style="line-height:16pt;"><span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">Cell one wraps into multiple words for comparison.</span></p></td>
+                    <td style="width:54pt;"><p style="line-height:17pt;"><span style="font-family:'{{SerifFamily}}'; font-weight:400; font-size:13pt;">Cell two</span></p></td>
+                  </tr>
+                </table>
+                """,
+                richStyle,
                 boxWidth: 190,
                 boxHeight: 120));
 
         cases.Add(
-            ConformanceCase.FromBlocks(
+            ConformanceCase.FromHtml(
                 "TableSpanAndNestedContentConformance",
-                new RichTextBlock[]
-                {
-                    new TableBlock(
-                        new[]
-                        {
-                            new TableRowBlock(new TableCellBlock[]
-                            {
-                                new TableHeaderCellBlock(new RichTextBlock[]
-                                {
-                                    new ParagraphBlock(new InlineNode[] { new TextRunNode("Span Header", sansBoldStyle) }, new ParagraphStyle(LineHeight: 16))
-                                }, ColSpan: 2)
-                            }),
-                            new TableRowBlock(new TableCellBlock[]
-                            {
-                                new TableDataCellBlock(new RichTextBlock[]
-                                {
-                                    new ParagraphBlock(new InlineNode[] { new TextRunNode("Tall spanning cell with wrapped content.", richStyle) }, new ParagraphStyle(LineHeight: 16)),
-                                    new UnorderedListBlock(
-                                        new[]
-                                        {
-                                            new ListItemBlock(new RichTextBlock[]
-                                            {
-                                                new ParagraphBlock(new InlineNode[] { new TextRunNode("Nested bullet one", condensedStyle) }, new ParagraphStyle(LineHeight: 15))
-                                            }),
-                                            new ListItemBlock(new RichTextBlock[]
-                                            {
-                                                new ParagraphBlock(new InlineNode[] { new TextRunNode("Nested bullet two", condensedStyle) }, new ParagraphStyle(LineHeight: 15))
-                                            })
-                                        })
-                                }, RowSpan: 2, Style: new TableCellStyle(BackgroundColor: new TextColor(243, 247, 255), Padding: 5)),
-                                new TableDataCellBlock(new RichTextBlock[]
-                                {
-                                    new ParagraphBlock(new InlineNode[] { new TextRunNode("Top right", serifStyle) }, new ParagraphStyle(LineHeight: 17))
-                                }, Style: new TableCellStyle(TextAlign: TextHorizontalAlignment.Center))
-                            }),
-                            new TableRowBlock(new TableCellBlock[]
-                            {
-                                new TableDataCellBlock(new RichTextBlock[]
-                                {
-                                    new ParagraphBlock(new InlineNode[] { new TextRunNode("Bottom right with underline", richStyle with { Underline = true }) }, new ParagraphStyle(LineHeight: 16))
-                                }, Style: new TableCellStyle(BackgroundColor: new TextColor(250, 244, 228)))
-                            })
-                        },
-                        new TableStyle(
-                            BorderColor: new TextColor(80, 80, 80),
-                            BorderWidth: 1,
-                            CellBorderColor: new TextColor(120, 120, 120),
-                            CellBorderWidth: 0.5,
-                            CellPadding: 4,
-                            MarginBlockEnd: 8))
-                },
+                $$"""
+                <table style="border:1pt solid #505050; cell-border-color:#787878; cell-border-width:0.5pt; cellpadding:4pt; margin-bottom:8pt;">
+                  <tr>
+                    <th colspan="2" style="width:170pt;"><p style="line-height:16pt;"><span style="font-family:'{{SansFamily}}'; font-weight:700; font-size:12pt;">Span Header</span></p></th>
+                  </tr>
+                  <tr>
+                    <td rowspan="2" style="width:108pt; background-color:#f3f7ff; padding:5pt;">
+                      <p style="line-height:16pt;"><span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">Tall spanning cell with wrapped content.</span></p>
+                      <ul>
+                        <li><p style="line-height:15pt;"><span style="font-family:'{{CondensedFamily}}'; font-weight:400; font-size:12pt;">Nested bullet one</span></p></li>
+                        <li><p style="line-height:15pt;"><span style="font-family:'{{CondensedFamily}}'; font-weight:400; font-size:12pt;">Nested bullet two</span></p></li>
+                      </ul>
+                    </td>
+                    <td style="width:62pt; text-align:center;"><p style="line-height:17pt;"><span style="font-family:'{{SerifFamily}}'; font-weight:400; font-size:13pt;">Top right</span></p></td>
+                  </tr>
+                  <tr>
+                    <td style="width:62pt; background-color:#faf4e4;"><p style="line-height:16pt;"><span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt; text-decoration:underline;">Bottom right with underline</span></p></td>
+                  </tr>
+                </table>
+                """,
+                richStyle,
                 boxWidth: 195,
                 boxHeight: 165));
+
+        cases.Add(
+            ConformanceCase.FromHtml(
+                "TableCellWidthAndAlignmentStyles",
+                $$"""
+                <table style="border:1pt solid #666666; cell-border-color:#999999; cell-border-width:0.75pt; cellpadding:5pt;">
+                  <tr>
+                    <td style="width:58pt; text-align:right; background-color:#f6efe0;">
+                      <p style="line-height:16pt;"><span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">Narrow right cell wraps earlier.</span></p>
+                    </td>
+                    <td style="width:96pt; text-align:center; background-color:#eef4ff;">
+                      <p style="line-height:16pt;"><span style="font-family:'{{SerifFamily}}'; font-weight:400; font-size:13pt;">Wider centered cell.</span></p>
+                    </td>
+                  </tr>
+                </table>
+                """,
+                richStyle,
+                boxWidth: 195,
+                boxHeight: 108));
+
+        cases.Add(
+            ConformanceCase.FromHtml(
+                "TableChromeAndSectionStyles",
+                $$"""
+                <table style="background-color:#f7f7f2; border-width:1pt; border-color:#4e4e4e; cell-border-color:#9c9c9c; cell-border-width:0.5pt; cellpadding:7pt; margin-bottom:8pt;">
+                  <thead>
+                    <tr>
+                      <th style="width:58pt; background-color:#e9edf4;"><p style="line-height:15pt;"><span style="font-family:'{{SansFamily}}'; font-weight:700; font-size:12pt;">Label</span></p></th>
+                      <th style="width:84pt; background-color:#e9edf4;"><p style="line-height:15pt;"><span style="font-family:'{{SansFamily}}'; font-weight:700; font-size:12pt;">Value</span></p></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="width:58pt;"><p style="line-height:15pt;"><span style="font-family:'{{SansFamily}}'; font-weight:400; font-size:12pt;">Alpha</span></p></td>
+                      <td style="width:84pt;"><p style="line-height:15pt;"><span style="font-family:'{{MonoFamily}}'; font-weight:400; font-size:11pt;">A-1024</span></p></td>
+                    </tr>
+                  </tbody>
+                </table>
+                """,
+                richStyle,
+                boxWidth: 184,
+                boxHeight: 110));
 
         cases.Add(
             ConformanceCase.FromBlocks(
@@ -1171,16 +1215,19 @@ public partial class ChromePdfConformanceTests
         {
             HtmlTextBoxFixture simple => await BrowserFixtureRenderer.RenderPdfAsync(simple),
             RichHtmlTextBoxFixture rich => await BrowserFixtureRenderer.RenderPdfAsync(rich),
+            NormalizedRichHtmlTextBoxFixture normalizedRich => await BrowserFixtureRenderer.RenderPdfAsync(normalizedRich),
             _ => throw new NotSupportedException($"Unsupported fixture type '{browserFixture.GetType().Name}'.")
         };
         var pdfLexerPdf = RenderWithPdfLexer(renderTestCase);
 
-        var chromeWords = NormalizeWords(ExtractWords(chromePdf), InternalRenderScaleFactor);
-        var libraryWords = NormalizeWords(ExtractWords(pdfLexerPdf), InternalRenderScaleFactor);
+        var chromeText = NormalizeExtractedText(ExtractText(chromePdf), InternalRenderScaleFactor);
+        var libraryText = NormalizeExtractedText(ExtractText(pdfLexerPdf), InternalRenderScaleFactor);
+        var chromeWords = chromeText.Words;
+        var libraryWords = libraryText.Words;
 
         try
         {
-            AssertWordGeometryComparable(chromeWords, libraryWords);
+            AssertWordGeometryComparable(chromeText, libraryText);
         }
         catch
         {
@@ -1204,6 +1251,19 @@ public partial class ChromePdfConformanceTests
                 testCase.Fonts,
                 testCase.Segments,
                 testCase.HorizontalAlignment,
+                testCase.BoxStyle)
+            : testCase.NormalizedHtml is not null
+            ? new NormalizedRichHtmlTextBoxFixture(
+                testCase.PageWidth,
+                testCase.PageHeight,
+                testCase.BoxLeft,
+                testCase.BoxTop,
+                testCase.BoxWidth,
+                testCase.BoxHeight,
+                testCase.Fonts,
+                testCase.NormalizedHtml,
+                testCase.ListIndent,
+                testCase.ListMarkerGap,
                 testCase.BoxStyle)
             : new RichHtmlTextBoxFixture(
                 testCase.PageWidth,
@@ -1342,12 +1402,63 @@ public partial class ChromePdfConformanceTests
                 .Scale(previewScale, previewScale)
                 .Form(pf)
                 .Restore();
+
+            DrawCornerOverlays(
+                writer,
+                chromeWords,
+                ReviewMargin,
+                ReviewMargin,
+                previewScale,
+                210,
+                60,
+                60);
+            DrawAreaOverlay(
+                writer,
+                testCase.BoxLeft,
+                testCase.PageHeight - testCase.BoxTop - testCase.BoxHeight,
+                testCase.BoxWidth,
+                testCase.BoxHeight,
+                ReviewMargin,
+                ReviewMargin,
+                previewScale,
+                40,
+                160,
+                70);
+            DrawCornerOverlays(
+                writer,
+                libraryWords,
+                ReviewMargin + chromePreviewWidth + ReviewGutter,
+                ReviewMargin,
+                previewScale,
+                40,
+                90,
+                210);
+            DrawAreaOverlay(
+                writer,
+                testCase.BoxLeft,
+                testCase.PageHeight - testCase.BoxTop - testCase.BoxHeight,
+                testCase.BoxWidth,
+                testCase.BoxHeight,
+                ReviewMargin + chromePreviewWidth + ReviewGutter,
+                ReviewMargin,
+                previewScale,
+                40,
+                160,
+                70);
         }
 
         var resultsDir = Path.Combine(PathUtil.GetPathFromSegmentOfCurrent("test"), "results", "chrome-conformance");
         Directory.CreateDirectory(resultsDir);
         File.WriteAllBytes(Path.Combine(resultsDir, $"{testCase.Name}.pdf"), outDoc.Save());
         File.WriteAllText(Path.Combine(resultsDir, $"{testCase.Name}.html"), GetHtml(fixture));
+        if (testCase.HtmlSource is not null)
+        {
+            File.WriteAllText(Path.Combine(resultsDir, $"{testCase.Name}.source.html"), testCase.HtmlSource);
+        }
+        if (testCase.NormalizedHtml is not null)
+        {
+            File.WriteAllText(Path.Combine(resultsDir, $"{testCase.Name}.normalized.html"), testCase.NormalizedHtml);
+        }
         var summaryPath = Path.Combine(resultsDir, $"{testCase.Name}.summary.md");
         var failureSummaryPath = Path.Combine(resultsDir, $"{testCase.Name}.failure.summary.md");
         var summaryContent = BuildWordGeometrySummary(testCase, chromeWords, libraryWords);
@@ -1362,11 +1473,98 @@ public partial class ChromePdfConformanceTests
         }
     }
 
+    private static void DrawCornerOverlays(
+        ContentWriter<double> writer,
+        IReadOnlyList<ExtractedWord> words,
+        double translateX,
+        double translateY,
+        double previewScale,
+        int r,
+        int g,
+        int b)
+    {
+        if (words.Count == 0)
+        {
+            return;
+        }
+
+        writer.Save()
+            .Translate(translateX, translateY)
+            .Scale(previewScale, previewScale)
+            .SetStrokingRGB(r, g, b)
+            .LineWidth(Math.Max(0.2d, 0.5d / previewScale));
+
+        foreach (var word in words)
+        {
+            var llx = word.BoundingBox.LLx;
+            var lly = word.BoundingBox.LLy;
+            var urx = word.BoundingBox.URx;
+            var ury = word.BoundingBox.URy;
+            var width = Math.Max(0d, urx - llx);
+            var height = Math.Max(0d, ury - lly);
+            var cornerLength = Math.Max(1.5d, Math.Min(4d, Math.Min(width, height) * 0.22d));
+
+            DrawCorner(writer, llx, lly, cornerLength, 1d, 0d, 0d, 1d);
+            DrawCorner(writer, llx, ury, cornerLength, 1d, 0d, 0d, -1d);
+            DrawCorner(writer, urx, lly, cornerLength, -1d, 0d, 0d, 1d);
+            DrawCorner(writer, urx, ury, cornerLength, -1d, 0d, 0d, -1d);
+        }
+
+        writer.Restore();
+    }
+
+    private static void DrawCorner(
+        ContentWriter<double> writer,
+        double x,
+        double y,
+        double length,
+        double dx1,
+        double dy1,
+        double dx2,
+        double dy2)
+    {
+        writer.MoveTo(x, y)
+            .LineTo(x + (length * dx1), y + (length * dy1))
+            .Stroke();
+        writer.MoveTo(x, y)
+            .LineTo(x + (length * dx2), y + (length * dy2))
+            .Stroke();
+    }
+
+    private static void DrawAreaOverlay(
+        ContentWriter<double> writer,
+        double x,
+        double y,
+        double width,
+        double height,
+        double translateX,
+        double translateY,
+        double previewScale,
+        int r,
+        int g,
+        int b)
+    {
+        writer.Save()
+            .Translate(translateX, translateY)
+            .Scale(previewScale, previewScale)
+            .SetStrokingRGB(r, g, b)
+            .LineWidth(Math.Max(0.25d, 0.8d / previewScale));
+
+        var cornerLength = Math.Max(3d, Math.Min(8d, Math.Min(width, height) * 0.08d));
+        DrawCorner(writer, x, y, cornerLength, 1d, 0d, 0d, 1d);
+        DrawCorner(writer, x, y + height, cornerLength, 1d, 0d, 0d, -1d);
+        DrawCorner(writer, x + width, y, cornerLength, -1d, 0d, 0d, 1d);
+        DrawCorner(writer, x + width, y + height, cornerLength, -1d, 0d, 0d, -1d);
+
+        writer.Restore();
+    }
+
     private static string GetHtml(object fixture)
         => fixture switch
         {
             HtmlTextBoxFixture simple => BrowserFixtureRenderer.GetHtml(simple),
             RichHtmlTextBoxFixture rich => BrowserFixtureRenderer.GetHtml(rich),
+            NormalizedRichHtmlTextBoxFixture normalizedRich => BrowserFixtureRenderer.GetHtml(normalizedRich),
             _ => throw new NotSupportedException($"Unsupported fixture type '{fixture.GetType().Name}'.")
         };
 
@@ -1383,6 +1581,12 @@ public partial class ChromePdfConformanceTests
         sb.AppendLine($"- Page: {testCase.PageWidth:0.###} x {testCase.PageHeight:0.###} pt");
         sb.AppendLine($"- Box: left={testCase.BoxLeft:0.###} top={testCase.BoxTop:0.###} width={testCase.BoxWidth:0.###} height={testCase.BoxHeight:0.###} pt");
         sb.AppendLine($"- Horizontal alignment: {testCase.HorizontalAlignment}");
+        if (testCase.HtmlSource is not null)
+        {
+            sb.AppendLine("- Fixture authoring: HTML -> model -> HTML");
+            sb.AppendLine($"- Source HTML length: {testCase.HtmlSource.Length}");
+            sb.AppendLine($"- Normalized HTML length: {testCase.NormalizedHtml?.Length ?? 0}");
+        }
         if (testCase.Segments is not null)
         {
             sb.AppendLine($"- Segment count: {testCase.Segments.Count}");
@@ -1420,11 +1624,17 @@ public partial class ChromePdfConformanceTests
 
         if (chromeWords.Count > 0 && libraryWords.Count > 0)
         {
+            var chromeLayout = BuildWordLineLayout(new ExtractedText(chromeWords, Array.Empty<IReadOnlyList<ExtractedWord>>()));
+            var libraryLayout = BuildWordLineLayout(new ExtractedText(libraryWords, Array.Empty<IReadOnlyList<ExtractedWord>>()));
             var pairCount = Math.Min(chromeWords.Count, libraryWords.Count);
             var maxDx = 0d;
             var maxDy = 0d;
             var maxDw = 0d;
             var maxDh = 0d;
+            var maxRelativeLineDx = 0d;
+            var maxRelativeLineDy = 0d;
+            var maxRelativeWordDx = 0d;
+            var maxRelativeWordDy = 0d;
             var sumDx = 0d;
             var sumDy = 0d;
             var sumDw = 0d;
@@ -1449,18 +1659,56 @@ public partial class ChromePdfConformanceTests
                 {
                     textMismatches++;
                 }
+
+                if (i < chromeLayout.Words.Count && i < libraryLayout.Words.Count
+                    && chromeLayout.Words[i].LineIndex == libraryLayout.Words[i].LineIndex)
+                {
+                    var chromeWord = chromeLayout.Words[i];
+                    var libraryWord = libraryLayout.Words[i];
+                    if (chromeWord.IsLineStart && libraryWord.IsLineStart && chromeWord.LineIndex > 0)
+                    {
+                        var chromePrev = chromeLayout.Lines[chromeWord.LineIndex - 1].Anchor;
+                        var chromeCurrent = chromeLayout.Lines[chromeWord.LineIndex].Anchor;
+                        var libraryPrev = libraryLayout.Lines[libraryWord.LineIndex - 1].Anchor;
+                        var libraryCurrent = libraryLayout.Lines[libraryWord.LineIndex].Anchor;
+                        maxRelativeLineDx = Math.Max(maxRelativeLineDx, Math.Abs((libraryCurrent.BoundingBox.LLx - libraryPrev.BoundingBox.LLx) - (chromeCurrent.BoundingBox.LLx - chromePrev.BoundingBox.LLx)));
+                        maxRelativeLineDy = Math.Max(maxRelativeLineDy, Math.Abs((libraryCurrent.BoundingBox.LLy - libraryPrev.BoundingBox.LLy) - (chromeCurrent.BoundingBox.LLy - chromePrev.BoundingBox.LLy)));
+                    }
+                    else if (!chromeWord.IsLineStart && !libraryWord.IsLineStart)
+                    {
+                        var chromeAnchorLine = chromeLayout.Lines[chromeWord.LineIndex].Anchor;
+                        var libraryAnchorLine = libraryLayout.Lines[libraryWord.LineIndex].Anchor;
+                        maxRelativeWordDx = Math.Max(maxRelativeWordDx, Math.Abs((libraryWords[i].BoundingBox.LLx - libraryAnchorLine.BoundingBox.LLx) - (chromeWords[i].BoundingBox.LLx - chromeAnchorLine.BoundingBox.LLx)));
+                        maxRelativeWordDy = Math.Max(maxRelativeWordDy, Math.Abs((libraryWords[i].BoundingBox.LLy - libraryAnchorLine.BoundingBox.LLy) - (chromeWords[i].BoundingBox.LLy - chromeAnchorLine.BoundingBox.LLy)));
+                    }
+                }
             }
 
             sb.AppendLine($"- Compared word pairs: {pairCount}");
+            sb.AppendLine($"- Chrome line count: {chromeLayout.Lines.Count}");
+            sb.AppendLine($"- PdfLexer line count: {libraryLayout.Lines.Count}");
             sb.AppendLine($"- Text mismatches by index: {textMismatches}");
             sb.AppendLine($"- Max |delta x|: {maxDx:0.###} pt");
             sb.AppendLine($"- Max |delta y|: {maxDy:0.###} pt");
             sb.AppendLine($"- Max |delta width|: {maxDw:0.###} pt");
             sb.AppendLine($"- Max |delta height|: {maxDh:0.###} pt");
+            sb.AppendLine($"- Max |relative line delta x|: {maxRelativeLineDx:0.###} pt");
+            sb.AppendLine($"- Max |relative line delta y|: {maxRelativeLineDy:0.###} pt");
+            sb.AppendLine($"- Max |relative word delta x|: {maxRelativeWordDx:0.###} pt");
+            sb.AppendLine($"- Max |relative word delta y|: {maxRelativeWordDy:0.###} pt");
             sb.AppendLine($"- Mean |delta x|: {sumDx / pairCount:0.###} pt");
             sb.AppendLine($"- Mean |delta y|: {sumDy / pairCount:0.###} pt");
             sb.AppendLine($"- Mean |delta width|: {sumDw / pairCount:0.###} pt");
             sb.AppendLine($"- Mean |delta height|: {sumDh / pairCount:0.###} pt");
+        }
+
+        var analysisSummary = BuildPdfLexerAnalysisSummary(testCase);
+        if (!string.IsNullOrWhiteSpace(analysisSummary))
+        {
+            sb.AppendLine();
+            sb.AppendLine("## PdfLexer Analysis");
+            sb.AppendLine();
+            sb.Append(analysisSummary);
         }
 
         sb.AppendLine();
@@ -1468,6 +1716,8 @@ public partial class ChromePdfConformanceTests
         sb.AppendLine();
         sb.AppendLine("Interpretation:");
         sb.AppendLine("- Table positions are normalized to the first extracted word in each document.");
+        sb.AppendLine("- Global `dx`/`dy` remain normalized to the first extracted word in each document.");
+        sb.AppendLine("- Pass/fail uses a hybrid rule: absolute anchor on the first line, relative line-to-line deltas for later line starts, and relative in-line offsets for later words.");
         sb.AppendLine("- `dx = (pdflexer.llx - pdflexer.first.llx) - (chrome.llx - chrome.first.llx)`");
         sb.AppendLine("- `dy = (pdflexer.lly - pdflexer.first.lly) - (chrome.lly - chrome.first.lly)`");
         sb.AppendLine("- `dw = pdflexer.width - chrome.width`");
@@ -1508,6 +1758,75 @@ public partial class ChromePdfConformanceTests
         }
 
         return sb.ToString();
+    }
+
+    private static string BuildPdfLexerAnalysisSummary(ConformanceCase testCase)
+    {
+        var context = new TextLayoutAnalysisContext().EnableLineDiagnostics();
+        TextLayoutPlan plan;
+        var library = CreateFontLibrary(testCase.Fonts);
+
+        if (testCase.Segments is not null)
+        {
+            var request = new TextBoxLayoutRequest(
+                testCase.BoxWidth,
+                testCase.BoxHeight,
+                library.CreateLayoutLibrary(),
+                testCase.Segments)
+            {
+                HorizontalAlignment = testCase.HorizontalAlignment,
+                OverflowMode = TextOverflowMode.Clip,
+                BoxStyle = testCase.BoxStyle,
+                MetricPreference = testCase.MetricPreference
+            };
+
+            plan = new TextBoxLayoutEngine().Analyze(request, context);
+        }
+        else
+        {
+            var request = new RichTextBoxLayoutRequest(
+                testCase.BoxWidth,
+                testCase.BoxHeight,
+                library.CreateLayoutLibrary(),
+                testCase.Blocks!)
+            {
+                OverflowMode = TextOverflowMode.Clip,
+                ListIndent = testCase.ListIndent,
+                ListMarkerGap = testCase.ListMarkerGap,
+                BoxStyle = testCase.BoxStyle,
+                MetricPreference = testCase.MetricPreference
+            };
+
+            plan = new RichTextBoxLayoutEngine().Analyze(request, context);
+        }
+
+        var sb = new StringBuilder();
+        foreach (var listNode in EnumerateNodes(plan.Root).Where(static node => node.ListDiagnostics is not null))
+        {
+            var metrics = listNode.ListDiagnostics!;
+            sb.AppendLine($"- List `{listNode.Source.Path}`: contentStart={metrics.ContentStart:0.###} markerColumn={metrics.MarkerColumnWidth:0.###} markerTextArea={metrics.MarkerTextAreaWidth:0.###} gap={metrics.MarkerGap:0.###} markerVisualWidth={metrics.MarkerVisualWidth:0.###} markerFontSize={metrics.MarkerFontSize:0.###}");
+        }
+
+        foreach (var lineNode in EnumerateNodes(plan.Root).Where(static node => node.LineDiagnostics is not null).Take(8))
+        {
+            var diagnostics = lineNode.LineDiagnostics!;
+            var requestedLineHeight = diagnostics.RequestedLineHeight?.ToString("0.###") ?? "n/a";
+            sb.AppendLine($"- Line `{lineNode.Source.Path}`: height={diagnostics.ResolvedLineHeight:0.###} baselineOffset={diagnostics.BaselineOffset:0.###} ascent={diagnostics.NaturalAscent:0.###} descent={diagnostics.NaturalDescent:0.###} requestedLineHeight={requestedLineHeight} expanded={diagnostics.ExpandedBeyondRequestedLineHeight}");
+        }
+
+        return sb.ToString();
+    }
+
+    private static IEnumerable<TextLayoutPlanNode> EnumerateNodes(TextLayoutPlanNode node)
+    {
+        yield return node;
+        foreach (var child in node.Children)
+        {
+            foreach (var descendant in EnumerateNodes(child))
+            {
+                yield return descendant;
+            }
+        }
     }
 
     private static string DescribeBlock(RichTextBlock block)
@@ -1584,7 +1903,7 @@ public partial class ChromePdfConformanceTests
         return doc.Save();
     }
 
-    private static IReadOnlyList<ExtractedWord> ExtractWords(byte[] pdf)
+    private static ExtractedText ExtractText(byte[] pdf)
     {
         using var doc = PdfDocument.Open(pdf);
         var page = doc.Pages[0];
@@ -1594,39 +1913,172 @@ public partial class ChromePdfConformanceTests
             Mode = StructuredTextMode.Deduplicated
         });
 
-        return structured.Words
+        var words = structured.Words
             .Select(x => new ExtractedWord(x.Text, x.BoundingBox))
             .ToList();
+        var lines = structured.Lines
+            .Select(line => line.Words.Select(word => new ExtractedWord(word.Text, word.BoundingBox)).ToList() as IReadOnlyList<ExtractedWord>)
+            .ToList();
+        return new ExtractedText(words, lines);
     }
 
-    private static IReadOnlyList<ExtractedWord> NormalizeWords(IReadOnlyList<ExtractedWord> words, double scale)
+    private static IReadOnlyList<ExtractedWord> ExtractWords(byte[] pdf)
+        => ExtractText(pdf).Words;
+
+    private static ExtractedText NormalizeExtractedText(ExtractedText text, double scale)
     {
         if (Math.Abs(scale - 1d) < 0.0001d)
         {
-            return words;
+            return text;
         }
 
-        return words.Select(x => new ExtractedWord(
-            x.Text,
-            new PdfRect<double>(
-                x.BoundingBox.LLx / scale,
-                x.BoundingBox.LLy / scale,
-                x.BoundingBox.URx / scale,
-                x.BoundingBox.URy / scale)))
-            .ToList();
+        static ExtractedWord ScaleWord(ExtractedWord x, double scale)
+            => new(
+                x.Text,
+                new PdfRect<double>(
+                    x.BoundingBox.LLx / scale,
+                    x.BoundingBox.LLy / scale,
+                    x.BoundingBox.URx / scale,
+                    x.BoundingBox.URy / scale));
+
+        return new ExtractedText(
+            text.Words.Select(x => ScaleWord(x, scale)).ToList(),
+            text.Lines.Select(line => line.Select(x => ScaleWord(x, scale)).ToList() as IReadOnlyList<ExtractedWord>).ToList());
     }
 
-    private static void AssertWordGeometryComparable(IReadOnlyList<ExtractedWord> expected, IReadOnlyList<ExtractedWord> actual)
+    private static void AssertWordGeometryComparable(ExtractedText expected, ExtractedText actual)
     {
-        Assert.Equal(expected.Count, actual.Count);
-        for (var i = 0; i < expected.Count; i++)
+        Assert.Equal(expected.Words.Count, actual.Words.Count);
+        var expectedLayout = BuildWordLineLayout(expected);
+        var actualLayout = BuildWordLineLayout(actual);
+        Assert.Equal(expectedLayout.Lines.Count, actualLayout.Lines.Count);
+
+        for (var i = 0; i < expected.Words.Count; i++)
         {
-            Assert.Equal(expected[i].Text, actual[i].Text);
-            Assert.InRange(Math.Abs(expected[i].BoundingBox.LLx - actual[i].BoundingBox.LLx), 0, PositionTolerance);
-            Assert.InRange(Math.Abs(expected[i].BoundingBox.LLy - actual[i].BoundingBox.LLy), 0, PositionTolerance);
-            Assert.InRange(Math.Abs(expected[i].BoundingBox.Width() - actual[i].BoundingBox.Width()), 0, SizeTolerance);
-            Assert.InRange(Math.Abs(expected[i].BoundingBox.Height() - actual[i].BoundingBox.Height()), 0, SizeTolerance);
+            Assert.Equal(expected.Words[i].Text, actual.Words[i].Text);
+            var expectedWord = expectedLayout.Words[i];
+            var actualWord = actualLayout.Words[i];
+            Assert.Equal(expectedWord.LineIndex, actualWord.LineIndex);
+
+            if (expectedWord.IsLineStart)
+            {
+                Assert.True(actualWord.IsLineStart, $"Word {i} ('{expected.Words[i].Text}') should begin a new line in both outputs.");
+
+                if (expectedWord.LineIndex == 0)
+                {
+                    Assert.InRange(Math.Abs(expected.Words[i].BoundingBox.LLx - actual.Words[i].BoundingBox.LLx), 0, PositionTolerance);
+                    Assert.InRange(Math.Abs(expected.Words[i].BoundingBox.LLy - actual.Words[i].BoundingBox.LLy), 0, PositionTolerance);
+                }
+                else
+                {
+                    var expectedPreviousLine = expectedLayout.Lines[expectedWord.LineIndex - 1];
+                    var actualPreviousLine = actualLayout.Lines[actualWord.LineIndex - 1];
+                    var expectedCurrentLine = expectedLayout.Lines[expectedWord.LineIndex];
+                    var actualCurrentLine = actualLayout.Lines[actualWord.LineIndex];
+
+                    var expectedDeltaX = expectedCurrentLine.Anchor.BoundingBox.LLx - expectedPreviousLine.Anchor.BoundingBox.LLx;
+                    var actualDeltaX = actualCurrentLine.Anchor.BoundingBox.LLx - actualPreviousLine.Anchor.BoundingBox.LLx;
+                    var expectedDeltaY = expectedCurrentLine.Anchor.BoundingBox.LLy - expectedPreviousLine.Anchor.BoundingBox.LLy;
+                    var actualDeltaY = actualCurrentLine.Anchor.BoundingBox.LLy - actualPreviousLine.Anchor.BoundingBox.LLy;
+
+                    Assert.InRange(Math.Abs(expectedDeltaX - actualDeltaX), 0, RelativeLineXTolerance);
+                    Assert.InRange(Math.Abs(expectedDeltaY - actualDeltaY), 0, RelativeLineYTolerance);
+                }
+            }
+            else
+            {
+                Assert.False(actualWord.IsLineStart, $"Word {i} ('{expected.Words[i].Text}') should remain on the same line in both outputs.");
+
+                var expectedLine = expectedLayout.Lines[expectedWord.LineIndex];
+                var actualLine = actualLayout.Lines[actualWord.LineIndex];
+                var expectedRelativeX = expected.Words[i].BoundingBox.LLx - expectedLine.Anchor.BoundingBox.LLx;
+                var actualRelativeX = actual.Words[i].BoundingBox.LLx - actualLine.Anchor.BoundingBox.LLx;
+                var expectedRelativeY = expected.Words[i].BoundingBox.LLy - expectedLine.Anchor.BoundingBox.LLy;
+                var actualRelativeY = actual.Words[i].BoundingBox.LLy - actualLine.Anchor.BoundingBox.LLy;
+
+                Assert.InRange(Math.Abs(expectedRelativeX - actualRelativeX), 0, RelativeWordXTolerance);
+                Assert.InRange(Math.Abs(expectedRelativeY - actualRelativeY), 0, RelativeWordYTolerance);
+            }
+
+            Assert.InRange(Math.Abs(expected.Words[i].BoundingBox.Width() - actual.Words[i].BoundingBox.Width()), 0, SizeTolerance);
+            Assert.InRange(Math.Abs(expected.Words[i].BoundingBox.Height() - actual.Words[i].BoundingBox.Height()), 0, SizeTolerance);
         }
+    }
+
+    private static ExtractedWordLineLayout BuildWordLineLayout(ExtractedText text)
+    {
+        if (TryBuildWordLineLayoutFromExtractedLines(text, out var structuredLayout))
+        {
+            return structuredLayout;
+        }
+
+        var words = text.Words;
+        var lines = new List<ExtractedLineInfo>();
+        var mappedWords = new List<ExtractedWordLineInfo>(words.Count);
+        if (words.Count == 0)
+        {
+            return new ExtractedWordLineLayout(lines, mappedWords);
+        }
+
+        for (var i = 0; i < words.Count; i++)
+        {
+            var word = words[i];
+            var isLineStart = i == 0 || Math.Abs(word.BoundingBox.LLy - words[i - 1].BoundingBox.LLy) > LineGroupingTolerance;
+            if (isLineStart)
+            {
+                lines.Add(new ExtractedLineInfo(lines.Count, word, i));
+            }
+
+            mappedWords.Add(new ExtractedWordLineInfo(i, lines.Count - 1, isLineStart));
+        }
+
+        return new ExtractedWordLineLayout(lines, mappedWords);
+    }
+
+    private static bool TryBuildWordLineLayoutFromExtractedLines(ExtractedText text, out ExtractedWordLineLayout layout)
+    {
+        var lines = new List<ExtractedLineInfo>();
+        var mappedWords = new List<ExtractedWordLineInfo>(text.Words.Count);
+        var flatIndex = 0;
+
+        for (var lineIndex = 0; lineIndex < text.Lines.Count; lineIndex++)
+        {
+            var line = text.Lines[lineIndex];
+            if (line.Count == 0)
+            {
+                continue;
+            }
+
+            lines.Add(new ExtractedLineInfo(lines.Count, line[0], flatIndex));
+            for (var wordIndex = 0; wordIndex < line.Count; wordIndex++)
+            {
+                if (flatIndex >= text.Words.Count)
+                {
+                    layout = default!;
+                    return false;
+                }
+
+                var flatWord = text.Words[flatIndex];
+                var lineWord = line[wordIndex];
+                if (!string.Equals(flatWord.Text, lineWord.Text, StringComparison.Ordinal))
+                {
+                    layout = default!;
+                    return false;
+                }
+
+                mappedWords.Add(new ExtractedWordLineInfo(flatIndex, lines.Count - 1, wordIndex == 0));
+                flatIndex++;
+            }
+        }
+
+        if (flatIndex != text.Words.Count)
+        {
+            layout = default!;
+            return false;
+        }
+
+        layout = new ExtractedWordLineLayout(lines, mappedWords);
+        return true;
     }
 
     private static TextSegment ScaleSegment(TextSegment segment, double scale)
@@ -1641,9 +2093,11 @@ public partial class ChromePdfConformanceTests
             style.CharacterSpacing * scale,
             style.WordSpacing * scale,
             style.LineSpacing.HasValue ? style.LineSpacing.Value * scale : null,
+            style.LineBoxSizing,
             style.Italic,
             style.ForegroundColor,
-            style.BackgroundColor);
+            style.BackgroundColor,
+            style.StrikeThrough);
 
     private static TextStyle ScaleTextStyle(TextStyle style, double scale)
         => style with
@@ -1693,9 +2147,10 @@ public partial class ChromePdfConformanceTests
             },
             TableBlock table => table with
             {
-                Rows = table.Rows.Select(x => ScaleTableRow(x, scale)).ToArray(),
+                Columns = table.Columns.Select(x => ScaleTableColumn(x, scale)).ToArray(),
+                Sections = table.Sections.Select(x => new TableSectionBlock(x.Kind, x.Rows.Select(r => ScaleTableRow(r, scale)).ToArray())).ToArray(),
                 Style = table.Style is null ? null : ScaleTableStyle(table.Style, scale),
-                ContinuationPolicy = table.ContinuationPolicy is null ? null : ScaleTableContinuationPolicy(table.ContinuationPolicy, scale)
+                Layout = table.Layout is null ? null : ScaleTableLayout(table.Layout, scale)
             },
             RowBlock row => row with
             {
@@ -1721,21 +2176,27 @@ public partial class ChromePdfConformanceTests
     private static TableRowBlock ScaleTableRow(TableRowBlock row, double scale)
         => row with
         {
-            Cells = row.Cells.Select(x => ScaleTableCell(x, scale)).ToArray()
+            Cells = row.Cells.Select(x => ScaleTableCell(x, scale)).ToArray(),
+            Style = row.Style is null ? null : ScaleTableRowStyle(row.Style, scale)
         };
 
     private static TableCellBlock ScaleTableCell(TableCellBlock cell, double scale)
     {
         var scaledBlocks = cell.Blocks.Select(x => ScaleBlock(x, scale)).ToArray();
-        double? scaledWidth = cell.ColWidth.HasValue ? cell.ColWidth.Value * scale : null;
         var scaledStyle = cell.Style is null ? null : ScaleTableCellStyle(cell.Style, scale);
         return cell switch
         {
-            TableHeaderCellBlock => new TableHeaderCellBlock(scaledBlocks, cell.ColSpan, cell.RowSpan, scaledWidth, scaledStyle),
-            TableDataCellBlock => new TableDataCellBlock(scaledBlocks, cell.ColSpan, cell.RowSpan, scaledWidth, scaledStyle),
+            TableHeaderCellBlock => new TableHeaderCellBlock(scaledBlocks, cell.ColSpan, cell.RowSpan, scaledStyle),
+            TableDataCellBlock => new TableDataCellBlock(scaledBlocks, cell.ColSpan, cell.RowSpan, scaledStyle),
             _ => throw new NotSupportedException($"Unsupported table cell type '{cell.GetType().Name}'.")
         };
     }
+
+    private static TableColumnDefinition ScaleTableColumn(TableColumnDefinition column, double scale)
+        => column with
+        {
+            Width = ScaleColumnWidthSpec(column.Width, scale)
+        };
 
     private static LayoutChild ScaleLayoutChild(LayoutChild child, double scale)
         => child with
@@ -1760,10 +2221,39 @@ public partial class ChromePdfConformanceTests
             Padding = style.Padding.HasValue ? style.Padding.Value * scale : null
         };
 
-    private static TableContinuationPolicy ScaleTableContinuationPolicy(TableContinuationPolicy policy, double scale)
-        => new(
-            policy.ContinuationHeaderRows.Select(x => ScaleTableRow(x, scale)).ToArray(),
-            policy.ContinuationFooterRows.Select(x => ScaleTableRow(x, scale)).ToArray());
+    private static TableRowStyle ScaleTableRowStyle(TableRowStyle style, double scale)
+        => style with
+        {
+            MinHeight = style.MinHeight.HasValue ? style.MinHeight.Value * scale : null
+        };
+
+    private static TableLayoutSpec ScaleTableLayout(TableLayoutSpec layout, double scale)
+        => layout with
+        {
+            Width = ScaleTableWidthSpec(layout.ResolvedWidth, scale)
+        };
+
+    private static TableWidthSpec ScaleTableWidthSpec(TableWidthSpec width, double scale)
+        => width switch
+        {
+            TableFixedWidth fixedWidth => new TableFixedWidth(fixedWidth.Points * scale),
+            TablePercentWidth percentWidth => percentWidth,
+            TableAutoWidth autoWidth => autoWidth,
+            _ => width
+        };
+
+    private static ColumnWidthSpec ScaleColumnWidthSpec(ColumnWidthSpec width, double scale)
+        => width switch
+        {
+            ColumnFixedWidth fixedWidth => new ColumnFixedWidth(fixedWidth.Points * scale),
+            ColumnPercentWidth percentWidth => percentWidth,
+            ColumnMinMaxWidth minMaxWidth => new ColumnMinMaxWidth(
+                minMaxWidth.MinPoints.HasValue ? minMaxWidth.MinPoints.Value * scale : null,
+                minMaxWidth.MaxPoints.HasValue ? minMaxWidth.MaxPoints.Value * scale : null),
+            ColumnFlexWidth flexWidth => flexWidth,
+            ColumnAutoWidth autoWidth => autoWidth,
+            _ => width
+        };
 
     private static LayoutContainerStyle ScaleLayoutContainerStyle(LayoutContainerStyle style, double scale)
         => style with
@@ -1786,6 +2276,8 @@ public partial class ChromePdfConformanceTests
         string Name,
         IReadOnlyList<TextSegment>? Segments,
         IReadOnlyList<RichTextBlock>? Blocks,
+        string? HtmlSource = null,
+        string? NormalizedHtml = null,
         TextHorizontalAlignment HorizontalAlignment = TextHorizontalAlignment.Left,
         double PageWidth = 240,
         double PageHeight = 160,
@@ -1793,9 +2285,9 @@ public partial class ChromePdfConformanceTests
         double BoxTop = 20,
         double BoxWidth = 180,
         double BoxHeight = 100,
-        double ListIndent = 18d,
-        double ListMarkerGap = 2d,
-        TextFontMetricSource MetricPreference = TextFontMetricSource.None,
+        double? ListIndent = null,
+        double? ListMarkerGap = null,
+        TextFontMetricSource MetricPreference = TextFontMetricSource.Windows,
         TextBoxStyle BoxStyle = null!,
         IReadOnlyList<FixtureFontAsset> Fonts = null!)
     {
@@ -1814,7 +2306,7 @@ public partial class ChromePdfConformanceTests
             IReadOnlyList<FixtureFontAsset>? fonts = null)
         {
             var resolvedPageHeight = Math.Max(pageHeight, boxTop + boxHeight + 20d);
-            return new(name, segments, null, horizontalAlignment, pageWidth, resolvedPageHeight, boxLeft, boxTop, boxWidth, boxHeight, 18d, 2d, metricPreference, boxStyle ?? new TextBoxStyle(), fonts ?? CreateFontAssets());
+            return new(name, segments, null, null, null, horizontalAlignment, pageWidth, resolvedPageHeight, boxLeft, boxTop, boxWidth, boxHeight, null, null, metricPreference, boxStyle ?? new TextBoxStyle(), fonts ?? CreateFontAssets());
         }
 
         public static ConformanceCase FromBlocks(
@@ -1826,17 +2318,49 @@ public partial class ChromePdfConformanceTests
             double boxTop = 20,
             double boxWidth = 180,
             double boxHeight = 100,
-            double listIndent = 18d,
+            double? listIndent = null,
+            double? listMarkerGap = null,
             TextFontMetricSource metricPreference = TextFontMetricSource.None,
             TextBoxStyle? boxStyle = null,
             IReadOnlyList<FixtureFontAsset>? fonts = null)
         {
             var resolvedPageHeight = Math.Max(pageHeight, boxTop + boxHeight + 20d);
-            return new(name, null, blocks, TextHorizontalAlignment.Left, pageWidth, resolvedPageHeight, boxLeft, boxTop, boxWidth, boxHeight, listIndent, 2d, metricPreference, boxStyle ?? new TextBoxStyle(), fonts ?? CreateFontAssets());
+            return new(name, null, blocks, null, null, TextHorizontalAlignment.Left, pageWidth, resolvedPageHeight, boxLeft, boxTop, boxWidth, boxHeight, listIndent, listMarkerGap, metricPreference, boxStyle ?? new TextBoxStyle(), fonts ?? CreateFontAssets());
+        }
+
+        public static ConformanceCase FromHtml(
+            string name,
+            string html,
+            TextStyle defaultTextStyle,
+            double pageWidth = 240,
+            double pageHeight = 160,
+            double boxLeft = 20,
+            double boxTop = 20,
+            double boxWidth = 180,
+            double boxHeight = 100,
+            double? listIndent = null,
+            double? listMarkerGap = null,
+            TextFontMetricSource metricPreference = TextFontMetricSource.None,
+            TextBoxStyle? boxStyle = null,
+            IReadOnlyList<FixtureFontAsset>? fonts = null)
+        {
+            var parser = new HtmlRichTextParser();
+            var parsedBlocks = parser.Parse(html, defaultTextStyle);
+            var normalizedHtml = parser.ToHtml(parsedBlocks);
+            var resolvedPageHeight = Math.Max(pageHeight, boxTop + boxHeight + 20d);
+            return new(name, null, parsedBlocks, html, normalizedHtml, TextHorizontalAlignment.Left, pageWidth, resolvedPageHeight, boxLeft, boxTop, boxWidth, boxHeight, listIndent, listMarkerGap, metricPreference, boxStyle ?? new TextBoxStyle(), fonts ?? CreateFontAssets());
         }
     }
 
     private sealed record ExtractedWord(string Text, PdfRect<double> BoundingBox);
+    private sealed record ExtractedText(
+        IReadOnlyList<ExtractedWord> Words,
+        IReadOnlyList<IReadOnlyList<ExtractedWord>> Lines);
+    private sealed record ExtractedLineInfo(int Index, ExtractedWord Anchor, int StartWordIndex);
+    private sealed record ExtractedWordLineInfo(int WordIndex, int LineIndex, bool IsLineStart);
+    private sealed record ExtractedWordLineLayout(
+        IReadOnlyList<ExtractedLineInfo> Lines,
+        IReadOnlyList<ExtractedWordLineInfo> Words);
 
     private static IReadOnlyList<FixtureFontAsset> CreateFontAssets()
         => new List<FixtureFontAsset>

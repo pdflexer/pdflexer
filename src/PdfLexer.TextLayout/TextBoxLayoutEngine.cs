@@ -1,10 +1,130 @@
+using System.Runtime.CompilerServices;
 using HarfRust;
 
 namespace PdfLexer.TextLayout;
 
 public sealed class TextBoxLayoutEngine
 {
+    public TextLayoutPlan Analyze(TextBoxLayoutRequest request)
+        => Analyze(request, context: null);
+
+    public TextLayoutPlan Analyze(TextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
+    {
+        var layout = LayoutCore(request, context);
+        return new TextLayoutPlan
+        {
+            Kind = TextLayoutPlanKind.FlatText,
+            Root = BuildFlatPlanRoot(layout, context),
+            RenderPlan = new TextLayoutRenderPlan
+            {
+                Layout = layout
+            }
+        };
+    }
+
+    public TextLayoutFitPlan AnalyzeFit(TextBoxLayoutRequest request)
+        => AnalyzeFit(request, context: null);
+
+    public TextLayoutFitPlan AnalyzeFit(TextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
+    {
+        var fullPlan = Analyze(request, context);
+        var fit = Fit(request);
+        var fittedRequest = BuildFittedRequest(request, fit.RemainderRequest);
+        var fittedPlan = TextLayoutPlanSlicer.Slice(fullPlan, fit.FittedLayout);
+
+        TextLayoutPlan? remainderPlan = null;
+        if (fit.RemainderRequest is not null)
+        {
+            remainderPlan = Analyze(fit.RemainderRequest, context);
+        }
+
+        return new TextLayoutFitPlan
+        {
+            FittedSelection = new TextLayoutPlanSelection
+            {
+                Plan = fittedPlan,
+                SourceReferences = CollectFlatSourceReferences(fittedPlan),
+                BoundaryReferences = CollectFlatBoundaryReferences(fittedPlan),
+                Continuations = BuildFlatContinuations(fittedPlan, remainderPlan, fit.BreakKind, fit.HasRemainder),
+                FragmentMetadata = BuildFragmentMetadata(fit.BreakKind, fit.FragmentBreak, BuildFlatContinuations(fittedPlan, remainderPlan, fit.BreakKind, fit.HasRemainder)),
+                StartLineIndex = fittedPlan.Root.StartLineIndex,
+                EndLineIndexExclusive = fittedPlan.Root.EndLineIndexExclusive
+            },
+            RemainderSelection = remainderPlan is null
+                ? null
+                : new TextLayoutPlanSelection
+                {
+                    Plan = remainderPlan,
+                    SourceReferences = CollectFlatSourceReferences(remainderPlan),
+                    BoundaryReferences = CollectFlatBoundaryReferences(remainderPlan),
+                    Continuations = Array.Empty<TextLayoutContinuationReference>(),
+                    FragmentMetadata = new TextLayoutFragmentMetadata(TextFragmentBreak.None),
+                    StartLineIndex = remainderPlan.Root.StartLineIndex,
+                    EndLineIndexExclusive = remainderPlan.Root.EndLineIndexExclusive
+                },
+            BreakKind = fit.BreakKind,
+            HasRemainder = fit.HasRemainder,
+            FragmentBreak = fit.FragmentBreak,
+            Materializer = new FlatFitPlanMaterializer(fittedRequest, fit.RemainderRequest)
+        };
+    }
+
+    public TextLayoutFitPlan AnalyzeFragment(TextBoxLayoutRequest request)
+        => AnalyzeFragment(request, context: null);
+
+    public TextLayoutFitPlan AnalyzeFragment(TextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
+    {
+        if (request.OverflowMode == TextOverflowMode.Fragment)
+        {
+            return AnalyzeFit(request, context);
+        }
+
+        var plan = Analyze(request, context);
+        return new TextLayoutFitPlan
+        {
+            FittedSelection = new TextLayoutPlanSelection
+            {
+                Plan = plan,
+                SourceReferences = CollectFlatSourceReferences(plan),
+                BoundaryReferences = CollectFlatBoundaryReferences(plan),
+                Continuations = Array.Empty<TextLayoutContinuationReference>(),
+                FragmentMetadata = new TextLayoutFragmentMetadata(TextFragmentBreak.None),
+                StartLineIndex = plan.Root.StartLineIndex,
+                EndLineIndexExclusive = plan.Root.EndLineIndexExclusive
+            },
+            RemainderSelection = null,
+            BreakKind = TextBreakKind.None,
+            HasRemainder = false,
+            FragmentBreak = TextFragmentBreak.None,
+            Materializer = new FlatFitPlanMaterializer(request, null)
+        };
+    }
+
+    public TextBoxFitResult Fragment(TextBoxLayoutRequest request)
+    {
+        if (request.OverflowMode != TextOverflowMode.Fragment)
+        {
+            var layout = Layout(request);
+            return new TextBoxFitResult(
+                layout,
+                null,
+                Math.Max(0d, layout.NaturalHeight - StyleResolver.Resolve(request.BoxStyle).Edges.VerticalInset),
+                Math.Max(0d, layout.NaturalWidth - StyleResolver.Resolve(request.BoxStyle).Edges.HorizontalInset),
+                TextBreakKind.None,
+                false)
+            {
+                FittedRequest = request,
+                FragmentBreak = TextFragmentBreak.None
+            };
+        }
+
+        return Fit(request);
+    }
+
     public TextBoxLayoutResult Layout(TextBoxLayoutRequest request)
+        => LayoutCore(request, context: null);
+
+    private TextBoxLayoutResult LayoutCore(TextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(request.FontLibrary);
@@ -20,8 +140,9 @@ public sealed class TextBoxLayoutEngine
             throw new ArgumentOutOfRangeException(nameof(request), "Height must be greater than zero.");
         }
 
-        var contentWidth = GetContentWidth(request.Width, request.BoxStyle);
-        var contentHeight = GetContentHeight(request.Height, request.BoxStyle);
+        var resolvedBoxStyle = StyleResolver.Resolve(request.BoxStyle);
+        var contentWidth = GetContentWidth(request.Width, resolvedBoxStyle);
+        var contentHeight = GetContentHeight(request.Height, resolvedBoxStyle);
         if (contentWidth <= 0 || contentHeight <= 0)
         {
             return CreateNoContentAreaResult(request);
@@ -30,15 +151,21 @@ public sealed class TextBoxLayoutEngine
         var issues = new List<TextLayoutIssue>();
         using var fonts = new FontCache(request.FontLibrary);
 
-        var preparedTokens = PrepareTokens(request, fonts, issues);
+        var formatting = ParagraphFormatter.Format(
+            request,
+            fonts,
+            issues,
+            new LayoutConstraints(contentWidth, contentHeight, request.OverflowMode, request.OverflowMode is TextOverflowMode.Clip or TextOverflowMode.Fragment),
+            context);
+        var preparedTokens = formatting.Tokens;
         if (issues.Any(x => x.Kind is TextLayoutIssueKind.MissingFamily or TextLayoutIssueKind.MissingWeight or TextLayoutIssueKind.MissingGlyph)
             && request.MissingFontBehavior == TextResolutionBehavior.Error)
         {
             return CreateResult(request, Array.Empty<PreparedLine>(), issues, TextLayoutStatus.Error, 0, 0);
         }
 
-        var lines = BuildLines(request, preparedTokens, issues, contentWidth);
-        var totalMeasuredHeight = lines.Sum(x => x.Height);
+        var lines = formatting.AllLines;
+        var totalMeasuredHeight = formatting.MeasuredHeight;
         var fitsHeight = totalMeasuredHeight <= contentHeight + 0.0001d;
         var fitsWidth = lines.All(x => x.MeasuredWidth <= contentWidth + 0.0001d);
 
@@ -52,17 +179,14 @@ public sealed class TextBoxLayoutEngine
             status = TextLayoutStatus.Error;
         }
 
-        var renderedLines = request.OverflowMode == TextOverflowMode.Clip
-            ? ClipLines(contentHeight, lines)
-            : lines;
+        var renderedLines = formatting.VisibleLines;
 
         if ((!fitsWidth || !fitsHeight) && status != TextLayoutStatus.Error)
         {
             issues.Add(new TextLayoutIssue(TextLayoutIssueKind.Overflow, "Text content exceeds the target text box."));
         }
 
-        PositionLines(request, renderedLines, contentWidth, contentHeight);
-        var measuredWidth = lines.Count == 0 ? 0d : lines.Max(x => x.MeasuredWidth);
+        var measuredWidth = formatting.MeasuredWidth;
         return CreateResult(request, renderedLines, issues, status, measuredWidth, totalMeasuredHeight);
     }
 
@@ -82,8 +206,9 @@ public sealed class TextBoxLayoutEngine
             throw new ArgumentOutOfRangeException(nameof(request), "Height must be greater than zero.");
         }
 
-        var contentWidth = GetContentWidth(request.Width, request.BoxStyle);
-        var contentHeight = GetContentHeight(request.Height, request.BoxStyle);
+        var resolvedBoxStyle = StyleResolver.Resolve(request.BoxStyle);
+        var contentWidth = GetContentWidth(request.Width, resolvedBoxStyle);
+        var contentHeight = GetContentHeight(request.Height, resolvedBoxStyle);
         if (contentWidth <= 0 || contentHeight <= 0)
         {
             return new TextBoxFitResult(CreateNoContentAreaResult(request), request, 0d, 0d, TextBreakKind.None, true);
@@ -92,10 +217,14 @@ public sealed class TextBoxLayoutEngine
         var issues = new List<TextLayoutIssue>();
         using var fonts = new FontCache(request.FontLibrary);
 
-        var preparedTokens = PrepareTokens(request, fonts, issues);
-        var allLines = BuildLines(request, preparedTokens, issues, contentWidth);
-        var fittingLines = ClipLines(contentHeight, allLines);
-        PositionLines(request, fittingLines, contentWidth, contentHeight);
+        var formatting = ParagraphFormatter.Format(
+            request,
+            fonts,
+            issues,
+            new LayoutConstraints(contentWidth, contentHeight, request.OverflowMode, ClipToHeight: true),
+            context: null);
+        var preparedTokens = formatting.Tokens;
+        var fittingLines = formatting.VisibleLines;
 
         var fittingMeasuredWidth = fittingLines.Count == 0 ? 0d : fittingLines.Max(x => x.MeasuredWidth);
         var fittingMeasuredHeight = fittingLines.Sum(x => x.Height);
@@ -116,10 +245,14 @@ public sealed class TextBoxLayoutEngine
             return new TextBoxFitResult(
                 fittingLayout,
                 null,
-                fittingMeasuredHeight,
-                fittingMeasuredWidth,
+                fittingLayout.NaturalHeight - resolvedBoxStyle.Edges.VerticalInset,
+                fittingLayout.NaturalWidth - resolvedBoxStyle.Edges.HorizontalInset,
                 TextBreakKind.None,
-                false);
+                false)
+            {
+                FittedRequest = request,
+                FragmentBreak = TextFragmentBreak.None
+            };
         }
 
         var remainderRequest = BuildRemainderRequest(request, preparedTokens, fittingTokenCount);
@@ -127,10 +260,14 @@ public sealed class TextBoxLayoutEngine
         return new TextBoxFitResult(
             fittingLayout,
             remainderRequest,
-            fittingMeasuredHeight,
-            fittingMeasuredWidth,
+            fittingLayout.NaturalHeight - resolvedBoxStyle.Edges.VerticalInset,
+            fittingLayout.NaturalWidth - resolvedBoxStyle.Edges.HorizontalInset,
             breakKind,
-            true);
+            true)
+        {
+            FittedRequest = BuildFittedRequest(request, remainderRequest),
+            FragmentBreak = new TextFragmentBreak(TextFragmentBreakReason.Overflow, breakKind, false)
+        };
     }
 
     private static List<PreparedToken> PrepareTokens(TextBoxLayoutRequest request, FontCache fonts, List<TextLayoutIssue> issues)
@@ -148,7 +285,19 @@ public sealed class TextBoxLayoutEngine
                 {
                     TryResolveFace(request, segment.Style, fonts, out var face, out _);
                     var metrics = ResolveTokenMetrics(request.MetricPreference, segment.Style, face);
-                    tokens.Add(new PreparedToken(segmentIndex, token.GetText(normalizedText), segment.Style, token.Kind, null, Array.Empty<TextLayoutGlyph>(), 0, 0, metrics));
+                    tokens.Add(new PreparedToken(
+                        segmentIndex,
+                        GetSegmentSourceStart(segment, token.Start),
+                        token.Length,
+                        segment.SourcePath ?? $"Segments[{segmentIndex}]",
+                        token.GetText(normalizedText),
+                        segment.Style,
+                        token.Kind,
+                        null,
+                        Array.Empty<TextLayoutGlyph>(),
+                        0,
+                        0,
+                        metrics));
                     tokenIndex++;
                     continue;
                 }
@@ -162,7 +311,7 @@ public sealed class TextBoxLayoutEngine
                     chunkEndIndex++;
                 }
 
-                AppendShapedChunkTokens(request, fonts, issues, tokens, segmentIndex, segment.Style, normalizedText, tokenSpans, tokenIndex, chunkEndIndex, chunkStart, chunkEnd - chunkStart);
+                AppendShapedChunkTokens(request, fonts, issues, tokens, segmentIndex, segment, normalizedText, tokenSpans, tokenIndex, chunkEndIndex, chunkStart, chunkEnd - chunkStart);
                 tokenIndex = chunkEndIndex;
             }
         }
@@ -176,7 +325,7 @@ public sealed class TextBoxLayoutEngine
         List<TextLayoutIssue> issues,
         List<PreparedToken> tokens,
         int segmentIndex,
-        TextSegmentStyle style,
+        TextSegment segment,
         string sourceText,
         IReadOnlyList<TokenSlice> tokenSpans,
         int startIndex,
@@ -184,6 +333,8 @@ public sealed class TextBoxLayoutEngine
         int chunkStart,
         int chunkLength)
     {
+        var style = segment.Style;
+        var sourcePath = segment.SourcePath ?? $"Segments[{segmentIndex}]";
         if (!TryResolveFace(request, style, fonts, out var face, out var faceError))
         {
             issues.Add(faceError!);
@@ -191,7 +342,19 @@ public sealed class TextBoxLayoutEngine
             for (var i = startIndex; i < endIndex; i++)
             {
                 var token = tokenSpans[i];
-                tokens.Add(new PreparedToken(segmentIndex, token.GetText(sourceText), style, token.Kind, null, Array.Empty<TextLayoutGlyph>(), 0, 0, missingMetrics));
+                tokens.Add(new PreparedToken(
+                    segmentIndex,
+                    GetSegmentSourceStart(segment, token.Start),
+                    token.Length,
+                    sourcePath,
+                    token.GetText(sourceText),
+                    style,
+                    token.Kind,
+                    null,
+                    Array.Empty<TextLayoutGlyph>(),
+                    0,
+                    0,
+                    missingMetrics));
             }
 
             return;
@@ -206,7 +369,19 @@ public sealed class TextBoxLayoutEngine
             for (var i = startIndex; i < endIndex; i++)
             {
                 var token = tokenSpans[i];
-                tokens.Add(new PreparedToken(segmentIndex, token.GetText(sourceText), style, token.Kind, face, Array.Empty<TextLayoutGlyph>(), 0, 0, fallbackMetrics));
+                tokens.Add(new PreparedToken(
+                    segmentIndex,
+                    GetSegmentSourceStart(segment, token.Start),
+                    token.Length,
+                    sourcePath,
+                    token.GetText(sourceText),
+                    style,
+                    token.Kind,
+                    face,
+                    Array.Empty<TextLayoutGlyph>(),
+                    0,
+                    0,
+                    fallbackMetrics));
             }
 
             return;
@@ -225,7 +400,19 @@ public sealed class TextBoxLayoutEngine
                 width += tokenGlyphs[glyphIndex].Advance;
             }
 
-            tokens.Add(new PreparedToken(segmentIndex, token.GetText(sourceText), style, token.Kind, face, tokenGlyphs, width, width, metrics));
+            tokens.Add(new PreparedToken(
+                segmentIndex,
+                GetSegmentSourceStart(segment, token.Start),
+                token.Length,
+                sourcePath,
+                token.GetText(sourceText),
+                style,
+                token.Kind,
+                face,
+                tokenGlyphs,
+                width,
+                width,
+                metrics));
         }
     }
 
@@ -505,6 +692,7 @@ public sealed class TextBoxLayoutEngine
             current.Descent = fallbackStrut.Descent;
             current.LineGap = fallbackStrut.LineGap;
             current.ExplicitLineHeight = fallbackStrut.ExplicitLineHeight;
+            current.LineBoxSizing = fallbackStrut.LineBoxSizing;
         }
 
         ResolveLineBox(current, paragraphStrut);
@@ -553,10 +741,32 @@ public sealed class TextBoxLayoutEngine
         return clipped;
     }
 
+    private static List<PreparedLine> ClipPositionedLines(double viewportTop, double viewportBottom, List<PreparedLine> lines)
+    {
+        var clipped = new List<PreparedLine>();
+        foreach (var line in lines)
+        {
+            var lineTop = GetLineTop(line);
+            var lineBottom = GetLineBottom(line);
+            if (lineTop >= viewportTop - 0.0001d && lineBottom <= viewportBottom + 0.0001d)
+            {
+                clipped.Add(line);
+            }
+        }
+
+        return clipped;
+    }
+
+    private static double GetLineTop(PreparedLine line)
+        => line.BaselineY - line.BaselineOffset;
+
+    private static double GetLineBottom(PreparedLine line)
+        => GetLineTop(line) + line.Height;
+
     private static void PositionLines(TextBoxLayoutRequest request, List<PreparedLine> lines, double contentWidth, double contentHeight)
     {
         var renderedHeight = lines.Sum(x => x.Height);
-        var inset = request.BoxStyle.Inset;
+        var edges = StyleResolver.Resolve(request.BoxStyle).Edges;
         var topOffset = request.VerticalAlignment switch
         {
             TextVerticalAlignment.Center => (contentHeight - renderedHeight) / 2d,
@@ -564,14 +774,14 @@ public sealed class TextBoxLayoutEngine
             _ => 0d
         };
 
-        double y = inset + topOffset;
+        double y = edges.Insets.Top + topOffset;
         foreach (var line in lines)
         {
             line.X = request.HorizontalAlignment switch
             {
-                TextHorizontalAlignment.Center when line.MeasuredWidth < contentWidth => inset + ((contentWidth - line.MeasuredWidth) / 2d),
-                TextHorizontalAlignment.Right when line.MeasuredWidth < contentWidth => inset + contentWidth - line.MeasuredWidth,
-                _ => inset
+                TextHorizontalAlignment.Center when line.MeasuredWidth < contentWidth => edges.Insets.Left + ((contentWidth - line.MeasuredWidth) / 2d),
+                TextHorizontalAlignment.Right when line.MeasuredWidth < contentWidth => edges.Insets.Left + contentWidth - line.MeasuredWidth,
+                _ => edges.Insets.Left
             };
 
             line.BaselineY = y + line.BaselineOffset;
@@ -595,7 +805,7 @@ public sealed class TextBoxLayoutEngine
         double measuredWidth,
         double measuredHeight)
     {
-        var inset = request.BoxStyle.Inset;
+        var edges = StyleResolver.Resolve(request.BoxStyle).Edges;
         var lines = new TextLayoutLine[renderedLines.Count];
         double renderedContentWidth = 0d;
         double renderedContentHeight = 0d;
@@ -625,7 +835,12 @@ public sealed class TextBoxLayoutEngine
                     token.MeasuredWidth,
                     line.Height,
                     token.Glyphs,
-                    false);
+                    false,
+                    token.Style.StrikeThrough,
+                    token.SourceStart,
+                    token.SourceLength,
+                    token.SourcePath,
+                    token.Style.LineSpacing);
             }
 
             lines[i] = new TextLayoutLine(
@@ -650,16 +865,214 @@ public sealed class TextBoxLayoutEngine
             Status = status,
             FitsWidth = measuredWidth <= GetContentWidth(request.Width, request.BoxStyle) + 0.0001d,
             FitsHeight = measuredHeight <= GetContentHeight(request.Height, request.BoxStyle) + 0.0001d,
-            MeasuredWidth = measuredWidth + (inset * 2d),
-            MeasuredHeight = measuredHeight + (inset * 2d),
-            RenderedWidth = renderedContentWidth + (inset * 2d),
-            RenderedHeight = renderedContentHeight + (inset * 2d),
+            MeasuredWidth = measuredWidth + edges.HorizontalInset,
+            MeasuredHeight = measuredHeight + edges.VerticalInset,
+            RenderedWidth = renderedContentWidth + edges.HorizontalInset,
+            RenderedHeight = renderedContentHeight + edges.VerticalInset,
             BoxStyle = request.BoxStyle,
             Lines = lines,
             Issues = issues.ToArray(),
             Decorations = Array.Empty<TextLayoutDecoration>()
         };
     }
+
+    private static TextLayoutPlanNode BuildFlatPlanRoot(TextBoxLayoutResult layout, TextLayoutAnalysisContext? context)
+    {
+        var lineNodes = new TextLayoutPlanNode[layout.Lines.Count];
+        for (var lineIndex = 0; lineIndex < layout.Lines.Count; lineIndex++)
+        {
+            var line = layout.Lines[lineIndex];
+            var runNodes = new TextLayoutPlanNode[line.Runs.Count];
+            for (var runIndex = 0; runIndex < line.Runs.Count; runIndex++)
+            {
+                var run = line.Runs[runIndex];
+                runNodes[runIndex] = new TextLayoutPlanNode
+                {
+                    Kind = TextLayoutNodeKind.Run,
+                    Source = CreateRunSourceReference(run),
+                    NaturalSize = new TextLayoutSize(run.MeasuredWidth, run.LineHeight),
+                    VisibleSize = new TextLayoutSize(run.Width, run.LineHeight),
+                    Children = Array.Empty<TextLayoutPlanNode>(),
+                    LineDiagnostics = null
+                };
+            }
+
+            var (lineContentVersion, lineStyleVersion) = GetChildVersions(runNodes);
+
+            lineNodes[lineIndex] = new TextLayoutPlanNode
+            {
+                Kind = TextLayoutNodeKind.Line,
+                Source = new TextLayoutSourceReference($"Lines[{lineIndex}]", NodeId: $"Lines[{lineIndex}]", ContentVersion: lineContentVersion, StyleVersion: lineStyleVersion),
+                NaturalSize = new TextLayoutSize(line.MeasuredWidth, line.Height),
+                VisibleSize = new TextLayoutSize(line.Width, line.Height),
+                Children = runNodes,
+                StartLineIndex = lineIndex,
+                EndLineIndexExclusive = lineIndex + 1,
+                LineDiagnostics = TextLayoutDiagnosticsBuilder.BuildLineDiagnostics(line, context)
+            };
+        }
+
+        var (rootContentVersion, rootStyleVersion) = GetChildVersions(lineNodes);
+
+        return new TextLayoutPlanNode
+        {
+            Kind = TextLayoutNodeKind.Root,
+            Source = new TextLayoutSourceReference("Root", NodeId: "Root", ContentVersion: rootContentVersion, StyleVersion: rootStyleVersion),
+            NaturalSize = layout.NaturalSize,
+            VisibleSize = layout.VisibleSize,
+            Children = lineNodes,
+            StartLineIndex = lineNodes.Length == 0 ? null : 0,
+            EndLineIndexExclusive = lineNodes.Length
+        };
+    }
+
+    private static TextLayoutSourceReference CreateRunSourceReference(TextLayoutRun run)
+    {
+        var contentVersion = new HashCode();
+        contentVersion.Add(run.SourcePath, StringComparer.Ordinal);
+        contentVersion.Add(run.SourceStart);
+        contentVersion.Add(run.SourceLength);
+        contentVersion.Add(run.Text, StringComparer.Ordinal);
+
+        var styleVersion = new HashCode();
+        styleVersion.Add(run.FaceId, StringComparer.Ordinal);
+        styleVersion.Add(run.FamilyName, StringComparer.Ordinal);
+        styleVersion.Add(run.Weight);
+        styleVersion.Add(run.FontSize);
+        styleVersion.Add(run.Italic);
+        styleVersion.Add(run.Underline);
+        styleVersion.Add(run.StrikeThrough);
+        styleVersion.Add(run.CharacterSpacing);
+        styleVersion.Add(run.WordSpacing);
+        styleVersion.Add(run.ForegroundColor);
+        styleVersion.Add(run.BackgroundColor);
+
+        var nodeId = run.SourcePath ?? $"Segments[{run.SegmentIndex}]";
+        return new TextLayoutSourceReference(
+            run.SourcePath ?? $"Segments[{run.SegmentIndex}]",
+            run.SegmentIndex,
+            run.SourceStart,
+            run.SourceLength,
+            nodeId,
+            contentVersion.ToHashCode(),
+            styleVersion.ToHashCode());
+    }
+
+    private static (int ContentVersion, int StyleVersion) GetChildVersions(IReadOnlyList<TextLayoutPlanNode> children)
+    {
+        var contentVersion = new HashCode();
+        var styleVersion = new HashCode();
+        foreach (var child in children)
+        {
+            contentVersion.Add(child.Source.ContentVersion);
+            styleVersion.Add(child.Source.StyleVersion);
+        }
+
+        return (contentVersion.ToHashCode(), styleVersion.ToHashCode());
+    }
+
+    private static IReadOnlyList<TextLayoutSourceReference> CollectFlatSourceReferences(TextLayoutPlan plan)
+        => plan.Root.Children
+            .SelectMany(line => line.Children)
+            .Select(run => run.Source)
+            .ToArray();
+
+    private static IReadOnlyList<TextLayoutSourceReference> CollectFlatBoundaryReferences(TextLayoutPlan plan)
+    {
+        var runs = plan.Root.Children.SelectMany(line => line.Children).ToArray();
+        if (runs.Length == 0)
+        {
+            return Array.Empty<TextLayoutSourceReference>();
+        }
+
+        return new[] { runs[0].Source, runs[^1].Source };
+    }
+
+    private static IReadOnlyList<TextLayoutContinuationReference> BuildFlatContinuations(
+        TextLayoutPlan fittedPlan,
+        TextLayoutPlan? remainderPlan,
+        TextBreakKind breakKind,
+        bool hasRemainder)
+    {
+        if (!hasRemainder)
+        {
+            return Array.Empty<TextLayoutContinuationReference>();
+        }
+
+        var fittedRuns = fittedPlan.Root.Children.SelectMany(line => line.Children).ToArray();
+        var remainderRuns = remainderPlan?.Root.Children.SelectMany(line => line.Children).ToArray() ?? Array.Empty<TextLayoutPlanNode>();
+        if (fittedRuns.Length == 0)
+        {
+            return Array.Empty<TextLayoutContinuationReference>();
+        }
+
+        return new[]
+        {
+            new TextLayoutContinuationReference(
+                MapContinuationKind(breakKind),
+                fittedRuns[^1].Source,
+                remainderRuns.FirstOrDefault()?.Source,
+                fittedRuns[^1].Source.Path,
+                TextFragmentBreakReason.Overflow,
+                false)
+        };
+    }
+
+    private static TextLayoutFragmentMetadata BuildFragmentMetadata(
+        TextBreakKind breakKind,
+        TextFragmentBreak fragmentBreak,
+        IReadOnlyList<TextLayoutContinuationReference> continuations)
+        => new(fragmentBreak, continuations.FirstOrDefault());
+
+    private static TextLayoutContinuationKind MapContinuationKind(TextBreakKind breakKind)
+        => breakKind switch
+        {
+            TextBreakKind.Paragraph => TextLayoutContinuationKind.Paragraph,
+            TextBreakKind.ListItem => TextLayoutContinuationKind.ListItem,
+            TextBreakKind.TableRow => TextLayoutContinuationKind.TableRow,
+            TextBreakKind.ContainerChild => TextLayoutContinuationKind.ContainerChild,
+            _ => TextLayoutContinuationKind.Line
+        };
+
+    private static TextBoxLayoutRequest BuildFittedRequest(TextBoxLayoutRequest request, TextBoxLayoutRequest? remainderRequest)
+    {
+        if (remainderRequest is null)
+        {
+            return request;
+        }
+
+        var fittedSegments = new List<TextSegment>();
+        var remainderSegments = remainderRequest.Segments;
+        var remainderIndex = 0;
+        for (var i = 0; i < request.Segments.Count; i++)
+        {
+            var original = request.Segments[i];
+            var remainder = remainderIndex < remainderSegments.Count ? remainderSegments[remainderIndex] : null;
+            if (remainder is not null && SameSourceSegment(original, remainder))
+            {
+                var consumedLength = Math.Max(0, original.Text.Length - remainder.Text.Length);
+                if (consumedLength > 0)
+                {
+                    fittedSegments.Add(original with
+                    {
+                        Text = original.Text[..consumedLength],
+                        SourceLength = original.SourceLength.HasValue ? Math.Min(original.SourceLength.Value, consumedLength) : consumedLength
+                    });
+                }
+
+                remainderIndex++;
+                break;
+            }
+
+            fittedSegments.Add(original);
+        }
+
+        return request with { Segments = fittedSegments };
+    }
+
+    private static bool SameSourceSegment(TextSegment left, TextSegment right)
+        => string.Equals(left.SourcePath ?? string.Empty, right.SourcePath ?? string.Empty, StringComparison.Ordinal)
+            && Equals(left.Style, right.Style);
 
     private static TextBoxLayoutResult CreateNoContentAreaResult(TextBoxLayoutRequest request)
     {
@@ -708,17 +1121,33 @@ public sealed class TextBoxLayoutEngine
                 continue;
             }
 
-            segments.Add(original with { Text = original.Text[consumed..] });
+            int? sourceStart = original.SourceStart.HasValue ? original.SourceStart.Value + consumed : null;
+            int? sourceLength = original.SourceLength.HasValue ? Math.Max(0, original.SourceLength.Value - consumed) : null;
+            segments.Add(original with
+            {
+                Text = original.Text[consumed..],
+                SourceStart = sourceStart,
+                SourceLength = sourceLength
+            });
         }
 
         return request with { Segments = segments };
     }
 
     private static double GetContentWidth(double width, TextBoxStyle style)
-        => width - (style.Inset * 2d);
+        => GetContentWidth(width, StyleResolver.Resolve(style));
 
     private static double GetContentHeight(double height, TextBoxStyle style)
-        => height - (style.Inset * 2d);
+        => GetContentHeight(height, StyleResolver.Resolve(style));
+
+    private static double GetContentWidth(double width, ComputedBoxStyle style)
+        => width - style.Edges.HorizontalInset;
+
+    private static double GetContentHeight(double height, ComputedBoxStyle style)
+        => height - style.Edges.VerticalInset;
+
+    private static int GetSegmentSourceStart(TextSegment segment, int tokenStart)
+        => (segment.SourceStart ?? 0) + tokenStart;
 
     private static List<TokenSlice> Tokenize(string text)
     {
@@ -778,10 +1207,10 @@ public sealed class TextBoxLayoutEngine
             var ascent = style.FontSize * (metrics.Ascent / 1000d);
             var descent = style.FontSize * (Math.Abs(metrics.Descent) / 1000d);
             var lineGap = style.FontSize * (Math.Max(0d, metrics.LineGap) / 1000d);
-            return new TokenMetrics(explicitLineHeight, ascent, descent, lineGap);
+            return new TokenMetrics(explicitLineHeight, style.LineBoxSizing, ascent, descent, lineGap);
         }
 
-        return new TokenMetrics(explicitLineHeight, style.FontSize, 0d, 0d);
+        return new TokenMetrics(explicitLineHeight, style.LineBoxSizing, style.FontSize, 0d, 0d);
     }
 
     private static TokenMetrics ResolveParagraphStrut(IReadOnlyList<PreparedToken> tokens)
@@ -796,7 +1225,7 @@ public sealed class TextBoxLayoutEngine
             return token.Metrics;
         }
 
-        return new TokenMetrics(null, 0d, 0d, 0d);
+        return new TokenMetrics(null, TextLineBoxSizing.AtLeastLineHeight, 0d, 0d, 0d);
     }
 
     private static void ApplyTokenMetrics(PreparedLine line, PreparedToken token)
@@ -807,6 +1236,11 @@ public sealed class TextBoxLayoutEngine
         if (token.Metrics.ExplicitLineHeight.HasValue)
         {
             line.ExplicitLineHeight = Math.Max(line.ExplicitLineHeight ?? 0d, token.Metrics.ExplicitLineHeight.Value);
+        }
+
+        if (token.Metrics.LineBoxSizing == TextLineBoxSizing.AtLeastLineHeight)
+        {
+            line.LineBoxSizing = TextLineBoxSizing.AtLeastLineHeight;
         }
     }
 
@@ -823,11 +1257,13 @@ public sealed class TextBoxLayoutEngine
         var naturalContentHeight = line.Ascent + line.Descent;
         var naturalLineHeight = naturalContentHeight + line.LineGap;
 
-        line.Height = line.ExplicitLineHeight ?? naturalLineHeight;
-        if (line.Height <= 0)
+        line.Height = line.LineBoxSizing switch
         {
-            line.Height = naturalLineHeight;
-        }
+            TextLineBoxSizing.Exact when line.ExplicitLineHeight.HasValue && line.ExplicitLineHeight.Value > 0d => line.ExplicitLineHeight.Value,
+            TextLineBoxSizing.AtLeastLineHeight when line.ExplicitLineHeight.HasValue && line.ExplicitLineHeight.Value > 0d
+                => Math.Max(line.ExplicitLineHeight.Value, naturalLineHeight),
+            _ => naturalLineHeight
+        };
 
         var baselineContentHeight = baselineAscent + baselineDescent;
         var topLeading = Math.Max(0d, line.Height - baselineContentHeight) / 2d;
@@ -843,9 +1279,12 @@ public sealed class TextBoxLayoutEngine
 
     private sealed class PreparedToken
     {
-        public PreparedToken(int segmentIndex, string text, TextSegmentStyle style, PreparedTokenKind kind, TextFontFace? face, IReadOnlyList<TextLayoutGlyph> glyphs, double width, double measuredWidth, TokenMetrics metrics)
+        public PreparedToken(int segmentIndex, int sourceStart, int sourceLength, string sourcePath, string text, TextSegmentStyle style, PreparedTokenKind kind, TextFontFace? face, IReadOnlyList<TextLayoutGlyph> glyphs, double width, double measuredWidth, TokenMetrics metrics)
         {
             SegmentIndex = segmentIndex;
+            SourceStart = sourceStart;
+            SourceLength = sourceLength;
+            SourcePath = sourcePath;
             Text = text;
             Style = style;
             Kind = kind;
@@ -857,6 +1296,9 @@ public sealed class TextBoxLayoutEngine
         }
 
         public int SegmentIndex { get; }
+        public int SourceStart { get; }
+        public int SourceLength { get; }
+        public string SourcePath { get; }
         public string Text { get; }
         public TextSegmentStyle Style { get; }
         public PreparedTokenKind Kind { get; }
@@ -869,6 +1311,48 @@ public sealed class TextBoxLayoutEngine
         public double BaselineY { get; set; }
     }
 
+    private sealed class ParagraphFormattingResult
+    {
+        public required IReadOnlyList<PreparedToken> Tokens { get; init; }
+        public required List<PreparedLine> AllLines { get; init; }
+        public required List<PreparedLine> VisibleLines { get; init; }
+        public required double MeasuredWidth { get; init; }
+        public required double MeasuredHeight { get; init; }
+    }
+
+    private sealed class IntrinsicParagraphMeasurement
+    {
+        public required IReadOnlyList<TextLayoutIssue> Issues { get; init; }
+        public required IReadOnlyList<PreparedToken> Tokens { get; init; }
+        public required List<PreparedLine> AllLines { get; init; }
+        public required double MeasuredWidth { get; init; }
+        public required double MeasuredHeight { get; init; }
+    }
+
+    private sealed class FlatFitPlanMaterializer : ITextLayoutFitPlanMaterializer
+    {
+        private readonly TextBoxLayoutRequest _fittedRequest;
+        private readonly TextBoxLayoutRequest? _remainderRequest;
+
+        public FlatFitPlanMaterializer(TextBoxLayoutRequest fittedRequest, TextBoxLayoutRequest? remainderRequest)
+        {
+            _fittedRequest = fittedRequest;
+            _remainderRequest = remainderRequest;
+        }
+
+        public TextBoxLayoutRequest MaterializeFittedRequest(TextBoxLayoutRequest template)
+            => template with { Segments = _fittedRequest.Segments };
+
+        public TextBoxLayoutRequest? MaterializeRemainderRequest(TextBoxLayoutRequest template)
+            => _remainderRequest is null ? null : template with { Segments = _remainderRequest.Segments };
+
+        public RichTextBoxLayoutRequest MaterializeFittedRequest(RichTextBoxLayoutRequest template)
+            => throw new NotSupportedException("Flat-text fit plans cannot materialize rich-text requests.");
+
+        public RichTextBoxLayoutRequest? MaterializeRemainderRequest(RichTextBoxLayoutRequest template)
+            => throw new NotSupportedException("Flat-text fit plans cannot materialize rich-text requests.");
+    }
+
     private sealed class PreparedLine
     {
         public List<PreparedToken> Tokens { get; } = new();
@@ -878,6 +1362,7 @@ public sealed class TextBoxLayoutEngine
         public double Descent { get; set; }
         public double LineGap { get; set; }
         public double? ExplicitLineHeight { get; set; }
+        public TextLineBoxSizing LineBoxSizing { get; set; } = TextLineBoxSizing.Exact;
         public double Height { get; set; }
         public double BaselineOffset { get; set; }
         public double X { get; set; }
@@ -886,6 +1371,7 @@ public sealed class TextBoxLayoutEngine
 
     private readonly record struct TokenMetrics(
         double? ExplicitLineHeight,
+        TextLineBoxSizing LineBoxSizing,
         double Ascent,
         double Descent,
         double LineGap);
@@ -932,6 +1418,244 @@ public sealed class TextBoxLayoutEngine
             }
 
             _fonts.Clear();
+        }
+    }
+
+    private static class ParagraphFormatter
+    {
+        private sealed class NormalizedParagraphInput
+        {
+            public required IReadOnlyList<TextSegment> Segments { get; init; }
+        }
+
+        private sealed class ShapedParagraph
+        {
+            public required IReadOnlyList<PreparedToken> Tokens { get; init; }
+        }
+
+        private sealed class BreakOpportunityPlan
+        {
+            public required IReadOnlyList<PreparedToken> Tokens { get; init; }
+        }
+
+        private sealed class PositionedParagraph
+        {
+            public required List<PreparedLine> AllLines { get; init; }
+            public required List<PreparedLine> VisibleLines { get; init; }
+        }
+
+        private sealed class ParagraphDecorationPlan
+        {
+            public static readonly ParagraphDecorationPlan Empty = new();
+        }
+
+        public static ParagraphFormattingResult Format(
+            TextBoxLayoutRequest request,
+            FontCache fonts,
+            List<TextLayoutIssue> issues,
+            LayoutConstraints constraints,
+            TextLayoutAnalysisContext? context)
+        {
+            var intrinsic = MeasureIntrinsic(request, fonts, issues, constraints.AvailableWidth, context);
+            var positioned = Position(request, intrinsic, constraints);
+            _ = PlanDecorations(positioned);
+
+            return new ParagraphFormattingResult
+            {
+                Tokens = intrinsic.Tokens,
+                AllLines = positioned.AllLines,
+                VisibleLines = positioned.VisibleLines,
+                MeasuredWidth = intrinsic.MeasuredWidth,
+                MeasuredHeight = intrinsic.MeasuredHeight
+            };
+        }
+
+        private static IntrinsicParagraphMeasurement MeasureIntrinsic(
+            TextBoxLayoutRequest request,
+            FontCache fonts,
+            List<TextLayoutIssue> issues,
+            double contentWidth,
+            TextLayoutAnalysisContext? context)
+        {
+            var key = BuildIntrinsicParagraphMeasurementCacheKey(request, contentWidth);
+            if (context?.IntrinsicMeasurements.TryGet(key, out var cachedEntry) == true
+                && cachedEntry?.Value is IntrinsicParagraphMeasurement cached)
+            {
+                issues.AddRange(cached.Issues);
+                return cached;
+            }
+
+            var localIssues = new List<TextLayoutIssue>();
+            var normalized = Normalize(request);
+            var shapedParagraph = Shape(request, normalized, fonts, localIssues);
+            var breakPlan = AnalyzeBreakOpportunities(shapedParagraph);
+            var allLines = BuildLines(request, breakPlan, localIssues, contentWidth);
+            issues.AddRange(localIssues);
+
+            var measurement = new IntrinsicParagraphMeasurement
+            {
+                Issues = localIssues.ToArray(),
+                Tokens = shapedParagraph.Tokens,
+                AllLines = allLines,
+                MeasuredWidth = allLines.Count == 0 ? 0d : allLines.Max(x => x.MeasuredWidth),
+                MeasuredHeight = allLines.Sum(x => x.Height)
+            };
+
+            context?.IntrinsicMeasurements.Set(
+                key,
+                new IntrinsicMeasurementCacheEntry
+                {
+                    NaturalSize = new TextLayoutSize(measurement.MeasuredWidth, measurement.MeasuredHeight),
+                    VisibleSize = new TextLayoutSize(measurement.MeasuredWidth, measurement.MeasuredHeight),
+                    Value = measurement
+                });
+            return measurement;
+        }
+
+        private static NormalizedParagraphInput Normalize(TextBoxLayoutRequest request)
+            => new()
+            {
+                Segments = request.Segments
+            };
+
+        private static ShapedParagraph Shape(TextBoxLayoutRequest request, NormalizedParagraphInput input, FontCache fonts, List<TextLayoutIssue> issues)
+            => new()
+            {
+                Tokens = PrepareTokens(request with { Segments = input.Segments }, fonts, issues)
+            };
+
+        private static BreakOpportunityPlan AnalyzeBreakOpportunities(ShapedParagraph paragraph)
+            => new()
+            {
+                Tokens = paragraph.Tokens
+            };
+
+        private static List<PreparedLine> BuildLines(TextBoxLayoutRequest request, BreakOpportunityPlan breakPlan, List<TextLayoutIssue> issues, double contentWidth)
+            => TextBoxLayoutEngine.BuildLines(request, (List<PreparedToken>)breakPlan.Tokens, issues, contentWidth);
+
+        private static PositionedParagraph Position(TextBoxLayoutRequest request, IntrinsicParagraphMeasurement intrinsic, LayoutConstraints constraints)
+        {
+            var allLines = CloneLines(intrinsic.AllLines);
+            List<PreparedLine> visibleLines;
+            if (constraints.ClipToHeight && request.VerticalAlignment != TextVerticalAlignment.Top)
+            {
+                PositionLines(request, allLines, constraints.AvailableWidth, constraints.AvailableHeight);
+                var edges = StyleResolver.Resolve(request.BoxStyle).Edges;
+                visibleLines = ClipPositionedLines(edges.Insets.Top, edges.Insets.Top + constraints.AvailableHeight, allLines);
+            }
+            else
+            {
+                visibleLines = constraints.ClipToHeight ? ClipLines(constraints.AvailableHeight, allLines) : allLines;
+                PositionLines(request, visibleLines, constraints.AvailableWidth, constraints.AvailableHeight);
+            }
+
+            return new PositionedParagraph
+            {
+                AllLines = allLines,
+                VisibleLines = visibleLines
+            };
+        }
+
+        private static ParagraphDecorationPlan PlanDecorations(PositionedParagraph positioned)
+            => ParagraphDecorationPlan.Empty;
+
+        private static List<PreparedLine> CloneLines(IReadOnlyList<PreparedLine> source)
+        {
+            var clone = new List<PreparedLine>(source.Count);
+            foreach (var line in source)
+            {
+                var clonedLine = new PreparedLine
+                {
+                    Width = line.Width,
+                    MeasuredWidth = line.MeasuredWidth,
+                    Ascent = line.Ascent,
+                    Descent = line.Descent,
+                    LineGap = line.LineGap,
+                    ExplicitLineHeight = line.ExplicitLineHeight,
+                    LineBoxSizing = line.LineBoxSizing,
+                    Height = line.Height,
+                    BaselineOffset = line.BaselineOffset,
+                    X = line.X,
+                    BaselineY = line.BaselineY
+                };
+
+                foreach (var token in line.Tokens)
+                {
+                    clonedLine.Tokens.Add(new PreparedToken(
+                        token.SegmentIndex,
+                        token.SourceStart,
+                        token.SourceLength,
+                        token.SourcePath,
+                        token.Text,
+                        token.Style,
+                        token.Kind,
+                        token.Face,
+                        token.Glyphs,
+                        token.Width,
+                        token.MeasuredWidth,
+                        token.Metrics));
+                }
+
+                clone.Add(clonedLine);
+            }
+
+            return clone;
+        }
+
+        private static IntrinsicMeasurementCacheKey BuildIntrinsicParagraphMeasurementCacheKey(TextBoxLayoutRequest request, double contentWidth)
+        {
+            var contentVersion = new HashCode();
+            var styleVersion = new HashCode();
+            foreach (var segment in request.Segments)
+            {
+                contentVersion.Add(segment.SourcePath, StringComparer.Ordinal);
+                contentVersion.Add(segment.SourceStart);
+                contentVersion.Add(segment.SourceLength);
+                contentVersion.Add(segment.Text, StringComparer.Ordinal);
+
+                styleVersion.Add(segment.Style.FamilyName, StringComparer.Ordinal);
+                styleVersion.Add(segment.Style.Weight);
+                styleVersion.Add(segment.Style.FontSize);
+                styleVersion.Add(segment.Style.Italic);
+                styleVersion.Add(segment.Style.Underline);
+                styleVersion.Add(segment.Style.StrikeThrough);
+                styleVersion.Add(segment.Style.CharacterSpacing);
+                styleVersion.Add(segment.Style.WordSpacing);
+                styleVersion.Add(segment.Style.LineSpacing);
+                styleVersion.Add(segment.Style.LineBoxSizing);
+                styleVersion.Add(segment.Style.ForegroundColor);
+                styleVersion.Add(segment.Style.BackgroundColor);
+            }
+
+            styleVersion.Add(RuntimeHelpers.GetHashCode(request.FontLibrary));
+            foreach (var fallback in request.FallbackFamilyNames)
+            {
+                styleVersion.Add(fallback, StringComparer.Ordinal);
+            }
+
+            var nodeId = request.Segments.Count == 0
+                ? "Segments"
+                : string.Join("|", request.Segments.Select(static (segment, index) => segment.SourcePath ?? $"Segments[{index}]"));
+
+            return new IntrinsicMeasurementCacheKey(
+                IntrinsicMeasurementUnitKind.Paragraph,
+                nodeId,
+                contentVersion.ToHashCode(),
+                styleVersion.ToHashCode(),
+                contentWidth,
+                BuildFlatLayoutModeFlags(request));
+        }
+
+        private static int BuildFlatLayoutModeFlags(TextBoxLayoutRequest request)
+        {
+            var flags = 0;
+            flags |= request.PreserveTrailingWhitespaceInWidth ? 1 << 0 : 0;
+            flags |= ((int)request.MissingFontBehavior & 0x3) << 1;
+            flags |= ((int)request.MissingGlyphBehavior & 0x3) << 3;
+            flags |= ((int)request.HorizontalAlignment & 0x3) << 5;
+            flags |= ((int)request.VerticalAlignment & 0x3) << 7;
+            flags |= ((int)request.MetricPreference & 0x7) << 9;
+            return flags;
         }
     }
 }

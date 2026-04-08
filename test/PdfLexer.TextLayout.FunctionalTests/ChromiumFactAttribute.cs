@@ -51,6 +51,8 @@ internal static class ChromiumFactAttributeHelper
             return null;
         }
 
+        return null;
+
         foreach (var library in LinuxLibraries)
         {
             if (!NativeLibrary.TryLoad(library, out var handle))

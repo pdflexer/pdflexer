@@ -2,6 +2,7 @@ using System.Text;
 using PuppeteerSharp;
 using PuppeteerSharp.Media;
 using Xunit.Sdk;
+using PdfLexer.TextLayout;
 
 namespace PdfLexer.TextLayout.FunctionalTests;
 
@@ -10,7 +11,7 @@ internal static class BrowserFixtureRenderer
     private static readonly SemaphoreSlim BrowserLock = new(1, 1);
     private const double PlainVerticalAlignmentCompensationPt = 0;
     private const double RichVerticalAlignmentCompensationPt = 0;
-    private static string? _executablePath;
+    private static string? _executablePath = OperatingSystem.IsLinux() ? "/usr/bin/chromium-browser" : null;
     private static IBrowser? _browser;
 
     public static async Task<byte[]> RenderPdfAsync(HtmlTextBoxFixture fixture)
@@ -21,6 +22,13 @@ internal static class BrowserFixtureRenderer
     }
 
     public static async Task<byte[]> RenderPdfAsync(RichHtmlTextBoxFixture fixture)
+    {
+        var browser = await EnsureBrowserAsync();
+        var html = GetHtml(fixture);
+        return await RenderPdfAsync(fixture.PageWidth, fixture.PageHeight, html, browser);
+    }
+
+    public static async Task<byte[]> RenderPdfAsync(NormalizedRichHtmlTextBoxFixture fixture)
     {
         var browser = await EnsureBrowserAsync();
         var html = GetHtml(fixture);
@@ -57,7 +65,7 @@ internal static class BrowserFixtureRenderer
         }
         catch (ProcessException ex)
         {
-            throw SkipException.ForSkip($"Chromium could not be launched for functional conformance tests: {ex.Message}");
+            throw SkipException.ForSkip($"Chromium could not be launched for functional conformance tests: {ex.ToString()}");
         }
     }
 
@@ -99,7 +107,7 @@ internal static class BrowserFixtureRenderer
         }
         catch (ProcessException ex)
         {
-            throw SkipException.ForSkip($"Chromium could not be launched for functional conformance tests: {ex.Message}");
+            throw SkipException.ForSkip($"Chromium could not be launched for functional conformance tests: {ex.ToString()}");
         }
         finally
         {
@@ -169,7 +177,7 @@ internal static class BrowserFixtureRenderer
         sb.AppendLine(".paragraph, .heading, .list-item-content { margin: 0; padding: 0; }");
         sb.AppendLine(".list { margin: 0; padding: 0; }");
         sb.AppendLine(".list-item { display: flex; align-items: flex-start; margin: 0; padding: 0; }");
-        sb.AppendLine($".list-marker {{ flex: 0 0 {Math.Max(0d, fixture.ListIndent - fixture.ListMarkerGap):0.###}pt; width: {Math.Max(0d, fixture.ListIndent - fixture.ListMarkerGap):0.###}pt; text-align: right; padding-right: {fixture.ListMarkerGap:0.###}pt; box-sizing: border-box; white-space: pre; }}");
+        sb.AppendLine(".list-marker { text-align: right; box-sizing: border-box; white-space: pre; }");
         sb.AppendLine(".list-item-content { flex: 1 1 auto; min-width: 0; }");
         sb.AppendLine("</style></head><body>");
         sb.AppendLine("<div class=\"box\"><div class=\"box-chrome\"></div><div class=\"box-inner\">");
@@ -180,6 +188,25 @@ internal static class BrowserFixtureRenderer
 
         sb.AppendLine("</div></div></body></html>");
         return sb.ToString();
+    }
+
+    public static string GetHtml(NormalizedRichHtmlTextBoxFixture fixture)
+    {
+        var parser = new HtmlRichTextParser();
+        var defaultStyle = new TextStyle(fixture.Fonts.First().FamilyName, fixture.Fonts.First().Weight, 12);
+        var blocks = parser.Parse(fixture.NormalizedHtml, defaultStyle);
+        return GetHtml(new RichHtmlTextBoxFixture(
+            fixture.PageWidth,
+            fixture.PageHeight,
+            fixture.BoxLeft,
+            fixture.BoxTop,
+            fixture.BoxWidth,
+            fixture.BoxHeight,
+            fixture.Fonts,
+            blocks,
+            fixture.ListIndent,
+            fixture.ListMarkerGap,
+            fixture.BoxStyle));
     }
 
     private static void AppendBlockHtml(StringBuilder sb, PdfLexer.TextLayout.RichTextBlock block, RichHtmlTextBoxFixture fixture)
@@ -194,10 +221,10 @@ internal static class BrowserFixtureRenderer
                 AppendFlowBlockHtml(sb, headingTag, "heading", heading.Inlines, heading.Style ?? new PdfLexer.TextLayout.ParagraphStyle());
                 break;
             case PdfLexer.TextLayout.UnorderedListBlock unordered:
-                AppendListHtml(sb, unordered.Items, unordered.MarginBlockEnd, fixture, index => unordered.Marker);
+                AppendListHtml(sb, unordered.Items, unordered.MarginBlockEnd, fixture, index => unordered.Marker, ResolveUnorderedListMetrics(fixture, unordered));
                 break;
             case PdfLexer.TextLayout.OrderedListBlock ordered:
-                AppendListHtml(sb, ordered.Items, ordered.MarginBlockEnd, fixture, index => $"{ordered.StartIndex + index}.");
+                AppendListHtml(sb, ordered.Items, ordered.MarginBlockEnd, fixture, index => OrderedListMarkerFormatter.Format(ordered.MarkerStyle, ordered.StartIndex + index), ResolveOrderedListMetrics(fixture, ordered));
                 break;
             case PdfLexer.TextLayout.RowBlock row:
                 AppendContainerHtml(sb, "row-container", true, row.Children, row.Height, row.Style ?? new PdfLexer.TextLayout.LayoutContainerStyle(), fixture);
@@ -316,7 +343,10 @@ internal static class BrowserFixtureRenderer
         var effectiveFontSize = GetFallbackFontSize(inlines);
         sb.Append($"<{tagName} class=\"{cssClass}\" style=\"");
         sb.Append($"font-size:{effectiveFontSize:0.###}pt;");
-        sb.Append($"text-align:{ToCssAlign(style.TextAlign)};");
+        if (style.TextAlign != PdfLexer.TextLayout.TextHorizontalAlignment.Left)
+        {
+            sb.Append($"text-align:{ToCssAlign(style.TextAlign)};");
+        }
         sb.Append($"line-height:{effectiveLineHeight:0.###}pt;");
         sb.Append($"margin:0 0 {style.MarginBlockEnd:0.###}pt 0;");
         sb.Append("\">");
@@ -329,7 +359,8 @@ internal static class BrowserFixtureRenderer
         IReadOnlyList<PdfLexer.TextLayout.ListItemBlock> items,
         double marginBlockEnd,
         RichHtmlTextBoxFixture fixture,
-        Func<int, string> markerFactory)
+        Func<int, string> markerFactory,
+        ResolvedListMetrics metrics)
     {
         sb.Append($"<div class=\"list\" style=\"margin:0 0 {marginBlockEnd:0.###}pt 0;\">");
         for (var itemIndex = 0; itemIndex < items.Count; itemIndex++)
@@ -337,14 +368,12 @@ internal static class BrowserFixtureRenderer
             var item = items[itemIndex];
             var markerStyle = FindMarkerStyle(item);
             sb.Append("<div class=\"list-item\">");
-            sb.Append("<div class=\"list-marker\"");
+            sb.Append($"<div class=\"list-marker\" style=\"box-sizing:border-box;flex:0 0 {metrics.MarkerColumnWidth:0.###}pt;width:{metrics.MarkerColumnWidth:0.###}pt;padding-right:{metrics.MarkerGap:0.###}pt;");
             if (markerStyle is not null)
             {
-                sb.Append(" style=\"");
                 sb.Append(BuildMarkerStyle(markerStyle.Value.Style, markerStyle.Value.ParagraphStyle));
-                sb.Append("\"");
             }
-            sb.Append(">");
+            sb.Append("\">");
             sb.Append(EscapeHtml(markerFactory(itemIndex) + " "));
             sb.Append("</div>");
             sb.Append("<div class=\"list-item-content\">");
@@ -368,22 +397,66 @@ internal static class BrowserFixtureRenderer
     {
         var style = table.Style ?? new PdfLexer.TextLayout.TableStyle();
         sb.Append("<table class=\"rich-table\" style=\"");
-        sb.Append("width:100%;border-collapse:collapse;table-layout:fixed;");
+        switch (table.Width)
+        {
+            case PdfLexer.TextLayout.TableFixedWidth fixedWidth:
+                sb.Append($"width:{fixedWidth.Points:0.###}pt;");
+                break;
+            case PdfLexer.TextLayout.TablePercentWidth percentWidth:
+                sb.Append($"width:{percentWidth.Percent:0.###}%;");
+                break;
+            default:
+                sb.Append("width:100%;");
+                break;
+        }
+        sb.Append("border-collapse:collapse;");
         sb.Append($"margin:0 0 {style.MarginBlockEnd:0.###}pt 0;");
         sb.Append($"border-style:solid;border-width:{Math.Max(0d, style.BorderWidth):0.###}pt;");
         sb.Append($"border-color:{ToCssColor(style.BorderColor)};");
         sb.Append($"background-color:{ToCssColor(style.BackgroundColor)};");
         sb.Append("\">");
 
-        foreach (var row in table.Rows)
+        if (table.Columns.Count > 0)
         {
-            sb.Append("<tr>");
-            foreach (var cell in row.Cells)
+            sb.Append("<colgroup>");
+            foreach (var column in table.Columns)
             {
-                AppendTableCellHtml(sb, cell, style, fixture);
-            }
+                sb.Append("<col style=\"box-sizing:border-box;");
+                switch (column.Width)
+                {
+                    case PdfLexer.TextLayout.ColumnFixedWidth fixedWidth:
+                        sb.Append($"width:{fixedWidth.Points:0.###}pt;");
+                        break;
+                    case PdfLexer.TextLayout.ColumnPercentWidth percentWidth:
+                        sb.Append($"width:{percentWidth.Percent:0.###}%;");
+                        break;
+                }
 
-            sb.Append("</tr>");
+                sb.Append("\"/>");
+            }
+            sb.Append("</colgroup>");
+        }
+
+        foreach (var section in table.Sections)
+        {
+            var sectionTag = section.Kind switch
+            {
+                PdfLexer.TextLayout.TableSectionKind.Header => "thead",
+                PdfLexer.TextLayout.TableSectionKind.Footer => "tfoot",
+                _ => "tbody"
+            };
+            sb.Append('<').Append(sectionTag).Append('>');
+            foreach (var row in section.Rows)
+            {
+                sb.Append("<tr>");
+                foreach (var cell in row.Cells)
+                {
+                    AppendTableCellHtml(sb, cell, style, fixture);
+                }
+
+                sb.Append("</tr>");
+            }
+            sb.Append("</").Append(sectionTag).Append('>');
         }
 
         sb.AppendLine("</table>");
@@ -419,10 +492,6 @@ internal static class BrowserFixtureRenderer
         sb.Append($"border-style:solid;border-width:{Math.Max(0d, tableStyle.CellBorderWidth):0.###}pt;");
         sb.Append($"border-color:{ToCssColor(tableStyle.CellBorderColor)};");
         sb.Append($"background-color:{ToCssColor(cellStyle.BackgroundColor)};");
-        if (cell.ColWidth.HasValue)
-        {
-            sb.Append($"width:{cell.ColWidth.Value:0.###}pt;");
-        }
 
         sb.Append("\">");
         foreach (var block in cell.Blocks)
@@ -590,6 +659,34 @@ internal static class BrowserFixtureRenderer
         return null;
     }
 
+    private static ResolvedListMetrics ResolveUnorderedListMetrics(RichHtmlTextBoxFixture fixture, PdfLexer.TextLayout.UnorderedListBlock list)
+    {
+        var firstItem = list.Items.FirstOrDefault();
+        var markerStyle = firstItem is not null ? FindMarkerStyle(firstItem) : null;
+        var fontSize = markerStyle?.Style.FontSize ?? 12d;
+        var markerWidth = list.MarkerStyle == PdfLexer.TextLayout.ListMarkerStyle.Disc && string.Equals(list.Marker, "\u2022", StringComparison.Ordinal)
+            ? Math.Max(1d, Math.Round(fontSize * 0.42d, 3))
+            : EstimateMarkerTextWidth(list.Marker, fontSize);
+        return ListLayoutMetricsResolver.Build(fixture.ListIndent, fixture.ListMarkerGap, fontSize, markerWidth);
+    }
+
+    private static ResolvedListMetrics ResolveOrderedListMetrics(RichHtmlTextBoxFixture fixture, PdfLexer.TextLayout.OrderedListBlock list)
+    {
+        var firstItem = list.Items.FirstOrDefault();
+        var markerStyle = firstItem is not null ? FindMarkerStyle(firstItem) : null;
+        var fontSize = markerStyle?.Style.FontSize ?? 12d;
+        var largestIndex = Math.Max(list.StartIndex, list.StartIndex + Math.Max(0, list.Items.Count - 1));
+        var markerWidth = EstimateMarkerTextWidth(OrderedListMarkerFormatter.Format(list.MarkerStyle, largestIndex, includeTrailingSpace: true), fontSize);
+        return ListLayoutMetricsResolver.Build(fixture.ListIndent, fixture.ListMarkerGap, fontSize, markerWidth);
+    }
+
+    private static double EstimateMarkerTextWidth(string markerText, double fontSize)
+    {
+        var nonWhitespace = markerText.Count(c => !char.IsWhiteSpace(c));
+        var whitespace = markerText.Length - nonWhitespace;
+        return Math.Max(1d, Math.Round((nonWhitespace * fontSize * 0.52d) + (whitespace * fontSize * 0.28d), 3));
+    }
+
     private static string ToCssAlign(PdfLexer.TextLayout.TextHorizontalAlignment alignment) => alignment switch
     {
         PdfLexer.TextLayout.TextHorizontalAlignment.Center => "center",
@@ -629,8 +726,21 @@ internal sealed record RichHtmlTextBoxFixture(
     double BoxHeight,
     IReadOnlyList<FixtureFontAsset> Fonts,
     IReadOnlyList<PdfLexer.TextLayout.RichTextBlock> Blocks,
-    double ListIndent = 18d,
-    double ListMarkerGap = 2d,
+    double? ListIndent = null,
+    double? ListMarkerGap = null,
+    PdfLexer.TextLayout.TextBoxStyle BoxStyle = default!);
+
+internal sealed record NormalizedRichHtmlTextBoxFixture(
+    double PageWidth,
+    double PageHeight,
+    double BoxLeft,
+    double BoxTop,
+    double BoxWidth,
+    double BoxHeight,
+    IReadOnlyList<FixtureFontAsset> Fonts,
+    string NormalizedHtml,
+    double? ListIndent = null,
+    double? ListMarkerGap = null,
     PdfLexer.TextLayout.TextBoxStyle BoxStyle = default!);
 
 public sealed record FixtureFontAsset(

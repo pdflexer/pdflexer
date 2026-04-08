@@ -106,6 +106,56 @@ public class TextBoxLayoutEngineTests
     }
 
     [Fact]
+    public void Layout_ExpandsLineBox_WhenExplicitLineHeightIsSmallerThanNaturalHeight_ByDefault()
+    {
+        var request = new TextBoxLayoutRequest(
+            200,
+            200,
+            new TextFontLibrary(new[]
+            {
+                CreateMetricFace("roboto-metric", "RobotoMetric", 400, ascent: 800, descent: -200, lineGap: 100)
+            }),
+            new[] { new TextSegment("Hello", new TextSegmentStyle("RobotoMetric", 400, 12, LineSpacing: 10)) });
+
+        var engine = new TextBoxLayoutEngine();
+        var result = engine.Layout(request);
+
+        Assert.True(result.Success);
+        Assert.Single(result.Lines);
+        Assert.Equal(13.2d, result.Lines[0].Height, precision: 6);
+        Assert.Equal(10.2d, result.Lines[0].BaselineOffset, precision: 6);
+    }
+
+    [Fact]
+    public void Layout_RespectsExactLineBoxSizing_WhenExplicitLineHeightIsSmallerThanNaturalHeight()
+    {
+        var request = new TextBoxLayoutRequest(
+            200,
+            200,
+            new TextFontLibrary(new[]
+            {
+                CreateMetricFace("roboto-metric", "RobotoMetric", 400, ascent: 800, descent: -200, lineGap: 100)
+            }),
+            new[]
+            {
+                new TextSegment("Hello", new TextSegmentStyle(
+                    "RobotoMetric",
+                    400,
+                    12,
+                    LineSpacing: 10,
+                    LineBoxSizing: TextLineBoxSizing.Exact))
+            });
+
+        var engine = new TextBoxLayoutEngine();
+        var result = engine.Layout(request);
+
+        Assert.True(result.Success);
+        Assert.Single(result.Lines);
+        Assert.Equal(10d, result.Lines[0].Height, precision: 6);
+        Assert.Equal(9.6d, result.Lines[0].BaselineOffset, precision: 6);
+    }
+
+    [Fact]
     public void Layout_BlankLines_ConsumeFullMetricLineBoxHeight()
     {
         var request = new TextBoxLayoutRequest(
@@ -123,6 +173,303 @@ public class TextBoxLayoutEngineTests
         Assert.True(result.Success);
         Assert.Equal(3, result.Lines.Count);
         Assert.Equal(39.6d, result.MeasuredHeight, precision: 6);
+    }
+
+    [Fact]
+    public void Layout_ExposesNaturalAndVisibleSizeAliases()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 18,
+            new TextSegment("Alpha Beta Gamma Delta", new TextSegmentStyle("Roboto", 400, 12)));
+
+        var engine = new TextBoxLayoutEngine();
+        var result = engine.Layout(request);
+
+        Assert.Equal(result.MeasuredWidth, result.NaturalWidth, precision: 6);
+        Assert.Equal(result.MeasuredHeight, result.NaturalHeight, precision: 6);
+        Assert.Equal(result.RenderedWidth, result.VisibleWidth, precision: 6);
+        Assert.Equal(result.RenderedHeight, result.VisibleHeight, precision: 6);
+        Assert.Equal(result.NaturalWidth, result.NaturalSize.Width, precision: 6);
+        Assert.Equal(result.NaturalHeight, result.NaturalSize.Height, precision: 6);
+        Assert.Equal(result.VisibleWidth, result.VisibleSize.Width, precision: 6);
+        Assert.Equal(result.VisibleHeight, result.VisibleSize.Height, precision: 6);
+    }
+
+    [Fact]
+    public void Analyze_ExposesLineAndRunSourceReferences()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 40,
+            new TextSegment("Alpha Beta Gamma", new TextSegmentStyle("Roboto", 400, 12)));
+
+        var engine = new TextBoxLayoutEngine();
+        var plan = engine.Analyze(request);
+
+        Assert.Equal(TextLayoutPlanKind.FlatText, plan.Kind);
+        Assert.Equal(TextLayoutNodeKind.Root, plan.Root.Kind);
+        Assert.Equal(plan.Layout.NaturalSize, plan.Root.NaturalSize);
+
+        var line = plan.Root.Children.First();
+        Assert.Equal(TextLayoutNodeKind.Line, line.Kind);
+        Assert.NotEmpty(line.Children);
+
+        var run = line.Children.First();
+        Assert.Equal(TextLayoutNodeKind.Run, run.Kind);
+        Assert.Equal("Segments[0]", run.Source.Path);
+        Assert.Equal("Segments[0]", run.Source.StableNodeId);
+        Assert.Equal(0, run.Source.SegmentIndex);
+        Assert.NotNull(run.Source.SourceStart);
+        Assert.NotNull(run.Source.SourceLength);
+        Assert.NotEqual(0, run.Source.ContentVersion);
+        Assert.NotEqual(0, run.Source.StyleVersion);
+    }
+
+    [Fact]
+    public void Analyze_WithReusableContext_PreservesExistingPlanBehavior()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 40,
+            new TextSegment("Alpha Beta Gamma", new TextSegmentStyle("Roboto", 400, 12)));
+
+        var engine = new TextBoxLayoutEngine();
+        var context = new TextLayoutAnalysisContext();
+        var plan = engine.Analyze(request, context);
+        var fitPlan = engine.AnalyzeFit(request with { Height = 20 }, context);
+
+        Assert.Equal(TextLayoutPlanKind.FlatText, plan.Kind);
+        Assert.Equal(plan.Layout.NaturalSize, plan.Root.NaturalSize);
+        Assert.True(context.CachedIntrinsicMeasurementCount >= 1);
+        Assert.True(context.CacheMissCount >= 1);
+        Assert.NotNull(fitPlan.FittedPlan);
+    }
+
+    [Fact]
+    public void Analyze_WithReusableContext_ReusesIntrinsicMeasurement_ForUnchangedParagraphAtSameWidth()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 40,
+            new TextSegment("Alpha Beta Gamma", new TextSegmentStyle("Roboto", 400, 12), 0, 16, "Paragraphs[0].Runs[0]"));
+
+        var engine = new TextBoxLayoutEngine();
+        var context = new TextLayoutAnalysisContext();
+
+        var first = engine.Analyze(request, context);
+        var second = engine.Analyze(request, context);
+
+        Assert.Equal(first.Layout.NaturalSize, second.Layout.NaturalSize);
+        Assert.Equal(first.Layout.Lines.Count, second.Layout.Lines.Count);
+        Assert.Equal(1, context.CachedIntrinsicMeasurementCount);
+        Assert.Equal(1, context.CacheMissCount);
+        Assert.True(context.CacheHitCount >= 1);
+    }
+
+    [Fact]
+    public void Layout_ParagraphPipeline_PreservesWhitespaceAlignmentAndDecorationFlags()
+    {
+        var request = CreateRequest(
+            width: 140,
+            height: 80,
+            new TextSegment("Hello  world", new TextSegmentStyle("Roboto", 400, 12, Underline: true, StrikeThrough: true)))
+            with
+            {
+                HorizontalAlignment = TextHorizontalAlignment.Center
+            };
+
+        var result = new TextBoxLayoutEngine().Layout(request);
+
+        Assert.True(result.Success);
+        Assert.Single(result.Lines);
+        Assert.True(result.Lines[0].X > 0d);
+        Assert.Contains(result.Lines[0].Runs, run => run.Text == "  " && run.Underline && run.StrikeThrough);
+    }
+
+    [Fact]
+    public void Analyze_WithReusableContext_WidthAndStyleChangesInvalidateIntrinsicMeasurementReuse()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 40,
+            new TextSegment("Alpha Beta Gamma", new TextSegmentStyle("Roboto", 400, 12), 0, 16, "Paragraphs[0].Runs[0]"));
+
+        var engine = new TextBoxLayoutEngine();
+        var context = new TextLayoutAnalysisContext();
+
+        engine.Analyze(request, context);
+        engine.Analyze(request with { Width = 80 }, context);
+        engine.Analyze(request with
+        {
+            Segments = new[]
+            {
+                request.Segments[0] with
+                {
+                    Style = request.Segments[0].Style with { FontSize = 13 }
+                }
+            }
+        }, context);
+
+        Assert.Equal(3, context.CachedIntrinsicMeasurementCount);
+        Assert.Equal(3, context.CacheMissCount);
+        Assert.Equal(0, context.CacheHitCount);
+    }
+
+    [Fact]
+    public void AnalyzeFit_FlatText_ExposesSourceReferencedSelections_AndMaterializers()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 20,
+            new TextSegment("Alpha Beta Gamma Delta", new TextSegmentStyle("Roboto", 400, 12), 0, 22, "Paragraphs[0].Runs[0]"));
+
+        var fitPlan = new TextBoxLayoutEngine().AnalyzeFit(request);
+
+        Assert.True(fitPlan.HasRemainder);
+        Assert.NotEmpty(fitPlan.FittedSelection.SourceReferences);
+        Assert.Equal("Paragraphs[0].Runs[0]", fitPlan.FittedSelection.SourceReferences[0].Path);
+        Assert.NotEmpty(fitPlan.FittedSelection.BoundaryReferences);
+        Assert.NotNull(fitPlan.RemainderSelection);
+
+        var fittedRequest = fitPlan.MaterializeFittedRequest(request);
+        var remainderRequest = fitPlan.MaterializeRemainderRequest(request);
+
+        Assert.NotNull(remainderRequest);
+        Assert.Single(fittedRequest.Segments);
+        Assert.Single(remainderRequest!.Segments);
+        Assert.Equal(request.Segments[0].Text, fittedRequest.Segments[0].Text + remainderRequest.Segments[0].Text);
+        Assert.Equal("Paragraphs[0].Runs[0]", fittedRequest.Segments[0].SourcePath);
+        Assert.Equal("Paragraphs[0].Runs[0]", remainderRequest.Segments[0].SourcePath);
+        Assert.Single(fitPlan.FittedSelection.Continuations);
+        Assert.Equal(TextLayoutContinuationKind.Line, fitPlan.FittedSelection.Continuations[0].Kind);
+        Assert.Equal("Paragraphs[0].Runs[0]", fitPlan.FittedSelection.Continuations[0].Boundary.Path);
+        Assert.Equal("Paragraphs[0].Runs[0]", fitPlan.FittedSelection.Continuations[0].ContinuationStart?.Path);
+    }
+
+    [Fact]
+    public void AnalyzeFit_FlatText_BuildsFittedPlanFromSlicedAnalyzedLines()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 20,
+            new TextSegment("Alpha Beta Gamma Delta", new TextSegmentStyle("Roboto", 400, 12), 0, 22, "Paragraphs[0].Runs[0]"));
+
+        var engine = new TextBoxLayoutEngine();
+        var analyzed = engine.Analyze(request with { Height = 200 });
+        var fitPlan = engine.AnalyzeFit(request);
+
+        Assert.True(analyzed.Layout.Lines.Count > fitPlan.FittedPlan.Layout.Lines.Count);
+        Assert.Equal(fitPlan.FittedPlan.Layout.Lines.Count, fitPlan.FittedPlan.Root.Children.Count);
+        Assert.All(fitPlan.FittedPlan.Root.Children, line =>
+        {
+            Assert.Equal(TextLayoutNodeKind.Line, line.Kind);
+            Assert.NotEmpty(line.Children);
+        });
+    }
+
+    [Fact]
+    public void Fragment_FlatText_WithClip_DoesNotEmitRemainder()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 20,
+            new TextSegment("Alpha Beta Gamma Delta", new TextSegmentStyle("Roboto", 400, 12), 0, 22, "Paragraphs[0].Runs[0]"))
+            with
+            {
+                OverflowMode = TextOverflowMode.Clip
+            };
+
+        var result = new TextBoxLayoutEngine().Fragment(request);
+
+        Assert.False(result.HasRemainder);
+        Assert.Equal(TextFragmentBreakReason.None, result.FragmentBreak.Reason);
+    }
+
+    [Fact]
+    public void AnalyzeFit_FlatText_ExposesFragmentOverflowMetadata()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 20,
+            new TextSegment("Alpha Beta Gamma Delta", new TextSegmentStyle("Roboto", 400, 12), 0, 22, "Paragraphs[0].Runs[0]"))
+            with
+            {
+                OverflowMode = TextOverflowMode.Fragment
+            };
+
+        var fitPlan = new TextBoxLayoutEngine().AnalyzeFit(request);
+
+        Assert.True(fitPlan.HasRemainder);
+        Assert.Equal(TextFragmentBreakReason.Overflow, fitPlan.FragmentBreak.Reason);
+        Assert.Equal(TextFragmentBreakReason.Overflow, fitPlan.FittedSelection.FragmentMetadata.Break.Reason);
+        Assert.Equal(TextFragmentBreakReason.Overflow, Assert.Single(fitPlan.FittedSelection.Continuations).BreakReason);
+    }
+
+    [Fact]
+    public void AnalyzeFragment_FlatText_WithClip_ProducesSingleFragmentPlan()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 20,
+            new TextSegment("Alpha Beta Gamma Delta", new TextSegmentStyle("Roboto", 400, 12), 0, 22, "Paragraphs[0].Runs[0]"))
+            with
+            {
+                OverflowMode = TextOverflowMode.Clip
+            };
+
+        var fitPlan = new TextBoxLayoutEngine().AnalyzeFragment(request);
+
+        Assert.False(fitPlan.HasRemainder);
+        Assert.Null(fitPlan.RemainderSelection);
+        Assert.Equal(TextFragmentBreakReason.None, fitPlan.FragmentBreak.Reason);
+    }
+
+    [Fact]
+    public void Analyze_FlatText_LineDiagnostics_AppearOnlyWhenRequested()
+    {
+        var request = new TextBoxLayoutRequest(
+            120,
+            60,
+            new TextFontLibrary(new[] { CreateFace("roboto-regular", "Roboto", 400) }),
+            new[]
+            {
+                new TextSegment("Alpha Beta", new TextSegmentStyle("Roboto", 400, 12, LineSpacing: 10))
+            });
+
+        var engine = new TextBoxLayoutEngine();
+        var withoutDiagnostics = engine.Analyze(request);
+        Assert.All(withoutDiagnostics.Root.Children, static line => Assert.Null(line.LineDiagnostics));
+
+        var withDiagnostics = engine.Analyze(request, new TextLayoutAnalysisContext().EnableLineDiagnostics());
+        Assert.Contains(withDiagnostics.Root.Children, static line => line.LineDiagnostics is not null);
+    }
+
+    [Fact]
+    public void FlatText_VisibleClipAndFragmentOverflow_HaveDistinctSemantics()
+    {
+        var visibleRequest = CreateRequest(
+            width: 70,
+            height: 20,
+            new TextSegment("Alpha Beta Gamma Delta Epsilon Zeta Eta Theta", new TextSegmentStyle("Roboto", 400, 12), 0, 45, "Paragraphs[0].Runs[0]"))
+            with
+            {
+                OverflowMode = TextOverflowMode.Visible
+            };
+        var clipRequest = visibleRequest with { OverflowMode = TextOverflowMode.Clip };
+        var fragmentRequest = visibleRequest with { OverflowMode = TextOverflowMode.Fragment };
+
+        var engine = new TextBoxLayoutEngine();
+        var visible = engine.Layout(visibleRequest);
+        var clip = engine.Fragment(clipRequest);
+        var fragment = engine.Fragment(fragmentRequest);
+
+        Assert.True(visible.VisibleHeight > visibleRequest.Height);
+        Assert.False(clip.HasRemainder);
+        Assert.True(clip.FittedLayout.VisibleHeight <= clipRequest.Height + 0.0001d);
+        Assert.True(fragment.HasRemainder);
+        Assert.True(fragment.FittedLayout.VisibleHeight <= fragmentRequest.Height + 0.0001d);
+        Assert.Equal(TextFragmentBreakReason.Overflow, fragment.FragmentBreak.Reason);
     }
 
     [Fact]
@@ -270,6 +617,104 @@ public class TextBoxLayoutEngineTests
         Assert.NotNull(result.RemainderRequest);
         Assert.NotEmpty(result.RemainderRequest!.Segments);
         Assert.Contains("Gamma", string.Concat(result.RemainderRequest.Segments.Select(x => x.Text)));
+    }
+
+    [Fact]
+    public void Fit_ExposesFittedLayoutAlias_AndConsumedSize()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 18,
+            new TextSegment("Alpha Beta Gamma", new TextSegmentStyle("Roboto", 400, 12)));
+
+        var engine = new TextBoxLayoutEngine();
+        var result = engine.Fit(request);
+
+        Assert.Same(result.FittingLayout, result.FittedLayout);
+        Assert.Same(result.RemainderRequest, result.RemainderContent);
+        Assert.Equal(result.ConsumedWidth, result.ConsumedSize.Width, precision: 6);
+        Assert.Equal(result.ConsumedHeight, result.ConsumedSize.Height, precision: 6);
+    }
+
+    [Fact]
+    public void Fit_MatchesVisibleLayout_ForSameParagraphFormattingPath()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 18,
+            new TextSegment("Alpha Beta Gamma Delta", new TextSegmentStyle("Roboto", 400, 12)));
+
+        var engine = new TextBoxLayoutEngine();
+        var layout = engine.Layout(request);
+        var fit = engine.Fit(request);
+
+        Assert.Equal(layout.Lines.Count, fit.FittedLayout.Lines.Count);
+        Assert.Equal(
+            layout.Lines.SelectMany(x => x.Runs).Select(x => x.Text).ToArray(),
+            fit.FittedLayout.Lines.SelectMany(x => x.Runs).Select(x => x.Text).ToArray());
+        Assert.Equal(layout.VisibleHeight, fit.FittedLayout.VisibleHeight, precision: 6);
+        Assert.Equal(layout.VisibleWidth, fit.FittedLayout.VisibleWidth, precision: 6);
+    }
+
+    [Fact]
+    public void Layout_Overflow_DistinguishesNaturalAndVisibleSizes()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 18,
+            new TextSegment("Alpha Beta Gamma Delta", new TextSegmentStyle("Roboto", 400, 12)));
+
+        var engine = new TextBoxLayoutEngine();
+        var result = engine.Layout(request);
+
+        Assert.Equal(TextLayoutStatus.Overflow, result.Status);
+        Assert.True(result.NaturalHeight > result.VisibleHeight);
+        Assert.Equal(result.MeasuredHeight, result.NaturalHeight, precision: 6);
+        Assert.Equal(result.RenderedHeight, result.VisibleHeight, precision: 6);
+    }
+
+    [Fact]
+    public void Layout_ClipWithCenterAlignment_ShowsCenteredVisibleLineWindow()
+    {
+        var request = CreateRequest(
+            120,
+            24,
+            new TextSegment("Line1\nLine2\nLine3\nLine4", new TextSegmentStyle("Roboto", 400, 12, LineSpacing: 12))) with
+        {
+            OverflowMode = TextOverflowMode.Clip,
+            VerticalAlignment = TextVerticalAlignment.Center
+        };
+
+        var engine = new TextBoxLayoutEngine();
+        var result = engine.Layout(request);
+
+        var visibleText = result.Lines.SelectMany(x => x.Runs).Select(x => x.Text).ToArray();
+        Assert.DoesNotContain("Line1", visibleText);
+        Assert.Contains("Line2", visibleText);
+        Assert.Contains("Line3", visibleText);
+        Assert.DoesNotContain("Line4", visibleText);
+    }
+
+    [Fact]
+    public void Layout_ClipWithBottomAlignment_ShowsBottomVisibleLineWindow()
+    {
+        var request = CreateRequest(
+            120,
+            24,
+            new TextSegment("Line1\nLine2\nLine3\nLine4", new TextSegmentStyle("Roboto", 400, 12, LineSpacing: 12))) with
+        {
+            OverflowMode = TextOverflowMode.Clip,
+            VerticalAlignment = TextVerticalAlignment.Bottom
+        };
+
+        var engine = new TextBoxLayoutEngine();
+        var result = engine.Layout(request);
+
+        var visibleText = result.Lines.SelectMany(x => x.Runs).Select(x => x.Text).ToArray();
+        Assert.DoesNotContain("Line1", visibleText);
+        Assert.DoesNotContain("Line2", visibleText);
+        Assert.Contains("Line3", visibleText);
+        Assert.Contains("Line4", visibleText);
     }
 
     [Fact]
@@ -425,6 +870,35 @@ public class TextBoxLayoutEngineTests
         var content = page.DumpDecodedContents();
         var moveCount = content.Split(" m").Length - 1;
         Assert.Equal(1, moveCount);
+    }
+
+    [Fact]
+    public void WriteTextBox_DrawsStrikeThroughStroke()
+    {
+        var face = CreateFace("roboto-regular", "Roboto", 400);
+        var fontLibrary = new PdfTextLayoutFontLibrary(new[]
+        {
+            new PdfTextLayoutFontFace(face, TrueTypeFont.CreateWritableFont(File.ReadAllBytes(RobotoPath)))
+        });
+
+        var request = new TextBoxLayoutRequest(
+            120,
+            120,
+            fontLibrary.CreateLayoutLibrary(),
+            new[]
+            {
+                new TextSegment("Hello", new TextSegmentStyle("Roboto", 400, 12, StrikeThrough: true))
+            });
+
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        using (var writer = page.GetWriter())
+        {
+            writer.WriteTextBox(new PdfRect<double>(20, 20, 140, 140), request, fontLibrary);
+        }
+
+        var content = page.DumpDecodedContents();
+        Assert.Contains("0.81 w", content);
     }
 
     [Fact]
