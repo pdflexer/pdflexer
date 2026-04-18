@@ -12,7 +12,7 @@ public sealed class RichTextBoxLayoutEngine
 
     private delegate void AppendBlockDelegate(RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state);
     private delegate BlockSplitOutcome SplitBlockDelegate(RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path);
-    private delegate IReadOnlyList<TextLayoutPlanNode> BuildPlanChildrenDelegate(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context);
+    private delegate IReadOnlyList<TextLayoutPlanNode> BuildPlanChildrenDelegate(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context);
 
     private sealed record RichBlockFormatterRegistration(
         TextLayoutNodeKind NodeKind,
@@ -27,42 +27,42 @@ public sealed class RichTextBoxLayoutEngine
                 TextLayoutNodeKind.Paragraph,
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => FlowBlockFormatter.AppendParagraph(request, (ParagraphBlock)block, contentWidth, xOffset, path, ref state),
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => FlowBlockFormatter.SplitParagraph(request, (ParagraphBlock)block, contentWidth, availableHeight, path),
-                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLineNodesForPath(rootLayout, path, context)),
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLineNodesForPath(rootLayout, path, context, rootGraph)),
             [typeof(HeadingBlock)] = new(
                 TextLayoutNodeKind.Heading,
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => FlowBlockFormatter.AppendHeading(request, (HeadingBlock)block, contentWidth, xOffset, path, ref state),
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => FlowBlockFormatter.SplitHeading(request, (HeadingBlock)block, contentWidth, availableHeight, path),
-                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLineNodesForPath(rootLayout, path, context)),
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLineNodesForPath(rootLayout, path, context, rootGraph)),
             [typeof(UnorderedListBlock)] = new(
                 TextLayoutNodeKind.UnorderedList,
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => ListBlockFormatter.AppendUnorderedList(request, (UnorderedListBlock)block, contentWidth, xOffset, path, ref state),
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => ListBlockFormatter.SplitUnorderedListBlock(request, (UnorderedListBlock)block, contentWidth, availableHeight, path),
-                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildListItemNodes(request, rootLayout, ((UnorderedListBlock)block).Items, path, context)),
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildListItemNodes(request, rootLayout, rootGraph, ((UnorderedListBlock)block).Items, path, context)),
             [typeof(OrderedListBlock)] = new(
                 TextLayoutNodeKind.OrderedList,
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => ListBlockFormatter.AppendOrderedList(request, (OrderedListBlock)block, contentWidth, xOffset, path, ref state),
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => ListBlockFormatter.SplitOrderedListBlock(request, (OrderedListBlock)block, contentWidth, availableHeight, path),
-                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildListItemNodes(request, rootLayout, ((OrderedListBlock)block).Items, path, context)),
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildListItemNodes(request, rootLayout, rootGraph, ((OrderedListBlock)block).Items, path, context)),
             [typeof(TableBlock)] = new(
                 TextLayoutNodeKind.Table,
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => TableBlockFormatter.AppendTable(request, (TableBlock)block, contentWidth, xOffset, path, ref state),
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => TableBlockFormatter.SplitTableBlock(request, (TableBlock)block, contentWidth, availableHeight, path),
-                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildTableNodes(request, rootLayout, (TableBlock)block, path, context)),
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildTableNodes(request, rootLayout, rootGraph, (TableBlock)block, path, context)),
             [typeof(RowBlock)] = new(
                 TextLayoutNodeKind.RowContainer,
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => ContainerBlockFormatter.AppendRow(request, (RowBlock)block, contentWidth, xOffset, path, ref state),
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => ContainerBlockFormatter.SplitRowBlock(request, (RowBlock)block, contentWidth, availableHeight, path),
-                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLayoutChildNodes(request, rootLayout, ((RowBlock)block).Children, path, context)),
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLayoutChildNodes(request, rootLayout, rootGraph, ((RowBlock)block).Children, path, context)),
             [typeof(ColumnBlock)] = new(
                 TextLayoutNodeKind.ColumnContainer,
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => ContainerBlockFormatter.AppendColumn(request, (ColumnBlock)block, contentWidth, xOffset, path, ref state),
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => ContainerBlockFormatter.SplitColumnBlock(request, (ColumnBlock)block, contentWidth, availableHeight, path),
-                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLayoutChildNodes(request, rootLayout, ((ColumnBlock)block).Children, path, context)),
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => BuildLayoutChildNodes(request, rootLayout, rootGraph, ((ColumnBlock)block).Children, path, context)),
             [typeof(EmbeddedObjectBlock)] = new(
                 TextLayoutNodeKind.EmbeddedObject,
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double xOffset, string path, ref LayoutState state) => AppendEmbeddedObject(request, (EmbeddedObjectBlock)block, contentWidth, xOffset, path, ref state),
                 static (RichTextBoxLayoutRequest request, RichTextBlock block, double contentWidth, double availableHeight, string path) => SplitEmbeddedObjectBlock((EmbeddedObjectBlock)block, path),
-                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => Array.Empty<TextLayoutPlanNode>())
+                static (RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context) => Array.Empty<TextLayoutPlanNode>())
         };
 
     private static RichBlockFormatterRegistration GetFormatter(RichTextBlock block)
@@ -75,7 +75,7 @@ public sealed class RichTextBoxLayoutEngine
 
     public TextLayoutPlan Analyze(RichTextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
     {
-        var layout = Layout(request);
+        var layout = Layout(request, context);
         return new TextLayoutPlan
         {
             Kind = TextLayoutPlanKind.RichText,
@@ -93,7 +93,7 @@ public sealed class RichTextBoxLayoutEngine
     public TextLayoutFitPlan AnalyzeFit(RichTextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
     {
         var fullPlan = Analyze(request, context);
-        var fit = Fit(request);
+        var fit = Fit(request, context);
         var fittedPlan = CanSliceFittedPlan(fit.SplitMetadata)
             ? TextLayoutPlanSlicer.Slice(fullPlan, fit.FittedLayout)
             : Analyze(request with { Blocks = fit.FittedContent.Blocks }, context);
@@ -190,6 +190,12 @@ public sealed class RichTextBoxLayoutEngine
         => !metadata.OfType<TableSplitMetadata>().Any(x => x.UsedContinuationFooter);
 
     public TextBoxLayoutResult Layout(RichTextBoxLayoutRequest request)
+        => Layout(request, context: null);
+
+    public TextBoxLayoutResult Layout(RichTextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
+        => LayoutInternal(request, context, "Blocks");
+
+    private static TextBoxLayoutResult LayoutInternal(RichTextBoxLayoutRequest request, TextLayoutAnalysisContext? context, string rootPathPrefix)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(request.FontLibrary);
@@ -214,68 +220,82 @@ public sealed class RichTextBoxLayoutEngine
             return CreateNoContentAreaResult(request);
         }
 
-        var state = new LayoutState();
-        LayoutBlocks(request, request.Blocks, contentWidth, 0d, "Blocks", ref state);
-
-        var measuredHeight = state.ConsumedHeight;
-        var measuredWidth = GetMaxRight(state.Lines, state.Decorations);
-        var fitsHeight = measuredHeight <= contentHeight + 0.0001d;
-        var fitsWidth = measuredWidth <= contentWidth + 0.0001d;
-        var hasFontIssues = state.Issues.Any(x => x.Kind is TextLayoutIssueKind.MissingFamily or TextLayoutIssueKind.MissingWeight or TextLayoutIssueKind.MissingGlyph);
-
-        var status = hasFontIssues
-            ? TextLayoutStatus.Error
-            : (!fitsWidth || !fitsHeight || state.HadOverflow ? TextLayoutStatus.Overflow : TextLayoutStatus.Success);
-
-        if (status == TextLayoutStatus.Overflow && request.OverflowMode == TextOverflowMode.Error)
+        var analysisContext = context ?? new TextLayoutAnalysisContext();
+        try
         {
-            state.Issues.Add(new TextLayoutIssue(TextLayoutIssueKind.Overflow, "Text content exceeds the target text box."));
-            status = TextLayoutStatus.Error;
+            var state = new LayoutState(analysisContext);
+            LayoutBlocks(request, request.Blocks, contentWidth, 0d, rootPathPrefix, ref state);
+
+            var measuredHeight = state.ConsumedHeight;
+            var measuredWidth = GetMaxRight(state.Lines, state.Decorations);
+            var fitsHeight = measuredHeight <= contentHeight + 0.0001d;
+            var fitsWidth = measuredWidth <= contentWidth + 0.0001d;
+            var hasFontIssues = state.Issues.Any(x => x.Kind is TextLayoutIssueKind.MissingFamily or TextLayoutIssueKind.MissingWeight or TextLayoutIssueKind.MissingGlyph);
+
+            var status = hasFontIssues
+                ? TextLayoutStatus.Error
+                : (!fitsWidth || !fitsHeight || state.HadOverflow ? TextLayoutStatus.Overflow : TextLayoutStatus.Success);
+
+            if (status == TextLayoutStatus.Overflow && request.OverflowMode == TextOverflowMode.Error)
+            {
+                state.Issues.Add(new TextLayoutIssue(TextLayoutIssueKind.Overflow, "Text content exceeds the target text box."));
+                status = TextLayoutStatus.Error;
+            }
+
+            var clipToViewport = request.OverflowMode is TextOverflowMode.Clip or TextOverflowMode.Fragment;
+            var renderedLines = clipToViewport && request.VerticalAlignment == TextVerticalAlignment.Top
+                ? ClipLines(contentHeight, state.Lines)
+                : state.Lines.ToList();
+            var renderedDecorationIntents = clipToViewport && request.VerticalAlignment == TextVerticalAlignment.Top
+                ? ClipDecorations(contentHeight, state.Decorations)
+                : state.Decorations.ToList();
+
+            if ((!fitsWidth || !fitsHeight) && status != TextLayoutStatus.Error)
+            {
+                state.Issues.Add(new TextLayoutIssue(TextLayoutIssueKind.Overflow, "Text content exceeds the target text box."));
+            }
+
+            var renderedContentHeight = Math.Max(GetMaxBottom(renderedLines), GetMaxBottom(renderedDecorationIntents));
+            ApplyVerticalAlignment(request, renderedLines, renderedDecorationIntents, renderedContentHeight, contentHeight);
+            if (clipToViewport && request.VerticalAlignment != TextVerticalAlignment.Top)
+            {
+                renderedLines = ClipPositionedLines(0d, contentHeight, renderedLines);
+                renderedDecorationIntents = ClipPositionedDecorations(0d, contentHeight, renderedDecorationIntents);
+            }
+
+            renderedContentHeight = Math.Max(GetMaxBottom(renderedLines), GetMaxBottom(renderedDecorationIntents));
+            var renderedContentWidth = Math.Max(GetMaxRight(renderedLines), GetMaxRight(renderedDecorationIntents));
+            OffsetLines(renderedLines, requestEdges.Insets.Left, requestEdges.Insets.Top);
+            OffsetDecorations(renderedDecorationIntents, requestEdges.Insets.Left, requestEdges.Insets.Top);
+
+            return new TextBoxLayoutResult
+            {
+                Status = status,
+                FitsWidth = fitsWidth,
+                FitsHeight = fitsHeight,
+                MeasuredWidth = measuredWidth + requestEdges.HorizontalInset,
+                MeasuredHeight = measuredHeight + requestEdges.VerticalInset,
+                RenderedWidth = renderedContentWidth + requestEdges.HorizontalInset,
+                RenderedHeight = renderedContentHeight + requestEdges.VerticalInset,
+                BoxStyle = request.BoxStyle,
+                Lines = renderedLines,
+                Issues = state.Issues.ToArray(),
+                Decorations = renderedDecorationIntents.Select(TextLayoutDecorationIntentMapper.ToDecoration).ToArray()
+            };
         }
-
-        var clipToViewport = request.OverflowMode is TextOverflowMode.Clip or TextOverflowMode.Fragment;
-        var renderedLines = clipToViewport && request.VerticalAlignment == TextVerticalAlignment.Top
-            ? ClipLines(contentHeight, state.Lines)
-            : state.Lines.ToList();
-        var renderedDecorationIntents = clipToViewport && request.VerticalAlignment == TextVerticalAlignment.Top
-            ? ClipDecorations(contentHeight, state.Decorations)
-            : state.Decorations.ToList();
-
-        if ((!fitsWidth || !fitsHeight) && status != TextLayoutStatus.Error)
+        finally
         {
-            state.Issues.Add(new TextLayoutIssue(TextLayoutIssueKind.Overflow, "Text content exceeds the target text box."));
+            if (context is null)
+            {
+                analysisContext.Dispose();
+            }
         }
-
-        var renderedContentHeight = Math.Max(GetMaxBottom(renderedLines), GetMaxBottom(renderedDecorationIntents));
-        ApplyVerticalAlignment(request, renderedLines, renderedDecorationIntents, renderedContentHeight, contentHeight);
-        if (clipToViewport && request.VerticalAlignment != TextVerticalAlignment.Top)
-        {
-            renderedLines = ClipPositionedLines(0d, contentHeight, renderedLines);
-            renderedDecorationIntents = ClipPositionedDecorations(0d, contentHeight, renderedDecorationIntents);
-        }
-
-        renderedContentHeight = Math.Max(GetMaxBottom(renderedLines), GetMaxBottom(renderedDecorationIntents));
-        var renderedContentWidth = Math.Max(GetMaxRight(renderedLines), GetMaxRight(renderedDecorationIntents));
-        OffsetLines(renderedLines, requestEdges.Insets.Left, requestEdges.Insets.Top);
-        OffsetDecorations(renderedDecorationIntents, requestEdges.Insets.Left, requestEdges.Insets.Top);
-
-        return new TextBoxLayoutResult
-        {
-            Status = status,
-            FitsWidth = fitsWidth,
-            FitsHeight = fitsHeight,
-            MeasuredWidth = measuredWidth + requestEdges.HorizontalInset,
-            MeasuredHeight = measuredHeight + requestEdges.VerticalInset,
-            RenderedWidth = renderedContentWidth + requestEdges.HorizontalInset,
-            RenderedHeight = renderedContentHeight + requestEdges.VerticalInset,
-            BoxStyle = request.BoxStyle,
-            Lines = renderedLines,
-            Issues = state.Issues.ToArray(),
-            Decorations = renderedDecorationIntents.Select(TextLayoutDecorationIntentMapper.ToDecoration).ToArray()
-        };
     }
 
     public RichTextBoxFitResult Fit(RichTextBoxLayoutRequest request)
+        => Fit(request, context: null);
+
+    public RichTextBoxFitResult Fit(RichTextBoxLayoutRequest request, TextLayoutAnalysisContext? context)
     {
         ArgumentNullException.ThrowIfNull(request);
         ArgumentNullException.ThrowIfNull(request.FontLibrary);
@@ -309,9 +329,9 @@ public sealed class RichTextBoxLayoutEngine
             };
         }
 
-        var outcome = FitBlocks(request, request.Blocks, contentWidth, contentHeight, "Blocks");
+        var outcome = FitBlocks(request, request.Blocks, contentWidth, contentHeight, "Blocks", context);
         var fittingRequest = request with { Blocks = outcome.FittedBlocks };
-        var fittingLayout = new RichTextBoxLayoutEngine().Layout(fittingRequest);
+        var fittingLayout = new RichTextBoxLayoutEngine().Layout(fittingRequest, context);
         var fittingSlice = new RichContentSlice(
             outcome.FittedBlocks,
             0,
@@ -354,7 +374,8 @@ public sealed class RichTextBoxLayoutEngine
         IReadOnlyList<RichTextBlock> blocks,
         double contentWidth,
         double availableHeight,
-        string pathPrefix)
+        string pathPrefix,
+        TextLayoutAnalysisContext? context = null)
     {
         var fitted = new List<RichTextBlock>();
         var remainder = new List<RichTextBlock>();
@@ -377,8 +398,8 @@ public sealed class RichTextBoxLayoutEngine
                 return new BlockFitOutcome(fitted, remainder, GetBreakKindForBlock(block), metadata, false, false);
             }
 
-            var candidateFitted = fitted.Concat(new[] { block }).ToArray();
-            var candidateLayout = MeasureBlocks(request, candidateFitted, contentWidth);
+            var candidateFitted = CreateCandidateBlocks(fitted, block);
+            var candidateLayout = MeasureBlocks(request, candidateFitted, contentWidth, context);
             var candidateHeight = Math.Max(0d, candidateLayout.NaturalHeight);
             if (FitsWithinAvailableHeight(candidateLayout, availableHeight))
             {
@@ -417,8 +438,8 @@ public sealed class RichTextBoxLayoutEngine
             var split = SplitBlock(request, block, contentWidth, remainingHeight, path);
             if (split.FittedBlock is not null)
             {
-                var splitCandidate = fitted.Concat(new[] { split.FittedBlock }).ToArray();
-                var splitCandidateLayout = MeasureBlocks(request, splitCandidate, contentWidth);
+                var splitCandidate = CreateCandidateBlocks(fitted, split.FittedBlock);
+                var splitCandidateLayout = MeasureBlocks(request, splitCandidate, contentWidth, context);
                 var splitCandidateHeight = Math.Max(0d, splitCandidateLayout.NaturalHeight);
                 if (FitsWithinAvailableHeight(splitCandidateLayout, availableHeight))
                 {
@@ -460,6 +481,18 @@ public sealed class RichTextBoxLayoutEngine
         }
 
         return new BlockFitOutcome(fitted, remainder, TextBreakKind.None, metadata, false, false);
+    }
+
+    private static RichTextBlock[] CreateCandidateBlocks(List<RichTextBlock> fitted, RichTextBlock block)
+    {
+        var candidate = new RichTextBlock[fitted.Count + 1];
+        for (var i = 0; i < fitted.Count; i++)
+        {
+            candidate[i] = fitted[i];
+        }
+
+        candidate[^1] = block;
+        return candidate;
     }
 
     private static BlockSplitOutcome SplitBlock(
@@ -657,7 +690,7 @@ public sealed class RichTextBoxLayoutEngine
 
         if (children.Count == 0)
         {
-            AddBoxStyleDecorations(state.Decorations, xOffset, state.ConsumedHeight, outerWidth, boxEdges.VerticalInset, computedContainerStyle.Box);
+            AddBoxStyleDecorations(state.Decorations, xOffset, state.ConsumedHeight, outerWidth, boxEdges.VerticalInset, computedContainerStyle.Box, path);
             state.ConsumedHeight += boxEdges.VerticalInset + computedContainerStyle.MarginBlockEnd;
             return;
         }
@@ -720,7 +753,7 @@ public sealed class RichTextBoxLayoutEngine
                         Math.Max(1d, rowInnerHeight - childEdges.VerticalInset),
                         children[i].VerticalAlignment,
                         true,
-                        context: null,
+                        state.AnalysisContext,
                         pathPrefix: $"{path}.Children[{i}].Blocks");
                     childLayouts.Add(layout);
                     childHeights[i] = rowInnerHeight;
@@ -741,7 +774,7 @@ public sealed class RichTextBoxLayoutEngine
                         LargeLayoutHeight,
                         TextVerticalAlignment.Top,
                         false,
-                        context: null,
+                        state.AnalysisContext,
                         pathPrefix: $"{path}.Children[{i}].Blocks");
                     initialLayouts.Add(layout);
                     childHeights[i] = layout.NaturalHeight + childEdges.VerticalInset;
@@ -766,7 +799,7 @@ public sealed class RichTextBoxLayoutEngine
                         Math.Max(1d, rowInnerHeight - childEdges.VerticalInset),
                         children[i].VerticalAlignment,
                         false,
-                        context: null,
+                        state.AnalysisContext,
                         pathPrefix: $"{path}.Children[{i}].Blocks");
                     childLayouts.Add(layout);
                     state.Issues.AddRange(layout.Layout.Issues);
@@ -775,7 +808,7 @@ public sealed class RichTextBoxLayoutEngine
             }
 
             var outerHeight = rowInnerHeight + boxEdges.VerticalInset;
-            AddBoxStyleDecorations(state.Decorations, xOffset, containerTop, outerWidth, outerHeight, computedContainerStyle.Box);
+            AddBoxStyleDecorations(state.Decorations, xOffset, containerTop, outerWidth, outerHeight, computedContainerStyle.Box, path);
 
             var childX = xOffset + insetLeft;
             for (var i = 0; i < children.Count; i++)
@@ -784,7 +817,7 @@ public sealed class RichTextBoxLayoutEngine
                 var childEdges = resolvedChildBoxStyle.Edges;
                 if (children[i].BoxStyle is not null)
                 {
-                    AddBoxStyleDecorations(state.Decorations, childX, containerTop + insetTop, childWidths[i], rowInnerHeight, resolvedChildBoxStyle);
+                    AddBoxStyleDecorations(state.Decorations, childX, containerTop + insetTop, childWidths[i], rowInnerHeight, resolvedChildBoxStyle, $"{path}.Children[{i}]");
                 }
 
                 AppendLines(state.Lines, childLayouts[i].Layout.Lines, containerTop + insetTop + childEdges.Insets.Top, childX + childEdges.Insets.Left);
@@ -846,7 +879,7 @@ public sealed class RichTextBoxLayoutEngine
                         Math.Max(1d, childHeights[i] - childEdges.VerticalInset),
                         children[i].VerticalAlignment,
                         true,
-                        context: null,
+                        state.AnalysisContext,
                         pathPrefix: $"{path}.Children[{i}].Blocks");
                     childLayouts.Add(layout);
                     state.Issues.AddRange(layout.Layout.Issues);
@@ -866,7 +899,7 @@ public sealed class RichTextBoxLayoutEngine
                         childHeight.HasValue ? Math.Max(1d, childHeight.Value - childEdges.VerticalInset) : LargeLayoutHeight,
                         childHeight.HasValue ? children[i].VerticalAlignment : TextVerticalAlignment.Top,
                         false,
-                        context: null,
+                        state.AnalysisContext,
                         pathPrefix: $"{path}.Children[{i}].Blocks");
                     childLayouts.Add(layout);
                     childHeights[i] = childHeight ?? (layout.NaturalHeight + childEdges.VerticalInset);
@@ -877,7 +910,7 @@ public sealed class RichTextBoxLayoutEngine
 
             var innerHeight = childHeights.Sum() + (gap * Math.Max(0, children.Count - 1));
             var outerHeight = fixedHeight ?? (innerHeight + boxEdges.VerticalInset);
-            AddBoxStyleDecorations(state.Decorations, xOffset, containerTop, outerWidth, outerHeight, computedContainerStyle.Box);
+            AddBoxStyleDecorations(state.Decorations, xOffset, containerTop, outerWidth, outerHeight, computedContainerStyle.Box, path);
 
             var childY = containerTop + insetTop;
             for (var i = 0; i < children.Count; i++)
@@ -886,7 +919,7 @@ public sealed class RichTextBoxLayoutEngine
                 var childEdges = resolvedChildBoxStyle.Edges;
                 if (children[i].BoxStyle is not null)
                 {
-                    AddBoxStyleDecorations(state.Decorations, xOffset + insetLeft, childY, innerWidth, childHeights[i], resolvedChildBoxStyle);
+                    AddBoxStyleDecorations(state.Decorations, xOffset + insetLeft, childY, innerWidth, childHeights[i], resolvedChildBoxStyle, $"{path}.Children[{i}]");
                 }
 
                 AppendLines(state.Lines, childLayouts[i].Layout.Lines, childY + childEdges.Insets.Top, xOffset + insetLeft + childEdges.Insets.Left);
@@ -1015,7 +1048,7 @@ public sealed class RichTextBoxLayoutEngine
 
         var tableWidth = columnWidths.Sum();
         var tableHeight = rowHeights.Sum();
-        AddTableDecorations(state.Decorations, tableStyle, measuredCells, columnLefts, rowTops, rowHeights, tableWidth, tableHeight, xOffset, state.ConsumedHeight);
+        AddTableDecorations(state.Decorations, tableStyle, measuredCells, columnLefts, rowTops, rowHeights, tableWidth, tableHeight, xOffset, state.ConsumedHeight, "Blocks");
 
         foreach (var cell in measuredCells)
         {
@@ -1335,17 +1368,19 @@ public sealed class RichTextBoxLayoutEngine
         double tableWidth,
         double tableHeight,
         double tableLeft,
-        double tableTop)
+        double tableTop,
+        string tablePath)
     {
         if (tableStyle.BackgroundColor is TextColor tableBackground)
         {
-            decorations.Add(new FillRectDecorationIntent(tableLeft, tableTop, tableWidth, tableHeight, tableBackground));
+            decorations.Add(new FillRectDecorationIntent(tableLeft, tableTop, tableWidth, tableHeight, tableBackground, SourcePath: tablePath));
         }
 
         foreach (var cell in cells)
         {
             var width = GetCellWidth(columnLefts, tableLeft + tableWidth, cell.Placement.ColumnIndex, cell.Placement.ColSpan);
             var height = Sum(rowHeights, cell.Placement.RowIndex, cell.Placement.RowSpan);
+            var cellPath = $"{tablePath}.Rows[{cell.Placement.RowIndex}].Cells[{cell.Placement.CellIndex}]";
 
             if (cell.Placement.Cell.Style?.BackgroundColor is not TextColor background)
             {
@@ -1357,7 +1392,8 @@ public sealed class RichTextBoxLayoutEngine
                         width,
                         height,
                         tableStyle.CellBorder.Color ?? new TextColor(0, 0, 0),
-                        tableStyle.CellBorder.MaxWidth));
+                        tableStyle.CellBorder.MaxWidth,
+                        SourcePath: cellPath));
                 }
 
                 continue;
@@ -1368,7 +1404,8 @@ public sealed class RichTextBoxLayoutEngine
                 rowTops[cell.Placement.RowIndex],
                 width,
                 height,
-                background));
+                background,
+                SourcePath: cellPath));
             if (tableStyle.CellBorder.HasVisibleStroke)
             {
                 decorations.Add(new StrokeRectDecorationIntent(
@@ -1377,13 +1414,14 @@ public sealed class RichTextBoxLayoutEngine
                     width,
                     height,
                     tableStyle.CellBorder.Color ?? new TextColor(0, 0, 0),
-                    tableStyle.CellBorder.MaxWidth));
+                    tableStyle.CellBorder.MaxWidth,
+                    SourcePath: cellPath));
             }
         }
 
         if (!tableStyle.CellBorder.HasVisibleStroke && tableStyle.Border.HasVisibleStroke)
         {
-            AddRectBorder(decorations, tableLeft, tableTop, tableWidth, tableHeight, tableStyle.Border.Color ?? new TextColor(0, 0, 0), tableStyle.Border.MaxWidth);
+            AddRectBorder(decorations, tableLeft, tableTop, tableWidth, tableHeight, tableStyle.Border.Color ?? new TextColor(0, 0, 0), tableStyle.Border.MaxWidth, tablePath);
         }
     }
 
@@ -1395,12 +1433,12 @@ public sealed class RichTextBoxLayoutEngine
         return end - start;
     }
 
-    private static void AddRectBorder(List<TextLayoutDecorationIntent> decorations, double x, double y, double width, double height, TextColor color, double thickness)
+    private static void AddRectBorder(List<TextLayoutDecorationIntent> decorations, double x, double y, double width, double height, TextColor color, double thickness, string? sourcePath = null)
     {
-        decorations.Add(new LineDecorationIntent(x, y, x + width, y, color, thickness));
-        decorations.Add(new LineDecorationIntent(x, y + height, x + width, y + height, color, thickness));
-        decorations.Add(new LineDecorationIntent(x, y, x, y + height, color, thickness));
-        decorations.Add(new LineDecorationIntent(x + width, y, x + width, y + height, color, thickness));
+        decorations.Add(new LineDecorationIntent(x, y, x + width, y, color, thickness, sourcePath));
+        decorations.Add(new LineDecorationIntent(x, y + height, x + width, y + height, color, thickness, sourcePath));
+        decorations.Add(new LineDecorationIntent(x, y, x, y + height, color, thickness, sourcePath));
+        decorations.Add(new LineDecorationIntent(x + width, y, x + width, y + height, color, thickness, sourcePath));
     }
 
     private static BlockLayoutResult MeasureSegments(
@@ -1409,7 +1447,8 @@ public sealed class RichTextBoxLayoutEngine
         TextHorizontalAlignment alignment,
         double width,
         bool preserveTrailingWhitespaceInWidth = false,
-        bool useFallbackFamilies = false)
+        bool useFallbackFamilies = false,
+        TextLayoutAnalysisContext? context = null)
     {
         var constraints = new LayoutConstraints(Math.Max(1d, width), LargeLayoutHeight, TextOverflowMode.Visible, ClipToHeight: false);
         var fallbackFamilies = useFallbackFamilies
@@ -1435,7 +1474,7 @@ public sealed class RichTextBoxLayoutEngine
         };
 
         var engine = new TextBoxLayoutEngine();
-        return new BlockLayoutResult(engine.Layout(childRequest), constraints);
+        return new BlockLayoutResult(engine.Layout(childRequest, context), constraints);
     }
 
     private static BlockLayoutResult MeasureBlocks(
@@ -1470,7 +1509,11 @@ public sealed class RichTextBoxLayoutEngine
             MetricPreference = parentRequest.MetricPreference
         };
 
-        var measured = new BlockLayoutResult(RemapLayoutSourcePaths(new RichTextBoxLayoutEngine().Layout(childRequest), pathPrefix), constraints);
+        var measuredLayout = LayoutInternal(childRequest, context, pathPrefix);
+        var measured = new BlockLayoutResult(
+            measuredLayout,
+            constraints,
+            context is null ? null : RichMeasurementGraphBuilder.Build(blocks, measuredLayout, pathPrefix));
         context?.IntrinsicMeasurements.Set(
             cacheKey,
             new IntrinsicMeasurementCacheEntry
@@ -1484,57 +1527,6 @@ public sealed class RichTextBoxLayoutEngine
 
     private static bool FitsWithinAvailableHeight(BlockLayoutResult layout, double availableHeight)
         => layout.VisibleHeight <= availableHeight + 0.0001d;
-
-    private static TextBoxLayoutResult RemapLayoutSourcePaths(TextBoxLayoutResult layout, string pathPrefix)
-    {
-        if (pathPrefix == "Blocks")
-        {
-            return layout;
-        }
-
-        var lines = new TextLayoutLine[layout.Lines.Count];
-        for (var i = 0; i < layout.Lines.Count; i++)
-        {
-            var line = layout.Lines[i];
-            var runs = new TextLayoutRun[line.Runs.Count];
-            for (var j = 0; j < line.Runs.Count; j++)
-            {
-                var run = line.Runs[j];
-                runs[j] = run with { SourcePath = RemapSourcePath(run.SourcePath, pathPrefix) };
-            }
-
-            lines[i] = line with { Runs = runs };
-        }
-
-        return new TextBoxLayoutResult
-        {
-            Status = layout.Status,
-            FitsWidth = layout.FitsWidth,
-            FitsHeight = layout.FitsHeight,
-            MeasuredWidth = layout.MeasuredWidth,
-            MeasuredHeight = layout.MeasuredHeight,
-            RenderedWidth = layout.RenderedWidth,
-            RenderedHeight = layout.RenderedHeight,
-            BoxStyle = layout.BoxStyle,
-            Lines = lines,
-            Issues = layout.Issues,
-            Decorations = layout.Decorations
-        };
-    }
-
-    private static string? RemapSourcePath(string? sourcePath, string pathPrefix)
-    {
-        if (string.IsNullOrEmpty(sourcePath))
-        {
-            return sourcePath;
-        }
-
-        return sourcePath == "Blocks"
-            ? pathPrefix
-            : sourcePath.StartsWith("Blocks[", StringComparison.Ordinal)
-                ? pathPrefix + sourcePath["Blocks".Length..]
-                : sourcePath;
-    }
 
     private static BlockLayoutResult MeasureChildBlocks(
         RichTextBoxLayoutRequest parentRequest,
@@ -1577,7 +1569,11 @@ public sealed class RichTextBoxLayoutEngine
             MetricPreference = parentRequest.MetricPreference
         };
 
-        var measured = new BlockLayoutResult(RemapLayoutSourcePaths(new RichTextBoxLayoutEngine().Layout(childRequest), pathPrefix), constraints);
+        var measuredLayout = LayoutInternal(childRequest, context, pathPrefix);
+        var measured = new BlockLayoutResult(
+            measuredLayout,
+            constraints,
+            context is null ? null : RichMeasurementGraphBuilder.Build(child.Blocks, measuredLayout, pathPrefix));
         if (!constrainHeight)
         {
             context?.IntrinsicMeasurements.Set(
@@ -1648,10 +1644,10 @@ public sealed class RichTextBoxLayoutEngine
         return sizes;
     }
 
-    private static void AddBoxStyleDecorations(List<TextLayoutDecorationIntent> decorations, double x, double y, double width, double height, TextBoxStyle style)
-        => AddBoxStyleDecorations(decorations, x, y, width, height, StyleResolver.Resolve(style));
+    private static void AddBoxStyleDecorations(List<TextLayoutDecorationIntent> decorations, double x, double y, double width, double height, TextBoxStyle style, string? sourcePath = null)
+        => AddBoxStyleDecorations(decorations, x, y, width, height, StyleResolver.Resolve(style), sourcePath);
 
-    private static void AddBoxStyleDecorations(List<TextLayoutDecorationIntent> decorations, double x, double y, double width, double height, ComputedBoxStyle style)
+    private static void AddBoxStyleDecorations(List<TextLayoutDecorationIntent> decorations, double x, double y, double width, double height, ComputedBoxStyle style, string? sourcePath = null)
     {
         if (width <= 0d || height <= 0d)
         {
@@ -1660,12 +1656,12 @@ public sealed class RichTextBoxLayoutEngine
 
         if (style.BackgroundColor is TextColor background)
         {
-            decorations.Add(new FillRectDecorationIntent(x, y, width, height, background, style.BorderRadius));
+            decorations.Add(new FillRectDecorationIntent(x, y, width, height, background, style.BorderRadius, sourcePath));
         }
 
         if (style.Border.HasVisibleStroke)
         {
-            decorations.Add(new StrokeRectDecorationIntent(x, y, width, height, style.Border.Color ?? new TextColor(0, 0, 0), style.Border.MaxWidth, style.BorderRadius));
+            decorations.Add(new StrokeRectDecorationIntent(x, y, width, height, style.Border.Color ?? new TextColor(0, 0, 0), style.Border.MaxWidth, style.BorderRadius, sourcePath));
         }
     }
 
@@ -1862,10 +1858,11 @@ public sealed class RichTextBoxLayoutEngine
 
     private static TextLayoutPlanNode BuildRichPlanRoot(RichTextBoxLayoutRequest request, TextBoxLayoutResult layout, TextLayoutAnalysisContext? context)
     {
+        using var rootGraph = RichMeasurementGraphBuilder.Build(request.Blocks, layout, "Blocks");
         var childNodes = new TextLayoutPlanNode[request.Blocks.Count];
         for (var i = 0; i < request.Blocks.Count; i++)
         {
-            childNodes[i] = BuildRichPlanNode(request, layout, request.Blocks[i], $"Blocks[{i}]", context);
+            childNodes[i] = BuildRichPlanNode(request, layout, rootGraph, request.Blocks[i], $"Blocks[{i}]", context);
         }
 
         return new TextLayoutPlanNode
@@ -1880,19 +1877,23 @@ public sealed class RichTextBoxLayoutEngine
         };
     }
 
-    private static TextLayoutPlanNode BuildRichPlanNode(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichTextBlock block, string path, TextLayoutAnalysisContext? context)
+    private static TextLayoutPlanNode BuildRichPlanNode(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, RichTextBlock block, string path, TextLayoutAnalysisContext? context)
     {
         var formatter = GetFormatter(block);
-        var blockLayout = MeasureBlocks(request, new[] { block }, GetContentWidth(request), context, path);
-        var children = formatter.BuildPlanChildren(request, rootLayout, block, path, context);
-        var (startLineIndex, endLineIndexExclusive) = GetLineRange(children);
+        var children = formatter.BuildPlanChildren(request, rootLayout, rootGraph, block, path, context);
+        var (naturalSize, visibleSize) = TryGetNodeSizes(rootGraph, path, out var descriptor)
+            ? (new TextLayoutSize(descriptor.NaturalWidth, descriptor.NaturalHeight), new TextLayoutSize(descriptor.VisibleWidth, descriptor.VisibleHeight))
+            : GetNaturalVisibleSizes(MeasureBlocks(request, new[] { block }, GetContentWidth(request), context, path));
+        var (startLineIndex, endLineIndexExclusive) = descriptor.StartLineIndex >= 0
+            ? ((int?)descriptor.StartLineIndex, (int?)descriptor.EndLineIndexExclusive)
+            : GetLineRange(children);
 
         return new TextLayoutPlanNode
         {
             Kind = formatter.NodeKind,
             Source = CreateBlockSourceReference(path, block, children),
-            NaturalSize = blockLayout.NaturalSize,
-            VisibleSize = blockLayout.VisibleSize,
+            NaturalSize = naturalSize,
+            VisibleSize = visibleSize,
             Children = children,
             StartLineIndex = startLineIndex,
             EndLineIndexExclusive = endLineIndexExclusive,
@@ -1908,26 +1909,46 @@ public sealed class RichTextBoxLayoutEngine
             _ => null
         };
 
-    private static IReadOnlyList<TextLayoutPlanNode> BuildListItemNodes(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, IReadOnlyList<ListItemBlock> items, string parentPath, TextLayoutAnalysisContext? context)
+    private static bool TryGetNodeSizes(RichMeasurementGraph? graph, string path, out RichMeasurementNodeDescriptor descriptor)
+    {
+        if (graph is not null && graph.TryGetNode(path, out descriptor))
+        {
+            return true;
+        }
+
+        descriptor = default;
+        return false;
+    }
+
+    private static (TextLayoutSize NaturalSize, TextLayoutSize VisibleSize) GetNaturalVisibleSizes(BlockLayoutResult layout)
+        => (layout.NaturalSize, layout.VisibleSize);
+
+    private static IReadOnlyList<TextLayoutPlanNode> BuildListItemNodes(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, IReadOnlyList<ListItemBlock> items, string parentPath, TextLayoutAnalysisContext? context)
     {
         var nodes = new TextLayoutPlanNode[items.Count];
         for (var i = 0; i < items.Count; i++)
         {
             var item = items[i];
-            var childLayout = MeasureBlocks(request, item.Blocks, GetContentWidth(request), context, $"{parentPath}.Items[{i}].Blocks");
+            var itemPath = $"{parentPath}.Items[{i}]";
             var blockChildren = new TextLayoutPlanNode[item.Blocks.Count];
             for (var j = 0; j < item.Blocks.Count; j++)
             {
-                blockChildren[j] = BuildRichPlanNode(request, rootLayout, item.Blocks[j], $"{parentPath}.Items[{i}].Blocks[{j}]", context);
+                blockChildren[j] = BuildRichPlanNode(request, rootLayout, rootGraph, item.Blocks[j], $"{itemPath}.Blocks[{j}]", context);
             }
-            var (startLineIndex, endLineIndexExclusive) = GetLineRange(blockChildren);
+
+            var (naturalSize, visibleSize) = TryGetNodeSizes(rootGraph, itemPath, out var descriptor)
+                ? (new TextLayoutSize(descriptor.NaturalWidth, descriptor.NaturalHeight), new TextLayoutSize(descriptor.VisibleWidth, descriptor.VisibleHeight))
+                : GetNaturalVisibleSizes(MeasureBlocks(request, item.Blocks, GetContentWidth(request), context, $"{itemPath}.Blocks"));
+            var (startLineIndex, endLineIndexExclusive) = descriptor.StartLineIndex >= 0
+                ? ((int?)descriptor.StartLineIndex, (int?)descriptor.EndLineIndexExclusive)
+                : GetLineRange(blockChildren);
 
             nodes[i] = new TextLayoutPlanNode
             {
                 Kind = TextLayoutNodeKind.ListItem,
-                Source = CreateAggregateSourceReference($"{parentPath}.Items[{i}]", blockChildren, item.Id.Value),
-                NaturalSize = childLayout.NaturalSize,
-                VisibleSize = childLayout.VisibleSize,
+                Source = CreateAggregateSourceReference(itemPath, blockChildren, item.Id.Value),
+                NaturalSize = naturalSize,
+                VisibleSize = visibleSize,
                 Children = blockChildren,
                 StartLineIndex = startLineIndex,
                 EndLineIndexExclusive = endLineIndexExclusive
@@ -1937,50 +1958,56 @@ public sealed class RichTextBoxLayoutEngine
         return nodes;
     }
 
-    private static IReadOnlyList<TextLayoutPlanNode> BuildTableNodes(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, TableBlock table, string parentPath, TextLayoutAnalysisContext? context)
+    private static IReadOnlyList<TextLayoutPlanNode> BuildTableNodes(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, TableBlock table, string parentPath, TextLayoutAnalysisContext? context)
     {
         var rowNodes = new TextLayoutPlanNode[table.Rows.Count];
         for (var rowIndex = 0; rowIndex < table.Rows.Count; rowIndex++)
         {
             var row = table.Rows[rowIndex];
+            var rowPath = $"{parentPath}.Rows[{rowIndex}]";
             var cellNodes = new TextLayoutPlanNode[row.Cells.Count];
             for (var cellIndex = 0; cellIndex < row.Cells.Count; cellIndex++)
             {
                 var cell = row.Cells[cellIndex];
-                var cellBlocks = new ColumnBlock(cell.Blocks.Select(x => new LayoutChild(new[] { x })).ToArray(), null, new LayoutContainerStyle());
-                var cellLayout = MeasureBlocks(request, new RichTextBlock[] { cellBlocks }, GetContentWidth(request), context, $"{parentPath}.Rows[{rowIndex}].Cells[{cellIndex}].Blocks");
+                var cellPath = $"{rowPath}.Cells[{cellIndex}]";
                 var blockChildren = new TextLayoutPlanNode[cell.Blocks.Count];
                 for (var blockIndex = 0; blockIndex < cell.Blocks.Count; blockIndex++)
                 {
-                    blockChildren[blockIndex] = BuildRichPlanNode(request, rootLayout, cell.Blocks[blockIndex], $"{parentPath}.Rows[{rowIndex}].Cells[{cellIndex}].Blocks[{blockIndex}]", context);
+                    blockChildren[blockIndex] = BuildRichPlanNode(request, rootLayout, rootGraph, cell.Blocks[blockIndex], $"{cellPath}.Blocks[{blockIndex}]", context);
                 }
-                var (cellStartLineIndex, cellEndLineIndexExclusive) = GetLineRange(blockChildren);
+
+                var (cellNaturalSize, cellVisibleSize) = TryGetNodeSizes(rootGraph, cellPath, out var cellDescriptor)
+                    ? (new TextLayoutSize(cellDescriptor.NaturalWidth, cellDescriptor.NaturalHeight), new TextLayoutSize(cellDescriptor.VisibleWidth, cellDescriptor.VisibleHeight))
+                    : GetNaturalVisibleSizes(MeasureBlocks(request, new RichTextBlock[] { new ColumnBlock(cell.Blocks.Select(x => new LayoutChild(new[] { x })).ToArray(), null, new LayoutContainerStyle()) }, GetContentWidth(request), context, $"{cellPath}.Blocks"));
+                var (cellStartLineIndex, cellEndLineIndexExclusive) = cellDescriptor.StartLineIndex >= 0
+                    ? ((int?)cellDescriptor.StartLineIndex, (int?)cellDescriptor.EndLineIndexExclusive)
+                    : GetLineRange(blockChildren);
 
                 cellNodes[cellIndex] = new TextLayoutPlanNode
                 {
                     Kind = TextLayoutNodeKind.TableCell,
-                    Source = CreateAggregateSourceReference($"{parentPath}.Rows[{rowIndex}].Cells[{cellIndex}]", blockChildren, cell.Id.Value),
-                    NaturalSize = cellLayout.NaturalSize,
-                    VisibleSize = cellLayout.VisibleSize,
+                    Source = CreateAggregateSourceReference(cellPath, blockChildren, cell.Id.Value),
+                    NaturalSize = cellNaturalSize,
+                    VisibleSize = cellVisibleSize,
                     Children = blockChildren,
                     StartLineIndex = cellStartLineIndex,
                     EndLineIndexExclusive = cellEndLineIndexExclusive
                 };
             }
 
-            var rowLayout = MeasureBlocks(
-                request,
-                new RichTextBlock[] { CreateTableFragment(table, Array.Empty<TableRowBlock>(), new[] { row }, Array.Empty<TableRowBlock>()) },
-                GetContentWidth(request),
-                context,
-                $"{parentPath}.Rows[{rowIndex}]");
-            var (rowStartLineIndex, rowEndLineIndexExclusive) = GetLineRange(cellNodes);
+            var (rowNaturalSize, rowVisibleSize) = TryGetNodeSizes(rootGraph, rowPath, out var rowDescriptor)
+                ? (new TextLayoutSize(rowDescriptor.NaturalWidth, rowDescriptor.NaturalHeight), new TextLayoutSize(rowDescriptor.VisibleWidth, rowDescriptor.VisibleHeight))
+                : GetNaturalVisibleSizes(MeasureBlocks(request, new RichTextBlock[] { CreateTableFragment(table, Array.Empty<TableRowBlock>(), new[] { row }, Array.Empty<TableRowBlock>()) }, GetContentWidth(request), context, rowPath));
+            var (rowStartLineIndex, rowEndLineIndexExclusive) = rowDescriptor.StartLineIndex >= 0
+                ? ((int?)rowDescriptor.StartLineIndex, (int?)rowDescriptor.EndLineIndexExclusive)
+                : GetLineRange(cellNodes);
+
             rowNodes[rowIndex] = new TextLayoutPlanNode
             {
                 Kind = TextLayoutNodeKind.TableRow,
-                Source = CreateAggregateSourceReference($"{parentPath}.Rows[{rowIndex}]", cellNodes, row.Id.Value),
-                NaturalSize = rowLayout.NaturalSize,
-                VisibleSize = rowLayout.VisibleSize,
+                Source = CreateAggregateSourceReference(rowPath, cellNodes, row.Id.Value),
+                NaturalSize = rowNaturalSize,
+                VisibleSize = rowVisibleSize,
                 Children = cellNodes,
                 StartLineIndex = rowStartLineIndex,
                 EndLineIndexExclusive = rowEndLineIndexExclusive
@@ -1990,26 +2017,32 @@ public sealed class RichTextBoxLayoutEngine
         return rowNodes;
     }
 
-    private static IReadOnlyList<TextLayoutPlanNode> BuildLayoutChildNodes(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, IReadOnlyList<LayoutChild> children, string parentPath, TextLayoutAnalysisContext? context)
+    private static IReadOnlyList<TextLayoutPlanNode> BuildLayoutChildNodes(RichTextBoxLayoutRequest request, TextBoxLayoutResult rootLayout, RichMeasurementGraph? rootGraph, IReadOnlyList<LayoutChild> children, string parentPath, TextLayoutAnalysisContext? context)
     {
         var nodes = new TextLayoutPlanNode[children.Count];
         for (var i = 0; i < children.Count; i++)
         {
             var child = children[i];
-            var childLayout = MeasureChildBlocks(request, child, GetContentWidth(request), LargeLayoutHeight, child.VerticalAlignment, false, context, $"{parentPath}.Children[{i}].Blocks");
+            var childPath = $"{parentPath}.Children[{i}]";
             var blockChildren = new TextLayoutPlanNode[child.Blocks.Count];
             for (var j = 0; j < child.Blocks.Count; j++)
             {
-                blockChildren[j] = BuildRichPlanNode(request, rootLayout, child.Blocks[j], $"{parentPath}.Children[{i}].Blocks[{j}]", context);
+                blockChildren[j] = BuildRichPlanNode(request, rootLayout, rootGraph, child.Blocks[j], $"{childPath}.Blocks[{j}]", context);
             }
-            var (startLineIndex, endLineIndexExclusive) = GetLineRange(blockChildren);
+
+            var (naturalSize, visibleSize) = TryGetNodeSizes(rootGraph, childPath, out var descriptor)
+                ? (new TextLayoutSize(descriptor.NaturalWidth, descriptor.NaturalHeight), new TextLayoutSize(descriptor.VisibleWidth, descriptor.VisibleHeight))
+                : GetNaturalVisibleSizes(MeasureChildBlocks(request, child, GetContentWidth(request), LargeLayoutHeight, child.VerticalAlignment, false, context, $"{childPath}.Blocks"));
+            var (startLineIndex, endLineIndexExclusive) = descriptor.StartLineIndex >= 0
+                ? ((int?)descriptor.StartLineIndex, (int?)descriptor.EndLineIndexExclusive)
+                : GetLineRange(blockChildren);
 
             nodes[i] = new TextLayoutPlanNode
             {
                 Kind = TextLayoutNodeKind.LayoutChild,
-                Source = CreateAggregateSourceReference($"{parentPath}.Children[{i}]", blockChildren),
-                NaturalSize = childLayout.NaturalSize,
-                VisibleSize = childLayout.VisibleSize,
+                Source = CreateAggregateSourceReference(childPath, blockChildren),
+                NaturalSize = naturalSize,
+                VisibleSize = visibleSize,
                 Children = blockChildren,
                 StartLineIndex = startLineIndex,
                 EndLineIndexExclusive = endLineIndexExclusive
@@ -2019,15 +2052,24 @@ public sealed class RichTextBoxLayoutEngine
         return nodes;
     }
 
-    private static IReadOnlyList<TextLayoutPlanNode> BuildLineNodesForPath(TextBoxLayoutResult layout, string pathPrefix, TextLayoutAnalysisContext? context)
+    private static IReadOnlyList<TextLayoutPlanNode> BuildLineNodesForPath(TextBoxLayoutResult layout, string pathPrefix, TextLayoutAnalysisContext? context, RichMeasurementGraph? rootGraph = null)
     {
         var lineNodes = new List<TextLayoutPlanNode>();
-        foreach (var line in layout.Lines)
+        var startIndex = 0;
+        var endIndexExclusive = layout.LineCount;
+        if (rootGraph is not null && rootGraph.TryGetNode(pathPrefix, out var descriptor) && descriptor.StartLineIndex >= 0)
         {
+            startIndex = descriptor.StartLineIndex;
+            endIndexExclusive = Math.Min(layout.LineCount, descriptor.EndLineIndexExclusive);
+        }
+
+        for (var lineIndex = startIndex; lineIndex < endIndexExclusive; lineIndex++)
+        {
+            var line = layout.GetLine(lineIndex);
             var runNodes = new List<TextLayoutPlanNode>();
             foreach (var run in line.Runs)
             {
-                if (run.SourcePath is null || !run.SourcePath.StartsWith(pathPrefix, StringComparison.Ordinal))
+                if (run.SourcePath is null || !RichMeasurementGraphBuilder.MatchesPath(pathPrefix, run.SourcePath))
                 {
                     continue;
                 }
@@ -2058,7 +2100,7 @@ public sealed class RichTextBoxLayoutEngine
                 Children = runNodes,
                 StartLineIndex = line.Index,
                 EndLineIndexExclusive = line.Index + 1,
-                LineDiagnostics = TextLayoutDiagnosticsBuilder.BuildLineDiagnostics(line, context)
+                LineDiagnostics = TextLayoutDiagnosticsBuilder.BuildLineDiagnostics(layout.Lines[line.Index], context)
             });
         }
 
@@ -2088,13 +2130,16 @@ public sealed class RichTextBoxLayoutEngine
         return new TextLayoutSourceReference(path, NodeId: block.Id.Value, ContentVersion: ComputeBlockContentVersion(block), StyleVersion: ComputeBlockStyleVersion(block));
     }
 
-    private static TextLayoutSourceReference CreateRunSourceReference(TextLayoutRun run)
+    private static TextLayoutSourceReference CreateRunSourceReference(TextLayoutRunView run)
     {
         var contentVersion = new HashCode();
         contentVersion.Add(run.SourcePath, StringComparer.Ordinal);
         contentVersion.Add(run.SourceStart);
         contentVersion.Add(run.SourceLength);
-        contentVersion.Add(run.Text, StringComparer.Ordinal);
+        foreach (var ch in run.TextSpan)
+        {
+            contentVersion.Add(ch);
+        }
 
         var styleVersion = new HashCode();
         styleVersion.Add(run.FaceId, StringComparer.Ordinal);
@@ -2798,6 +2843,12 @@ public sealed class RichTextBoxLayoutEngine
 
     private sealed class LayoutState
     {
+        public LayoutState(TextLayoutAnalysisContext analysisContext)
+        {
+            AnalysisContext = analysisContext;
+        }
+
+        public TextLayoutAnalysisContext AnalysisContext { get; }
         public List<TextLayoutLine> Lines { get; } = new();
         public List<TextLayoutDecorationIntent> Decorations { get; } = new();
         public List<TextLayoutIssue> Issues { get; } = new();
@@ -2953,7 +3004,7 @@ public sealed class RichTextBoxLayoutEngine
                 var inset = tableStyle.CellBorder.MaxWidth + cellStyle.Padding.Top;
                 var innerWidth = Math.Max(1d, outerWidth - (cellStyle.Padding.Horizontal + tableStyle.CellBorder.Widths.Horizontal));
                 var cellBlocks = ApplyCellAlignment(placement.Cell, cellStyle.TextAlign);
-                var cellLayout = MeasureBlocks(request, cellBlocks, innerWidth, context: null, pathPrefix: $"{path}.Rows[{placement.RowIndex}].Cells[{placement.CellIndex}].Blocks");
+                var cellLayout = MeasureBlocks(request, cellBlocks, innerWidth, state.AnalysisContext, $"{path}.Rows[{placement.RowIndex}].Cells[{placement.CellIndex}].Blocks");
                 measuredCells.Add(new MeasuredCell(placement, cellLayout.Layout, inset, outerWidth, cellLayout.NaturalHeight + cellStyle.Padding.Vertical + tableStyle.CellBorder.Widths.Vertical));
                 state.Issues.AddRange(cellLayout.Layout.Issues);
                 state.HadOverflow |= cellLayout.Layout.Status == TextLayoutStatus.Overflow;
@@ -3031,7 +3082,7 @@ public sealed class RichTextBoxLayoutEngine
 
             var tableWidth = columnWidths.Sum();
             var tableHeight = rowHeights.Sum();
-            AddTableDecorations(state.Decorations, tableStyle, measuredCells, columnLefts, rowTops, rowHeights, tableWidth, tableHeight, xOffset, state.ConsumedHeight);
+            AddTableDecorations(state.Decorations, tableStyle, measuredCells, columnLefts, rowTops, rowHeights, tableWidth, tableHeight, xOffset, state.ConsumedHeight, path);
 
             foreach (var cell in measuredCells)
             {
@@ -3320,7 +3371,7 @@ public sealed class RichTextBoxLayoutEngine
             bool useBuiltInMarkerFont,
             ResolvedListMetrics metrics)
         {
-            var itemState = new LayoutState { NextSegmentIndex = state.NextSegmentIndex };
+            var itemState = new LayoutState(state.AnalysisContext) { NextSegmentIndex = state.NextSegmentIndex };
             var markerStyle = ResolveMarkerStyle(
                 request,
                 FindMarkerStyle(item) ?? throw new InvalidOperationException("List items require at least one text run."),
@@ -3341,7 +3392,7 @@ public sealed class RichTextBoxLayoutEngine
             };
             var markerLayout = useBuiltInMarkerFont
                 ? null
-                : MeasureSegments(request, markerSegments, TextHorizontalAlignment.Right, markerTextAreaWidth, preserveTrailingWhitespaceInWidth: true, useFallbackFamilies: true);
+                : MeasureSegments(request, markerSegments, TextHorizontalAlignment.Right, markerTextAreaWidth, preserveTrailingWhitespaceInWidth: true, useFallbackFamilies: true, context: state.AnalysisContext);
 
             var firstLine = itemState.Lines[0];
             if (useBuiltInMarkerFont)
@@ -3621,7 +3672,7 @@ public sealed class RichTextBoxLayoutEngine
         {
             state.ConsumedHeight += style.MarginBlockStart;
             var segments = CreateSegments(inlines, style, path);
-            var layout = MeasureSegments(request, segments, style.TextAlign, Math.Max(1d, contentWidth - xOffset));
+            var layout = MeasureSegments(request, segments, style.TextAlign, Math.Max(1d, contentWidth - xOffset), context: state.AnalysisContext);
             state.Issues.AddRange(layout.Layout.Issues);
 
             AppendLines(state.Lines, layout.Layout.Lines, state.ConsumedHeight, xOffset);

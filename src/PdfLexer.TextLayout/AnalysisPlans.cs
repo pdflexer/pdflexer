@@ -79,6 +79,11 @@ public sealed record TextLayoutListDiagnostics(
 public sealed class TextLayoutRenderPlan
 {
     public required TextBoxLayoutResult Layout { get; init; }
+    public int LineCount => Layout.LineCount;
+    public TextLayoutLineViewCollection LineViews => Layout.LineViews;
+    public TextLayoutLineView GetLine(int index) => Layout.GetLine(index);
+    public IReadOnlyList<TextLayoutLine> MaterializeLegacyLines() => Layout.MaterializeLegacyLines();
+    public TextBoxLayoutResult MaterializeLegacyLayout() => Layout.MaterializeLegacyLayout();
 }
 
 public sealed class TextLayoutFlattenedView
@@ -86,6 +91,11 @@ public sealed class TextLayoutFlattenedView
     public required TextBoxLayoutResult Layout { get; init; }
     public IReadOnlyList<TextLayoutLine> Lines => Layout.Lines;
     public IReadOnlyList<TextLayoutDecoration> Decorations => Layout.Decorations;
+    public int LineCount => Layout.LineCount;
+    public TextLayoutLineViewCollection LineViews => Layout.LineViews;
+    public TextLayoutLineView GetLine(int index) => Layout.GetLine(index);
+    public IReadOnlyList<TextLayoutLine> MaterializeLegacyLines() => Layout.MaterializeLegacyLines();
+    public TextBoxLayoutResult MaterializeLegacyLayout() => Layout.MaterializeLegacyLayout();
 }
 
 public sealed class TextLayoutPlanSelection
@@ -97,6 +107,11 @@ public sealed class TextLayoutPlanSelection
     public TextLayoutFragmentMetadata FragmentMetadata { get; init; } = new(TextFragmentBreak.None);
     public int? StartLineIndex { get; init; }
     public int? EndLineIndexExclusive { get; init; }
+    public int LineCount => Plan.Layout.LineCount;
+    public TextLayoutLineViewCollection LineViews => Plan.Layout.LineViews;
+    public TextLayoutLineView GetLine(int index) => Plan.Layout.GetLine(index);
+    public IReadOnlyList<TextLayoutLine> MaterializeLegacyLines() => Plan.Layout.MaterializeLegacyLines();
+    public TextBoxLayoutResult MaterializeLegacyLayout() => Plan.Layout.MaterializeLegacyLayout();
 
     public TextLayoutFlattenedView Flatten()
         => new()
@@ -161,6 +176,11 @@ public sealed class TextLayoutPagePlan
     public required TextLayoutRenderPlan RenderPlan { get; init; }
 
     public TextBoxLayoutResult Layout => RenderPlan.Layout;
+    public int LineCount => Layout.LineCount;
+    public TextLayoutLineViewCollection LineViews => Layout.LineViews;
+    public TextLayoutLineView GetLine(int index) => Layout.GetLine(index);
+    public IReadOnlyList<TextLayoutLine> MaterializeLegacyLines() => Layout.MaterializeLegacyLines();
+    public TextBoxLayoutResult MaterializeLegacyLayout() => Layout.MaterializeLegacyLayout();
 
     public TextLayoutFlattenedView Flatten()
         => new()
@@ -184,6 +204,11 @@ public sealed class TextLayoutPlan
     public required TextLayoutRenderPlan RenderPlan { get; init; }
 
     public TextBoxLayoutResult Layout => RenderPlan.Layout;
+    public int LineCount => Layout.LineCount;
+    public TextLayoutLineViewCollection LineViews => Layout.LineViews;
+    public TextLayoutLineView GetLine(int index) => Layout.GetLine(index);
+    public IReadOnlyList<TextLayoutLine> MaterializeLegacyLines() => Layout.MaterializeLegacyLines();
+    public TextBoxLayoutResult MaterializeLegacyLayout() => Layout.MaterializeLegacyLayout();
 
     public TextLayoutFlattenedView Flatten()
         => new()
@@ -788,7 +813,12 @@ public static class TextLayoutPageComposer
 
     private static TextBoxLayoutResult SliceLayout(TextBoxLayoutResult layout, int startLineIndex, int endLineIndexExclusive)
     {
-        var sourceLines = layout.Lines.Skip(startLineIndex).Take(Math.Max(0, endLineIndexExclusive - startLineIndex)).ToArray();
+        var lineCount = Math.Max(0, endLineIndexExclusive - startLineIndex);
+        var sourceLines = new TextLayoutLine[lineCount];
+        for (var i = 0; i < lineCount; i++)
+        {
+            sourceLines[i] = layout.Lines[startLineIndex + i];
+        }
         var lines = new TextLayoutLine[sourceLines.Length];
         var firstBaseline = sourceLines.Length == 0 ? 0d : sourceLines[0].BaselineY - sourceLines[0].BaselineOffset;
         double naturalWidth = 0d;
@@ -800,12 +830,14 @@ public static class TextLayoutPageComposer
             var sourceLine = sourceLines[i];
             var top = sourceLine.BaselineY - sourceLine.BaselineOffset - firstBaseline;
             var baselineY = top + sourceLine.BaselineOffset;
-            var runs = sourceLine.Runs
-                .Select(run => run with
+            var runs = new TextLayoutRun[sourceLine.Runs.Count];
+            for (var runIndex = 0; runIndex < sourceLine.Runs.Count; runIndex++)
+            {
+                runs[runIndex] = sourceLine.Runs[runIndex] with
                 {
                     BaselineY = baselineY
-                })
-                .ToArray();
+                };
+            }
 
             lines[i] = sourceLine with
             {
@@ -894,12 +926,14 @@ public static class TextLayoutPageComposer
             {
                 var lineTop = sourceLine.BaselineY - sourceLine.BaselineOffset - firstTop;
                 var baselineY = yOffset + lineTop + sourceLine.BaselineOffset;
-                var runs = sourceLine.Runs
-                    .Select(run => run with
+                var runs = new TextLayoutRun[sourceLine.Runs.Count];
+                for (var runIndex = 0; runIndex < sourceLine.Runs.Count; runIndex++)
+                {
+                    runs[runIndex] = sourceLine.Runs[runIndex] with
                     {
                         BaselineY = baselineY
-                    })
-                    .ToArray();
+                    };
+                }
                 lines.Add(sourceLine with
                 {
                     Index = lines.Count,

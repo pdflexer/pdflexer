@@ -288,6 +288,26 @@ public class TextBoxLayoutEngineTests
     }
 
     [Fact]
+    public void Layout_ExposesRangeBackedLineViews_WithoutMaterializingLegacyTextFirst()
+    {
+        var request = CreateRequest(
+            width: 200,
+            height: 80,
+            new TextSegment("Alpha Beta", new TextSegmentStyle("Roboto", 400, 12)));
+
+        var result = new TextBoxLayoutEngine().Layout(request);
+
+        Assert.Equal(1, result.LineCount);
+
+        var line = result.GetLine(0);
+        Assert.Equal(3, line.Runs.Count);
+        Assert.Equal("Alpha", line.Runs[0].TextSpan.ToString());
+        Assert.Equal(" ", line.Runs[1].TextSpan.ToString());
+        Assert.Equal("Beta", line.Runs[2].TextSpan.ToString());
+        Assert.NotEmpty(line.Runs[0].Glyphs);
+    }
+
+    [Fact]
     public void Analyze_WithReusableContext_WidthAndStyleChangesInvalidateIntrinsicMeasurementReuse()
     {
         var request = CreateRequest(
@@ -314,6 +334,28 @@ public class TextBoxLayoutEngineTests
         Assert.Equal(3, context.CachedIntrinsicMeasurementCount);
         Assert.Equal(3, context.CacheMissCount);
         Assert.Equal(0, context.CacheHitCount);
+    }
+
+    [Fact]
+    public void Analyze_WithReusableContext_ReusesFontCacheAndClearResetsIt()
+    {
+        var request = CreateRequest(
+            width: 70,
+            height: 40,
+            new TextSegment("Alpha Beta Gamma", new TextSegmentStyle("Roboto", 400, 12)));
+
+        var engine = new TextBoxLayoutEngine();
+        using var context = new TextLayoutAnalysisContext();
+
+        engine.Analyze(request, context);
+        engine.Analyze(request with { Height = 20 }, context);
+
+        Assert.Equal(1, context.CachedFontLibraryCount);
+
+        context.Clear();
+
+        Assert.Equal(0, context.CachedFontLibraryCount);
+        Assert.Equal(0, context.CachedIntrinsicMeasurementCount);
     }
 
     [Fact]

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "PdfLexer.Benchmarks": {
+      "commandName": "Project",
+      "commandLineArgs": "--textlayout-baseline"
+    }
+  }
+}

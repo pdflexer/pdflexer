@@ -257,6 +257,83 @@ public class RichTextBoxLayoutEngineTests
     }
 
     [Fact]
+    public void Analyze_RichText_TableNodes_UseGraphBackedSizes_AndPreserveDecorationPaths()
+    {
+        var request = CreateRequest(new RichTextBlock[]
+        {
+            new TableBlock(new[]
+            {
+                new TableRowBlock(new[]
+                {
+                    new TableDataCellBlock(new RichTextBlock[]
+                    {
+                        new ParagraphBlock(
+                            new InlineNode[]
+                            {
+                                new TextRunNode("Decorated cell", new TextStyle("Roboto", 400, 12))
+                            },
+                            new ParagraphStyle(LineHeight: 14))
+                    }, Style: new TableCellStyle(BackgroundColor: new TextColor(255, 240, 180)))
+                }, Style: new TableRowStyle(MinHeight: 24))
+            }, new TableStyle(CellPadding: 4, CellBorderWidth: 1, CellBorderColor: new TextColor(80, 80, 80), BackgroundColor: new TextColor(240, 240, 240)))
+        }) with { Width = 120 };
+
+        var plan = new RichTextBoxLayoutEngine().Analyze(request);
+
+        var table = Assert.Single(plan.Root.Children);
+        var row = Assert.Single(table.Children);
+        var cell = Assert.Single(row.Children);
+        var paragraph = Assert.Single(cell.Children);
+
+        Assert.Equal(TextLayoutNodeKind.Table, table.Kind);
+        Assert.Equal(TextLayoutNodeKind.TableRow, row.Kind);
+        Assert.Equal(TextLayoutNodeKind.TableCell, cell.Kind);
+        Assert.True(table.NaturalSize.Height >= row.NaturalSize.Height);
+        Assert.True(row.NaturalSize.Height >= cell.NaturalSize.Height);
+        Assert.True(cell.NaturalSize.Height >= paragraph.NaturalSize.Height);
+        Assert.NotNull(row.StartLineIndex);
+        Assert.NotNull(cell.StartLineIndex);
+        Assert.Contains(plan.Layout.Decorations, x => x is TextLayoutFillRectDecoration fill && string.Equals(fill.SourcePath, "Blocks[0]", StringComparison.Ordinal));
+        Assert.Contains(plan.Layout.Decorations, x => x is TextLayoutFillRectDecoration fill && string.Equals(fill.SourcePath, "Blocks[0].Rows[0].Cells[0]", StringComparison.Ordinal));
+        Assert.Contains(plan.Layout.Decorations, x => x is TextLayoutStrokeRectDecoration stroke && string.Equals(stroke.SourcePath, "Blocks[0].Rows[0].Cells[0]", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void Analyze_RichText_LayoutChildNodes_UseGraphBackedSizes_AndContainerDecorationPaths()
+    {
+        var request = CreateRequest(new RichTextBlock[]
+        {
+            new ColumnBlock(new[]
+            {
+                new LayoutChild(new RichTextBlock[]
+                {
+                    new ParagraphBlock(
+                        new InlineNode[]
+                        {
+                            new TextRunNode("Child one", new TextStyle("Roboto", 400, 12))
+                        },
+                        new ParagraphStyle(LineHeight: 14))
+                }, BoxStyle: new TextBoxStyle(BackgroundColor: new TextColor(245, 245, 210), Padding: 3))
+            }, Style: new LayoutContainerStyle(Padding: 5, BackgroundColor: new TextColor(225, 235, 245)))
+        }) with { Width = 120 };
+
+        var plan = new RichTextBoxLayoutEngine().Analyze(request);
+
+        var column = Assert.Single(plan.Root.Children);
+        var child = Assert.Single(column.Children);
+        var paragraph = Assert.Single(child.Children);
+
+        Assert.Equal(TextLayoutNodeKind.ColumnContainer, column.Kind);
+        Assert.Equal(TextLayoutNodeKind.LayoutChild, child.Kind);
+        Assert.True(column.NaturalSize.Height >= child.NaturalSize.Height);
+        Assert.True(child.NaturalSize.Height >= paragraph.NaturalSize.Height);
+        Assert.NotNull(child.StartLineIndex);
+        Assert.Equal("Blocks[0].Children[0]", child.Source.Path);
+        Assert.Contains(plan.Layout.Decorations, x => x is TextLayoutFillRectDecoration fill && string.Equals(fill.SourcePath, "Blocks[0]", StringComparison.Ordinal));
+        Assert.Contains(plan.Layout.Decorations, x => x is TextLayoutFillRectDecoration fill && string.Equals(fill.SourcePath, "Blocks[0].Children[0]", StringComparison.Ordinal));
+    }
+
+    [Fact]
     public void Analyze_RichText_WithReusableContext_PreservesExistingPlanBehavior()
     {
         var request = CreateRequest(new RichTextBlock[]
@@ -295,6 +372,27 @@ public class RichTextBoxLayoutEngineTests
         Assert.True(context.CacheMissCount >= 1);
         Assert.True(context.CacheHitCount >= 1);
         Assert.NotNull(fitPlan.FittedPlan);
+    }
+
+    [Fact]
+    public void Analyze_RichText_WithReusableContext_ReusesFontCacheAcrossAnalyzeAndFit()
+    {
+        var request = CreateRequest(new RichTextBlock[]
+        {
+            new ParagraphBlock(
+                new InlineNode[]
+                {
+                    new TextRunNode("Reusable rich text", new TextStyle("Roboto", 400, 12))
+                })
+        });
+
+        var engine = new RichTextBoxLayoutEngine();
+        using var context = new TextLayoutAnalysisContext();
+
+        engine.Analyze(request, context);
+        engine.AnalyzeFit(request with { Height = 10_000 }, context);
+
+        Assert.Equal(1, context.CachedFontLibraryCount);
     }
 
     [Fact]
@@ -394,6 +492,61 @@ public class RichTextBoxLayoutEngineTests
         Assert.Equal(result.ConsumedHeight, result.ConsumedSize.Height, precision: 6);
         Assert.Equal(result.FittedLayout.MeasuredHeight, result.FittedLayout.NaturalHeight, precision: 6);
         Assert.Equal(result.FittedLayout.RenderedHeight, result.FittedLayout.VisibleHeight, precision: 6);
+        Assert.Equal(result.FittingLayout.LineCount, result.LineCount);
+        Assert.Equal(result.FittingLayout.LineViews.Count, result.LineViews.Count);
+        Assert.Equal(result.FittingLayout.GetLine(0).Runs[0].TextSpan.ToString(), result.GetLine(0).Runs[0].TextSpan.ToString());
+        var legacyLines = result.MaterializeLegacyLines();
+        Assert.Equal(result.LineCount, legacyLines.Count);
+        Assert.Equal(result.GetLine(0).Runs[0].TextSpan.ToString(), legacyLines[0].Runs[0].Text);
+        var legacyLayout = result.MaterializeLegacyLayout();
+        Assert.NotSame(result.FittingLayout, legacyLayout);
+        Assert.Equal(result.LineCount, legacyLayout.Lines.Count);
+    }
+
+    [Fact]
+    public void AnalyzeFit_WithReusableContext_ReusesRichIntrinsicMeasurements_ForNestedLayout()
+    {
+        var request = CreateRequest(new RichTextBlock[]
+        {
+            new ColumnBlock(
+                new[]
+                {
+                    new LayoutChild(new RichTextBlock[]
+                    {
+                        new ParagraphBlock(new InlineNode[]
+                        {
+                            new TextRunNode("Alpha Beta Gamma Delta", new TextStyle("Roboto", 400, 12))
+                        }, new ParagraphStyle(LineHeight: 14))
+                    }),
+                    new LayoutChild(new RichTextBlock[]
+                    {
+                        new ParagraphBlock(new InlineNode[]
+                        {
+                            new TextRunNode("Nested rich content for cache reuse", new TextStyle("Roboto", 400, 12))
+                        }, new ParagraphStyle(LineHeight: 14))
+                    })
+                })
+        }) with
+        {
+            Width = 140,
+            Height = 40,
+            OverflowMode = TextOverflowMode.Fragment
+        };
+
+        var engine = new RichTextBoxLayoutEngine();
+        using var context = new TextLayoutAnalysisContext();
+
+        _ = engine.AnalyzeFit(request, context);
+        var cachedAfterFirst = context.CachedIntrinsicMeasurementCount;
+        var hitsAfterFirst = context.CacheHitCount;
+
+        _ = engine.AnalyzeFit(request, context);
+
+        Assert.True(cachedAfterFirst > 0);
+        Assert.True(context.CacheHitCount > hitsAfterFirst);
+
+        context.ClearMeasurements();
+        Assert.Equal(0, context.CachedIntrinsicMeasurementCount);
     }
 
     [Fact]
@@ -447,6 +600,9 @@ public class RichTextBoxLayoutEngineTests
         Assert.Single(remainderRequest!.Blocks);
         Assert.IsType<ParagraphBlock>(fittedRequest.Blocks[0]);
         Assert.IsType<ParagraphBlock>(remainderRequest.Blocks[0]);
+        var fittedLegacyLines = fitPlan.FittedSelection.MaterializeLegacyLines();
+        Assert.Equal(fitPlan.FittedSelection.LineCount, fittedLegacyLines.Count);
+        Assert.Equal(fitPlan.FittedSelection.GetLine(0).Runs[0].TextSpan.ToString(), fittedLegacyLines[0].Runs[0].Text);
     }
 
     [Fact]
@@ -665,6 +821,34 @@ public class RichTextBoxLayoutEngineTests
 
         var fittingLayoutText = string.Concat(result.FittingLayout.Lines.SelectMany(x => x.Runs).Select(x => x.Text));
         Assert.Equal(FlattenInlineText(fittedParagraph.Inlines), fittingLayoutText);
+    }
+
+    [Fact]
+    public void Fit_RichBlocks_PreservesBlockOrder_WhenOverflowStartsOnLaterBlock()
+    {
+        var request = CreateRequest(new RichTextBlock[]
+        {
+            new ParagraphBlock(
+                new InlineNode[]
+                {
+                    new TextRunNode("First block fits.", new TextStyle("Roboto", 400, 12))
+                },
+                new ParagraphStyle(LineHeight: 16)),
+            new ParagraphBlock(
+                new InlineNode[]
+                {
+                    new TextRunNode("Second block overflows and should remain in the remainder without displacing the first block.", new TextStyle("Roboto", 400, 12))
+                },
+                new ParagraphStyle(LineHeight: 16))
+        }) with { Height = 20, Width = 140 };
+
+        var result = new RichTextBoxLayoutEngine().Fit(request);
+
+        Assert.True(result.HasRemainder);
+        var fitted = Assert.IsType<ParagraphBlock>(Assert.Single(result.FittingSlice.Blocks));
+        var remainder = Assert.IsType<ParagraphBlock>(Assert.Single(result.RemainderSlice!.Blocks));
+        Assert.Equal("First block fits.", FlattenInlineText(fitted.Inlines));
+        Assert.StartsWith("Second block", FlattenInlineText(remainder.Inlines), StringComparison.Ordinal);
     }
 
     [Fact]

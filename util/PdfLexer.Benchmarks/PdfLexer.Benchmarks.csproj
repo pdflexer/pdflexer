@@ -19,7 +19,9 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\PdfLexer.CMaps\PdfLexer.CMaps.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer.ImageSharpExts\PdfLexer.ImageSharpExts.csproj" />
+    <ProjectReference Include="..\..\src\PdfLexer.TextLayout\PdfLexer.TextLayout.csproj" />
     <ProjectReference Include="..\..\src\PdfLexer\PdfLexer.csproj" />
+    <ProjectReference Include="..\pdflexer.TestCaseGen\pdflexer.TestCaseGen.csproj" />
   </ItemGroup>
 
 </Project>

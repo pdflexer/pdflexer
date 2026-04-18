@@ -8,7 +8,8 @@ internal sealed record FillRectDecorationIntent(
     double Width,
     double Height,
     TextColor Color,
-    double Radius = 0d) : TextLayoutDecorationIntent;
+    double Radius = 0d,
+    string? SourcePath = null) : TextLayoutDecorationIntent;
 
 internal sealed record StrokeRectDecorationIntent(
     double X,
@@ -17,7 +18,8 @@ internal sealed record StrokeRectDecorationIntent(
     double Height,
     TextColor Color,
     double Thickness,
-    double Radius = 0d) : TextLayoutDecorationIntent;
+    double Radius = 0d,
+    string? SourcePath = null) : TextLayoutDecorationIntent;
 
 internal sealed record LineDecorationIntent(
     double X1,
@@ -25,7 +27,8 @@ internal sealed record LineDecorationIntent(
     double X2,
     double Y2,
     TextColor Color,
-    double Thickness) : TextLayoutDecorationIntent;
+    double Thickness,
+    string? SourcePath = null) : TextLayoutDecorationIntent;
 
 internal sealed record InlineHighlightDecorationIntent(
     double X,
@@ -52,18 +55,18 @@ internal static class TextLayoutDecorationIntentMapper
     public static TextLayoutDecorationIntent ToIntent(TextLayoutDecoration decoration)
         => decoration switch
         {
-            TextLayoutFillRectDecoration fill => new FillRectDecorationIntent(fill.X, fill.Y, fill.Width, fill.Height, fill.Color, fill.Radius),
-            TextLayoutStrokeRectDecoration stroke => new StrokeRectDecorationIntent(stroke.X, stroke.Y, stroke.Width, stroke.Height, stroke.Color, stroke.Thickness, stroke.Radius),
-            TextLayoutLineDecoration line => new LineDecorationIntent(line.X1, line.Y1, line.X2, line.Y2, line.Color, line.Thickness),
+            TextLayoutFillRectDecoration fill => new FillRectDecorationIntent(fill.X, fill.Y, fill.Width, fill.Height, fill.Color, fill.Radius, fill.SourcePath),
+            TextLayoutStrokeRectDecoration stroke => new StrokeRectDecorationIntent(stroke.X, stroke.Y, stroke.Width, stroke.Height, stroke.Color, stroke.Thickness, stroke.Radius, stroke.SourcePath),
+            TextLayoutLineDecoration line => new LineDecorationIntent(line.X1, line.Y1, line.X2, line.Y2, line.Color, line.Thickness, line.SourcePath),
             _ => throw new NotSupportedException($"Unsupported decoration type: {decoration.GetType().Name}")
         };
 
     public static TextLayoutDecoration ToDecoration(TextLayoutDecorationIntent intent)
         => intent switch
         {
-            FillRectDecorationIntent fill => new TextLayoutFillRectDecoration(fill.X, fill.Y, fill.Width, fill.Height, fill.Color, fill.Radius),
-            StrokeRectDecorationIntent stroke => new TextLayoutStrokeRectDecoration(stroke.X, stroke.Y, stroke.Width, stroke.Height, stroke.Color, stroke.Thickness, stroke.Radius),
-            LineDecorationIntent line => new TextLayoutLineDecoration(line.X1, line.Y1, line.X2, line.Y2, line.Color, line.Thickness),
+            FillRectDecorationIntent fill => new TextLayoutFillRectDecoration(fill.X, fill.Y, fill.Width, fill.Height, fill.Color, fill.Radius, fill.SourcePath),
+            StrokeRectDecorationIntent stroke => new TextLayoutStrokeRectDecoration(stroke.X, stroke.Y, stroke.Width, stroke.Height, stroke.Color, stroke.Thickness, stroke.Radius, stroke.SourcePath),
+            LineDecorationIntent line => new TextLayoutLineDecoration(line.X1, line.Y1, line.X2, line.Y2, line.Color, line.Thickness, line.SourcePath),
             _ => throw new NotSupportedException($"Unsupported decoration intent type: {intent.GetType().Name}")
         };
 

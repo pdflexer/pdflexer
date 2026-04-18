@@ -8,7 +8,8 @@ internal readonly record struct LayoutConstraints(
 
 internal sealed record BlockLayoutResult(
     TextBoxLayoutResult Layout,
-    LayoutConstraints Constraints)
+    LayoutConstraints Constraints,
+    RichMeasurementGraph? MeasurementGraph = null) : IDisposable
 {
     public TextLayoutSize NaturalSize => Layout.NaturalSize;
 
@@ -21,6 +22,9 @@ internal sealed record BlockLayoutResult(
     public double VisibleWidth => Layout.VisibleWidth;
 
     public double VisibleHeight => Layout.VisibleHeight;
+
+    public void Dispose()
+        => MeasurementGraph?.Dispose();
 }
 
 internal sealed record BlockFitResult<T>(

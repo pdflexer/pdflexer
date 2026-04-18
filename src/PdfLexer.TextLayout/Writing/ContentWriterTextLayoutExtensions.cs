@@ -134,21 +134,21 @@ public static class ContentWriterTextLayoutExtensions
         where T : struct, IFloatingPoint<T>
     {
         ArgumentNullException.ThrowIfNull(plan);
-        return writer.WriteTextBox(area, plan.Flatten().Layout, fontLibrary);
+        return writer.WriteTextBox(area, plan.Layout, fontLibrary);
     }
 
     public static TextBoxLayoutResult WriteTextBox<T>(this ContentWriter<T> writer, PdfRect<T> area, TextLayoutFitPlan fitPlan, PdfTextLayoutFontLibrary fontLibrary)
         where T : struct, IFloatingPoint<T>
     {
         ArgumentNullException.ThrowIfNull(fitPlan);
-        return writer.WriteTextBox(area, fitPlan.FittedSelection.Flatten().Layout, fontLibrary);
+        return writer.WriteTextBox(area, fitPlan.FittedSelection.Plan.Layout, fontLibrary);
     }
 
     public static TextBoxLayoutResult WriteTextBox<T>(this ContentWriter<T> writer, PdfRect<T> area, TextLayoutPagePlan pagePlan, PdfTextLayoutFontLibrary fontLibrary)
         where T : struct, IFloatingPoint<T>
     {
         ArgumentNullException.ThrowIfNull(pagePlan);
-        return writer.WriteTextBox(area, pagePlan.Flatten().Layout, fontLibrary);
+        return writer.WriteTextBox(area, pagePlan.Layout, fontLibrary);
     }
 
     public static TextBoxLayoutResult WriteTextBox<T>(this ContentWriter<T> writer, PdfRect<T> area, TextBoxLayoutResult layout, PdfTextLayoutFontLibrary fontLibrary)
@@ -170,9 +170,9 @@ public static class ContentWriterTextLayoutExtensions
         var backgrounds = new List<InlineHighlightDecorationIntent>();
         var vectorBullets = new List<VectorBulletDecorationIntent>();
 
-        for (var lineIndex = 0; lineIndex < layout.Lines.Count; lineIndex++)
+        for (var lineIndex = 0; lineIndex < layout.LineCount; lineIndex++)
         {
-            var line = layout.Lines[lineIndex];
+            var line = layout.GetLine(lineIndex);
             var lineTop = ToDouble(area.URy) - (line.BaselineY - line.BaselineOffset);
             for (var runIndex = 0; runIndex < line.Runs.Count; runIndex++)
             {
@@ -226,7 +226,7 @@ public static class ContentWriterTextLayoutExtensions
         TextColor? currentFillColor = null;
 
         writer.BeginText();
-        foreach (var line in layout.Lines)
+        foreach (var line in layout.LineViews)
         {
             foreach (var run in line.Runs)
             {
@@ -270,9 +270,7 @@ public static class ContentWriterTextLayoutExtensions
                 var y = FromDouble<T>(ToDouble(area.URy) - run.BaselineY);
                 writer.TextMove(x, y);
 
-                var pdfGlyphs = writableFont.GetGlyphs(run.Text)
-                    .Where(x => x.Glyph != null)
-                    .ToList();
+                var pdfGlyphs = FilterRenderableGlyphs(writableFont.GetGlyphs(run.Text));
                 var hbCumulativeAdv = BuildExpectedCharacterAdvances(run, pdfGlyphs);
 
                 var arr = new List<GlyphOrShift<T>>(pdfGlyphs.Count * 2);
@@ -374,17 +372,31 @@ public static class ContentWriterTextLayoutExtensions
         return layout;
     }
 
-    private static (double Top, double Height) GetInlineHighlightMetrics(TextLayoutRun run)
+    private static (double Top, double Height) GetInlineHighlightMetrics(TextLayoutRunView run)
     {
         var height = Math.Min(run.LineHeight, Math.Max(run.FontSize * 1.07d, run.FontSize + 1.5d));
         var top = run.BaselineY - (run.FontSize * 0.87d);
         return (top, height);
     }
 
-    private static double GetUnderlineThickness(TextLayoutRun run)
+    private static double GetUnderlineThickness(TextLayoutRunView run)
         => Math.Max(0.75d, run.FontSize * 0.075d);
 
-    private static double[] BuildExpectedCharacterAdvances(TextLayoutRun run, IReadOnlyList<GlyphOrShift> pdfGlyphs)
+    private static List<GlyphOrShift> FilterRenderableGlyphs(IEnumerable<GlyphOrShift> glyphs)
+    {
+        var filtered = new List<GlyphOrShift>();
+        foreach (var glyph in glyphs)
+        {
+            if (glyph.Glyph is not null)
+            {
+                filtered.Add(glyph);
+            }
+        }
+
+        return filtered;
+    }
+
+    private static double[] BuildExpectedCharacterAdvances(TextLayoutRunView run, IReadOnlyList<GlyphOrShift> pdfGlyphs)
     {
         var cumulative = new double[run.Text.Length + 1];
         if (run.Text.Length == 0)
@@ -430,21 +442,34 @@ public static class ContentWriterTextLayoutExtensions
             return cumulative;
         }
 
-        var clusterBase = run.Glyphs.Min(x => x.Cluster);
-        var clusterAdvances = new Dictionary<int, double>();
-        foreach (var hbGlyph in run.Glyphs)
+        var clusterBase = uint.MaxValue;
+        for (var i = 0; i < run.Glyphs.Count; i++)
         {
-            var localCluster = hbGlyph.Cluster >= clusterBase ? hbGlyph.Cluster - clusterBase : 0u;
-            var clusterIndex = (int)Math.Min(localCluster, (uint)(run.Text.Length - 1));
-            clusterAdvances.TryGetValue(clusterIndex, out var current);
-            clusterAdvances[clusterIndex] = current + hbGlyph.Advance;
+            clusterBase = Math.Min(clusterBase, run.Glyphs[i].Cluster);
         }
 
-        var clusterStarts = clusterAdvances.Keys.OrderBy(x => x).ToArray();
-        for (var i = 0; i < clusterStarts.Length; i++)
+        var clusterAdvances = new double[run.Text.Length];
+        var clusterSeen = new bool[run.Text.Length];
+        var clusterStarts = new List<int>(run.Glyphs.Count);
+        for (var i = 0; i < run.Glyphs.Count; i++)
+        {
+            var hbGlyph = run.Glyphs[i];
+            var localCluster = hbGlyph.Cluster >= clusterBase ? hbGlyph.Cluster - clusterBase : 0u;
+            var clusterIndex = (int)Math.Min(localCluster, (uint)(run.Text.Length - 1));
+            if (!clusterSeen[clusterIndex])
+            {
+                clusterSeen[clusterIndex] = true;
+                clusterStarts.Add(clusterIndex);
+            }
+
+            clusterAdvances[clusterIndex] += hbGlyph.Advance;
+        }
+
+        clusterStarts.Sort();
+        for (var i = 0; i < clusterStarts.Count; i++)
         {
             var start = clusterStarts[i];
-            var end = i + 1 < clusterStarts.Length ? clusterStarts[i + 1] : run.Text.Length;
+            var end = i + 1 < clusterStarts.Count ? clusterStarts[i + 1] : run.Text.Length;
             end = Math.Max(start + 1, Math.Min(end, run.Text.Length));
 
             var clusterAdvance = clusterAdvances[start];
@@ -483,7 +508,7 @@ public static class ContentWriterTextLayoutExtensions
         return cumulative;
     }
 
-    private static double GetVisibleDecorationWidth(TextLayoutLine line, TextLayoutRun run)
+    private static double GetVisibleDecorationWidth(TextLayoutLineView line, TextLayoutRunView run)
     {
         var remainingVisibleWidth = line.MeasuredWidth - run.X;
         if (remainingVisibleWidth <= 0d)

@@ -140,11 +140,11 @@ public class AnalysisPlanRegressionTests
         => new(
             plan.Kind.ToString(),
             BuildNode(plan.Root),
-            plan.Flatten().Lines.Count,
+            plan.Flatten().LineCount,
             plan.Flatten().Decorations.Count,
             BuildSelection(fitPlan.FittedSelection),
             fitPlan.RemainderSelection is null ? null : BuildSelection(fitPlan.RemainderSelection),
-            fitPlan.ToPagePlan().Flatten().Lines.Count,
+            fitPlan.ToPagePlan().Flatten().LineCount,
             fitPlan.FragmentBreak.Reason.ToString(),
             fitPlan.FragmentBreak.BoundaryKind.ToString(),
             fitPlan.FragmentBreak.IsForced);
@@ -174,7 +174,7 @@ public class AnalysisPlanRegressionTests
                 x.IsForced)).ToArray(),
             selection.StartLineIndex,
             selection.EndLineIndexExclusive,
-            selection.Flatten().Lines.Count,
+            selection.Flatten().LineCount,
             selection.Flatten().Decorations.Count,
             selection.FragmentMetadata.Break.Reason.ToString(),
             selection.FragmentMetadata.Break.BoundaryKind.ToString(),

@@ -110,6 +110,12 @@ public sealed record RichTextBoxFitResult(
 {
     public IReadOnlyList<RichLayoutSplitMetadata> SplitMetadata { get; init; } = Metadata ?? Array.Empty<RichLayoutSplitMetadata>();
     public TextFragmentBreak FragmentBreak { get; init; } = TextFragmentBreak.None;
+    public int LineCount => FittingLayout.LineCount;
+    public TextLayoutLineViewCollection LineViews => FittingLayout.LineViews;
+    public TextLayoutLineView GetLine(int index) => FittingLayout.GetLine(index);
+    public IReadOnlyList<TextLayoutDecoration> Decorations => FittingLayout.Decorations;
+    public IReadOnlyList<TextLayoutLine> MaterializeLegacyLines() => FittingLayout.MaterializeLegacyLines();
+    public TextBoxLayoutResult MaterializeLegacyLayout() => FittingLayout.MaterializeLegacyLayout();
 
     public TextBoxLayoutResult FittedLayout => FittingLayout;
 
