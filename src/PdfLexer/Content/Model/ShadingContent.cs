@@ -10,6 +10,8 @@ namespace PdfLexer.Content.Model;
 public class ShadingContent<T> : IContentGroup<T>, ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Shading;
+    public ParsedContentId? ParsedItemId { get; set; }
+    public StructuredSourceRef? SourceReference { get; set; }
     public required GfxState<T> GraphicsState { get; set; }
 
     public required IPdfObject Shading { get; set; }

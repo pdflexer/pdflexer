@@ -146,4 +146,53 @@ public class StructuralBuilderTests
         Assert.Equal(0, p.ContentItems[0].MCID);
         Assert.Same(page, p.ContentItems[0].Page);
     }
+
+    [Fact]
+    public void Builder_should_capture_accessibility_metadata_and_root_registries()
+    {
+        var builder = new StructuralBuilder();
+        var ns = builder.DeclareNamespace("https://example.com/ns");
+        builder.MapRole("CustomRole", "Span")
+            .AddClassDefinition("Hero", new PdfDictionary { [PdfName.O] = PdfName.Layout });
+
+        var node = builder.AddSpan("Span")
+            .Alt("Alt")
+            .ActualText("Actual")
+            .Expansion("Expansion")
+            .Lang("fr-CA")
+            .ElementId("node-1")
+            .References("target-1")
+            .AddClass("Hero")
+            .SetNamespace(ns)
+            .TableScope(StructureScope.Row)
+            .TableHeaders("header-1")
+            .TableSummary("Summary")
+            .ListNumbering(StructureListNumbering.Decimal)
+            .GetNode();
+
+        Assert.Equal("Alt", node.Alt);
+        Assert.Equal("Actual", node.ActualText);
+        Assert.Equal("Expansion", node.Expansion);
+        Assert.Equal("fr-CA", node.Language);
+        Assert.Equal("node-1", node.ID);
+        Assert.Contains("target-1", node.References);
+        Assert.Contains("Hero", node.Classes);
+        Assert.Equal(ns, node.Namespace);
+        Assert.Equal(StructureScope.Row, node.Scope);
+        Assert.Contains("header-1", node.Headers);
+        Assert.Equal("Summary", node.Summary);
+        Assert.Equal(StructureListNumbering.Decimal, node.ListNumbering);
+        Assert.Equal("Span", builder.GetStructureRoot().RoleMap["CustomRole"]);
+        Assert.True(builder.GetStructureRoot().ClassMap.ContainsKey("Hero"));
+        Assert.Same(node, builder.GetStructureRoot().IdMap["node-1"]);
+    }
+
+    [Fact]
+    public void Builder_should_reject_duplicate_ids()
+    {
+        var builder = new StructuralBuilder();
+        builder.AddParagraph().ElementId("dup-id");
+
+        Assert.Throws<PdfLexerException>(() => builder.AddParagraph().ElementId("dup-id"));
+    }
 }

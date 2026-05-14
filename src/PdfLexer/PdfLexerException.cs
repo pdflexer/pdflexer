@@ -41,3 +41,27 @@ public class PdfLexerPasswordException : PdfLexerException
 
     }
 }
+
+public class PdfAccessibilitySetupException : PdfLexerException
+{
+    public PdfAccessibilitySetupException(string message) : base(message)
+    {
+
+    }
+}
+
+public class PdfAccessibilityTextException : PdfLexerException
+{
+    public PdfAccessibilityTextException(string message) : base(message)
+    {
+
+    }
+}
+
+public class PdfAccessibilityConformanceException : PdfLexerException
+{
+    public PdfAccessibilityConformanceException(string message) : base(message)
+    {
+
+    }
+}

@@ -280,6 +280,8 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     public ContentWriter<T> CustomOp(IPdfOperation<T> op) => Op(op);
 
     int mcDepth = 0;
+    private Stack<bool> accessibilityScopeStack = new Stack<bool>();
+    private Stack<bool> mcTextStateStack = new Stack<bool>();
     internal int GraphicsStackSize = 0;
     public PdfStreamContents Complete()
     {

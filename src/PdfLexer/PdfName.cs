@@ -97,6 +97,8 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName AllPages = new("AllPages", false);
     public static readonly PdfName Alpha = new("Alpha", false);
     public static readonly PdfName ALT = new("ALT", false);
+    public static readonly PdfName Alt = new("Alt", false);
+    public static readonly PdfName ActualText = new("ActualText", false);
     public static readonly PdfName Alternative = new("Alternative", false);
     public static readonly PdfName And = new("And", false);
     public static readonly PdfName ANF = new("ANF", false);
@@ -153,6 +155,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName CIDFontType0C = new("CIDFontType0C", false);
     public static readonly PdfName CIDFontType2 = new("CIDFontType2", false);
     public static readonly PdfName Circle = new("Circle", false);
+    public static readonly PdfName Class = new("Class", false);
     public static readonly PdfName ClosedArrow = new("ClosedArrow", false);
     public static readonly PdfName Cloud = new("Cloud", false);
     public static readonly PdfName CMap = new("CMap", false);
@@ -218,6 +221,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Difference = new("Difference", false);
     public static readonly PdfName DigSig = new("DigSig", false);
     public static readonly PdfName DigSigMDP = new("DigSigMDP", false);
+    public static readonly PdfName E = new("E", false);
     public static readonly PdfName DigSigValidation = new("DigSigValidation", false);
     public static readonly PdfName Disc = new("Disc", false);
     public static readonly PdfName Dissolve = new("Dissolve", false);
@@ -234,6 +238,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName DPartInteract = new("DPartInteract", false);
     public static readonly PdfName DPartRoot = new("DPartRoot", false);
     public static readonly PdfName DParts = new("DParts", false);
+    public static readonly PdfName DisplayDocTitle = new("DisplayDocTitle", false);
     public static readonly PdfName DSm = new("DSm", false);
     public static readonly PdfName DSn = new("DSn", false);
     public static readonly PdfName DSS = new("DSS", false);
@@ -272,6 +277,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Export = new("Export", false);
     public static readonly PdfName Extensions = new("Extensions", false);
     public static readonly PdfName ExtGState = new("ExtGState", false);
+    public static readonly PdfName Figure = new("Figure", false);
     public static readonly PdfName ExtraCondensed = new("ExtraCondensed", false);
     public static readonly PdfName ExtraExpanded = new("ExtraExpanded", false);
     public static readonly PdfName ExtRKSJH = new("Ext-RKSJ-H", false);
@@ -295,6 +301,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName FitR = new("FitR", false);
     public static readonly PdfName FitV = new("FitV", false);
     public static readonly PdfName FixedPrint = new("FixedPrint", false);
+    public static readonly PdfName Fields = new("Fields", false);
     public static readonly PdfName Flash = new("Flash", false);
     public static readonly PdfName FlateDecode = new("FlateDecode", false);
     public static readonly PdfName Fly = new("Fly", false);
@@ -510,8 +517,10 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName N90msRKSJH = new("90ms-RKSJ-H", false);
     public static readonly PdfName N90msRKSJV = new("90ms-RKSJ-V", false);
     public static readonly PdfName N90pvRKSJH = new("90pv-RKSJ-H", false);
+    public static readonly PdfName Dests = new("Dests", false);
     public static readonly PdfName Named = new("Named", false);
     public static readonly PdfName Names = new("Names", false);
+    public static readonly PdfName Namespaces = new("Namespaces", false);
     public static readonly PdfName Namespace = new("Namespace", false);
     public static readonly PdfName Navigation = new("Navigation", false);
     public static readonly PdfName Navigator = new("Navigator", false);
@@ -533,6 +542,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName NumberFormat = new("NumberFormat", false);
     public static readonly PdfName O = new("O", false);
     public static readonly PdfName OBJR = new("OBJR", false);
+    public static readonly PdfName Obj = new("Obj", false);
     public static readonly PdfName ObjStm = new("ObjStm", false);
     public static readonly PdfName OCAutoStates = new("OCAutoStates", false);
     public static readonly PdfName OCG = new("OCG", false);
@@ -561,8 +571,10 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName P = new("P", false);
     public static readonly PdfName Page = new("Page", false);
     public static readonly PdfName PageLabel = new("PageLabel", false);
-    public static readonly PdfName PageNum = new("PageNum", false);
+    public static readonly PdfName PageElement = new("PageElement", false);
+    public static readonly PdfName PageLabels = new("PageLabels", false);
     public static readonly PdfName Pages = new("Pages", false);
+
     public static readonly PdfName Pagination = new("Pagination", false);
     public static readonly PdfName Palindrome = new("Palindrome", false);
     public static readonly PdfName PaperMetaData = new("PaperMetaData", false);
@@ -603,6 +615,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName QRCode = new("QRCode", false);
     public static readonly PdfName r = new("r", false);
     public static readonly PdfName R = new("R", false);
+    public static readonly PdfName Rect = new("Rect", false);
     public static readonly PdfName R2L = new("R2L", false);
     public static readonly PdfName Raw = new("Raw", false);
     public static readonly PdfName rb = new("rb", false);
@@ -707,10 +720,12 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName StampSnapshot = new("StampSnapshot", false);
     public static readonly PdfName Standalone = new("Standalone", false);
     public static readonly PdfName Standard = new("Standard", false);
+    public static readonly PdfName St = new("St", false);
     public static readonly PdfName Start = new("Start", false);
     public static readonly PdfName State = new("State", false);
     public static readonly PdfName StdCF = new("StdCF", false);
     public static readonly PdfName STEP = new("STEP", false);
+    public static readonly PdfName Stm = new("Stm", false);
     public static readonly PdfName Stop = new("Stop", false);
     public static readonly PdfName Stream = new("Stream", false);
     public static readonly PdfName StrikeOut = new("StrikeOut", false);
@@ -718,6 +733,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName StructParent = new("StructParent", false);
     public static readonly PdfName StructParents = new("StructParents", false);
     public static readonly PdfName StructTreeRoot = new("StructTreeRoot", false);
+    public static readonly PdfName Summary = new("Summary", false);
     public static readonly PdfName Style = new("Style", false);
     public static readonly PdfName Sub = new("Sub", false);
     public static readonly PdfName SubmitForm = new("SubmitForm", false);
@@ -727,8 +743,10 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Supplement = new("Supplement", false);
     public static readonly PdfName SV = new("SV", false);
     public static readonly PdfName SVCert = new("SVCert", false);
+    public static readonly PdfName Suspects = new("Suspects", false);
     public static readonly PdfName T = new("T", false);
     public static readonly PdfName Table = new("Table", false);
+    public static readonly PdfName Tabs = new("Tabs", false);
     public static readonly PdfName TbLr = new("TbLr", false);
     public static readonly PdfName TbRl = new("TbRl", false);
     public static readonly PdfName Template = new("Template", false);
@@ -764,6 +782,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Type1 = new("Type1", false);
     public static readonly PdfName Type1C = new("Type1C", false);
     public static readonly PdfName Type3 = new("Type3", false);
+    public static readonly PdfName TU = new("TU", false);
     public static readonly PdfName U = new("U", false);
     public static readonly PdfName U3D = new("U3D", false);
     public static readonly PdfName UltraCondensed = new("UltraCondensed", false);
@@ -817,6 +836,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Viewport = new("Viewport", false);
     public static readonly PdfName VisiblePages = new("VisiblePages", false);
     public static readonly PdfName VRI = new("VRI", false);
+    public static readonly PdfName ViewerPreferences = new("ViewerPreferences", false);
     public static readonly PdfName W = new("W", false);
     public static readonly PdfName Warichu = new("Warichu", false);
     public static readonly PdfName Watermark = new("Watermark", false);
@@ -838,6 +858,7 @@ public class PdfName : PdfObject, IEquatable<PdfName>
 
     public static readonly PdfName Name = new("Name", false);
     public static readonly PdfName CharProcs = new("CharProcs", false);
+    public static readonly PdfName Info = new("Info", false);
     public static readonly PdfName Prev = new("Prev", false);
     public static readonly PdfName Length = new("Length", false);
     public static readonly PdfName Root = new("Root", false);
@@ -936,6 +957,14 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName SubFilter = new("SubFilter", false);
     public static readonly PdfName EncryptMetadata = new("EncryptMetadata", false);
     public static readonly PdfName ID = new("ID", false);
+    public static readonly PdfName IDTree = new("IDTree", false);
+    public static readonly PdfName Headers = new("Headers", false);
+    public static readonly PdfName ListNumbering = new("ListNumbering", false);
+    public static readonly PdfName Ref = new("Ref", false);
+    public static readonly PdfName RoleMap = new("RoleMap", false);
+    public static readonly PdfName ClassMap = new("ClassMap", false);
+    public static readonly PdfName Scope = new("Scope", false);
+    public static readonly PdfName NS = new("NS", false);
     public static readonly PdfName Limits = new("Limits", false);
 
     [return: NotNullIfNotNull("name")]

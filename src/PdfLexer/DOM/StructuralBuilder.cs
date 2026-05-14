@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Numerics;
+using PdfLexer.Content;
 using PdfLexer.Writing;
 
 namespace PdfLexer.DOM;
@@ -7,11 +8,24 @@ namespace PdfLexer.DOM;
 /// <summary>
 /// A fluent builder for PDF logical structure (Tags).
 /// </summary>
+/// <remarks>
+/// This builder is intended for authoring structure in new documents and in existing documents that are currently
+/// untagged. It is not a remediation API for editing a pre-existing <c>StructTreeRoot</c>. See
+/// <c>docs/accessibility-authoring.md</c> for the supported workflow.
+/// </remarks>
 public class StructuralBuilder : IStructureContext
 {
-    private readonly StructureNode _root = new StructureNode { Type = "Document" };
+    private readonly StructureRoot _structureRoot = new();
+    private readonly StructureNode _root;
+
+    public StructuralBuilder()
+    {
+        _root = _structureRoot.Document;
+    }
 
     public StructureNode GetRoot() => _root;
+
+    public StructureRoot GetStructureRoot() => _structureRoot;
 
     public IStructureContext AddElement(string type, string? title = null, string? id = null, string? language = null)
     {
@@ -22,7 +36,7 @@ public class StructuralBuilder : IStructureContext
             ID = id,
             Language = language
         };
-        _root.Children.Add(node);
+        _structureRoot.AttachChild(_root, node);
         return new StructuralContext(this, node, this);
     }
 
@@ -45,7 +59,7 @@ public class StructuralBuilder : IStructureContext
     public IStructureContext AddCell(bool header = false, int rowSpan = 1, int colSpan = 1)
     {
         var type = header ? "TH" : "TD";
-        var ctx = (StructuralContext)AddElement(type);
+        var ctx = AddElement(type);
         var node = ctx.GetNode();
         if (rowSpan > 1 || colSpan > 1)
         {
@@ -79,29 +93,113 @@ public class StructuralBuilder : IStructureContext
     public IStructureContext AddSpan(string? title = null, string? lang = null) => AddElement("Span", title, language: lang);
     public IStructureContext AddQuote(string? title = null) => AddElement("Quote", title);
     public IStructureContext AddCode(string? title = null) => AddElement("Code", title);
-    
-    public IStructureContext AddFormula(string? title = null, string? altText = null) 
+
+    public IStructureContext AddDocumentTitle(string? title = null) => AddElement("Title", title);
+
+    public IStructureContext AddFormula(string? title = null, string? altText = null)
     {
         var ctx = AddElement("Formula", title);
-        if (altText != null) ctx.GetNode().AlternateText = altText;
+        if (altText != null) { ctx.Alt(altText); }
         return ctx;
     }
 
     public IStructureContext AddReference(string? title = null) => AddElement("Reference", title);
     public IStructureContext AddNote(string? title = null) => AddElement("Note", title);
-    
+    public IStructureContext AddFENote(string? title = null) => AddElement("FENote", title);
+
     public IStructureContext AddFigure(string? title = null, string? altText = null)
     {
         var ctx = AddElement("Figure", title);
-        if (altText != null) ctx.GetNode().AlternateText = altText;
+        if (altText != null) { ctx.Alt(altText); }
         return ctx;
     }
 
     public IStructureContext AddLink(string? title = null, string? altText = null)
     {
         var ctx = AddElement("Link", title);
-        if (altText != null) ctx.GetNode().AlternateText = altText;
+        if (altText != null) { ctx.Alt(altText); }
         return ctx;
+    }
+
+    public IStructureContext AddLink(LinkAnnotation annotation, string? title = null, string? altText = null)
+    {
+        var ctx = AddLink(title, altText);
+        BindLinkAnnotation(ctx.GetNode(), annotation, title, altText);
+        return ctx;
+    }
+
+    public IStructureContext AddLink(PdfPage page, PdfRect<double> rect, IPdfObject destination, string? title = null, string? altText = null)
+    {
+        return AddLink(AnnotationFactory.CreateLink(page, rect, destination, title ?? altText), title, altText);
+    }
+
+    public IStructureContext AddLink(
+        PdfPage page,
+        PdfRect<double> rect,
+        StructureNode destination,
+        string accessibleDescription,
+        string? title = null,
+        string? altText = null)
+    {
+        return AddLink(
+            AnnotationFactory.CreateStructureLink(page, rect, destination, accessibleDescription),
+            title ?? accessibleDescription,
+            altText ?? accessibleDescription);
+    }
+
+    public IStructureContext AddLinkAction(PdfPage page, PdfRect<double> rect, PdfDictionary action, string? title = null, string? altText = null)
+    {
+        return AddLink(AnnotationFactory.CreateLinkAction(page, rect, action, title ?? altText), title, altText);
+    }
+
+    public IStructureContext AddFormField(WidgetAnnotation widget, string? title = null)
+    {
+        var ctx = AddElement("Form", title);
+        BindAnnotation(ctx.GetNode(), widget.Page, widget.NativeObject);
+        return ctx;
+    }
+
+    public IStructureContext AddFormField(PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName, string? title = null, string? tooltip = null, bool print = true)
+    {
+        return AddFormField(AnnotationFactory.CreateTextWidget(document, page, rect, fieldName, tooltip, print), title);
+    }
+
+    public IStructureContext AddLabeledFormField(WidgetAnnotation widget, string? title = null, string? tooltip = null)
+    {
+        var formCtx = AddElement("Form", title);
+        var lblCtx = formCtx.AddElement("Lbl");
+        var node = formCtx.GetNode();
+        var widgetObj = widget.NativeObject;
+        
+        // Requirement 2.3: Consistency for /Contents and /TU
+        var description = tooltip ?? title ?? widget.Field.Get<PdfString>((PdfName)"TU")?.Value;
+        if (!string.IsNullOrEmpty(description))
+        {
+            widgetObj[PdfName.Contents] = new PdfString(description);
+            widgetObj[(PdfName)"TU"] = new PdfString(description);
+            widget.Field[(PdfName)"TU"] = new PdfString(description);
+        }
+
+        BindAnnotation(node, widget.Page, widgetObj);
+        return lblCtx;
+    }
+
+    public IStructureContext BindImage(XObjImage image, params PdfPage[] pages)
+    {
+        BindImage(_root, image, pages);
+        return this;
+    }
+
+    public IStructureContext BindFormXObject(XObjForm form, params PdfPage[] pages)
+    {
+        BindFormXObject(_root, form, pages);
+        return this;
+    }
+
+    public IStructureContext BindMarkedContent(PdfPage page, int mcid)
+    {
+        BindMarkedContent(_root, page, mcid);
+        return this;
     }
 
     public IStructureContext AddLayoutAttributes(string? textAlign = null, double? width = null, double? height = null)
@@ -114,6 +212,108 @@ public class StructuralBuilder : IStructureContext
         return this;
     }
 
+    public IStructureContext Alt(string? altText)
+    {
+        _root.Alt = altText;
+        return this;
+    }
+
+    public IStructureContext ActualText(string? actualText)
+    {
+        _root.ActualText = actualText;
+        return this;
+    }
+
+    public IStructureContext Expansion(string? expansion)
+    {
+        _root.Expansion = expansion;
+        return this;
+    }
+
+    public IStructureContext Lang(string? language)
+    {
+        _root.Language = language;
+        return this;
+    }
+
+    public IStructureContext ElementId(string? id)
+    {
+        _root.ID = id;
+        return this;
+    }
+
+    public IStructureContext References(params string[] ids)
+    {
+        AddUnique(_root.References, ids);
+        return this;
+    }
+
+    public IStructureContext AddClass(string className)
+    {
+        AddUnique(_root.Classes, className);
+        return this;
+    }
+
+    public IStructureContext SetNamespace(StructureNamespace? ns)
+    {
+        _root.Namespace = ns;
+        return this;
+    }
+
+    public IStructureContext TableScope(StructureScope? scope)
+    {
+        _root.Scope = scope;
+        return this;
+    }
+
+    public IStructureContext TableHeaders(params string[] ids)
+    {
+        AddUnique(_root.Headers, ids);
+        return this;
+    }
+
+    public IStructureContext TableSummary(string? summary)
+    {
+        _root.Summary = summary;
+        return this;
+    }
+
+    public IStructureContext ListNumbering(StructureListNumbering? numbering)
+    {
+        _root.ListNumbering = numbering;
+        return this;
+    }
+
+    public IStructureContext Ref(StructureNode target)
+    {
+        if (string.IsNullOrEmpty(target.ID))
+        {
+            target.ID = Guid.NewGuid().ToString("N");
+        }
+        AddUnique(_root.References, target.ID);
+        return this;
+    }
+
+    public StructuralBuilder MapRole(string customRole, string standardRole)
+    {
+        _structureRoot.MapRole(customRole, standardRole);
+        return this;
+    }
+
+    public StructuralBuilder AddClassDefinition(string className, PdfDictionary attributes)
+    {
+        _structureRoot.AddClass(className, attributes);
+        return this;
+    }
+
+    public StructuralBuilder AddClassDefinition(string className, PdfArray attributes)
+    {
+        _structureRoot.AddClass(className, attributes);
+        return this;
+    }
+
+    public StructureNamespace DeclareNamespace(string uri) => _structureRoot.DeclareNamespace(uri);
+
     public IStructureContext Back() => this;
 
     public StructureNode GetNode() => _root;
@@ -123,188 +323,198 @@ public class StructuralBuilder : IStructureContext
         outlineBuilder.AddBookmark(title);
         outlineBuilder.LastNode.StructureElement = _root;
     }
+
+    private static void AddUnique(List<string> values, params string[] additions)
+    {
+        foreach (var addition in additions)
+        {
+            if (string.IsNullOrWhiteSpace(addition) || values.Contains(addition))
+            {
+                continue;
+            }
+
+            values.Add(addition);
+        }
+    }
+
+    internal void BindAnnotation(StructureNode node, PdfPage page, PdfDictionary annotation)
+    {
+        var index = _structureRoot.AllocateStructParentIndex();
+        node.ObjectReferences.Add(new StructureObjectReference(annotation, index, page));
+    }
+
+    internal void BindLinkAnnotation(StructureNode node, LinkAnnotation annotation, string? title = null, string? altText = null)
+    {
+        var index = _structureRoot.AllocateStructParentIndex();
+        node.ObjectReferences.Add(new StructureObjectReference(annotation.NativeObject, index, annotation.Page)
+        {
+            AnnotationContents = annotation.NativeObject.Get<PdfString>(PdfName.Contents)?.Value ?? title ?? altText,
+            StructureDestinationTarget = annotation.StructureDestinationTarget,
+            StructureDestinationTemplate = annotation.StructureDestinationTemplate
+        });
+    }
+
+    internal void BindImage(StructureNode node, XObjImage image, params PdfPage[] pages)
+    {
+        var index = _structureRoot.AllocateStructParentIndex();
+        image.StructParent = new PdfIntNumber(index);
+        node.ObjectReferences.Add(new StructureObjectReference(image.Stream, index, pages));
+    }
+
+    internal void BindFormXObject(StructureNode node, XObjForm form, params PdfPage[] pages)
+    {
+        var existing = node.XObjectReferences.FirstOrDefault(x => ReferenceEquals(x.XObject.Resolve(), form.NativeObject));
+        if (existing != null)
+        {
+            foreach (var page in pages)
+            {
+                if (!existing.Pages.Contains(page))
+                {
+                    existing.Pages.Add(page);
+                }
+            }
+            form.StructParents = new PdfIntNumber(existing.StructParentsIndex);
+            return;
+        }
+
+        var index = _structureRoot.AllocateStructParentIndex();
+        form.StructParents = new PdfIntNumber(index);
+        node.XObjectReferences.Add(new StructureXObjectReference(form.NativeObject, index, pages));
+    }
+
+    internal void BindMarkedContent(StructureNode node, PdfPage page, int mcid)
+    {
+        node.ContentItems.Add((page, mcid));
+    }
+
+    public void ReparentStructureNode(StructureNode node, StructureNode newParent)
+    {
+        var oldParent = node.Parent;
+        if (oldParent != null)
+        {
+            oldParent.Children.Remove(node);
+        }
+
+        newParent.Children.Add(node);
+        node.Parent = newParent;
+        if (newParent.Root != null)
+        {
+            newParent.Root.AttachSubtree(node);
+        }
+    }
+
+    internal void FlattenLeafStructureNodeInto(StructureNode leaf, StructureNode target)
+    {
+        if (leaf.Children.Count > 0 || leaf.ObjectReferences.Count > 0 || leaf.XObjectReferences.Count > 0 || leaf.XObjectContentItems.Count > 0)
+        {
+            throw new InvalidOperationException("Only leaf structure nodes with page marked-content references can be flattened.");
+        }
+
+        target.ContentItems.AddRange(leaf.ContentItems);
+        leaf.ContentItems.Clear();
+
+        var oldParent = leaf.Parent;
+        if (oldParent != null)
+        {
+            oldParent.Children.Remove(leaf);
+        }
+
+        leaf.Parent = null;
+    }
+
+    public void InsertParentAroundStructureNode(StructureNode child, StructureNode newParent)
+    {
+        var oldParent = child.Parent;
+        if (oldParent == null)
+        {
+            return;
+        }
+
+        var index = oldParent.Children.IndexOf(child);
+        if (index < 0)
+        {
+            return;
+        }
+
+        newParent.Parent?.Children.Remove(newParent);
+        oldParent.Children[index] = newParent;
+        newParent.Parent = oldParent;
+
+        child.Parent = newParent;
+        if (!newParent.Children.Contains(child))
+        {
+            newParent.Children.Add(child);
+        }
+
+        if (oldParent.Root != null)
+        {
+            oldParent.Root.AttachSubtree(newParent);
+        }
+    }
 }
 
 public interface IStructureContext
 {
-    /// <summary>
-    /// Writes content to the page writer wrapped in the current structure element's MCID context.
-    /// </summary>
     IStructureContext WriteContent<T>(PageWriter<T> writer, Action<PageWriter<T>> action) where T : struct, IFloatingPoint<T>;
-
-    /// <summary>
-    /// Adds a structural element of the specified type.
-    /// </summary>
     IStructureContext AddElement(string type, string? title = null, string? id = null, string? language = null);
-
-    /// <summary>
-    /// Adds a paragraph (P) element.
-    /// </summary>
     IStructureContext AddParagraph(string? title = null);
-
-    /// <summary>
-    /// Adds a header (H1-H6) element.
-    /// </summary>
     IStructureContext AddHeader(int level, string? title = null);
-
-    /// <summary>
-    /// Adds a table (Table) element.
-    /// </summary>
     IStructureContext AddTable(string? title = null);
-
-    /// <summary>
-    /// Adds a table row (TR) element.
-    /// </summary>
     IStructureContext AddRow();
-
-    /// <summary>
-    /// Adds a table cell (TH or TD) element.
-    /// </summary>
     IStructureContext AddCell(bool header = false, int rowSpan = 1, int colSpan = 1);
-
-    /// <summary>
-    /// Adds a Part element.
-    /// </summary>
     IStructureContext AddPart(string? title = null);
-
-    /// <summary>
-    /// Adds a Section (Sect) element.
-    /// </summary>
     IStructureContext AddSection(string? title = null);
-
-    /// <summary>
-    /// Adds a Div element.
-    /// </summary>
     IStructureContext AddDiv(string? title = null);
-
-    /// <summary>
-    /// Adds a BlockQuote element.
-    /// </summary>
     IStructureContext AddBlockQuote(string? title = null);
-
-    /// <summary>
-    /// Adds a Caption element.
-    /// </summary>
     IStructureContext AddCaption(string? title = null);
-
-    /// <summary>
-    /// Adds a TOC element.
-    /// </summary>
     IStructureContext AddTOC(string? title = null);
-
-    /// <summary>
-    /// Adds a TOCI element.
-    /// </summary>
     IStructureContext AddTOCI(string? title = null);
-
-    /// <summary>
-    /// Adds a List (L) element.
-    /// </summary>
     IStructureContext AddList(string? title = null);
-
-    /// <summary>
-    /// Adds a ListItem (LI) element.
-    /// </summary>
     IStructureContext AddListItem(string? title = null);
-
-    /// <summary>
-    /// Adds a Label (Lbl) element.
-    /// </summary>
     IStructureContext AddLabel(string? title = null);
-
-    /// <summary>
-    /// Adds a ListBody (LBody) element.
-    /// </summary>
     IStructureContext AddListBody(string? title = null);
-
-    /// <summary>
-    /// Adds a TableHead (THead) element.
-    /// </summary>
     IStructureContext AddTableHead(string? title = null);
-
-    /// <summary>
-    /// Adds a TableBody (TBody) element.
-    /// </summary>
     IStructureContext AddTableBody(string? title = null);
-
-    /// <summary>
-    /// Adds a TableFoot (TFoot) element.
-    /// </summary>
     IStructureContext AddTableFoot(string? title = null);
-
-    /// <summary>
-    /// Adds a Header Cell (TH) element.
-    /// </summary>
     IStructureContext AddHeaderCell(int rowSpan = 1, int colSpan = 1);
-
-    /// <summary>
-    /// Adds a Data Cell (TD) element.
-    /// </summary>
     IStructureContext AddDataCell(int rowSpan = 1, int colSpan = 1);
-
-    /// <summary>
-    /// Adds a Span element.
-    /// </summary>
     IStructureContext AddSpan(string? title = null, string? lang = null);
-
-    /// <summary>
-    /// Adds a Quote element.
-    /// </summary>
     IStructureContext AddQuote(string? title = null);
-
-    /// <summary>
-    /// Adds a Code element.
-    /// </summary>
     IStructureContext AddCode(string? title = null);
-
-    /// <summary>
-    /// Adds a Formula element.
-    /// </summary>
+    IStructureContext AddDocumentTitle(string? title = null);
     IStructureContext AddFormula(string? title = null, string? altText = null);
-
-    /// <summary>
-    /// Adds a Reference element.
-    /// </summary>
     IStructureContext AddReference(string? title = null);
-
-    /// <summary>
-    /// Adds a Note element.
-    /// </summary>
     IStructureContext AddNote(string? title = null);
-
-    /// <summary>
-    /// Adds a Figure element.
-    /// </summary>
+    IStructureContext AddFENote(string? title = null);
     IStructureContext AddFigure(string? title = null, string? altText = null);
-
-    /// <summary>
-    /// Adds a Link element.
-    /// </summary>
     IStructureContext AddLink(string? title = null, string? altText = null);
-
-    /// <summary>
-    /// Adds layout attributes to the current element.
-    /// </summary>
+    IStructureContext AddLink(LinkAnnotation annotation, string? title = null, string? altText = null);
+    IStructureContext AddLink(PdfPage page, PdfRect<double> rect, IPdfObject destination, string? title = null, string? altText = null);
+    IStructureContext AddLink(PdfPage page, PdfRect<double> rect, StructureNode destination, string accessibleDescription, string? title = null, string? altText = null);
+    IStructureContext AddLinkAction(PdfPage page, PdfRect<double> rect, PdfDictionary action, string? title = null, string? altText = null);
+    IStructureContext AddFormField(WidgetAnnotation widget, string? title = null);
+    IStructureContext AddFormField(PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName, string? title = null, string? tooltip = null, bool print = true);
+    IStructureContext AddLabeledFormField(WidgetAnnotation widget, string? title = null, string? tooltip = null);
+    IStructureContext BindImage(XObjImage image, params PdfPage[] pages);
+    IStructureContext BindFormXObject(XObjForm form, params PdfPage[] pages);
+    IStructureContext BindMarkedContent(PdfPage page, int mcid);
     IStructureContext AddLayoutAttributes(string? textAlign = null, double? width = null, double? height = null);
-
-    /// <summary>
-    /// Moves back to the parent element context.
-    /// </summary>
+    IStructureContext Alt(string? altText);
+    IStructureContext ActualText(string? actualText);
+    IStructureContext Expansion(string? expansion);
+    IStructureContext Lang(string? language);
+    IStructureContext ElementId(string? id);
+    IStructureContext References(params string[] ids);
+    IStructureContext AddClass(string className);
+    IStructureContext SetNamespace(StructureNamespace? ns);
+    IStructureContext TableScope(StructureScope? scope);
+    IStructureContext TableHeaders(params string[] ids);
+    IStructureContext TableSummary(string? summary);
+    IStructureContext ListNumbering(StructureListNumbering? numbering);
+    IStructureContext Ref(StructureNode target);
     IStructureContext Back();
-
-    /// <summary>
-    /// Gets the root node of the structure tree.
-    /// </summary>
     StructureNode GetRoot();
-
-    /// <summary>
-    /// Gets the current structure node.
-    /// </summary>
     StructureNode GetNode();
-
-    /// <summary>
-    /// Creates a bookmark linked to the current structure node.
-    /// </summary>
     void CreateBookmark(string title, IOutlineContext outlineBuilder);
 }
 
@@ -330,7 +540,7 @@ public class StructuralContext : IStructureContext
             ID = id,
             Language = language
         };
-        _node.Children.Add(node);
+        _builder.GetStructureRoot().AttachChild(_node, node);
         return new StructuralContext(_builder, node, this);
     }
 
@@ -343,17 +553,14 @@ public class StructuralContext : IStructureContext
     }
 
     public IStructureContext AddParagraph(string? title = null) => AddElement("P", title);
-
     public IStructureContext AddHeader(int level, string? title = null) => AddElement($"H{level}", title);
-
     public IStructureContext AddTable(string? title = null) => AddElement("Table", title);
-
     public IStructureContext AddRow() => AddElement("TR");
 
     public IStructureContext AddCell(bool header = false, int rowSpan = 1, int colSpan = 1)
     {
         var type = header ? "TH" : "TD";
-        var ctx = (StructuralContext)AddElement(type);
+        var ctx = AddElement(type);
         var node = ctx.GetNode();
         if (rowSpan > 1 || colSpan > 1)
         {
@@ -372,44 +579,125 @@ public class StructuralContext : IStructureContext
     public IStructureContext AddCaption(string? title = null) => AddElement("Caption", title);
     public IStructureContext AddTOC(string? title = null) => AddElement("TOC", title);
     public IStructureContext AddTOCI(string? title = null) => AddElement("TOCI", title);
-
     public IStructureContext AddList(string? title = null) => AddElement("L", title);
     public IStructureContext AddListItem(string? title = null) => AddElement("LI", title);
     public IStructureContext AddLabel(string? title = null) => AddElement("Lbl", title);
     public IStructureContext AddListBody(string? title = null) => AddElement("LBody", title);
-
     public IStructureContext AddTableHead(string? title = null) => AddElement("THead", title);
     public IStructureContext AddTableBody(string? title = null) => AddElement("TBody", title);
     public IStructureContext AddTableFoot(string? title = null) => AddElement("TFoot", title);
     public IStructureContext AddHeaderCell(int rowSpan = 1, int colSpan = 1) => AddCell(true, rowSpan, colSpan);
     public IStructureContext AddDataCell(int rowSpan = 1, int colSpan = 1) => AddCell(false, rowSpan, colSpan);
-
     public IStructureContext AddSpan(string? title = null, string? lang = null) => AddElement("Span", title, language: lang);
     public IStructureContext AddQuote(string? title = null) => AddElement("Quote", title);
     public IStructureContext AddCode(string? title = null) => AddElement("Code", title);
-    
-    public IStructureContext AddFormula(string? title = null, string? altText = null) 
+
+    public IStructureContext AddDocumentTitle(string? title = null) => AddElement("Title", title);
+
+    public IStructureContext AddFormula(string? title = null, string? altText = null)
     {
         var ctx = AddElement("Formula", title);
-        if (altText != null) ctx.GetNode().AlternateText = altText;
+        if (altText != null) { ctx.Alt(altText); }
         return ctx;
     }
 
     public IStructureContext AddReference(string? title = null) => AddElement("Reference", title);
     public IStructureContext AddNote(string? title = null) => AddElement("Note", title);
-    
+    public IStructureContext AddFENote(string? title = null) => AddElement("FENote", title);
+
     public IStructureContext AddFigure(string? title = null, string? altText = null)
     {
         var ctx = AddElement("Figure", title);
-        if (altText != null) ctx.GetNode().AlternateText = altText;
+        if (altText != null) { ctx.Alt(altText); }
         return ctx;
     }
 
     public IStructureContext AddLink(string? title = null, string? altText = null)
     {
         var ctx = AddElement("Link", title);
-        if (altText != null) ctx.GetNode().AlternateText = altText;
+        if (altText != null) { ctx.Alt(altText); }
         return ctx;
+    }
+
+    public IStructureContext AddLink(LinkAnnotation annotation, string? title = null, string? altText = null)
+    {
+        var ctx = AddLink(title, altText);
+        _builder.BindLinkAnnotation(ctx.GetNode(), annotation, title, altText);
+        return ctx;
+    }
+
+    public IStructureContext AddLink(PdfPage page, PdfRect<double> rect, IPdfObject destination, string? title = null, string? altText = null)
+    {
+        return AddLink(AnnotationFactory.CreateLink(page, rect, destination, title ?? altText), title, altText);
+    }
+
+    public IStructureContext AddLink(
+        PdfPage page,
+        PdfRect<double> rect,
+        StructureNode destination,
+        string accessibleDescription,
+        string? title = null,
+        string? altText = null)
+    {
+        return AddLink(
+            AnnotationFactory.CreateStructureLink(page, rect, destination, accessibleDescription),
+            title ?? accessibleDescription,
+            altText ?? accessibleDescription);
+    }
+
+    public IStructureContext AddLinkAction(PdfPage page, PdfRect<double> rect, PdfDictionary action, string? title = null, string? altText = null)
+    {
+        return AddLink(AnnotationFactory.CreateLinkAction(page, rect, action, title ?? altText), title, altText);
+    }
+
+    public IStructureContext AddFormField(WidgetAnnotation widget, string? title = null)
+    {
+        var ctx = AddElement("Form", title);
+        _builder.BindAnnotation(ctx.GetNode(), widget.Page, widget.NativeObject);
+        return ctx;
+    }
+
+    public IStructureContext AddFormField(PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName, string? title = null, string? tooltip = null, bool print = true)
+    {
+        return AddFormField(AnnotationFactory.CreateTextWidget(document, page, rect, fieldName, tooltip, print), title);
+    }
+
+    public IStructureContext AddLabeledFormField(WidgetAnnotation widget, string? title = null, string? tooltip = null)
+    {
+        var formCtx = AddElement("Form", title);
+        var lblCtx = formCtx.AddElement("Lbl");
+        var node = formCtx.GetNode();
+        var widgetObj = widget.NativeObject;
+        
+        // Requirement 2.3: Consistency for /Contents and /TU
+        var description = tooltip ?? title ?? widget.Field.Get<PdfString>((PdfName)"TU")?.Value;
+        if (!string.IsNullOrEmpty(description))
+        {
+            widgetObj[PdfName.Contents] = new PdfString(description);
+            widgetObj[(PdfName)"TU"] = new PdfString(description);
+            widget.Field[(PdfName)"TU"] = new PdfString(description);
+        }
+
+        _builder.BindAnnotation(node, widget.Page, widgetObj);
+        return lblCtx;
+    }
+
+    public IStructureContext BindImage(XObjImage image, params PdfPage[] pages)
+    {
+        _builder.BindImage(_node, image, pages);
+        return this;
+    }
+
+    public IStructureContext BindFormXObject(XObjForm form, params PdfPage[] pages)
+    {
+        _builder.BindFormXObject(_node, form, pages);
+        return this;
+    }
+
+    public IStructureContext BindMarkedContent(PdfPage page, int mcid)
+    {
+        _builder.BindMarkedContent(_node, page, mcid);
+        return this;
     }
 
     public IStructureContext AddLayoutAttributes(string? textAlign = null, double? width = null, double? height = null)
@@ -422,15 +710,108 @@ public class StructuralContext : IStructureContext
         return this;
     }
 
+    public IStructureContext Alt(string? altText)
+    {
+        _node.Alt = altText;
+        return this;
+    }
+
+    public IStructureContext ActualText(string? actualText)
+    {
+        _node.ActualText = actualText;
+        return this;
+    }
+
+    public IStructureContext Expansion(string? expansion)
+    {
+        _node.Expansion = expansion;
+        return this;
+    }
+
+    public IStructureContext Lang(string? language)
+    {
+        _node.Language = language;
+        return this;
+    }
+
+    public IStructureContext ElementId(string? id)
+    {
+        _node.ID = id;
+        return this;
+    }
+
+    public IStructureContext References(params string[] ids)
+    {
+        AddUnique(_node.References, ids);
+        return this;
+    }
+
+    public IStructureContext AddClass(string className)
+    {
+        AddUnique(_node.Classes, className);
+        return this;
+    }
+
+    public IStructureContext SetNamespace(StructureNamespace? ns)
+    {
+        _node.Namespace = ns;
+        return this;
+    }
+
+    public IStructureContext TableScope(StructureScope? scope)
+    {
+        _node.Scope = scope;
+        return this;
+    }
+
+    public IStructureContext TableHeaders(params string[] ids)
+    {
+        AddUnique(_node.Headers, ids);
+        return this;
+    }
+
+    public IStructureContext TableSummary(string? summary)
+    {
+        _node.Summary = summary;
+        return this;
+    }
+
+    public IStructureContext ListNumbering(StructureListNumbering? numbering)
+    {
+        _node.ListNumbering = numbering;
+        return this;
+    }
+
+    public IStructureContext Ref(StructureNode target)
+    {
+        if (string.IsNullOrEmpty(target.ID))
+        {
+            target.ID = Guid.NewGuid().ToString("N");
+        }
+        AddUnique(_node.References, target.ID);
+        return this;
+    }
+
     public IStructureContext Back() => _parent;
-
     public StructureNode GetRoot() => _builder.GetRoot();
-
     public StructureNode GetNode() => _node;
 
     public void CreateBookmark(string title, IOutlineContext outlineBuilder)
     {
         outlineBuilder.AddBookmark(title);
         outlineBuilder.LastNode.StructureElement = _node;
+    }
+
+    private static void AddUnique(List<string> values, params string[] additions)
+    {
+        foreach (var addition in additions)
+        {
+            if (string.IsNullOrWhiteSpace(addition) || values.Contains(addition))
+            {
+                continue;
+            }
+
+            values.Add(addition);
+        }
     }
 }

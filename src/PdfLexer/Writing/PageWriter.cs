@@ -35,7 +35,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
         var props = new PdfDictionary();
         props[PdfName.MCID] = new PdfIntNumber(mcid);
         var mc = new MarkedContent(node.Type) { InlineProps = props };
-        MarkedContent(mc);
+        MarkedContent(mc, accessibilityScope: true);
         node.ContentItems.Add((Page, mcid));
         return this;
     }
@@ -62,7 +62,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
         {
             mc.InlineProps = new PdfDictionary { [PdfName.TYPE] = type };
         }
-        MarkedContent(mc);
+        MarkedContent(mc, accessibilityScope: false);
         return this;
     }
 

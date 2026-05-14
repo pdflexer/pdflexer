@@ -11,6 +11,8 @@ namespace PdfLexer.Content.Model;
 public class FormContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Form;
+    public ParsedContentId? ParsedItemId { get; set; }
+    public StructuredSourceRef? SourceReference { get; set; }
     public required GfxState<T> GraphicsState { get; set; }
     public required PdfStream Stream { get; set; }
 

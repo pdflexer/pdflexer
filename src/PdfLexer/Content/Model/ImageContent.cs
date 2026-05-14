@@ -13,6 +13,8 @@ namespace PdfLexer.Content.Model;
 public record class ImageContent<T> : IContentGroup<T>, ISinglePartCopy<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Image;
+    public ParsedContentId? ParsedItemId { get; set; }
+    public StructuredSourceRef? SourceReference { get; set; }
     public required GfxState<T> GraphicsState { get; set; }
     public required PdfStream Stream { get; set; }
 

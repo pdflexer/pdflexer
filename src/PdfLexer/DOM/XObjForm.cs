@@ -63,6 +63,18 @@ public class XObjForm
         set => NativeObject.Contents = value == null ? PdfStreamContents.Empty : value;
     }
 
+    public PdfNumber? StructParents
+    {
+        get => NativeObject.Dictionary.Get<PdfNumber>(PdfName.StructParents);
+        set => NativeObject.Dictionary.Set(PdfName.StructParents, value);
+    }
+
+    public PdfNumber? StructParent
+    {
+        get => NativeObject.Dictionary.Get<PdfNumber>(PdfName.StructParent);
+        set => NativeObject.Dictionary.Set(PdfName.StructParent, value);
+    }
+
     // Type -> XObject (optional)
     // Subtype => Form
     // FormType => 1 (optional)

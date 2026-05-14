@@ -6,7 +6,7 @@ using System.Text;
 
 namespace PdfLexer.Fonts;
 
-internal class TrueTypeWritableFont : IWritableFont
+internal class TrueTypeWritableFont : IWritableFont, IAccessibilityAwareWritableFont
 {
     private readonly TrueTypeEmbeddedFont _info;
     private readonly Dictionary<char, Glyph> _glyphs;
@@ -388,4 +388,12 @@ internal class TrueTypeWritableFont : IWritableFont
     }
 
     public bool SpaceIsWordSpace() => false;
+
+    void IAccessibilityAwareWritableFont.EnableAccessibilityMapping()
+    {
+    }
+
+    bool IAccessibilityAwareWritableFont.CanEncode(char c) => GetGlyph(c) != null;
+
+    IWritableFont? IAccessibilityAwareWritableFont.GetUnicodeSafeAlternative() => null;
 }

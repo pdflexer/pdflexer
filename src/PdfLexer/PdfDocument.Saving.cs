@@ -21,6 +21,8 @@ public sealed partial class PdfDocument
     /// <param name="stream"></param>
     public void SaveTo(Stream stream)
     {
+        ValidateAccessibilityAuthoringBeforeSave();
+
         // var nums = XrefEntries?.Values.Select(x => x.Reference.ObjectNumber).ToList();
         // var nextId = 1;
         // if (nums != null && nums.Any())
@@ -60,9 +62,13 @@ public sealed partial class PdfDocument
         var catalog = Catalog.CloneShallow();
         var trailer = Trailer.CloneShallow();
 
-        // remove page tree specific items
-        catalog.Remove(PdfName.Names);
+        // remove authored structure so it can be rebuilt for the current save
         catalog.Remove(PdfName.StructTreeRoot);
+
+        if (_pageLabels.Count > 0)
+        {
+            catalog[PdfName.PageLabels] = SerializePageLabels();
+        }
 
         var cir = PdfIndirectRef.Create(catalog);
         trailer[PdfName.Root] = cir;
@@ -80,7 +86,7 @@ public sealed partial class PdfDocument
         List<PdfIndirectRef>? pageRefs = null;
         if (Pages != null)
         {
-            var (pagesRef, refs) = BuildPageTree(ctx);
+            var (pagesRef, refs, annotationMap) = BuildPageTree();
             catalog[PdfName.Pages] = pagesRef;
             pageRefs = refs;
 
@@ -96,7 +102,7 @@ public sealed partial class PdfDocument
                     }
                 }
 
-                var serializer = new Writing.StructuralSerializer(pageMap);
+                var serializer = new Writing.StructuralSerializer(pageMap, annotationMap);
                 var result = serializer.ConvertToPdf(_structure.GetRoot());
                 catalog[PdfName.StructTreeRoot] = PdfIndirectRef.Create(result.Root);
                 structureMap = result.Map;
@@ -114,12 +120,15 @@ public sealed partial class PdfDocument
             }
         }
 
-      
+        if (pageRefs != null)
+        {
+            ValidateAccessibilityAuthoringAfterSerialization(pageRefs, catalog);
+        }
 
         ctx.Complete(trailer);
     }
 
-    private (IPdfObject, List<PdfIndirectRef>) BuildPageTree(WritingContext ctx)
+    private (IPdfObject, List<PdfIndirectRef>, Dictionary<PdfDictionary, PdfDictionary>) BuildPageTree()
     {
         // TODO page tree
         var dict = new PdfDictionary();
@@ -127,10 +136,12 @@ public sealed partial class PdfDocument
         var ir = PdfIndirectRef.Create(dict);
         var pageDicts = Pages.Select(x => x.NativeObject).ToList();
         var pageRefs = new List<PdfIndirectRef>();
+        var annotationMap = new Dictionary<PdfDictionary, PdfDictionary>();
+        var resolvableNamedDests = NameTreeReader.BuildDestinationKeys(Catalog);
         foreach (var page in Pages)
         {
             var pg = page.NativeObject.CloneShallow();
-            WritingUtil.RemovedUnusedLinks(pg, ir => pageDicts.Contains(ir.GetObject()));
+            WritingUtil.RemovedUnusedLinks(pg, ir => pageDicts.Contains(ir.GetObject()), annotationMap, resolvableNamedDests);
             pg[PdfName.Parent] = ir;
             if (page.SourceRef != null)
             {
@@ -144,7 +155,7 @@ public sealed partial class PdfDocument
         dict[PdfName.Kids] = arr;
         dict[PdfName.TypeName] = PdfName.Pages;
         dict[PdfName.Count] = new PdfIntNumber(Pages.Count);
-        return (PdfIndirectRef.Create(dict), pageRefs);
+        return (PdfIndirectRef.Create(dict), pageRefs, annotationMap);
     }
 
     private void SaveExistingObjects(WritingContext ctx)
@@ -174,5 +185,37 @@ public sealed partial class PdfDocument
                 ctx.WriteIndirectObject(new ExistingIndirectRef(this, obj.Reference));
             }
         }
+    }
+
+    private PdfDictionary SerializePageLabels()
+    {
+        var nums = new PdfArray();
+        foreach (var (index, label) in _pageLabels)
+        {
+            var dict = new PdfDictionary();
+            if (label.Style != PageLabelStyle.None)
+            {
+                dict[PdfName.S] = label.Style switch
+                {
+                    PageLabelStyle.Decimal => PdfName.D,
+                    PageLabelStyle.UpperRoman => PdfName.R,
+                    PageLabelStyle.LowerRoman => PdfName.r,
+                    PageLabelStyle.UpperAlpha => PdfName.A,
+                    PageLabelStyle.LowerAlpha => PdfName.a,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+            }
+            if (!string.IsNullOrEmpty(label.Prefix))
+            {
+                dict[PdfName.P] = new PdfString(label.Prefix);
+            }
+            if (label.Start != 1)
+            {
+                dict[PdfName.St] = new PdfIntNumber(label.Start);
+            }
+            nums.Add(new PdfIntNumber(index));
+            nums.Add(dict);
+        }
+        return new PdfDictionary { [PdfName.Nums] = nums };
     }
 }

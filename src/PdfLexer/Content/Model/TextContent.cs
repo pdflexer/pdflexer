@@ -19,6 +19,8 @@ namespace PdfLexer.Content.Model;
 public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<T>
 {
     public ContentType Type { get; } = ContentType.Text;
+    public ParsedContentId? ParsedItemId { get; set; }
+    public StructuredSourceRef? SourceReference { get; set; }
     public GfxState<T> GraphicsState { get => Segments[0].GraphicsState; }
     public bool CompatibilitySection { get => Segments[0].CompatibilitySection; }
     public required List<TextSegment<T>> Segments { get; set; }
@@ -288,6 +290,221 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
         }
     }
 
+    public bool TrySplitByCharacterRange(
+        int startCharacterIndex,
+        int characterCount,
+        out TextContent<T>? before,
+        out TextContent<T>? selected,
+        out TextContent<T>? after,
+        out string? error)
+    {
+        before = null;
+        selected = null;
+        after = null;
+        error = null;
+
+        if (startCharacterIndex < 0)
+        {
+            error = "Start character index must be non-negative.";
+            return false;
+        }
+
+        if (characterCount <= 0)
+        {
+            error = "Character count must be greater than zero.";
+            return false;
+        }
+
+        var rangeStart = startCharacterIndex;
+        var rangeEnd = startCharacterIndex + characterCount;
+        var totalCharacters = CountCharacters();
+        if (rangeEnd > totalCharacters)
+        {
+            error = "Character range extends beyond the text content.";
+            return false;
+        }
+
+        if (!IsCharacterBoundary(rangeStart) || !IsCharacterBoundary(rangeEnd))
+        {
+            error = "Character range splits inside a multi-character glyph.";
+            return false;
+        }
+
+        var beforeSegments = new List<TextSegment<T>>();
+        var selectedSegments = new List<TextSegment<T>>();
+        var afterSegments = new List<TextSegment<T>>();
+        var characterIndex = 0;
+        var gfx = GraphicsState with { Text = new TxtState<T> { TextLineMatrix = LineMatrix, TextMatrix = LineMatrix } };
+
+        foreach (var seg in Segments)
+        {
+            gfx = seg.GraphicsState with { Text = gfx.Text };
+            if (seg.NewLine)
+            {
+                T_Star_Op<T>.Value.Apply(ref gfx);
+            }
+            else
+            {
+                gfx.UpdateTRM();
+            }
+
+            TextSegment<T>? beforeSegment = null;
+            TextSegment<T>? selectedSegment = null;
+            TextSegment<T>? afterSegment = null;
+
+            foreach (var item in seg.Glyphs)
+            {
+                var textStateBeforeItem = gfx.Text;
+                if (item.Glyph == null)
+                {
+                    if (characterIndex > 0 && characterIndex < rangeStart)
+                    {
+                        beforeSegment ??= CreateSegment(seg, textStateBeforeItem);
+                        beforeSegment.Glyphs.Add(item);
+                    }
+                    else if (characterIndex > rangeStart && characterIndex < rangeEnd)
+                    {
+                        selectedSegment ??= CreateSegment(seg, textStateBeforeItem);
+                        selectedSegment.Glyphs.Add(item);
+                    }
+                    else if (characterIndex > rangeEnd)
+                    {
+                        afterSegment ??= CreateSegment(seg, textStateBeforeItem);
+                        afterSegment.Glyphs.Add(item);
+                    }
+
+                    gfx.Apply(item);
+                    continue;
+                }
+
+                var glyphCharacterCount = item.Glyph.MultiChar?.Length ?? 1;
+                var glyphStart = characterIndex;
+                var glyphEnd = glyphStart + glyphCharacterCount;
+
+                if (glyphEnd <= rangeStart)
+                {
+                    beforeSegment ??= CreateSegment(seg, textStateBeforeItem);
+                    beforeSegment.Glyphs.Add(item);
+                }
+                else if (glyphStart >= rangeEnd)
+                {
+                    afterSegment ??= CreateSegment(seg, textStateBeforeItem);
+                    afterSegment.Glyphs.Add(item);
+                }
+                else
+                {
+                    selectedSegment ??= CreateSegment(seg, textStateBeforeItem);
+                    selectedSegment.Glyphs.Add(item);
+                }
+
+                characterIndex = glyphEnd;
+                gfx.Apply(item);
+            }
+
+            AddIfNotEmpty(beforeSegments, beforeSegment);
+            AddIfNotEmpty(selectedSegments, selectedSegment);
+            AddIfNotEmpty(afterSegments, afterSegment);
+        }
+
+        before = CreateContent(beforeSegments);
+        selected = CreateContent(selectedSegments);
+        after = CreateContent(afterSegments);
+        return selected != null;
+    }
+
+    private int CountCharacters()
+    {
+        var count = 0;
+        foreach (var seg in Segments)
+        {
+            foreach (var item in seg.Glyphs)
+            {
+                if (item.Glyph != null)
+                {
+                    count += item.Glyph.MultiChar?.Length ?? 1;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    private bool IsCharacterBoundary(int characterIndex)
+    {
+        if (characterIndex == 0)
+        {
+            return true;
+        }
+
+        var current = 0;
+        foreach (var seg in Segments)
+        {
+            foreach (var item in seg.Glyphs)
+            {
+                if (item.Glyph == null)
+                {
+                    continue;
+                }
+
+                var next = current + (item.Glyph.MultiChar?.Length ?? 1);
+                if (characterIndex == next)
+                {
+                    return true;
+                }
+
+                if (characterIndex < next)
+                {
+                    return false;
+                }
+
+                current = next;
+            }
+        }
+
+        return characterIndex == current;
+    }
+
+    private static TextSegment<T> CreateSegment(TextSegment<T> source, TxtState<T> textState)
+    {
+        return new TextSegment<T>
+        {
+            GraphicsState = source.GraphicsState with
+            {
+                Text = new TxtState<T>
+                {
+                    TextLineMatrix = textState.TextMatrix,
+                    TextMatrix = textState.TextMatrix
+                }
+            },
+            CompatibilitySection = source.CompatibilitySection,
+            Glyphs = new List<GlyphOrShift<T>>()
+        };
+    }
+
+    private static void AddIfNotEmpty(List<TextSegment<T>> segments, TextSegment<T>? segment)
+    {
+        if (segment?.Glyphs.Count > 0)
+        {
+            segments.Add(segment);
+        }
+    }
+
+    private TextContent<T>? CreateContent(List<TextSegment<T>> segments)
+    {
+        if (segments.Count == 0)
+        {
+            return null;
+        }
+
+        return new TextContent<T>
+        {
+            ParsedItemId = ParsedItemId,
+            SourceReference = SourceReference,
+            LineMatrix = segments[0].GraphicsState.Text.TextMatrix,
+            Segments = segments
+        };
+    }
+
     public TextContent<T>? CopyArea(PdfRect<T> rect) => SplitInternal(rect, true, false).Inside;
     public (TextContent<T>? Inside, TextContent<T>? Outside) Split(PdfRect<T> rect) => SplitInternal(rect, true, true);
 
@@ -297,11 +514,15 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
 
         var inside = trackInside ? new TextContent<T>
         {
+            ParsedItemId = ParsedItemId,
+            SourceReference = SourceReference,
             LineMatrix = LineMatrix,
             Segments = new List<TextSegment<T>> { }
         } : null;
         var outside = trackOutside ? new TextContent<T>
         {
+            ParsedItemId = ParsedItemId,
+            SourceReference = SourceReference,
             LineMatrix = LineMatrix,
             Segments = new List<TextSegment<T>> { }
         } : null;

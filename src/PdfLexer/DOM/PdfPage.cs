@@ -123,6 +123,19 @@ public sealed class PdfPage
         NativeObject.GetOrCreateValue<PdfDictionary>(PdfName.Resources).GetOrCreateValue<PdfDictionary>(PdfName.XObject)[nm] = xobj.Indirect();
     }
 
+    public PdfIndirectRef AddAnnotation(PdfDictionary annotation)
+    {
+        if (!annotation.ContainsKey(PdfName.P))
+        {
+            annotation[PdfName.P] = NativeObject.Indirect();
+        }
+
+        var annots = NativeObject.GetOrCreateValue<PdfArray>(PdfName.Annots);
+        var indirect = annotation.Indirect();
+        annots.Add(indirect);
+        return indirect;
+    }
+
 
     private PdfArray GetWithDefault(PdfName primary, PdfName secondary)
     {

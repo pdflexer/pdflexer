@@ -18,7 +18,7 @@ public sealed class StructuredLine
         this.pageSpace = pageSpace;
     }
 
-    internal int SequenceIndex { get; }
+    public int SequenceIndex { get; }
 
     public IReadOnlyList<StructuredWord> Words { get; }
     public IReadOnlyList<StructuredSourceRef> SourceReferences => sourceReferences ??=

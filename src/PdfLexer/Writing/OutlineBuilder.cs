@@ -59,9 +59,19 @@ internal class OutlineBuilder
             // Set properties
             dict[PdfName.Title] = new PdfString(node.Title);
 
+            PdfIndirectRef? structureElementRef = null;
+            if (node.StructureElement != null && structureMap != null)
+            {
+                structureMap.TryGetValue(node.StructureElement, out structureElementRef);
+            }
+
             if (node.Destination != null)
             {
-                if (node.Destination is PdfDictionary pageDict)
+                if (structureElementRef != null && TryBuildStructureDestination(node.Destination, structureElementRef, out var structureDestination))
+                {
+                    dict[PdfName.Dest] = structureDestination;
+                }
+                else if (node.Destination is PdfDictionary pageDict)
                 {
                     dict[PdfName.Dest] = new PdfArray
                 {
@@ -89,12 +99,9 @@ internal class OutlineBuilder
                 }
             }
 
-            if (node.StructureElement != null && structureMap != null)
+            if (structureElementRef != null)
             {
-                if (structureMap.TryGetValue(node.StructureElement, out var seRef))
-                {
-                    dict[PdfName.SE] = seRef;
-                }
+                dict[PdfName.SE] = structureElementRef;
             }
 
             if (node.Color != null && node.Color.Length == 3)
@@ -130,6 +137,40 @@ internal class OutlineBuilder
         }
 
         return rootDict;
+    }
+
+    private static bool TryBuildStructureDestination(IPdfObject destination, PdfIndirectRef structureRef, out PdfArray structureDestination)
+    {
+        if (destination is PdfDictionary || destination is PdfIndirectRef)
+        {
+            structureDestination = new PdfArray
+            {
+                structureRef,
+                PdfName.Fit
+            };
+            return true;
+        }
+
+        if (destination.Resolve().Type == PdfObjectType.ArrayObj)
+        {
+            var source = destination.Resolve().GetAs<PdfArray>();
+            if (source.Count == 0)
+            {
+                structureDestination = default!;
+                return false;
+            }
+
+            structureDestination = new PdfArray { structureRef };
+            for (var i = 1; i < source.Count; i++)
+            {
+                structureDestination.Add(source[i]);
+            }
+
+            return true;
+        }
+
+        structureDestination = default!;
+        return false;
     }
 
     private void LinkSiblings(List<BookmarkNode> siblings, PdfIndirectRef parentRef, Dictionary<BookmarkNode, (PdfDictionary Dict, PdfIndirectRef Ref)> map)

@@ -438,7 +438,7 @@ namespace PdfLexer.Tests
         }
 
         [Fact]
-        public void Save_Removes_Names_And_Encrypt_FromOutput()
+        public void Save_Preserves_Names_And_Removes_Encrypt_FromOutput()
         {
             using var doc = PdfDocument.Create();
             doc.Catalog[PdfName.Names] = new PdfDictionary();
@@ -448,8 +448,63 @@ namespace PdfLexer.Tests
             doc.SaveTo(ms);
             
             using var doc2 = PdfDocument.Open(ms.ToArray());
-            Assert.False(doc2.Catalog.ContainsKey(PdfName.Names));
+            Assert.True(doc2.Catalog.ContainsKey(PdfName.Names));
             Assert.False(doc2.Trailer.ContainsKey(PdfName.Encrypt));
+        }
+
+        [Fact]
+        public void Save_Preserves_Named_Destinations_And_Internal_Link_Targets()
+        {
+            using var doc = PdfDocument.Create();
+            var page = doc.AddPage();
+
+            var dest = new PdfArray
+            {
+                page.NativeObject.Indirect(),
+                PdfName.XYZ,
+                new PdfIntNumber(0),
+                new PdfIntNumber(0),
+                PdfNull.Value
+            };
+            var dests = new PdfDictionary
+            {
+                [(PdfName)"Names"] = new PdfArray
+                {
+                    new PdfString("chapter-1"),
+                    dest
+                }
+            };
+            doc.Catalog[PdfName.Names] = new PdfDictionary
+            {
+                [(PdfName)"Dests"] = dests
+            };
+
+            var annot = new PdfDictionary
+            {
+                [PdfName.Subtype] = PdfName.Link,
+                [PdfName.Rect] = new PdfArray
+                {
+                    new PdfIntNumber(0),
+                    new PdfIntNumber(0),
+                    new PdfIntNumber(10),
+                    new PdfIntNumber(10)
+                },
+                [PdfName.Dest] = new PdfString("chapter-1")
+            };
+            page.NativeObject[PdfName.Annots] = new PdfArray { annot };
+
+            using var ms = new MemoryStream();
+            doc.SaveTo(ms);
+
+            using var doc2 = PdfDocument.Open(ms.ToArray());
+            var names = doc2.Catalog.Get<PdfDictionary>(PdfName.Names);
+            Assert.NotNull(names);
+            Assert.True(names.ContainsKey((PdfName)"Dests"));
+
+            var annots = doc2.Pages[0].NativeObject.Get<PdfArray>(PdfName.Annots);
+            Assert.NotNull(annots);
+            var savedAnnot = annots[0].Resolve().GetAs<PdfDictionary>();
+            Assert.Equal("chapter-1", savedAnnot.Get<PdfString>(PdfName.Dest).Value);
         }
 
         [Fact]

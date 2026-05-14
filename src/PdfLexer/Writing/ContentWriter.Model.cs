@@ -598,10 +598,10 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         }
     }
 
-    internal ContentWriter<T> MarkedContent(MarkedContent mc)
+    internal ContentWriter<T> MarkedContent(MarkedContent mc, bool accessibilityScope = false)
     {
-        // EnsureInPageState(); // make sure in page state to simplify making sure we don't have
-                               // uneven operators eg. BT BMC ET EMC
+        mcTextStateStack.Push(State == PageState.Text);
+        
         if (mc.PropList != null)
         {
             if (!propertyLists.TryGetValue(mc.PropList, out var name))
@@ -636,13 +636,13 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         }
         mcState ??= new List<MarkedContent>();
         mcState.Add(mc);
+        accessibilityScopeStack.Push(accessibilityScope);
         mcDepth++;
         return this;
     }
 
     internal ContentWriter<T> EndMarkedContent()
     {
-        // EnsureInPageState();
         if (mcState == null || mcState.Count == 0)
         {
             throw new PdfLexerException("EMC called without MC state");
@@ -655,10 +655,30 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         }
 
         mcDepth--;
+        if (accessibilityScopeStack.Count > 0)
+        {
+            accessibilityScopeStack.Pop();
+        }
+        
+        if (mcTextStateStack.Count > 0)
+        {
+            var startedInText = mcTextStateStack.Pop();
+            if (startedInText)
+            {
+                EnsureInTextState();
+            }
+            else
+            {
+                EnsureInPageState();
+            }
+        }
+        
         EMC_Op.Value.Serialize(Writer.Stream);
         Writer.Stream.WriteByte((byte)'\n');
         return this;
     }
+
+    internal bool IsAccessibilityTextScope => accessibilityScopeStack.Count > 0 && accessibilityScopeStack.Peek();
 
 
     private Dictionary<PdfDictionary, PdfName> extGraphics = new Dictionary<PdfDictionary, PdfName>();

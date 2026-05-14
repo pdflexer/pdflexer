@@ -93,6 +93,12 @@ namespace PdfLexer.DOM
             }
         }
 
+        public PdfNumber? StructParent
+        {
+            get => NativeObject.Get<PdfNumber>(PdfName.StructParent);
+            set => NativeObject.Set(PdfName.StructParent, value);
+        }
+
 
 
         // Width int

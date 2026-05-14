@@ -14,6 +14,8 @@ public class MarkedContentGroup<T> : IContentGroup<T>, IContentContainer<T> wher
     public MarkedContent Tag { get; }
     public List<IContentNode<T>> Children { get; }
     IEnumerable<IContentNode<T>> IContentContainer<T>.Children => Children;
+    public ParsedContentId? ParsedItemId => ContentIdentityHelpers.Merge(Children);
+    public StructuredSourceRef? SourceReference => ContentIdentityHelpers.MergeSourceRefs(Children);
     public required GfxState<T> GraphicsState { get; set; }
     public ContentType Type => ContentType.MarkedContent;
     public bool CompatibilitySection { get; set; }
@@ -123,6 +125,11 @@ public class MarkedContentGroup<T> : IContentGroup<T>, IContentContainer<T> wher
          }
 
          return (inGroup, outGroup);
+    }
+
+    public MarkedContentGroup<T> Wrap(IEnumerable<IContentItem<T>> leaves, MarkedContent tag)
+    {
+        return Children.Wrap(leaves, tag);
     }
 
     public void Transform(GfxMatrix<T> transformation)

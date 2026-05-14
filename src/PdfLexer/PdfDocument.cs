@@ -62,13 +62,22 @@ public sealed partial class PdfDocument : IDisposable
     }
 
     private StructuralBuilder? _structure;
+    /// <summary>
+    /// Gets the logical-structure authoring surface for new documents and existing documents that are currently untagged.
+    /// </summary>
+    /// <remarks>
+    /// This property rejects documents that already contain a <c>StructTreeRoot</c>. See <c>docs/accessibility-authoring.md</c>
+    /// for the supported accessible-authoring workflow and scope contract.
+    /// </remarks>
     public StructuralBuilder Structure
     {
         get
         {
             if (_structure == null)
             {
+                ThrowIfAccessibilityAuthoringIsUnsupported(nameof(Structure));
                 _structure = new StructuralBuilder();
+                ApplyAccessibilityStructureDefaults();
             }
             return _structure;
         }
@@ -120,6 +129,9 @@ public sealed partial class PdfDocument : IDisposable
         Trailer = null!;
     }
 
+    private readonly SortedDictionary<int, PageLabel> _pageLabels = new();
+    public void SetPageLabel(int pageIndex, PageLabel label) => _pageLabels[pageIndex] = label;
+
     public byte[] Save()
     {
         using var ms = new MemoryStream();
@@ -131,6 +143,10 @@ public sealed partial class PdfDocument : IDisposable
     {
         var pg = new PdfPage();
         pg.MediaBox = PageSizeHelpers.GetMediaBox(size);
+        if (_accessibilityConfiguration != null)
+        {
+            pg.NativeObject[PdfName.Tabs] = PdfName.S;
+        }
         Pages.Add(pg);
         return pg;
     }
@@ -139,6 +155,10 @@ public sealed partial class PdfDocument : IDisposable
     {
         var pg = new PdfPage();
         pg.MediaBox = new PdfArray { PdfCommonNumbers.Zero, PdfCommonNumbers.Zero, new PdfDoubleNumber(width), new PdfDoubleNumber(height) };
+        if (_accessibilityConfiguration != null)
+        {
+            pg.NativeObject[PdfName.Tabs] = PdfName.S;
+        }
         Pages.Add(pg);
         return pg;
     }

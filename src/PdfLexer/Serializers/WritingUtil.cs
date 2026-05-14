@@ -4,7 +4,7 @@ namespace PdfLexer.Serializers;
 
 internal class WritingUtil
 {
-    public static void RemovedUnusedLinks(PdfDictionary page, Func<PdfIndirectRef, bool> exists)
+    public static void RemovedUnusedLinks(PdfDictionary page, Func<PdfIndirectRef, bool> exists, Dictionary<PdfDictionary, PdfDictionary>? annotationMap = null, HashSet<string>? resolvableNamedDests = null)
     {
         if (!page.TryGetValue<PdfArray>(PdfName.Annots, out var data, false))
         {
@@ -28,12 +28,17 @@ internal class WritingUtil
                 bool remove = false;
                 if (dest is PdfName named)
                 {
-                    // TODO check if exists -> just remove for now
-                    remove = true;
+                    if (resolvableNamedDests == null || !resolvableNamedDests.Contains(named.Value))
+                    {
+                        remove = true;
+                    }
                 }
                 else if (dest is PdfString stringed)
                 {
-                    remove = true;
+                    if (resolvableNamedDests == null || !resolvableNamedDests.Contains(stringed.Value))
+                    {
+                        remove = true;
+                    }
                 }
                 else if (dest is PdfArray array && array.Count > 0 && array[0] is PdfIndirectRef xref)
                 {
@@ -41,7 +46,6 @@ internal class WritingUtil
                     {
                         remove = true;
                     }
-
                 }
                 if (remove)
                 {
@@ -116,6 +120,14 @@ internal class WritingUtil
                 var copy = annot.CloneShallow();
                 copy[PdfName.P] = PdfIndirectRef.Create(page);
                 data[i] = copy.Indirect();
+                if (annotationMap != null)
+                {
+                    annotationMap[annot] = copy;
+                }
+            }
+            else if (current is PdfDictionary annotDict)
+            {
+                annotationMap?.TryAdd(annotDict, annotDict);
             }
         }
     }

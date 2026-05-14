@@ -213,6 +213,8 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         }
                         AddContent(new ShadingContent<T>
                         {
+                            ParsedItemId = GetCurrentIdentity().parsedItemId,
+                            SourceReference = GetCurrentIdentity().sourceReference,
                             Shading = shObj,
                             GraphicsState = GraphicsState,
                             CompatibilitySection = bx
@@ -231,8 +233,11 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                     }
                     if (isForm)
                     {
+                        var identity = GetCurrentIdentity();
                         AddContent(new FormContent<T>
                         {
+                            ParsedItemId = identity.parsedItemId,
+                            SourceReference = identity.sourceReference,
                             Stream = obj,
                             GraphicsState = GraphicsState,
                             CompatibilitySection = bx,
@@ -241,8 +246,11 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                     }
                     else
                     {
+                        var identity = GetCurrentIdentity();
                         AddContent(new ImageContent<T>
                         {
+                            ParsedItemId = identity.parsedItemId,
+                            SourceReference = identity.sourceReference,
                             Stream = obj,
                             GraphicsState = GraphicsState,
                             CompatibilitySection = bx
@@ -257,8 +265,11 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         }
                         var img = (InlineImage_Op<T>)iiop;
                         var ximg = img.ConvertToStream(Scanner.Resources);
+                        var identity = GetCurrentIdentity();
                         AddContent(new ImageContent<T>
                         {
+                            ParsedItemId = identity.parsedItemId,
+                            SourceReference = identity.sourceReference,
                             Stream = ximg,
                             GraphicsState = GraphicsState,
                             CompatibilitySection = bx
@@ -505,7 +516,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                     {
                         if (Scanner.TryGetCurrentOperation<T>(out var pco))
                         {
-                            currentSubPath ??= NewSubPath(T.Zero, T.Zero, GraphicsState);
+                            currentSubPath ??= NewSubPath(T.Zero, T.Zero, GraphicsState, GetCurrentIdentity());
                             currentSubPath.Operations.Add((IPathCreatingOp<T>)pco);
                         }
                         continue;
@@ -529,7 +540,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             }
 
                             var re = (re_Op<T>)gso;
-                            currentSubPath = NewSubPath(re.x, re.y, GraphicsState);
+                            currentSubPath = NewSubPath(re.x, re.y, GraphicsState, GetCurrentIdentity());
                             currentSubPath.Operations.Add(re);
                         }
                         continue;
@@ -543,7 +554,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                                 state = ParseState.Paths;
                             }
                             var m = (m_Op<T>)gso;
-                            currentSubPath = NewSubPath(m.x, m.y, GraphicsState);
+                            currentSubPath = NewSubPath(m.x, m.y, GraphicsState, GetCurrentIdentity());
                         }
                         continue;
                     }
@@ -577,7 +588,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             currentPath.Paths,
                             clipping == PdfOperatorType.W_Star) : null;
 
-                        CompleteCurrent(GraphicsState);
+                        CompleteCurrent(GraphicsState, true, GetCurrentIdentity());
 
                         if (clip != null)
                         {
@@ -643,10 +654,13 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
                         var seg = CreateTextSegment(slice);
                         seg.CompatibilitySection = bx;
+                        var identity = GetCurrentIdentity();
                         if (currentText == null)
                         {
                             currentText = new TextContent<T>
                             {
+                                ParsedItemId = identity.parsedItemId,
+                                SourceReference = identity.sourceReference,
                                 Segments = new List<TextSegment<T>> { seg },
                                 LineMatrix = GraphicsState.Text.TextLineMatrix
                             };
@@ -659,10 +673,13 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         {
                             seg.NewLine = true;
                             currentText.Segments.Add(seg);
+                            ExtendIdentity(currentText);
                         }
 
                         textClipping?.Add(new TextContent<T>
                         {
+                            ParsedItemId = identity.parsedItemId,
+                            SourceReference = identity.sourceReference,
                             Segments = new List<TextSegment<T>> { seg with { NewLine = false } },
                             LineMatrix = GraphicsState.Text.TextLineMatrix
                         });
@@ -680,10 +697,13 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         T_Star_Op<T>.Value.Apply(ref GraphicsState);
                         var seg = CreateTextSegment(slice);
                         seg.CompatibilitySection = bx;
+                        var identity = GetCurrentIdentity();
                         if (currentText == null)
                         {
                             currentText = new TextContent<T>
                             {
+                                ParsedItemId = identity.parsedItemId,
+                                SourceReference = identity.sourceReference,
                                 Segments = new List<TextSegment<T>> { seg },
                                 LineMatrix = GraphicsState.Text.TextLineMatrix
                             };
@@ -696,9 +716,12 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         {
                             seg.NewLine = true;
                             currentText.Segments.Add(seg);
+                            ExtendIdentity(currentText);
                         }
                         textClipping?.Add(new TextContent<T>
                         {
+                            ParsedItemId = identity.parsedItemId,
+                            SourceReference = identity.sourceReference,
                             Segments = new List<TextSegment<T>> { seg with { NewLine = false } },
                             LineMatrix = GraphicsState.Text.TextLineMatrix
                         });
@@ -712,10 +735,13 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         var slice = Scanner.Scanner.Data.Slice(op.StartAt, op.Length);
                         var seg = CreateTextSegment(slice);
                         seg.CompatibilitySection = bx;
+                        var identity = GetCurrentIdentity();
                         if (currentText == null)
                         {
                             currentText = new TextContent<T>
                             {
+                                ParsedItemId = identity.parsedItemId,
+                                SourceReference = identity.sourceReference,
                                 Segments = new List<TextSegment<T>> { seg },
                                 LineMatrix = GraphicsState.Text.TextLineMatrix
                             };
@@ -727,9 +753,12 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         else
                         {
                             currentText.Segments.Add(seg);
+                            ExtendIdentity(currentText);
                         }
                         textClipping?.Add(new TextContent<T>
                         {
+                            ParsedItemId = identity.parsedItemId,
+                            SourceReference = identity.sourceReference,
                             Segments = new List<TextSegment<T>> { seg with { } },
                             LineMatrix = GraphicsState.Text.TextLineMatrix
                         });
@@ -761,11 +790,14 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                             }
                         }
                         ApplyAll(seg.Glyphs);
+                        var identity = GetCurrentIdentity();
 
                         if (currentText == null)
                         {
                             currentText = new TextContent<T>
                             {
+                                ParsedItemId = identity.parsedItemId,
+                                SourceReference = identity.sourceReference,
                                 Segments = new List<TextSegment<T>> { seg },
                                 LineMatrix = GraphicsState.Text.TextLineMatrix
                             };
@@ -777,9 +809,12 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         else
                         {
                             currentText.Segments.Add(seg);
+                            ExtendIdentity(currentText);
                         }
                         textClipping?.Add(new TextContent<T>
                         {
+                            ParsedItemId = identity.parsedItemId,
+                            SourceReference = identity.sourceReference,
                             Segments = new List<TextSegment<T>> { seg with { } },
                             LineMatrix = GraphicsState.Text.TextLineMatrix
                         });
@@ -796,7 +831,10 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
 
         return content;
 
-        void CompleteCurrent(GfxState<T> gs, bool reset = true)
+        void CompleteCurrent(
+            GfxState<T> gs,
+            bool reset = true,
+            (ParsedContentId parsedItemId, StructuredSourceRef sourceReference)? currentIdentity = null)
         {
             if (state == ParseState.Text)
             {
@@ -813,6 +851,11 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                 }
                 if (currentPath!.Closing != n_Op<T>.Value)
                 {
+                    if (currentIdentity != null)
+                    {
+                        currentPath.ParsedItemId = ContentIdentityHelpers.Merge(currentPath.ParsedItemId, currentIdentity.Value.parsedItemId);
+                        currentPath.SourceReference = ContentIdentityHelpers.Merge(currentPath.SourceReference, currentIdentity.Value.sourceReference);
+                    }
                     currentPath.GraphicsState = gs; // catch GS changes for final stroking
                     currentPath.CompatibilitySection = bx;
                     AddContent(currentPath!);
@@ -826,6 +869,8 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                 {
                     currentPath = new PathSequence<T>
                     {
+                        ParsedItemId = currentIdentity?.parsedItemId,
+                        SourceReference = currentIdentity?.sourceReference,
                         GraphicsState = gs,
                         CompatibilitySection = bx,
                         Paths = new List<SubPath<T>>()
@@ -834,13 +879,19 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
             }
         }
 
-        SubPath<T> NewSubPath(T x, T y, GfxState<T> gs)
+        SubPath<T> NewSubPath(
+            T x,
+            T y,
+            GfxState<T> gs,
+            (ParsedContentId parsedItemId, StructuredSourceRef sourceReference)? currentIdentity = null)
         {
             var nsp = new SubPath<T> { XPos = x, YPos = y, Operations = new List<IPathCreatingOp<T>>() };
             if (currentPath == null)
             {
                 currentPath = new PathSequence<T>
                 {
+                    ParsedItemId = currentIdentity?.parsedItemId,
+                    SourceReference = currentIdentity?.sourceReference,
                     GraphicsState = gs,
                     CompatibilitySection = bx,
                     Paths = new List<SubPath<T>>
@@ -856,6 +907,22 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
 
             return nsp;
         }
+    }
+
+    private (ParsedContentId parsedItemId, StructuredSourceRef sourceReference) GetCurrentIdentity()
+    {
+        var (start, length) = Scanner.Scanner.GetCurrentLength();
+        var operatorIndex = Scanner.Scanner.Position;
+        return (
+            ParsedContentId.FromSingleOperator(Scanner.CurrentStreamId, operatorIndex),
+            new StructuredSourceRef(Scanner.CurrentStreamId, start, length));
+    }
+
+    private void ExtendIdentity(TextContent<T> text)
+    {
+        var (parsedItemId, sourceReference) = GetCurrentIdentity();
+        text.ParsedItemId = ContentIdentityHelpers.Merge(text.ParsedItemId, parsedItemId);
+        text.SourceReference = ContentIdentityHelpers.Merge(text.SourceReference, sourceReference);
     }
 
     private IPdfObject GetShiftedPattern(IPdfObject pattern, GfxMatrix<T> formStart)

@@ -30,7 +30,7 @@ public sealed class StructuredWord
         HasExplicitBreakBefore = hasExplicitBreakBefore;
     }
 
-    internal int SequenceIndex { get; }
+    public int SequenceIndex { get; }
     internal bool StartsNewLine { get; }
     internal bool HasExplicitBreakBefore { get; }
 

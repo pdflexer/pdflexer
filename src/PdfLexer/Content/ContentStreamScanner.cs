@@ -162,7 +162,9 @@ public ref struct ContentStreamScanner
 
     public ReadOnlySpan<byte> GetDataForCurrent()
     {
-        var first = Position - CurrentInfo.Length;
+        if (Items.Length == 0 || Position < 0) return ReadOnlySpan<byte>.Empty;
+        var first = Math.Max(0, Position - CurrentInfo.Length);
+        if (first >= Items.Length) return ReadOnlySpan<byte>.Empty;
         var start = Items[first].StartAt;
         var oplen = CurrentInfo.Type switch
         {
@@ -181,7 +183,9 @@ public ref struct ContentStreamScanner
 
     public (int start, int length) GetCurrentLength()
     {
-        var first = Position - CurrentInfo.Length;
+        if (Items.Length == 0 || Position < 0) return (0, 0);
+        var first = Math.Max(0, Position - CurrentInfo.Length);
+        if (first >= Items.Length) return (0, 0);
         var start = Items[first].StartAt;
         var oplen = CurrentInfo.Type switch
         {

@@ -34,6 +34,7 @@ internal static class StructuredTextBuilder
     {
         var characters = new List<StructuredCharacter>();
         var scanner = new TextScanner(ctx, page);
+        var sourceCharacterIndexes = new Dictionary<StructuredSourceRef, int>();
         var sequenceIndex = 0;
         while (scanner.Advance())
         {
@@ -41,26 +42,105 @@ internal static class StructuredTextBuilder
             var glyph = scanner.Glyph;
             var isVertical = scanner.GraphicsState.Font?.IsVertical ?? false;
             var metrics = new StructuredGlyphMetrics(glyph, isVertical);
-            var snapshot = new StructuredGlyphSnapshot(textRenderingMatrix, metrics, scanner.GraphicsState.FontSize);
+            var snapshot = new StructuredGlyphSnapshot(
+                textRenderingMatrix,
+                metrics,
+                scanner.GraphicsState.FontSize,
+                CreateStyleSnapshot(scanner.GraphicsState));
             var emitted = glyph.MultiChar ?? glyph.Char.ToString();
+            var sourceReference = new StructuredSourceRef(
+                scanner.Scanner.CurrentStreamId,
+                scanner.TxtOpStart,
+                scanner.TxtOpLength);
+            sourceCharacterIndexes.TryGetValue(sourceReference, out var sourceCharacterIndex);
             for (var i = 0; i < emitted.Length; i++)
             {
-                var sourceReference = new StructuredSourceRef(
-                    scanner.Scanner.CurrentStreamId,
-                    scanner.TxtOpStart,
-                    scanner.TxtOpLength);
                 characters.Add(new StructuredCharacter(
                     emitted[i],
                     snapshot,
                     sourceReference,
+                    sourceCharacterIndex,
                     sequenceIndex,
                     scanner.WasNewLine && i == 0,
                     pageSpace));
+                sourceCharacterIndex++;
                 sequenceIndex++;
             }
+
+            sourceCharacterIndexes[sourceReference] = sourceCharacterIndex;
         }
 
         return characters;
+    }
+
+    private static StructuredStyleSnapshot CreateStyleSnapshot(GfxState<double> state)
+    {
+        var fontResourceName = state.FontResourceName?.Value;
+        var fontName = GetFontName(state.FontObject);
+        return new StructuredStyleSnapshot(
+            fontResourceName,
+            fontName,
+            InferFontWeight(fontName),
+            InferItalic(fontName),
+            IsGrayish(state));
+    }
+
+    private static string? GetFontName(PdfDictionary? font)
+    {
+        var name = font?.Get<PdfName>(PdfName.BaseFont)?.Value;
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return null;
+        }
+
+        var plus = name.IndexOf('+');
+        if (plus == 6 && name.Take(6).All(char.IsUpper))
+        {
+            name = name[(plus + 1)..];
+        }
+
+        return name;
+    }
+
+    private static int? InferFontWeight(string? fontName)
+    {
+        if (string.IsNullOrWhiteSpace(fontName))
+        {
+            return null;
+        }
+
+        return fontName.Contains("Bold", StringComparison.OrdinalIgnoreCase) ||
+            fontName.Contains("Black", StringComparison.OrdinalIgnoreCase) ||
+            fontName.Contains("Heavy", StringComparison.OrdinalIgnoreCase)
+            ? 700
+            : 400;
+    }
+
+    private static bool? InferItalic(string? fontName)
+    {
+        if (string.IsNullOrWhiteSpace(fontName))
+        {
+            return null;
+        }
+
+        return fontName.Contains("Italic", StringComparison.OrdinalIgnoreCase) ||
+            fontName.Contains("Oblique", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static bool? IsGrayish(GfxState<double> state)
+    {
+        var name = state.ColorSpaceModel.Name;
+        if (name == PdfName.DeviceGray || name == PdfName.CalGray)
+        {
+            return true;
+        }
+
+        if (name == PdfName.DeviceRGB)
+        {
+            return false;
+        }
+
+        return null;
     }
 
     private static List<StructuredWord> GroupWords(IReadOnlyList<StructuredCharacter> characters, StructuredTextOptions options)

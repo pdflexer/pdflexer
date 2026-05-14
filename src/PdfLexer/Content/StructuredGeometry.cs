@@ -22,11 +22,16 @@ internal readonly struct StructuredGlyphMetrics
 
 internal readonly struct StructuredGlyphSnapshot
 {
-    public StructuredGlyphSnapshot(GfxMatrix<double> textRenderingMatrix, StructuredGlyphMetrics metrics, double fontSize)
+    public StructuredGlyphSnapshot(
+        GfxMatrix<double> textRenderingMatrix,
+        StructuredGlyphMetrics metrics,
+        double fontSize,
+        StructuredStyleSnapshot style)
     {
         TextRenderingMatrix = textRenderingMatrix;
         Metrics = metrics;
         FontSize = fontSize;
+        Style = style;
         Rotation = textRenderingMatrix.GetRotation();
         Origin = new PdfPoint<double> { X = textRenderingMatrix.E, Y = textRenderingMatrix.F };
         var (inlineX, inlineY) = GetAxis(textRenderingMatrix, metrics.IsVertical);
@@ -40,6 +45,7 @@ internal readonly struct StructuredGlyphSnapshot
     public GfxMatrix<double> TextRenderingMatrix { get; }
     public StructuredGlyphMetrics Metrics { get; }
     public double FontSize { get; }
+    public StructuredStyleSnapshot Style { get; }
     public double Rotation { get; }
     public PdfPoint<double> Origin { get; }
     public double InlineAxisX { get; }
@@ -111,6 +117,13 @@ internal readonly struct StructuredGlyphSnapshot
         return Math.Abs(width * scale);
     }
 }
+
+public readonly record struct StructuredStyleSnapshot(
+    string? FontResourceName,
+    string? FontName,
+    int? FontWeight,
+    bool? Italic,
+    bool? IsGrayish);
 
 internal static class StructuredBounds
 {

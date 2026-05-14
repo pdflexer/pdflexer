@@ -105,6 +105,47 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
     {
         if (writableFont == null) { throw new NotSupportedException("Must set current font before writing."); }
         EnsureInTextState();
+        if (IsAccessibilityTextScope)
+        {
+            while (true)
+            {
+                if (writableFont is not IAccessibilityAwareWritableFont accessibilityFont)
+                {
+                    break;
+                }
+
+                accessibilityFont.EnableAccessibilityMapping();
+                if (writableFont is TrueTypeWritableFont)
+                {
+                    break;
+                }
+                var unsupported = text.FirstOrDefault(c => !accessibilityFont.CanEncode(c));
+                if (unsupported == default && !text.Contains(default(char)))
+                {
+                    break;
+                }
+
+                var alternative = accessibilityFont.GetUnicodeSafeAlternative();
+                if (alternative == null)
+                {
+                    throw new PdfAccessibilityTextException(
+                        $"Tagged text contains '{unsupported}', which cannot be encoded by the current font. Choose a Type 0-capable font up front for this content.");
+                }
+
+                var tm = GfxState.Text.TextMatrix;
+                EndText();
+                BeginText();
+                TextTransform(tm);
+                Font(alternative, GfxState.FontSize, setTextLeading: false);
+            }
+        }
+
+        WriteTextSegment(text);
+        return this;
+    }
+
+    private void WriteTextSegment(string text)
+    {
         // very inefficient just experimenting
         var b = new byte[2];
         byte[] rented = ArrayPool<byte>.Shared.Rent(text.Length*2);
@@ -149,7 +190,6 @@ public partial class ContentWriter<T> where T : struct, IFloatingPoint<T>
         Writer.Stream.WriteByte((byte)'\n');
         GfxState.ApplyCharShift(FPC<T>.Util.FromDouble<T>(total), false);
         ArrayPool<byte>.Shared.Return(rented);
-        return this;
     }
 
     public ContentWriter<T> TextWrap(string text, T width, TextAlign align = TextAlign.Left, bool userSpace = true)

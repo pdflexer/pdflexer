@@ -3,7 +3,7 @@ using PdfLexer.Fonts.Predefined;
 
 namespace PdfLexer.Fonts;
 
-public class Standard14Font : IWritableFont
+public class Standard14Font : IWritableFont, IAccessibilityAwareWritableFont
 {
     public static IWritableFont GetTimesRoman()
     {
@@ -193,6 +193,7 @@ public class Standard14Font : IWritableFont
     private Glyph[] _fastLookup;
     private int _fastStart;
     private int? _fastEnd;
+    private bool _accessibilityMappingEnabled;
 
     public double LineHeight => 0.9;
     public bool SpaceIsWordSpace() => true;
@@ -250,6 +251,14 @@ public class Standard14Font : IWritableFont
         f.LastChar = max;
         f.Widths = widths;
         f.FontDescriptor = _metrics.Descriptor;
+        if (_accessibilityMappingEnabled)
+        {
+            f.ToUnicode = AccessibilityFontSupport.CreateSingleByteToUnicodeCMap(
+                _glyphs.Values
+                    .Where(x => x.CodePoint.HasValue)
+                    .Select(x => ((byte)x.CodePoint!.Value, char.ConvertFromUtf32(x.Char))),
+                $"{_metrics.BaseFont.Value}-ToUnicode");
+        }
         font = f;
         return f;
     }
@@ -314,4 +323,40 @@ public class Standard14Font : IWritableFont
         c.Kernings.TryGetValue(c2, out k);
         return k;
     }
+
+    private bool TryGetGlyph(char c, out Glyph? glyph)
+    {
+        if (_fastLookup != null && c >= _fastStart && c <= _fastEnd)
+        {
+            glyph = _fastLookup[c];
+            if (glyph != null)
+            {
+                return true;
+            }
+        }
+
+        return _glyphs.TryGetValue(c, out glyph);
+    }
+
+    void IAccessibilityAwareWritableFont.EnableAccessibilityMapping()
+    {
+        if (_accessibilityMappingEnabled)
+        {
+            return;
+        }
+
+        _accessibilityMappingEnabled = true;
+        if (font != null)
+        {
+            new FontType1(font).ToUnicode = AccessibilityFontSupport.CreateSingleByteToUnicodeCMap(
+                _glyphs.Values
+                    .Where(x => x.CodePoint.HasValue)
+                    .Select(x => ((byte)x.CodePoint!.Value, char.ConvertFromUtf32(x.Char))),
+                $"{_metrics.BaseFont.Value}-ToUnicode");
+        }
+    }
+
+    bool IAccessibilityAwareWritableFont.CanEncode(char c) => TryGetGlyph(c, out _);
+
+    IWritableFont? IAccessibilityAwareWritableFont.GetUnicodeSafeAlternative() => null;
 }

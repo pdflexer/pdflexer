@@ -1,5 +1,6 @@
 ﻿using PdfLexer.DOM;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 
 namespace PdfLexer.Content;
 
@@ -473,6 +474,8 @@ public ref struct PageContentScanner
             CurrentStreamId = 0;
             return;
         }
+
+        CurrentStreamId = unchecked((ulong)RuntimeHelpers.GetHashCode(CurrentStream));
     }
 
     internal bool TryGetForm(PdfName name, [NotNullWhen(true)] out PdfStream? found)

@@ -1,5 +1,6 @@
 using PdfLexer.Writing;
 using System.Numerics;
+using PdfLexer.Content;
 
 namespace PdfLexer.Content.Model;
 
@@ -26,6 +27,16 @@ public interface IContentNode<T> where T : struct, IFloatingPoint<T>
 /// </summary>
 public interface IContentItem<T> : IContentNode<T> where T : struct, IFloatingPoint<T>
 {
+    /// <summary>
+    /// Stable parsed-item identity for content produced by <see cref="ContentModelParser{T}"/>.
+    /// </summary>
+    public ParsedContentId? ParsedItemId { get; }
+
+    /// <summary>
+    /// Source-operator provenance for content produced by <see cref="ContentModelParser{T}"/>.
+    /// </summary>
+    public StructuredSourceRef? SourceReference { get; }
+
     /// <summary>
     /// Graphics state for this content.
     /// </summary>

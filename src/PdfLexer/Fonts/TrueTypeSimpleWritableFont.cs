@@ -4,7 +4,7 @@ using PdfLexer.Fonts.Files;
 
 namespace PdfLexer.Fonts;
 
-internal class TrueTypeSimpleWritableFont : IWritableFont
+internal class TrueTypeSimpleWritableFont : IWritableFont, IAccessibilityAwareWritableFont
 {
     private readonly TrueTypeEmbeddedFont _info;
     private readonly Dictionary<char, Glyph> _glyphs;
@@ -13,6 +13,8 @@ internal class TrueTypeSimpleWritableFont : IWritableFont
     private readonly int? _fastEnd;
     private readonly UnknownCharHandling _charHandling;
     private readonly PdfDictionary _xobjDictionary;
+    private bool _accessibilityMappingEnabled;
+    private IWritableFont? _unicodeSafeAlternative;
 
     public double LineHeight => throw new NotImplementedException();
 
@@ -167,8 +169,43 @@ internal class TrueTypeSimpleWritableFont : IWritableFont
         f.Widths = widths;
 
         f.FontDescriptor = _info.Descriptor;
+        if (_accessibilityMappingEnabled)
+        {
+            f.ToUnicode = AccessibilityFontSupport.CreateSingleByteToUnicodeCMap(
+                _glyphs.Values
+                    .Where(x => x.CodePoint.HasValue && x.CodePoint.Value < 256)
+                    .Select(x => ((byte)x.CodePoint!.Value, char.ConvertFromUtf32(x.Char))),
+                $"{_info.PostScriptName}-ToUnicode");
+        }
         return f;
     }
 
     public bool SpaceIsWordSpace() => true;
+
+    void IAccessibilityAwareWritableFont.EnableAccessibilityMapping()
+    {
+        if (_accessibilityMappingEnabled)
+        {
+            return;
+        }
+
+        _accessibilityMappingEnabled = true;
+        var refreshed = CreatePdfDictionary();
+        foreach (var key in _xobjDictionary.Keys.ToList())
+        {
+            _xobjDictionary.Remove(key);
+        }
+        foreach (var kvp in refreshed)
+        {
+            _xobjDictionary[kvp.Key] = kvp.Value;
+        }
+    }
+
+    bool IAccessibilityAwareWritableFont.CanEncode(char c) => GetGlyph(c) != null;
+
+    IWritableFont? IAccessibilityAwareWritableFont.GetUnicodeSafeAlternative()
+    {
+        _unicodeSafeAlternative ??= _info.GetType0EncodedFont(UnknownCharHandling.Error);
+        return _unicodeSafeAlternative;
+    }
 }
