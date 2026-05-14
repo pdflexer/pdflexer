@@ -68,14 +68,16 @@ internal ref struct PipeScanner
         return;
     }
 
-    // read more data and advance reader to start of new data but don't update positioning
-    private void AdvanceBufferSkipReaderToEnd(SequencePosition pos)
+    // consumed = earliest byte the pipe may release; scanFrom = where the next scan resumes.
+    // ReadTo pins consumed at the call's start position so it can return the spanned slice;
+    // ScanToToken passes consumed == scanFrom to release scanned bytes while keeping overlap for split tokens.
+    private void AdvanceBufferPreserve(SequencePosition consumed, SequencePosition scanFrom)
     {
-        var l = LastRead.Length;
-        Pipe.AdvanceTo(pos, Reader.Sequence.End);
-        InitReader(LastRead.End);
-        CurrentStart = l;
-        return;
+        var offset = CurrentOffset + Reader.Sequence.Slice(Reader.Sequence.Start, scanFrom).Length;
+        Pipe.AdvanceTo(consumed, Reader.Sequence.End);
+        InitReader(scanFrom);
+        CurrentOffset = offset;
+        CurrentStart = 0;
     }
 
     private void AdvanceBuffer(long count)
@@ -147,7 +149,7 @@ internal ref struct PipeScanner
     {
         if (CurrentTokenType == PdfTokenType.EOS)
         {
-            Reader.Rewind(10);
+            Reader.Rewind(Math.Min(10, Reader.Consumed));
             throw CommonUtil.DisplayDataErrorException(ref Reader, $"End of data reached");
         }
     }
@@ -253,6 +255,7 @@ internal ref struct PipeScanner
     public ReadOnlySequence<byte> ReadTo(ReadOnlySpan<byte> sequence)
     {
         var start = Reader.Position;
+        var overlap = Math.Max(sequence.Length - 1, 0);
         while (true)
         {
             if (!Reader.TryAdvanceTo(sequence[0], false) || Reader.Remaining < sequence.Length)
@@ -261,7 +264,8 @@ internal ref struct PipeScanner
                 {
                     throw CommonUtil.DisplayDataErrorException(ref Reader, "Sequence not found to read to " + System.Text.Encoding.ASCII.GetString(sequence));
                 }
-                AdvanceBufferSkipReaderToEnd(start);
+                var scanStart = GetOverlapPosition(overlap, Reader.Sequence.Start);
+                AdvanceBufferPreserve(start, scanStart);
                 continue;
             }
 
@@ -275,9 +279,12 @@ internal ref struct PipeScanner
         }
     }
 
-    public bool ScanToToken(ReadOnlySpan<byte> token)
+    public bool ScanToToken(ReadOnlySpan<byte> token, int prevBuffer = 0)
     {
-        var start = Reader.Position;
+        // overlap must cover at least token.Length - 1 to detect tokens split across buffer reads;
+        // callers that ScanBackTokens off the match pass prevBuffer to keep additional back-context.
+        var overlap = Math.Max(token.Length - 1, prevBuffer);
+        CurrentTokenType = PdfTokenType.TBD;
         while (true)
         {
             if (!Reader.TryAdvanceTo(token[0], false) || Reader.Remaining < token.Length)
@@ -286,7 +293,8 @@ internal ref struct PipeScanner
                 {
                     return false;
                 }
-                AdvanceBuffer(start);
+                var scanStart = GetOverlapPosition(overlap, Reader.Sequence.Start);
+                AdvanceBufferPreserve(scanStart, scanStart);
                 continue;
             }
 
@@ -304,6 +312,10 @@ internal ref struct PipeScanner
     {
         while (Reader.Remaining < total)
         {
+            if (IsCompleted)
+            {
+                throw CommonUtil.DisplayDataErrorException(ref Reader, "End of data reached before requested read length");
+            }
             AdvanceBuffer(CurrentStart);
         }
         Reader.Advance(total);
@@ -337,6 +349,7 @@ internal ref struct PipeScanner
         {
             prevBuffer = 1;
         }
+        prevBuffer = Math.Max(prevBuffer, sequence.Length - 1);
         CurrentTokenType = PdfTokenType.TBD;
         while (true)
         {
@@ -358,7 +371,6 @@ internal ref struct PipeScanner
                     // need to keep enough in prevbuffer
                     Reader.Rewind(-e);
                     AdvanceBuffer(Reader.Position);
-                    Reader.Advance(-e);
                 }
                 continue;
             }
@@ -393,6 +405,17 @@ internal ref struct PipeScanner
             Reader.Advance(1);
             continue;
         }
+    }
+
+    private SequencePosition GetOverlapPosition(int overlap, SequencePosition minimum)
+    {
+        var minimumOffset = Reader.Sequence.Slice(Reader.Sequence.Start, minimum).Length;
+        if (overlap <= 0 || Reader.Sequence.Length <= overlap)
+        {
+            return minimum;
+        }
+        var offset = Math.Max(minimumOffset, Reader.Sequence.Length - overlap);
+        return Reader.Sequence.GetPosition(offset);
     }
 
     public int ScanBackTokens(int count, int maxScan)
