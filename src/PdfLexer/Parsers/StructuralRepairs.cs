@@ -27,7 +27,7 @@ internal static class StructuralRepairs
             var cur = scanner.GetOffset();
             if (nextOs > cur) { scanner.Advance((int)(nextOs - cur)); cur = nextOs; }
             nextOs = cur + 1;
-            scanner.ScanToToken(IndirectSequences.obj);
+            scanner.ScanToToken(IndirectSequences.obj, 20);
             var sl = scanner.ScanBackTokens(2, 20);
             if (sl == -1)
             {
@@ -83,7 +83,7 @@ internal static class StructuralRepairs
             var cur = scanner.GetOffset();
             if (nextOs > cur) { scanner.Advance((int)(nextOs - cur)); cur = nextOs; }
             nextOs = cur + 1;
-            if (!scanner.ScanToToken(IndirectSequences.obj))
+            if (!scanner.ScanToToken(IndirectSequences.obj, 20))
             {
                 break;
             }
@@ -207,7 +207,7 @@ internal static class StructuralRepairs
             var cur = scanner.GetOffset();
             if (nextOs > cur) { scanner.Advance((int)(nextOs - cur)); cur = nextOs; }
             nextOs = cur + 1;
-            scanner.ScanToToken(IndirectSequences.obj);
+            scanner.ScanToToken(IndirectSequences.obj, 20);
             var sl = scanner.ScanBackTokens(2, 20);
             if (sl == -1)
             {
