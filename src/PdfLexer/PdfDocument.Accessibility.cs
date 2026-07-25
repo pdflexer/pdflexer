@@ -13,6 +13,30 @@ public sealed partial class PdfDocument
 
     private AccessibilityConfiguration? _accessibilityConfiguration;
 
+    internal void ValidateLegacyWidgetFactory()
+    {
+        const string message = "The legacy text-widget overload has no embedded appearance font. Use FormFieldAppearanceOptions.";
+        if (_accessibilityConfiguration?.StrictConformance == true)
+            throw new PdfAccessibilityConformanceException(message);
+        Context.Warning(message);
+    }
+
+    internal void ValidateAppearanceFont(IWritableFont font)
+    {
+        if (_accessibilityConfiguration?.StrictConformance == true && !IsPdfFontDictionaryEmbedded(font.GetPdfFont()))
+            throw new PdfAccessibilityConformanceException("Strict accessibility requires an embedded font for form-field appearances.");
+    }
+
+    private static bool IsPdfFontDictionaryEmbedded(PdfDictionary dict)
+    {
+        var subtype = dict.Get<PdfName>(PdfName.Subtype);
+        PdfDictionary? descriptor = subtype == PdfName.Type0
+            ? dict.Get<PdfArray>(PdfName.DescendantFonts)?.FirstOrDefault()?.Resolve().GetAs<PdfDictionary>()?.Get<PdfDictionary>(PdfName.FontDescriptor)
+            : dict.Get<PdfDictionary>(PdfName.FontDescriptor);
+        return descriptor != null && (descriptor.ContainsKey(PdfName.FontFile) ||
+            descriptor.ContainsKey(PdfName.FontFile2) || descriptor.ContainsKey(PdfName.FontFile3));
+    }
+
     /// <summary>
     /// Applies the document-level metadata and viewer defaults required for the library's PDF/UA-oriented authoring flow.
     /// </summary>
@@ -30,11 +54,11 @@ public sealed partial class PdfDocument
 
         _accessibilityConfiguration = AccessibilityConfiguration.Create(profile, strictConformance);
 
-        Catalog[PdfName.Lang] = CreateTextString(language);
+        Catalog[PdfName.Lang] = PdfString.CreateTextString(language);
 
         var info = Trailer.GetOrCreateValue<PdfDictionary>(PdfName.Info);
         Trailer[PdfName.Info] = info.Indirect();
-        info[PdfName.Title] = CreateTextString(title);
+        info[PdfName.Title] = PdfString.CreateTextString(title);
 
         var viewerPreferences = Catalog.GetOrCreateValue<PdfDictionary>(PdfName.ViewerPreferences);
         viewerPreferences[PdfName.DisplayDocTitle] = PdfBoolean.True;
@@ -68,16 +92,6 @@ public sealed partial class PdfDocument
     {
         ThrowIfAccessibilityAuthoringIsUnsupported(nameof(BeginRemediation));
         return new RemediationSession(this, configuration ?? new RemediationSessionConfiguration());
-    }
-
-    private static PdfString CreateTextString(string value)
-    {
-        if (value.Any(c => c > 255))
-        {
-            return new PdfString(value, PdfStringType.Literal, PdfTextEncodingType.UTF16BE);
-        }
-
-        return new PdfString(value);
     }
 
     private static PdfStream CreateAccessibilityMetadata(string language, string title, AccessibilityConfiguration config)
@@ -154,7 +168,14 @@ $"""
 
     internal void ValidateAccessibilityAuthoringBeforeSave()
     {
-        if (_accessibilityConfiguration?.StrictConformance != true || _structure == null)
+        if (_structure == null)
+        {
+            return;
+        }
+
+        ValidateStructureReferences(_structure.GetRoot());
+
+        if (_accessibilityConfiguration?.StrictConformance != true)
         {
             return;
         }
@@ -181,6 +202,32 @@ $"""
         ValidateRoleMap(_structure.GetStructureRoot());
         ValidateStructureNode(root);
         ValidateNavigation(root);
+    }
+
+    private void ValidateStructureReferences(StructureNode node)
+    {
+        ValidateIds(node, node.References, "Ref");
+        ValidateIds(node, node.Headers, "Headers");
+        foreach (var child in node.Children)
+        {
+            ValidateStructureReferences(child);
+        }
+    }
+
+    private void ValidateIds(StructureNode source, IEnumerable<string> ids, string relationship)
+    {
+        foreach (var id in ids.Where(x => !_structure!.GetStructureRoot().IdMap.ContainsKey(x)).Distinct(StringComparer.Ordinal))
+        {
+            var sourceName = string.IsNullOrEmpty(source.ID)
+                ? source.Type
+                : $"{source.Type} (ID '{source.ID}')";
+            var message = $"Structure element {sourceName} has a /{relationship} reference to missing ID '{id}'.";
+            if (_accessibilityConfiguration?.StrictConformance == true)
+            {
+                throw new PdfAccessibilityConformanceException(message);
+            }
+            Context.Warning(message);
+        }
     }
 
     private void ValidateNavigation(StructureNode root)
@@ -248,10 +295,130 @@ $"""
                     throw new PdfAccessibilityConformanceException(
                         "Strict accessibility mode requires annotated pages to have /Tabs set to /S (Structure order).");
                 }
+
+                ValidatePageAnnotations(page, parentTreeEntries);
             }
 
             ValidateRenderedContent(page.GetContentNodes(), pageDict.Get<PdfNumber>(PdfName.StructParents), parentTreeEntries);
         }
+    }
+
+    private static void ValidatePageAnnotations(PdfPage page, IReadOnlyDictionary<int, IPdfObject> parentTreeEntries)
+    {
+        var annots = page.NativeObject.Get<PdfArray>(PdfName.Annots);
+        if (annots == null) return;
+        foreach (var item in annots)
+        {
+            if (item.Resolve() is not PdfDictionary annotation) continue;
+            var subtype = annotation.Get<PdfName>(PdfName.Subtype);
+            if (subtype == null || subtype == (PdfName)"Popup" || IsHiddenAnnotation(annotation) || IsWhollyOffPage(page, annotation))
+                continue;
+
+            if (subtype == (PdfName)"PrinterMark")
+            {
+                if (!HasNormalAppearance(annotation))
+                    throw new PdfAccessibilityConformanceException("Visible PrinterMark annotations require a normal appearance stream.");
+                if (!NormalAppearances(annotation).All(IsArtifactedAppearance))
+                    throw new PdfAccessibilityConformanceException(
+                        "PrinterMark annotation appearance content must be marked as an Artifact.");
+                continue;
+            }
+
+            var index = annotation.Get<PdfNumber>(PdfName.StructParent);
+            if (index == null || !parentTreeEntries.TryGetValue((int)index, out var owner) ||
+                owner.Resolve() is not PdfDictionary structureElement)
+                throw new PdfAccessibilityConformanceException(
+                    $"Visible {subtype.Value} annotations require a valid /StructParent entry backed by the ParentTree.");
+
+            var actualTag = structureElement.Get<PdfName>(PdfName.S)?.Value;
+            var expectedTag = subtype == PdfName.Link ? "Link" : subtype == PdfName.Widget ? "Form" : "Annot";
+            if (!string.Equals(actualTag, expectedTag, StringComparison.Ordinal))
+                throw new PdfAccessibilityConformanceException(
+                    $"{subtype.Value} annotations must be nested in a {expectedTag} structure element, not {actualTag ?? "an untyped element"}.");
+
+            if (subtype == PdfName.Widget)
+            {
+                ValidateWidgetAnnotation(annotation);
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(annotation.Get<PdfString>(PdfName.Contents)?.Value))
+                    throw new PdfAccessibilityConformanceException(
+                        $"Visible {subtype.Value} annotations require a non-empty /Contents description.");
+                if (subtype != PdfName.Link && !HasNormalAppearance(annotation))
+                    throw new PdfAccessibilityConformanceException(
+                        $"Visible {subtype.Value} annotations require a normal appearance stream.");
+            }
+        }
+    }
+
+    private static void ValidateWidgetAnnotation(PdfDictionary annotation)
+    {
+        var field = annotation.Get<PdfDictionary>(PdfName.Parent) ?? annotation;
+        var tooltip = field.Get<PdfString>((PdfName)"TU")?.Value ??
+            annotation.Get<PdfString>((PdfName)"TU")?.Value;
+        if (string.IsNullOrWhiteSpace(tooltip))
+            throw new PdfAccessibilityConformanceException("Widget annotations require a non-empty /TU tooltip.");
+        var flags = (int?)annotation.Get<PdfNumber>(PdfName.F) ?? 0;
+        if ((flags & 4) == 0)
+            throw new PdfAccessibilityConformanceException("Widget annotations require the Print flag.");
+        if (!HasNormalAppearance(annotation))
+            throw new PdfAccessibilityConformanceException("Widget annotations require a normal appearance stream.");
+
+        if (field.Get<PdfName>(PdfName.FT) != PdfName.Btn) return;
+        var normal = annotation.Get<PdfDictionary>((PdfName)"AP")?.Get<PdfDictionary>(PdfName.N);
+        if (normal == null) return; // pushbuttons use a single normal appearance stream
+        var state = annotation.Get<PdfName>((PdfName)"AS");
+        var value = field.Get<PdfName>(PdfName.V);
+        if (state == null || !normal.ContainsKey(state) ||
+            (value != null && state != (PdfName)"Off" && state != value))
+            throw new PdfAccessibilityConformanceException(
+                "Button widget /AP /N states, /AS, and field /V must be synchronized.");
+    }
+
+    private static bool HasNormalAppearance(PdfDictionary annotation)
+    {
+        return annotation.Get<PdfDictionary>((PdfName)"AP")?[PdfName.N].Resolve() is PdfStream or PdfDictionary;
+    }
+
+    private static IEnumerable<PdfStream> NormalAppearances(PdfDictionary annotation)
+    {
+        var normal = annotation.Get<PdfDictionary>((PdfName)"AP")?[PdfName.N].Resolve();
+        if (normal is PdfStream stream)
+        {
+            yield return stream;
+        }
+        else if (normal is PdfDictionary states)
+        {
+            foreach (var value in states.Values)
+            {
+                if (value.Resolve() is PdfStream state) yield return state;
+            }
+        }
+    }
+
+    private static bool IsArtifactedAppearance(PdfStream appearance)
+    {
+        var content = Encoding.ASCII.GetString(appearance.Contents.GetDecodedData());
+        return content.Contains("/Artifact", StringComparison.Ordinal) &&
+               (content.Contains(" BMC", StringComparison.Ordinal) ||
+                content.Contains(" BDC", StringComparison.Ordinal));
+    }
+
+    private static bool IsHiddenAnnotation(PdfDictionary annotation)
+    {
+        var flags = (int?)annotation.Get<PdfNumber>(PdfName.F) ?? 0;
+        return (flags & 2) != 0 || (flags & 32) != 0;
+    }
+
+    private static bool IsWhollyOffPage(PdfPage page, PdfDictionary annotation)
+    {
+        var rectArray = annotation.Get<PdfArray>(PdfName.Rect);
+        if (rectArray == null) return false;
+        var rect = new PdfRectangle(rectArray);
+        var box = page.CropBox;
+        return (decimal)rect.URx <= (decimal)box.LLx || (decimal)rect.LLx >= (decimal)box.URx ||
+               (decimal)rect.URy <= (decimal)box.LLy || (decimal)rect.LLy >= (decimal)box.URy;
     }
 
     internal void ValidateAccessibilityAuthoringSnapshot()

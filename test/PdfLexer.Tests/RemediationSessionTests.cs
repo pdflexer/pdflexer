@@ -118,7 +118,7 @@ public class RemediationSessionTests
         var report = session.Commit();
 
         Assert.True(report.Committed);
-        Assert.Equal(0, node.ContentItems[0].MCID);
+        Assert.Equal(1, node.ContentItems[0].MCID);
         Assert.True(page.NativeObject.ContainsKey(PdfName.StructParents));
         Assert.True(annotation.ContainsKey(PdfName.StructParent));
     }

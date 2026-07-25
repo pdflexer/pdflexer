@@ -171,7 +171,7 @@ doc.ApplyAccessibilitySetup("en-US", "Example", PdfUaProfile.PdfUa1);
 var section = doc.Structure.AddSection("Main");
 var intro = section.AddParagraph("Intro");
 
-// One PageWriter per page: MCIDs are allocated per writer instance.
+// Multiple PageWriters may target a page; MCIDs are allocated per page.
 using (var writer = page.GetWriter())
 {
     intro.WriteContent(writer, w =>

@@ -35,29 +35,30 @@ var font = TrueTypeFont.CreateType0WritableFont(File.ReadAllBytes("Roboto-Regula
 
 Type 0 (CID) fonts are the safe default: they carry a `ToUnicode` CMap and handle the full Unicode range.
 
-### One `PageWriter` per page
+### Multiple writers on one page
 
-MCIDs are allocated per `PageWriter` instance, not per page. Calling `page.GetWriter()` a second time restarts numbering at 0, and the colliding entries silently overwrite each other in the `ParentTree` — the earlier structure elements disappear from the tree with no error at save time.
+MCIDs are allocated in the page's namespace, so separate writer instances can safely append or prepend tagged
+content to the same page. The allocator also scans existing marked content and continues above its highest MCID.
 
 ```csharp
-// WRONG: both paragraphs are written with /MCID 0; the first one is lost.
-using (var writer = page.GetWriter()) { /* ... first paragraph ... */ }
-using (var writer = page.GetWriter()) { /* ... second paragraph ... */ }
-
-// RIGHT: one writer covers the whole page.
 using (var writer = page.GetWriter())
 {
     writer.BeginMarkedContent(first.GetNode());
     writer.Font(font, 12).TextMove(40, 700).Text("First paragraph");
     writer.EndMarkedContent();
+}
 
+using (var writer = page.GetWriter())
+{
     writer.BeginMarkedContent(second.GetNode());
     writer.Font(font, 12).TextMove(40, 680).Text("Second paragraph");
     writer.EndMarkedContent();
 }
 ```
 
-The same applies when adding tagged content to an existing untagged page that already contains marked-content sequences: the writer starts at MCID 0 and can collide with the MCIDs already in the content stream.
+`Append` and `Pre` continue above existing MCIDs. `Replace` discards the old content and starts a fresh MCID
+namespace at 0. Existing semantic marked content still needs to be bound into the new structure tree; allocation
+prevents collisions but does not infer those bindings.
 
 ### Every mark of ink must be tagged or artifacted
 
@@ -154,12 +155,14 @@ var span = paragraph.AddSpan("Highlighted Span", lang: "en-US")
 | `.Lang(...)` | `/Lang` | Language override for this subtree |
 | `.ElementId(...)` | `/ID` | Identifier, registered in the document `IDTree` |
 
-> [!WARNING]
-> These values are currently serialized as PDFDocEncoded strings. Characters outside Latin-1 (CJK, Arabic, Hebrew, and even typographic dashes) are **corrupted on write** — `图表：季度收入 — Résumé` round-trips as `??:???? - Résumé`. Restrict alternate text to Latin-1 until this is fixed. See [Known Limitations](#known-limitations).
+These values use compact PDF document encoding for ASCII and UTF-16BE for non-ASCII text. CJK, Arabic, Hebrew,
+accented characters, and typographic punctuation therefore round-trip without loss.
 
 ### 3. Accessible Data Tables
 
-Header cells must carry an explicit ID before a data cell can reference them. `TableHeaders(...)` resolves by ID string and **silently drops any reference it cannot resolve**, leaving a `/A << /O /Table >>` attribute dictionary with no `/Headers` entry and no error at save time.
+Header cells may be referenced directly. The typed overload assigns a stable ID when necessary and rejects
+cross-tree targets immediately. String IDs remain supported; unresolved string IDs throw in strict mode and are
+recorded in `PdfDocument.Context.ParsingWarnings` otherwise.
 
 ```csharp
 var table = doc.Structure.AddTable("Quarterly Revenue")
@@ -177,8 +180,8 @@ var revenueHeader = headRow.AddHeaderCell()
 
 var body = table.AddTableBody();
 var bodyRow = body.AddRow();
-var quarterCell = bodyRow.AddDataCell().TableHeaders("th-quarter");
-var revenueCell = bodyRow.AddDataCell().TableHeaders("th-revenue");
+var quarterCell = bodyRow.AddDataCell().TableHeaders(quarterHeader);
+var revenueCell = bodyRow.AddDataCell().TableHeaders(revenueHeader);
 ```
 
 `AddHeaderCell` / `AddDataCell` accept `rowSpan` and `colSpan`; values greater than 1 emit `/RowSpan` and `/ColSpan`. The scope enum is `StructureScope` (`Row`, `Column`, `Both`).
@@ -237,13 +240,20 @@ var formNode = label.Back().AddFormField(
     page: page,
     rect: new PdfRect<double>(140, 650, 340, 670),
     fieldName: "UserEmail",
+    appearance: new FormFieldAppearanceOptions { Font = embeddedFont, FontSize = 11 },
     title: "Email Address",
     tooltip: "Enter your email address",
     print: true);
 ```
 
-> [!WARNING]
-> Form support is currently minimal and **does not produce PDF/UA-conformant widgets on its own**. Only text fields are available (no checkbox, radio, choice, pushbutton, or signature), the generated widget has no `/AP` appearance stream — required by ISO 14289-1 §7.18.1 — and the `AcroForm` dictionary is created with only `/Fields` (no `/DA`, `/DR`, or `/NeedAppearances`). Expect veraPDF failures and blank field rendering in Acrobat until you supply these yourself via the returned dictionaries.
+`FormFieldAppearanceOptions.Font` is required and must be embedded in strict mode. Text, checkbox, radio-group,
+combo/list choice, and pushbutton factories create normal appearances and populate AcroForm `/DR` and `/DA`.
+`/NeedAppearances` is omitted unless explicitly enabled. The legacy text overload remains available, but strict
+accessibility mode rejects it and non-strict mode records a warning.
+
+Arbitrary visible annotations can be attached with `AddAnnot(page, annotation, title, altText)` or, when already
+present on the page, `BindAnnotation(annotation, page)`. Strict mode validates ParentTree linkage, tag nesting,
+descriptions, and required appearances.
 
 ### 7. Tagged XObjects (Images & Forms)
 
@@ -344,11 +354,6 @@ These are current defects and coverage gaps, verified against the code in this r
 
 | Area | Behaviour | Workaround |
 | --- | --- | --- |
-| **Non-Latin-1 text** | `/Alt`, `/ActualText`, `/E`, `/T`, `/Lang`, `/ID`, `/Summary`, and annotation `/Contents` are written as PDFDocEncoded strings. Non-Latin-1 characters are corrupted. | Restrict alternate text to Latin-1. |
-| **MCID allocation** | Counters are per-`PageWriter`, not per page. A second writer on the same page restarts at 0 and silently drops earlier elements from the `ParentTree`. | Use exactly one writer per page. |
-| **Annotation tagging** | Only `Link` and text `Widget` annotations can be bound to structure. Any other annotation subtype (Stamp, Square, FileAttachment, …) cannot be tagged, and strict mode does not detect the omission — it never inspects `/Annots`. | Avoid other annotation subtypes, or post-process. |
-| **Form widgets** | No `/AP` appearance stream; `AcroForm` has no `/DA`, `/DR`, or `/NeedAppearances`; text fields only. | Populate the returned `WidgetAnnotation.NativeObject` / `.Field` dictionaries manually. |
-| **Dangling IDs** | `TableHeaders(...)` and `References(...)` silently drop IDs that do not resolve. | Assign `ElementId(...)` before referencing; verify with veraPDF. |
 | **Heading levels** | Skipped levels (`H1` → `H3`) and out-of-range levels (`H7`+) are not detected. | Review heading order manually. |
 | **`AddNote()`** | Emits `/Note`, which strict mode unconditionally rejects. | Use `AddFENote()` for footnotes and endnotes. |
 | **PDF/UA-2 namespaces** | Only the root `Document` element receives `/NS`; descendants inherit the default PDF 1.7 namespace. | Assign `.SetNamespace(ns)` per element if your validator requires it. |

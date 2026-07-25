@@ -45,6 +45,18 @@ public class PdfString : PdfObject, IEquatable<PdfString>
         Encoding = encoding;
         StringType = type;
     }
+
+    /// <summary>
+    /// Creates a PDF text string without relying on the incomplete PDFDocEncoding
+    /// implementation for non-ASCII characters.
+    /// </summary>
+    internal static PdfString CreateTextString(string value)
+    {
+        return value.Any(c => c > 0x7F)
+            ? new PdfString(value, PdfStringType.Literal, PdfTextEncodingType.UTF16BE)
+            : new PdfString(value);
+    }
+
     public string Value { get; }
     public override PdfObjectType Type => PdfObjectType.StringObj;
 

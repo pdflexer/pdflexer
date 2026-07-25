@@ -10,6 +10,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
 {
     private readonly PageWriteMode Mode;
     private PdfPage Page;
+    private bool McidAllocatorPrepared;
     public PageWriter(PdfPage page, PageWriteMode mode = PageWriteMode.Append, PageUnit unit = PageUnit.Points) : base(page.Resources, unit)
     // append without encode / decode ->
     // need to first make sure can turn page into a form (no nested forms with resources on page)
@@ -20,18 +21,19 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
     }
 
     /// <summary>
-    /// Current Marked Content Identifier (MCID) for this page.
-    /// </summary>
-    internal int CurrentMCID { get; set; } = 0;
-
-    /// <summary>
     /// Begins a marked-content sequence associated with a structure node.
     /// </summary>
     /// <param name="node">The structure node to associate with the content.</param>
     /// <returns>The PageWriter instance.</returns>
     public PageWriter<T> BeginMarkedContent(StructureNode node)
     {
-        var mcid = CurrentMCID++;
+        if (!McidAllocatorPrepared)
+        {
+            McidAllocator.Prepare(Page, Mode);
+            McidAllocatorPrepared = true;
+        }
+
+        var mcid = McidAllocator.Allocate(Page);
         var props = new PdfDictionary();
         props[PdfName.MCID] = new PdfIntNumber(mcid);
         var mc = new MarkedContent(node.Type) { InlineProps = props };

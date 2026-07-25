@@ -41,32 +41,32 @@ internal class StructuralSerializer
 
             if (!string.IsNullOrEmpty(node.ID))
             {
-                dict[PdfName.ID] = new PdfString(node.ID);
+                dict[PdfName.ID] = PdfString.CreateTextString(node.ID);
             }
 
             if (!string.IsNullOrEmpty(node.Title))
             {
-                dict[PdfName.T] = new PdfString(node.Title);
+                dict[PdfName.T] = PdfString.CreateTextString(node.Title);
             }
 
             if (!string.IsNullOrEmpty(node.Alt))
             {
-                dict[PdfName.Alt] = new PdfString(node.Alt);
+                dict[PdfName.Alt] = PdfString.CreateTextString(node.Alt);
             }
 
             if (!string.IsNullOrEmpty(node.ActualText))
             {
-                dict[PdfName.ActualText] = new PdfString(node.ActualText);
+                dict[PdfName.ActualText] = PdfString.CreateTextString(node.ActualText);
             }
 
             if (!string.IsNullOrEmpty(node.Expansion))
             {
-                dict[PdfName.E] = new PdfString(node.Expansion);
+                dict[PdfName.E] = PdfString.CreateTextString(node.Expansion);
             }
 
             if (!string.IsNullOrEmpty(node.Language))
             {
-                dict[PdfName.Lang] = new PdfString(node.Language);
+                dict[PdfName.Lang] = PdfString.CreateTextString(node.Language);
             }
 
             if (node.Classes.Count == 1)
@@ -232,7 +232,7 @@ internal class StructuralSerializer
     {
         var attributes = new List<PdfDictionary>(node.Attributes);
 
-        if (node.Scope.HasValue || node.Headers.Count > 0 || !string.IsNullOrEmpty(node.Summary))
+        if (node.Scope.HasValue || node.Headers.Any(structureRoot.IdMap.ContainsKey) || !string.IsNullOrEmpty(node.Summary))
         {
             var table = new PdfDictionary
             {
@@ -268,7 +268,7 @@ internal class StructuralSerializer
 
             if (!string.IsNullOrEmpty(node.Summary))
             {
-                table[PdfName.Summary] = new PdfString(node.Summary);
+                table[PdfName.Summary] = PdfString.CreateTextString(node.Summary);
             }
 
             attributes.Add(table);
@@ -313,7 +313,7 @@ internal class StructuralSerializer
                 continue;
             }
 
-            names.Add(new PdfString(entry.Key));
+            names.Add(PdfString.CreateTextString(entry.Key));
             names.Add(nodeRef);
         }
 
@@ -369,7 +369,7 @@ internal class StructuralSerializer
             var nsDict = new PdfDictionary
             {
                 [PdfName.TYPE] = new PdfName("Namespace"),
-                [PdfName.NS] = new PdfString(ns.Uri)
+                [PdfName.NS] = PdfString.CreateTextString(ns.Uri)
             };
             nsMap[ns] = PdfIndirectRef.Create(nsDict);
         }
@@ -402,40 +402,61 @@ internal class StructuralSerializer
 
     private IPdfObject BuildParentTree(List<(StructureNode Node, PdfDictionary Dict, PdfIndirectRef Ref)> items)
     {
-        var pageMap = new Dictionary<PdfPage, SortedDictionary<int, IPdfObject>>();
-        var xobjectMap = new Dictionary<XObjForm, SortedDictionary<int, IPdfObject>>();
+        var pageMap = new Dictionary<PdfDictionary, (PdfPage Page, SortedDictionary<int, IPdfObject> Mcids)>();
+        var xobjectMap = new Dictionary<PdfStream, (XObjForm Form, SortedDictionary<int, IPdfObject> Mcids)>();
+        var formsWithInternalMcids = items
+            .SelectMany(x => x.Node.XObjectContentItems)
+            .Select(x => x.Form.NativeObject)
+            .ToHashSet();
         var directEntries = new SortedDictionary<int, IPdfObject>();
-        var participantPages = new HashSet<PdfPage>();
+        var participantPages = new Dictionary<PdfDictionary, PdfPage>();
 
         foreach (var (node, _, ir) in items)
         {
             foreach (var content in node.ContentItems)
             {
-                if (!pageMap.TryGetValue(content.Page, out var mcidMap))
+                var pageKey = content.Page.NativeObject;
+                if (!pageMap.TryGetValue(pageKey, out var pageEntry))
                 {
-                    mcidMap = new SortedDictionary<int, IPdfObject>();
-                    pageMap[content.Page] = mcidMap;
+                    pageEntry = (content.Page, new SortedDictionary<int, IPdfObject>());
+                    pageMap[pageKey] = pageEntry;
                 }
-                mcidMap[content.MCID] = ir;
-                participantPages.Add(content.Page);
+
+                if (!pageEntry.Mcids.TryAdd(content.MCID, ir))
+                {
+                    throw new PdfAccessibilityConformanceException(
+                        $"Page content MCID {content.MCID} is registered to more than one structure element.");
+                }
+
+                participantPages.TryAdd(pageKey, content.Page);
             }
 
             foreach (var content in node.XObjectContentItems)
             {
-                if (!xobjectMap.TryGetValue(content.Form, out var mcidMap))
+                var formKey = content.Form.NativeObject;
+                if (!xobjectMap.TryGetValue(formKey, out var formEntry))
                 {
-                    mcidMap = new SortedDictionary<int, IPdfObject>();
-                    xobjectMap[content.Form] = mcidMap;
+                    formEntry = (content.Form, new SortedDictionary<int, IPdfObject>());
+                    xobjectMap[formKey] = formEntry;
                 }
-                mcidMap[content.MCID] = ir;
+
+                if (!formEntry.Mcids.TryAdd(content.MCID, ir))
+                {
+                    throw new PdfAccessibilityConformanceException(
+                        $"Form XObject content MCID {content.MCID} is registered to more than one structure element.");
+                }
             }
 
             foreach (var objRef in node.ObjectReferences)
             {
-                directEntries[objRef.StructParentIndex] = ir;
+                AddParentTreeEntry(
+                    directEntries,
+                    objRef.StructParentIndex,
+                    ir,
+                    "object reference");
                 foreach (var page in objRef.Pages)
                 {
-                    participantPages.Add(page);
+                    participantPages.TryAdd(page.NativeObject, page);
                 }
                 if (objRef.Object.Resolve() is PdfDictionary objDict)
                 {
@@ -449,10 +470,18 @@ internal class StructuralSerializer
 
             foreach (var xObjectRef in node.XObjectReferences)
             {
-                directEntries[xObjectRef.StructParentsIndex] = ir;
+                var resolvedXObject = xObjectRef.XObject.Resolve();
+                if (resolvedXObject is not PdfStream stream || !formsWithInternalMcids.Contains(stream))
+                {
+                    AddParentTreeEntry(
+                        directEntries,
+                        xObjectRef.StructParentsIndex,
+                        ir,
+                        "XObject reference");
+                }
                 foreach (var page in xObjectRef.Pages)
                 {
-                    participantPages.Add(page);
+                    participantPages.TryAdd(page.NativeObject, page);
                 }
                 if (xObjectRef.XObject.Resolve() is PdfDictionary xObjectDict)
                 {
@@ -472,8 +501,8 @@ internal class StructuralSerializer
                 nextPageIndex++;
             }
 
-            var page = entry.Key;
-            var mcids = entry.Value;
+            var page = entry.Value.Page;
+            var mcids = entry.Value.Mcids;
 
             if (_pageMap != null && _pageMap.TryGetValue(page, out var ir))
             {
@@ -494,15 +523,15 @@ internal class StructuralSerializer
                 mcidArray.Add(mcids.TryGetValue(i, out var refObj) ? refObj : PdfNull.Value);
             }
 
-            directEntries[nextPageIndex] = mcidArray;
+            AddParentTreeEntry(directEntries, nextPageIndex, mcidArray, "page content");
             usedIndexes.Add(nextPageIndex);
             nextPageIndex++;
         }
 
         foreach (var entry in xobjectMap)
         {
-            var form = entry.Key;
-            var mcids = entry.Value;
+            var form = entry.Value.Form;
+            var mcids = entry.Value.Mcids;
             var index = (int?)form.StructParents ?? -1;
             if (index < 0)
             {
@@ -521,13 +550,13 @@ internal class StructuralSerializer
                 mcidArray.Add(mcids.TryGetValue(i, out var refObj) ? refObj : PdfNull.Value);
             }
 
-            directEntries[index] = mcidArray;
+            AddParentTreeEntry(directEntries, index, mcidArray, "form XObject content");
             usedIndexes.Add(index);
         }
 
         foreach (var page in participantPages)
         {
-            if (pageMap.ContainsKey(page))
+            if (pageMap.ContainsKey(page.Key))
             {
                 continue;
             }
@@ -537,7 +566,7 @@ internal class StructuralSerializer
                 nextPageIndex++;
             }
 
-            if (_pageMap != null && _pageMap.TryGetValue(page, out var ir))
+            if (_pageMap != null && _pageMap.TryGetValue(page.Value, out var ir))
             {
                 if (ir.GetObject() is PdfDictionary pageDict)
                 {
@@ -546,10 +575,10 @@ internal class StructuralSerializer
             }
             else
             {
-                page.NativeObject[PdfName.StructParents] = new PdfIntNumber(nextPageIndex);
+                page.Value.NativeObject[PdfName.StructParents] = new PdfIntNumber(nextPageIndex);
             }
 
-            directEntries[nextPageIndex] = new PdfArray();
+            AddParentTreeEntry(directEntries, nextPageIndex, new PdfArray(), "page participant");
             usedIndexes.Add(nextPageIndex);
             nextPageIndex++;
         }
@@ -563,6 +592,19 @@ internal class StructuralSerializer
         var parentTree = new PdfDictionary();
         parentTree[PdfName.Nums] = nums;
         return PdfIndirectRef.Create(parentTree);
+    }
+
+    private static void AddParentTreeEntry(
+        SortedDictionary<int, IPdfObject> entries,
+        int index,
+        IPdfObject value,
+        string participant)
+    {
+        if (!entries.TryAdd(index, value))
+        {
+            throw new PdfAccessibilityConformanceException(
+                $"ParentTree index {index} is registered by more than one {participant}.");
+        }
     }
 
     private PdfDictionary BuildObjectReference(StructureObjectReference objRef)
@@ -593,7 +635,7 @@ internal class StructuralSerializer
 
         if (!string.IsNullOrWhiteSpace(objRef.AnnotationContents))
         {
-            annotation[PdfName.Contents] = new PdfString(objRef.AnnotationContents);
+            annotation[PdfName.Contents] = PdfString.CreateTextString(objRef.AnnotationContents);
         }
 
         if (annotation.Get<PdfName>(PdfName.Subtype) != PdfName.Link ||

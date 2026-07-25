@@ -60,15 +60,14 @@ gate on it being written down and agreed.
 
 ## Prerequisites outside this tracker
 
-Two defects in the authoring layer corrupt remediation output silently. The remediation engine
-writes its marked content through `PageWriter` and its structure tree through
-`StructuralSerializer`, so these are not optional and not parallelizable — they poison every
-result produced before they are fixed.
+Two defects in the authoring layer previously corrupted remediation output silently. They were
+fixed as the first M0 work so later milestones can rely on lossless structure metadata and
+page-scoped MCID ownership.
 
 | Item | Source | Why it blocks remediation |
 | --- | --- | --- |
-| Non-Latin-1 text strings corrupted on write | [gaps-2 #1](accessibility_gaps_2.md#1-non-latin-1-text-strings-are-corrupted-on-write) | `/Alt`, `/ActualText`, `/E`, and `/T` values written by remediation actions are mangled outside Latin-1. Any corpus with non-ASCII content produces wrong output that still validates. |
-| MCID counters are per-writer, not per-page | [gaps-2 #2](accessibility_gaps_2.md#2-mcid-counters-are-per-writer-not-per-page) | Collides MCIDs when a page is touched by more than one writer. ParentTree entries are silently overwritten and structure bindings are lost. Directly undermines RRM-016 and RRM-018 evidence. |
+| ✅ Non-Latin-1 text strings | [gaps-2 #1](accessibility_gaps_2.md#1-non-latin-1-text-strings-are-corrupted-on-write) | Resolved with ASCII/PDF-document encoding and non-ASCII/UTF-16BE selection across accessibility metadata. |
+| ✅ Page/form MCID allocation | [gaps-2 #2](accessibility_gaps_2.md#2-mcid-counters-are-per-writer-not-per-page) | Resolved with owner-scoped allocation, existing-content seeding, and duplicate ParentTree guards. |
 
 Both are scheduled inside M0.
 
@@ -82,8 +81,8 @@ Both are scheduled inside M0.
 
 | Work | Gaps |
 | --- | --- |
-| Fix text-string encoding on write | gaps-2 #1 |
-| Fix per-page MCID allocation | gaps-2 #2 |
+| ✅ Fix text-string encoding on write | gaps-2 #1 |
+| ✅ Fix per-page MCID allocation | gaps-2 #2 |
 | Enumerate supported document families in writing | prerequisite for RRM-011, RRM-017 |
 | Collect representative real inputs per family, with layout and data variation | prerequisite for RRM-011 |
 | **Decide the page-locality question** | RRM-001 scope decision |
@@ -104,7 +103,7 @@ Decide in M0, even if the implementation lands in M6:
 
 **Exit gate**
 
-- [ ] Both prerequisite defects fixed, with regression tests.
+- [x] Both prerequisite defects fixed, with regression tests.
 - [ ] Supported families and explicitly unsupported cases written down.
 - [ ] At least one real input per family from the actual producing system, not synthesized.
 - [ ] Page-locality decision recorded, with the corpus evidence behind it.

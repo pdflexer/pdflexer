@@ -103,8 +103,10 @@ using (var writer = page.GetWriter())
 }
 ```
 
-> [!IMPORTANT]
-> Create **one** `PageWriter` per page. MCIDs are allocated per writer instance, so a second `page.GetWriter()` restarts numbering at 0 and silently drops the earlier elements from the structure tree. See [Accessible Authoring](accessibility-authoring.md#before-you-start) for the full set of authoring prerequisites, including the embedded-font requirement.
+MCIDs are allocated per page, so multiple `PageWriter` instances can safely write tagged content to the same
+page. Append and prepend modes continue above existing MCIDs; replace mode starts again at 0. See
+[Accessible Authoring](accessibility-authoring.md#before-you-start) for the full prerequisites, including the
+embedded-font requirement.
 
 ## Outlines and Bookmarks
 

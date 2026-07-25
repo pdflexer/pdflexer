@@ -67,7 +67,29 @@ internal static class AccessibilityFixtureGenerator
             AccessibilityFixtureKind.Focused,
             AccessibilityFixtureCoverage.DocumentSetup |
             AccessibilityFixtureCoverage.XObjects,
-            CreateTaggedFormXObjectFixture)
+            CreateTaggedFormXObjectFixture),
+        new(
+            "Unicode accessibility metadata",
+            UnicodeMetadataFixtureBaseName,
+            AccessibilityFixtureKind.Focused,
+            AccessibilityFixtureCoverage.DocumentSetup |
+            AccessibilityFixtureCoverage.Figures |
+            AccessibilityFixtureCoverage.UnicodeMetadata,
+            CreateUnicodeMetadataFixture),
+        new(
+            "Multi-pass page writing",
+            MultiPassWritingFixtureBaseName,
+            AccessibilityFixtureKind.Focused,
+            AccessibilityFixtureCoverage.DocumentSetup |
+            AccessibilityFixtureCoverage.MultiPassWriting,
+            CreateMultiPassWritingFixture),
+        new(
+            "Tagged square annotation",
+            TaggedAnnotationFixtureBaseName,
+            AccessibilityFixtureKind.Focused,
+            AccessibilityFixtureCoverage.DocumentSetup |
+            AccessibilityFixtureCoverage.Annotations,
+            CreateTaggedAnnotationFixture)
     };
 
     public const string AccessibleReportFixtureBaseName = "accessible-report";
@@ -75,12 +97,19 @@ internal static class AccessibilityFixtureGenerator
     public const string FillableFormFixtureBaseName = "fillable-form";
     public const string ReusedImageFixtureBaseName = "reused-image";
     public const string TaggedFormXObjectFixtureBaseName = "tagged-form-xobject";
+    public const string UnicodeMetadataFixtureBaseName = "unicode-accessibility-metadata";
+    public const string MultiPassWritingFixtureBaseName = "multi-pass-page-writing";
+    public const string TaggedAnnotationFixtureBaseName = "tagged-square-annotation";
+    public const string UnicodeMetadataValue = "图表：季度收入 — Résumé — العربية — עברית";
 
     public const string AccessibleReportFixtureFileName = AccessibleReportFixtureBaseName + "-ua2.pdf";
     public const string RetaggedNavigationFixtureFileName = RetaggedNavigationFixtureBaseName + "-ua2.pdf";
     public const string FillableFormFixtureFileName = FillableFormFixtureBaseName + "-ua2.pdf";
     public const string ReusedImageFixtureFileName = ReusedImageFixtureBaseName + "-ua2.pdf";
     public const string TaggedFormXObjectFixtureFileName = TaggedFormXObjectFixtureBaseName + "-ua2.pdf";
+    public const string UnicodeMetadataFixtureFileName = UnicodeMetadataFixtureBaseName + "-ua2.pdf";
+    public const string MultiPassWritingFixtureFileName = MultiPassWritingFixtureBaseName + "-ua2.pdf";
+    public const string TaggedAnnotationFixtureFileName = TaggedAnnotationFixtureBaseName + "-ua2.pdf";
 
     public const string NewDocumentFixtureFileName = AccessibleReportFixtureFileName;
     public const string RetaggedDocumentFixtureFileName = RetaggedNavigationFixtureFileName;
@@ -380,6 +409,7 @@ internal static class AccessibilityFixtureGenerator
         doc.ApplyAccessibilitySetup("en-US", "Fixture: Fillable Form", profile, strictConformance: true);
 
         var formSection = doc.Structure.AddSection("Volunteer Registration");
+        var appearance = new FormFieldAppearanceOptions { Font = unicodeFont, FontSize = 11 };
         var heading = formSection.AddHeader(1, "Volunteer Registration");
         var instructions = heading.Back().AddParagraph("Complete the form to request follow-up.");
         var nameLabel = instructions.Back().AddParagraph("Full name");
@@ -388,8 +418,9 @@ internal static class AccessibilityFixtureGenerator
             page,
             new PdfRect<double>(140, 695, 320, 718),
             "full_name",
-            "Full name",
-            "Full name",
+            appearance,
+            title: "Full name",
+            tooltip: "Full name",
             print: true);
         var emailLabel = nameField.Back().AddParagraph("Email address");
         var emailField = emailLabel.Back().AddFormField(
@@ -397,10 +428,40 @@ internal static class AccessibilityFixtureGenerator
             page,
             new PdfRect<double>(140, 645, 320, 668),
             "email",
-            "Email address",
-            "Email address",
+            appearance,
+            title: "Email address",
+            tooltip: "Email address",
             print: true);
-        var confirmation = emailField.Back().AddParagraph("Required fields are announced with their tooltips.");
+        var section = emailField.Back();
+        var checkbox = AnnotationFactory.CreateCheckboxWidget(
+            doc, page, new PdfRect<double>(140, 605, 158, 623), "updates", appearance,
+            isChecked: true, tooltip: "Receive updates");
+        var checkboxField = section.AddFormField(checkbox, "Receive updates");
+        var radio = AnnotationFactory.CreateRadioGroup(
+            doc, "contact_method",
+            new[]
+            {
+                new RadioButtonOption(page, new PdfRect<double>(140, 570, 158, 588), "Email", true),
+                new RadioButtonOption(page, new PdfRect<double>(180, 570, 198, 588), "Phone")
+            },
+            appearance, "Preferred contact method");
+        var radioOne = checkboxField.Back().AddFormField(radio.Widgets[0], "Email contact");
+        var radioTwo = radioOne.Back().AddFormField(radio.Widgets[1], "Phone contact");
+        var combo = AnnotationFactory.CreateChoiceWidget(
+            doc, page, new PdfRect<double>(140, 530, 260, 552), "region",
+            new[] { "North", "South", "West" }, ChoiceFieldKind.Combo, appearance,
+            "North", "Region");
+        var comboField = radioTwo.Back().AddFormField(combo, "Region");
+        var list = AnnotationFactory.CreateChoiceWidget(
+            doc, page, new PdfRect<double>(140, 470, 260, 520), "interests",
+            new[] { "Events", "Mentoring", "Fundraising" }, ChoiceFieldKind.List, appearance,
+            "Events", "Interests");
+        var listField = comboField.Back().AddFormField(list, "Interests");
+        var button = AnnotationFactory.CreatePushButtonWidget(
+            doc, page, new PdfRect<double>(140, 430, 230, 455), "submit", "Submit", appearance,
+            "Submit registration");
+        var buttonField = listField.Back().AddFormField(button, "Submit registration");
+        var confirmation = buttonField.Back().AddParagraph("Required fields are announced with their tooltips.");
 
         using (var writer = page.GetWriter())
         {
@@ -485,6 +546,76 @@ internal static class AccessibilityFixtureGenerator
         return doc;
     }
 
+    private static PdfDocument CreateUnicodeMetadataFixture(PdfUaProfile profile)
+    {
+        using var image = new Image<Rgba32>(32, 32);
+        image.Mutate(x => x.BackgroundColor(Color.Black));
+        var xobj = image.CreatePdfImage();
+
+        var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        doc.ApplyAccessibilitySetup("en-US", "Fixture: Unicode Metadata", profile, strictConformance: true);
+
+        var figure = doc.Structure
+            .AddFigure(UnicodeMetadataValue, UnicodeMetadataValue)
+            .ActualText(UnicodeMetadataValue)
+            .Expansion(UnicodeMetadataValue);
+        figure.BindImage(xobj, page);
+
+        using (var writer = page.GetWriter())
+        {
+            writer.Image(xobj, 40, 680, 32, 32);
+        }
+
+        return doc;
+    }
+
+    private static PdfDocument CreateMultiPassWritingFixture(PdfUaProfile profile)
+    {
+        var unicodeFont = LoadUnicodeFont();
+        var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        doc.ApplyAccessibilitySetup("en-US", "Fixture: Multi-pass Writing", profile, strictConformance: true);
+
+        var first = doc.Structure.AddParagraph("First pass");
+        var second = doc.Structure.AddParagraph("Second pass");
+
+        using (var writer = page.GetWriter())
+        {
+            writer.BeginMarkedContent(first.GetNode());
+            writer.Font(unicodeFont, 12).TextMove(40, 700).Text("First pass");
+            writer.EndMarkedContent();
+        }
+
+        using (var writer = page.GetWriter())
+        {
+            writer.BeginMarkedContent(second.GetNode());
+            writer.Font(unicodeFont, 12).TextMove(40, 680).Text("Second pass");
+            writer.EndMarkedContent();
+        }
+
+        return doc;
+    }
+
+    private static PdfDocument CreateTaggedAnnotationFixture(PdfUaProfile profile)
+    {
+        var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        doc.ApplyAccessibilitySetup("en-US", "Fixture: Tagged Square Annotation", profile, strictConformance: true);
+        var appearanceWriter = new FormWriter(40, 30);
+        appearanceWriter.SetStrokingRGB(0, 0, 0).LineWidth(2).Rect(1, 1, 38, 28).Stroke();
+        var appearance = appearanceWriter.Complete();
+        var square = new PdfDictionary
+        {
+            [PdfName.TypeName] = PdfName.Annot,
+            [PdfName.Subtype] = (PdfName)"Square",
+            [PdfName.Rect] = new PdfArray { 60, 680, 100, 710 },
+            [(PdfName)"AP"] = new PdfDictionary { [PdfName.N] = appearance.NativeObject.Indirect() }
+        };
+        doc.Structure.AddAnnot(page, square, "Review region", "Outlined review region");
+        return doc;
+    }
+
     private static IWritableFont LoadUnicodeFont()
     {
         var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
@@ -509,7 +640,10 @@ internal enum AccessibilityFixtureCoverage
     UnicodeText = 1 << 9,
     XObjects = 1 << 10,
     MultiPage = 1 << 11,
-    Artifacts = 1 << 12
+    Artifacts = 1 << 12,
+    UnicodeMetadata = 1 << 13,
+    MultiPassWriting = 1 << 14,
+    Annotations = 1 << 15
 }
 
 internal enum AccessibilityFixtureKind

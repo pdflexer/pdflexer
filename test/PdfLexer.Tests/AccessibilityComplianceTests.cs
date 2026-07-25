@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using PdfLexer.Content.Model;
 using PdfLexer.DOM;
 using Xunit;
 
@@ -23,7 +24,10 @@ public class AccessibilityComplianceTests
         AccessibilityFixtureCoverage.UnicodeText |
         AccessibilityFixtureCoverage.XObjects |
         AccessibilityFixtureCoverage.MultiPage |
-        AccessibilityFixtureCoverage.Artifacts;
+        AccessibilityFixtureCoverage.Artifacts |
+        AccessibilityFixtureCoverage.UnicodeMetadata |
+        AccessibilityFixtureCoverage.MultiPassWriting |
+        AccessibilityFixtureCoverage.Annotations;
 
     [Fact]
     public void Accessibility_Fixture_Generator_Writes_All_Scenarios_To_Known_Path()
@@ -36,7 +40,10 @@ public class AccessibilityComplianceTests
             AccessibilityFixtureGenerator.RetaggedNavigationFixtureBaseName,
             AccessibilityFixtureGenerator.FillableFormFixtureBaseName,
             AccessibilityFixtureGenerator.ReusedImageFixtureBaseName,
-            AccessibilityFixtureGenerator.TaggedFormXObjectFixtureBaseName
+            AccessibilityFixtureGenerator.TaggedFormXObjectFixtureBaseName,
+            AccessibilityFixtureGenerator.UnicodeMetadataFixtureBaseName,
+            AccessibilityFixtureGenerator.MultiPassWritingFixtureBaseName,
+            AccessibilityFixtureGenerator.TaggedAnnotationFixtureBaseName
         };
 
         var expectedFileNames = expectedBaseNames
@@ -49,9 +56,9 @@ public class AccessibilityComplianceTests
         Assert.Equal(expectedFileNames.OrderBy(x => x), fixtures.Select(x => x.FileName).OrderBy(x => x));
 
         Assert.Equal(6, fixtures.Count(x => x.Kind == AccessibilityFixtureKind.Anchor));
-        Assert.Equal(4, fixtures.Count(x => x.Kind == AccessibilityFixtureKind.Focused));
-        Assert.Equal(5, fixtures.Count(x => x.Profile == PdfUaProfile.PdfUa1));
-        Assert.Equal(5, fixtures.Count(x => x.Profile == PdfUaProfile.PdfUa2));
+        Assert.Equal(10, fixtures.Count(x => x.Kind == AccessibilityFixtureKind.Focused));
+        Assert.Equal(8, fixtures.Count(x => x.Profile == PdfUaProfile.PdfUa1));
+        Assert.Equal(8, fixtures.Count(x => x.Profile == PdfUaProfile.PdfUa2));
 
         var aggregateCoverage = fixtures.Aggregate(
             AccessibilityFixtureCoverage.None,
@@ -199,6 +206,26 @@ public class AccessibilityComplianceTests
                 document.Pages.Any(HasArtifactContent),
                 $"{fixture.FileName} should include explicit Artifact marked-content.");
         }
+
+        if (fixture.Coverage.HasFlag(AccessibilityFixtureCoverage.UnicodeMetadata))
+        {
+            Assert.Contains(
+                AccessibilityIntegrityAssert.GetStructureElements(document),
+                x =>
+                    x.Get<PdfName>(PdfName.S) == PdfName.Figure &&
+                    x.Get<PdfString>(PdfName.Alt)?.Value == AccessibilityFixtureGenerator.UnicodeMetadataValue &&
+                    x.Get<PdfString>(PdfName.ActualText)?.Value == AccessibilityFixtureGenerator.UnicodeMetadataValue &&
+                    x.Get<PdfString>(PdfName.E)?.Value == AccessibilityFixtureGenerator.UnicodeMetadataValue);
+        }
+
+        if (fixture.Coverage.HasFlag(AccessibilityFixtureCoverage.MultiPassWriting))
+        {
+            var mcids = document.Pages
+                .SelectMany(page => GetMarkedContentIds(page.GetContentNodes()))
+                .OrderBy(x => x)
+                .ToArray();
+            Assert.Equal(new[] { 0, 1 }, mcids);
+        }
     }
 
     private static IEnumerable<PdfDictionary> GetAttributes(PdfDictionary structElement)
@@ -276,6 +303,29 @@ public class AccessibilityComplianceTests
         return page.GetContentNodes()
             .OfType<PdfLexer.Content.Model.MarkedContentGroup<double>>()
             .Any(ContainsArtifactGroup);
+    }
+
+    private static IEnumerable<int> GetMarkedContentIds(IEnumerable<IContentNode<double>> nodes)
+    {
+        foreach (var node in nodes)
+        {
+            if (node is not MarkedContentGroup<double> marked)
+            {
+                continue;
+            }
+
+            var value = marked.Tag.InlineProps?.Get<PdfNumber>(PdfName.MCID) ??
+                        marked.Tag.PropList?.Get<PdfNumber>(PdfName.MCID);
+            if (value != null)
+            {
+                yield return (int)value;
+            }
+
+            foreach (var child in GetMarkedContentIds(marked.Children))
+            {
+                yield return child;
+            }
+        }
     }
 
     private static bool ContainsArtifactGroup(PdfLexer.Content.Model.MarkedContentGroup<double> group)

@@ -9,7 +9,7 @@ namespace PdfLexer.Tests;
 
 public class McidRepro
 {
-    // [Fact] TODO -> trac MCID across writing sessions
+    [Fact]
     public void Mcid_Should_Increment_On_Subsequent_PageWriter_Usage()
     {
         using var doc = PdfDocument.Create();

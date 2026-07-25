@@ -1,6 +1,8 @@
 using PdfLexer;
 using PdfLexer.DOM;
 using PdfLexer.Content;
+using PdfLexer.Fonts;
+using System.IO;
 using Xunit;
 
 namespace PdfLexer.Tests;
@@ -15,7 +17,14 @@ public class Phase2AccessibilityTests
         doc.ApplyAccessibilitySetup("en-US", "Form Test", PdfUaProfile.PdfUa1, strictConformance: true);
 
         var rect = new PdfRect<double>(100, 700, 200, 720);
-        var widget = AnnotationFactory.CreateTextWidget(doc, page, rect, "firstName", "Enter First Name");
+        var fontPath = File.Exists("/workspace/test/Roboto-Regular.ttf")
+            ? "/workspace/test/Roboto-Regular.ttf"
+            : "../../../../test/Roboto-Regular.ttf";
+        var appearance = new FormFieldAppearanceOptions
+        {
+            Font = TrueTypeFont.CreateWritableFont(File.ReadAllBytes(fontPath))
+        };
+        var widget = AnnotationFactory.CreateTextWidget(doc, page, rect, "firstName", appearance, tooltip: "Enter First Name");
         
         // Use the new helper - it returns the Lbl context
         doc.Structure.AddLabeledFormField(widget, "First Name Label", "Tooltip Override");

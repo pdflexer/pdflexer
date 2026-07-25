@@ -897,7 +897,7 @@ policy for either direction.
 
 - [ ] Candidates expose whether they sit inside an existing marked-content sequence, and which.
 - [ ] Predicates can select or exclude content by existing tag and by optional-content membership.
-- [ ] MCID allocation is seeded from the highest identifier already present on the page.
+- [x] MCID allocation is seeded from the highest identifier already present on the page.
 - [ ] A documented policy governs nesting inside pre-existing sequences, including `/Artifact`.
 - [ ] Optional-content handling is either supported or diagnosed as unsupported, not silently ignored.
 - [ ] Tests cover a producer artifact mark, an `/OC` watermark layer, and pre-existing MCIDs.

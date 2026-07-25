@@ -28,13 +28,13 @@ The structure-tree machinery is fundamentally sound. `StructuralSerializer` emit
 spanning pages, and `/StructParents` wiring for pages and form XObjects. Strict mode already catches untagged real
 content and non-embedded fonts — a genuinely useful guard that most libraries lack.
 
-The problems are at the edges:
+The remaining problems are at the edges:
 
-- **Two defects silently corrupt output.** Non-Latin-1 text-string values are mangled on write, and MCID counters
-  reset per `PageWriter` rather than per page. Neither raises an error; both produce files that look fine until a
-  screen reader or validator sees them.
-- **Two conformance requirements have no API at all.** Annotations other than links and text widgets cannot be
-  bound to structure, and generated form widgets lack appearance streams. Both are hard PDF/UA-1 failures.
+- **The two silent-corruption defects are resolved.** Accessibility text strings now switch to UTF-16BE for
+  non-ASCII values, and MCIDs are allocated per page/form namespace with duplicate-registration guards.
+- **Phase 2 conformance-blocker implementation is complete; external validation is pending.** Arbitrary
+  annotations can be bound to structure, generated widgets have embedded-font appearances, and unresolved
+  references fail or warn instead of disappearing. The findings remain open until pinned veraPDF acceptance.
 - **Several silent-drop paths** turn author mistakes into invalid output instead of exceptions.
 - **The documentation did not compile.** Corrected under this effort; see [Phase 0](#phase-0--documentation-completed).
 
@@ -44,11 +44,11 @@ Nothing here is architectural. The two corruption bugs are small, localized fixe
 
 | # | Item | Severity | Effort | Phase |
 | --- | --- | --- | --- | --- |
-| [1](#1-non-latin-1-text-strings-are-corrupted-on-write) | Non-Latin-1 text strings corrupted | **Critical** | S | 1 |
-| [2](#2-mcid-counters-are-per-writer-not-per-page) | MCID counters per-writer, not per-page | **Critical** | S–M | 1 |
-| [3](#3-annotations-other-than-linkwidget-cannot-be-tagged) | Non-link/widget annotations cannot be tagged | **High** | M | 2 |
-| [4](#4-generated-form-widgets-are-not-pdfua-conformant) | Form widgets lack `/AP`; AcroForm incomplete | **High** | M | 2 |
-| [5](#5-unresolvable-idsreferences-are-dropped-silently) | Unresolvable IDs dropped silently | **High** | S | 2 |
+| [1](#1-non-latin-1-text-strings-are-corrupted-on-write) | Non-Latin-1 text strings corrupted | **Resolved** | S | 1 ✅ |
+| [2](#2-mcid-counters-are-per-writer-not-per-page) | MCID counters per-writer, not per-page | **Resolved** | S–M | 1 ✅ |
+| [3](#3-annotations-other-than-linkwidget-cannot-be-tagged) | Non-link/widget annotation tagging | **Implemented; validation pending** | M | 2 |
+| [4](#4-generated-form-widgets-are-not-pdfua-conformant) | Conformant generated form widgets | **Implemented; validation pending** | M | 2 |
+| [5](#5-unresolvable-idsreferences-are-dropped-silently) | Reliable structure-reference resolution | **Implemented; validation pending** | S | 2 |
 | [6](#6-heading-levels-are-not-validated) | Heading levels not validated | Medium | S | 3 |
 | [7](#7-artifacts-cannot-express-subtype-bbox-or-attached) | Artifacts lack `/Subtype`, `/BBox`, `/Attached` | Medium | S | 3 |
 | [8](#8-table-conformance-rules-are-only-half-checked) | Table conformance only half-checked | Medium | M | 3 |
@@ -90,7 +90,8 @@ nested inside `Introduction` instead of as its sibling — a live demonstration 
 and its `WriteContent` example threw `NotSupportedException: Must set current font before writing.`
 
 **Done:** both documents rewritten with snippets that compile and run, an up-front prerequisites section covering
-the font and one-writer-per-page requirements, a new artifacts section, and a Known Limitations table pointing here.
+the font and the then-current one-writer-per-page requirement, a new artifacts section, and a Known Limitations
+table pointing here. The writer restriction was removed when finding 2 was resolved.
 Stale `Base14` references were also corrected in `docs/agent_instruction.md`, `docs/content_creation.md`, and the
 `examples/*.ipynb` notebooks.
 
@@ -101,9 +102,12 @@ Stale `Base14` references were also corrected in `docs/agent_instruction.md`, `d
 These two produce invalid output with no error at any point. They should land before anything else, because every
 document authored in the meantime is potentially affected and the damage is invisible.
 
-### 1. Non-Latin-1 text strings are corrupted on write
+### 1. Non-Latin-1 text strings are corrupted on write — resolved
 
-**Severity: Critical · Effort: S**
+**Severity: Resolved · Effort: S**
+
+Resolved by routing the accessibility-authoring surface through `PdfString.CreateTextString`, which retains the
+compact representation for ASCII and emits UTF-16BE for every non-ASCII value.
 
 `StructuralSerializer` writes every text-string value with `new PdfString(value)`, which encodes as PDFDocEncoding.
 Any character outside Latin-1 is destroyed:
@@ -134,18 +138,22 @@ private static PdfString CreateTextString(string value)
 }
 ```
 
-**Tasks**
+**Completed**
 
-- [ ] Promote `CreateTextString` to a shared internal helper (e.g. `PdfString.CreateTextString`).
-- [ ] Route every text-string write in `StructuralSerializer` and `AnnotationFactory` through it.
-- [ ] Widen the guard: the current `c > 255` test still emits PDFDocEncoding for the 0x80–0xFF range, where
+- [x] Promote `CreateTextString` to a shared internal helper (`PdfString.CreateTextString`).
+- [x] Route every accessibility text-string write in `StructuralSerializer`, `AnnotationFactory`, and the
+      labeled-widget builder through it.
+- [x] Widen the guard: the old `c > 255` test emitted PDFDocEncoding for the 0x80–0xFF range, where
       PDFDocEncoding and Latin-1 disagree (the em-dash above sits here). Prefer UTF-16BE for anything non-ASCII.
-- [ ] Regression test: round-trip CJK, Arabic, Hebrew, and typographic punctuation through `/Alt`, `/ActualText`,
+- [x] Regression test: round-trip CJK, Arabic, Hebrew, and typographic punctuation through `/Alt`, `/ActualText`,
       `/E`, `/T`, `/Summary`, and annotation `/Contents`.
 
-### 2. MCID counters are per-writer, not per-page
+### 2. MCID counters are per-writer, not per-page — resolved
 
-**Severity: Critical · Effort: S–M**
+**Severity: Resolved · Effort: S–M**
+
+Resolved with an allocator keyed to the underlying page or form object, seeded from existing marked content and
+shared by page writing and remediation. Duplicate ParentTree registrations now throw.
 
 `PageWriter.CurrentMCID` (`PageWriter.cs:25`) is instance state on the writer. A second `page.GetWriter()` on the
 same page restarts numbering at 0, so two different structure elements both claim `/MCID 0`. The `ParentTree`
@@ -163,14 +171,15 @@ This matters most for the "add tagged content to an existing PDF" workflow, whic
 authoring API targets: writing in several passes is natural, and an existing untagged page may already contain
 marked-content sequences whose MCIDs start at 0 and collide with the new ones.
 
-**Tasks**
+**Completed**
 
-- [ ] Move MCID allocation to per-page (and per-form-XObject) state rather than per-writer.
-- [ ] Seed the counter from the highest MCID already present in the page's content streams, so appending to a page
+- [x] Move MCID allocation to per-page (and per-form-XObject) state rather than per-writer.
+- [x] Seed the counter from the highest MCID already present in the page's content streams, so appending to a page
       that already has marked content cannot collide.
-- [ ] Detect duplicate `(page, MCID)` registrations in `StructuralSerializer.BuildParentTree` and throw rather than
+- [x] Detect duplicate `(page, MCID)` and `(form, MCID)` registrations in
+      `StructuralSerializer.BuildParentTree` and throw rather than
       overwrite — a cheap backstop that turns any remaining path into a loud failure.
-- [ ] Regression tests: two writers on one page; appending to a page with pre-existing MCIDs; a form XObject
+- [x] Regression tests: two writers on one page; appending to a page with pre-existing MCIDs; a form XObject
       written in two passes.
 
 ---
@@ -180,7 +189,7 @@ marked-content sequences whose MCIDs start at 0 and collide with the new ones.
 Output that is structurally well-formed but still fails PDF/UA validation. These need new API surface, not just
 fixes.
 
-### 3. Annotations other than Link/Widget cannot be tagged
+### 3. Annotations other than Link/Widget cannot be tagged — implemented, validation pending
 
 **Severity: High · Effort: M**
 
@@ -196,15 +205,15 @@ non-conformant and the library reports success.
 
 **Tasks**
 
-- [ ] Add `IStructureContext.BindAnnotation(PdfDictionary annotation, PdfPage page)` (public) so any annotation
+- [x] Add `IStructureContext.BindAnnotation(PdfDictionary annotation, PdfPage page)` (public) so any annotation
       subtype can be attached to an `Annot` element.
-- [ ] Add `AddAnnot(...)` convenience matching `AddLink` / `AddFormField`.
-- [ ] Extend `ValidateAccessibilityAuthoringAfterSerialization` to sweep every page's `/Annots` array and throw for
+- [x] Add `AddAnnot(...)` convenience matching `AddLink` / `AddFormField`.
+- [x] Extend `ValidateAccessibilityAuthoringAfterSerialization` to sweep every page's `/Annots` array and throw for
       any annotation lacking `/StructParent` that is not `Popup` and not hidden (`/F` bit 2).
-- [ ] Confirm the Matterhorn nesting rules while there: `Link` annotations inside `Link` elements, `Widget` inside
+- [x] Confirm the Matterhorn nesting rules while there: `Link` annotations inside `Link` elements, `Widget` inside
       `Form`, everything else inside `Annot`.
 
-### 4. Generated form widgets are not PDF/UA-conformant
+### 4. Generated form widgets are not PDF/UA-conformant — implemented, validation pending
 
 **Severity: High · Effort: M**
 
@@ -221,15 +230,15 @@ pushbutton, or signature.
 
 **Tasks**
 
-- [ ] Generate a default `/AP` normal appearance stream for created widgets.
-- [ ] Populate `AcroForm` with `/DA` and a `/DR` resource dictionary containing the field font; set
+- [x] Generate a default `/AP` normal appearance stream for created widgets.
+- [x] Populate `AcroForm` with `/DA` and a `/DR` resource dictionary containing the field font; set
       `/NeedAppearances` only as an explicit opt-in, since it is a poor substitute for real appearances.
-- [ ] Add factories for checkbox, radio group, choice (combo/list), and pushbutton widgets, each with the
+- [x] Add factories for checkbox, radio group, choice (combo/list), and pushbutton widgets, each with the
       `/TU` tooltip wiring `AddLabeledFormField` already does for text fields.
-- [ ] Validate the widget's `/F` print flag and that `/TU` is non-empty under strict mode.
-- [ ] Add a fillable-form fixture to the veraPDF corpus covering every field type.
+- [x] Validate the widget's `/F` print flag and that `/TU` is non-empty under strict mode.
+- [x] Add a fillable-form fixture to the veraPDF corpus covering every field type.
 
-### 5. Unresolvable IDs/references are dropped silently
+### 5. Unresolvable IDs/references are dropped silently — implemented, validation pending
 
 **Severity: High · Effort: S**
 
@@ -243,10 +252,10 @@ documentation demonstrated exactly this mistake.
 
 **Tasks**
 
-- [ ] Throw `PdfAccessibilityConformanceException` for unresolvable IDs under strict mode; warn otherwise.
-- [ ] Add `TableHeaders(params IStructureContext[])` and `References(params IStructureContext[])` overloads that
+- [x] Throw `PdfAccessibilityConformanceException` for unresolvable IDs under strict mode; warn otherwise.
+- [x] Add `TableHeaders(params IStructureContext[])` and `References(params IStructureContext[])` overloads that
       auto-assign an ID to the target the way `Ref(StructureNode)` already does, removing the string indirection.
-- [ ] Suppress emission of attribute dictionaries that end up carrying only `/O`.
+- [x] Suppress emission of attribute dictionaries that end up carrying only `/O`.
 
 ---
 
@@ -416,13 +425,13 @@ This is a product decision, not a defect. Recorded here so it is chosen rather t
 | Phase | Contents | Rationale |
 | --- | --- | --- |
 | **0** | Documentation | ✅ Done. Was actively misleading; every example failed. |
-| **1** | Findings 1–2 | Silent corruption. Small, localized, and every document authored before the fix is suspect. |
+| **1** | Findings 1–2 | ✅ Done. Silent-corruption fixes and focused fixtures landed together. |
 | **2** | Findings 3–5 | Conformance blockers needing new API. Ship together so the surface settles once. |
 | **3** | Findings 6–8 | Guards that turn validator findings into build-time errors. |
 | **4** | Findings 9–13 | Ergonomics and completeness; independent, can be picked up opportunistically. |
 | **5** | Finding 14 | Decide before committing engineering time. |
 
-Phases 1 and 2 are what stand between the current library and reliably veraPDF-clean output for common documents.
+Phase 2 is what remains between the current library and reliably veraPDF-clean output for common documents.
 
 ## Validation Baseline
 
@@ -434,5 +443,7 @@ went unnoticed: the internal integrity checks pass on files an external validato
 
 - [ ] Wire `verapdf --flavour ua1|ua2` over the generated fixtures into CI, with a pinned veraPDF version.
 - [ ] Treat new veraPDF findings as build failures; record any accepted exception explicitly.
-- [ ] Add fixtures for the gaps above once fixed: non-Latin-1 alternate text, multi-pass page writing, non-link
-      annotations, every form field type, and running header/footer artifacts.
+- [x] Add focused fixtures for non-Latin-1 alternate text and multi-pass page writing.
+- [x] Add fixtures for non-link annotations and every named form field type.
+- [ ] Add fixtures for running
+      header/footer artifacts.

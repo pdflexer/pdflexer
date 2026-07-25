@@ -164,6 +164,7 @@ public sealed class StructureRoot
     private readonly Dictionary<string, IPdfObject> _classMap = new(StringComparer.Ordinal);
     private readonly List<StructureNamespace> _namespaces = new();
     private int _nextStructParentIndex;
+    private int _nextGeneratedId;
 
     public StructureRoot()
     {
@@ -249,6 +250,24 @@ public sealed class StructureRoot
         }
 
         _idMap[newId] = node;
+    }
+
+    internal string EnsureNodeId(StructureNode node)
+    {
+        if (!string.IsNullOrEmpty(node.ID))
+        {
+            return node.ID;
+        }
+
+        string id;
+        do
+        {
+            id = $"struct-{++_nextGeneratedId}";
+        }
+        while (_idMap.ContainsKey(id));
+
+        node.ID = id;
+        return id;
     }
 
     public StructureRoot MapRole(string customRole, string standardRole)

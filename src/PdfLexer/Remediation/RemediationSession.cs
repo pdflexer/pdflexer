@@ -1,6 +1,7 @@
 using PdfLexer.Content;
 using PdfLexer.Content.Model;
 using PdfLexer.DOM;
+using PdfLexer.Writing;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
@@ -12,7 +13,7 @@ namespace PdfLexer.Remediation;
 public sealed class RemediationSession : IDisposable
 {
     private readonly PdfDocument _document;
-    private readonly Dictionary<PdfPage, int> _pageMcids = new();
+    private readonly HashSet<PdfPage> _pagesWithAllocatedMcids = new();
     private readonly Dictionary<PdfPage, int> _pageStructParents = new();
     private readonly List<RuleSet> _ruleSets = new();
     private readonly List<DiagnosticSuppression> _suppressions = new();
@@ -2959,7 +2960,7 @@ public sealed class RemediationSession : IDisposable
         // Actually _pageStructParents tracks this
         foreach (var pageState in pageStates)
         {
-            if (_pageMcids.TryGetValue(pageState.Page, out var count) && count > 0)
+            if (_pagesWithAllocatedMcids.Contains(pageState.Page))
             {
                 if (!_pageStructParents.ContainsKey(pageState.Page))
                 {
@@ -3055,15 +3056,8 @@ public sealed class RemediationSession : IDisposable
     internal int AllocateMcid(PdfPage page)
     {
         ThrowIfDisposed();
-
-        if (!_pageMcids.TryGetValue(page, out var nextMcid))
-        {
-            _pageMcids[page] = 1;
-            return 0;
-        }
-
-        _pageMcids[page] = nextMcid + 1;
-        return nextMcid;
+        _pagesWithAllocatedMcids.Add(page);
+        return McidAllocator.Allocate(page);
     }
 
     internal int GetOrCreateStructParentsIndex(PdfPage page)
@@ -3120,7 +3114,7 @@ public sealed class RemediationSession : IDisposable
     /// <summary>Releases the remediation session.</summary>
     public void Dispose()
     {
-        _pageMcids.Clear();
+        _pagesWithAllocatedMcids.Clear();
         _pageStructParents.Clear();
         _disposed = true;
     }

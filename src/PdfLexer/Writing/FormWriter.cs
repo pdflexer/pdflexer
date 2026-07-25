@@ -26,7 +26,6 @@ public class FormWriter<T> : ContentWriter<T> where T : struct, IFloatingPoint<T
 {
     private PdfArray BBox;
     private readonly XObjForm Form;
-    internal int CurrentMCID { get; set; }
 
     public FormWriter(PageSize size, PageUnit unit = PageUnit.Points) : base(new PdfDictionary(), unit)
     {
@@ -51,7 +50,7 @@ public class FormWriter<T> : ContentWriter<T> where T : struct, IFloatingPoint<T
 
     public FormWriter<T> BeginMarkedContent(StructureNode node)
     {
-        var mcid = CurrentMCID++;
+        var mcid = McidAllocator.Allocate(Form);
         var props = new PdfDictionary();
         props[PdfName.MCID] = new PdfIntNumber(mcid);
         var mc = new MarkedContent(node.Type) { InlineProps = props };

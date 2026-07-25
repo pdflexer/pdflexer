@@ -90,6 +90,8 @@ public class ParsingContext : IDisposable
 
     internal List<string> Errors { get; set; } = new List<string>();
     public IReadOnlyList<string> ParsingErrors => Errors;
+    internal List<string> Warnings { get; set; } = new List<string>();
+    public IReadOnlyList<string> ParsingWarnings => Warnings;
 
     private int errors = 0;
     public void Error(string info)
@@ -108,6 +110,27 @@ public class ParsingContext : IDisposable
         Errors.Add(info);
     }
     public int ErrorCount { get => errors; }
+
+    private int warnings = 0;
+    /// <summary>
+    /// Records a non-fatal warning. Warnings never honor <see cref="ParsingOptions.ThrowOnErrors"/>.
+    /// </summary>
+    public void Warning(string info)
+    {
+        warnings++;
+        if (Options.MaxWarningRetention <= 0)
+        {
+            return;
+        }
+
+        while (Warnings.Count >= Options.MaxWarningRetention)
+        {
+            Warnings.RemoveAt(0);
+        }
+        Warnings.Add(info);
+    }
+
+    public int WarningCount => warnings;
 
     internal Stream GetTemporaryStream()
     {

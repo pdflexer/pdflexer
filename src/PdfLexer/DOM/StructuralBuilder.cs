@@ -155,6 +155,8 @@ public class StructuralBuilder : IStructureContext
     public IStructureContext AddFormField(WidgetAnnotation widget, string? title = null)
     {
         var ctx = AddElement("Form", title);
+        ApplyAnnotationDescription(widget.NativeObject, widget.Field,
+            widget.Field.Get<PdfString>((PdfName)"TU")?.Value ?? title);
         BindAnnotation(ctx.GetNode(), widget.Page, widget.NativeObject);
         return ctx;
     }
@@ -162,6 +164,11 @@ public class StructuralBuilder : IStructureContext
     public IStructureContext AddFormField(PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName, string? title = null, string? tooltip = null, bool print = true)
     {
         return AddFormField(AnnotationFactory.CreateTextWidget(document, page, rect, fieldName, tooltip, print), title);
+    }
+
+    public IStructureContext AddFormField(PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName, FormFieldAppearanceOptions appearance, string? value = null, string? title = null, string? tooltip = null, bool print = true)
+    {
+        return AddFormField(AnnotationFactory.CreateTextWidget(document, page, rect, fieldName, appearance, value, tooltip, print), title);
     }
 
     public IStructureContext AddLabeledFormField(WidgetAnnotation widget, string? title = null, string? tooltip = null)
@@ -172,13 +179,7 @@ public class StructuralBuilder : IStructureContext
         var widgetObj = widget.NativeObject;
         
         // Requirement 2.3: Consistency for /Contents and /TU
-        var description = tooltip ?? title ?? widget.Field.Get<PdfString>((PdfName)"TU")?.Value;
-        if (!string.IsNullOrEmpty(description))
-        {
-            widgetObj[PdfName.Contents] = new PdfString(description);
-            widgetObj[(PdfName)"TU"] = new PdfString(description);
-            widget.Field[(PdfName)"TU"] = new PdfString(description);
-        }
+        ApplyAnnotationDescription(widgetObj, widget.Field, tooltip ?? title);
 
         BindAnnotation(node, widget.Page, widgetObj);
         return lblCtx;
@@ -200,6 +201,22 @@ public class StructuralBuilder : IStructureContext
     {
         BindMarkedContent(_root, page, mcid);
         return this;
+    }
+
+    public IStructureContext BindAnnotation(PdfDictionary annotation, PdfPage page)
+    {
+        BindAnnotation(_root, page, annotation);
+        return this;
+    }
+
+    public IStructureContext AddAnnot(PdfPage page, PdfDictionary annotation, string? title = null, string? altText = null)
+    {
+        EnsureAnnotationOnPage(page, annotation, addWhenMissing: true);
+        ApplyAnnotationDescription(annotation, null, altText ?? title);
+        var ctx = AddElement("Annot", title);
+        if (altText != null) ctx.Alt(altText);
+        BindAnnotation(ctx.GetNode(), page, annotation);
+        return ctx;
     }
 
     public IStructureContext AddLayoutAttributes(string? textAlign = null, double? width = null, double? height = null)
@@ -248,6 +265,12 @@ public class StructuralBuilder : IStructureContext
         return this;
     }
 
+    public IStructureContext References(params IStructureContext[] targets)
+    {
+        AddTargets(_root.References, targets);
+        return this;
+    }
+
     public IStructureContext AddClass(string className)
     {
         AddUnique(_root.Classes, className);
@@ -269,6 +292,12 @@ public class StructuralBuilder : IStructureContext
     public IStructureContext TableHeaders(params string[] ids)
     {
         AddUnique(_root.Headers, ids);
+        return this;
+    }
+
+    public IStructureContext TableHeaders(params IStructureContext[] targets)
+    {
+        AddTargets(_root.Headers, targets);
         return this;
     }
 
@@ -339,8 +368,71 @@ public class StructuralBuilder : IStructureContext
 
     internal void BindAnnotation(StructureNode node, PdfPage page, PdfDictionary annotation)
     {
+        EnsureAnnotationOnPage(page, annotation, addWhenMissing: false);
+        if (node.ObjectReferences.Any(x => ReferenceEquals(x.Object.Resolve(), annotation)))
+        {
+            return;
+        }
         var index = _structureRoot.AllocateStructParentIndex();
         node.ObjectReferences.Add(new StructureObjectReference(annotation, index, page));
+    }
+
+    private void AddTargets(List<string> destination, IStructureContext[] targets)
+    {
+        ArgumentNullException.ThrowIfNull(targets);
+        foreach (var target in targets)
+        {
+            ArgumentNullException.ThrowIfNull(target);
+            var node = target.GetNode();
+            if (!ReferenceEquals(node.Root, _structureRoot))
+            {
+                throw new ArgumentException("Referenced structure context belongs to another structure tree.", nameof(targets));
+            }
+            AddUnique(destination, _structureRoot.EnsureNodeId(node));
+        }
+    }
+
+    internal static void EnsureAnnotationOnPage(PdfPage page, PdfDictionary annotation, bool addWhenMissing)
+    {
+        ArgumentNullException.ThrowIfNull(page);
+        ArgumentNullException.ThrowIfNull(annotation);
+        var annots = page.NativeObject.Get<PdfArray>(PdfName.Annots);
+        var present = annots?.Any(x => ReferenceEquals(x.Resolve(), annotation)) == true;
+        if (!present && addWhenMissing)
+        {
+            page.AddAnnotation(annotation);
+            present = true;
+        }
+        if (!present)
+        {
+            throw new ArgumentException("The annotation does not belong to the supplied page.", nameof(annotation));
+        }
+
+        var owner = annotation[PdfName.P].Resolve();
+        if (owner != null && !ReferenceEquals(owner, page.NativeObject))
+        {
+            throw new ArgumentException("The annotation belongs to a different page.", nameof(annotation));
+        }
+        annotation[PdfName.P] = page.NativeObject.Indirect();
+    }
+
+    internal static void ApplyAnnotationDescription(PdfDictionary annotation, PdfDictionary? field, string? description)
+    {
+        description ??= field?.Get<PdfString>((PdfName)"TU")?.Value
+            ?? annotation.Get<PdfString>((PdfName)"TU")?.Value
+            ?? annotation.Get<PdfString>(PdfName.Contents)?.Value;
+        if (string.IsNullOrWhiteSpace(description))
+        {
+            return;
+        }
+
+        var text = PdfString.CreateTextString(description);
+        annotation[PdfName.Contents] = text;
+        if (annotation.Get<PdfName>(PdfName.Subtype) == PdfName.Widget)
+        {
+            annotation[(PdfName)"TU"] = PdfString.CreateTextString(description);
+            if (field != null) field[(PdfName)"TU"] = PdfString.CreateTextString(description);
+        }
     }
 
     internal void BindLinkAnnotation(StructureNode node, LinkAnnotation annotation, string? title = null, string? altText = null)
@@ -494,10 +586,13 @@ public interface IStructureContext
     IStructureContext AddLinkAction(PdfPage page, PdfRect<double> rect, PdfDictionary action, string? title = null, string? altText = null);
     IStructureContext AddFormField(WidgetAnnotation widget, string? title = null);
     IStructureContext AddFormField(PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName, string? title = null, string? tooltip = null, bool print = true);
+    IStructureContext AddFormField(PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName, FormFieldAppearanceOptions appearance, string? value = null, string? title = null, string? tooltip = null, bool print = true);
     IStructureContext AddLabeledFormField(WidgetAnnotation widget, string? title = null, string? tooltip = null);
     IStructureContext BindImage(XObjImage image, params PdfPage[] pages);
     IStructureContext BindFormXObject(XObjForm form, params PdfPage[] pages);
     IStructureContext BindMarkedContent(PdfPage page, int mcid);
+    IStructureContext BindAnnotation(PdfDictionary annotation, PdfPage page);
+    IStructureContext AddAnnot(PdfPage page, PdfDictionary annotation, string? title = null, string? altText = null);
     IStructureContext AddLayoutAttributes(string? textAlign = null, double? width = null, double? height = null);
     IStructureContext Alt(string? altText);
     IStructureContext ActualText(string? actualText);
@@ -505,10 +600,12 @@ public interface IStructureContext
     IStructureContext Lang(string? language);
     IStructureContext ElementId(string? id);
     IStructureContext References(params string[] ids);
+    IStructureContext References(params IStructureContext[] targets);
     IStructureContext AddClass(string className);
     IStructureContext SetNamespace(StructureNamespace? ns);
     IStructureContext TableScope(StructureScope? scope);
     IStructureContext TableHeaders(params string[] ids);
+    IStructureContext TableHeaders(params IStructureContext[] targets);
     IStructureContext TableSummary(string? summary);
     IStructureContext ListNumbering(StructureListNumbering? numbering);
     IStructureContext Ref(StructureNode target);
@@ -653,6 +750,8 @@ public class StructuralContext : IStructureContext
     public IStructureContext AddFormField(WidgetAnnotation widget, string? title = null)
     {
         var ctx = AddElement("Form", title);
+        ApplyAnnotationDescription(widget.NativeObject, widget.Field,
+            widget.Field.Get<PdfString>((PdfName)"TU")?.Value ?? title);
         _builder.BindAnnotation(ctx.GetNode(), widget.Page, widget.NativeObject);
         return ctx;
     }
@@ -660,6 +759,11 @@ public class StructuralContext : IStructureContext
     public IStructureContext AddFormField(PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName, string? title = null, string? tooltip = null, bool print = true)
     {
         return AddFormField(AnnotationFactory.CreateTextWidget(document, page, rect, fieldName, tooltip, print), title);
+    }
+
+    public IStructureContext AddFormField(PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName, FormFieldAppearanceOptions appearance, string? value = null, string? title = null, string? tooltip = null, bool print = true)
+    {
+        return AddFormField(AnnotationFactory.CreateTextWidget(document, page, rect, fieldName, appearance, value, tooltip, print), title);
     }
 
     public IStructureContext AddLabeledFormField(WidgetAnnotation widget, string? title = null, string? tooltip = null)
@@ -670,13 +774,7 @@ public class StructuralContext : IStructureContext
         var widgetObj = widget.NativeObject;
         
         // Requirement 2.3: Consistency for /Contents and /TU
-        var description = tooltip ?? title ?? widget.Field.Get<PdfString>((PdfName)"TU")?.Value;
-        if (!string.IsNullOrEmpty(description))
-        {
-            widgetObj[PdfName.Contents] = new PdfString(description);
-            widgetObj[(PdfName)"TU"] = new PdfString(description);
-            widget.Field[(PdfName)"TU"] = new PdfString(description);
-        }
+        ApplyAnnotationDescription(widgetObj, widget.Field, tooltip ?? title);
 
         _builder.BindAnnotation(node, widget.Page, widgetObj);
         return lblCtx;
@@ -698,6 +796,22 @@ public class StructuralContext : IStructureContext
     {
         _builder.BindMarkedContent(_node, page, mcid);
         return this;
+    }
+
+    public IStructureContext BindAnnotation(PdfDictionary annotation, PdfPage page)
+    {
+        _builder.BindAnnotation(_node, page, annotation);
+        return this;
+    }
+
+    public IStructureContext AddAnnot(PdfPage page, PdfDictionary annotation, string? title = null, string? altText = null)
+    {
+        EnsureAnnotationOnPage(page, annotation, addWhenMissing: true);
+        ApplyAnnotationDescription(annotation, null, altText ?? title);
+        var ctx = AddElement("Annot", title);
+        if (altText != null) ctx.Alt(altText);
+        _builder.BindAnnotation(ctx.GetNode(), page, annotation);
+        return ctx;
     }
 
     public IStructureContext AddLayoutAttributes(string? textAlign = null, double? width = null, double? height = null)
@@ -746,6 +860,12 @@ public class StructuralContext : IStructureContext
         return this;
     }
 
+    public IStructureContext References(params IStructureContext[] targets)
+    {
+        AddTargets(_node.References, targets);
+        return this;
+    }
+
     public IStructureContext AddClass(string className)
     {
         AddUnique(_node.Classes, className);
@@ -767,6 +887,12 @@ public class StructuralContext : IStructureContext
     public IStructureContext TableHeaders(params string[] ids)
     {
         AddUnique(_node.Headers, ids);
+        return this;
+    }
+
+    public IStructureContext TableHeaders(params IStructureContext[] targets)
+    {
+        AddTargets(_node.Headers, targets);
         return this;
     }
 
@@ -813,5 +939,31 @@ public class StructuralContext : IStructureContext
 
             values.Add(addition);
         }
+    }
+
+    private void AddTargets(List<string> destination, IStructureContext[] targets)
+    {
+        ArgumentNullException.ThrowIfNull(targets);
+        foreach (var target in targets)
+        {
+            ArgumentNullException.ThrowIfNull(target);
+            var node = target.GetNode();
+            var root = _builder.GetStructureRoot();
+            if (!ReferenceEquals(node.Root, root))
+            {
+                throw new ArgumentException("Referenced structure context belongs to another structure tree.", nameof(targets));
+            }
+            AddUnique(destination, root.EnsureNodeId(node));
+        }
+    }
+
+    private static void EnsureAnnotationOnPage(PdfPage page, PdfDictionary annotation, bool addWhenMissing)
+    {
+        StructuralBuilder.EnsureAnnotationOnPage(page, annotation, addWhenMissing);
+    }
+
+    private static void ApplyAnnotationDescription(PdfDictionary annotation, PdfDictionary? field, string? description)
+    {
+        StructuralBuilder.ApplyAnnotationDescription(annotation, field, description);
     }
 }
