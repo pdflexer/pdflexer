@@ -17,6 +17,7 @@ public class StructuralBuilder : IStructureContext
 {
     private readonly StructureRoot _structureRoot = new();
     private readonly StructureNode _root;
+    private readonly Dictionary<PdfStream, StructureNode> _boundForms = new();
 
     public StructuralBuilder()
     {
@@ -156,7 +157,7 @@ public class StructuralBuilder : IStructureContext
     {
         var ctx = AddElement("Form", title);
         ApplyAnnotationDescription(widget.NativeObject, widget.Field,
-            widget.Field.Get<PdfString>((PdfName)"TU")?.Value ?? title);
+            title ?? widget.Field.Get<PdfString>((PdfName)"TU")?.Value);
         BindAnnotation(ctx.GetNode(), widget.Page, widget.NativeObject);
         return ctx;
     }
@@ -179,7 +180,7 @@ public class StructuralBuilder : IStructureContext
         var widgetObj = widget.NativeObject;
         
         // Requirement 2.3: Consistency for /Contents and /TU
-        ApplyAnnotationDescription(widgetObj, widget.Field, tooltip ?? title);
+        ApplyAnnotationDescription(widgetObj, widget.Field, tooltip ?? title, overwriteFieldTooltip: tooltip != null);
 
         BindAnnotation(node, widget.Page, widgetObj);
         return lblCtx;
@@ -225,7 +226,7 @@ public class StructuralBuilder : IStructureContext
         if (textAlign != null) attr[PdfName.TextAlign] = (PdfName)textAlign;
         if (width.HasValue) attr[PdfName.Width] = new PdfDoubleNumber(width.Value);
         if (height.HasValue) attr[PdfName.Height] = new PdfDoubleNumber(height.Value);
-        _root.Attributes.Add(attr);
+        if (attr.Count > 1) _root.Attributes.Add(attr);
         return this;
     }
 
@@ -408,7 +409,7 @@ public class StructuralBuilder : IStructureContext
             throw new ArgumentException("The annotation does not belong to the supplied page.", nameof(annotation));
         }
 
-        var owner = annotation[PdfName.P].Resolve();
+        var owner = annotation.Get(PdfName.P)?.Resolve();
         if (owner != null && !ReferenceEquals(owner, page.NativeObject))
         {
             throw new ArgumentException("The annotation belongs to a different page.", nameof(annotation));
@@ -416,7 +417,17 @@ public class StructuralBuilder : IStructureContext
         annotation[PdfName.P] = page.NativeObject.Indirect();
     }
 
-    internal static void ApplyAnnotationDescription(PdfDictionary annotation, PdfDictionary? field, string? description)
+    /// <param name="overwriteFieldTooltip">
+    /// True when <paramref name="description"/> came from an explicit tooltip argument, which is a
+    /// direct request to set the field tooltip. False when it is a fallback from a structure title,
+    /// in which case a field tooltip already set by the annotation factory is left alone — a field
+    /// tooltip is shared by every kid of a radio group and must not be redefined per widget.
+    /// </param>
+    internal static void ApplyAnnotationDescription(
+        PdfDictionary annotation,
+        PdfDictionary? field,
+        string? description,
+        bool overwriteFieldTooltip = false)
     {
         description ??= field?.Get<PdfString>((PdfName)"TU")?.Value
             ?? annotation.Get<PdfString>((PdfName)"TU")?.Value
@@ -430,8 +441,11 @@ public class StructuralBuilder : IStructureContext
         annotation[PdfName.Contents] = text;
         if (annotation.Get<PdfName>(PdfName.Subtype) == PdfName.Widget)
         {
-            annotation[(PdfName)"TU"] = PdfString.CreateTextString(description);
-            if (field != null) field[(PdfName)"TU"] = PdfString.CreateTextString(description);
+            annotation[(PdfName)"TU"] = text;
+            if (field != null && (overwriteFieldTooltip || field.Get<PdfString>((PdfName)"TU") == null))
+            {
+                field[(PdfName)"TU"] = text;
+            }
         }
     }
 
@@ -469,9 +483,18 @@ public class StructuralBuilder : IStructureContext
             return;
         }
 
+        // A form XObject carries a single /StructParents, so it can only point at one ParentTree
+        // entry. Binding it under a second element would silently orphan the first entry.
+        if (_boundForms.TryGetValue(form.NativeObject, out var owner) && !ReferenceEquals(owner, node))
+        {
+            throw new PdfAccessibilityConformanceException(
+                $"Form XObject is already bound to structure element '{owner.Type}'. A form XObject can only be bound to one structure element.");
+        }
+
         var index = _structureRoot.AllocateStructParentIndex();
         form.StructParents = new PdfIntNumber(index);
         node.XObjectReferences.Add(new StructureXObjectReference(form.NativeObject, index, pages));
+        _boundForms[form.NativeObject] = node;
     }
 
     internal void BindMarkedContent(StructureNode node, PdfPage page, int mcid)
@@ -751,7 +774,7 @@ public class StructuralContext : IStructureContext
     {
         var ctx = AddElement("Form", title);
         ApplyAnnotationDescription(widget.NativeObject, widget.Field,
-            widget.Field.Get<PdfString>((PdfName)"TU")?.Value ?? title);
+            title ?? widget.Field.Get<PdfString>((PdfName)"TU")?.Value);
         _builder.BindAnnotation(ctx.GetNode(), widget.Page, widget.NativeObject);
         return ctx;
     }
@@ -774,7 +797,7 @@ public class StructuralContext : IStructureContext
         var widgetObj = widget.NativeObject;
         
         // Requirement 2.3: Consistency for /Contents and /TU
-        ApplyAnnotationDescription(widgetObj, widget.Field, tooltip ?? title);
+        ApplyAnnotationDescription(widgetObj, widget.Field, tooltip ?? title, overwriteFieldTooltip: tooltip != null);
 
         _builder.BindAnnotation(node, widget.Page, widgetObj);
         return lblCtx;
@@ -820,7 +843,7 @@ public class StructuralContext : IStructureContext
         if (textAlign != null) attr[PdfName.TextAlign] = (PdfName)textAlign;
         if (width.HasValue) attr[PdfName.Width] = new PdfDoubleNumber(width.Value);
         if (height.HasValue) attr[PdfName.Height] = new PdfDoubleNumber(height.Value);
-        _node.Attributes.Add(attr);
+        if (attr.Count > 1) _node.Attributes.Add(attr);
         return this;
     }
 
@@ -962,8 +985,12 @@ public class StructuralContext : IStructureContext
         StructuralBuilder.EnsureAnnotationOnPage(page, annotation, addWhenMissing);
     }
 
-    private static void ApplyAnnotationDescription(PdfDictionary annotation, PdfDictionary? field, string? description)
+    private static void ApplyAnnotationDescription(
+        PdfDictionary annotation,
+        PdfDictionary? field,
+        string? description,
+        bool overwriteFieldTooltip = false)
     {
-        StructuralBuilder.ApplyAnnotationDescription(annotation, field, description);
+        StructuralBuilder.ApplyAnnotationDescription(annotation, field, description, overwriteFieldTooltip);
     }
 }

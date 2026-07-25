@@ -12,6 +12,7 @@ public sealed partial class PdfDocument
     internal const string Pdf20StructureNamespaceUri = "http://iso.org/pdf2/ssn";
 
     private AccessibilityConfiguration? _accessibilityConfiguration;
+    internal bool IsStrictAccessibility => _accessibilityConfiguration?.StrictConformance == true;
 
     internal void ValidateLegacyWidgetFactory()
     {
@@ -263,20 +264,29 @@ $"""
 
     internal void ValidateAccessibilityAuthoringAfterSerialization(IReadOnlyList<PdfIndirectRef> pageRefs, PdfDictionary catalog)
     {
-        if (_accessibilityConfiguration?.StrictConformance != true)
+        // Only documents that opted into the accessible-authoring flow are validated; a document
+        // that merely used the structure builder never asked for PDF/UA conformance feedback.
+        if (_accessibilityConfiguration == null)
         {
             return;
         }
 
+        var isStrict = _accessibilityConfiguration.StrictConformance;
         var structRoot = catalog.Get<PdfDictionary>(PdfName.StructTreeRoot);
-        if (structRoot == null)
+        if (structRoot == null && isStrict)
         {
             throw new PdfAccessibilityConformanceException(
                 "Strict accessibility authoring requires a structure tree to be serialized.");
         }
 
-        var parentTree = structRoot[PdfName.ParentTree].Resolve().GetAs<PdfDictionary>();
-        var parentTreeEntries = BuildParentTreeLookup(parentTree);
+        var parentTreeObj = structRoot?.Get(PdfName.ParentTree)?.Resolve();
+        var parentTree = parentTreeObj is PdfDictionary ptDict ? ptDict : (parentTreeObj is PdfIndirectRef ir && ir.GetObject() is PdfDictionary irDict ? irDict : null);
+        if (parentTree == null && isStrict)
+        {
+            throw new PdfAccessibilityConformanceException(
+                "Strict accessibility authoring requires a ParentTree in the structure tree root.");
+        }
+        var parentTreeEntries = parentTree != null ? BuildParentTreeLookup(parentTree) : new Dictionary<int, IPdfObject>();
 
         foreach (var pageRef in pageRefs)
         {
@@ -292,18 +302,31 @@ $"""
                 var tabs = pageDict.Get<PdfName>(PdfName.Tabs);
                 if (tabs != PdfName.S)
                 {
-                    throw new PdfAccessibilityConformanceException(
-                        "Strict accessibility mode requires annotated pages to have /Tabs set to /S (Structure order).");
+                    ReportViolation("Strict accessibility mode requires annotated pages to have /Tabs set to /S (Structure order).", isStrict);
                 }
 
-                ValidatePageAnnotations(page, parentTreeEntries);
+                ValidatePageAnnotations(page, parentTreeEntries, isStrict);
             }
 
-            ValidateRenderedContent(page.GetContentNodes(), pageDict.Get<PdfNumber>(PdfName.StructParents), parentTreeEntries);
+            // Deliberately strict-only: sweeping every page's content model is far more expensive
+            // than the /Annots walk above, which runs in both modes.
+            if (isStrict)
+            {
+                ValidateRenderedContent(page.GetContentNodes(), pageDict.Get<PdfNumber>(PdfName.StructParents), parentTreeEntries);
+            }
         }
     }
 
-    private static void ValidatePageAnnotations(PdfPage page, IReadOnlyDictionary<int, IPdfObject> parentTreeEntries)
+    private void ReportViolation(string message, bool isStrict)
+    {
+        if (isStrict)
+        {
+            throw new PdfAccessibilityConformanceException(message);
+        }
+        Context.Warning(message);
+    }
+
+    private void ValidatePageAnnotations(PdfPage page, IReadOnlyDictionary<int, IPdfObject> parentTreeEntries, bool isStrict)
     {
         var annots = page.NativeObject.Get<PdfArray>(PdfName.Annots);
         if (annots == null) return;
@@ -317,53 +340,58 @@ $"""
             if (subtype == (PdfName)"PrinterMark")
             {
                 if (!HasNormalAppearance(annotation))
-                    throw new PdfAccessibilityConformanceException("Visible PrinterMark annotations require a normal appearance stream.");
+                    ReportViolation("Visible PrinterMark annotations require a normal appearance stream.", isStrict);
                 if (!NormalAppearances(annotation).All(IsArtifactedAppearance))
-                    throw new PdfAccessibilityConformanceException(
-                        "PrinterMark annotation appearance content must be marked as an Artifact.");
+                    ReportViolation("PrinterMark annotation appearance content must be marked as an Artifact.", isStrict);
                 continue;
             }
 
             var index = annotation.Get<PdfNumber>(PdfName.StructParent);
             if (index == null || !parentTreeEntries.TryGetValue((int)index, out var owner) ||
                 owner.Resolve() is not PdfDictionary structureElement)
-                throw new PdfAccessibilityConformanceException(
-                    $"Visible {subtype.Value} annotations require a valid /StructParent entry backed by the ParentTree.");
+            {
+                ReportViolation($"Visible {subtype.Value} annotations require a valid /StructParent entry backed by the ParentTree.", isStrict);
+                continue;
+            }
 
-            var actualTag = structureElement.Get<PdfName>(PdfName.S)?.Value;
+            var rawTag = structureElement.Get<PdfName>(PdfName.S)?.Value;
+            var actualTag = rawTag;
+            if (rawTag != null && _structure != null && _structure.GetStructureRoot().RoleMap.TryGetValue(rawTag, out var mapped))
+            {
+                actualTag = mapped;
+            }
             var expectedTag = subtype == PdfName.Link ? "Link" : subtype == PdfName.Widget ? "Form" : "Annot";
             if (!string.Equals(actualTag, expectedTag, StringComparison.Ordinal))
-                throw new PdfAccessibilityConformanceException(
-                    $"{subtype.Value} annotations must be nested in a {expectedTag} structure element, not {actualTag ?? "an untyped element"}.");
+            {
+                ReportViolation($"{subtype.Value} annotations must be nested in a {expectedTag} structure element, not {actualTag ?? "an untyped element"}.", isStrict);
+            }
 
             if (subtype == PdfName.Widget)
             {
-                ValidateWidgetAnnotation(annotation);
+                ValidateWidgetAnnotation(annotation, isStrict);
             }
             else
             {
                 if (string.IsNullOrWhiteSpace(annotation.Get<PdfString>(PdfName.Contents)?.Value))
-                    throw new PdfAccessibilityConformanceException(
-                        $"Visible {subtype.Value} annotations require a non-empty /Contents description.");
+                    ReportViolation($"Visible {subtype.Value} annotations require a non-empty /Contents description.", isStrict);
                 if (subtype != PdfName.Link && !HasNormalAppearance(annotation))
-                    throw new PdfAccessibilityConformanceException(
-                        $"Visible {subtype.Value} annotations require a normal appearance stream.");
+                    ReportViolation($"Visible {subtype.Value} annotations require a normal appearance stream.", isStrict);
             }
         }
     }
 
-    private static void ValidateWidgetAnnotation(PdfDictionary annotation)
+    private void ValidateWidgetAnnotation(PdfDictionary annotation, bool isStrict)
     {
         var field = annotation.Get<PdfDictionary>(PdfName.Parent) ?? annotation;
         var tooltip = field.Get<PdfString>((PdfName)"TU")?.Value ??
             annotation.Get<PdfString>((PdfName)"TU")?.Value;
         if (string.IsNullOrWhiteSpace(tooltip))
-            throw new PdfAccessibilityConformanceException("Widget annotations require a non-empty /TU tooltip.");
+            ReportViolation("Widget annotations require a non-empty /TU tooltip.", isStrict);
         var flags = (int?)annotation.Get<PdfNumber>(PdfName.F) ?? 0;
         if ((flags & 4) == 0)
-            throw new PdfAccessibilityConformanceException("Widget annotations require the Print flag.");
+            ReportViolation("Widget annotations require the Print flag.", isStrict);
         if (!HasNormalAppearance(annotation))
-            throw new PdfAccessibilityConformanceException("Widget annotations require a normal appearance stream.");
+            ReportViolation("Widget annotations require a normal appearance stream.", isStrict);
 
         if (field.Get<PdfName>(PdfName.FT) != PdfName.Btn) return;
         var normal = annotation.Get<PdfDictionary>((PdfName)"AP")?.Get<PdfDictionary>(PdfName.N);
@@ -372,18 +400,17 @@ $"""
         var value = field.Get<PdfName>(PdfName.V);
         if (state == null || !normal.ContainsKey(state) ||
             (value != null && state != (PdfName)"Off" && state != value))
-            throw new PdfAccessibilityConformanceException(
-                "Button widget /AP /N states, /AS, and field /V must be synchronized.");
+            ReportViolation("Button widget /AP /N states, /AS, and field /V must be synchronized.", isStrict);
     }
 
     private static bool HasNormalAppearance(PdfDictionary annotation)
     {
-        return annotation.Get<PdfDictionary>((PdfName)"AP")?[PdfName.N].Resolve() is PdfStream or PdfDictionary;
+        return annotation.Get<PdfDictionary>((PdfName)"AP")?.Get(PdfName.N)?.Resolve() is PdfStream or PdfDictionary;
     }
 
     private static IEnumerable<PdfStream> NormalAppearances(PdfDictionary annotation)
     {
-        var normal = annotation.Get<PdfDictionary>((PdfName)"AP")?[PdfName.N].Resolve();
+        var normal = annotation.Get<PdfDictionary>((PdfName)"AP")?.Get(PdfName.N)?.Resolve();
         if (normal is PdfStream stream)
         {
             yield return stream;

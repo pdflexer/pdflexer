@@ -146,11 +146,162 @@ public class AccessibilityAuthoringPhase2Tests
             AnnotationFactory.CreateTextWidget(strict, strictPage, new PdfRect<double>(0, 0, 20, 20), "legacy"));
     }
 
+    [Fact]
+    public void IDTree_MaintainsByteOrderingWithNonAsciiKeys()
+    {
+        using var doc = PdfDocument.Create();
+        doc.ApplyAccessibilitySetup("en-US", "IDTree test", PdfUaProfile.PdfUa1, strictConformance: true);
+        var p1 = doc.Structure.AddParagraph("p1");
+        p1.GetNode().ID = "aÄ";
+        var p2 = doc.Structure.AddParagraph("p2");
+        p2.GetNode().ID = "zzz";
+
+        using var ms = new MemoryStream();
+        doc.SaveTo(ms);
+        ms.Position = 0;
+        using var saved = PdfDocument.Open(ms);
+        var structRoot = saved.Catalog.Get<PdfDictionary>(PdfName.StructTreeRoot)!;
+        var idTree = structRoot.Get<PdfDictionary>(PdfName.IDTree)!;
+        var names = idTree.Get<PdfArray>(PdfName.Names)!;
+
+        // "zzz" (7A 7A 7A) comes before "aÄ" (FE FF 00 61 00 C4) by byte order
+        var firstKey = names[0].GetAs<PdfString>().Value;
+        var secondKey = names[2].GetAs<PdfString>().Value;
+        Assert.Equal("zzz", firstKey);
+        Assert.Equal("aÄ", secondKey);
+    }
+
+    [Fact]
+    public void AddLayoutAttributes_OnlyAddsWhenMultipleEntries()
+    {
+        using var doc = PdfDocument.Create();
+        var p = doc.Structure.AddParagraph("test");
+        p.AddLayoutAttributes(null, null, null);
+        Assert.Empty(p.GetNode().Attributes);
+
+        p.AddLayoutAttributes(textAlign: "Left");
+        Assert.Single(p.GetNode().Attributes);
+    }
+
+    [Fact]
+    public void ValidatePageAnnotations_WarnsInNonStrictMode()
+    {
+        var context = ParsingContext.Reset();
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        doc.ApplyAccessibilitySetup("en-US", "NonStrict test", PdfUaProfile.PdfUa1, strictConformance: false);
+
+        var annot = new PdfDictionary
+        {
+            [PdfName.TypeName] = PdfName.Annot,
+            [PdfName.Subtype] = (PdfName)"Square",
+            [PdfName.Rect] = new PdfArray { new PdfIntNumber(0), new PdfIntNumber(0), new PdfIntNumber(10), new PdfIntNumber(10) }
+        };
+        page.AddAnnotation(annot);
+
+        using var ms = new MemoryStream();
+        doc.SaveTo(ms);
+        Assert.True(context.WarningCount > 0);
+    }
+
+    [Fact]
+    public void RadioGroupTooltip_SurvivesPerWidgetStructureTitles()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        var radio = AnnotationFactory.CreateRadioGroup(
+            doc, "contact",
+            new[]
+            {
+                new RadioButtonOption(page, new PdfRect<double>(10, 10, 30, 30), "Email", true, "Email contact"),
+                new RadioButtonOption(page, new PdfRect<double>(40, 10, 60, 30), "Phone", false, "Phone contact")
+            },
+            EmbeddedAppearance(), "Preferred contact method");
+
+        doc.Structure.AddFormField(radio.Widgets[0], "Email contact");
+        doc.Structure.AddFormField(radio.Widgets[1], "Phone contact");
+
+        // The field tooltip is shared by both kids and must remain the group description.
+        Assert.Equal("Preferred contact method", radio.Field.Get<PdfString>((PdfName)"TU")!.Value);
+        Assert.Equal("Email contact", radio.Widgets[0].NativeObject.Get<PdfString>((PdfName)"TU")!.Value);
+        Assert.Equal("Email contact", radio.Widgets[0].NativeObject.Get<PdfString>(PdfName.Contents)!.Value);
+        Assert.Equal("Phone contact", radio.Widgets[1].NativeObject.Get<PdfString>((PdfName)"TU")!.Value);
+        Assert.Equal("Phone contact", radio.Widgets[1].NativeObject.Get<PdfString>(PdfName.Contents)!.Value);
+    }
+
+    [Fact]
+    public void AddFormField_StillSuppliesFieldTooltipWhenFactoryLeftItEmpty()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        var widget = AnnotationFactory.CreateTextWidget(
+            doc, page, new PdfRect<double>(10, 10, 110, 30), "name", EmbeddedAppearance());
+
+        doc.Structure.AddFormField(widget, "Full name");
+
+        Assert.Equal("Full name", widget.Field.Get<PdfString>((PdfName)"TU")!.Value);
+        Assert.Equal("Full name", widget.NativeObject.Get<PdfString>((PdfName)"TU")!.Value);
+    }
+
+    [Fact]
+    public void PostSerializationValidation_IsSkippedWithoutAccessibilitySetup()
+    {
+        var context = ParsingContext.Reset();
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        doc.Structure.AddParagraph("untagged content");
+        page.AddAnnotation(new PdfDictionary
+        {
+            [PdfName.TypeName] = PdfName.Annot,
+            [PdfName.Subtype] = (PdfName)"Square",
+            [PdfName.Rect] = new PdfArray { new PdfIntNumber(0), new PdfIntNumber(0), new PdfIntNumber(10), new PdfIntNumber(10) }
+        });
+
+        doc.SaveTo(new MemoryStream());
+
+        Assert.Equal(0, context.WarningCount);
+    }
+
+    [Fact]
+    public void TextAppearance_WrapsVariableTextInClippedTxMarkedContent()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        var widget = AnnotationFactory.CreateTextWidget(
+            doc, page, new PdfRect<double>(10, 10, 60, 30), "f", EmbeddedAppearance(), "value", "tip");
+
+        var appearance = widget.NativeObject.Get<PdfDictionary>((PdfName)"AP")!.Get<PdfStream>(PdfName.N)!;
+        var content = System.Text.Encoding.ASCII.GetString(appearance.Contents.GetDecodedData());
+
+        var order = new[] { "q", "/Tx BMC", "W", "n", "ET", "Q", "EMC" };
+        var position = -1;
+        foreach (var token in order)
+        {
+            var next = content.IndexOf(token, position + 1, StringComparison.Ordinal);
+            Assert.True(next > position, $"'{token}' missing or out of order in:\n{content}");
+            position = next;
+        }
+    }
+
+    [Fact]
+    public void BindFormXObject_RejectsBindingOneFormToTwoElements()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        var formWriter = new PdfLexer.Writing.FormWriter(50, 50);
+        formWriter.SetFillRGB(0, 0, 0).Rect(0, 0, 10, 10).Fill();
+        var form = formWriter.Complete();
+
+        doc.Structure.AddFigure("first", "first figure").BindFormXObject(form, page);
+        var second = doc.Structure.AddFigure("second", "second figure");
+
+        Assert.Throws<PdfAccessibilityConformanceException>(() => second.BindFormXObject(form, page));
+    }
+
     private static FormFieldAppearanceOptions EmbeddedAppearance()
     {
-        var path = File.Exists("/workspace/test/Roboto-Regular.ttf")
-            ? "/workspace/test/Roboto-Regular.ttf"
-            : "../../../../test/Roboto-Regular.ttf";
+        var testDir = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var path = Path.Combine(testDir, "Roboto-Regular.ttf");
         return new FormFieldAppearanceOptions
         {
             Font = TrueTypeFont.CreateWritableFont(File.ReadAllBytes(path)),

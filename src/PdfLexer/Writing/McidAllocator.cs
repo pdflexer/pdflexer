@@ -20,12 +20,20 @@ internal static class McidAllocator
         {
             if (mode == PageWriteMode.Replace)
             {
+                if (state.Initialized && state.Next > 0)
+                {
+                    throw new PdfAccessibilityConformanceException(
+                        "PageWriteMode.Replace cannot be used on a page after structure elements have already been bound to MCIDs on that page.");
+                }
                 state.Next = 0;
                 state.Initialized = true;
                 return;
             }
 
-            Refresh(state, FindHighestMcid(page.GetContentNodes()), "page");
+            if (!state.Initialized)
+            {
+                Refresh(state, FindHighestMcid(page.GetContentNodes()), "page");
+            }
         }
     }
 

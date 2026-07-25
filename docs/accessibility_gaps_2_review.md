@@ -38,24 +38,42 @@ The five findings are genuinely addressed and the approach is right in both phas
 Six defects below are worth fixing before this is called done; three of them are uncaught exceptions or
 wrong-on-the-wire output rather than missing polish. Nothing requires rework of the design.
 
+> **Status: all 14 resolved.** Findings R1–R14 were fixed in a first pass, then re-verified. That pass left
+> three loose ends, closed in a follow-up:
+>
+> - **R4 was over-corrected.** Flipping the precedence to `title ?? field /TU` fixed the ignored title but made
+>   a per-widget title *overwrite* the shared field tooltip, wiping out radio-group descriptions.
+>   `ApplyAnnotationDescription` now takes an `overwriteFieldTooltip` flag: an explicit `tooltip:` argument on
+>   `AddLabeledFormField` still replaces the field `/TU`, while a `title` fallback only fills an empty one.
+> - **R8 changed behaviour for callers who never opted in.** The `_accessibilityConfiguration == null` early
+>   return had been nested inside the `structRoot == null` branch, so documents using `doc.Structure` without
+>   `ApplyAccessibilitySetup` started receiving annotation warnings. It is now a single top-level guard.
+> - **R11 and R14 were partial.** `q…Q` and the `re W n` clip were added to the appearance streams, and the
+>   duplicate form-XObject binding now throws. `/MK` support was deliberately left out and is recorded as a
+>   known limitation instead. Narrowing the R14 dead branch to `PdfStream` had also dropped the bare-dictionary
+>   case that `StructuralSerializationTests` covers; it now handles both.
+>
+> Full suite: 634 passing, 4 failing — all four are pre-existing `pdfcpu` validation failures in
+> `FontLoadTests` / `WritingTests` that reproduce on a clean tree and are unrelated to this work.
+
 ### Priority
 
 | # | Item | Severity | Effort | Evidence |
 | --- | --- | --- | --- | --- |
-| [R1](#r1-keynotfoundexception-escapes-savepdf-when-ap-has-no-n) | `KeyNotFoundException` escapes save when `/AP` has no `/N` | **High** | XS | Reproduced |
-| [R2](#r2-keynotfoundexception-from-addannotbindannotation-when-the-annotation-has-no-p) | `KeyNotFoundException` from `AddAnnot` when annotation has no `/P` | **High** | XS | Reproduced |
-| [R3](#r3-unselected-choice-fields-render-a-value-they-do-not-have) | Unselected choice fields render a value they do not have | **High** | XS | Reproduced |
-| [R4](#r4-addformfieldwidget-title-discards-title-every-radio-button-gets-the-group-tooltip) | `AddFormField(widget, title)` discards `title`; radio buttons share one label | **High** | S | Reproduced |
-| [R5](#r5-needappearances-and-acroform-da-are-last-write-wins-across-fields) | `NeedAppearances` and AcroForm `/DA` are last-write-wins | **Medium** | S | Reproduced |
-| [R6](#r6-idtree-names-loses-byte-ordering-once-any-id-is-non-ascii) | `IDTree` `/Names` loses byte ordering once any ID is non-ASCII | **Medium** | S | Reproduced |
-| [R7](#r7-only-o-suppression-was-applied-to-the-table-attribute-dictionary-only) | Only-`/O` suppression applied to the Table attribute dict only | **Medium** | XS | Reproduced |
-| [R8](#r8-the-annotation-sweep-is-strict-only-while-reference-validation-warns) | Annotation sweep is strict-only while reference validation warns | **Medium** | S | Reproduced |
-| [R9](#r9-the-new-phase-2-widget-test-does-not-run-in-a-normal-checkout) | New Phase-2 widget test does not run in a normal checkout | **Medium** | XS | Reproduced |
-| [R10](#r10-print-false-widgets-can-never-be-saved-in-strict-mode) | `print: false` widgets can never be saved in strict mode | Low | XS | Reproduced |
-| [R11](#r11-generated-appearance-streams-omit-tx-bmc--emc-and-ignore-mk) | Appearances omit `/Tx BMC … EMC` and ignore `/MK` | Low | S | Reproduced |
-| [R12](#r12-replace-after-a-tagged-append-pass-fails-with-a-misleading-message) | `Replace` after a tagged `Append` fails with a misleading message | Low | XS | Reproduced |
-| [R13](#r13-every-pagewriter-re-parses-the-page-content-stream) | Every `PageWriter` re-parses the page content stream | Low | XS | Reproduced |
-| [R14](#r14-smaller-notes) | Smaller notes (dead branch, role-mapped tags, shared forms) | Low | XS | Code read |
+| [R1](#r1-keynotfoundexception-escapes-savepdf-when-ap-has-no-n) | `KeyNotFoundException` escapes save when `/AP` has no `/N` | **High** | XS | **Resolved** |
+| [R2](#r2-keynotfoundexception-from-addannotbindannotation-when-the-annotation-has-no-p) | `KeyNotFoundException` from `AddAnnot` when annotation has no `/P` | **High** | XS | **Resolved** |
+| [R3](#r3-unselected-choice-fields-render-a-value-they-do-not-have) | Unselected choice fields render a value they do not have | **High** | XS | **Resolved** |
+| [R4](#r4-addformfieldwidget-title-discards-title-every-radio-button-gets-the-group-tooltip) | `AddFormField(widget, title)` discards `title`; radio buttons share one label | **High** | S | **Resolved** (needed a second pass — see status note) |
+| [R5](#r5-needappearances-and-acroform-da-are-last-write-wins-across-fields) | `NeedAppearances` and AcroForm `/DA` are last-write-wins | **Medium** | S | **Resolved** |
+| [R6](#r6-idtree-names-loses-byte-ordering-once-any-id-is-non-ascii) | `IDTree` `/Names` loses byte ordering once any ID is non-ASCII | **Medium** | S | **Resolved** |
+| [R7](#r7-only-o-suppression-was-applied-to-the-table-attribute-dictionary-only) | Only-`/O` suppression applied to the Table attribute dict only | **Medium** | XS | **Resolved** |
+| [R8](#r8-the-annotation-sweep-is-strict-only-while-reference-validation-warns) | Annotation sweep is strict-only while reference validation warns | **Medium** | S | **Resolved** |
+| [R9](#r9-the-new-phase-2-widget-test-does-not-run-in-a-normal-checkout) | New Phase-2 widget test does not run in a normal checkout | **Medium** | XS | **Resolved** |
+| [R10](#r10-print-false-widgets-can-never-be-saved-in-strict-mode) | `print: false` widgets can never be saved in strict mode | Low | XS | **Resolved** |
+| [R11](#r11-generated-appearance-streams-omit-tx-bmc--emc-and-ignore-mk) | Appearances omit `/Tx BMC … EMC` and ignore `/MK` | Low | S | **Resolved** (`/MK` deliberately out of scope) |
+| [R12](#r12-replace-after-a-tagged-append-pass-fails-with-a-misleading-message) | `Replace` after a tagged `Append` pass fails with a misleading message | Low | XS | **Resolved** |
+| [R13](#r13-every-pagewriter-re-parses-the-page-content-stream) | Every `PageWriter` re-parses the page content stream | Low | XS | **Resolved** |
+| [R14](#r14-smaller-notes) | Smaller notes (dead branch, role-mapped tags, shared forms) | Low | XS | **Resolved** |
 
 Effort key matches the source document: XS ≈ under an hour · S ≈ half a day · M ≈ 1–3 days.
 

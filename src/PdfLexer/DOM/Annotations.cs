@@ -1,4 +1,5 @@
 using PdfLexer.Content;
+using PdfLexer.Content.Model;
 using PdfLexer.Fonts;
 using PdfLexer.Writing;
 
@@ -59,7 +60,7 @@ public enum ChoiceFieldKind
     List
 }
 
-public sealed record RadioButtonOption(PdfPage Page, PdfRect<double> Rect, string Value, bool Selected = false);
+public sealed record RadioButtonOption(PdfPage Page, PdfRect<double> Rect, string Value, bool Selected = false, string? Label = null);
 
 public sealed class RadioGroupAnnotation
 {
@@ -214,6 +215,10 @@ public static class AnnotationFactory
             throw new ArgumentException("Radio option values must be non-empty and unique.", nameof(options));
         if (optionList.Count(x => x.Selected) > 1)
             throw new ArgumentException("Only one radio option may be selected.", nameof(options));
+        if (!print && document.IsStrictAccessibility)
+        {
+            throw new PdfAccessibilityConformanceException("Widget annotations require the Print flag.");
+        }
 
         var field = CreateField(document, fieldName, PdfName.Btn, appearance, tooltip);
         field[(PdfName)"Ff"] = new PdfIntNumber(1 << 15);
@@ -228,7 +233,8 @@ public static class AnnotationFactory
             if (print) annotation[PdfName.F] = new PdfIntNumber(4);
             annotation[PdfName.Parent] = field.Indirect();
             annotation[(PdfName)"AS"] = (PdfName)(option.Selected ? option.Value : "Off");
-            ApplyTooltip(annotation, field, tooltip);
+            var optionTooltip = option.Label ?? tooltip;
+            ApplyTooltip(annotation, null, optionTooltip);
             annotation[(PdfName)"AP"] = new PdfDictionary
             {
                 [PdfName.N] = new PdfDictionary
@@ -268,7 +274,7 @@ public static class AnnotationFactory
         if (selectedValue != null) result.Field[PdfName.V] = PdfString.CreateTextString(selectedValue);
         result.NativeObject[(PdfName)"AP"] = new PdfDictionary
         {
-            [PdfName.N] = CreateTextAppearance(rect, appearance, selectedValue ?? values[0]).NativeObject.Indirect()
+            [PdfName.N] = CreateTextAppearance(rect, appearance, selectedValue ?? string.Empty).NativeObject.Indirect()
         };
         return result;
     }
@@ -300,6 +306,10 @@ public static class AnnotationFactory
         PdfDocument document, PdfPage page, PdfRect<double> rect, string fieldName,
         PdfName fieldType, FormFieldAppearanceOptions appearance, string? tooltip, bool print)
     {
+        if (!print && document.IsStrictAccessibility)
+        {
+            throw new PdfAccessibilityConformanceException("Widget annotations require the Print flag.");
+        }
         ValidateAppearance(document, appearance);
         var annotation = CreateBaseAnnotation(page, rect, PdfName.Widget);
         if (print) annotation[PdfName.F] = new PdfIntNumber(4);
@@ -319,9 +329,8 @@ public static class AnnotationFactory
         var fields = acroForm.GetOrCreateValue<PdfArray>((PdfName)"Fields");
         var fontName = RegisterFont(acroForm, appearance.Font);
         var da = $"/{fontName.Value} {appearance.FontSize:0.###} Tf 0 g";
-        acroForm[(PdfName)"DA"] = new PdfString(da);
+        if (!acroForm.ContainsKey((PdfName)"DA")) acroForm[(PdfName)"DA"] = new PdfString(da);
         if (appearance.NeedAppearances) acroForm[(PdfName)"NeedAppearances"] = PdfBoolean.True;
-        else acroForm.Remove((PdfName)"NeedAppearances");
         var field = new PdfDictionary
         {
             [PdfName.FT] = fieldType,
@@ -357,10 +366,10 @@ public static class AnnotationFactory
         document.ValidateAppearanceFont(appearance.Font);
     }
 
-    private static void ApplyTooltip(PdfDictionary? annotation, PdfDictionary field, string? tooltip)
+    private static void ApplyTooltip(PdfDictionary? annotation, PdfDictionary? field, string? tooltip)
     {
         if (string.IsNullOrWhiteSpace(tooltip)) return;
-        field[(PdfName)"TU"] = PdfString.CreateTextString(tooltip);
+        if (field != null) field[(PdfName)"TU"] = PdfString.CreateTextString(tooltip);
         if (annotation != null)
         {
             annotation[(PdfName)"TU"] = PdfString.CreateTextString(tooltip);
@@ -373,10 +382,19 @@ public static class AnnotationFactory
         var width = Math.Max(1, rect.Width());
         var height = Math.Max(1, rect.Height());
         var writer = new FormWriter(width, height);
-        writer.SetFillRGB(255, 255, 255).Rect(0, 0, width, height).Fill();
-        writer.SetStrokingRGB(0, 0, 0).LineWidth(1).Rect(.5, .5, width - 1, height - 1).Stroke();
+        writer.Save();
+        WriteFieldChrome(writer, width, height);
+
+        // ISO 32000-1 12.7.3.3: variable text is enclosed in /Tx BMC ... EMC and clipped to the field.
+        writer.MarkedContent(new MarkedContent("Tx"));
+        writer.Save();
+        writer.Rect(1, 1, Math.Max(0.1, width - 2), Math.Max(0.1, height - 2)).Clip(evenOdd: false).EndPathNoOp();
         writer.SetFillRGB(0, 0, 0).Font(options.Font, options.FontSize)
             .BeginText().TextMove(3, Math.Max(2, (height - options.FontSize) / 2)).Text(text).EndText();
+        writer.Restore();
+        writer.EndMarkedContent();
+
+        writer.Restore();
         return writer.Complete();
     }
 
@@ -385,14 +403,26 @@ public static class AnnotationFactory
         var width = Math.Max(1, rect.Width());
         var height = Math.Max(1, rect.Height());
         var writer = new FormWriter(width, height);
-        writer.SetFillRGB(255, 255, 255).Rect(0, 0, width, height).Fill();
-        writer.SetStrokingRGB(0, 0, 0).LineWidth(1).Rect(.5, .5, width - 1, height - 1).Stroke();
+        writer.Save();
+        WriteFieldChrome(writer, width, height);
+        // No /Tx wrapper here: button appearances are not variable text.
         if (on)
         {
             var inset = Math.Max(2, Math.Min(width, height) / (radio ? 4 : 5));
             writer.SetFillRGB(0, 0, 0).Rect(inset, inset, Math.Max(1, width - 2 * inset), Math.Max(1, height - 2 * inset)).Fill();
         }
+        writer.Restore();
         return writer.Complete();
+    }
+
+    /// <summary>
+    /// Draws the default field background and border. /MK border and background colours are
+    /// not honoured; see the known limitations in docs/accessibility-authoring.md.
+    /// </summary>
+    private static void WriteFieldChrome(FormWriter writer, double width, double height)
+    {
+        writer.SetFillRGB(255, 255, 255).Rect(0, 0, width, height).Fill();
+        writer.SetStrokingRGB(0, 0, 0).LineWidth(1).Rect(.5, .5, width - 1, height - 1).Stroke();
     }
 
     private static PdfDictionary CreateBaseAnnotation(PdfPage page, PdfRect<double> rect, PdfName subtype, string? contents = null)

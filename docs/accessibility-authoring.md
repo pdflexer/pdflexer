@@ -248,8 +248,37 @@ var formNode = label.Back().AddFormField(
 
 `FormFieldAppearanceOptions.Font` is required and must be embedded in strict mode. Text, checkbox, radio-group,
 combo/list choice, and pushbutton factories create normal appearances and populate AcroForm `/DR` and `/DA`.
-`/NeedAppearances` is omitted unless explicitly enabled. The legacy text overload remains available, but strict
-accessibility mode rejects it and non-strict mode records a warning.
+`/NeedAppearances` is omitted unless explicitly enabled, and neither it nor the AcroForm `/DA` is cleared or
+rewritten by a later field. The legacy text overload remains available, but strict accessibility mode rejects it
+and non-strict mode records a warning. `print: false` is rejected at creation time under strict mode, since
+PDF/UA requires the Print flag on visible annotations.
+
+#### Describing widgets and radio groups
+
+A widget's own `/TU` and `/Contents` describe that widget; the *field* `/TU` is shared by every kid of a radio
+group. Give each button its own description with `RadioButtonOption.Label` and leave the group description on
+the field:
+
+```csharp
+var radio = AnnotationFactory.CreateRadioGroup(
+    doc, "contact_method",
+    new[]
+    {
+        new RadioButtonOption(page, emailRect, "Email", Selected: true, Label: "Email contact"),
+        new RadioButtonOption(page, phoneRect, "Phone", Label: "Phone contact")
+    },
+    appearance, tooltip: "Preferred contact method");
+
+foreach (var widget in radio.Widgets)
+{
+    section.AddFormField(widget, "Contact option");
+}
+```
+
+`AddFormField(widget, title)` uses `title` as the structure element `/T` and, as a convenience, as the widget
+description. It fills an empty field `/TU` but never replaces one the factory already set — so the group
+tooltip survives. `AddLabeledFormField(widget, title, tooltip)` treats an explicit `tooltip` as a deliberate
+override and does replace the field `/TU`.
 
 Arbitrary visible annotations can be attached with `AddAnnot(page, annotation, title, altText)` or, when already
 present on the page, `BindAnnotation(annotation, page)`. Strict mode validates ParentTree linkage, tag nesting,
@@ -360,6 +389,9 @@ These are current defects and coverage gaps, verified against the code in this r
 | **Already-tagged input** | All authoring entry points throw on documents that already have a `StructTreeRoot`, including for appending new content. | Author into untagged or new documents only. |
 | **Artifact detail** | `/Subtype` (`Header`/`Footer`/`Watermark`), `/BBox`, and `/Attached` are not emitted. | Post-process the content stream. |
 | **`ParentTreeNextKey`** | Not written on `StructTreeRoot`. | Generally tolerated; add manually if a consumer requires it. |
+| **Field appearance chrome** | Generated widget appearances always draw a white background and a 1 pt black border; the annotation `/MK` border and background entries are not consulted. | Build the appearance stream yourself and assign `/AP` if you need different chrome. |
+| **Subsetted appearance fonts** | A subsetted TrueType font placed in AcroForm `/DR` only carries the glyphs used at authoring time, so a viewer regenerating the appearance after the user types may be missing glyphs. | Use a font whose subset covers the expected input, or set `NeedAppearances`. |
+| **`PageWriteMode.Replace`** | Replacing a page after structure elements have been bound to MCIDs on it throws. Content written through `AddContent` bypasses the MCID allocator entirely, so that path is unguarded. | Write a page in one mode; use `Append`/`Pre` to add to existing content. |
 
 ---
 

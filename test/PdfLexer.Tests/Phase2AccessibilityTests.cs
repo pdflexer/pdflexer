@@ -17,9 +17,8 @@ public class Phase2AccessibilityTests
         doc.ApplyAccessibilitySetup("en-US", "Form Test", PdfUaProfile.PdfUa1, strictConformance: true);
 
         var rect = new PdfRect<double>(100, 700, 200, 720);
-        var fontPath = File.Exists("/workspace/test/Roboto-Regular.ttf")
-            ? "/workspace/test/Roboto-Regular.ttf"
-            : "../../../../test/Roboto-Regular.ttf";
+        var testDir = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var fontPath = Path.Combine(testDir, "Roboto-Regular.ttf");
         var appearance = new FormFieldAppearanceOptions
         {
             Font = TrueTypeFont.CreateWritableFont(File.ReadAllBytes(fontPath))

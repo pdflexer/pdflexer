@@ -37,13 +37,8 @@ public class FontEmbeddingAccessibilityTests
 
         var p = doc.Structure.AddParagraph("Tagged text");
 
-        // Use absolute path for reliability in this environment
-        var fontPath = "/workspace/test/Roboto-Regular.ttf";
-        if (!System.IO.File.Exists(fontPath))
-        {
-            // Fallback for local dev
-            fontPath = "../../../../test/Roboto-Regular.ttf";
-        }
+        var testDir = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var fontPath = System.IO.Path.Combine(testDir, "Roboto-Regular.ttf");
         var fontData = System.IO.File.ReadAllBytes(fontPath);
         var font = TrueTypeFont.CreateWritableFont(fontData);
 

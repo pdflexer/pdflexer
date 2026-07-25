@@ -441,8 +441,8 @@ internal static class AccessibilityFixtureGenerator
             doc, "contact_method",
             new[]
             {
-                new RadioButtonOption(page, new PdfRect<double>(140, 570, 158, 588), "Email", true),
-                new RadioButtonOption(page, new PdfRect<double>(180, 570, 198, 588), "Phone")
+                new RadioButtonOption(page, new PdfRect<double>(140, 570, 158, 588), "Email", true, "Email contact"),
+                new RadioButtonOption(page, new PdfRect<double>(180, 570, 198, 588), "Phone", false, "Phone contact")
             },
             appearance, "Preferred contact method");
         var radioOne = checkboxField.Back().AddFormField(radio.Widgets[0], "Email contact");

@@ -52,9 +52,30 @@ public class PdfString : PdfObject, IEquatable<PdfString>
     /// </summary>
     internal static PdfString CreateTextString(string value)
     {
-        return value.Any(c => c > 0x7F)
+        return RequiresUtf16(value)
             ? new PdfString(value, PdfStringType.Literal, PdfTextEncodingType.UTF16BE)
             : new PdfString(value);
+    }
+
+    private static bool RequiresUtf16(string value) => value.Any(c => c > 0x7F);
+
+    /// <summary>
+    /// Returns the bytes <see cref="CreateTextString"/> serializes for the given value. Name trees
+    /// must be sorted by these bytes, so the encoding decision has to come from one place.
+    /// </summary>
+    internal static byte[] GetTextStringBytes(string value)
+    {
+        if (!RequiresUtf16(value))
+        {
+            return System.Text.Encoding.Latin1.GetBytes(value);
+        }
+
+        var utf16 = System.Text.Encoding.BigEndianUnicode.GetBytes(value);
+        var bytes = new byte[utf16.Length + 2];
+        bytes[0] = 0xFE;
+        bytes[1] = 0xFF;
+        utf16.CopyTo(bytes, 2);
+        return bytes;
     }
 
     public string Value { get; }

@@ -305,8 +305,10 @@ internal class StructuralSerializer
             return null;
         }
 
+        // ISO 32000-1 7.9.6: name tree keys are ordered by the bytes actually written, which is not
+        // the same relation as an ordinal string sort once any key encodes as UTF-16BE.
         var names = new PdfArray();
-        foreach (var entry in structureRoot.IdMap.OrderBy(x => x.Key, System.StringComparer.Ordinal))
+        foreach (var entry in structureRoot.IdMap.OrderBy(x => PdfString.GetTextStringBytes(x.Key), ByteSequenceComparer.Instance))
         {
             if (!nodeMap.TryGetValue(entry.Value, out var nodeRef))
             {
@@ -483,7 +485,12 @@ internal class StructuralSerializer
                 {
                     participantPages.TryAdd(page.NativeObject, page);
                 }
-                if (xObjectRef.XObject.Resolve() is PdfDictionary xObjectDict)
+                // XObject is typed IPdfObject: form XObjects resolve to a PdfStream, but a bare
+                // dictionary is also a legal reference target.
+                var xObjectDict = resolvedXObject is PdfStream streamObj
+                    ? streamObj.Dictionary
+                    : resolvedXObject as PdfDictionary;
+                if (xObjectDict != null)
                 {
                     xObjectDict[PdfName.StructParents] = new PdfIntNumber(xObjectRef.StructParentsIndex);
                 }
@@ -691,5 +698,24 @@ internal class StructuralSerializer
         return obj.Resolve().Type == PdfObjectType.DictionaryObj
             ? obj.Resolve().GetAs<PdfDictionary>()
             : null;
+    }
+
+    private sealed class ByteSequenceComparer : IComparer<byte[]>
+    {
+        public static ByteSequenceComparer Instance { get; } = new();
+
+        public int Compare(byte[]? x, byte[]? y)
+        {
+            if (ReferenceEquals(x, y)) return 0;
+            if (x == null) return -1;
+            if (y == null) return 1;
+            var len = Math.Min(x.Length, y.Length);
+            for (var i = 0; i < len; i++)
+            {
+                var cmp = x[i].CompareTo(y[i]);
+                if (cmp != 0) return cmp;
+            }
+            return x.Length.CompareTo(y.Length);
+        }
     }
 }
