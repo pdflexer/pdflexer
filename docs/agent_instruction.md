@@ -130,7 +130,7 @@ writer
     .Rect(10, 10, 100, 50)
     .Stroke()
     .BeginText()
-    .Font(Base14.Helvetica, 12)
+    .Font(Standard14Font.GetHelvetica(), 12) // PdfLexer.Fonts
     .TextMove(50, 500)
     .Text("Simple text")
     .EndText();
@@ -158,24 +158,30 @@ while (scanner.Advance())
 
 ```csharp
 using PdfLexer.DOM;
+using PdfLexer.Fonts;
+
+// PDF/UA requires embedded fonts; Standard-14 fonts are rejected under strict mode.
+var font = TrueTypeFont.CreateType0WritableFont(File.ReadAllBytes("Roboto-Regular.ttf"));
 
 var page = doc.AddPage();
-using var writer = page.GetWriter();
+doc.ApplyAccessibilitySetup("en-US", "Example", PdfUaProfile.PdfUa1);
 
-var builder = new StructuralBuilder();
-builder.AddSection("Main")
-       .AddParagraph("Intro")
-       .WriteContent(writer, w =>
-       {
-           w.BeginText()
-            .Font(Base14.Helvetica, 12)
-            .TextMove(50, 700)
-            .Text("Hello")
-            .EndText();
-       });
+// Use doc.Structure (do not assign a fresh StructuralBuilder — the property
+// getter performs the tagged-document check and namespace setup).
+var section = doc.Structure.AddSection("Main");
+var intro = section.AddParagraph("Intro");
 
-doc.Structure = builder;
+// One PageWriter per page: MCIDs are allocated per writer instance.
+using (var writer = page.GetWriter())
+{
+    intro.WriteContent(writer, w =>
+    {
+        w.Font(font, 12).TextMove(50, 700).Text("Hello");
+    });
+}
 ```
+
+See [Accessible Authoring](accessibility-authoring.md) for the full workflow, artifact handling, and current limitations.
 
 ## 9. Image Extraction
 

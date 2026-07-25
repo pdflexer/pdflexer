@@ -36,9 +36,9 @@ doc.SaveTo("newFilePath.pdf")
 using var doc = PdfDocument.Open("filePath.pdf");
 var pg = doc.Pages.First();
 { // scope for writer, saved on dispose
-      using var writer = pg.GetWiter(PageWriterMode.Append);
-      writer.Font(ContentWriter.Base14.Courier, 10) // font / size
-            .TexdtMove(100f, 200f)
+      using var writer = pg.GetWriter(PageWriteMode.Append);
+      writer.Font(Standard14Font.GetCourier(), 10) // font / size, from PdfLexer.Fonts
+            .TextMove(100f, 200f)
             .Text("Hello world");
 }
 doc.SaveTo("newFilePath.pdf")
