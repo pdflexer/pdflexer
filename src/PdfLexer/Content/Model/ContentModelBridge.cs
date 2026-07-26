@@ -100,6 +100,22 @@ public static class ContentModelBridge
         return new ReadOnlyCollection<IContentItem<T>>(ordered);
     }
 
+    internal static IReadOnlyList<TextContent<T>> FindTextFragments<T>(
+        IEnumerable<IContentNode<T>> content,
+        StructuredSourceRef sourceReference) where T : struct, IFloatingPoint<T>
+    {
+        return new ReadOnlyCollection<TextContent<T>>(
+            EnumerateItems(content)
+                .OfType<TextContent<T>>()
+                .Where(x => x.SourceReference is { } itemSourceReference &&
+                            itemSourceReference.StreamId == sourceReference.StreamId &&
+                            itemSourceReference.OperatorStart <= sourceReference.OperatorStart &&
+                            itemSourceReference.OperatorStart + itemSourceReference.OperatorLength >=
+                            sourceReference.OperatorStart + sourceReference.OperatorLength)
+                .OrderBy(x => x.SourceCharacterOffset)
+                .ToList());
+    }
+
     private static IEnumerable<IContentItem<T>> EnumerateItems<T>(
         IEnumerable<IContentNode<T>> content) where T : struct, IFloatingPoint<T>
     {

@@ -222,6 +222,10 @@ public static class AnnotationFactory
 
         var field = CreateField(document, fieldName, PdfName.Btn, appearance, tooltip);
         field[(PdfName)"Ff"] = new PdfIntNumber(1 << 15);
+        field[(PdfName)"Opt"] = new PdfArray(
+            optionList
+                .Select(x => (IPdfObject)PdfString.CreateTextString(x.Value))
+                .ToList());
         var kids = new PdfArray();
         field[PdfName.Kids] = kids;
         var selected = optionList.FirstOrDefault(x => x.Selected)?.Value ?? "Off";

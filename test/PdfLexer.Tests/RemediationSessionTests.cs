@@ -239,6 +239,265 @@ public class RemediationSessionTests
     }
 
     [Fact]
+    public void RuleDryRun_ReportsZeroMatchRulesAndEnforcesDocumentCardinality()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Invoice").EndText();
+        }
+
+        using var session = doc.BeginRemediation();
+        var report = session.DryRun(
+            new Rule(
+                "invoice",
+                RemediationActions.Tag("H1"),
+                Predicates.Text.Equals("Invoice"),
+                Granularity.Word,
+                cardinality: RuleCardinality.Exactly(1)),
+            new Rule(
+                "missing-total",
+                RemediationActions.Tag("P"),
+                Predicates.Text.Equals("Total"),
+                Granularity.Word,
+                cardinality: RuleCardinality.Exactly(1)));
+
+        Assert.Equal(2, report.RuleEvaluations.Count);
+        var invoice = Assert.Single(report.RuleEvaluations, x => x.RuleId == "invoice");
+        Assert.Equal(1, invoice.Total.InputsConsidered);
+        Assert.Equal(1, invoice.Total.InputsMatched);
+        Assert.Equal(1, invoice.Total.AppliedClaims);
+
+        var missing = Assert.Single(report.RuleEvaluations, x => x.RuleId == "missing-total");
+        Assert.Equal(1, missing.Total.InputsConsidered);
+        Assert.Equal(0, missing.Total.InputsMatched);
+        Assert.Equal(0, missing.Total.AppliedClaims);
+        Assert.Contains(report.Diagnostics, x =>
+            x.Contains("RuleCardinalityMismatch") &&
+            x.Contains("missing-total") &&
+            x.Contains("observed 0"));
+    }
+
+    [Fact]
+    public void RuleDryRun_EnforcesCardinalityPerSelectedPage()
+    {
+        using var doc = PdfDocument.Create();
+        var first = doc.AddPage(PageSize.LETTER);
+        var second = doc.AddPage(PageSize.LETTER);
+        using (var writer = first.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Total").EndText();
+        }
+        using (var writer = second.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Subtotal").EndText();
+        }
+
+        using var session = doc.BeginRemediation();
+        var report = session.DryRun(new Rule(
+            "page-total",
+            RemediationActions.Tag("P"),
+            Predicates.Text.Equals("Total"),
+            Granularity.Word,
+            cardinality: RuleCardinality.Exactly(1, RuleCardinalityScope.PerPage)));
+
+        var summary = Assert.Single(report.RuleEvaluations);
+        Assert.Equal(2, summary.Pages.Count);
+        Assert.Equal(new[] { 1, 0 }, summary.Pages.Select(x => x.Counts.InputsMatched).ToArray());
+        Assert.Contains(report.Diagnostics, x => x.Contains("page 2") && x.Contains("observed 0"));
+    }
+
+    [Fact]
+    public void RuleDryRun_AccountsForConflictsAndOverrides()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Hello").EndText();
+        }
+
+        using var session = doc.BeginRemediation();
+        var report = session.DryRun(
+            new Rule("first", RemediationActions.Tag("P"), granularity: Granularity.Word),
+            new Rule("conflict", RemediationActions.Tag("Span"), granularity: Granularity.Word),
+            new Rule("replacement", RemediationActions.Tag("H1"), granularity: Granularity.Word, @override: true));
+
+        var first = Assert.Single(report.RuleEvaluations, x => x.RuleId == "first");
+        Assert.Equal(0, first.Total.AppliedClaims);
+        Assert.Equal(1, first.Total.OverriddenClaims);
+
+        var conflict = Assert.Single(report.RuleEvaluations, x => x.RuleId == "conflict");
+        Assert.Equal(1, conflict.Total.InputsMatched);
+        Assert.Equal(1, conflict.Total.RejectedByConflict);
+        Assert.Equal(0, conflict.Total.AppliedClaims);
+
+        var replacement = Assert.Single(report.RuleEvaluations, x => x.RuleId == "replacement");
+        Assert.Equal(1, replacement.Total.AppliedClaims);
+    }
+
+    [Fact]
+    public void RuleDryRun_ReportsGroupRefineAndCustomInputCounts()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Alpha Beta").EndText();
+        }
+
+        using var session = doc.BeginRemediation();
+        var report = session.DryRun(
+            new Rule(
+                "words",
+                RemediationActions.Tag("Span"),
+                granularity: Granularity.Word,
+                cardinality: RuleCardinality.Exactly(2)),
+            new Rule(
+                "custom-first",
+                RemediationActions.Custom(
+                    context => new CustomRemediationOutcome(
+                        context.Candidates.Take(1).ToArray(),
+                        RemediationActions.Tag("Span")),
+                    "first candidate"),
+                granularity: Granularity.Word,
+                cardinality: RuleCardinality.Exactly(1)),
+            new Rule(
+                "paragraph",
+                RemediationActions.MergeTo("P", ClaimPredicates.FromRule("words")),
+                stage: Stage.Group,
+                cardinality: RuleCardinality.Exactly(2)),
+            new Rule(
+                "language",
+                RemediationActions.Lang(ClaimPredicates.FromRule("paragraph"), "en-US"),
+                stage: Stage.Refine,
+                cardinality: RuleCardinality.Exactly(2)));
+
+        Assert.Empty(report.Diagnostics);
+        Assert.Equal(2, Assert.Single(report.RuleEvaluations, x => x.RuleId == "words").Total.InputsMatched);
+        var custom = Assert.Single(report.RuleEvaluations, x => x.RuleId == "custom-first");
+        Assert.Equal(2, custom.Total.InputsConsidered);
+        Assert.Equal(1, custom.Total.InputsMatched);
+        Assert.Equal(2, Assert.Single(report.RuleEvaluations, x => x.RuleId == "paragraph").Total.InputsMatched);
+        Assert.Equal(2, Assert.Single(report.RuleEvaluations, x => x.RuleId == "language").Total.InputsMatched);
+    }
+
+    [Fact]
+    public void RuleDryRun_PerPagePositiveMinimumFailsWhenSelectorChoosesNoPage()
+    {
+        using var doc = PdfDocument.Create();
+        doc.AddPage(PageSize.LETTER);
+
+        using var session = doc.BeginRemediation();
+        var report = session.DryRun(new Rule(
+            "out-of-range",
+            RemediationActions.Tag("P"),
+            pages: PageSelector.Range(4, 6),
+            cardinality: RuleCardinality.AtLeast(1, RuleCardinalityScope.PerPage)));
+
+        var summary = Assert.Single(report.RuleEvaluations);
+        Assert.Empty(summary.Pages);
+        Assert.Contains(report.Diagnostics, x => x.Contains("selected no existing pages"));
+    }
+
+    [Fact]
+    public void RuleCardinality_PreventsAutoArtifactAfterTemplateDrift()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Invoice Total").EndText();
+        }
+
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            StrictConformance = false,
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
+        });
+        session.Use(new RuleSet(
+            "invoice-v1",
+            new Rule(
+                "invoice-total",
+                RemediationActions.Tag("P"),
+                Predicates.Text.Equals("Amount Due"),
+                Granularity.Word,
+                cardinality: RuleCardinality.Exactly(1))));
+
+        var dryRun = session.DryRun();
+        var leftover = Assert.Single(dryRun.AutoArtifacts);
+        Assert.Equal(RemediationAutoArtifactDisposition.Planned, leftover.Disposition);
+        Assert.Equal("Invoice Total", leftover.Text);
+        Assert.Contains(dryRun.Diagnostics, x => x.Contains("RuleCardinalityMismatch"));
+
+        Assert.Throws<InvalidOperationException>(() => session.Commit());
+        Assert.DoesNotContain("Artifact", page.DumpDecodedContents());
+        Assert.False(doc.Catalog.ContainsKey(PdfName.MarkInfo));
+    }
+
+    [Fact]
+    public void RuleCommit_ReportsAppliedAutoArtifacts()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Invoice Total").EndText();
+        }
+
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            StrictConformance = false,
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
+        });
+        var report = session.Commit(new Rule(
+            "total",
+            RemediationActions.Tag("Span"),
+            Predicates.Text.Equals("Total"),
+            Granularity.Word,
+            cardinality: RuleCardinality.Exactly(1)));
+
+        var artifact = Assert.Single(report.AutoArtifacts);
+        Assert.Equal(RemediationAutoArtifactDisposition.Applied, artifact.Disposition);
+        Assert.Contains("Invoice", artifact.Text);
+        Assert.True(report.Committed);
+    }
+
+    [Fact]
+    public void RuleCommit_PermissiveCardinalitySuppressionUsesRuleScope()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Decorative").EndText();
+        }
+
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            StrictConformance = false,
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact,
+            DiagnosticStrictness = RemediationDiagnosticStrictness.Permissive
+        });
+        session.Suppress(
+            DiagnosticCode.RuleCardinalityMismatch,
+            "Rule:optional-label",
+            "Reviewed optional variant.");
+
+        var report = session.Commit(new Rule(
+            "optional-label",
+            RemediationActions.Tag("P"),
+            Predicates.Text.Equals("Absent"),
+            Granularity.Word,
+            cardinality: RuleCardinality.Exactly(1)));
+
+        Assert.True(report.Committed);
+        Assert.Contains(report.Diagnostics, x => x.StartsWith("[SUPPRESSED] RuleCardinalityMismatch"));
+        Assert.Equal(RemediationAutoArtifactDisposition.Applied, Assert.Single(report.AutoArtifacts).Disposition);
+    }
+
+    [Fact]
     public void RuleCommit_ComposedPredicateTargetsExactWordAndReportsBinding()
     {
         using var doc = PdfDocument.Create();
@@ -272,6 +531,165 @@ public class RemediationSessionTests
         Assert.NotNull(binding.MarkedContentGroup);
         Assert.Equal("Invoice Total", new string(page.GetStructuredText().Characters.Select(x => x.Char).ToArray()));
         Assert.Contains("/Span <</MCID 0>> BDC", page.DumpDecodedContents());
+    }
+
+    [Theory]
+    [InlineData(false, false)]
+    [InlineData(false, true)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    public void RuleCommit_MultipleInlineClaimsInOneOperatorAreRuleOrderIndependent(
+        bool adjustedTextArray,
+        bool reverseRuleOrder)
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        var font = Standard14Font.GetCourier();
+        var content = TextContent<double>.Create(
+            "Invoice #: INV-12345",
+            font,
+            12,
+            new PdfPoint<double>(40, 700));
+        if (adjustedTextArray)
+        {
+            content.Segments[0].Glyphs.Insert(11, new GlyphOrShift<double>(-120));
+        }
+
+        using (var writer = page.GetWriter<double>())
+        {
+            writer.AddContent(content);
+        }
+
+        var originalOperators = page.DumpDecodedContents();
+        Assert.Contains(adjustedTextArray ? " TJ" : " Tj", originalOperators);
+        var originalCharacters = page.GetStructuredText().Characters
+            .Select(x => (x.Char, x.BoundingBox))
+            .ToArray();
+
+        var label = new Rule(
+            "label",
+            RemediationActions.Tag("Span"),
+            Predicates.Text.Equals("Invoice"),
+            Granularity.Word);
+        var value = new Rule(
+            "value",
+            RemediationActions.Tag("Reference"),
+            Predicates.Text.Equals("INV-12345"),
+            Granularity.Word);
+        var rules = reverseRuleOrder ? new[] { value, label } : new[] { label, value };
+
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            StrictConformance = false,
+            DebugWrite = true,
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
+        });
+        var report = session.Commit(rules);
+
+        Assert.True(report.Committed);
+        Assert.Equal(new[] { "label", "value" }, doc.Structure.GetRoot().Children.Select(x => x.Title).ToArray());
+        Assert.Equal(
+            new[] { 0, 1 },
+            report.Claims.OrderBy(x => x.FirstSequenceIndex)
+                .SelectMany(x => x.AppliedBindings)
+                .SelectMany(x => x.Mcids)
+                .ToArray());
+
+        var reparsedCharacters = page.GetStructuredText().Characters
+            .Select(x => (x.Char, x.BoundingBox))
+            .ToArray();
+        Assert.Equal(originalCharacters.Length, reparsedCharacters.Length);
+        for (var i = 0; i < originalCharacters.Length; i++)
+        {
+            Assert.Equal(originalCharacters[i].Char, reparsedCharacters[i].Char);
+            Assert.Equal(originalCharacters[i].BoundingBox.LLx, reparsedCharacters[i].BoundingBox.LLx, 5);
+            Assert.Equal(originalCharacters[i].BoundingBox.LLy, reparsedCharacters[i].BoundingBox.LLy, 5);
+            Assert.Equal(originalCharacters[i].BoundingBox.URx, reparsedCharacters[i].BoundingBox.URx, 5);
+            Assert.Equal(originalCharacters[i].BoundingBox.URy, reparsedCharacters[i].BoundingBox.URy, 5);
+        }
+    }
+
+    [Theory]
+    [InlineData(Granularity.Line)]
+    [InlineData(Granularity.Paragraph)]
+    public void RuleDryRun_DetectsWordOverlapWithCoarserGranularity(Granularity granularity)
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Alpha Beta Gamma").EndText();
+        }
+
+        using var session = doc.BeginRemediation();
+        var report = session.DryRun(
+            new Rule("coarse", RemediationActions.Tag("P"), granularity: granularity),
+            new Rule(
+                "word",
+                RemediationActions.Tag("Span"),
+                Predicates.Text.Equals("Beta"),
+                Granularity.Word));
+
+        Assert.Single(report.Claims);
+        Assert.Equal("coarse", report.Claims[0].RuleId);
+        Assert.Contains(report.SkippedClaims, x => x.RuleId == "word" && x.Status == ClaimStatus.Skipped);
+    }
+
+    [Fact]
+    public void RuleDryRun_DetectsPartialCharacterWordOverlap()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("ABC").EndText();
+        }
+
+        using var session = doc.BeginRemediation();
+        var report = session.DryRun(
+            new Rule(
+                "middle-character",
+                RemediationActions.Tag("Span"),
+                Predicates.Text.Equals("B"),
+                Granularity.Character),
+            new Rule("whole-word", RemediationActions.Tag("P"), granularity: Granularity.Word));
+
+        Assert.Single(report.Claims);
+        Assert.Equal("middle-character", report.Claims[0].RuleId);
+        Assert.Contains(report.SkippedClaims, x => x.RuleId == "whole-word");
+    }
+
+    [Fact]
+    public void RuleCommit_OverrideReplacesOnlyOverlappingWordAndPreservesResiduals()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12).Text("Alpha Beta Gamma").EndText();
+        }
+
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            StrictConformance = false,
+            DebugWrite = true,
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
+        });
+        var report = session.Commit(
+            new Rule("line", RemediationActions.Tag("P"), granularity: Granularity.Line),
+            new Rule(
+                "beta",
+                RemediationActions.Tag("Span"),
+                Predicates.Text.Equals("Beta"),
+                Granularity.Word,
+                @override: true));
+
+        Assert.True(report.Committed);
+        Assert.Equal(new[] { "line", "beta", "line" }, doc.Structure.GetRoot().Children.Select(x => x.Title).ToArray());
+        Assert.Equal(2, report.Claims.Count(x => x.RuleId == "line"));
+        Assert.Contains(report.SkippedClaims, x => x.RuleId == "line" && x.Status == ClaimStatus.Overridden);
+        Assert.Empty(report.AutoArtifacts);
+        Assert.Equal("Alpha Beta Gamma", new string(page.GetStructuredText().Characters.Select(x => x.Char).ToArray()));
     }
 
     [Fact]
@@ -481,6 +899,38 @@ public class RemediationSessionTests
         });
         Assert.Equal(6, table.Children.SelectMany(x => x.Children).Count(x => x.ContentItems.Count == 1));
         Assert.Contains("/TH <</MCID 0>> BDC", page.DumpDecodedContents());
+    }
+
+    [Fact]
+    public void RuleCommit_TableOverRejectsPrebuiltRowClaimsBeforeMutation()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12)
+                .TextMove(50, 700).Text("A1")
+                .TextMove(220, 700).Text("B1")
+                .EndText();
+        }
+
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            StrictConformance = false
+        });
+        var error = Assert.Throws<InvalidOperationException>(() => session.Commit(
+            new Rule("prebuilt-row", RemediationActions.Tag("TR"), granularity: Granularity.Word),
+            new Rule(
+                "table",
+                RemediationActions.TableOver(ClaimPredicates.FromRule("prebuilt-row"), 40, 200, 400),
+                stage: Stage.Group)));
+
+        Assert.Contains("cannot preserve", error.Message);
+        Assert.Contains("prebuilt-row", error.Message);
+        Assert.Contains("TR", error.Message);
+        Assert.DoesNotContain("BDC", page.DumpDecodedContents());
+        Assert.False(doc.Catalog.ContainsKey(PdfName.MarkInfo));
+        Assert.Empty(doc.Structure.GetRoot().Children);
     }
 
     [Fact]

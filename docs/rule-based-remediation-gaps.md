@@ -1,6 +1,6 @@
 # Rule-Based Remediation Gap Tracker
 
-Last reviewed: 2026-07-24
+Last reviewed: 2026-07-26
 
 > [!NOTE]
 > This is the gap **register** — what is missing and why it matters. For the scheduled version
@@ -39,20 +39,20 @@ PDF/UA assurance as complete.
 | --- | --- | --- | --- |
 | RRM-001 | P0 | Open | Flow regions do not continue across pages |
 | RRM-002 | P0 | Open | Declarative rules cannot select or artifact non-text content |
-| RRM-003 | P0 | Needs regression test | Multiple inline claims in one text operator may be order-sensitive |
+| RRM-003 | P0 | Complete | Multiple inline claims in one text operator may be order-sensitive |
 | RRM-004 | P1 | Open | Group rules cannot consume prior Group outputs |
 | RRM-005 | P0 | Open | Table construction handles only regular, page-local grids |
-| RRM-006 | P0 | Open | Table examples and validation can admit incorrect hierarchy |
+| RRM-006 | P0 | Complete | Table examples and validation can admit incorrect hierarchy |
 | RRM-007 | P1 | Open | No declarative Figure/caption association |
 | RRM-008 | P1 | Open | Anchor and table geometry is not text-orientation-aware |
 | RRM-009 | P1 | Open | Interactive form widgets are outside the rule model |
-| RRM-010 | P0 | Open | External PDF/UA validation baseline is incomplete |
+| RRM-010 | P0 | Partially addressed | External PDF/UA validation baseline is incomplete |
 | RRM-011 | P1 | Open | Remediation coverage is tested primarily with synthetic PDFs |
 | RRM-012 | P1 | Open | Multi-column reading order support is limited |
 | RRM-013 | P1 | Open | Declarative tag and JSON schema validation is incomplete |
 | RRM-014 | P2 | Intentional limitation | Existing tagged PDFs cannot be repaired |
 | RRM-015 | P2 | Intentional limitation | Scanned PDFs require an external text/OCR layer |
-| RRM-016 | P0 | Open | Rules have no expected-match cardinality, so template drift is silent |
+| RRM-016 | P0 | Complete | Rules have no expected-match cardinality, so template drift is silent |
 | RRM-017 | P0 | Open | No rule-set applicability guard or document-family check |
 | RRM-018 | P0 | Open | No semantic output assertions beyond conformance validation |
 | RRM-019 | P0 | Open | Annotations already present in the input are outside the rule model |
@@ -69,7 +69,7 @@ PDF/UA assurance as complete.
 | RRM-030 | P1 | Open | `DryRun` does not guarantee `Commit`; failure semantics are undocumented |
 | RRM-031 | P1 | Open | Rule-set composition and precedence are undefined |
 | RRM-032 | P0 | Open | Text normalization for predicate matching is unspecified |
-| RRM-033 | P1 | Open | No negative explain or per-rule match diagnostics |
+| RRM-033 | P1 | Partially addressed | No negative explain or per-rule match diagnostics |
 | RRM-034 | P2 | Open | Predicate evaluation cost is unbounded |
 | RRM-035 | P1 | Partially addressed | Documented rule language omits shipped API surface |
 
@@ -296,7 +296,7 @@ available as a portable, serialized remediation rule.
 
 ## RRM-003: Multiple inline claims in one text operator may be order-sensitive
 
-**Status:** Needs regression test
+**Status:** Complete
 
 **Priority:** P0
 
@@ -304,12 +304,11 @@ One word or character range inside a `Tj`/`TJ` operator can be split and wrapped
 without changing rendered text. The unresolved case is applying multiple
 separate claims to different ranges in the same original operator.
 
-Split `TextContent` fragments retain the same `ParsedItemId` and
-`SourceReference`. Later source resolution uses the first item with that
-identity. Conflict ownership keys also compare exact ranges, not interval
-overlap. This combination may make a later-offset claim fail after an
-earlier-offset claim has already split the operator, and may fail to detect
-partially overlapping character/word claims.
+Split `TextContent` fragments now retain their original source-character
+offset. Exact-range resolution intersects the requested original interval with
+the correct fragment, and ownership uses half-open character intervals across
+all text granularities. Rule order still determines conflict precedence while
+materialization and MCID allocation use page reading order.
 
 **Impact**
 
@@ -322,18 +321,20 @@ support separately tagging the label and value in natural rule order.
   (`TrySplitByCharacterRange`, `CreateContent`)
 - `src/PdfLexer/Content/Model/ContentModelBridge.cs` (`FindItem`)
 - `src/PdfLexer/Remediation/RemediationCandidate.cs` (`MaterializeLeaves`)
-- `src/PdfLexer/Remediation/RemediationSession.cs` (`GetTargetKeys`)
+- `src/PdfLexer/Remediation/TextOwnership.cs`
+- `src/PdfLexer/Remediation/RemediationSession.cs`
+  (`GetTargetSpans`, `CreateResidualClaims`)
 
 **Completion criteria**
 
-- [ ] Add a regression test that tags two non-overlapping words from the same
+- [x] Add a regression test that tags two non-overlapping words from the same
   `Tj` with separate rules in reading order.
-- [ ] Add the equivalent test for a `TJ` array with glyph adjustments.
-- [ ] Materialization is independent of rule order.
-- [ ] Ownership detects interval overlap between character, word, line, and
+- [x] Add the equivalent test for a `TJ` array with glyph adjustments.
+- [x] Materialization is independent of rule order.
+- [x] Ownership detects interval overlap between character, word, line, and
   paragraph claims over the same source content.
-- [ ] Override replaces only the intended overlapping range.
-- [ ] Reparsed text, glyph selection, and positioning remain unchanged.
+- [x] Override replaces only the intended overlapping range.
+- [x] Reparsed text, glyph selection, and positioning remain unchanged.
 
 ## RRM-004: Group rules cannot consume prior Group outputs
 
@@ -369,8 +370,8 @@ cannot select a parent produced by an earlier Group rule.
 
 **Priority:** P0
 
-Rows are currently grouped by rounding the lower Y coordinate to a fixed
-two-point bucket. Inferred columns use a fixed twelve-point center clustering
+Rows are currently grouped by rounding the vertical center to a fixed
+six-point bucket. Inferred columns use a fixed twelve-point center clustering
 tolerance. A matched claim is assigned to a column by its horizontal center,
 and each matched claim becomes a separate `TD`/`TH`.
 
@@ -410,18 +411,14 @@ not generally merge several claims or visual lines into one semantic cell.
 
 ## RRM-006: Table examples and validation can admit incorrect hierarchy
 
-**Status:** Open
+**Status:** Complete
 
 **Priority:** P0
 
-The complete invoice example classifies each line-item line as `TR` and then
-passes those claims to `TableOver`. Claim-consuming table mode treats each
-matched claim as a cell, so preserving a `TR` claim can place that `TR` below a
-generated `TD`.
-
-The strict structure validator checks allowed children for `TR`, and verifies
-that `TD`/`TH` have a `TR` parent, but does not verify that every `TR` has a
-valid table-related parent.
+The complete invoice example now classifies header and body words as leaf
+`Span` claims and flattens them into generated `TH`/`TD` cells. Preserve-child
+table composition rejects prebuilt `TR`/`TH`/`TD` claims before mutation, and
+strict validation requires every `TR` to have a table-related parent.
 
 **Impact**
 
@@ -440,11 +437,11 @@ valid table-related parent.
 
 **Completion criteria**
 
-- [ ] Correct the example to classify cell content rather than prebuilt rows,
+- [x] Correct the example to classify cell content rather than prebuilt rows,
   or add a true row-consuming table mode.
-- [ ] Validate the allowed parent of `TR`, `TH`, and `TD`.
-- [ ] Add an end-to-end strict-conformance test for the documented example.
-- [ ] Add a veraPDF assertion for the resulting table hierarchy.
+- [x] Validate the allowed parent of `TR`, `TH`, and `TD`.
+- [x] Add an end-to-end strict-conformance test for the documented example.
+- [x] Add a veraPDF assertion for the resulting table hierarchy.
 
 ## RRM-007: No declarative Figure/caption association
 
@@ -520,7 +517,7 @@ other interactive forms are not covered by the claimed use case.
 
 ## RRM-010: External PDF/UA validation baseline is incomplete
 
-**Status:** Open
+**Status:** Partially addressed
 
 **Priority:** P0
 
@@ -531,6 +528,11 @@ external tools as the conformance authority.
 Most remediation engine and fixture tests use `StrictConformance = false`.
 Internal diagnostics are valuable but do not constitute complete PDF/UA-1 or
 PDF/UA-2 validation.
+
+CI now installs checksum-pinned veraPDF 1.30.2 and checks a strict,
+embedded-font PDF/UA-1 invoice table as an expected pass plus an intentionally
+invalid `TD > TR` document as an expected failure. Expanding this gate to every
+UA-1/UA-2 remediation fixture and recording PAC/manual review remain open.
 
 **Relevant code and tracking**
 
@@ -543,7 +545,8 @@ PDF/UA-2 validation.
 - [ ] All remediation fixtures run with strict conformance enabled unless a
   fixture explicitly tests permissive behavior.
 - [ ] veraPDF is run for the intended UA profile of every fixture.
-- [ ] Expected-pass and expected-failure baselines are checked in CI.
+- [x] Expected-pass and expected-failure baselines are checked in CI for the
+  strict invoice table and intentional invalid-hierarchy fixtures.
 - [ ] PAC/manual assistive-technology review is recorded for representative
   documents where automated validation is insufficient.
 - [ ] Task 18.6 is completed only after results are reproducible.
@@ -682,15 +685,19 @@ language does not perform OCR or ingest an external OCR/layout result.
 
 ## RRM-016: Rules have no expected-match cardinality, so template drift is silent
 
-**Status:** Open
+**Status:** Complete
 
 **Priority:** P0
 
-`AnchorSelection` gives anchors explicit cardinality: `RequiredSingle` fails when an anchor resolves
-to zero or several candidates. Rules have no equivalent. `Rule` exposes `MinConfidence` but no
-`MinMatches`, `MaxMatches`, or `ExpectedMatches`.
+**Resolved 2026-07-26:** `RuleCardinality` now supports document- and page-scoped match
+constraints, `RemediationReport.RuleEvaluations` includes zero-match rules and rejection counts, and
+`RemediationReport.AutoArtifacts` identifies prospective and committed automatic artifacts.
 
-A rule that matches nothing is therefore indistinguishable from a rule that had nothing to match.
+`AnchorSelection` already gave anchors explicit cardinality: `RequiredSingle` fails when an anchor
+resolves to zero or several candidates. Before this change, rules had no equivalent; `Rule` exposed
+`MinConfidence` but no expected match constraint.
+
+A rule without an explicit cardinality remains optional, so zero matches are still legitimate.
 This is the defining failure mode of a template system: the producing application changes a label,
 shifts a column, or reflows a block, and a regex that used to match stops matching. No diagnostic is
 raised, because "zero candidates selected" is a legitimate outcome for optional content.
@@ -722,13 +729,13 @@ the author no longer knows what is left over.
 
 **Completion criteria**
 
-- [ ] `Rule` accepts an expected-match cardinality (at minimum `MinMatches`, ideally an explicit
+- [x] `Rule` accepts an expected-match cardinality (at minimum `MinMatches`, ideally an explicit
   `Cardinality` mirroring `AnchorSelection`), evaluated per page or per document as declared.
-- [ ] Unsatisfied cardinality produces a diagnostic identifying the rule, page, and observed count.
-- [ ] Per-rule match counts appear in `RemediationReport` for every rule, including zero-match rules.
-- [ ] `AutoArtifact` reports which content it artifacted and how much, rather than silently absorbing
+- [x] Unsatisfied cardinality produces a diagnostic identifying the rule, page, and observed count.
+- [x] Per-rule match counts appear in `RemediationReport` for every rule, including zero-match rules.
+- [x] `AutoArtifact` reports which content it artifacted and how much, rather than silently absorbing
   it; consider requiring an explicit maximum artifacted area or candidate count.
-- [ ] Tests cover a rule whose predicate stops matching after a layout change, asserting that the
+- [x] Tests cover a rule whose predicate stops matching after a layout change, asserting that the
   run fails rather than producing hidden content.
 
 ## RRM-017: No rule-set applicability guard or document-family check
@@ -1336,7 +1343,7 @@ Helvetica text. RRM-011 will expose it; the fix is a language feature rather tha
 
 ## RRM-033: No negative explain or per-rule match diagnostics
 
-**Status:** Open
+**Status:** Partially addressed
 
 **Priority:** P1
 
@@ -1364,7 +1371,7 @@ is the missing tool — and it is the direct enabler for diagnosing RRM-016 and 
 - [ ] A trace mode records per-predicate evaluation outcomes for selected candidates or a selected
   page.
 - [ ] Composed predicates report which operand rejected a candidate.
-- [ ] Per-rule evaluation counts — candidates considered, matched, rejected by confidence, rejected by
+- [x] Per-rule evaluation counts — candidates considered, matched, rejected by confidence, rejected by
   conflict — appear in the report for every rule.
 - [ ] `Explain` is documented, and a negative form is available from the CLI.
 

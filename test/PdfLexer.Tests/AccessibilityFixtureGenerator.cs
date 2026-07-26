@@ -190,19 +190,28 @@ internal static class AccessibilityFixtureGenerator
         var intro = title.Back()
             .AddParagraph("Executive summary")
             .ActualText("Executive summary for the annual accessibility report");
-        var findings = intro.Back()
-            .AddList("Key findings")
-            .ListNumbering(StructureListNumbering.Decimal);
+        IStructureContext firstLabel = null!;
+        IStructureContext firstBody = null!;
+        IStructureContext secondLabel = null!;
+        IStructureContext secondBody = null!;
+        var findings = overview.AddList("Key findings", list =>
+        {
+            list.ListNumbering(StructureListNumbering.Decimal);
+            list.AddListItem("Finding one", item =>
+            {
+                firstLabel = item.AddLabel("1.", label => { });
+                firstBody = item.AddListBody("Keyboard support improved", body => { });
+            });
+            list.AddListItem("Finding two", item =>
+            {
+                secondLabel = item.AddLabel("2.", label => { });
+                secondBody = item.AddListBody("Alt text coverage is now complete", body => { });
+            });
+        });
 
-        var firstFinding = findings.AddListItem("Finding one");
-        var firstLabel = firstFinding.AddLabel("1.");
-        var firstBody = firstLabel.Back().AddListBody("Keyboard support improved");
-
-        var secondFinding = findings.AddListItem("Finding two");
-        var secondLabel = secondFinding.AddLabel("2.");
-        var secondBody = secondLabel.Back().AddListBody("Alt text coverage is now complete");
-
-        var figure = findings.Back().AddFigure("Audit progress chart", "Bar chart showing accessibility audit progress");
+        var figure = findings.Back()
+            .AddFigure("Audit progress chart", "Bar chart showing accessibility audit progress")
+            .AddLayoutBoundingBox(new PdfRect<double>(40, 560, 104, 624));
         figure.BindImage(reportImage, page1);
 
         var regional = figure.Back().AddSection("Regional Results");
@@ -210,26 +219,33 @@ internal static class AccessibilityFixtureGenerator
         var regionalParagraph = regionalHeading.Back()
             .AddParagraph("Résumé et café pour Montréal")
             .Lang("fr-CA");
-        var table = regionalParagraph.Back()
-            .AddTable("Regional accessibility status")
-            .TableSummary("Accessibility readiness by region and audit status.");
-
-        var headerGroup = table.AddTableHead();
-        var headerRow = headerGroup.AddRow();
-        var regionHeader = headerRow.AddHeaderCell()
-            .ElementId("report-region")
-            .TableScope(StructureScope.Column);
-        var statusHeader = regionHeader.Back().AddHeaderCell()
-            .ElementId("report-status")
-            .TableScope(StructureScope.Column);
-
-        var bodyGroup = statusHeader.Back().Back().Back().AddTableBody();
-        var northRow = bodyGroup.AddRow();
-        var northRegion = northRow.AddDataCell().TableHeaders("report-region");
-        var northStatus = northRegion.Back().AddDataCell().TableHeaders("report-status");
-        var montrealRow = northStatus.Back().Back().AddRow();
-        var montrealRegion = montrealRow.AddDataCell().TableHeaders("report-region");
-        var montrealStatus = montrealRegion.Back().AddDataCell().TableHeaders("report-status");
+        IStructureContext regionHeader = null!;
+        IStructureContext statusHeader = null!;
+        IStructureContext northRegion = null!;
+        IStructureContext northStatus = null!;
+        IStructureContext montrealRegion = null!;
+        IStructureContext montrealStatus = null!;
+        var table = regional.AddTable("Regional accessibility status", table =>
+        {
+            table.TableSummary("Accessibility readiness by region and audit status.");
+            table.AddRow(row =>
+            {
+                regionHeader = row.AddHeaderCell(cell =>
+                    cell.ElementId("report-region").TableScope(StructureScope.Column));
+                statusHeader = row.AddHeaderCell(cell =>
+                    cell.ElementId("report-status").TableScope(StructureScope.Column));
+            });
+            table.AddRow(row =>
+            {
+                northRegion = row.AddDataCell(cell => cell.TableHeaders("report-region"));
+                northStatus = row.AddDataCell(cell => cell.TableHeaders("report-status"));
+            });
+            table.AddRow(row =>
+            {
+                montrealRegion = row.AddDataCell(cell => cell.TableHeaders("report-region"));
+                montrealStatus = row.AddDataCell(cell => cell.TableHeaders("report-status"));
+            });
+        });
 
         var jumpLink = regional.Back().AddLink(
             page1,
@@ -505,12 +521,16 @@ internal static class AccessibilityFixtureGenerator
 
         using (var writer = page1.GetWriter())
         {
+            writer.BeginMarkedContent(figure.GetNode());
             writer.Image(xobj, 40, 680, 32, 32);
+            writer.EndMarkedContent();
         }
 
         using (var writer = page2.GetWriter())
         {
+            writer.BeginMarkedContent(figure.GetNode());
             writer.Image(xobj, 40, 680, 32, 32);
+            writer.EndMarkedContent();
         }
 
         return doc;
@@ -559,7 +579,8 @@ internal static class AccessibilityFixtureGenerator
         var figure = doc.Structure
             .AddFigure(UnicodeMetadataValue, UnicodeMetadataValue)
             .ActualText(UnicodeMetadataValue)
-            .Expansion(UnicodeMetadataValue);
+            .Expansion(UnicodeMetadataValue)
+            .AddLayoutBoundingBox(new PdfRect<double>(40, 680, 72, 712));
         figure.BindImage(xobj, page);
 
         using (var writer = page.GetWriter())

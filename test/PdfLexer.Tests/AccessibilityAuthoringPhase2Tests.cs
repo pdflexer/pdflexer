@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using PdfLexer.Content;
 using PdfLexer.DOM;
 using PdfLexer.Fonts;
@@ -227,6 +228,12 @@ public class AccessibilityAuthoringPhase2Tests
         Assert.Equal("Email contact", radio.Widgets[0].NativeObject.Get<PdfString>(PdfName.Contents)!.Value);
         Assert.Equal("Phone contact", radio.Widgets[1].NativeObject.Get<PdfString>((PdfName)"TU")!.Value);
         Assert.Equal("Phone contact", radio.Widgets[1].NativeObject.Get<PdfString>(PdfName.Contents)!.Value);
+        var options = radio.Field.Get<PdfArray>((PdfName)"Opt");
+        Assert.NotNull(options);
+        Assert.Equal(
+            new[] { "Email", "Phone" },
+            options!.Select(x => x.Resolve().GetAs<PdfString>().Value));
+        Assert.Equal(radio.Widgets.Count, options.Count);
     }
 
     [Fact]

@@ -58,7 +58,7 @@ Read [Before You Author Rules](#before-you-author-rules) first. Several document
 > [!WARNING]
 > **`RemediationLeftoverPolicy.AutoArtifact` can hide content.** Unclaimed content is marked as an artifact, which removes it from the structure tree and from assistive technology entirely. That is correct for decorative content and wrong for everything else — and the engine cannot tell the difference.
 >
-> A rule that matches nothing produces no diagnostic today (RRM-016). So if a producer-side layout change breaks one predicate, the content that rule should have tagged falls through to the leftover policy and is silently hidden. The resulting document is valid PDF/UA and passes external validation.
+> Protect every required semantic rule with `RuleCardinality`. If a producer-side layout change breaks its selector, dry-run and commit report `RuleCardinalityMismatch`, and commit stops before `AutoArtifact` can hide the content. `RemediationReport.AutoArtifacts` also lists every leftover text item that would be or was artifacted.
 >
 > Use `FailFast` in development **and in production** unless you have separately established that the leftover set is decorative. Prefer explicit `Artifact(...)` rules over `AutoArtifact`.
 
@@ -69,12 +69,32 @@ session.Suppress(DiagnosticCode.ReadingOrderDrift, scope: "Page3", reason: "Know
 ```
 
 Suppressions are surfaced on `RemediationReport.Suppressions`. They are only honored when `DiagnosticStrictness = Permissive`. Every suppression should carry a justification that someone has actually checked.
+Cardinality diagnostics use `Rule:<id>` for document scope and `Rule:<id>:Page<n>` for page scope.
 
 ## Before You Author Rules
 
 Five behaviors that are easy to get wrong and hard to diagnose.
 
-**A rule that matches nothing is not an error.** There is no `MinMatches` or expected-cardinality on `Rule`; only anchors have that, through `AnchorSelection.RequiredSingle`. Check `report.Outcomes` for the rules you expect to fire, and prefer routing critical fields through a `RequiredSingle` anchor so that a miss fails loudly. Tracked as RRM-016.
+**Optional rules may match nothing; required rules should declare cardinality.** Cardinality counts inputs accepted by the rule's primary selector before confidence and conflict handling. It can be evaluated across the document or independently on each selected page:
+
+```csharp
+new Rule(
+    "invoice-number",
+    RemediationActions.Tag("P"),
+    Predicates.Text.Matches(@"^INV-\d+$"),
+    Granularity.Word,
+    pages: PageSelector.First,
+    cardinality: RuleCardinality.Exactly(1));
+
+new Rule(
+    "page-number",
+    RemediationActions.Artifact(ArtifactSubtype.Pagination),
+    Predicates.Flow.InZone("footer"),
+    Granularity.Line,
+    cardinality: RuleCardinality.Exactly(1, RuleCardinalityScope.PerPage));
+```
+
+`Document` is the default scope. `PerPage` checks every existing page selected by `Rule.Pages`; a positive minimum also fails if that selector selects no existing pages.
 
 **Anchors resolve per page, not per document.** `AnchorSelection.RequiredSingle` means "exactly one match *on this page*". A label that appears on every page is fine; the same label twice on one page fails; a label absent from an intermediate page also fails. Narrow the scope with `RemediationAnchor.Pages` when an anchor only exists on some pages:
 
@@ -113,6 +133,20 @@ Every `Rule` has the same shape:
 - `Predicate`: how raw candidates are selected for classify rules.
 - `Granularity`: `Character`, `Word`, `Line`, or `Paragraph`.
 - `Pages`: `PageSelector.Every`, `First`, `Last`, `Range(...)`, or `Parity(...)`.
+- `Cardinality`: optional expected selector-match count, using `Exactly`, `AtLeast`, `AtMost`, or `Between`.
+
+The serialized v1 rule format accepts the same constraint additively:
+
+```json
+{
+  "id": "invoice-number",
+  "cardinality": {
+    "scope": "document",
+    "minMatches": 1,
+    "maxMatches": 1
+  }
+}
+```
 - `Stage`: `Classify`, `Group`, or `Refine`.
 - `Override`: whether the rule may replace earlier claims over the same target.
 - `MinConfidence`: optional hard confidence threshold.
@@ -332,11 +366,11 @@ var lineItems = new FlowRegion(
     FlowBoundary.Anchor("line-items-header"),
     FlowBoundary.Anchor("subtotal-label"));
 
-var rowRule = new Rule(
-    "line-item-row",
-    RemediationActions.Tag("TR"),
+var cellRule = new Rule(
+    "line-item-cell",
+    RemediationActions.Tag("Span"),
     Predicates.Flow.InFlowRegion("line-items"),
-    Granularity.Line);
+    Granularity.Word);
 ```
 
 Boundaries can be anchors, toleranced zones, a predicate match, or the page boundary.
@@ -380,8 +414,8 @@ Table actions run in the `Group` stage. They can infer columns, use explicit col
 ```csharp
 new Rule(
     "line-items-table",
-    RemediationActions.TableOver(
-        ClaimPredicates.FromRule("line-item-row"),
+    RemediationActions.TableOverFlattenedCells(
+        ClaimPredicates.FromRule("line-item-cell"),
         72, 300, 380, 470),
     stage: Stage.Group);
 
@@ -487,7 +521,7 @@ Claim predicates select existing claim outcomes for group and refine actions.
 ```csharp
 ClaimPredicates.ClaimIs("P");
 ClaimPredicates.ActionIs(RemediationActionKind.Artifact);
-ClaimPredicates.FromRule("line-item-row");
+ClaimPredicates.FromRule("line-item-cell");
 ClaimPredicates.FromRuleSet("invoice-v2");
 ClaimPredicates.StatusIs(ClaimStatus.Applied);
 ClaimPredicates.SamePage();
@@ -524,7 +558,7 @@ static RuleSet BuildInvoiceRules()
 
         RemediationAnchor.TextLabel("bill-to-label", "Bill To"),
         RemediationAnchor.TextLabel("ship-to-label", "Ship To"),
-        RemediationAnchor.TableHeader("line-items-header", "Item", "Qty", "Amount"),
+        RemediationAnchor.TextLabel("line-items-header", "Item"),
         RemediationAnchor.TextLabel("subtotal-label", "Subtotal")
     };
 
@@ -567,12 +601,17 @@ static RuleSet BuildInvoiceRules()
             Predicates.Flow.InFlowRegion("bill-to-address"),
             Granularity.Line),
 
-        // NOTE: see the warning below - this row-based shape is known to be wrong.
         new Rule(
-            "line-item-row",
-            RemediationActions.Tag("TR"),
+            "line-item-header-cell",
+            RemediationActions.Tag("Span"),
+            Predicates.Anchor.SameRowAs("line-items-header", tolerance: 4),
+            Granularity.Word),
+
+        new Rule(
+            "line-item-cell",
+            RemediationActions.Tag("Span"),
             Predicates.Flow.InFlowRegion("line-items"),
-            Granularity.Line),
+            Granularity.Word),
 
         new Rule(
             "page-footer",
@@ -582,7 +621,11 @@ static RuleSet BuildInvoiceRules()
 
         new Rule(
             "line-items-table",
-            RemediationActions.TableOver(ClaimPredicates.FromRule("line-item-row"), 72, 300, 380, 470),
+            RemediationActions.TableOverFlattenedCells(
+                ClaimPredicates.FromRule("line-item-header-cell")
+                    .Or(ClaimPredicates.FromRule("line-item-cell")),
+                ClaimPredicates.FromRule("line-item-header-cell"),
+                72, 250, 450, 600),
             stage: Stage.Group),
 
         new Rule(
@@ -600,8 +643,10 @@ static RuleSet BuildInvoiceRules()
 }
 ```
 
-> [!WARNING]
-> **The table portion of this example produces an incorrect hierarchy** and is retained only until the fix lands. `line-item-row` tags each row line as `TR`, and claim-consuming table mode treats every matched claim as a *cell* — so each `TR` claim is placed beneath a generated `TD`. Classify **cell** content and pass those claims to `TableOver`, rather than pre-building rows. The internal strict validator does not currently catch this, but external validators do. Tracked as RRM-006 in the [gap tracker](rule-based-remediation-gaps.md), which owns the corrected example.
+The table rules classify leaf cell content as `Span` and flatten those bindings directly into
+generated `TH`/`TD` cells. Do not classify visual rows as `TR` before passing them to `TableOver`;
+preserve-children mode rejects table-row and table-cell claims because they would create an invalid
+`TD > TR` or nested-cell hierarchy.
 
 ## What Remediation Cannot Fix
 
@@ -659,6 +704,7 @@ Dry-run and commit plan diagnostics catch page-specific problems:
 - flow regions that are empty, overlapping, or have invalid boundaries;
 - candidates that cannot be safely materialized into exact marked-content ranges;
 - table grid mismatch or low-confidence inference;
+- rule cardinality mismatches, with rule and page provenance;
 - unclaimed content under `FailFast` or flagged leftovers;
 - orphaned MCIDs, missing `/StructParents`, or reading-order drift.
 
@@ -677,6 +723,19 @@ foreach (var outcome in report.Outcomes)
 
 `report.SkippedOutcomes` carries the same shape for claims that were conflicted, overridden, or failed.
 
+`report.RuleEvaluations` contains every composed rule, including rules that matched nothing. Each summary has document totals and selected-page counts for inputs considered, inputs matched, confidence and conflict rejections, applied claims, and overridden claims:
+
+```csharp
+foreach (var rule in report.RuleEvaluations)
+{
+    Console.WriteLine(
+        $"{rule.RuleId}: matched={rule.Total.InputsMatched}, " +
+        $"applied={rule.Total.AppliedClaims}, conflicts={rule.Total.RejectedByConflict}");
+}
+```
+
+When `AutoArtifact` is configured, `report.AutoArtifacts` identifies each leftover text item. Dry-run entries have `Planned` disposition; successful commit entries have `Applied` disposition.
+
 `Explain(...)` reports which rules considered a given piece of content, accepting a `StructuredSourceRef`, a `RemediationCandidate`, or a `StructuredCharacter`:
 
 ```csharp
@@ -687,7 +746,7 @@ foreach (var outcome in report.Explain(someCharacter))
 ```
 
 > [!NOTE]
-> `Explain` answers "which rules touched this content." It cannot yet answer "why did my rule match nothing" or "which conjunct of this `And` chain rejected this candidate," and per-rule match counts are not reported for rules that produced no claims. Until that lands (RRM-033), verify that every rule you expect to fire appears in `report.Outcomes`.
+> `Explain` answers "which rules touched this content." It cannot yet answer "why did my rule match nothing" or "which conjunct of this `And` chain rejected this candidate." Use `RuleEvaluations` for aggregate rejection counts; predicate-level negative tracing remains RRM-033.
 
 ## Authoring Guidance
 
@@ -697,9 +756,9 @@ foreach (var outcome in report.Explain(someCharacter))
 - Use `FirstAfter` or `FirstIn` for ordered field extraction; use `NearestTo` only when geometric nearness is the intent.
 - Classify first, then group or refine claims. Do not try to build parent structure by re-selecting raw text.
 - Keep rule ids stable because reports, debug output, and downstream tests depend on them.
-- Use `RemediationLeftoverPolicy.FailFast` in development *and* in production. Reach for `AutoArtifact` only once you have separately established that the leftover set is decorative — a rule that silently stops matching will otherwise route real content into it.
-- Route business-critical fields through a `RequiredSingle` anchor so a template change fails the run instead of degrading the output.
-- Assert the rules you expect to fire against `report.Outcomes` in your own tests. The engine does not do this for you yet.
+- Use `RemediationLeftoverPolicy.FailFast` in development *and* in production. When `AutoArtifact` is justified, inspect `report.AutoArtifacts` and declare cardinality on every required semantic rule.
+- Route business-critical fields through `RuleCardinality.Exactly(...)` and use `RequiredSingle` anchors where stable anchor identity is also required.
+- Assert semantic output shape in application tests; cardinality detects selector drift but does not replace RRM-018 structure assertions.
 - Verify output with an external validator, and separately verify that the *right* content got the *right* tags. Conformance validation cannot tell you the invoice total was tagged as a footer.
 
 ## Current Limitations

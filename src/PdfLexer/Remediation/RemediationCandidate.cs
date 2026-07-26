@@ -22,7 +22,8 @@ public sealed record RemediationCandidate
         string? fontName = null,
         int? fontWeight = null,
         bool? italic = null,
-        bool? isGrayish = null)
+        bool? isGrayish = null,
+        IReadOnlyList<RemediationTextRange>? exactTextRanges = null)
     {
         Granularity = granularity;
         Text = text;
@@ -36,6 +37,7 @@ public sealed record RemediationCandidate
         FontWeight = fontWeight ?? GetCommon(characters.Select(x => x.FontWeight));
         Italic = italic ?? GetCommon(characters.Select(x => x.Italic));
         IsGrayish = isGrayish ?? GetCommon(characters.Select(x => x.IsGrayish));
+        ExactTextRanges = exactTextRanges;
     }
 
     /// <summary>Granularity represented by this candidate.</summary>
@@ -57,7 +59,12 @@ public sealed record RemediationCandidate
     public IReadOnlyList<StructuredSourceRef> SourceReferences { get; }
 
     /// <summary>Text ranges selected inside content operators.</summary>
-    public IReadOnlyList<RemediationTextRange> TextRanges => BuildTextRanges(Characters);
+    public IReadOnlyList<RemediationTextRange> TextRanges => ExactTextRanges ?? BuildTextRanges(Characters);
+
+    internal IReadOnlyList<RemediationTextRange>? ExactTextRanges { get; }
+
+    internal bool RequiresExactMaterialization =>
+        Granularity is Granularity.Character or Granularity.Word || ExactTextRanges != null;
 
     /// <summary>Reading-order sequence index.</summary>
     public int SequenceIndex { get; }
@@ -199,6 +206,57 @@ public sealed record RemediationCandidate
 
         return new ReadOnlyCollection<RemediationTextRange>(ranges);
     }
+
+    internal static RemediationCandidate CreateExactRange(
+        RemediationCandidate template,
+        RemediationTextRange range,
+        IReadOnlyList<StructuredCharacter> characters)
+    {
+        var bounds = characters.Count == 0 ? template.BoundingBox : Union(characters.Select(x => x.BoundingBox));
+        var relativeBounds = characters.Count == 0
+            ? template.RelativeBoundingBox
+            : Union(characters.Select(x => x.RelativeBoundingBox));
+        var text = characters.Count == 0
+            ? range.Text
+            : new string(characters.OrderBy(x => x.SourceCharacterIndex).Select(x => x.Char).ToArray());
+
+        return new RemediationCandidate(
+            template.Granularity,
+            text,
+            bounds,
+            relativeBounds,
+            new ReadOnlyCollection<StructuredCharacter>(characters.ToList()),
+            new ReadOnlyCollection<StructuredSourceRef>(new[] { range.SourceReference }),
+            characters.Count == 0 ? template.SequenceIndex : characters.Min(x => x.SequenceIndex),
+            characters.Count == 0 ? template.FontSize : characters.Average(x => x.FontSize),
+            template.FontName,
+            template.FontWeight,
+            template.Italic,
+            template.IsGrayish,
+            new ReadOnlyCollection<RemediationTextRange>(new[] { range }));
+    }
+
+    private static PdfRect<double> Union(IEnumerable<PdfRect<double>> rects)
+    {
+        using var enumerator = rects.GetEnumerator();
+        if (!enumerator.MoveNext())
+        {
+            return new PdfRect<double>(0, 0, 0, 0);
+        }
+
+        var result = enumerator.Current;
+        while (enumerator.MoveNext())
+        {
+            var rect = enumerator.Current;
+            result = new PdfRect<double>(
+                Math.Min(result.LLx, rect.LLx),
+                Math.Min(result.LLy, rect.LLy),
+                Math.Max(result.URx, rect.URx),
+                Math.Max(result.URy, rect.URy));
+        }
+
+        return result;
+    }
 }
 
 /// <summary>
@@ -262,7 +320,7 @@ public static class RemediationLeafSelection
         this RemediationCandidate candidate,
         IEnumerable<IContentNode<T>> content) where T : struct, IFloatingPoint<T>
     {
-        if (candidate.Granularity is not (Granularity.Character or Granularity.Word))
+        if (!candidate.RequiresExactMaterialization)
         {
             return new ReadOnlyCollection<RemediationClaimTarget<T>>(
                 candidate.FindLeaves(content).Select(x => new RemediationClaimTarget<T>(x)).ToList());
@@ -272,27 +330,37 @@ public static class RemediationLeafSelection
         var seenWholeItems = new HashSet<IContentItem<T>>();
         foreach (var range in candidate.TextRanges)
         {
-            if (!ContentModelBridge.TryResolveParsedItemId(content, range.SourceReference, out var parsedItemId))
+            foreach (var textContent in ContentModelBridge.FindTextFragments(content, range.SourceReference))
             {
-                continue;
-            }
+                var fragmentStart = textContent.SourceCharacterOffset;
+                var fragmentEnd = fragmentStart + textContent.Text.Length;
+                var rangeStart = range.StartCharacterIndex;
+                var rangeEnd = rangeStart + range.CharacterCount;
+                var intersectionStart = Math.Max(fragmentStart, rangeStart);
+                var intersectionEnd = Math.Min(fragmentEnd, rangeEnd);
+                if (intersectionStart >= intersectionEnd)
+                {
+                    continue;
+                }
 
-            var item = ContentModelBridge.FindItem(content, parsedItemId);
-            if (item == null)
-            {
-                continue;
-            }
-
-            if (item is TextContent<T> textContent &&
-                (range.StartCharacterIndex != 0 || range.CharacterCount != textContent.Text.Length))
-            {
-                targets.Add(new RemediationClaimTarget<T>(item, range));
-                continue;
-            }
-
-            if (seenWholeItems.Add(item))
-            {
-                targets.Add(new RemediationClaimTarget<T>(item));
+                if (intersectionStart == fragmentStart &&
+                    intersectionEnd == fragmentEnd)
+                {
+                    if (seenWholeItems.Add(textContent))
+                    {
+                        targets.Add(new RemediationClaimTarget<T>(textContent));
+                    }
+                }
+                else
+                {
+                    targets.Add(new RemediationClaimTarget<T>(
+                        textContent,
+                        new RemediationTextRange(
+                            range.SourceReference,
+                            intersectionStart,
+                            intersectionEnd - intersectionStart,
+                            range.Text)));
+                }
             }
         }
 
@@ -335,7 +403,7 @@ public static class RemediationLeafSelection
             if (ReferenceEquals(nodes[i], target))
             {
                 if (!target.TrySplitByCharacterRange(
-                    range.StartCharacterIndex,
+                    range.StartCharacterIndex - target.SourceCharacterOffset,
                     range.CharacterCount,
                     out var before,
                     out var selected,
@@ -385,7 +453,7 @@ public static class RemediationLeafSelection
             if (ReferenceEquals(nodes[i], target))
             {
                 if (!target.TrySplitByCharacterRange(
-                    range.StartCharacterIndex,
+                    range.StartCharacterIndex - target.SourceCharacterOffset,
                     range.CharacterCount,
                     out var before,
                     out var selected,

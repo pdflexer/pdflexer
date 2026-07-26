@@ -16,7 +16,9 @@ public enum DiagnosticCode
     /// <summary>A page with marked content is missing required structure-parent wiring.</summary>
     MissingStructParents = 4,
     /// <summary>Logical structure order differs from the expected reading order.</summary>
-    ReadingOrderDrift = 5
+    ReadingOrderDrift = 5,
+    /// <summary>A rule matched a number of inputs outside its declared cardinality.</summary>
+    RuleCardinalityMismatch = 6
 }
 
 /// <summary>

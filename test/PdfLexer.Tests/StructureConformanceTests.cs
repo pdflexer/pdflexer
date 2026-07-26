@@ -82,4 +82,18 @@ public class StructureConformanceTests
         // Should not throw
         doc.SaveTo(new System.IO.MemoryStream());
     }
+
+    [Fact]
+    public void Strict_Accessibility_Save_Rejects_RowOutsideTableHierarchy()
+    {
+        using var doc = PdfDocument.Create();
+        doc.AddPage();
+        doc.ApplyAccessibilitySetup("en-US", "Invalid Table", PdfUaProfile.PdfUa1, strictConformance: true);
+        doc.Structure.AddRow();
+
+        var ex = Assert.Throws<PdfAccessibilityConformanceException>(
+            () => doc.SaveTo(new System.IO.MemoryStream()));
+
+        Assert.Contains("TR elements must be children of Table, THead, TBody, or TFoot", ex.Message);
+    }
 }

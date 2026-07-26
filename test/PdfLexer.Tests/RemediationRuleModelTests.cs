@@ -30,7 +30,7 @@ public class RemediationRuleModelTests
           "anchors": [
             { "id": "invoice-label", "kind": "regex", "pattern": "^Invoice\\s*#$", "granularity": "line" },
             { "id": "subtotal-label", "kind": "textLabel", "text": "Subtotal" },
-            { "id": "items-header", "kind": "tableHeader", "headers": ["Item", "Qty", "Amount"] }
+            { "id": "items-header", "kind": "textLabel", "text": "Item" }
           ],
           "zones": [
             { "id": "footer", "bounds": { "kind": "marginRelative", "bottom": 42 }, "tolerance": 6 }
@@ -48,14 +48,22 @@ public class RemediationRuleModelTests
               "stage": "classify",
               "granularity": "line",
               "pages": { "kind": "first" },
+              "cardinality": { "scope": "document", "minMatches": 1, "maxMatches": 1 },
               "action": { "kind": "tag", "tag": "H1" },
               "predicate": { "kind": "textStartsWith", "text": "Invoice" }
             },
             {
-              "id": "line-item-row",
+              "id": "line-item-header-cell",
               "stage": "classify",
-              "granularity": "line",
-              "action": { "kind": "tag", "tag": "TR" },
+              "granularity": "word",
+              "action": { "kind": "tag", "tag": "Span" },
+              "predicate": { "kind": "anchorSameRowAs", "id": "items-header", "tolerance": 4 }
+            },
+            {
+              "id": "line-item-cell",
+              "stage": "classify",
+              "granularity": "word",
+              "action": { "kind": "tag", "tag": "Span" },
               "predicate": { "kind": "flowInRegion", "id": "line-items" }
             },
             {
@@ -63,8 +71,16 @@ public class RemediationRuleModelTests
               "stage": "group",
               "action": {
                 "kind": "table",
-                "over": { "kind": "fromRule", "ruleId": "line-item-row" },
-                "columns": [72, 300, 380, 470]
+                "over": {
+                  "kind": "any",
+                  "predicates": [
+                    { "kind": "fromRule", "ruleId": "line-item-header-cell" },
+                    { "kind": "fromRule", "ruleId": "line-item-cell" }
+                  ]
+                },
+                "headerSelector": { "kind": "fromRule", "ruleId": "line-item-header-cell" },
+                "cellContentMode": "flattenLeafClaims",
+                "columns": [72, 250, 450, 600]
               }
             },
             {
@@ -91,7 +107,10 @@ public class RemediationRuleModelTests
         Assert.Equal(3, job.RuleSet.Anchors.Count);
         Assert.Single(job.RuleSet.TolerancedZones);
         Assert.Single(job.RuleSet.FlowRegions);
-        Assert.Equal(new[] { "invoice-title", "line-item-row", "line-items-table", "document-lang" }, job.RuleSet.Rules.Select(x => x.Id).ToArray());
+        Assert.Equal(
+            new[] { "invoice-title", "line-item-header-cell", "line-item-cell", "line-items-table", "document-lang" },
+            job.RuleSet.Rules.Select(x => x.Id).ToArray());
+        Assert.Equal(RuleCardinality.Exactly(1), job.RuleSet.Rules[0].Cardinality);
         Assert.Empty(job.RuleSet.Rules.SelectMany(x => x.ValidateShape()));
     }
 
@@ -105,17 +124,34 @@ public class RemediationRuleModelTests
             Granularity.Paragraph,
             PageSelector.First,
             Stage.Classify,
-            minConfidence: 0.8);
+            minConfidence: 0.8,
+            cardinality: RuleCardinality.Exactly(1));
 
         Assert.Equal("heading", rule.Id);
         Assert.Equal(Stage.Classify, rule.Stage);
         Assert.Equal(Granularity.Paragraph, rule.Granularity);
         Assert.Same(PageSelector.First, rule.Pages);
         Assert.Equal(0.8, rule.MinConfidence);
+        Assert.Equal(RuleCardinality.Exactly(1), rule.Cardinality);
         Assert.Empty(rule.ValidateShape());
 
         Assert.Throws<ArgumentOutOfRangeException>(() =>
             new Rule("bad", RemediationActions.Tag("P"), minConfidence: 1.1));
+    }
+
+    [Fact]
+    public void RuleCardinality_ValidatesBoundsAndProvidesFactories()
+    {
+        Assert.Equal(new RuleCardinality(2, 2), RuleCardinality.Exactly(2));
+        Assert.Equal(new RuleCardinality(2), RuleCardinality.AtLeast(2));
+        Assert.Equal(new RuleCardinality(0, 2), RuleCardinality.AtMost(2));
+        Assert.Equal(
+            new RuleCardinality(1, 3, RuleCardinalityScope.PerPage),
+            RuleCardinality.Between(1, 3, RuleCardinalityScope.PerPage));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() => new RuleCardinality(-1));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new RuleCardinality(2, 1));
+        Assert.Throws<ArgumentException>(() => new RuleCardinality(0));
     }
 
     [Fact]

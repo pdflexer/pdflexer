@@ -1,5 +1,6 @@
 using PdfLexer.DOM;
 using PdfLexer.Writing;
+using System.Linq;
 using Xunit;
 
 namespace PdfLexer.Tests;
@@ -126,7 +127,11 @@ public class StructuralSerializationTests
         var attrs = cellDict[PdfName.A].Resolve().GetAs<PdfDictionary>();
         Assert.Equal(PdfName.Table, attrs[PdfName.O]);
         Assert.Equal(PdfName.Column, attrs[PdfName.Scope]);
-        Assert.True(attrs.ContainsKey(PdfName.Headers));
+        var headers = attrs.Get<PdfArray>(PdfName.Headers);
+        Assert.NotNull(headers);
+        var header = Assert.Single(headers!);
+        Assert.Equal(PdfObjectType.StringObj, header.Type);
+        Assert.Equal("fig-1", header.GetAs<PdfString>().Value);
         Assert.Equal("Header summary", attrs.Get<PdfString>(PdfName.Summary).Value);
 
         var listDict = result.Map[list].GetObject().GetAs<PdfDictionary>();
@@ -138,25 +143,43 @@ public class StructuralSerializationTests
     [Fact]
     public void StructuralSerializer_Expands_ParentTree_For_Object_And_XObject_Entries()
     {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
         var root = new StructureNode { Type = "Document" };
         var link = new StructureNode { Type = "Link" };
         root.Children.Add(link);
 
         var annot = new PdfDictionary();
         var xObject = new PdfDictionary();
-        link.ObjectReferences.Add(new StructureObjectReference(annot, 5));
-        link.XObjectReferences.Add(new StructureXObjectReference(xObject, 6));
+        link.ObjectReferences.Add(new StructureObjectReference(annot, 5, page));
+        link.XObjectReferences.Add(new StructureXObjectReference(xObject, 6, page));
 
         var serializer = new StructuralSerializer();
         var result = serializer.ConvertToPdf(root);
         var parentTree = result.Root[PdfName.ParentTree].Resolve().GetAs<PdfDictionary>();
         var nums = parentTree.Get<PdfArray>(PdfName.Nums);
 
-        Assert.Equal(5, (PdfIntNumber)nums[0]);
-        Assert.Equal(result.Map[link], nums[1]);
-        Assert.Equal(6, (PdfIntNumber)nums[2]);
-        Assert.Equal(result.Map[link], nums[3]);
+        var annotationEntry = Enumerable.Range(0, nums.Count / 2)
+            .Select(x => x * 2)
+            .Single(x => (PdfIntNumber)nums[x] == 5);
+        var xObjectEntry = Enumerable.Range(0, nums.Count / 2)
+            .Select(x => x * 2)
+            .Single(x => (PdfIntNumber)nums[x] == 6);
+        Assert.Equal(result.Map[link], nums[annotationEntry + 1]);
+        Assert.Equal(result.Map[link], nums[xObjectEntry + 1]);
         Assert.Equal(5, (PdfIntNumber)annot[PdfName.StructParent]);
         Assert.Equal(6, (PdfIntNumber)xObject[PdfName.StructParents]);
+    }
+
+    [Fact]
+    public void StructuralSerializer_Rejects_Object_Reference_Without_Placement_Page()
+    {
+        var root = new StructureNode { Type = "Document" };
+        root.ObjectReferences.Add(new StructureObjectReference(new PdfDictionary(), 0));
+
+        var error = Assert.Throws<PdfAccessibilityConformanceException>(
+            () => new StructuralSerializer().ConvertToPdf(root));
+
+        Assert.Contains("no bound placement page", error.Message);
     }
 }

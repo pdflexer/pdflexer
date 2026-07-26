@@ -8,6 +8,18 @@ namespace PdfLexer.Tests;
 public class RemediationFixtureTests
 {
     [Fact]
+    public void StrictInvoiceTableFixtureCommitsAndSavesAsPdfUa1()
+    {
+        var fixture = RemediationFixtureGenerator.GenerateStrictInvoiceUa1();
+
+        Assert.True(fixture.Report.Committed);
+        using var document = PdfDocument.Open(fixture.Bytes);
+        AccessibilityIntegrityAssert.HasDocumentSetup(document, PdfUaProfile.PdfUa1);
+        AccessibilityIntegrityAssert.HasBasicStructureIntegrity(document);
+        AccessibilityIntegrityAssert.HasValidTableAndListHierarchy(document);
+    }
+
+    [Fact]
     public void Remediation_Fixture_Generator_Writes_Input_And_Remediated_Ua1_Ua2_Corpus()
     {
         var fixtures = RemediationFixtureGenerator.GenerateAll();
@@ -59,13 +71,26 @@ public class RemediationFixtureTests
 
         var invoice = Assert.Single(fixtures, x => x.FileName == "invoice-like-ua2.pdf");
         Assert.Contains(invoice.Report.Claims, x => x.RuleId == "invoice-number");
-        Assert.Equal(2, invoice.Report.Claims.Count(x => x.RuleId == "line-item-row"));
+        Assert.Equal(3, invoice.Report.Claims.Count(x => x.RuleId == "line-item-header-cell"));
+        Assert.Equal(6, invoice.Report.Claims.Count(x => x.RuleId == "line-item-cell"));
 
         using (var invoiceDocument = PdfDocument.Open(invoice.Bytes))
         {
             Assert.Contains(
                 AccessibilityIntegrityAssert.GetStructureElements(invoiceDocument),
                 x => x.Get<PdfString>(PdfName.T)?.Value == "invoice-number");
+            AccessibilityIntegrityAssert.HasValidTableAndListHierarchy(invoiceDocument);
+            var table = Assert.Single(
+                AccessibilityIntegrityAssert.GetStructureElements(invoiceDocument),
+                x => x.Get<PdfName>(PdfName.S) == PdfName.Table);
+            var rows = table.Get<PdfArray>(PdfName.K)!
+                .Select(x => x.Resolve())
+                .OfType<PdfDictionary>()
+                .ToList();
+            Assert.Equal(3, rows.Count);
+            Assert.Equal(new[] { (PdfName)"TH", (PdfName)"TH", (PdfName)"TH" }, GetChildTypes(rows[0]));
+            Assert.Equal(new[] { (PdfName)"TD", (PdfName)"TD", (PdfName)"TD" }, GetChildTypes(rows[1]));
+            Assert.Equal(new[] { (PdfName)"TD", (PdfName)"TD", (PdfName)"TD" }, GetChildTypes(rows[2]));
             Assert.Contains(invoiceDocument.Pages.Select(x => x.DumpDecodedContents()), x => x.Contains("/Artifact"));
         }
 
@@ -77,4 +102,12 @@ public class RemediationFixtureTests
         Assert.Equal(2, mixedDocument.Pages.Count);
         Assert.All(mixedDocument.Pages, page => Assert.Contains("/Artifact", page.DumpDecodedContents()));
     }
+
+    private static PdfName[] GetChildTypes(PdfDictionary parent) =>
+        parent.Get<PdfArray>(PdfName.K)!
+            .Select(x => x.Resolve())
+            .OfType<PdfDictionary>()
+            .Select(x => x.Get<PdfName>(PdfName.S)!)
+            .ToArray();
+
 }

@@ -107,16 +107,42 @@ internal sealed class RemediateCmd
         }
     }
 
-    private static void PrintReport(RemediationReport report)
+    internal static void PrintReport(RemediationReport report)
     {
         Console.WriteLine($"Committed: {report.Committed}");
         Console.WriteLine($"Claims: {report.Claims.Count}");
         Console.WriteLine($"Skipped claims: {report.SkippedClaims.Count}");
+        foreach (var rule in report.RuleEvaluations)
+        {
+            var count = rule.Total;
+            Console.WriteLine(
+                $"rule: {rule.RuleId} considered={count.InputsConsidered} matched={count.InputsMatched} " +
+                $"applied={count.AppliedClaims} low-confidence={count.RejectedByConfidence} " +
+                $"conflict={count.RejectedByConflict} overridden={count.OverriddenClaims}");
+        }
+
+        if (report.AutoArtifacts.Count > 0)
+        {
+            Console.WriteLine($"Auto-artifacts: {report.AutoArtifacts.Count}");
+            foreach (var artifact in report.AutoArtifacts)
+            {
+                Console.WriteLine(
+                    $"auto-artifact: {artifact.Disposition} page={artifact.PageIndex + 1} " +
+                    $"source={artifact.SourceReference} bounds={artifact.BoundingBox} text=\"{Preview(artifact.Text)}\"");
+            }
+        }
+
         foreach (var diagnostic in report.Diagnostics)
         {
             var output = diagnostic.StartsWith("[SUPPRESSED]", StringComparison.Ordinal) ? Console.Out : Console.Error;
             output.WriteLine("diagnostic: " + diagnostic);
         }
+    }
+
+    private static string Preview(string text)
+    {
+        var normalized = string.Join(" ", text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        return normalized.Length <= 80 ? normalized : normalized[..77] + "...";
     }
 
     private static int RunVeraPdf(string command, string output)

@@ -90,7 +90,16 @@ public static class SerializedRemediationRules
             json.OptionalObject("pages") is { } pages ? ParsePages(pages) : PageSelector.Every,
             json.OptionalEnum("stage", Stage.Classify),
             json.OptionalBool("override") ?? false,
-            json.OptionalDouble("minConfidence"));
+            json.OptionalDouble("minConfidence"),
+            json.OptionalObject("cardinality") is { } cardinality ? ParseCardinality(cardinality) : null);
+    }
+
+    private static RuleCardinality ParseCardinality(JsonElement json)
+    {
+        var scope = json.OptionalEnum("scope", RuleCardinalityScope.Document);
+        var min = json.OptionalInt("minMatches") ?? 0;
+        var max = json.OptionalInt("maxMatches");
+        return new RuleCardinality(min, max, scope);
     }
 
     private static RemediationAction ParseAction(JsonElement json)

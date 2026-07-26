@@ -88,6 +88,7 @@ public sealed partial class PdfDocument
         {
             var (pagesRef, refs, annotationMap) = BuildPageTree();
             catalog[PdfName.Pages] = pagesRef;
+            RemapAcroForm(catalog, annotationMap);
             pageRefs = refs;
 
             Dictionary<StructureNode, PdfIndirectRef>? structureMap = null;
@@ -156,6 +157,98 @@ public sealed partial class PdfDocument
         dict[PdfName.TypeName] = PdfName.Pages;
         dict[PdfName.Count] = new PdfIntNumber(Pages.Count);
         return (PdfIndirectRef.Create(dict), pageRefs, annotationMap);
+    }
+
+    private static void RemapAcroForm(
+        PdfDictionary catalog,
+        Dictionary<PdfDictionary, PdfDictionary> annotationMap)
+    {
+        var acroFormName = (PdfName)"AcroForm";
+        var originalAcroForm = catalog.Get<PdfDictionary>(acroFormName);
+        var originalFields = originalAcroForm?.Get<PdfArray>(PdfName.Fields);
+        if (originalAcroForm == null || originalFields == null)
+        {
+            return;
+        }
+
+        var clonedAcroForm = originalAcroForm.CloneShallow();
+        var clonedFields = new PdfArray();
+        var fieldMap = new Dictionary<PdfDictionary, PdfIndirectRef>();
+
+        foreach (var fieldObject in originalFields)
+        {
+            if (fieldObject.Resolve() is PdfDictionary field)
+            {
+                clonedFields.Add(CloneField(field, null, annotationMap, fieldMap));
+            }
+            else
+            {
+                clonedFields.Add(fieldObject);
+            }
+        }
+
+        clonedAcroForm[PdfName.Fields] = clonedFields;
+        catalog[acroFormName] = clonedAcroForm.Indirect();
+    }
+
+    private static PdfIndirectRef CloneField(
+        PdfDictionary original,
+        PdfIndirectRef? parent,
+        Dictionary<PdfDictionary, PdfDictionary> annotationMap,
+        Dictionary<PdfDictionary, PdfIndirectRef> fieldMap)
+    {
+        if (annotationMap.TryGetValue(original, out var mappedWidget))
+        {
+            if (parent != null)
+            {
+                mappedWidget[PdfName.Parent] = parent;
+            }
+            else
+            {
+                mappedWidget.Remove(PdfName.Parent);
+            }
+
+            return mappedWidget.Indirect();
+        }
+
+        if (fieldMap.TryGetValue(original, out var existing))
+        {
+            return existing;
+        }
+
+        var cloned = original.CloneShallow();
+        var clonedRef = PdfIndirectRef.Create(cloned);
+        fieldMap[original] = clonedRef;
+
+        if (parent != null)
+        {
+            cloned[PdfName.Parent] = parent;
+        }
+        else
+        {
+            cloned.Remove(PdfName.Parent);
+        }
+
+        var originalKids = original.Get<PdfArray>(PdfName.Kids);
+        if (originalKids != null)
+        {
+            var clonedKids = new PdfArray();
+            foreach (var kidObject in originalKids)
+            {
+                if (kidObject.Resolve() is PdfDictionary kid)
+                {
+                    clonedKids.Add(CloneField(kid, clonedRef, annotationMap, fieldMap));
+                }
+                else
+                {
+                    clonedKids.Add(kidObject);
+                }
+            }
+
+            cloned[PdfName.Kids] = clonedKids;
+        }
+
+        return clonedRef;
     }
 
     private void SaveExistingObjects(WritingContext ctx)

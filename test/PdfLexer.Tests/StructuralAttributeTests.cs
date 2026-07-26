@@ -1,4 +1,5 @@
 using PdfLexer.DOM;
+using PdfLexer.Content;
 using PdfLexer.Writing;
 using System;
 using System.Collections.Generic;
@@ -49,6 +50,30 @@ public class StructuralAttributeTests
         Assert.Equal(PdfName.Layout, attr[PdfName.O]);
         Assert.Equal(new PdfName("Center"), attr[PdfName.TextAlign]);
         Assert.Equal(100.5, (PdfDoubleNumber)attr[PdfName.Width]);
+    }
+
+    [Fact]
+    public void StructuralBuilder_Adds_Layout_BoundingBox()
+    {
+        var builder = new StructuralBuilder();
+        builder.AddFigure(altText: "Chart")
+               .AddLayoutAttributes(width: 64, height: 64)
+               .AddLayoutBoundingBox(new PdfRect<double>(40, 560, 104, 624))
+               .Back();
+
+        var figure = builder.GetRoot().Children[0];
+        var attr = Assert.Single(figure.Attributes);
+        Assert.Equal(PdfName.Layout, attr[PdfName.O]);
+        Assert.Equal(64, (PdfDoubleNumber)attr[PdfName.Width]);
+        Assert.Equal(64, (PdfDoubleNumber)attr[PdfName.Height]);
+
+        var bbox = attr.Get<PdfArray>(PdfName.BBox);
+        Assert.NotNull(bbox);
+        Assert.Equal(4, bbox!.Count);
+        Assert.Equal(40, (decimal)(PdfNumber)bbox[0]);
+        Assert.Equal(560, (decimal)(PdfNumber)bbox[1]);
+        Assert.Equal(104, (decimal)(PdfNumber)bbox[2]);
+        Assert.Equal(624, (decimal)(PdfNumber)bbox[3]);
     }
 
     [Fact]

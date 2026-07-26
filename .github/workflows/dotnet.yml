@@ -16,6 +16,19 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 10.0.x
+      - name: Setup Java for veraPDF
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: veraPDF 1.30.2
+        run: |
+          curl -fsSL https://software.verapdf.org/releases/1.30/verapdf-greenfield-1.30.2-installer.zip -o "$RUNNER_TEMP/verapdf.zip"
+          echo "6cc6341cb1af644044054b81f00a6590a7918abb18f762243de115258bcad838  $RUNNER_TEMP/verapdf.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/verapdf.zip" -d "$RUNNER_TEMP/verapdf-installer"
+          java -jar "$RUNNER_TEMP/verapdf-installer/verapdf-greenfield-1.30.2/verapdf-izpack-installer-1.30.2.jar" .github/verapdf-auto-install.xml
+          /tmp/verapdf/verapdf --version
+          echo "VERAPDF_PATH=/tmp/verapdf/verapdf" >> "$GITHUB_ENV"
       - name: pdfcpu
         run: |
           curl -sL https://github.com/pdfcpu/pdfcpu/releases/download/v0.6.0/pdfcpu_0.6.0_Linux_x86_64.tar.xz | tar xJ

@@ -55,6 +55,22 @@ internal static class RemediationFixtureGenerator
         }
     }
 
+    public static GeneratedRemediationFixture GenerateStrictInvoiceUa1()
+    {
+        lock (GenerateLock)
+        {
+            Directory.CreateDirectory(FixtureRootPath);
+            Directory.CreateDirectory(InputRootPath);
+            var blueprint = new RemediationFixtureBlueprint(
+                "Strict invoice table",
+                "invoice-table-strict",
+                CreateStrictInvoiceInput,
+                CreateInvoiceRuleSet);
+            var input = SaveInput(blueprint);
+            return SaveFixture(blueprint, input, PdfUaProfile.PdfUa1, strictConformance: true);
+        }
+    }
+
     private static GeneratedRemediationInput SaveInput(RemediationFixtureBlueprint blueprint)
     {
         using var document = blueprint.CreateInput();
@@ -68,7 +84,8 @@ internal static class RemediationFixtureGenerator
     private static GeneratedRemediationFixture SaveFixture(
         RemediationFixtureBlueprint blueprint,
         GeneratedRemediationInput input,
-        PdfUaProfile profile)
+        PdfUaProfile profile,
+        bool strictConformance = false)
     {
         using var document = PdfDocument.Open(input.Bytes);
         var configuration = new RemediationSessionConfiguration
@@ -76,7 +93,7 @@ internal static class RemediationFixtureGenerator
             Language = "en-US",
             Title = $"Remediated {blueprint.Name}",
             Profile = profile,
-            StrictConformance = false,
+            StrictConformance = strictConformance,
             DebugWrite = true,
             LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
         };
@@ -106,16 +123,28 @@ internal static class RemediationFixtureGenerator
                     Predicates.Text.Contains("INV-10042"),
                     Granularity.Line),
                 new Rule(
-                    "line-item-row",
-                    RemediationActions.Tag("P"),
+                    "line-item-header-cell",
+                    RemediationActions.Tag("Span"),
+                    Predicates.Anchor.SameRowAs("line-items-header", tolerance: 4),
+                    Granularity.Word),
+                new Rule(
+                    "line-item-cell",
+                    RemediationActions.Tag("Span"),
                     Predicates.Flow.InFlowRegion("line-items"),
-                    Granularity.Line),
+                    Granularity.Word),
+                new Rule(
+                    "line-items-table",
+                    RemediationActions.TableOverFlattenedCells(
+                        ClaimPredicates.FromRule("line-item-header-cell").Or(ClaimPredicates.FromRule("line-item-cell")),
+                        ClaimPredicates.FromRule("line-item-header-cell"),
+                        72, 250, 450, 600),
+                    stage: Stage.Group),
                 BodyParagraphRule()
             },
             new[]
             {
                 RemediationAnchor.TextLabel("invoice-label", "Invoice #"),
-                RemediationAnchor.TableHeader("line-items-header", "Item", "Qty", "Amount"),
+                RemediationAnchor.TextLabel("line-items-header", "Item"),
                 RemediationAnchor.TextLabel("subtotal-label", "Subtotal")
             },
             tolerancedZones: FooterZones(),
@@ -170,20 +199,39 @@ internal static class RemediationFixtureGenerator
     private static TolerancedZone[] FooterZones() =>
         new[] { new TolerancedZone("footer", LayoutCoord.MarginRelative(bottom: 42), Tolerance: 6) };
 
-    private static PdfDocument CreateInvoiceInput()
+    private static PdfDocument CreateInvoiceInput() =>
+        CreateInvoiceInput(Standard14Font.GetHelvetica());
+
+    private static PdfDocument CreateStrictInvoiceInput()
+    {
+        var testDir = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var fontPath = Path.Combine(testDir, "Roboto-Regular.ttf");
+        return CreateInvoiceInput(TrueTypeFont.CreateWritableFont(File.ReadAllBytes(fontPath)));
+    }
+
+    private static PdfDocument CreateInvoiceInput(IWritableFont font)
     {
         var doc = PdfDocument.Create();
         var page = doc.AddPage(PageSize.LETTER);
         using var writer = page.GetWriter();
-        WriteLine(writer, 40, 750, "Invoice 10042", 18);
-        WriteLine(writer, 40, 720, "Invoice #");
-        WriteLine(writer, 150, 720, "INV-10042");
-        WriteLine(writer, 40, 680, "Item Qty Amount");
-        WriteLine(writer, 40, 658, "Widget 2 10.00");
-        WriteLine(writer, 40, 636, "Service 1 90.00");
-        WriteLine(writer, 40, 600, "Subtotal");
-        WriteLine(writer, 150, 600, "100.00");
-        WriteLine(writer, 520, 24, "Page 1");
+        WriteLine(writer, font, 40, 750, "Invoice 10042", 18);
+        WriteLine(writer, font, 40, 720, "Invoice #");
+        WriteLine(writer, font, 150, 720, "INV-10042");
+        writer.Save()
+            .Font(font, 12)
+            .WordSpacing(180)
+            .TextMove(90, 680)
+            .Text("Item Qty Amount")
+            .Restore();
+        WriteLine(writer, font, 90, 658, "Widget");
+        WriteLine(writer, font, 300, 658, "2");
+        WriteLine(writer, font, 500, 658, "10.00");
+        WriteLine(writer, font, 90, 636, "Service");
+        WriteLine(writer, font, 300, 636, "1");
+        WriteLine(writer, font, 500, 636, "90.00");
+        WriteLine(writer, font, 40, 600, "Subtotal");
+        WriteLine(writer, font, 150, 600, "100.00");
+        WriteLine(writer, font, 520, 24, "Page 1");
         return doc;
     }
 
@@ -272,6 +320,17 @@ internal static class RemediationFixtureGenerator
     private static void WriteLine(ContentWriter<double> writer, double x, double y, string text, double size = 12)
     {
         writer.Save().Font(Base14.Helvetica, size).TextMove(x, y).Text(text).Restore();
+    }
+
+    private static void WriteLine(
+        ContentWriter<double> writer,
+        IWritableFont font,
+        double x,
+        double y,
+        string text,
+        double size = 12)
+    {
+        writer.Save().Font(font, size).TextMove(x, y).Text(text).Restore();
     }
 }
 

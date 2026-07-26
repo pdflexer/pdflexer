@@ -114,7 +114,7 @@ public class RemediationDiagnosticTests
         {
             writer.Font(Standard14Font.GetHelvetica(), 12)
                 .TextMove(50, 680).Text("First")
-                .TextMove(50, 700).Text("Second")
+                .TextMove(200, 700).Text("Second")
                 .EndText();
         }
 
@@ -126,7 +126,10 @@ public class RemediationDiagnosticTests
 
         var r1 = new Rule("r1", RemediationActions.Tag("P"), Predicates.Text.Equals("First"), Granularity.Word);
         var r2 = new Rule("r2", RemediationActions.Tag("P"), Predicates.Text.Equals("Second"), Granularity.Word);
-        var swap = new Rule("swap", RemediationActions.ReorderSiblings(ClaimPredicate.Always, SiblingReorderMode.GeometryTopToBottom), stage: Stage.Refine);
+        var swap = new Rule(
+            "swap",
+            RemediationActions.ReorderSiblings(ClaimPredicate.Always, SiblingReorderMode.GeometryLeftToRight),
+            stage: Stage.Refine);
 
         var error = Assert.Throws<InvalidOperationException>(() => session.Commit(r1, r2, swap));
         Assert.Contains("ReadingOrderDrift: Logical reading order drift detected on page 1", error.Message);

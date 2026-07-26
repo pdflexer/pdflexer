@@ -462,6 +462,7 @@ $"""
 
         var (pagesRef, refs, annotationMap) = BuildPageTree();
         catalog[PdfName.Pages] = pagesRef;
+        RemapAcroForm(catalog, annotationMap);
 
         if (_structure != null)
         {
@@ -530,6 +531,14 @@ $"""
                     "Caption");
                 break;
             case "TR":
+                if (node.Parent == null ||
+                    !new[] { "Table", "THead", "TBody", "TFoot" }
+                        .Contains(node.Parent.Type, StringComparer.Ordinal))
+                {
+                    throw new PdfAccessibilityConformanceException(
+                        "TR elements must be children of Table, THead, TBody, or TFoot elements in strict accessibility mode.");
+                }
+
                 ValidateChildTypes(node, "TR", "TH", "TD");
                 break;
             case "TH":

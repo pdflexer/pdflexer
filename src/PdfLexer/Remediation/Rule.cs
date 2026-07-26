@@ -18,7 +18,8 @@ public sealed record Rule
         PageSelector? pages = null,
         Stage stage = Stage.Classify,
         bool @override = false,
-        double? minConfidence = null)
+        double? minConfidence = null,
+        RuleCardinality? cardinality = null)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -38,6 +39,7 @@ public sealed record Rule
         Action = action ?? throw new ArgumentNullException(nameof(action));
         Override = @override;
         MinConfidence = minConfidence;
+        Cardinality = cardinality;
     }
 
     /// <summary>Caller-supplied stable identifier used for provenance, validation, and reports.</summary>
@@ -66,6 +68,9 @@ public sealed record Rule
 
     /// <summary>Optional minimum confidence required for a match to be applied.</summary>
     public double? MinConfidence { get; init; }
+
+    /// <summary>Optional expected count of inputs matched by this rule.</summary>
+    public RuleCardinality? Cardinality { get; init; }
 
     /// <summary>
     /// Validates rule shape that does not require page parsing.

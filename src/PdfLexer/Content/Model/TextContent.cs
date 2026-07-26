@@ -21,6 +21,7 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
     public ContentType Type { get; } = ContentType.Text;
     public ParsedContentId? ParsedItemId { get; set; }
     public StructuredSourceRef? SourceReference { get; set; }
+    internal int SourceCharacterOffset { get; set; }
     public GfxState<T> GraphicsState { get => Segments[0].GraphicsState; }
     public bool CompatibilitySection { get => Segments[0].CompatibilitySection; }
     public required List<TextSegment<T>> Segments { get; set; }
@@ -406,9 +407,9 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
             AddIfNotEmpty(afterSegments, afterSegment);
         }
 
-        before = CreateContent(beforeSegments);
-        selected = CreateContent(selectedSegments);
-        after = CreateContent(afterSegments);
+        before = CreateContent(beforeSegments, SourceCharacterOffset);
+        selected = CreateContent(selectedSegments, SourceCharacterOffset + rangeStart);
+        after = CreateContent(afterSegments, SourceCharacterOffset + rangeEnd);
         return selected != null;
     }
 
@@ -489,7 +490,7 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
         }
     }
 
-    private TextContent<T>? CreateContent(List<TextSegment<T>> segments)
+    private TextContent<T>? CreateContent(List<TextSegment<T>> segments, int sourceCharacterOffset)
     {
         if (segments.Count == 0)
         {
@@ -500,6 +501,7 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
         {
             ParsedItemId = ParsedItemId,
             SourceReference = SourceReference,
+            SourceCharacterOffset = sourceCharacterOffset,
             LineMatrix = segments[0].GraphicsState.Text.TextMatrix,
             Segments = segments
         };
@@ -516,6 +518,7 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
         {
             ParsedItemId = ParsedItemId,
             SourceReference = SourceReference,
+            SourceCharacterOffset = SourceCharacterOffset,
             LineMatrix = LineMatrix,
             Segments = new List<TextSegment<T>> { }
         } : null;
@@ -523,6 +526,7 @@ public class TextContent<T> : IContentGroup<T> where T : struct, IFloatingPoint<
         {
             ParsedItemId = ParsedItemId,
             SourceReference = SourceReference,
+            SourceCharacterOffset = SourceCharacterOffset,
             LineMatrix = LineMatrix,
             Segments = new List<TextSegment<T>> { }
         } : null;

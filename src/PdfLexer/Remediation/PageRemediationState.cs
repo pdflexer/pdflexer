@@ -37,6 +37,8 @@ internal sealed class PageRemediationState
 
     public bool IsDirty { get; private set; }
 
+    public TextOwnershipIndex TextOwnership { get; } = new();
+
     public IReadOnlyDictionary<Stage, IReadOnlyList<RemediationClaim>> ClaimSnapshots => _claimSnapshots;
 
     public IReadOnlyList<string> PlanDiagnostics => _planDiagnostics;

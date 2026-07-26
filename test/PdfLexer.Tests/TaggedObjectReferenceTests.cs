@@ -114,6 +114,20 @@ public class TaggedObjectReferenceTests
         var parentTree = structRoot[PdfName.ParentTree].Resolve().GetAs<PdfDictionary>();
         var figureElem = GetParentTreeValue(parentTree, (int)img1.Dictionary.Get<PdfNumber>(PdfName.StructParent)!);
         Assert.Equal(PdfName.Figure, figureElem.Get<PdfName>(PdfName.S));
+        Assert.False(figureElem.ContainsKey(PdfName.Pg));
+        var objectReferences = figureElem.Get<PdfArray>(PdfName.K);
+        Assert.NotNull(objectReferences);
+        Assert.Equal(2, objectReferences!.Count);
+        Assert.Contains(objectReferences, x =>
+            ReferenceEquals(x.Resolve().GetAs<PdfDictionary>()[PdfName.Pg].Resolve(), saved.Pages[0].NativeObject));
+        Assert.Contains(objectReferences, x =>
+            ReferenceEquals(x.Resolve().GetAs<PdfDictionary>()[PdfName.Pg].Resolve(), saved.Pages[1].NativeObject));
+        Assert.All(objectReferences, x =>
+        {
+            var objr = x.Resolve().GetAs<PdfDictionary>();
+            Assert.Equal(PdfName.OBJR, objr.Get<PdfName>(PdfName.TYPE));
+            Assert.Same(img1, objr[PdfName.Obj].Resolve());
+        });
         Assert.True(saved.Pages[0].NativeObject.ContainsKey(PdfName.StructParents));
         Assert.True(saved.Pages[1].NativeObject.ContainsKey(PdfName.StructParents));
         AccessibilityIntegrityAssert.HasBasicStructureIntegrity(saved);
@@ -154,9 +168,63 @@ public class TaggedObjectReferenceTests
         var refs = GetParentTreeArray(parentTree, index);
 
         Assert.Equal(2, refs.Count);
-        Assert.Equal("First", refs[0].Resolve().GetAs<PdfDictionary>().Get<PdfString>(PdfName.T)!.Value);
-        Assert.Equal("Second", refs[1].Resolve().GetAs<PdfDictionary>().Get<PdfString>(PdfName.T)!.Value);
+        var firstElement = refs[0].Resolve().GetAs<PdfDictionary>();
+        var secondElement = refs[1].Resolve().GetAs<PdfDictionary>();
+        Assert.Equal("First", firstElement.Get<PdfString>(PdfName.T)!.Value);
+        Assert.Equal("Second", secondElement.Get<PdfString>(PdfName.T)!.Value);
+        Assert.Same(saved.Pages[0].NativeObject, firstElement[PdfName.Pg].Resolve());
+        Assert.Same(saved.Pages[0].NativeObject, secondElement[PdfName.Pg].Resolve());
+        AssertMcrPage(firstElement, saved.Pages[0]);
+        AssertMcrPage(secondElement, saved.Pages[0]);
         Assert.True(saved.Pages[0].NativeObject.ContainsKey(PdfName.StructParents));
+    }
+
+    [Fact]
+    public void Tagged_Form_XObject_Reused_On_Two_Pages_Emits_Page_Specific_MCRs()
+    {
+        using var doc = PdfDocument.Create();
+        var page1 = doc.AddPage();
+        var page2 = doc.AddPage();
+        var container = doc.Structure.AddFigure("Repeated Tagged Form", "Alt");
+        var span = container.AddSpan("Repeated content");
+
+        var formWriter = new FormWriter(100, 50);
+        formWriter.BeginMarkedContent(span.GetNode());
+        formWriter.Font(Base14.Helvetica, 12).Text("Repeated");
+        formWriter.EndMarkedContent();
+        var form = formWriter.Complete();
+        container.BindFormXObject(form, page1, page2);
+
+        using (var writer = page1.GetWriter())
+        {
+            writer.Form(form, 10, 10);
+        }
+        using (var writer = page2.GetWriter())
+        {
+            writer.Form(form, 20, 20);
+        }
+
+        using var saved = PdfDocument.Open(doc.Save());
+        var formXObject = (XObjForm)GetFirstXObject(saved.Pages[0], PdfName.Form);
+        var structRoot = saved.Catalog.Get<PdfDictionary>(PdfName.StructTreeRoot)!;
+        var parentTree = structRoot[PdfName.ParentTree].Resolve().GetAs<PdfDictionary>();
+        var refs = GetParentTreeArray(parentTree, (int)formXObject.StructParents!);
+        var spanElement = Assert.Single(refs).Resolve().GetAs<PdfDictionary>();
+        var mcrs = spanElement.Get<PdfArray>(PdfName.K);
+
+        Assert.NotNull(mcrs);
+        Assert.Equal(2, mcrs!.Count);
+        Assert.DoesNotContain(PdfName.Pg, spanElement.Keys);
+        Assert.Contains(mcrs, x => ReferenceEquals(x.Resolve().GetAs<PdfDictionary>()[PdfName.Pg].Resolve(), saved.Pages[0].NativeObject));
+        Assert.Contains(mcrs, x => ReferenceEquals(x.Resolve().GetAs<PdfDictionary>()[PdfName.Pg].Resolve(), saved.Pages[1].NativeObject));
+        Assert.All(mcrs, x => Assert.Equal(PdfName.MCR, x.Resolve().GetAs<PdfDictionary>().Get<PdfName>(PdfName.TYPE)));
+    }
+
+    private static void AssertMcrPage(PdfDictionary structureElement, PdfPage page)
+    {
+        var mcr = structureElement[PdfName.K].Resolve().GetAs<PdfDictionary>();
+        Assert.Equal(PdfName.MCR, mcr.Get<PdfName>(PdfName.TYPE));
+        Assert.Same(page.NativeObject, mcr[PdfName.Pg].Resolve());
     }
 
     private static PdfDictionary GetParentTreeValue(PdfDictionary parentTree, int index)

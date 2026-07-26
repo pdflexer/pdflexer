@@ -222,11 +222,13 @@ public class StructuralBuilder : IStructureContext
 
     public IStructureContext AddLayoutAttributes(string? textAlign = null, double? width = null, double? height = null)
     {
-        var attr = new PdfDictionary { [PdfName.O] = PdfName.Layout };
-        if (textAlign != null) attr[PdfName.TextAlign] = (PdfName)textAlign;
-        if (width.HasValue) attr[PdfName.Width] = new PdfDoubleNumber(width.Value);
-        if (height.HasValue) attr[PdfName.Height] = new PdfDoubleNumber(height.Value);
-        if (attr.Count > 1) _root.Attributes.Add(attr);
+        ApplyLayoutAttributes(_root, textAlign, width, height, null);
+        return this;
+    }
+
+    public IStructureContext AddLayoutBoundingBox(PdfRect<double> boundingBox)
+    {
+        ApplyLayoutAttributes(_root, null, null, null, boundingBox);
         return this;
     }
 
@@ -566,6 +568,34 @@ public class StructuralBuilder : IStructureContext
             oldParent.Root.AttachSubtree(newParent);
         }
     }
+
+    internal static void ApplyLayoutAttributes(
+        StructureNode node,
+        string? textAlign,
+        double? width,
+        double? height,
+        PdfRect<double>? boundingBox)
+    {
+        if (textAlign == null && !width.HasValue && !height.HasValue && boundingBox == null)
+        {
+            return;
+        }
+
+        var attr = node.Attributes.FirstOrDefault(x => x.Get<PdfName>(PdfName.O) == PdfName.Layout);
+        if (attr == null)
+        {
+            attr = new PdfDictionary { [PdfName.O] = PdfName.Layout };
+            node.Attributes.Add(attr);
+        }
+
+        if (textAlign != null) attr[PdfName.TextAlign] = (PdfName)textAlign;
+        if (width.HasValue) attr[PdfName.Width] = new PdfDoubleNumber(width.Value);
+        if (height.HasValue) attr[PdfName.Height] = new PdfDoubleNumber(height.Value);
+        if (boundingBox != null)
+        {
+            attr[PdfName.BBox] = PdfRectangle.FromContentModel(boundingBox).NativeObject;
+        }
+    }
 }
 
 public interface IStructureContext
@@ -617,6 +647,7 @@ public interface IStructureContext
     IStructureContext BindAnnotation(PdfDictionary annotation, PdfPage page);
     IStructureContext AddAnnot(PdfPage page, PdfDictionary annotation, string? title = null, string? altText = null);
     IStructureContext AddLayoutAttributes(string? textAlign = null, double? width = null, double? height = null);
+    IStructureContext AddLayoutBoundingBox(PdfRect<double> boundingBox);
     IStructureContext Alt(string? altText);
     IStructureContext ActualText(string? actualText);
     IStructureContext Expansion(string? expansion);
@@ -839,11 +870,13 @@ public class StructuralContext : IStructureContext
 
     public IStructureContext AddLayoutAttributes(string? textAlign = null, double? width = null, double? height = null)
     {
-        var attr = new PdfDictionary { [PdfName.O] = PdfName.Layout };
-        if (textAlign != null) attr[PdfName.TextAlign] = (PdfName)textAlign;
-        if (width.HasValue) attr[PdfName.Width] = new PdfDoubleNumber(width.Value);
-        if (height.HasValue) attr[PdfName.Height] = new PdfDoubleNumber(height.Value);
-        if (attr.Count > 1) _node.Attributes.Add(attr);
+        StructuralBuilder.ApplyLayoutAttributes(_node, textAlign, width, height, null);
+        return this;
+    }
+
+    public IStructureContext AddLayoutBoundingBox(PdfRect<double> boundingBox)
+    {
+        StructuralBuilder.ApplyLayoutAttributes(_node, null, null, null, boundingBox);
         return this;
     }
 

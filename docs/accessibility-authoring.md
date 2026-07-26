@@ -118,19 +118,26 @@ doc.SaveTo("accessible_output.pdf");
 
 ## Detailed Structural Builder Surface
 
-`PdfDocument.Structure` returns a `StructuralBuilder`. Its `Add*` methods return an `IStructureContext` positioned **on the node just created**, so chained calls nest one level deeper each time. Use `.Back()` to move up one level, and `.GetNode()` to get the underlying `StructureNode` for content binding.
+`PdfDocument.Structure` returns a `StructuralBuilder`. Prefer callback overloads for nested trees: the callback is
+given the newly created child and sibling relationships follow lexical nesting. Scoped calls return that child,
+not its parent. Capture the return value in a local when content, figures, links, or form bindings need the node
+later. `Configure(...)` applies leaf metadata or content and returns the original context.
 
-Because `.Back()` is positional, long chains are easy to miscount. Capturing each context in a local variable — as the examples below do — is the readable and safe form.
+`.Back()` remains available and unchanged for compatibility, but positional chains are easy to miscount.
 
 ### 1. Document & Block Structure
 
 ```csharp
-var part = doc.Structure.AddPart("Part I");
-var section = part.AddSection("Section 1");
-var div = section.AddDiv();
-var quote = section.AddBlockQuote();
-var heading = section.AddHeader(1, "Main Header"); // H1..H6
-var paragraph = section.AddParagraph("Paragraph Text");
+var part = doc.Structure.AddPart("Part I", part =>
+{
+    part.AddSection("Section 1", section =>
+    {
+        section.AddDiv(div => { });
+        section.AddBlockQuote(quote => { });
+        section.AddParagraph("Paragraph Text", paragraph =>
+            paragraph.ActualText("Accessible paragraph text"));
+    });
+});
 ```
 
 `AddHeader(level, ...)` builds the tag name by concatenation, so `AddHeader(7, ...)` emits `/H7` — not a standard type under PDF/UA-1, and not automatically role-mapped. Stay within `H1`–`H6`, and do not skip levels (`H1` → `H3` is a conformance failure that the library does not currently detect).
@@ -165,23 +172,24 @@ cross-tree targets immediately. String IDs remain supported; unresolved string I
 recorded in `PdfDocument.Context.ParsingWarnings` otherwise.
 
 ```csharp
-var table = doc.Structure.AddTable("Quarterly Revenue")
-    .TableSummary("Revenue by quarter.");
-
-var head = table.AddTableHead();
-var headRow = head.AddRow();
-
-var quarterHeader = headRow.AddHeaderCell()
-    .ElementId("th-quarter")                     // required for TableHeaders(...) to resolve
-    .TableScope(StructureScope.Column);
-var revenueHeader = headRow.AddHeaderCell()
-    .ElementId("th-revenue")
-    .TableScope(StructureScope.Column);
-
-var body = table.AddTableBody();
-var bodyRow = body.AddRow();
-var quarterCell = bodyRow.AddDataCell().TableHeaders(quarterHeader);
-var revenueCell = bodyRow.AddDataCell().TableHeaders(revenueHeader);
+IStructureContext quarterHeader = null!;
+IStructureContext revenueHeader = null!;
+var table = doc.Structure.AddTable("Quarterly Revenue", table =>
+{
+    table.TableSummary("Revenue by quarter.");
+    table.AddTableHead(head => head.AddRow(row =>
+    {
+        quarterHeader = row.AddHeaderCell(cell =>
+            cell.ElementId("th-quarter").TableScope(StructureScope.Column));
+        revenueHeader = row.AddHeaderCell(cell =>
+            cell.ElementId("th-revenue").TableScope(StructureScope.Column));
+    }));
+    table.AddTableBody(body => body.AddRow(row =>
+    {
+        row.AddDataCell(cell => cell.TableHeaders(quarterHeader));
+        row.AddDataCell(cell => cell.TableHeaders(revenueHeader));
+    }));
+});
 ```
 
 `AddHeaderCell` / `AddDataCell` accept `rowSpan` and `colSpan`; values greater than 1 emit `/RowSpan` and `/ColSpan`. The scope enum is `StructureScope` (`Row`, `Column`, `Both`).
@@ -191,15 +199,19 @@ Strict mode validates table *nesting* (`TR` under `Table`/`THead`/`TBody`/`TFoot
 ### 4. Accessible Lists
 
 ```csharp
-var list = doc.Structure.AddList("Features List")
-    .ListNumbering(StructureListNumbering.Decimal); // Decimal, Disc, Square, LowerRoman, ...
-
-var item = list.AddListItem();
-var label = item.AddLabel();            // e.g. "1."
-var itemBody = label.Back().AddListBody();
+var list = doc.Structure.AddList("Features List", list =>
+{
+    list.ListNumbering(StructureListNumbering.Decimal);
+    list.AddListItem(item =>
+    {
+        item.AddLabel("1.", label => { });
+        item.AddListBody("First feature", body => { });
+    });
+});
 ```
 
-The numbering enum is `StructureListNumbering`. Note that `AddLabel()` returns the `Lbl` context, so `AddListBody()` needs a `.Back()` to attach as a sibling under the same `LI` rather than a child of `Lbl`.
+The numbering enum is `StructureListNumbering`. Both label and body are added to the item context, so they are
+siblings without a positional `.Back()`.
 
 ### 5. Tagged Links & Object References (`OBJR`)
 
@@ -223,7 +235,12 @@ var external = section.AddLinkAction(
         [PdfName.S] = PdfName.URI,
         [(PdfName)"URI"] = new PdfString("https://example.com/accessibility")
     },
-    "Read the accessibility statement");
+    "Read the accessibility statement")
+    .Configure(link => link.ActualText("Accessibility statement"));
+
+// Configure is useful when a leaf needs several metadata or binding calls.
+section.AddFigure("Audit chart", "Bar chart of audit results")
+    .Configure(figure => figure.BindImage(chartImage, page));
 ```
 
 Every link annotation needs a non-empty `/Contents`; strict mode enforces this. Under `PdfUaProfile.PdfUa2`, links whose destination is inside the current document must use the `StructureNode`-targeted overload above, or validation fails.
@@ -235,7 +252,7 @@ Remember to also write the visible link text inside `BeginMarkedContent(link.Get
 ```csharp
 var section = doc.Structure.AddSection("Registration");
 var label = section.AddParagraph("Email address");
-var formNode = label.Back().AddFormField(
+var formNode = section.AddFormField(
     document: doc,
     page: page,
     rect: new PdfRect<double>(140, 650, 340, 670),
@@ -243,7 +260,8 @@ var formNode = label.Back().AddFormField(
     appearance: new FormFieldAppearanceOptions { Font = embeddedFont, FontSize = 11 },
     title: "Email Address",
     tooltip: "Enter your email address",
-    print: true);
+    print: true)
+    .Configure(form => form.Lang("en-US"));
 ```
 
 `FormFieldAppearanceOptions.Font` is required and must be embedded in strict mode. Text, checkbox, radio-group,

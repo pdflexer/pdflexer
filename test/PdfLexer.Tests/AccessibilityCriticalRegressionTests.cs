@@ -207,12 +207,15 @@ public class AccessibilityCriticalRegressionTests
     [Fact]
     public void StructuralSerializer_Rejects_Duplicate_Form_MCIDs()
     {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
         var form = new XObjForm(100, 50);
         var root = new StructureNode { Type = "Document" };
         var first = new StructureNode { Type = "Span" };
         var second = new StructureNode { Type = "Span" };
         root.Children.Add(first);
         root.Children.Add(second);
+        root.XObjectReferences.Add(new StructureXObjectReference(form.NativeObject, 0, page));
         first.XObjectContentItems.Add((form, 0));
         second.XObjectContentItems.Add((form, 0));
 
@@ -220,6 +223,19 @@ public class AccessibilityCriticalRegressionTests
             () => new StructuralSerializer().ConvertToPdf(root));
 
         Assert.Contains("Form XObject content MCID 0", error.Message);
+    }
+
+    [Fact]
+    public void StructuralSerializer_Rejects_Tagged_Form_Content_Without_Placement_Page()
+    {
+        var form = new XObjForm(100, 50);
+        var root = new StructureNode { Type = "Document" };
+        root.XObjectContentItems.Add((form, 0));
+
+        var error = Assert.Throws<PdfAccessibilityConformanceException>(
+            () => new StructuralSerializer().ConvertToPdf(root));
+
+        Assert.Contains("no bound placement page", error.Message);
     }
 
     private static PdfPage CreatePageWithExistingMcids(PdfDocument doc)

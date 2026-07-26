@@ -123,16 +123,7 @@ public class AccessibilityComplianceTests
 
         if (fixture.Coverage.HasFlag(AccessibilityFixtureCoverage.Tables))
         {
-            var tableElements = AccessibilityIntegrityAssert.GetStructureElements(document)
-                .Where(x =>
-                    x.Get<PdfName>(PdfName.S) == PdfName.Table ||
-                    x.Get<PdfName>(PdfName.S) == (PdfName)"TH" ||
-                    x.Get<PdfName>(PdfName.S) == (PdfName)"TD")
-                .ToList();
-            Assert.NotEmpty(tableElements);
-            var tableAttributes = tableElements.SelectMany(GetAttributes).Where(x => x.Get<PdfName>(PdfName.O) == PdfName.Table).ToList();
-            Assert.Contains(tableAttributes, x => x.ContainsKey(PdfName.Summary));
-            Assert.Contains(tableAttributes, x => x.ContainsKey(PdfName.Scope) || x.ContainsKey(PdfName.Headers));
+            AssertPdf6CompatibleTable(document);
         }
 
         if (fixture.Coverage.HasFlag(AccessibilityFixtureCoverage.Links))
@@ -150,9 +141,23 @@ public class AccessibilityComplianceTests
 
         if (fixture.Coverage.HasFlag(AccessibilityFixtureCoverage.Figures))
         {
-            Assert.Contains(
-                AccessibilityIntegrityAssert.GetStructureElements(document),
-                x => x.Get<PdfName>(PdfName.S) == PdfName.Figure && !string.IsNullOrWhiteSpace(x.Get<PdfString>(PdfName.Alt)?.Value));
+            var figures = AccessibilityIntegrityAssert.GetStructureElements(document)
+                .Where(x => x.Get<PdfName>(PdfName.S) == PdfName.Figure)
+                .ToList();
+            Assert.Contains(figures, x => !string.IsNullOrWhiteSpace(x.Get<PdfString>(PdfName.Alt)?.Value));
+
+            foreach (var figure in figures.Where(x => x.ContainsKey(PdfName.Pg)))
+            {
+                var layout = Assert.Single(
+                    GetAttributes(figure),
+                    x => x.Get<PdfName>(PdfName.O) == PdfName.Layout);
+                var bbox = layout.Get<PdfArray>(PdfName.BBox);
+                Assert.NotNull(bbox);
+                Assert.Equal(4, bbox!.Count);
+                Assert.All(bbox, x => Assert.IsAssignableFrom<PdfNumber>(x.Resolve()));
+                Assert.True((decimal)(PdfNumber)bbox[0] < (decimal)(PdfNumber)bbox[2]);
+                Assert.True((decimal)(PdfNumber)bbox[1] < (decimal)(PdfNumber)bbox[3]);
+            }
         }
 
         if (fixture.Coverage.HasFlag(AccessibilityFixtureCoverage.Forms))
@@ -165,6 +170,8 @@ public class AccessibilityComplianceTests
                 x =>
                     x.ContainsKey(PdfName.StructParent) &&
                     x[PdfName.Parent].Resolve().GetAs<PdfDictionary>().Get<PdfString>(PdfName.TU) != null);
+            AssertCoherentAcroFormGraph(document);
+            AssertRadioOptionMapping(document);
         }
 
         if (fixture.Coverage.HasFlag(AccessibilityFixtureCoverage.Navigation))
@@ -254,6 +261,199 @@ public class AccessibilityComplianceTests
                 yield return item.Resolve().GetAs<PdfDictionary>();
             }
         }
+    }
+
+    private static void AssertPdf6CompatibleTable(PdfDocument document)
+    {
+        var table = Assert.Single(
+            AccessibilityIntegrityAssert.GetStructureElements(document),
+            x => x.Get<PdfName>(PdfName.S) == PdfName.Table);
+        var tableAttributes = GetAttributes(table)
+            .Where(x => x.Get<PdfName>(PdfName.O) == PdfName.Table)
+            .ToList();
+        Assert.Contains(tableAttributes, x => x.ContainsKey(PdfName.Summary));
+
+        var rows = GetStructureChildren(table);
+        Assert.Equal(3, rows.Count);
+        Assert.All(rows, x => Assert.Equal((PdfName)"TR", x.Get<PdfName>(PdfName.S)));
+
+        var headerCells = GetStructureChildren(rows[0]);
+        Assert.Equal(2, headerCells.Count);
+        Assert.All(headerCells, x => Assert.Equal((PdfName)"TH", x.Get<PdfName>(PdfName.S)));
+        Assert.Equal("report-region", headerCells[0].Get<PdfString>(PdfName.ID)?.Value);
+        Assert.Equal("report-status", headerCells[1].Get<PdfString>(PdfName.ID)?.Value);
+        Assert.All(headerCells, cell =>
+        {
+            var tableAttribute = Assert.Single(
+                GetAttributes(cell),
+                x => x.Get<PdfName>(PdfName.O) == PdfName.Table);
+            Assert.Equal(PdfName.Column, tableAttribute.Get<PdfName>(PdfName.Scope));
+        });
+
+        var expectedHeaders = new[] { "report-region", "report-status" };
+        foreach (var row in rows.Skip(1))
+        {
+            var cells = GetStructureChildren(row);
+            Assert.Equal(2, cells.Count);
+            Assert.All(cells, x => Assert.Equal((PdfName)"TD", x.Get<PdfName>(PdfName.S)));
+
+            for (var index = 0; index < cells.Count; index++)
+            {
+                var tableAttribute = Assert.Single(
+                    GetAttributes(cells[index]),
+                    x => x.Get<PdfName>(PdfName.O) == PdfName.Table);
+                var headers = tableAttribute.Get<PdfArray>(PdfName.Headers);
+                var header = Assert.Single(headers!);
+                Assert.Equal(PdfObjectType.StringObj, header.Resolve().Type);
+                Assert.Equal(expectedHeaders[index], header.Resolve().GetAs<PdfString>().Value);
+            }
+        }
+    }
+
+    private static IReadOnlyList<PdfDictionary> GetStructureChildren(PdfDictionary element)
+    {
+        if (!element.TryGetValue(PdfName.K, out var kids) || kids == null)
+        {
+            return Array.Empty<PdfDictionary>();
+        }
+
+        var resolved = kids.Resolve();
+        if (resolved.Type == PdfObjectType.DictionaryObj)
+        {
+            var child = resolved.GetAs<PdfDictionary>();
+            return child.Get<PdfName>(PdfName.TYPE) == PdfName.StructElem
+                ? new[] { child }
+                : Array.Empty<PdfDictionary>();
+        }
+
+        if (resolved.Type != PdfObjectType.ArrayObj)
+        {
+            return Array.Empty<PdfDictionary>();
+        }
+
+        return resolved.GetAs<PdfArray>()
+            .Select(x => x.Resolve().GetAsOrNull<PdfDictionary>())
+            .Where(x => x?.Get<PdfName>(PdfName.TYPE) == PdfName.StructElem)
+            .Select(x => x!)
+            .ToArray();
+    }
+
+    private static void AssertCoherentAcroFormGraph(PdfDocument document)
+    {
+        var activeWidgets = new Dictionary<PdfDictionary, PdfPage>();
+        foreach (var page in document.Pages)
+        {
+            var annotations = page.NativeObject.Get<PdfArray>(PdfName.Annots);
+            if (annotations == null)
+            {
+                continue;
+            }
+
+            foreach (var annotationObject in annotations)
+            {
+                var annotation = annotationObject.Resolve().GetAsOrNull<PdfDictionary>();
+                if (annotation?.Get<PdfName>(PdfName.Subtype) == PdfName.Widget)
+                {
+                    activeWidgets[annotation] = page;
+                }
+            }
+        }
+
+        var acroForm = document.Catalog.Get<PdfDictionary>((PdfName)"AcroForm");
+        var fields = acroForm?.Get<PdfArray>(PdfName.Fields);
+        Assert.NotNull(fields);
+
+        var visitedWidgets = new HashSet<PdfDictionary>();
+        foreach (var fieldObject in fields!)
+        {
+            AssertField(fieldObject.Resolve().GetAs<PdfDictionary>(), null);
+        }
+
+        Assert.Equal(activeWidgets.Count, visitedWidgets.Count);
+
+        void AssertField(PdfDictionary field, PdfDictionary expectedParent)
+        {
+            if (expectedParent != null)
+            {
+                Assert.Same(expectedParent, field[PdfName.Parent].Resolve());
+            }
+
+            var kids = field.Get<PdfArray>(PdfName.Kids);
+            if (kids == null)
+            {
+                Assert.Equal(PdfName.Widget, field.Get<PdfName>(PdfName.Subtype));
+                AssertWidget(field, expectedParent);
+                return;
+            }
+
+            foreach (var kidObject in kids)
+            {
+                var kid = kidObject.Resolve().GetAs<PdfDictionary>();
+                if (kid.Get<PdfName>(PdfName.Subtype) == PdfName.Widget)
+                {
+                    AssertWidget(kid, field);
+                }
+                else
+                {
+                    AssertField(kid, field);
+                }
+            }
+        }
+
+        void AssertWidget(PdfDictionary widget, PdfDictionary expectedField)
+        {
+            Assert.True(activeWidgets.TryGetValue(widget, out var page), "Field /Kids references a widget outside the active page tree.");
+            Assert.Same(page!.NativeObject, widget[PdfName.P].Resolve());
+            if (expectedField != null)
+            {
+                Assert.Same(expectedField, widget[PdfName.Parent].Resolve());
+            }
+            Assert.True(visitedWidgets.Add(widget), "A widget is referenced by more than one field.");
+            Assert.Contains(
+                AccessibilityIntegrityAssert.GetStructureElements(document),
+                element => ContainsObjectReference(element, widget));
+        }
+    }
+
+    private static void AssertRadioOptionMapping(PdfDocument document)
+    {
+        var acroForm = document.Catalog.Get<PdfDictionary>((PdfName)"AcroForm");
+        var fields = acroForm?.Get<PdfArray>(PdfName.Fields);
+        Assert.NotNull(fields);
+
+        var radio = Assert.Single(
+            fields!.Select(x => x.Resolve().GetAs<PdfDictionary>()),
+            x => x.Get<PdfString>(PdfName.T)?.Value == "contact_method");
+        var options = radio.Get<PdfArray>((PdfName)"Opt");
+        var kids = radio.Get<PdfArray>(PdfName.Kids);
+        Assert.NotNull(options);
+        Assert.NotNull(kids);
+        Assert.Equal(kids!.Count, options!.Count);
+        Assert.Equal(
+            new[] { "Email", "Phone" },
+            options.Select(x => x.Resolve().GetAs<PdfString>().Value));
+    }
+
+    private static bool ContainsObjectReference(PdfDictionary structureElement, PdfDictionary widget)
+    {
+        if (!structureElement.TryGetValue(PdfName.K, out var kids) || kids == null)
+        {
+            return false;
+        }
+
+        var resolved = kids.Resolve();
+        if (resolved.Type == PdfObjectType.DictionaryObj)
+        {
+            var kid = resolved.GetAs<PdfDictionary>();
+            return kid.Get<PdfName>(PdfName.TYPE) == PdfName.OBJR &&
+                   ReferenceEquals(kid[PdfName.Obj].Resolve(), widget);
+        }
+
+        return resolved.Type == PdfObjectType.ArrayObj &&
+               resolved.GetAs<PdfArray>().Any(x =>
+                   x.Resolve().GetAsOrNull<PdfDictionary>() is { } kid &&
+                   kid.Get<PdfName>(PdfName.TYPE) == PdfName.OBJR &&
+                   ReferenceEquals(kid[PdfName.Obj].Resolve(), widget));
     }
 
     private static bool HasFontWithToUnicode(PdfDocument document)

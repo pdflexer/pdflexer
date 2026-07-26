@@ -33,6 +33,7 @@ internal class StructuralSerializer
         var nodeMap = items.ToDictionary(x => x.Node, x => x.Ref);
         var map = items.ToDictionary(x => x.Node, x => (x.Dict, x.Ref));
         var namespaceMap = CreateNamespaceMap(structureRoot);
+        var formPages = BuildFormPageMap(items);
 
         foreach (var (node, dict, ir) in items)
         {
@@ -120,7 +121,16 @@ internal class StructuralSerializer
                 }
             }
 
-            var pages = node.ContentItems.Select(x => x.Page).Distinct().ToList();
+            var pages = node.ContentItems
+                .Select(x => x.Page)
+                .Concat(node.ObjectReferences.SelectMany(x => x.Pages))
+                .Concat(node.XObjectReferences.SelectMany(x => x.Pages))
+                .Concat(node.XObjectContentItems.SelectMany(x =>
+                    formPages.TryGetValue(x.Form.NativeObject, out var placementPages)
+                        ? placementPages
+                        : Enumerable.Empty<PdfPage>()))
+                .Distinct()
+                .ToList();
             if (pages.Count == 1)
             {
                 dict[PdfName.Pg] = GetPageRef(pages[0]);
@@ -143,17 +153,39 @@ internal class StructuralSerializer
 
             foreach (var item in node.XObjectContentItems)
             {
-                var mcr = new PdfDictionary();
-                mcr[PdfName.TYPE] = PdfName.MCR;
-                mcr[PdfName.Stm] = item.Form.NativeObject.Indirect();
-                mcr[PdfName.MCID] = new PdfIntNumber(item.MCID);
-                kids.Add(mcr);
+                if (!formPages.TryGetValue(item.Form.NativeObject, out var placementPages) ||
+                    placementPages.Count == 0)
+                {
+                    throw new PdfAccessibilityConformanceException(
+                        $"Tagged form XObject content MCID {item.MCID} has no bound placement page. " +
+                        "Call BindFormXObject(form, page) before saving.");
+                }
+
+                foreach (var page in placementPages)
+                {
+                    var mcr = new PdfDictionary();
+                    mcr[PdfName.TYPE] = PdfName.MCR;
+                    mcr[PdfName.Pg] = GetPageRef(page);
+                    mcr[PdfName.Stm] = item.Form.NativeObject.Indirect();
+                    mcr[PdfName.MCID] = new PdfIntNumber(item.MCID);
+                    kids.Add(mcr);
+                }
             }
 
             foreach (var objRef in node.ObjectReferences)
             {
                 ApplyAnnotationAccessibility(objRef, nodeMap);
-                kids.Add(BuildObjectReference(objRef));
+                var placementPages = objRef.Pages.Distinct().ToList();
+                if (placementPages.Count == 0)
+                {
+                    throw new PdfAccessibilityConformanceException(
+                        "A structured object reference has no bound placement page.");
+                }
+
+                foreach (var page in placementPages)
+                {
+                    kids.Add(BuildObjectReference(objRef, page));
+                }
             }
 
             if (kids.Count == 1)
@@ -225,6 +257,35 @@ internal class StructuralSerializer
         return (root, nodeMap);
     }
 
+    private static Dictionary<PdfStream, List<PdfPage>> BuildFormPageMap(
+        List<(StructureNode Node, PdfDictionary Dict, PdfIndirectRef Ref)> items)
+    {
+        var formPages = new Dictionary<PdfStream, List<PdfPage>>();
+        foreach (var reference in items.SelectMany(x => x.Node.XObjectReferences))
+        {
+            if (reference.XObject.Resolve() is not PdfStream form)
+            {
+                continue;
+            }
+
+            if (!formPages.TryGetValue(form, out var pages))
+            {
+                pages = new List<PdfPage>();
+                formPages[form] = pages;
+            }
+
+            foreach (var page in reference.Pages)
+            {
+                if (!pages.Contains(page))
+                {
+                    pages.Add(page);
+                }
+            }
+        }
+
+        return formPages;
+    }
+
     private static List<PdfDictionary> BuildAttributes(
         StructureNode node,
         Dictionary<StructureNode, (PdfDictionary Dict, PdfIndirectRef Ref)> map,
@@ -254,9 +315,9 @@ internal class StructuralSerializer
                 var headers = new PdfArray();
                 foreach (var headerId in node.Headers)
                 {
-                    if (structureRoot.IdMap.TryGetValue(headerId, out var headerNode) && map.TryGetValue(headerNode, out var headerRef))
+                    if (structureRoot.IdMap.ContainsKey(headerId))
                     {
-                        headers.Add(headerRef.Ref);
+                        headers.Add(PdfString.CreateTextString(headerId));
                     }
                 }
 
@@ -614,20 +675,14 @@ internal class StructuralSerializer
         }
     }
 
-    private PdfDictionary BuildObjectReference(StructureObjectReference objRef)
+    private PdfDictionary BuildObjectReference(StructureObjectReference objRef, PdfPage page)
     {
-        var objr = new PdfDictionary
+        return new PdfDictionary
         {
             [PdfName.TYPE] = PdfName.OBJR,
-            [PdfName.Obj] = GetSerializedObjectRef(objRef.Object)
+            [PdfName.Obj] = GetSerializedObjectRef(objRef.Object),
+            [PdfName.Pg] = GetPageRef(page)
         };
-
-        if (objRef.Pages.Count == 1)
-        {
-            objr[PdfName.Pg] = GetPageRef(objRef.Pages[0]);
-        }
-
-        return objr;
     }
 
     private void ApplyAnnotationAccessibility(

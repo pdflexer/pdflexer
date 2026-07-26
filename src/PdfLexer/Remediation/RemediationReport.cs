@@ -17,7 +17,9 @@ public sealed class RemediationReport
         IReadOnlyList<RemediationClaim>? claims = null,
         IReadOnlyList<RemediationClaim>? skippedClaims = null,
         IReadOnlyList<string>? diagnostics = null,
-        IReadOnlyList<DiagnosticSuppression>? suppressions = null)
+        IReadOnlyList<DiagnosticSuppression>? suppressions = null,
+        IReadOnlyList<RuleEvaluationSummary>? ruleEvaluations = null,
+        IReadOnlyList<RemediationAutoArtifactOutcome>? autoArtifacts = null)
     {
         Committed = committed;
         AppliedAccessibilitySetup = appliedAccessibilitySetup;
@@ -25,6 +27,8 @@ public sealed class RemediationReport
         SkippedClaims = skippedClaims ?? Array.Empty<RemediationClaim>();
         Diagnostics = diagnostics ?? Array.Empty<string>();
         Suppressions = suppressions ?? Array.Empty<DiagnosticSuppression>();
+        RuleEvaluations = ruleEvaluations ?? Array.Empty<RuleEvaluationSummary>();
+        AutoArtifacts = autoArtifacts ?? Array.Empty<RemediationAutoArtifactOutcome>();
         
         Outcomes = Claims.Select(CreateOutcome).ToList();
         SkippedOutcomes = SkippedClaims.Select(CreateOutcome).ToList();
@@ -47,6 +51,12 @@ public sealed class RemediationReport
 
     /// <summary>Diagnostic suppressions configured on the session.</summary>
     public IReadOnlyList<DiagnosticSuppression> Suppressions { get; }
+
+    /// <summary>Aggregate and page-level counters for every composed rule, including rules with no matches.</summary>
+    public IReadOnlyList<RuleEvaluationSummary> RuleEvaluations { get; }
+
+    /// <summary>Text content planned for or handled by the automatic artifact policy.</summary>
+    public IReadOnlyList<RemediationAutoArtifactOutcome> AutoArtifacts { get; }
 
     /// <summary>Public outcome summaries for applied claims.</summary>
     public IReadOnlyList<RemediationClaimOutcome> Outcomes { get; }
