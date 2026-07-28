@@ -77,9 +77,9 @@ public sealed partial class PdfDocument
         //     }
         // }
 
-        var cat = Trailer.GetOptionalValue<PdfDictionary>(PdfName.Root);
+        var cat = Trailer.GetOptional<PdfDictionary>(PdfName.Root);
         if (cat == null ||
-            (cat.GetOptionalValue<PdfName>(PdfName.TypeName) != PdfName.Catalog && !cat.ContainsKey(PdfName.Pages)))
+            (cat.GetOptional<PdfName>(PdfName.TypeName) != PdfName.Catalog && !cat.ContainsKey(PdfName.Pages)))
         {
 
             var matched = StructuralRepairs.RepairFindLastMatching(ctx, MainDocSource.GetStream(ctx, 0), PdfTokenType.DictionaryStart, x =>
@@ -89,7 +89,7 @@ public sealed partial class PdfDocument
                     return false;
                 }
                 var dict = x.GetAs<PdfDictionary>();
-                if (dict.GetOptionalValue<PdfName>(PdfName.TypeName)?.Value == PdfName.Catalog.Value)
+                if (dict.GetOptional<PdfName>(PdfName.TypeName)?.Value == PdfName.Catalog.Value)
                 {
                     return true;
                 }
@@ -119,7 +119,7 @@ public sealed partial class PdfDocument
             }
         }
 
-        var pagesRef = cat?.GetOptionalValue<PdfDictionary>(PdfName.Pages);
+        var pagesRef = cat?.GetOptional<PdfDictionary>(PdfName.Pages);
         Pages = new();
         if (ctx.Options.LoadPageTree && pagesRef != null)
         {

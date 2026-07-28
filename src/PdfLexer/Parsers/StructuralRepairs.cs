@@ -150,7 +150,7 @@ internal static class StructuralRepairs
                 var after = scanner.Peek();
                 if (after == PdfTokenType.StartStream)
                 {
-                    var l = dict.GetOptionalValue<PdfNumber>(PdfName.Length);
+                    var l = dict.GetOptional<PdfNumber>(PdfName.Length);
                     if (l == null)
                     {
                         if (scanner.ScanToToken(IndirectSequences.endstream))
@@ -371,7 +371,7 @@ internal static class StructuralRepairs
             if (scanner.Peek() == PdfTokenType.DictionaryStart)
             {
                 var dict = scanner.GetCurrentObject().GetAs<PdfDictionary>();
-                var type = dict.GetOptionalValue<PdfName>(PdfName.TypeName);
+                var type = dict.GetOptional<PdfName>(PdfName.TypeName);
                 if (type == null)
                 {
                     return;
@@ -395,17 +395,17 @@ internal static class StructuralRepairs
                 // this object is an object stream, need to grab xref entries for it
                 // TODO low memory mode
 
-                var length = dict.GetRequiredValue<PdfNumber>(PdfName.Length);
+                var length = dict.GetRequired<PdfNumber>(PdfName.Length);
                 scanner.SkipCurrent();
                 var sequence = scanner.Read(length);
                 PdfStreamContents contents = new PdfByteArrayStreamContents(sequence.ToArray());
-                contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
-                contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+                contents.Filters = dict.GetOptional<IPdfObject>(PdfName.Filter);
+                contents.DecodeParams = dict.GetOptional<IPdfObject>(PdfName.DecodeParms);
                 var str = new PdfStream(dict, contents);
                 var data = str.Contents.GetDecodedData();
 
-                var current = GetOSOffsets(ctx, data, str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N), n);
-                var first = str.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
+                var current = GetOSOffsets(ctx, data, str.Dictionary.GetRequired<PdfNumber>(PdfName.N), n);
+                var first = str.Dictionary.GetRequired<PdfNumber>(PdfName.First);
                 var source = new ObjectStreamDataSource(ctx.CurrentSource!.Document, n, data, current.Select(x => (int)x.Offset).ToList(), first);
                 foreach (var item in current)
                 {

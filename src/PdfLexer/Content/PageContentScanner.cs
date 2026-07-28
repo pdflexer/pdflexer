@@ -574,7 +574,7 @@ public ref struct PageContentScanner
     {
         if (
             Resources.TryGetValue<PdfDictionary>(PdfName.ExtGState, out var gs)
-            && gs.TryGetValue<PdfDictionary>(name, out found, errorOnMismatch: false)
+            && gs.TryGet<PdfDictionary>(name, out found)
         )
         {
             return true;
@@ -587,7 +587,7 @@ public ref struct PageContentScanner
     {
         if (
             Resources.TryGetValue<PdfDictionary>("Properties", out var props)
-            && props.TryGetValue<PdfDictionary>(name, out found, errorOnMismatch: false)
+            && props.TryGet<PdfDictionary>(name, out found)
         )
         {
             return true;
@@ -629,7 +629,7 @@ public ref struct PageContentScanner
     {
         if (
             Resources.TryGetValue<PdfDictionary>(PdfName.Font, out var fonts)
-            && fonts.TryGetValue<PdfDictionary>(name, out found, errorOnMismatch: false)
+            && fonts.TryGet<PdfDictionary>(name, out found)
         )
         {
             return true;

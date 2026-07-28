@@ -124,8 +124,8 @@ public ref struct ImageScanner
         static bool TryGetFromDict(PdfDictionary dict, PdfName name, out PdfStream? image)
         {
             image = null;
-            if (dict.TryGetValue<PdfDictionary>(PdfName.Resources, out var res, false)
-                    && res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobjs, false)
+            if (dict.TryGet<PdfDictionary>(PdfName.Resources, out var res)
+                    && res.TryGet<PdfDictionary>(PdfName.XObject, out var xobjs)
                     && xobjs.TryGetValue(name, out var xobj)
                     )
             {
@@ -133,7 +133,7 @@ public ref struct ImageScanner
                 if (xobj.Type == PdfObjectType.StreamObj)
                 {
                     var str = (PdfStream)xobj;
-                    if (str.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var st, false)
+                    if (str.Dictionary.TryGet<PdfName>(PdfName.Subtype, out var st)
                     && st == PdfName.Image)
                     {
                         image = str;

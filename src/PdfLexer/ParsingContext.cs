@@ -334,7 +334,7 @@ public class ParsingContext : IDisposable
         }
 
         var stream = GetIndirectObject(doc, XRef.GetId(entry.ObjectStreamNumber, 0)).GetAs<PdfStream>();
-        var start = stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.First);
+        var start = stream.Dictionary.GetRequired<PdfNumber>(PdfName.First);
 
         IPdfDataSource? source;
         if (Options.LowMemoryMode)
@@ -347,14 +347,14 @@ public class ParsingContext : IDisposable
             str.Seek(0, SeekOrigin.Begin);
             str.FillArray(data, start);
             Span<byte> spanned = data;
-            var os = GetOffsets(spanned.Slice(0, start), stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
+            var os = GetOffsets(spanned.Slice(0, start), stream.Dictionary.GetRequired<PdfNumber>(PdfName.N));
             ArrayPool<byte>.Shared.Return(data);
             source = new ObjectStreamFileDataSource(doc, entry.ObjectStreamNumber, str, os, start);
         }
         else
         {
             var data = stream.Contents.GetDecodedData();
-            var os = GetOffsets(data, stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.N));
+            var os = GetOffsets(data, stream.Dictionary.GetRequired<PdfNumber>(PdfName.N));
             source = new ObjectStreamDataSource(doc, entry.ObjectStreamNumber, data, os, start);
         }
 

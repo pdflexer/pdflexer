@@ -60,7 +60,7 @@ internal class OutlineParser
     private BookmarkNode ParseItem(PdfDictionary item)
     {
         var node = new BookmarkNode();
-        node.Title = item.GetOptionalValue<PdfString>(PdfName.Title)?.Value ?? "";
+        node.Title = item.GetOptional<PdfString>(PdfName.Title)?.Value ?? "";
 
         // Destination
         IPdfObject? dest = null;
@@ -70,9 +70,9 @@ internal class OutlineParser
         }
         else if (item.TryGetValue<PdfDictionary>(PdfName.A, out var action))
         {
-            var type = action.GetOptionalValue<PdfName>(PdfName.TypeName);
-            var subtype = action.GetOptionalValue<PdfName>(PdfName.Subtype);
-            var s = action.GetOptionalValue<PdfName>(PdfName.S);
+            var type = action.GetOptional<PdfName>(PdfName.TypeName);
+            var subtype = action.GetOptional<PdfName>(PdfName.Subtype);
+            var s = action.GetOptional<PdfName>(PdfName.S);
 
             if ((type == PdfName.GoTo || subtype == PdfName.GoTo || s == PdfName.GoTo) && action.TryGetValue(PdfName.D, out var ad))
             {
@@ -147,7 +147,7 @@ internal class OutlineParser
         {
             // Direct page dictionary?
             var dict = (PdfDictionary)dest;
-            if (dict.GetOptionalValue<PdfName>(PdfName.TypeName) == PdfName.Page)
+            if (dict.GetOptional<PdfName>(PdfName.TypeName) == PdfName.Page)
             {
                 return dict;
             }
@@ -162,7 +162,7 @@ internal class OutlineParser
             if (arr.Count > 0)
             {
                 var p = arr[0].Resolve();
-                if (p.Type == PdfObjectType.DictionaryObj && ((PdfDictionary)p).GetOptionalValue<PdfName>(PdfName.TypeName) == PdfName.Page)
+                if (p.Type == PdfObjectType.DictionaryObj && ((PdfDictionary)p).GetOptional<PdfName>(PdfName.TypeName) == PdfName.Page)
                 {
                     return p;
                 }

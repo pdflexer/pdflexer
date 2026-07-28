@@ -187,18 +187,18 @@ internal class XRefParser
                 }
                 scanner.SkipCurrent();
 
-                var len = dict.GetRequiredValue<PdfNumber>(PdfName.Length);
+                var len = dict.GetRequired<PdfNumber>(PdfName.Length);
 
                 PdfStreamContents contents = new PdfExistingStreamContents(source, strStart + scanner.GetOffset(), len, xref.GetId());
 
-                contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
-                contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+                contents.Filters = dict.GetOptional<IPdfObject>(PdfName.Filter);
+                contents.DecodeParams = dict.GetOptional<IPdfObject>(PdfName.DecodeParms);
                 var str = new PdfStream(dict, contents);
                 var data = str.Contents.GetDecodedData();
 
-                var index = dict.GetOptionalValue<PdfArray>(PdfName.Index);
-                AddEntries(data, dict.GetRequiredValue<PdfArray>(PdfName.W), index, entries);
-                oss = dict.GetOptionalValue<PdfNumber>(PdfName.Prev);
+                var index = dict.GetOptional<PdfArray>(PdfName.Index);
+                AddEntries(data, dict.GetRequired<PdfArray>(PdfName.W), index, entries);
+                oss = dict.GetOptional<PdfNumber>(PdfName.Prev);
 
                 if (original != null)
                 {
@@ -242,8 +242,8 @@ internal class XRefParser
     private void AddXRefStream(PdfStream stream, List<XRefEntry> entries)
     {
         var data = stream.Contents.GetDecodedData();
-        var index = stream.Dictionary.GetOptionalValue<PdfArray>(PdfName.Index);
-        AddEntries(data, stream.Dictionary.GetRequiredValue<PdfArray>(PdfName.W), index, entries);
+        var index = stream.Dictionary.GetOptional<PdfArray>(PdfName.Index);
+        AddEntries(data, stream.Dictionary.GetRequired<PdfArray>(PdfName.W), index, entries);
     }
 
 

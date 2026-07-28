@@ -64,17 +64,17 @@ internal class Deduplication
         // PdfName.Pattern
         // Properties
 
-        if (resources.TryGetValue<PdfDictionary>(PdfName.ColorSpace, out var cs, false))
+        if (resources.TryGet<PdfDictionary>(PdfName.ColorSpace, out var cs))
         {
             HandleColorspaces(cs);
         }
 
-        if (resources.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobj, false))
+        if (resources.TryGet<PdfDictionary>(PdfName.XObject, out var xobj))
         {
             HandleXObjs(xobj);
         }
 
-        if (resources.TryGetValue<PdfDictionary>(PdfName.Font, out var font, false))
+        if (resources.TryGet<PdfDictionary>(PdfName.Font, out var font))
         {
             HandleFonts(font);
         }
@@ -95,7 +95,7 @@ internal class Deduplication
     {
         foreach (var (k, v) in resources.ToList())
         {
-            if (v.Resolve() is PdfStream xobj && xobj.Dictionary.TryGetValue<PdfName>(PdfName.Subtype, out var name, false))
+            if (v.Resolve() is PdfStream xobj && xobj.Dictionary.TryGet<PdfName>(PdfName.Subtype, out var name))
             {
                 switch (name.Value)
                 {
@@ -140,7 +140,7 @@ internal class Deduplication
     private Dictionary<int, List<CachableItem>> fonts = new();
     private void HandleFont(PdfDictionary parent, PdfName key, PdfDictionary font)
     {
-        if (!font.TryGetValue<PdfName>(PdfName.BaseFont, out var name, false))
+        if (!font.TryGet<PdfName>(PdfName.BaseFont, out var name))
         {
             return;
         }

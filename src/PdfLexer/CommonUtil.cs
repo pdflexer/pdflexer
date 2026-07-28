@@ -173,7 +173,7 @@ internal static class CommonUtil
                 }
             case PdfDictionary dict:
                 refStack.Add(obj);
-                dict.TryGetValue<PdfName>(PdfName.TypeName, out var type, false);
+                dict.TryGet<PdfName>(PdfName.TypeName, out var type);
                 foreach (var (k, v) in dict)
                 {
                     if (type == PdfName.Page && k == PdfName.Parent)

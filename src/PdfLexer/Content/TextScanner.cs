@@ -197,7 +197,7 @@ public ref struct TextScanner
                     float? fsize = null;
                     PdfDictionary? fdict = null;
                     IReadableFont? fread = null;
-                    if (gsd.TryGetValue<PdfArray>(PdfName.Font, out var fobj, false))
+                    if (gsd.TryGet<PdfArray>(PdfName.Font, out var fobj))
                     {
                         if (fobj.Count > 0 && fobj[0].Resolve() is PdfDictionary fdv)
                         {

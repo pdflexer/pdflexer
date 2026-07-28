@@ -54,8 +54,8 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
         PdfArray? ocgdOff = null;
         PdfDictionary? ocgd = null;
         if (catalog != null 
-            && catalog.TryGetValue<PdfDictionary>("OCProperties", out var ocp, false)
-            && ocp.TryGetValue<PdfDictionary>("D", out ocgd, false)
+            && catalog.TryGet<PdfDictionary>("OCProperties", out var ocp)
+            && ocp.TryGet<PdfDictionary>("D", out ocgd)
             && ocgd.TryGetValue<PdfArray>(PdfName.OFF, out ocgdOff))
         {
             // grabbing defaults
@@ -161,7 +161,7 @@ internal ref struct ContentModelParser<T> where T : struct, IFloatingPoint<T>
                         if (ocgdOff != null)
                         {
                             var dv = mcItem.PropList ?? mcItem.InlineProps;
-                            if (dv != null && dv.TryGetValue<PdfName>(PdfName.TYPE, out var val, false) && val == PdfName.OCG
+                            if (dv != null && dv.TryGet<PdfName>(PdfName.TYPE, out var val) && val == PdfName.OCG
                                 && bdcOp.props is PdfName nm2 && Scanner.TryGetPropertyRef(nm2, out var ir))
                             {
                                 if (ocgdOff.Contains(ir))

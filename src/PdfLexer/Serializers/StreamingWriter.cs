@@ -189,7 +189,7 @@ public class StreamingWriter : IDisposable
                 CreateBag(false);
                 foreach (var (bag, bagRef) in current)
                 {
-                    count += bag.GetRequiredValue<PdfIntNumber>(PdfName.Count).Value;
+                    count += bag.GetRequired<PdfIntNumber>(PdfName.Count).Value;
                     bag[PdfName.Parent] = currentBagRef;
                     currentBagArray.Add(bagRef);
                 }
@@ -207,7 +207,7 @@ public class StreamingWriter : IDisposable
             var count = 0;
             foreach (var (bag, bagRef) in bags)
             {
-                count += bag.GetRequiredValue<PdfIntNumber>(PdfName.Count).Value;
+                count += bag.GetRequired<PdfIntNumber>(PdfName.Count).Value;
                 bag[PdfName.Parent] = currentBagRef;
                 currentBagArray.Add(bagRef);
             }

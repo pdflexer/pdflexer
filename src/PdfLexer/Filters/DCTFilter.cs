@@ -44,7 +44,7 @@ public class DCTFilter : IDecoder
         int colorTransform = -1; // -1 means use default/auto-detect
         if (filterParams != null)
         {
-            var ct = filterParams.GetOptionalValue<PdfNumber>(new PdfName("ColorTransform"));
+            var ct = filterParams.GetOptional<PdfNumber>(new PdfName("ColorTransform"));
             if (ct != null)
             {
                 colorTransform = (int)ct;

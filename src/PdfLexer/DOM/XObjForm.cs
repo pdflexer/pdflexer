@@ -163,12 +163,12 @@ public class XObjForm
 
         if (uninheritResources)
         {
-            form.Resources.TryGetValue<PdfDictionary>(PdfName.ExtGState, out var gs, false);
-            form.Resources.TryGetValue<PdfDictionary>(PdfName.ColorSpace, out var cs, false);
-            form.Resources.TryGetValue<PdfDictionary>(PdfName.Pattern, out var patterns, false);
-            form.Resources.TryGetValue<PdfDictionary>(PdfName.Shading, out var shading, false);
-            form.Resources.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobj, false);
-            form.Resources.TryGetValue<PdfDictionary>(PdfName.Font, out var fonts, false);
+            form.Resources.TryGet<PdfDictionary>(PdfName.ExtGState, out var gs);
+            form.Resources.TryGet<PdfDictionary>(PdfName.ColorSpace, out var cs);
+            form.Resources.TryGet<PdfDictionary>(PdfName.Pattern, out var patterns);
+            form.Resources.TryGet<PdfDictionary>(PdfName.Shading, out var shading);
+            form.Resources.TryGet<PdfDictionary>(PdfName.XObject, out var xobj);
+            form.Resources.TryGet<PdfDictionary>(PdfName.Font, out var fonts);
 
             EnumerateForms(form.NativeObject.Dictionary, x =>
             {
@@ -193,7 +193,7 @@ public class XObjForm
             return; // no resources
         }
 
-        var dest = parent.GetOptionalValue<PdfDictionary>(type);
+        var dest = parent.GetOptional<PdfDictionary>(type);
         if (dest != null)
         {
             dest = dest.CloneShallow();
@@ -214,11 +214,11 @@ public class XObjForm
 
     private static void EnumerateForms(PdfDictionary pg, Func<PdfDictionary, PdfDictionary> resourceMutation, HashSet<PdfDictionary> seen)
     {
-        if (pg.TryGetValue<PdfDictionary>(PdfName.Resources, out var res, false))
+        if (pg.TryGet<PdfDictionary>(PdfName.Resources, out var res))
         {
             res = res.CloneShallow();
             pg[PdfName.Resources] = res;
-            if (res.TryGetValue<PdfDictionary>(PdfName.XObject, out var xobj, false))
+            if (res.TryGet<PdfDictionary>(PdfName.XObject, out var xobj))
             {
                 xobj = xobj.CloneShallow();
                 res[PdfName.XObject] = xobj;

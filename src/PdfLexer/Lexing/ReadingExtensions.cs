@@ -53,8 +53,8 @@ internal static class ReadingExtensions
         }
 
         var contents = new PdfXRefStreamContents(source, xref, streamLength);
-        contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
-        contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+        contents.Filters = dict.GetOptional<IPdfObject>(PdfName.Filter);
+        contents.DecodeParams = dict.GetOptional<IPdfObject>(PdfName.DecodeParms);
         return new PdfStream(dict, contents);
     }
 
@@ -166,8 +166,8 @@ internal static class ReadingExtensions
                 }
             }
             var contents = new PdfExistingStreamContents(source, xref.Offset + startPos, streamLength, xref.Reference.GetId());
-            contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
-            contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+            contents.Filters = dict.GetOptional<IPdfObject>(PdfName.Filter);
+            contents.DecodeParams = dict.GetOptional<IPdfObject>(PdfName.DecodeParms);
             var stream = new PdfStream(dict, contents);
 
             return stream;
@@ -226,7 +226,7 @@ internal static class ReadingExtensions
             ctx.Options.Eagerness = Eagerness.Lazy;
 
             var dict = (PdfDictionary)ctx.GetKnownPdfItem(PdfObjectType.DictionaryObj, scanner.Data, objStart, objLength, source.Document);
-            if (!dict.TryGetValue<PdfNumber>(PdfName.Length, out var streamLength, errorOnMismatch: false))
+            if (!dict.TryGet<PdfNumber>(PdfName.Length, out var streamLength))
             {
                 ctx.Error("Pdf dictionary followed by start stream token did not contain /Length.");
                 streamLength = PdfCommonNumbers.Zero;
@@ -263,8 +263,8 @@ internal static class ReadingExtensions
                 dict[PdfName.Length] = streamLength;
                 var contents = new PdfByteArrayStreamContents(scanner.Data.Slice(startPos, scanner.Position - startPos).ToArray());
                 var stream = new PdfStream(dict, contents);
-                contents.Filters = dict.GetOptionalValue<IPdfObject>(PdfName.Filter);
-                contents.DecodeParams = dict.GetOptionalValue<IPdfObject>(PdfName.DecodeParms);
+                contents.Filters = dict.GetOptional<IPdfObject>(PdfName.Filter);
+                contents.DecodeParams = dict.GetOptional<IPdfObject>(PdfName.DecodeParms);
                 wtx.SerializeObject(stream, true);
             }
             ctx.Options.Eagerness = existing;

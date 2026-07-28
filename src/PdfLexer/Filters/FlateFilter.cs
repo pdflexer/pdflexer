@@ -36,15 +36,15 @@ public class FlateFilter : IDecoder //, IEncoder
 
         if (decodeParms == null) { return deflated; }
 
-        int predictor = decodeParms.GetOptionalValue<PdfNumber>(PdfName.Predictor) ?? DefaultPredictor;
+        int predictor = decodeParms.GetOptional<PdfNumber>(PdfName.Predictor) ?? DefaultPredictor;
         if (predictor == 1)
         {
             return deflated;
         }
 
-        int bpc = decodeParms.GetOptionalValue<PdfNumber>(PdfName.BitsPerComponent) ?? DefaultBPC;
-        int colors = decodeParms.GetOptionalValue<PdfNumber>(PdfName.Colors) ?? DefaultColors;
-        int columns = decodeParms.GetOptionalValue<PdfNumber>(PdfName.Columns) ?? DefaultColumns;
+        int bpc = decodeParms.GetOptional<PdfNumber>(PdfName.BitsPerComponent) ?? DefaultBPC;
+        int colors = decodeParms.GetOptional<PdfNumber>(PdfName.Colors) ?? DefaultColors;
+        int columns = decodeParms.GetOptional<PdfNumber>(PdfName.Columns) ?? DefaultColumns;
 
         if (predictor == 2)
         {

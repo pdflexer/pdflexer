@@ -221,38 +221,38 @@ public partial class gs_Op<T>
     {
         var orig = dict;
         dict = dict.CloneShallow();
-        if (dict.TryGetValue<PdfNumber>("LS", out var lsobj, false))
+        if (dict.TryGet<PdfNumber>("LS", out var lsobj))
         {
             dict.Remove("LS");
         }
 
-        if (dict.TryGetValue<PdfNumber>("LC", out var lcobj, false))
+        if (dict.TryGet<PdfNumber>("LC", out var lcobj))
         {
             dict.Remove("LC");
         }
 
-        if (dict.TryGetValue<PdfNumber>("LJ", out var ljobj, false))
+        if (dict.TryGet<PdfNumber>("LJ", out var ljobj))
         {
             dict.Remove("LJ");
         }
 
-        if (dict.TryGetValue<PdfNumber>("ML", out var mlobj, false))
+        if (dict.TryGet<PdfNumber>("ML", out var mlobj))
         {
             dict.Remove("ML");
         }
 
-        if (dict.TryGetValue<PdfName>("RI", out var riobj, false))
+        if (dict.TryGet<PdfName>("RI", out var riobj))
         {
             dict.Remove("RI");
         }
 
-        if (dict.TryGetValue<PdfNumber>("FL", out var flobj, false))
+        if (dict.TryGet<PdfNumber>("FL", out var flobj))
         {
             dict.Remove("FL");
         }
 
         d_Op<T>? dop = null;
-        if (dict.TryGetValue<PdfArray>("D", out var dobj, false))
+        if (dict.TryGet<PdfArray>("D", out var dobj))
         {
             dict.Remove("D");
             if (dobj.Count > 1 && dobj[0].Resolve() is PdfArray dashes && dobj[1].Resolve() is PdfNumber dp)
@@ -264,7 +264,7 @@ public partial class gs_Op<T>
         T? fsize = null;
         PdfDictionary? fdict = null;
         IReadableFont? fread = null;
-        if (dict.TryGetValue<PdfArray>(PdfName.Font, out var fobj, false))
+        if (dict.TryGet<PdfArray>(PdfName.Font, out var fobj))
         {
             dict.Remove(PdfName.Font);
             if (fobj.Count > 0 && fobj[0].Resolve() is PdfDictionary fdv)
