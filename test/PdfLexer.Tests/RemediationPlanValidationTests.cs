@@ -31,7 +31,7 @@ public class RemediationPlanValidationTests
             "bad-source",
             RemediationActions.Custom(ctx =>
             {
-                var candidate = new RemediationCandidate(
+                var candidate = new TextRemediationCandidate(
                     Granularity.Line,
                     "ghost",
                     new PdfRect<double>(0, 0, 10, 10),

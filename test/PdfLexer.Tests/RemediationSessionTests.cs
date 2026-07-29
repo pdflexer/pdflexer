@@ -1495,7 +1495,7 @@ public class RemediationSessionTests
     {
         public override string DebugString => "low-confidence";
 
-        public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate) =>
+        protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate) =>
             PredicateResult.Match(0.5);
     }
 

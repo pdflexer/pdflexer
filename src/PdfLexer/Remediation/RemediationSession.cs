@@ -2,7 +2,7 @@ using PdfLexer.Content;
 using PdfLexer.Content.Model;
 using PdfLexer.DOM;
 using PdfLexer.Writing;
-using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
 namespace PdfLexer.Remediation;
@@ -17,6 +17,8 @@ public sealed class RemediationSession : IDisposable
     private readonly Dictionary<PdfPage, int> _pageStructParents = new();
     private readonly List<RuleSet> _ruleSets = new();
     private readonly List<DiagnosticSuppression> _suppressions = new();
+    private RemediationTraceRequest? _traceRequest;
+    private List<RemediationPredicateTrace>? _predicateTraces;
     private bool _committed;
     private bool _disposed;
 
@@ -98,6 +100,24 @@ public sealed class RemediationSession : IDisposable
         }
 
         return new RemediationReport(committed: false, appliedAccessibilitySetup: false);
+    }
+
+    /// <summary>Evaluates configured rule sets and retains selected predicate rejection traces.</summary>
+    public RemediationReport DryRun(RemediationTraceRequest traceRequest)
+    {
+        ArgumentNullException.ThrowIfNull(traceRequest);
+        ThrowIfDisposed();
+        _traceRequest = traceRequest;
+        _predicateTraces = new List<RemediationPredicateTrace>();
+        try
+        {
+            return Evaluate(ComposeRules(Array.Empty<Rule>()), apply: false);
+        }
+        finally
+        {
+            _traceRequest = null;
+            _predicateTraces = null;
+        }
     }
 
     /// <summary>Evaluates additional rules without mutating the document.</summary>
@@ -191,7 +211,10 @@ public sealed class RemediationSession : IDisposable
             report.Diagnostics,
             _suppressions,
             report.RuleEvaluations,
-            report.AutoArtifacts.Select(x => x with { Disposition = RemediationAutoArtifactDisposition.Applied }).ToList());
+            report.AutoArtifacts.Select(x => x with { Disposition = RemediationAutoArtifactDisposition.Applied }).ToList(),
+            report.PredicateTraces,
+            report.AssertionOutcomes,
+            report.PlannedSemanticTree);
     }
 
     private IReadOnlyList<Rule> ComposeRules(IEnumerable<Rule> rules)
@@ -269,6 +292,7 @@ public sealed class RemediationSession : IDisposable
 
         var ruleEvaluations = evaluations.Build(allClaims, skippedClaims);
         CheckRuleCardinalities(ruleList, ruleEvaluations, diagnostics);
+        var assertionOutcomes = EvaluateAssertions(allClaims, diagnostics);
 
         if (apply && !HasUnsuppressedDiagnostics(diagnostics))
         {
@@ -289,7 +313,111 @@ public sealed class RemediationSession : IDisposable
             diagnostics,
             _suppressions,
             ruleEvaluations,
-            autoArtifacts);
+            autoArtifacts,
+            _predicateTraces?.ToList(),
+            assertionOutcomes,
+            RemediationSemanticTree.FromClaims(allClaims));
+    }
+
+    private IReadOnlyList<RemediationAssertionOutcome> EvaluateAssertions(
+        IReadOnlyList<RemediationClaim> claims,
+        List<string> diagnostics)
+    {
+        var outcomes = new List<RemediationAssertionOutcome>();
+        foreach (var ruleSet in _ruleSets)
+        {
+            foreach (var assertion in ruleSet.Assertions)
+            {
+                var pages = assertion.Scope == SemanticAssertionScope.Document
+                    ? new int?[] { null }
+                    : Enumerable.Range(0, _document.Pages.Count)
+                        .Where(x => (assertion.Pages ?? PageSelector.Every).Includes(x, _document.Pages.Count))
+                        .Select(x => (int?)x);
+
+                foreach (var page in pages)
+                {
+                    var selected = claims.Where(x =>
+                        x.Status == ClaimStatus.Applied &&
+                        (page == null || ClaimAppearsOnPage(x, page.Value)) &&
+                        (page != null || (assertion.Pages ?? PageSelector.Every)
+                            .Includes(x.PageIndex, _document.Pages.Count))).ToList();
+
+                    switch (assertion)
+                    {
+                        case RuleOutputCountAssertion output:
+                            AddCountOutcome(ruleSet.Id, output.Id, page,
+                                output.Expected,
+                                selected.Count(x => x.RuleId == output.RuleId &&
+                                    (output.ProducedTag == null || x.ProducedTag == output.ProducedTag)),
+                                output.RuleId, output.ProducedTag);
+                            break;
+                        case StructureElementCountAssertion structure:
+                            AddCountOutcome(ruleSet.Id, structure.Id, page,
+                                structure.Expected,
+                                selected.Count(x => x.ProducedTag == structure.Tag),
+                                null, structure.Tag);
+                            break;
+                        case ParentChildShapeAssertion shape:
+                            var parents = selected.Where(x => x.ProducedTag == shape.ParentTag).ToList();
+                            if (parents.Count == 0)
+                            {
+                                AddOutcome(ruleSet.Id, shape.Id, page,
+                                    $"at least one '{shape.ParentTag}' parent with {shape.ExpectedChildren.Description} child(ren)",
+                                    "no matching parents",
+                                    false, null, shape.ParentTag);
+                            }
+                            foreach (var parent in parents)
+                            {
+                                var children = parent.RelatedClaims;
+                                var tagsValid = children.All(x => shape.AllowedChildTags.Contains(x.ProducedTag));
+                                var countValid = shape.ExpectedChildren.Accepts(children.Count);
+                                AddOutcome(ruleSet.Id, shape.Id, page,
+                                    $"{shape.ExpectedChildren.Description} child(ren), tags [{string.Join(", ", shape.AllowedChildTags)}]",
+                                    $"{children.Count} child(ren), tags [{string.Join(", ", children.Select(x => x.ProducedTag))}]",
+                                    tagsValid && countValid, parent.RuleId, shape.ParentTag);
+                            }
+                            break;
+                    }
+                }
+            }
+        }
+        return outcomes;
+
+        void AddCountOutcome(string ruleSetId, string id, int? page, AssertionCount expected,
+            int observed, string? ruleId, string? tag) =>
+            AddOutcome(ruleSetId, id, page, expected.Description, observed.ToString(),
+                expected.Accepts(observed), ruleId, tag);
+
+        void AddOutcome(string ruleSetId, string id, int? page, string expected,
+            string observed, bool passed, string? ruleId, string? tag)
+        {
+            outcomes.Add(new RemediationAssertionOutcome(
+                ruleSetId, id, page, expected, observed, passed, ruleId, tag));
+            if (!passed)
+            {
+                var location = page is { } p ? $" on page {p + 1}" : string.Empty;
+                ReportDiagnostic(DiagnosticCode.SemanticAssertionFailed,
+                    $"RuleSet:{ruleSetId}:Assertion:{id}" + (page is { } pi ? $":Page{pi + 1}" : string.Empty),
+                    $"Rule set '{ruleSetId}' assertion '{id}'{location} expected {expected}, but observed {observed}.",
+                    diagnostics);
+            }
+        }
+    }
+
+    private static bool ClaimAppearsOnPage(RemediationClaim claim, int pageIndex) =>
+        ClaimAppearsOnPage(claim, pageIndex, new HashSet<ClaimId>());
+
+    private static bool ClaimAppearsOnPage(
+        RemediationClaim claim,
+        int pageIndex,
+        HashSet<ClaimId> visited)
+    {
+        if (!visited.Add(claim.ClaimId))
+        {
+            return false;
+        }
+        return claim.PageIndex == pageIndex ||
+            claim.RelatedClaims.Any(x => ClaimAppearsOnPage(x, pageIndex, visited));
     }
 
     private void CheckRuleCardinalities(
@@ -419,6 +547,48 @@ public sealed class RemediationSession : IDisposable
         foreach (var group in ruleSets.SelectMany(x => x.FlowRegions).GroupBy(x => x.Id, StringComparer.Ordinal).Where(x => x.Count() > 1))
         {
             errors.Add($"Flow region id '{group.Key}' is duplicated across the composed rule set.");
+        }
+
+        foreach (var ruleSet in ruleSets)
+        {
+            foreach (var duplicate in ruleSet.Assertions.GroupBy(x => x.Id, StringComparer.Ordinal).Where(x => x.Count() > 1))
+            {
+                errors.Add($"Assertion id '{duplicate.Key}' is duplicated in rule set '{ruleSet.Id}'.");
+            }
+
+            var knownRules = ruleSets.SelectMany(x => x.Rules).Select(x => x.Id).ToHashSet(StringComparer.Ordinal);
+            foreach (var assertion in ruleSet.Assertions)
+            {
+                if (string.IsNullOrWhiteSpace(assertion.Id))
+                {
+                    errors.Add($"Rule set '{ruleSet.Id}' has an assertion without an id.");
+                }
+                if (assertion.Expected.Min < 0 ||
+                    assertion.Expected.Max is { } max && max < assertion.Expected.Min)
+                {
+                    errors.Add($"Assertion '{assertion.Id}' has an invalid expected count range.");
+                }
+                if (assertion is RuleOutputCountAssertion output && !knownRules.Contains(output.RuleId))
+                {
+                    errors.Add($"Assertion '{assertion.Id}' references unknown rule '{output.RuleId}'.");
+                }
+                if (assertion is StructureElementCountAssertion structure && string.IsNullOrWhiteSpace(structure.Tag))
+                {
+                    errors.Add($"Assertion '{assertion.Id}' requires a structure tag.");
+                }
+                if (assertion is ParentChildShapeAssertion shape &&
+                    (string.IsNullOrWhiteSpace(shape.ParentTag) || shape.AllowedChildTags.Count == 0))
+                {
+                    errors.Add($"Assertion '{assertion.Id}' requires a parent tag and at least one allowed child tag.");
+                }
+                if (assertion is ParentChildShapeAssertion childShape &&
+                    (childShape.ExpectedChildren.Min < 0 ||
+                     childShape.ExpectedChildren.Max is { } childMax &&
+                     childMax < childShape.ExpectedChildren.Min))
+                {
+                    errors.Add($"Assertion '{assertion.Id}' has an invalid expected child count range.");
+                }
+            }
         }
 
         foreach (var zone in ruleSets.SelectMany(x => x.TolerancedZones))
@@ -821,8 +991,134 @@ public sealed class RemediationSession : IDisposable
             states.Add(new PageRemediationState(page, i, structured, content, content.ToList()));
         }
 
+        BuildContentCandidateIndexes(states);
         return states;
     }
+
+    private static IReadOnlyList<RemediationCandidate> SelectCandidates(
+        PageRemediationState pageState,
+        CandidateSelector selector)
+    {
+        if (selector is CandidateSelector.TextSelector text)
+        {
+            return pageState.StructuredText.GetCandidates(text.Granularity);
+        }
+
+        var kinds = ((CandidateSelector.ContentSelector)selector).Kinds;
+        return pageState.ContentCandidates.Where(x => kinds.Contains(x.Kind)).Cast<RemediationCandidate>().ToArray();
+    }
+
+    private static void BuildContentCandidateIndexes(IReadOnlyList<PageRemediationState> states)
+    {
+        var allItems = states
+            .SelectMany(state => EnumerateItems(state.WorkingContent)
+                .Where(IsPaintingItem)
+                .Where(x => x is not TextContent<double>)
+                .Select(item => (State: state, Item: item)))
+            .ToList();
+        var resourceCounts = allItems
+            .Select(x => GetResourceObject(x.Item))
+            .Where(x => x != null)
+            .GroupBy(x => x!, ReferenceEqualityComparer.Instance)
+            .ToDictionary(x => x.Key, x => x.Count(), ReferenceEqualityComparer.Instance);
+
+        foreach (var state in states)
+        {
+            var pageSpace = new StructuredPageSpace(state.Page);
+            state.ContentCandidates = allItems
+                .Where(x => ReferenceEquals(x.State, state))
+                .Select((x, index) =>
+                {
+                    var resource = GetResourceObject(x.Item);
+                    return new ContentRemediationCandidate(
+                        GetCandidateKind(x.Item)!.Value,
+                        x.Item,
+                        x.Item.GetBoundingBox(),
+                        pageSpace.Normalize(x.Item.GetBoundingBox()),
+                        x.Item.SourceReference?.OperatorStart ?? index,
+                        resource != null && resourceCounts.TryGetValue(resource, out var count) ? count : 1,
+                        GetStableResourceIdentity(resource),
+                        FindResourceName(state.Page, resource));
+                })
+                .ToArray();
+        }
+    }
+
+    private static ContentRemediationCandidate CreateContentCandidate(
+        PageRemediationState pageState,
+        IContentItem<double> item,
+        int fallbackSequenceIndex) =>
+        pageState.ContentCandidates.FirstOrDefault(x => ReferenceEquals(x.Item, item)) ??
+        new ContentRemediationCandidate(
+            GetCandidateKind(item)!.Value,
+            item,
+            item.GetBoundingBox(),
+            new StructuredPageSpace(pageState.Page).Normalize(item.GetBoundingBox()),
+            item.SourceReference?.OperatorStart ?? fallbackSequenceIndex,
+            1,
+            GetStableResourceIdentity(GetResourceObject(item)),
+            FindResourceName(pageState.Page, GetResourceObject(item)));
+
+    private static string? FindResourceName(PdfPage page, object? resource)
+    {
+        if (resource == null)
+        {
+            return null;
+        }
+
+        foreach (var category in new[] { PdfName.XObject, PdfName.Shading })
+        {
+            if (!page.Resources.TryGet<PdfDictionary>(category, out var resources) || resources == null)
+            {
+                continue;
+            }
+
+            foreach (var entry in resources)
+            {
+                if (ReferenceEquals(entry.Value.Resolve(), resource))
+                {
+                    return entry.Key.Value;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static string? GetStableResourceIdentity(object? resource)
+    {
+        if (resource is not PdfStream stream)
+        {
+            return null;
+        }
+
+        var hash = SHA256.HashData(stream.Contents.GetDecodedData());
+        return "sha256:" + Convert.ToHexString(hash).ToLowerInvariant();
+    }
+
+    private static RemediationCandidateKind? GetCandidateKind(IContentItem<double> item) => item switch
+    {
+        ImageContent<double> => RemediationCandidateKind.Image,
+        PathSequence<double> => RemediationCandidateKind.Path,
+        FormContent<double> => RemediationCandidateKind.Form,
+        ShadingContent<double> => RemediationCandidateKind.Shading,
+        _ => null
+    };
+
+    private static object? GetResourceObject(IContentItem<double> item) => item switch
+    {
+        ImageContent<double> image => image.Stream,
+        FormContent<double> form => form.Stream,
+        ShadingContent<double> shading => shading.Shading,
+        _ => null
+    };
+
+    private static bool IsPaintingItem(IContentItem<double> item) => item switch
+    {
+        PathSequence<double> path => path.Closing != null && path.Closing is not n_Op<double>,
+        ImageContent<double> or FormContent<double> or ShadingContent<double> or TextContent<double> => true,
+        _ => false
+    };
 
     private void EvaluatePage(
         PageRemediationState pageState,
@@ -969,7 +1265,7 @@ public sealed class RemediationSession : IDisposable
         var customCtx = new CustomRemediationContext(
             this,
             context,
-            pageState.StructuredText.GetCandidates(rule.Granularity));
+            SelectCandidates(pageState, rule.Candidates));
 
         CustomRemediationOutcome outcome;
         try
@@ -1021,11 +1317,32 @@ public sealed class RemediationSession : IDisposable
         List<string> diagnostics,
         RuleEvaluationAccumulator evaluations)
     {
-        var candidates = pageState.StructuredText.GetCandidates(rule.Granularity);
-        var candidateResults = candidates
-            .Select(candidate => (Candidate: candidate, Result: rule.Predicate.Evaluate(context, candidate)))
-            .Where(x => x.Result.IsMatch)
-            .ToList();
+        var normalization = rule.TextNormalization ?? TextNormalizationOptions.Default;
+        context = context.WithTextNormalization(normalization);
+        var candidates = SelectCandidates(pageState, rule.Candidates);
+        var candidateResults = new List<(RemediationCandidate Candidate, PredicateResult Result)>();
+        foreach (var candidate in candidates)
+        {
+            var traced = _traceRequest?.Includes(rule.Id, pageState.PageIndex, candidate) == true;
+            var evaluationContext = context.WithPredicateTracing(traced);
+            var result = rule.Predicate.Evaluate(evaluationContext, candidate);
+            if (result.IsMatch)
+            {
+                candidateResults.Add((candidate, result));
+            }
+            else if (traced && result.Trace != null)
+            {
+                _predicateTraces!.Add(new RemediationPredicateTrace(
+                    rule.Id,
+                    pageState.PageIndex,
+                    candidate.CandidateId,
+                    candidate.Kind,
+                    candidate.Text,
+                    normalization.Normalize(candidate.Text),
+                    candidate.SourceReferences,
+                    result.Trace));
+            }
+        }
 
         if (candidateResults.Count == 0 && ContainsFlowRegionPredicate(rule.Predicate))
         {
@@ -1064,7 +1381,11 @@ public sealed class RemediationSession : IDisposable
             }
 
             var targetSpans = GetTargetSpans(candidate);
-            var conflicting = ownedTargets.FindOverlaps(targetSpans);
+            var contentItem = (candidate as ContentRemediationCandidate)?.Item;
+            var conflicting = contentItem != null &&
+                pageState.ContentOwnership.TryGetValue(contentItem, out var contentClaim)
+                    ? new[] { new OwnedTextSpan(default, contentClaim) }.ToList()
+                    : ownedTargets.FindOverlaps(targetSpans);
             if (conflicting.Count > 0 && !rule.Override)
             {
                 rejectedByConflict++;
@@ -1085,6 +1406,10 @@ public sealed class RemediationSession : IDisposable
                     }
 
                     ownedTargets.Remove(previous);
+                    foreach (var owned in pageState.ContentOwnership.Where(x => x.Value.ClaimId == previous.ClaimId).ToList())
+                    {
+                        pageState.ContentOwnership.Remove(owned.Key);
+                    }
                     foreach (var residual in CreateResidualClaims(previous, targetSpans))
                     {
                         stageClaims.Add(residual);
@@ -1095,6 +1420,10 @@ public sealed class RemediationSession : IDisposable
 
             var claim = CreateClaim(rule, pageState.PageIndex, candidate, ClaimStatus.Applied, confidence);
             ownedTargets.Add(claim, targetSpans);
+            if (contentItem != null)
+            {
+                pageState.ContentOwnership[contentItem] = claim;
+            }
             stageClaims.Add(claim);
         }
 
@@ -1151,14 +1480,19 @@ public sealed class RemediationSession : IDisposable
                 return ownedTargets.GetUnowned(source).Select(span => (Item: item, Span: span));
             })
             .ToList();
-        if (leftovers.Count == 0)
+        var graphicalLeftovers = EnumerateItems(pageState.WorkingContent)
+            .Where(IsPaintingItem)
+            .Where(x => x is not TextContent<double>)
+            .Where(x => !pageState.ContentOwnership.ContainsKey(x))
+            .ToList();
+        if (leftovers.Count == 0 && graphicalLeftovers.Count == 0)
         {
             return;
         }
 
         if (Configuration.LeftoverPolicy == RemediationLeftoverPolicy.FailFast)
         {
-            diagnostics.Add($"Page {pageState.PageIndex + 1} has {leftovers.Count} unclaimed text content item(s).");
+            diagnostics.Add($"Page {pageState.PageIndex + 1} has {leftovers.Count} unclaimed text and {graphicalLeftovers.Count} unclaimed graphical painting item(s).");
             return;
         }
 
@@ -1181,6 +1515,37 @@ public sealed class RemediationSession : IDisposable
                 isCommit
                     ? RemediationAutoArtifactDisposition.Applied
                     : RemediationAutoArtifactDisposition.Planned));
+        }
+
+        foreach (var item in graphicalLeftovers)
+        {
+            var candidate = CreateContentCandidate(pageState, item, int.MaxValue);
+            var claim = new RemediationClaim(
+                "__auto_artifact__", Granularity.Paragraph, new[] { candidate }, "Artifact")
+            {
+                PageIndex = pageState.PageIndex,
+                Action = RemediationActions.Artifact(ArtifactSubtype.Layout)
+            };
+            pageState.ContentOwnership[item] = claim;
+            autoArtifacts.Add(new RemediationAutoArtifactOutcome(
+                pageState.PageIndex,
+                item.SourceReference ?? default,
+                string.Empty,
+                candidate.BoundingBox,
+                isCommit
+                    ? RemediationAutoArtifactDisposition.Applied
+                    : RemediationAutoArtifactDisposition.Planned)
+            {
+                CandidateKind = candidate.Kind,
+                CandidateId = candidate.CandidateId,
+                ResourceIdentity = candidate.ResourceIdentity,
+                ResourceName = candidate.ResourceName,
+                ResourceUseCount = candidate.ResourceUseCount
+            });
+            if (isCommit)
+            {
+                ApplyClassifyClaim(pageState, claim, diagnostics);
+            }
         }
     }
 
@@ -1274,6 +1639,7 @@ public sealed class RemediationSession : IDisposable
         List<string> diagnostics,
         RuleEvaluationAccumulator evaluations)
     {
+        context = context.WithTextNormalization(rule.TextNormalization ?? TextNormalizationOptions.Default);
         if (table.Over != null)
         {
             EvaluateClaimConsumingTableRule(pageState, rule, table, context, stageClaims, skippedClaims, diagnostics, evaluations);
@@ -1285,7 +1651,7 @@ public sealed class RemediationSession : IDisposable
         var rejectedByConfidence = 0;
         var candidates = new List<RemediationCandidate>();
         var confidence = 1.0;
-        foreach (var candidate in pageState.StructuredText.GetCandidates(rule.Granularity))
+        foreach (var candidate in SelectCandidates(pageState, rule.Candidates))
         {
             considered++;
             var predicate = rule.Predicate.Evaluate(context, candidate);

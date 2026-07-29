@@ -8,9 +8,14 @@ namespace PdfLexer.Remediation;
 /// <summary>
 /// Structured-text/content candidate considered by remediation rules.
 /// </summary>
-public sealed record RemediationCandidate
+public abstract record RemediationCandidate
 {
-    internal RemediationCandidate(
+    /// <summary>Candidate family.</summary>
+    public abstract RemediationCandidateKind Kind { get; }
+
+    /// <summary>Stable identity within the parsed page candidate index.</summary>
+    public string CandidateId => $"{Kind}:{SequenceIndex}:{Granularity}:{SourceReferences.FirstOrDefault()}";
+    protected RemediationCandidate(
         Granularity granularity,
         string text,
         PdfRect<double> boundingBox,
@@ -86,7 +91,7 @@ public sealed record RemediationCandidate
 
     /// <summary>Creates a candidate from a structured character.</summary>
     public static RemediationCandidate From(StructuredCharacter character) =>
-        new(
+        new TextRemediationCandidate(
             Granularity.Character,
             character.Char.ToString(),
             character.BoundingBox,
@@ -98,7 +103,7 @@ public sealed record RemediationCandidate
 
     /// <summary>Creates a candidate from a structured word.</summary>
     public static RemediationCandidate From(StructuredWord word) =>
-        new(
+        new TextRemediationCandidate(
             Granularity.Word,
             word.Text,
             word.BoundingBox,
@@ -110,7 +115,7 @@ public sealed record RemediationCandidate
 
     /// <summary>Creates a candidate from a structured line.</summary>
     public static RemediationCandidate From(StructuredLine line) =>
-        new(
+        new TextRemediationCandidate(
             Granularity.Line,
             line.Text,
             line.BoundingBox,
@@ -125,7 +130,7 @@ public sealed record RemediationCandidate
     {
         var words = paragraph.Lines.SelectMany(x => x.Words).ToList();
         var characters = words.SelectMany(x => x.Characters).ToList();
-        return new RemediationCandidate(
+        return new TextRemediationCandidate(
             Granularity.Paragraph,
             paragraph.Text,
             paragraph.BoundingBox,
@@ -220,7 +225,7 @@ public sealed record RemediationCandidate
             ? range.Text
             : new string(characters.OrderBy(x => x.SourceCharacterIndex).Select(x => x.Char).ToArray());
 
-        return new RemediationCandidate(
+        return new TextRemediationCandidate(
             template.Granularity,
             text,
             bounds,
@@ -257,6 +262,79 @@ public sealed record RemediationCandidate
 
         return result;
     }
+}
+
+/// <summary>A structured-text remediation candidate with exact source ranges and font properties.</summary>
+public sealed record TextRemediationCandidate : RemediationCandidate
+{
+    public override RemediationCandidateKind Kind => RemediationCandidateKind.Text;
+    internal TextRemediationCandidate(
+        Granularity granularity,
+        string text,
+        PdfRect<double> boundingBox,
+        PdfRect<double> relativeBoundingBox,
+        IReadOnlyList<StructuredCharacter> characters,
+        IReadOnlyList<StructuredSourceRef> sourceReferences,
+        int sequenceIndex,
+        double fontSize,
+        string? fontName = null,
+        int? fontWeight = null,
+        bool? italic = null,
+        bool? isGrayish = null,
+        IReadOnlyList<RemediationTextRange>? exactTextRanges = null)
+        : base(granularity, text, boundingBox, relativeBoundingBox, characters, sourceReferences,
+            sequenceIndex, fontSize, fontName, fontWeight, italic, isGrayish, exactTextRanges)
+    {
+    }
+}
+
+/// <summary>An atomic non-text painting candidate from the parsed content model.</summary>
+public sealed record ContentRemediationCandidate : RemediationCandidate
+{
+    internal ContentRemediationCandidate(
+        RemediationCandidateKind kind,
+        IContentItem<double> item,
+        PdfRect<double> bounds,
+        PdfRect<double> relativeBounds,
+        int sequenceIndex,
+        int resourceUseCount,
+        string? resourceIdentity = null,
+        string? resourceName = null)
+        : base(
+            Granularity.Paragraph,
+            string.Empty,
+            bounds,
+            relativeBounds,
+            Array.Empty<StructuredCharacter>(),
+            item.SourceReference is { } source ? new[] { source } : Array.Empty<StructuredSourceRef>(),
+            sequenceIndex,
+            0)
+    {
+        ContentKind = kind;
+        Item = item;
+        ParsedContentIdentity = item.ParsedItemId;
+        ResourceIdentity = resourceIdentity;
+        ResourceName = resourceName;
+        ResourceUseCount = resourceUseCount;
+    }
+
+    public override RemediationCandidateKind Kind => ContentKind;
+    public RemediationCandidateKind ContentKind { get; }
+    public ParsedContentId? ParsedContentIdentity { get; }
+    public string? ResourceIdentity { get; }
+    public string? ResourceName { get; }
+    public int ResourceUseCount { get; }
+    internal IContentItem<double> Item { get; }
+}
+
+/// <summary>High-level family of content represented by a remediation candidate.</summary>
+public enum RemediationCandidateKind
+{
+    Text,
+    Image,
+    Path,
+    Form,
+    Shading
 }
 
 /// <summary>
@@ -312,6 +390,14 @@ public static class RemediationLeafSelection
         this RemediationCandidate candidate,
         IEnumerable<IContentNode<T>> content) where T : struct, IFloatingPoint<T>
     {
+        if (candidate is ContentRemediationCandidate graphical)
+        {
+            if (typeof(T) != typeof(double))
+            {
+                throw new NotSupportedException("Graphical remediation candidates currently support double-precision content models only.");
+            }
+            return new[] { (IContentItem<T>)(object)graphical.Item };
+        }
         return ContentModelBridge.FindItems(content, candidate.SourceReferences);
     }
 
@@ -320,6 +406,14 @@ public static class RemediationLeafSelection
         this RemediationCandidate candidate,
         IEnumerable<IContentNode<T>> content) where T : struct, IFloatingPoint<T>
     {
+        if (candidate is ContentRemediationCandidate graphical)
+        {
+            if (typeof(T) != typeof(double))
+            {
+                throw new NotSupportedException("Graphical remediation candidates currently support double-precision content models only.");
+            }
+            return new[] { new RemediationClaimTarget<T>((IContentItem<T>)(object)graphical.Item) };
+        }
         if (!candidate.RequiresExactMaterialization)
         {
             return new ReadOnlyCollection<RemediationClaimTarget<T>>(

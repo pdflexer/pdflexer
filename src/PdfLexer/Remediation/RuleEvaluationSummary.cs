@@ -47,7 +47,23 @@ public sealed record RemediationAutoArtifactOutcome(
     /// <summary>Content bounds in page coordinates.</summary>
     PdfRect<double> BoundingBox,
     /// <summary>Whether the artifact operation is planned or applied.</summary>
-    RemediationAutoArtifactDisposition Disposition);
+    RemediationAutoArtifactDisposition Disposition)
+{
+    /// <summary>Candidate family handled by the automatic policy.</summary>
+    public RemediationCandidateKind CandidateKind { get; init; } = RemediationCandidateKind.Text;
+
+    /// <summary>Stable candidate identity, when available.</summary>
+    public string? CandidateId { get; init; }
+
+    /// <summary>Stable resource identity, when the item uses a resource.</summary>
+    public string? ResourceIdentity { get; init; }
+
+    /// <summary>Page resource name, when available.</summary>
+    public string? ResourceName { get; init; }
+
+    /// <summary>Number of document-wide invocations of the resource.</summary>
+    public int ResourceUseCount { get; init; }
+}
 
 internal sealed class RuleEvaluationAccumulator
 {

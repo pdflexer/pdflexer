@@ -66,7 +66,7 @@ using var doc = PdfDocument.Open("input.pdf");
 var page = doc.Pages[0];
 
 var resources = page.NativeObject.Get<PdfDictionary>(PdfName.Resources);
-var rawContents = page.NativeObject.GetRequiredValue(PdfName.Contents);
+var rawContents = page.NativeObject.GetRequired<IPdfObject>(PdfName.Contents);
 ```
 
 Use raw access when:
@@ -77,18 +77,26 @@ Use raw access when:
 
 ## Traversing Raw PDF Objects
 
-`PdfDictionary` provides the main typed access helpers:
+`PdfDictionary` provides five preferred lookup shapes:
 
-- `dict.Get<T>(key)`: optional typed access, returns `null` if missing or wrong type
-- `dict.GetRequiredValue<T>(key)`: required typed access, throws if missing or wrong type
-- `dict.Get(key)`: optional raw `IPdfObject`
-- `dict.GetRequiredValue(key)`: required raw `IPdfObject`
-- `dict.TryGetValue(key, out value)`: optional raw access using an `out` parameter
-- `dict.TryGetValue<T>(key, out value, errorOnMismatch: ...)`: optional typed access using an `out` parameter
+| Method | Missing | PDF null | Wrong type | Indirect reference |
+| --- | --- | --- | --- | --- |
+| `Get(key)` | `null` | `PdfNull` | n/a | resolved |
+| `Get<T>(key)` | `null` | `null` | `null` | resolved |
+| `GetOptional<T>(key)` | `null` | `null` | throws | resolved |
+| `GetRequired<T>(key)` | throws | throws | throws | resolved |
+| `TryGet<T>(key, out value)` | `false` | `false` | `false` | resolved |
 
-Typed dictionary access auto-resolves indirect references.
+The typed PDF-null behavior above applies when `T` is a concrete expected type. A request for `IPdfObject`
+accepts and returns `PdfNull`, preserving the ability to inspect arbitrary resolved objects.
 
-**important** TryGetValue<T> `errorOnMismatch` parameter defaults to `true`, which means it can throw if the key exists but resolves to the wrong type. Pass `errorOnMismatch: false` when you want classic try-get behavior that will not throw exceptions.
+The indexer and `TryGetValue(key, out value)` expose the stored object without resolving indirect references.
+The indexer follows `IDictionary` semantics and throws `KeyNotFoundException` for an absent key; use `Get(key)`
+for a nullable resolved read.
+
+Legacy `Get<T>`, `GetOptionalValue<T>`, `GetRequiredValue<T>`, and generic `TryGetValue<T>` remain supported but
+are hidden from IntelliSense. In particular, legacy generic `TryGetValue<T>` defaults to throwing on a type
+mismatch; new code should use `TryGet<T>` for conventional non-throwing behavior.
 
 For object-level casting after you already have an `IPdfObject`, prefer:
 
@@ -106,13 +114,13 @@ var pageDict = page.NativeObject;
 PdfDictionary? resources = pageDict.Get<PdfDictionary>(PdfName.Resources);
 
 // required typed access
-PdfArray mediaBox = pageDict.GetRequiredValue<PdfArray>(PdfName.MediaBox);
+PdfArray mediaBox = pageDict.GetRequired<PdfArray>(PdfName.MediaBox);
 ```
 
-When the object type is not known up front, use raw access and resolve explicitly:
+When the object type is not known up front, request the resolved `IPdfObject`:
 
 ```csharp
-var val = page.NativeObject.GetRequiredValue(PdfName.Contents).Resolve();
+var val = page.NativeObject.GetRequired<IPdfObject>(PdfName.Contents);
 
 switch (val)
 {
@@ -120,11 +128,11 @@ switch (val)
         foreach (var item in arr)
         {
             var stream = item.GetAs<PdfStream>();
-            Console.WriteLine(stream.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length));
+            Console.WriteLine(stream.Dictionary.GetRequired<PdfNumber>(PdfName.Length));
         }
         break;
     case PdfStream single:
-        Console.WriteLine(single.Dictionary.GetRequiredValue<PdfNumber>(PdfName.Length));
+        Console.WriteLine(single.Dictionary.GetRequired<PdfNumber>(PdfName.Length));
         break;
     default:
         throw new ApplicationException("Invalid Contents value on page");
@@ -134,7 +142,7 @@ switch (val)
 `IPdfObject.GetPdfObjType()` is useful when you want the direct object type without switching manually on indirect references first.
 
 ```csharp
-var val = page.NativeObject.GetRequiredValue(PdfName.Contents);
+var val = page.NativeObject.GetRequired<IPdfObject>(PdfName.Contents);
 
 switch (val.GetPdfObjType())
 {

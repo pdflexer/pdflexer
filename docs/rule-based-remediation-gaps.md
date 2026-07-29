@@ -38,7 +38,7 @@ PDF/UA assurance as complete.
 | ID | Priority | Status | Gap |
 | --- | --- | --- | --- |
 | RRM-001 | P0 | Open | Flow regions do not continue across pages |
-| RRM-002 | P0 | Open | Declarative rules cannot select or artifact non-text content |
+| RRM-002 | P0 | In progress | Declarative rules cannot select or artifact non-text content |
 | RRM-003 | P0 | Complete | Multiple inline claims in one text operator may be order-sensitive |
 | RRM-004 | P1 | Open | Group rules cannot consume prior Group outputs |
 | RRM-005 | P0 | Open | Table construction handles only regular, page-local grids |
@@ -54,7 +54,7 @@ PDF/UA assurance as complete.
 | RRM-015 | P2 | Intentional limitation | Scanned PDFs require an external text/OCR layer |
 | RRM-016 | P0 | Complete | Rules have no expected-match cardinality, so template drift is silent |
 | RRM-017 | P0 | Open | No rule-set applicability guard or document-family check |
-| RRM-018 | P0 | Open | No semantic output assertions beyond conformance validation |
+| RRM-018 | P0 | In progress | No semantic output assertions beyond conformance validation |
 | RRM-019 | P0 | Open | Annotations already present in the input are outside the rule model |
 | RRM-020 | P1 | Open | Pre-existing marked content and optional content are unmodeled |
 | RRM-021 | P1 | Open | List interior structure and `/ListNumbering` are not expressible |
@@ -68,8 +68,8 @@ PDF/UA assurance as complete.
 | RRM-029 | P1 | Open | Structure sibling order and the reading-order default are unspecified |
 | RRM-030 | P1 | Open | `DryRun` does not guarantee `Commit`; failure semantics are undocumented |
 | RRM-031 | P1 | Open | Rule-set composition and precedence are undefined |
-| RRM-032 | P0 | Open | Text normalization for predicate matching is unspecified |
-| RRM-033 | P1 | Partially addressed | No negative explain or per-rule match diagnostics |
+| RRM-032 | P0 | In progress | Text normalization for predicate matching is unspecified |
+| RRM-033 | P1 | In progress | No negative explain or per-rule match diagnostics |
 | RRM-034 | P2 | Open | Predicate evaluation cost is unbounded |
 | RRM-035 | P1 | Partially addressed | Documented rule language omits shipped API surface |
 
@@ -252,7 +252,7 @@ parents rather than one logical multi-page structure.
 
 ## RRM-002: Declarative rules cannot select or artifact non-text content
 
-**Status:** Open
+**Status:** In progress
 
 **Priority:** P0
 
@@ -263,6 +263,20 @@ the untagged-content diagnostic examines every content item.
 
 The imperative `StructuralBuilder` can bind images, but that capability is not
 available as a portable, serialized remediation rule.
+
+**Progress (2026-07-29)**
+
+Implemented discriminated text/content candidates, typed selectors, atomic image/path/form/shading
+enumeration and materialization, content type/resource/reuse predicates, same-item ownership
+conflicts, and reported graphical `AutoArtifact`. Non-paint paths are excluded. Resource names come
+from page resource keys, resource identities are stable SHA-256 stream hashes, reuse counts are
+document-wide, graphical bounds use the structured-text page transform, and the page candidate
+index is cached. Integration coverage exercises named/reused forms, ruling/background paths,
+dry-run, commit, JSON predicates, and auto-artifact reporting.
+
+Still required: remove the legacy granularity API and require `candidates` in JSON; compute unified
+text/graphics ordering; expose structured unaccounted-content details; verify invocation-level MCID
+binding and Figure `/Alt`; and add real image/logo and shading fixtures.
 
 **Impact**
 
@@ -780,7 +794,7 @@ runtime safety concept: the engine should be able to decline a document it does 
 
 ## RRM-018: No semantic output assertions beyond conformance validation
 
-**Status:** Open
+**Status:** In progress
 
 **Priority:** P0
 
@@ -795,6 +809,18 @@ The rule language has no way to express expectations about the shape of the resu
 The MVP exit gate covers this with human review ("one reviewed rule set handles those variants").
 That does not scale to production batches and does not survive template drift.
 
+**Progress (2026-07-29)**
+
+Implemented immutable planned semantic-tree output; document/per-page rule-output counts,
+structure-tag counts, and direct parent/child assertions; JSON parsing and validation; report
+outcomes with provenance; and commit-blocking `SemanticAssertionFailed` diagnostics.
+Missing parent/element assertions now fail rather than producing no outcome, child ranges are
+validated, recursive traversal is cycle-guarded, and integration coverage exercises a missing
+semantic element.
+
+Still required: snapshot the materialized `StructuralBuilder` tree, compare asserted planned and
+materialized dimensions, strengthen tag/page-selector validation, and add rollback/parity tests.
+
 **Impact**
 
 - Conformance passes are mistaken for correctness passes.
@@ -808,11 +834,11 @@ That does not scale to production batches and does not survive template drift.
 
 **Completion criteria**
 
-- [ ] A declarative assertion set can be attached to a rule set and evaluated at dry-run and commit.
-- [ ] Assertions cover claim counts per rule, structure-element counts per tag, parent/child shape,
+- [x] A declarative assertion set can be attached to a rule set and evaluated at dry-run and commit.
+- [x] Assertions cover claim counts per rule, structure-element counts per tag, parent/child shape,
   and page-scoped variants of each.
-- [ ] Assertion failures are diagnostics with the same provenance detail as rule diagnostics.
-- [ ] Assertions are expressible in the JSON rule format.
+- [x] Assertion failures are diagnostics with the same provenance detail as rule diagnostics.
+- [x] Assertions are expressible in the JSON rule format.
 - [ ] Tests cover an assertion that catches a mis-tagged total which external validation accepts.
 
 ## RRM-019: Annotations already present in the input are outside the rule model
@@ -1305,7 +1331,7 @@ case, and nothing confirms it is supported.
 
 ## RRM-032: Text normalization for predicate matching is unspecified
 
-**Status:** Open
+**Status:** In progress
 
 **Priority:** P0
 
@@ -1321,6 +1347,18 @@ a non-breaking hyphen simply does not match — and by RRM-016, does not report 
 This is invisible in the current synthetic fixtures, which are generated by PdfLexer from simple
 Helvetica text. RRM-011 will expose it; the fix is a language feature rather than a test.
 
+**Progress (2026-07-29)**
+
+Implemented the documented NFKC, soft-hyphen, Unicode-whitespace, dash, and quote pipeline with
+rule-set and predicate overrides. Literal operations normalize both operands; regex operations
+normalize candidate text only. Traces expose raw and normalized text, and focused unit tests cover
+the transformations and overrides.
+
+Still required: route every anchor/table-header/repeated-element/neighbor-text matcher through the
+policy; expose raw/normalized text in general candidate and outcome summaries rather than only
+traces; add decomposed-character and `TJ`-gap fixtures; and verify source-range materialization is
+unchanged end to end.
+
 **Impact**
 
 - Rules are brittle in ways that correlate with the producing application rather than the layout.
@@ -1335,15 +1373,15 @@ Helvetica text. RRM-011 will expose it; the fix is a language feature rather tha
 
 **Completion criteria**
 
-- [ ] A documented default normalization is applied to candidate text before matching, covering
+- [x] A documented default normalization is applied to candidate text before matching, covering
   Unicode normal form, whitespace collapsing, and hyphen/dash/quote folding.
-- [ ] Normalization is configurable per rule set and per predicate where the default is wrong.
+- [x] Normalization is configurable per rule set and per predicate where the default is wrong.
 - [ ] Reports expose both the raw and normalized text for a candidate.
 - [ ] Tests cover ligatures, soft hyphens, non-breaking hyphens and spaces, and `TJ`-derived spacing.
 
 ## RRM-033: No negative explain or per-rule match diagnostics
 
-**Status:** Partially addressed
+**Status:** In progress
 
 **Priority:** P1
 
@@ -1354,6 +1392,19 @@ It answers "which rules affected this content." It cannot answer the question a 
 has: "why did my rule match nothing", or "which conjunct of this `And` chain rejected this
 candidate". For a language whose entire authoring loop consists of tuning composed predicates, that
 is the missing tool — and it is the direct enabler for diagnosing RRM-016 and RRM-032.
+
+**Progress (2026-07-29)**
+
+Implemented opt-in candidate rejection tracing filtered by rule/page/candidate/source, trace trees
+with confidence/reasons/evaluated/skipped state, short-circuit preservation, rejecting `And`
+operand reporting, `RemediationReport.PredicateTraces`, `ExplainRejection`, and CLI
+`--explain-rule`/`--explain-page`. A central evaluation wrapper guarantees that custom and built-in
+predicate implementations cannot omit trace nodes; mixed Font/Text regression coverage walks the
+entire resulting tree.
+
+Still required: trace claim predicates used by group/refine actions, improve rejection reasons
+where built-in leaves still return generic data, and add end-to-end filtering, zero-match CLI, and
+tracing-does-not-change-results tests.
 
 **Impact**
 
@@ -1368,12 +1419,12 @@ is the missing tool — and it is the direct enabler for diagnosing RRM-016 and 
 
 **Completion criteria**
 
-- [ ] A trace mode records per-predicate evaluation outcomes for selected candidates or a selected
+- [x] A trace mode records per-predicate evaluation outcomes for selected candidates or a selected
   page.
-- [ ] Composed predicates report which operand rejected a candidate.
+- [x] Composed predicates report which operand rejected a candidate.
 - [x] Per-rule evaluation counts — candidates considered, matched, rejected by confidence, rejected by
   conflict — appear in the report for every rule.
-- [ ] `Explain` is documented, and a negative form is available from the CLI.
+- [x] `Explain` is documented, and a negative form is available from the CLI.
 
 ## RRM-034: Predicate evaluation cost is unbounded
 

@@ -555,7 +555,7 @@ public class RemediationRuleModelTests
         double fontSize,
         int sequenceIndex = 0)
     {
-        return new RemediationCandidate(
+        return new TextRemediationCandidate(
             Granularity.Paragraph,
             text,
             bounds,

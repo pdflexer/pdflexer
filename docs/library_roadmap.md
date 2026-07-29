@@ -104,7 +104,7 @@ Work:
   - required typed access
   - raw object access
   - object resolution
-- Reduce overlap between `Get<T>`, `GetOptionalValue<T>`, `GetRequiredValue<T>`, `TryGetValue<T>`, `GetAs<T>`, `GetAsOrNull<T>`, and `Resolve()`
+- Use `Get<T>`, `GetOptional<T>`, `GetRequired<T>`, and `TryGet<T>` as the preferred dictionary lookup vocabulary; retain older accessors as hidden compatibility aliases
 - Mark aliases or legacy forms as secondary if they must remain for compatibility
 - Update examples and XML docs to consistently use the preferred path
 

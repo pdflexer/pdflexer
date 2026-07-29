@@ -178,12 +178,12 @@ This is especially important for `Resources`, `MediaBox`, `CropBox`, `BleedBox`,
 
 Current preferred names, reflecting the decisions already made:
 
-- `dict.Get<T>(key)` for optional typed dictionary access
-- `dict.GetRequiredValue<T>(key)` for required typed dictionary access
-- `dict.Get(key)` for optional raw dictionary access
-- `dict.GetRequiredValue(key)` for required raw dictionary access
-- `dict.TryGetValue(key, out value)` as a secondary raw dictionary helper
-- `dict.TryGetValue<T>(key, out value, errorOnMismatch: ...)` as a secondary typed dictionary helper
+- `dict.Get<T>(key)` for mismatch-tolerant optional typed dictionary access
+- `dict.GetOptional<T>(key)` for absence-tolerant, mismatch-strict typed access
+- `dict.GetRequired<T>(key)` for required typed dictionary access
+- `dict.Get(key)` for optional resolved object access
+- `dict.TryGet<T>(key, out value)` for non-throwing typed access
+- the indexer or `dict.TryGetValue(key, out value)` for unresolved stored-object access
 - `obj.GetAs<T>()` for required object-level typed access once you already have an `IPdfObject`
 - `obj.GetAsOrNull<T>()` for optional object-level typed access once you already have an `IPdfObject`
 - `Resolve()` when callers explicitly want the resolved underlying object
@@ -204,31 +204,29 @@ Today users must choose between:
 Decisions made:
 
 - keep compatibility where needed
-- mark the `Get*` / `GetRequiredValue*` dictionary helpers as preferred in XML docs and examples
+- mark the canonical dictionary helpers as preferred in XML docs and examples
 - treat `TryGetValue*` as secondary helpers rather than the primary teaching surface
 - prefer `GetAs<T>` / `GetAsOrNull<T>` for object-level casts
 - deprecate `GetValue<T>` / `GetValueOrNull<T>` in favor of `GetAs<T>` / `GetAsOrNull<T>`
-- treat `GetOptionalValue<T>` as legacy/secondary alongside the other overlapping aliases
+- treat `Get<T>`, `GetOptionalValue<T>`, `GetRequiredValue<T>`, and generic `TryGetValue<T>` as hidden compatibility aliases
 
 ### C. Clarify raw object access versus typed access
 
 Recommended distinction, matching the current implementation and docs:
 
-- typed dictionary access (`Get<T>`, `GetRequiredValue<T>`, `TryGetValue<T>`) auto-resolves indirect references and enforces type expectations
-- raw dictionary access (`Get(key)`, `GetRequiredValue(key)`, `TryGetValue(key, out value)`) returns the underlying `IPdfObject` without changing the surface vocabulary to imply a cast
+- canonical typed dictionary access auto-resolves indirect references and makes mismatch behavior explicit in its verb
+- `Get(key)` also resolves indirect references for compatibility
+- the indexer and raw `TryGetValue(key, out value)` return the stored object without resolving it
 - object-level typed access should use `GetAs<T>` / `GetAsOrNull<T>` so it is visually clear that the operation applies to the current object, not to a dictionary entry
 - `Resolve()` remains available when callers want the resolved underlying object and will handle type discrimination themselves
 
 This should be described once and used consistently everywhere.
 
-Special note for `TryGetValue<T>`:
+Special note for compatibility:
 
-- it is a secondary helper
-- it auto-resolves like the other typed dictionary helpers
-- its `errorOnMismatch` parameter defaults to `true`
-- callers who want classic try-get behavior should pass `errorOnMismatch: false`
-
-This default must be called out explicitly anywhere `TryGetValue<T>` is documented so users do not incorrectly assume it is always non-throwing.
+- preferred `TryGet<T>` auto-resolves and never throws for absence, PDF null, or mismatch
+- legacy generic `TryGetValue<T>` auto-resolves but defaults `errorOnMismatch` to `true`
+- strict legacy call sites remain supported, but new code should express strict optional access with `GetOptional<T>`
 
 ### D. Add a short “how to traverse” cheat sheet
 
@@ -244,8 +242,9 @@ Examples:
 
 The cheat sheet should map these cases to the current preferred names:
 
-- expected dictionary entry type: `dict.Get<T>(key)` or `dict.GetRequiredValue<T>(key)`
-- raw dictionary entry: `dict.Get(key)` or `dict.GetRequiredValue(key)`
+- expected dictionary entry type: `dict.GetOptional<T>(key)` or `dict.GetRequired<T>(key)`
+- mismatch-tolerant dictionary entry: `dict.Get<T>(key)` or `dict.TryGet<T>(key, out value)`
+- stored unresolved dictionary entry: the indexer or raw `dict.TryGetValue(key, out value)`
 - out-parameter dictionary access: `dict.TryGetValue(...)` only when that style is specifically desired
 - object-level cast: `obj.GetAs<T>()` or `obj.GetAsOrNull<T>()`
 - explicit object resolution before manual inspection: `obj.Resolve()`

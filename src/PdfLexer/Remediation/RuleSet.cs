@@ -10,7 +10,10 @@ public sealed class RuleSet
     /// <summary>
     /// Creates a rule set with rules only.
     /// </summary>
-    public RuleSet(string id, IEnumerable<Rule> rules)
+    public RuleSet(
+        string id,
+        IEnumerable<Rule> rules,
+        TextNormalizationOptions? textNormalization = null)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -18,9 +21,14 @@ public sealed class RuleSet
         }
 
         Id = id;
+        TextNormalization = textNormalization ?? TextNormalizationOptions.Default;
         Rules = new ReadOnlyCollection<Rule>(
             (rules ?? throw new ArgumentNullException(nameof(rules)))
-            .Select(rule => rule with { RuleSetId = id })
+            .Select(rule => rule with
+            {
+                RuleSetId = id,
+                TextNormalization = rule.TextNormalization ?? TextNormalization
+            })
             .ToList());
     }
 
@@ -40,8 +48,10 @@ public sealed class RuleSet
         IEnumerable<Rule> rules,
         IEnumerable<RemediationAnchor> anchors,
         IEnumerable<TolerancedZone>? tolerancedZones = null,
-        IEnumerable<FlowRegion>? flowRegions = null)
-        : this(id, rules)
+        IEnumerable<FlowRegion>? flowRegions = null,
+        TextNormalizationOptions? textNormalization = null,
+        IEnumerable<RemediationSemanticAssertion>? assertions = null)
+        : this(id, rules, textNormalization)
     {
         Anchors = new ReadOnlyCollection<RemediationAnchor>(
             (anchors ?? throw new ArgumentNullException(nameof(anchors))).ToList());
@@ -49,6 +59,8 @@ public sealed class RuleSet
             (tolerancedZones ?? Array.Empty<TolerancedZone>()).ToList());
         FlowRegions = new ReadOnlyCollection<FlowRegion>(
             (flowRegions ?? Array.Empty<FlowRegion>()).ToList());
+        Assertions = new ReadOnlyCollection<RemediationSemanticAssertion>(
+            (assertions ?? Array.Empty<RemediationSemanticAssertion>()).ToList());
     }
 
     /// <summary>Stable rule-set identifier used for composition and report provenance.</summary>
@@ -65,4 +77,11 @@ public sealed class RuleSet
 
     /// <summary>Flow regions available to rules in this set.</summary>
     public IReadOnlyList<FlowRegion> FlowRegions { get; } = Array.Empty<FlowRegion>();
+
+    /// <summary>Default text normalization inherited by rules that do not specify an override.</summary>
+    public TextNormalizationOptions TextNormalization { get; }
+
+    /// <summary>Semantic expectations evaluated against planned and materialized output.</summary>
+    public IReadOnlyList<RemediationSemanticAssertion> Assertions { get; } =
+        Array.Empty<RemediationSemanticAssertion>();
 }

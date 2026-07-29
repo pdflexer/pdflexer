@@ -20,6 +20,10 @@ internal sealed class RemediateCmd
 
     public string VeraPdfCommand { get; set; } = "verapdf";
 
+    public string? ExplainRule { get; set; }
+
+    public int? ExplainPage { get; set; }
+
     public static Command Create()
     {
         return new Command("remediate", "Applies serialized remediation rules to an untagged PDF")
@@ -41,7 +45,9 @@ internal sealed class RemediateCmd
             new Option<bool>("--dry-run", "Evaluate rules and print diagnostics without writing output."),
             new Option<bool>("--validate-only", "Validate rule shape without parsing page content."),
             new Option<bool>("--verapdf", "Run veraPDF on the output PDF after a successful commit."),
-            new Option<string>("--verapdf-command", () => "verapdf", "veraPDF executable path or command name.")
+            new Option<string>("--verapdf-command", () => "verapdf", "veraPDF executable path or command name."),
+            new Option<string?>("--explain-rule", "Retain and print rejection traces for this rule (dry-run only)."),
+            new Option<int?>("--explain-page", "Optional one-based page filter for --explain-rule.")
         };
     }
 
@@ -64,7 +70,17 @@ internal sealed class RemediateCmd
         }
 
         session.Use(job.RuleSet);
-        var report = cmd.DryRun ? session.DryRun() : session.Commit();
+        if (cmd.ExplainRule != null && !cmd.DryRun)
+        {
+            Console.Error.WriteLine("--explain-rule is dry-run only.");
+            return 4;
+        }
+
+        var report = cmd.ExplainRule == null
+            ? cmd.DryRun ? session.DryRun() : session.Commit()
+            : session.DryRun(new RemediationTraceRequest(
+                new[] { cmd.ExplainRule },
+                cmd.ExplainPage is { } page ? page - 1 : null));
         PrintReport(report);
         if (report.Diagnostics.Any(d => !d.StartsWith("[SUPPRESSED]", StringComparison.Ordinal)))
         {
@@ -128,7 +144,10 @@ internal sealed class RemediateCmd
             {
                 Console.WriteLine(
                     $"auto-artifact: {artifact.Disposition} page={artifact.PageIndex + 1} " +
-                    $"source={artifact.SourceReference} bounds={artifact.BoundingBox} text=\"{Preview(artifact.Text)}\"");
+                    $"kind={artifact.CandidateKind} candidate={artifact.CandidateId ?? "<none>"} " +
+                    $"source={artifact.SourceReference} bounds={artifact.BoundingBox} " +
+                    $"resource={artifact.ResourceIdentity ?? "<none>"} name={artifact.ResourceName ?? "<none>"} " +
+                    $"reuse={artifact.ResourceUseCount} text=\"{Preview(artifact.Text)}\"");
             }
         }
 
@@ -136,6 +155,27 @@ internal sealed class RemediateCmd
         {
             var output = diagnostic.StartsWith("[SUPPRESSED]", StringComparison.Ordinal) ? Console.Out : Console.Error;
             output.WriteLine("diagnostic: " + diagnostic);
+        }
+
+        foreach (var trace in report.PredicateTraces)
+        {
+            Console.WriteLine(
+                $"rejected: rule={trace.RuleId} page={trace.PageIndex + 1} candidate={trace.CandidateId} " +
+                $"kind={trace.CandidateKind} raw=\"{Preview(trace.RawText ?? string.Empty)}\" " +
+                $"normalized=\"{Preview(trace.NormalizedText ?? string.Empty)}\"");
+            PrintTrace(trace.Trace, 1);
+        }
+    }
+
+    private static void PrintTrace(PredicateTraceNode node, int depth)
+    {
+        var indent = new string(' ', depth * 2);
+        var state = node.Evaluated ? node.Result?.ToString() ?? "unknown" : "skipped";
+        var rejecting = node.RejectingAndOperand is { } operand ? $" rejecting-and-operand={operand}" : string.Empty;
+        Console.WriteLine($"{indent}{node.Predicate}: {state}{rejecting}{(node.Reason == null ? string.Empty : " — " + node.Reason)}");
+        foreach (var child in node.Children ?? Array.Empty<PredicateTraceNode>())
+        {
+            PrintTrace(child, depth + 1);
         }
     }
 

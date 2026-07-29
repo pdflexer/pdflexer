@@ -18,7 +18,27 @@ public abstract record RemediationPredicate
     public abstract string DebugString { get; }
 
     /// <summary>Evaluates this predicate against a candidate in context.</summary>
-    public abstract PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate);
+    public PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    {
+        var result = EvaluateCore(context, candidate);
+        if (!context.TracePredicates || result.Trace != null)
+        {
+            return result;
+        }
+
+        return result with
+        {
+            Trace = new PredicateTraceNode(
+                DebugString,
+                result.IsMatch,
+                result.Confidence,
+                result.Reason)
+        };
+    }
+
+    protected abstract PredicateResult EvaluateCore(
+        RemediationEvaluationContext context,
+        RemediationCandidate candidate);
 
     /// <summary>Evaluates this predicate against a candidate with an empty context.</summary>
     public PredicateResult Evaluate(RemediationCandidate candidate) => Evaluate(RemediationEvaluationContext.Empty, candidate);
@@ -38,8 +58,13 @@ public sealed record ConstantRemediationPredicate(bool Value, string Name) : Rem
 {
     public override string DebugString => Name;
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate) =>
-        Value ? PredicateResult.Match() : PredicateResult.NoMatch();
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate) =>
+        Value
+            ? PredicateResult.Match(trace: context.TracePredicates
+                ? new PredicateTraceNode(DebugString, true, 1) : null)
+            : PredicateResult.NoMatch($"Constant predicate '{Name}' rejected the candidate.", trace:
+                context.TracePredicates ? new PredicateTraceNode(DebugString, false, 1,
+                    $"Constant predicate '{Name}' rejected the candidate.") : null);
 }
 
 /// <summary>Logical operator for composite predicates.</summary>
@@ -59,30 +84,55 @@ public sealed record CompositeRemediationPredicate(
 {
     public override string DebugString => $"({Left.DebugString} {Kind} {Right.DebugString})";
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
         var left = Left.Evaluate(context, candidate);
         if (Kind == CompositePredicateKind.And)
         {
             if (!left.IsMatch)
             {
-                return left;
+                return context.TracePredicates
+                    ? left with { Trace = new PredicateTraceNode(DebugString, false, left.Confidence,
+                        left.Reason, new[] { left.Trace!, Skipped(Right) }, RejectingAndOperand: 1) }
+                    : left;
             }
 
             var right = Right.Evaluate(context, candidate);
+            var confidence = Math.Min(left.Confidence, right.Confidence);
+            if (!context.TracePredicates)
+            {
+                return right.IsMatch ? PredicateResult.Match(confidence) : right;
+            }
             return right.IsMatch
-                ? PredicateResult.Match(Math.Min(left.Confidence, right.Confidence))
-                : right;
+                ? PredicateResult.Match(confidence, new PredicateTraceNode(DebugString, true, confidence,
+                    Children: new[] { left.Trace!, right.Trace! }))
+                : right with { Trace = new PredicateTraceNode(DebugString, false, right.Confidence,
+                    right.Reason, new[] { left.Trace!, right.Trace! }, RejectingAndOperand: 2) };
         }
 
         if (left.IsMatch)
         {
-            return left;
+            return context.TracePredicates
+                ? left with { Trace = new PredicateTraceNode(DebugString, true, left.Confidence,
+                    Children: new[] { left.Trace!, Skipped(Right) }) }
+                : left;
         }
 
         var orRight = Right.Evaluate(context, candidate);
-        return orRight.IsMatch ? orRight : PredicateResult.NoMatch(left.Reason ?? orRight.Reason);
+        if (!context.TracePredicates)
+        {
+            return orRight.IsMatch ? orRight : PredicateResult.NoMatch(left.Reason ?? orRight.Reason);
+        }
+        var reason = left.Reason ?? orRight.Reason;
+        return orRight.IsMatch
+            ? orRight with { Trace = new PredicateTraceNode(DebugString, true, orRight.Confidence,
+                Children: new[] { left.Trace!, orRight.Trace! }) }
+            : PredicateResult.NoMatch(reason, trace: new PredicateTraceNode(DebugString, false,
+                Math.Min(left.Confidence, orRight.Confidence), reason, new[] { left.Trace!, orRight.Trace! }));
     }
+
+    private static PredicateTraceNode Skipped(RemediationPredicate predicate) =>
+        new(predicate.DebugString, null, 0, "Short-circuited.", Evaluated: false);
 }
 
 /// <summary>Candidate predicate that negates another predicate.</summary>
@@ -90,10 +140,17 @@ public sealed record NotRemediationPredicate(RemediationPredicate Inner) : Remed
 {
     public override string DebugString => $"Not({Inner.DebugString})";
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
         var result = Inner.Evaluate(context, candidate);
-        return result.IsMatch ? PredicateResult.NoMatch() : PredicateResult.Match(result.Confidence);
+        var matched = !result.IsMatch;
+        var trace = context.TracePredicates
+            ? new PredicateTraceNode(DebugString, matched, result.Confidence,
+                matched ? null : "Inner predicate matched.", new[] { result.Trace! })
+            : null;
+        return matched
+            ? PredicateResult.Match(result.Confidence, trace)
+            : PredicateResult.NoMatch("Negated predicate matched.", result.Confidence, trace);
     }
 }
 
@@ -114,11 +171,16 @@ public enum TextPredicateKind
 public sealed record TextRemediationPredicate : RemediationPredicate
 {
     /// <summary>Creates a text predicate.</summary>
-    public TextRemediationPredicate(TextPredicateKind kind, string value, StringComparison comparison = StringComparison.Ordinal)
+    public TextRemediationPredicate(
+        TextPredicateKind kind,
+        string value,
+        StringComparison comparison = StringComparison.Ordinal,
+        TextNormalizationOptions? normalization = null)
     {
         Kind = kind;
         Value = value ?? throw new ArgumentNullException(nameof(value));
         Comparison = comparison;
+        Normalization = normalization;
     }
 
     /// <summary>Text operation.</summary>
@@ -130,20 +192,35 @@ public sealed record TextRemediationPredicate : RemediationPredicate
     /// <summary>String comparison used for non-regex operations.</summary>
     public StringComparison Comparison { get; }
 
+    /// <summary>Optional predicate-specific normalization override.</summary>
+    public TextNormalizationOptions? Normalization { get; }
+
     public override string DebugString => $"Text.{Kind}(\"{Value}\")";
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
+        if (candidate.Kind != RemediationCandidateKind.Text)
+        {
+            return PredicateResult.NoMatch($"Text predicate requires a text candidate; actual kind was {candidate.Kind}.");
+        }
+
+        var normalizer = Normalization ?? context.TextNormalization;
+        var candidateText = normalizer.Normalize(candidate.Text);
+        var literal = Kind == TextPredicateKind.Matches ? Value : normalizer.Normalize(Value);
         var matched = Kind switch
         {
-            TextPredicateKind.Matches => Regex.IsMatch(candidate.Text, Value),
-            TextPredicateKind.Contains => candidate.Text.Contains(Value, Comparison),
-            TextPredicateKind.StartsWith => candidate.Text.StartsWith(Value, Comparison),
-            TextPredicateKind.Equals => string.Equals(candidate.Text, Value, Comparison),
+            TextPredicateKind.Matches => Regex.IsMatch(candidateText, Value),
+            TextPredicateKind.Contains => candidateText.Contains(literal, Comparison),
+            TextPredicateKind.StartsWith => candidateText.StartsWith(literal, Comparison),
+            TextPredicateKind.Equals => string.Equals(candidateText, literal, Comparison),
             _ => throw new ArgumentOutOfRangeException()
         };
 
-        return matched ? PredicateResult.Match() : PredicateResult.NoMatch();
+        var reason = matched ? null : $"Normalized candidate text \"{candidateText}\" did not satisfy {DebugString}.";
+        var trace = context.TracePredicates
+            ? new PredicateTraceNode(DebugString, matched, 1, reason, EvaluatedText: candidateText)
+            : null;
+        return matched ? PredicateResult.Match(trace: trace) : PredicateResult.NoMatch(reason, trace: trace);
     }
 }
 
@@ -162,6 +239,66 @@ public enum NumericOperator
     GreaterThan,
     /// <summary>Greater than or equal.</summary>
     GreaterThanOrEqual
+}
+
+public enum ContentPredicateKind
+{
+    Type,
+    ResourceIdentity,
+    ResourceName,
+    ResourceUseCount
+}
+
+/// <summary>Predicate over atomic non-text content metadata.</summary>
+public sealed record ContentRemediationPredicate(
+    ContentPredicateKind Kind,
+    RemediationCandidateKind? ExpectedType = null,
+    string? ExpectedText = null,
+    NumericOperator? Operator = null,
+    int? ExpectedCount = null) : RemediationPredicate
+{
+    public override string DebugString => $"Content.{Kind}({ExpectedType?.ToString() ?? ExpectedText ?? ExpectedCount?.ToString()})";
+
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
+    {
+        if (candidate is not ContentRemediationCandidate content)
+        {
+            return PredicateResult.NoMatch($"Content predicate requires a non-text candidate; actual kind was {candidate.Kind}.");
+        }
+        var matched = Kind switch
+        {
+            ContentPredicateKind.Type => content.Kind == ExpectedType,
+            ContentPredicateKind.ResourceIdentity => string.Equals(content.ResourceIdentity, ExpectedText, StringComparison.Ordinal),
+            ContentPredicateKind.ResourceName => string.Equals(content.ResourceName, ExpectedText, StringComparison.Ordinal),
+            ContentPredicateKind.ResourceUseCount when Operator is { } op && ExpectedCount is { } count =>
+                CompareNumber(content.ResourceUseCount, op, count),
+            _ => false
+        };
+        var actual = Kind switch
+        {
+            ContentPredicateKind.Type => content.Kind.ToString(),
+            ContentPredicateKind.ResourceIdentity => content.ResourceIdentity ?? "<none>",
+            ContentPredicateKind.ResourceName => content.ResourceName ?? "<none>",
+            ContentPredicateKind.ResourceUseCount => content.ResourceUseCount.ToString(),
+            _ => "<unknown>"
+        };
+        var reason = matched ? null : $"{DebugString} rejected candidate; actual value was {actual}.";
+        var trace = context.TracePredicates
+            ? new PredicateTraceNode(DebugString, matched, 1, reason)
+            : null;
+        return matched ? PredicateResult.Match(trace: trace) : PredicateResult.NoMatch(reason, trace: trace);
+    }
+
+    private static bool CompareNumber(int actual, NumericOperator op, int expected) => op switch
+    {
+        NumericOperator.Equal => actual == expected,
+        NumericOperator.NotEqual => actual != expected,
+        NumericOperator.LessThan => actual < expected,
+        NumericOperator.LessThanOrEqual => actual <= expected,
+        NumericOperator.GreaterThan => actual > expected,
+        NumericOperator.GreaterThanOrEqual => actual >= expected,
+        _ => false
+    };
 }
 
 /// <summary>Font/style predicate category.</summary>
@@ -229,8 +366,12 @@ public sealed record FontRemediationPredicate : RemediationPredicate
         _ => $"Font.{Kind}"
     };
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
+        if (candidate.Kind != RemediationCandidateKind.Text)
+        {
+            return PredicateResult.NoMatch($"Font predicate requires a text candidate; actual kind was {candidate.Kind}.");
+        }
         if (Kind == FontPredicateKind.Size && Operator is { } op && NumericValue is { } expected)
         {
             return Compare(candidate.FontSize, op, expected) ? PredicateResult.Match() : PredicateResult.NoMatch();
@@ -289,7 +430,7 @@ public sealed record GeometryRemediationPredicate(LayoutCoord Coord, GeometryMat
 {
     public override string DebugString => $"Geo.{Mode}({Coord.DebugString})";
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
         PdfRect<double> rect;
         try
@@ -317,7 +458,7 @@ public sealed record TolerancedZoneRemediationPredicate(string ZoneId) : Remedia
 {
     public override string DebugString => $"Flow.InZone({ZoneId})";
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
         var zone = context.ResolveTolerancedZone(ZoneId);
         return zone?.Contains(candidate.RelativeBoundingBox) ?? PredicateResult.NoMatch($"Could not resolve zone '{ZoneId}'.");
@@ -329,7 +470,7 @@ public sealed record FlowRegionRemediationPredicate(string RegionId) : Remediati
 {
     public override string DebugString => $"Flow.InFlowRegion({RegionId})";
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
         var region = context.ResolveFlowRegion(RegionId);
         return region?.Contains(candidate) == true
@@ -365,7 +506,7 @@ public sealed record FlowOrderRemediationPredicate(
         _ => $"Flow.{Kind}({Id})"
     };
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
         if (context.StructuredText == null)
         {
@@ -472,7 +613,7 @@ public sealed record RelationalRemediationPredicate(
         ? $"Rel.{Kind}({RuleId},{child})"
         : $"Rel.{Kind}({RuleId})";
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
         if (!context.ClaimsByRuleId.TryGetValue(RuleId, out var claims) || claims.Count == 0)
         {
@@ -531,7 +672,7 @@ public sealed record AnchorRelativeRemediationPredicate(
             : $"Anchor.{Kind}({AnchorId})"
     };
 
-    public override PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
         var resolution = context.ResolveAnchor(AnchorId);
         if (resolution == null)
@@ -636,6 +777,19 @@ public sealed record AnchorRelativeRemediationPredicate(
 /// </summary>
 public static class Predicates
 {
+    /// <summary>Atomic graphical-content predicate helpers.</summary>
+    public static class Content
+    {
+        public static RemediationPredicate Type(RemediationCandidateKind kind) =>
+            new ContentRemediationPredicate(ContentPredicateKind.Type, ExpectedType: kind);
+        public static RemediationPredicate ResourceIdentity(string identity) =>
+            new ContentRemediationPredicate(ContentPredicateKind.ResourceIdentity, ExpectedText: identity);
+        public static RemediationPredicate ResourceName(string name) =>
+            new ContentRemediationPredicate(ContentPredicateKind.ResourceName, ExpectedText: name);
+        public static RemediationPredicate ResourceUseCount(NumericOperator op, int count) =>
+            new ContentRemediationPredicate(ContentPredicateKind.ResourceUseCount, Operator: op, ExpectedCount: count);
+    }
+
     /// <summary>Text predicate factory helpers.</summary>
     public static class Text
     {

@@ -39,6 +39,12 @@ internal sealed class PageRemediationState
 
     public TextOwnershipIndex TextOwnership { get; } = new();
 
+    public Dictionary<IContentItem<double>, RemediationClaim> ContentOwnership { get; } =
+        new(ReferenceEqualityComparer.Instance);
+
+    public IReadOnlyList<ContentRemediationCandidate> ContentCandidates { get; internal set; } =
+        Array.Empty<ContentRemediationCandidate>();
+
     public IReadOnlyDictionary<Stage, IReadOnlyList<RemediationClaim>> ClaimSnapshots => _claimSnapshots;
 
     public IReadOnlyList<string> PlanDiagnostics => _planDiagnostics;

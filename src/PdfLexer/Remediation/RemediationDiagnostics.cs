@@ -18,7 +18,9 @@ public enum DiagnosticCode
     /// <summary>Logical structure order differs from the expected reading order.</summary>
     ReadingOrderDrift = 5,
     /// <summary>A rule matched a number of inputs outside its declared cardinality.</summary>
-    RuleCardinalityMismatch = 6
+    RuleCardinalityMismatch = 6,
+    /// <summary>A semantic output assertion was not satisfied.</summary>
+    SemanticAssertionFailed = 7
 }
 
 /// <summary>

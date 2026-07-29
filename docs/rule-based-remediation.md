@@ -107,7 +107,11 @@ var anchor = RemediationAnchor.TextLabel("subtotal-label", "Subtotal") with
 
 Tracked as RRM-028.
 
-**Text predicates match extracted text as-is.** No normalization is documented or guaranteed. Ligatures, soft hyphens, non-breaking spaces, U+2011 non-breaking hyphens, and runs of spaces synthesized from `TJ` offsets will all defeat an otherwise-correct pattern — and by the point above, defeat it silently. Prefer `Contains` with an explicit `StringComparison` over anchored `Matches` for values you do not control. Tracked as RRM-032.
+**Text predicates normalize extracted text by default.** The pipeline applies Unicode NFKC, removes
+soft hyphens, collapses Unicode whitespace, and folds common dash and curly-quote characters.
+`Equals`, `Contains`, and `StartsWith` normalize both operands; regex predicates normalize candidate
+text only. Configure the rule-set policy with `TextNormalizationOptions`, or pass an override to
+`TextRemediationPredicate`. Source characters and PDF operator ranges are never rewritten.
 
 **Sibling order in the structure tree is unspecified.** Reading order is tree order, but nothing currently defines whether siblings are ordered by rule declaration, geometry, or content-stream position. If reading order matters, assert it with an explicit `ReorderSiblings` refine rule rather than relying on the default. Tracked as RRM-029.
 
@@ -115,7 +119,8 @@ Tracked as RRM-028.
 
 ## Rule Model
 
-Rules live in a `RuleSet`. A rule set also carries shared anchors, toleranced zones, and flow regions.
+Rules live in a `RuleSet`. A rule set also carries shared anchors, toleranced zones, flow regions,
+text normalization, and semantic assertions.
 
 ```csharp
 var ruleSet = new RuleSet(
@@ -131,7 +136,8 @@ Every `Rule` has the same shape:
 - `Id`: stable provenance id used in reports and debug-write titles.
 - `Action`: what to do with matched content or claims.
 - `Predicate`: how raw candidates are selected for classify rules.
-- `Granularity`: `Character`, `Word`, `Line`, or `Paragraph`.
+- `Candidates`: `CandidateSelector.Text(Granularity)` or
+  `CandidateSelector.Content(...)` for image, path, form, and shading invocations.
 - `Pages`: `PageSelector.Every`, `First`, `Last`, `Range(...)`, or `Parity(...)`.
 - `Cardinality`: optional expected selector-match count, using `Exactly`, `AtLeast`, `AtMost`, or `Between`.
 
@@ -745,8 +751,16 @@ foreach (var outcome in report.Explain(someCharacter))
 }
 ```
 
-> [!NOTE]
-> `Explain` answers "which rules touched this content." It cannot yet answer "why did my rule match nothing" or "which conjunct of this `And` chain rejected this candidate." Use `RuleEvaluations` for aggregate rejection counts; predicate-level negative tracing remains RRM-033.
+`Explain` remains the positive provenance API: it answers which rules touched content. For negative
+diagnostics, pass a `RemediationTraceRequest` to `DryRun`. Rejections appear in
+`report.PredicateTraces`, and `ExplainRejection(ruleId, candidateId)` returns one retained trace.
+Tracing preserves short-circuit behavior and records skipped operands and the rejecting `And`
+operand. The CLI equivalent is `--dry-run --explain-rule <id>` with optional `--explain-page`.
+
+Semantic assertions are attached to `RuleSet.Assertions`. Rule-output counts,
+structure-element counts, and direct parent/child shapes produce
+`RemediationReport.AssertionOutcomes`; an unsuppressed `SemanticAssertionFailed` blocks commit.
+`RemediationReport.PlannedSemanticTree` exposes the immutable tree derived from the finalized plan.
 
 ## Authoring Guidance
 

@@ -127,6 +127,12 @@ This is scheduled first among gap-closing work for one reason: until a rule that
 produces a failure instead of degraded output, no other fix can be trusted in a batch. Everything
 downstream is measured with these instruments.
 
+**Progress (2026-07-29):** RRM-018 and RRM-033 are in progress. Assertion models, JSON/report
+surfaces, planned-tree output, commit-blocking failures, candidate rejection traces, and CLI explain
+mode are implemented. Trace-node completeness and missing-element assertion behavior now have
+regressions. Remaining work is materialized-tree parity, claim-predicate tracing, richer leaf
+reasons, and rollback/parity integration fixtures.
+
 Pair RRM-016 with the `AutoArtifact` hazard directly. The current interaction — content that no
 rule claims gets swept into an artifact — is how a rule set silently converts an invoice total
 into hidden content while passing every conformance check available.
@@ -158,6 +164,11 @@ than as fallout from it.
 RRM-032 and RRM-026 are near-certain first-contact failures. Ligatures, soft hyphens, non-breaking
 spaces, and decomposed forms defeat literal predicates; damaged or unusual input needs to fail with
 a diagnosis rather than a stack trace or a wrong result.
+
+**Progress (2026-07-29):** RRM-032 is in progress. The default configurable normalizer and literal
+versus regex semantics are implemented and documented. Remaining work is normalization across all
+anchor/label matchers, general raw/normalized report summaries, and synthetic `TJ`/Unicode fixture
+coverage with source-range invariance checks.
 
 **Exit gate**
 
@@ -215,6 +226,13 @@ RRM-028, rather than in M6.
 These three-and-a-half items are what "all content is accounted for" actually requires. Untagged
 paths, images, and pre-existing annotations are the most common reason a document that looks
 remediated fails validation or reads wrong.
+
+**Progress (2026-07-29):** RRM-002 is in progress. Typed graphical candidates/selectors,
+JSON content predicates, atomic materialization/ownership, stable resource names/hashes,
+document-wide reuse, normalized bounds, cached candidate indexes, and reported graphical
+auto-artifact handling are implemented. Named/reused form and path integration coverage passes.
+Remaining work is the final API/schema cutover, structured painting diagnostics, invocation-level
+binding verification, and real image/shading fixtures.
 
 **Exit gate**
 

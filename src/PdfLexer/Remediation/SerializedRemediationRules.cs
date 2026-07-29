@@ -37,8 +37,61 @@ public static class SerializedRemediationRules
         var zones = root.OptionalArray("zones").Select(ParseZone).ToArray();
         var flows = root.OptionalArray("flowRegions").Select(ParseFlowRegion).ToArray();
         var rules = root.RequiredArray("rules").Select(ParseRule).ToArray();
+        var normalization = ParseTextNormalization(root.OptionalObject("textNormalization"));
+        var assertions = root.OptionalArray("assertions").Select(ParseAssertion).ToArray();
 
-        return new SerializedRemediationJob(session, new RuleSet(ruleSetId, rules, anchors, zones, flows));
+        return new SerializedRemediationJob(session, new RuleSet(ruleSetId, rules, anchors, zones, flows, normalization, assertions));
+    }
+
+    private static RemediationSemanticAssertion ParseAssertion(JsonElement json)
+    {
+        var id = json.RequiredString("id");
+        var scope = json.OptionalEnum("scope", SemanticAssertionScope.Document);
+        var pages = json.OptionalObject("pages") is { } pageSelector ? ParsePages(pageSelector) : null;
+        var expected = new AssertionCount(
+            json.OptionalInt("minCount") ?? json.OptionalInt("count") ?? 0,
+            json.OptionalInt("maxCount") ?? json.OptionalInt("count"));
+        return json.RequiredString("kind").Token() switch
+        {
+            "ruleoutputcount" => new RuleOutputCountAssertion(
+                id, json.RequiredString("ruleId"), expected, json.OptionalString("tag"), scope, pages),
+            "structureelementcount" => new StructureElementCountAssertion(
+                id, json.RequiredString("tag"), expected, scope, pages),
+            "parentchildshape" => new ParentChildShapeAssertion(
+                id,
+                json.RequiredString("parentTag"),
+                json.RequiredArray("allowedChildTags").Select(x => x.GetString() ??
+                    throw new InvalidDataException("allowedChildTags entries must be strings.")).ToArray(),
+                new AssertionCount(
+                    json.OptionalInt("minChildren") ?? json.OptionalInt("childCount") ?? 0,
+                    json.OptionalInt("maxChildren") ?? json.OptionalInt("childCount")),
+                scope,
+                pages),
+            var kind => throw new InvalidDataException($"Unsupported assertion kind '{kind}'.")
+        };
+    }
+
+    private static TextNormalizationOptions ParseTextNormalization(JsonElement? json)
+    {
+        if (json == null)
+        {
+            return TextNormalizationOptions.Default;
+        }
+
+        var el = json.Value;
+        if (el.OptionalBool("enabled") == false)
+        {
+            return TextNormalizationOptions.None;
+        }
+
+        return new TextNormalizationOptions
+        {
+            CompatibilityComposition = el.OptionalBool("compatibilityComposition") ?? true,
+            RemoveSoftHyphens = el.OptionalBool("removeSoftHyphens") ?? true,
+            NormalizeWhitespace = el.OptionalBool("normalizeWhitespace") ?? true,
+            FoldDashes = el.OptionalBool("foldDashes") ?? true,
+            FoldQuotes = el.OptionalBool("foldQuotes") ?? true
+        };
     }
 
     private static RemediationSessionConfiguration ParseSession(JsonElement? json)
@@ -82,17 +135,31 @@ public static class SerializedRemediationRules
 
     private static Rule ParseRule(JsonElement json)
     {
+        var stage = json.OptionalEnum("stage", Stage.Classify);
+        var candidates = json.OptionalObject("candidates") is { } selector
+            ? ParseCandidateSelector(selector)
+            : CandidateSelector.Text(json.OptionalEnum("granularity", Granularity.Paragraph));
         return new Rule(
             json.RequiredString("id"),
             ParseAction(json.RequiredObject("action")),
             json.OptionalObject("predicate") is { } predicate ? ParsePredicate(predicate) : null,
-            json.OptionalEnum("granularity", Granularity.Paragraph),
+            candidates,
             json.OptionalObject("pages") is { } pages ? ParsePages(pages) : PageSelector.Every,
-            json.OptionalEnum("stage", Stage.Classify),
+            stage,
             json.OptionalBool("override") ?? false,
             json.OptionalDouble("minConfidence"),
             json.OptionalObject("cardinality") is { } cardinality ? ParseCardinality(cardinality) : null);
     }
+
+    private static CandidateSelector ParseCandidateSelector(JsonElement json) =>
+        json.RequiredString("kind").Token() switch
+        {
+            "text" => CandidateSelector.Text(json.OptionalEnum("granularity", Granularity.Paragraph)),
+            "content" => CandidateSelector.Content(json.RequiredArray("types")
+                .Select(x => ParseEnum<RemediationCandidateKind>(x.GetString() ??
+                    throw new InvalidDataException("Candidate content types must be strings."))).ToArray()),
+            var kind => throw new InvalidDataException($"Unsupported candidate selector kind '{kind}'.")
+        };
 
     private static RuleCardinality ParseCardinality(JsonElement json)
     {
@@ -151,6 +218,12 @@ public static class SerializedRemediationRules
             "fontfamily" => Predicates.Font.Family(json.RequiredString("value")),
             "fontitalic" => Predicates.Font.Italic(json.OptionalBool("value") ?? true),
             "colorgrayish" => Predicates.Color.IsGrayish(),
+            "contenttype" => Predicates.Content.Type(json.OptionalEnum<RemediationCandidateKind>("type")),
+            "contentresourceidentity" => Predicates.Content.ResourceIdentity(json.RequiredString("identity")),
+            "contentresourcename" => Predicates.Content.ResourceName(json.RequiredString("name")),
+            "contentresourceusecount" => Predicates.Content.ResourceUseCount(
+                json.OptionalEnum("operator", NumericOperator.Equal),
+                json.RequiredInt("value")),
             "geocontains" => Predicates.Geo.Contains(ParseLayout(json.RequiredObject("coord"))),
             "geoin" => Predicates.Geo.In(ParseLayout(json.RequiredObject("coord"))),
             "geointersects" => Predicates.Geo.Intersects(ParseLayout(json.RequiredObject("coord"))),

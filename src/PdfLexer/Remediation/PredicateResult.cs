@@ -7,13 +7,19 @@ using PdfLexer.DOM;
 /// <summary>
 /// Result of evaluating a remediation predicate.
 /// </summary>
-public readonly record struct PredicateResult(bool IsMatch, double Confidence, string? Reason = null)
+public readonly record struct PredicateResult(
+    bool IsMatch,
+    double Confidence,
+    string? Reason = null,
+    PredicateTraceNode? Trace = null)
 {
     /// <summary>Creates a matching predicate result.</summary>
-    public static PredicateResult Match(double confidence = 1.0) => new(true, Clamp(confidence));
+    public static PredicateResult Match(double confidence = 1.0, PredicateTraceNode? trace = null) =>
+        new(true, Clamp(confidence), null, trace);
 
     /// <summary>Creates a non-matching predicate result.</summary>
-    public static PredicateResult NoMatch(string? reason = null, double confidence = 1.0) => new(false, Clamp(confidence), reason);
+    public static PredicateResult NoMatch(string? reason = null, double confidence = 1.0, PredicateTraceNode? trace = null) =>
+        new(false, Clamp(confidence), reason, trace);
 
     private static double Clamp(double value) => Math.Min(1.0, Math.Max(0.0, value));
 }
@@ -38,7 +44,9 @@ public sealed class RemediationEvaluationContext
         IReadOnlyDictionary<string, TolerancedZoneResolution>? resolvedZones = null,
         IReadOnlyDictionary<string, FlowRegionResolution>? resolvedFlowRegions = null,
         StructuredTextPage? structuredText = null,
-        List<string>? diagnostics = null)
+        List<string>? diagnostics = null,
+        TextNormalizationOptions? textNormalization = null,
+        bool tracePredicates = false)
     {
         Claims = claims ?? Array.Empty<RemediationClaim>();
         ClaimsByRuleId = claimsByRuleId ?? BuildClaimLookup(Claims);
@@ -54,6 +62,8 @@ public sealed class RemediationEvaluationContext
         ResolvedFlowRegions = resolvedFlowRegions ?? new Dictionary<string, FlowRegionResolution>();
         StructuredText = structuredText;
         Diagnostics = diagnostics ?? new List<string>();
+        TextNormalization = textNormalization ?? TextNormalizationOptions.Default;
+        TracePredicates = tracePredicates;
         _anchorResolver = new Lazy<AnchorResolver>(() => new AnchorResolver(this, Diagnostics));
         _flowRegionResolver = new Lazy<FlowRegionResolver>(() => new FlowRegionResolver(this, Diagnostics));
     }
@@ -103,6 +113,36 @@ public sealed class RemediationEvaluationContext
     /// <summary>Diagnostics collected during evaluation.</summary>
     public List<string> Diagnostics { get; }
 
+    /// <summary>Normalization policy of the rule currently being evaluated.</summary>
+    public TextNormalizationOptions TextNormalization { get; }
+
+    internal bool TracePredicates { get; }
+
+    internal RemediationEvaluationContext WithTextNormalization(TextNormalizationOptions normalization) =>
+        new(
+            Claims,
+            ClaimsByRuleId,
+            PageBox,
+            PageIndex,
+            PageCount,
+            Configuration,
+            Anchors,
+            TolerancedZones,
+            FlowRegions,
+            ResolvedAnchors,
+            ResolvedZones,
+            ResolvedFlowRegions,
+            StructuredText,
+            Diagnostics,
+            normalization,
+            TracePredicates);
+
+    internal RemediationEvaluationContext WithPredicateTracing(bool enabled) =>
+        new(
+            Claims, ClaimsByRuleId, PageBox, PageIndex, PageCount, Configuration, Anchors,
+            TolerancedZones, FlowRegions, ResolvedAnchors, ResolvedZones, ResolvedFlowRegions,
+            StructuredText, Diagnostics, TextNormalization, enabled);
+
     private readonly Lazy<AnchorResolver> _anchorResolver;
 
     private readonly Lazy<FlowRegionResolver> _flowRegionResolver;
@@ -132,7 +172,7 @@ public sealed class RemediationEvaluationContext
             return null;
         }
 
-        var baseBounds = zone.Bounds.Resolve(this, new RemediationCandidate(
+        var baseBounds = zone.Bounds.Resolve(this, new TextRemediationCandidate(
             Granularity.Line,
             string.Empty,
             new PdfRect<double>(0, 0, 0, 0),

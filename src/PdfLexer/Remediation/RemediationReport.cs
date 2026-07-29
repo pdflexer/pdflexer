@@ -19,7 +19,10 @@ public sealed class RemediationReport
         IReadOnlyList<string>? diagnostics = null,
         IReadOnlyList<DiagnosticSuppression>? suppressions = null,
         IReadOnlyList<RuleEvaluationSummary>? ruleEvaluations = null,
-        IReadOnlyList<RemediationAutoArtifactOutcome>? autoArtifacts = null)
+        IReadOnlyList<RemediationAutoArtifactOutcome>? autoArtifacts = null,
+        IReadOnlyList<RemediationPredicateTrace>? predicateTraces = null,
+        IReadOnlyList<RemediationAssertionOutcome>? assertionOutcomes = null,
+        RemediationSemanticTree? plannedSemanticTree = null)
     {
         Committed = committed;
         AppliedAccessibilitySetup = appliedAccessibilitySetup;
@@ -29,6 +32,9 @@ public sealed class RemediationReport
         Suppressions = suppressions ?? Array.Empty<DiagnosticSuppression>();
         RuleEvaluations = ruleEvaluations ?? Array.Empty<RuleEvaluationSummary>();
         AutoArtifacts = autoArtifacts ?? Array.Empty<RemediationAutoArtifactOutcome>();
+        PredicateTraces = predicateTraces ?? Array.Empty<RemediationPredicateTrace>();
+        AssertionOutcomes = assertionOutcomes ?? Array.Empty<RemediationAssertionOutcome>();
+        PlannedSemanticTree = plannedSemanticTree ?? new RemediationSemanticTree(Array.Empty<RemediationSemanticNode>());
         
         Outcomes = Claims.Select(CreateOutcome).ToList();
         SkippedOutcomes = SkippedClaims.Select(CreateOutcome).ToList();
@@ -57,6 +63,21 @@ public sealed class RemediationReport
 
     /// <summary>Text content planned for or handled by the automatic artifact policy.</summary>
     public IReadOnlyList<RemediationAutoArtifactOutcome> AutoArtifacts { get; }
+
+    /// <summary>Opt-in traces retained for rejected predicate inputs.</summary>
+    public IReadOnlyList<RemediationPredicateTrace> PredicateTraces { get; }
+
+    /// <summary>Semantic output assertion results.</summary>
+    public IReadOnlyList<RemediationAssertionOutcome> AssertionOutcomes { get; }
+
+    /// <summary>Immutable semantic tree produced from the finalized action plan.</summary>
+    public RemediationSemanticTree PlannedSemanticTree { get; }
+
+    /// <summary>Returns a retained rejection trace for a rule and candidate.</summary>
+    public RemediationPredicateTrace? ExplainRejection(string ruleId, string candidateId) =>
+        PredicateTraces.FirstOrDefault(x =>
+            string.Equals(x.RuleId, ruleId, StringComparison.Ordinal) &&
+            string.Equals(x.CandidateId, candidateId, StringComparison.Ordinal));
 
     /// <summary>Public outcome summaries for applied claims.</summary>
     public IReadOnlyList<RemediationClaimOutcome> Outcomes { get; }

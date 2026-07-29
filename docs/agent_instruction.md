@@ -48,7 +48,7 @@ For unsupported or low-level features, drop down to the raw PDF dictionary:
 ```csharp
 var pageDict = page.NativeObject;
 var resources = pageDict.Get<PdfDictionary>(PdfName.Resources);
-var rawContents = pageDict.GetRequiredValue(PdfName.Contents);
+var rawContents = pageDict.GetRequired<IPdfObject>(PdfName.Contents);
 ```
 
 ## 4. Raw DOM and Object Traversal
@@ -69,22 +69,25 @@ Typed dictionary access auto-resolves indirect references:
 var pageDict = page.NativeObject;
 
 var resources = pageDict.Get<PdfDictionary>(PdfName.Resources);
-var mediaBox = pageDict.GetRequiredValue<PdfArray>(PdfName.MediaBox);
+var mediaBox = pageDict.GetRequired<PdfArray>(PdfName.MediaBox);
 ```
 
 Other available low-level helpers:
 
 - `pageDict.TryGetValue(PdfName.Resources, out var rawValue)` for optional raw access
-- `pageDict.TryGetValue<PdfDictionary>(PdfName.Resources, out var typedValue, errorOnMismatch: false)` for optional typed access
+- `pageDict.TryGet<PdfDictionary>(PdfName.Resources, out var typedValue)` for non-throwing typed access
 
-`Get*`/`GetRequiredValue*` remain the preferred accessors for most examples. Note that `TryGetValue<T>` defaults `errorOnMismatch` to `true`, so it can throw if the key exists but resolves to a different type. Use `errorOnMismatch: false` if you want it to simply return `false` on mismatch.
+Use `Get<T>` when missing and mismatched values are both tolerated, `GetOptional<T>` when absence is
+allowed but a mismatched type is malformed input, and `GetRequired<T>` when the entry must exist.
+`TryGet<T>` is always non-throwing for absence, PDF null, and mismatch. Legacy generic `TryGetValue<T>` remains
+available with its strict-by-default behavior but is hidden from IntelliSense.
 
 Once you already have an `IPdfObject`, prefer `GetAs<T>()` and `GetAsOrNull<T>()` for object-level typed access rather than the older `GetValue<T>()` aliases.
 
 When you do not know the underlying type, use raw access and resolve explicitly:
 
 ```csharp
-var obj = page.NativeObject.GetRequiredValue(PdfName.Contents).Resolve();
+var obj = page.NativeObject.GetRequired<IPdfObject>(PdfName.Contents);
 
 if (obj is PdfArray arr)
 {
