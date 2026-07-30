@@ -10,6 +10,19 @@ public static class SerializedRemediationRules
 {
     public const string CurrentSchema = "pdflexer.remediation.ruleset.v1";
 
+    /// <summary>
+    /// Performs document-independent validation suitable for CLI preflight before a PDF is opened.
+    /// </summary>
+    public static ValidationReport ValidateDeclarations(params RuleSet[] ruleSets)
+    {
+        ArgumentNullException.ThrowIfNull(ruleSets);
+        var errors = ruleSets.SelectMany(x => x.Rules)
+            .SelectMany(rule => rule.ValidateShape().Select(error => $"Rule '{rule.Id}': {error}"))
+            .Concat(RemediationStructuralTemplateValidator.Validate(ruleSets))
+            .ToArray();
+        return new ValidationReport(errors);
+    }
+
     public static SerializedRemediationJob Load(string path)
     {
         using var stream = File.OpenRead(path);
@@ -39,9 +52,23 @@ public static class SerializedRemediationRules
         var rules = root.RequiredArray("rules").Select(ParseRule).ToArray();
         var normalization = ParseTextNormalization(root.OptionalObject("textNormalization"));
         var assertions = root.OptionalArray("assertions").Select(ParseAssertion).ToArray();
+        var template = root.OptionalObject("template") is { } templateJson
+            ? new RemediationStructuralTemplate(ParseTemplateNode(templateJson))
+            : null;
 
-        return new SerializedRemediationJob(session, new RuleSet(ruleSetId, rules, anchors, zones, flows, normalization, assertions));
+        return new SerializedRemediationJob(
+            session,
+            new RuleSet(ruleSetId, rules, anchors, zones, flows, normalization, assertions, template));
     }
+
+    private static RemediationStructuralTemplateNode ParseTemplateNode(JsonElement json) =>
+        new(
+            json.RequiredString("tag"),
+            json.OptionalArray("children").Select(ParseTemplateNode).ToArray(),
+            json.OptionalString("id"),
+            json.OptionalEnum("occurrence", RemediationStructuralOccurrence.ExactlyOne),
+            json.OptionalObject("pages") is { } pages ? ParsePages(pages) : null,
+            json.OptionalBool("spansPages"));
 
     private static RemediationSemanticAssertion ParseAssertion(JsonElement json)
     {
@@ -111,7 +138,7 @@ public static class SerializedRemediationRules
             LeftoverPolicy = el.OptionalEnum("leftoverPolicy", RemediationLeftoverPolicy.Flag),
             DiagnosticStrictness = el.OptionalEnum("diagnosticStrictness", RemediationDiagnosticStrictness.Strict),
             DebugWrite = el.OptionalBool("debugWrite") ?? false,
-            DefaultConfidence = el.OptionalDouble("defaultConfidence") ?? 0,
+            DefaultConfidence = el.OptionalDouble("defaultConfidence") ?? 1,
             NamedZoneMargins = ParseMargins(el.OptionalObject("namedZoneMargins"))
         };
     }
@@ -136,9 +163,24 @@ public static class SerializedRemediationRules
     private static Rule ParseRule(JsonElement json)
     {
         var stage = json.OptionalEnum("stage", Stage.Classify);
+        if (json.TryGetProperty("granularity", out _))
+        {
+            throw new InvalidDataException(
+                $"Rule '{json.RequiredString("id")}' uses removed property 'granularity'; use 'candidates'.");
+        }
         var candidates = json.OptionalObject("candidates") is { } selector
             ? ParseCandidateSelector(selector)
-            : CandidateSelector.Text(json.OptionalEnum("granularity", Granularity.Paragraph));
+            : null;
+        if (stage == Stage.Classify && candidates == null)
+        {
+            throw new InvalidDataException(
+                $"Classify rule '{json.RequiredString("id")}' requires a 'candidates' object.");
+        }
+        if (stage != Stage.Classify && candidates != null)
+        {
+            throw new InvalidDataException(
+                $"{stage} rule '{json.RequiredString("id")}' must omit 'candidates'.");
+        }
         return new Rule(
             json.RequiredString("id"),
             ParseAction(json.RequiredObject("action")),
@@ -148,7 +190,8 @@ public static class SerializedRemediationRules
             stage,
             json.OptionalBool("override") ?? false,
             json.OptionalDouble("minConfidence"),
-            json.OptionalObject("cardinality") is { } cardinality ? ParseCardinality(cardinality) : null);
+            json.OptionalObject("cardinality") is { } cardinality ? ParseCardinality(cardinality) : null,
+            json.OptionalString("slot"));
     }
 
     private static CandidateSelector ParseCandidateSelector(JsonElement json) =>
@@ -181,7 +224,8 @@ public static class SerializedRemediationRules
                 json.OptionalInt("headerRows") ?? 0,
                 json.OptionalObject("over") is { } over ? ParseClaimPredicate(over) : null,
                 json.OptionalObject("headerSelector") is { } header ? ParseClaimPredicate(header) : null,
-                json.OptionalEnum("cellContentMode", TableCellContentMode.PreserveChildren)),
+                json.OptionalEnum("cellContentMode", TableCellContentMode.PreserveChildren),
+                json.OptionalEnum("headerRowsScope", TableHeaderRowsScope.LogicalTable)),
             "group" => RemediationActions.Group(json.RequiredString("tag"), ParseClaimPredicate(json.RequiredObject("over"))),
             "merge" => RemediationActions.MergeTo(json.RequiredString("tag"), ParseClaimPredicate(json.RequiredObject("over"))),
             "lang" => RemediationActions.Lang(ParseClaimPredicate(json.RequiredObject("over")), json.RequiredString("language")),
@@ -277,6 +321,11 @@ public static class SerializedRemediationRules
     private static RemediationAnchor ParseAnchor(JsonElement json)
     {
         var id = json.RequiredString("id");
+        if (json.TryGetProperty("occurrence", out _))
+        {
+            throw new InvalidDataException(
+                $"Anchor '{id}' uses removed property 'occurrence'; use zero-based selection kind 'nthInReadingOrder'.");
+        }
         var anchor = json.RequiredString("kind").Token() switch
         {
             "selector" => RemediationAnchor.Selector(
@@ -286,7 +335,13 @@ public static class SerializedRemediationRules
                     : new[] { json.OptionalEnum("granularity", Granularity.Line) },
                 ParsePredicate(json.RequiredObject("predicate")),
                 json.OptionalObject("selection") is { } selection ? ParseAnchorSelection(selection) : AnchorSelection.RequiredSingle),
-            "textlabel" => RemediationAnchor.TextLabel(id, json.RequiredString("text"), ParseComparison(json)),
+            "textlabel" => RemediationAnchor.TextLabel(
+                id,
+                json.RequiredString("text"),
+                ParseComparison(json),
+                json.OptionalObject("selection") is { } labelSelection
+                    ? ParseAnchorSelection(labelSelection)
+                    : AnchorSelection.RequiredSingle),
             "regex" => RemediationAnchor.Regex(
                 id,
                 json.RequiredString("pattern"),
@@ -294,8 +349,18 @@ public static class SerializedRemediationRules
                 json.OptionalObject("selection") is { } regexSelection ? ParseAnchorSelection(regexSelection) : AnchorSelection.RequiredSingle),
             "priorclaim" => RemediationAnchor.PriorClaim(id, json.RequiredString("ruleId")),
             "declaredzone" => RemediationAnchor.DeclaredZone(id, json.OptionalEnum<NamedLayoutZone>("zone")),
-            "tableheader" => RemediationAnchor.TableHeader(id, json.RequiredArray("headers").Select(x => x.GetString() ?? "").ToArray()),
-            "repeatedelement" => RemediationAnchor.RepeatedElement(id, json.RequiredString("pattern")),
+            "tableheader" => RemediationAnchor.TableHeader(
+                id,
+                json.RequiredArray("headers").Select(x => x.GetString() ?? "").ToArray(),
+                json.OptionalObject("selection") is { } headerSelection
+                    ? ParseAnchorSelection(headerSelection)
+                    : AnchorSelection.RequiredSingle),
+            "repeatedelement" => RemediationAnchor.RepeatedElement(
+                id,
+                json.RequiredString("pattern"),
+                json.OptionalObject("selection") is { } repeatedSelection
+                    ? ParseAnchorSelection(repeatedSelection)
+                    : AnchorSelection.RequiredSingle),
             "geometry" => RemediationAnchor.Geometry(id, ParseRect(json.RequiredObject("bounds"))),
             var kind => throw new InvalidDataException($"Unsupported anchor kind '{kind}'.")
         };
@@ -303,7 +368,6 @@ public static class SerializedRemediationRules
         return anchor with
         {
             Pages = json.OptionalObject("pages") is { } pages ? ParsePages(pages) : PageSelector.Every,
-            Occurrence = json.OptionalInt("occurrence"),
             NeighborText = json.OptionalString("neighborText"),
             NeighborTolerance = json.OptionalDouble("neighborTolerance") ?? 24,
             Style = json.OptionalObject("style") is { } style ? ParsePredicate(style) : null
@@ -322,7 +386,8 @@ public static class SerializedRemediationRules
         ParseFlowBoundary(json.RequiredObject("end")),
         json.OptionalDouble("maxExtent"),
         json.OptionalEnum("continuationPolicy", FlowContinuationPolicy.CurrentPageOnly),
-        json.OptionalEnum("readingOrderMode", FlowReadingOrderMode.StructuredText));
+        json.OptionalEnum("readingOrderMode", FlowReadingOrderMode.StructuredText),
+        json.OptionalInt("maxPages"));
 
     private static FlowBoundary ParseFlowBoundary(JsonElement json)
     {

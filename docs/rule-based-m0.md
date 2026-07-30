@@ -24,7 +24,7 @@ everything after.* The first half is finished. This plan covers the second half.
 | Fix per-page MCID allocation | gaps-2 #2 | ✅ Done |
 | Enumerate supported document families in writing | prereq for RRM-011, RRM-017 | Open |
 | Collect representative real inputs per family | prereq for RRM-011 | Open |
-| **Decide the page-locality question** | RRM-001 scope decision | Open |
+| **Decide and implement the page-locality model** | RRM-001 | ✅ Done |
 | Confirm RRM-014 / RRM-015 remain out of scope | RRM-014, RRM-015 | Open |
 
 Both prerequisite defects were fixed and regression-tested; the fixes and their follow-up review are

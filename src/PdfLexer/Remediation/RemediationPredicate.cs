@@ -21,6 +21,15 @@ public abstract record RemediationPredicate
     public PredicateResult Evaluate(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
         var result = EvaluateCore(context, candidate);
+        if (result.IsMatch && result.UsesDefaultConfidence)
+        {
+            var confidence = context.Configuration.DefaultConfidence;
+            result = result with
+            {
+                Confidence = confidence,
+                Trace = result.Trace == null ? null : result.Trace with { Confidence = confidence }
+            };
+        }
         if (!context.TracePredicates || result.Trace != null)
         {
             return result;
@@ -204,8 +213,9 @@ public sealed record TextRemediationPredicate : RemediationPredicate
             return PredicateResult.NoMatch($"Text predicate requires a text candidate; actual kind was {candidate.Kind}.");
         }
 
+        var textCandidate = (TextRemediationCandidate)candidate;
         var normalizer = Normalization ?? context.TextNormalization;
-        var candidateText = normalizer.Normalize(candidate.Text);
+        var candidateText = normalizer.Normalize(textCandidate.Text);
         var literal = Kind == TextPredicateKind.Matches ? Value : normalizer.Normalize(Value);
         var matched = Kind switch
         {
@@ -372,36 +382,37 @@ public sealed record FontRemediationPredicate : RemediationPredicate
         {
             return PredicateResult.NoMatch($"Font predicate requires a text candidate; actual kind was {candidate.Kind}.");
         }
+        var textCandidate = (TextRemediationCandidate)candidate;
         if (Kind == FontPredicateKind.Size && Operator is { } op && NumericValue is { } expected)
         {
-            return Compare(candidate.FontSize, op, expected) ? PredicateResult.Match() : PredicateResult.NoMatch();
+            return Compare(textCandidate.FontSize, op, expected) ? PredicateResult.Match() : PredicateResult.NoMatch();
         }
 
         if (Kind == FontPredicateKind.Weight && Operator is { } weightOp && NumericValue is { } weight)
         {
-            return candidate.FontWeight is { } actual
+            return textCandidate.FontWeight is { } actual
                 ? Compare(actual, weightOp, weight) ? PredicateResult.Match() : PredicateResult.NoMatch()
                 : PredicateResult.NoMatch("Structured text does not expose font weight for this candidate.");
         }
 
         if (Kind == FontPredicateKind.Family && TextValue is { } family)
         {
-            return candidate.FontName != null &&
-                candidate.FontName.Contains(family, StringComparison.OrdinalIgnoreCase)
+            return textCandidate.FontName != null &&
+                textCandidate.FontName.Contains(family, StringComparison.OrdinalIgnoreCase)
                 ? PredicateResult.Match()
                 : PredicateResult.NoMatch();
         }
 
         if (Kind == FontPredicateKind.Italic && BooleanValue is { } italic)
         {
-            return candidate.Italic is { } actual
+            return textCandidate.Italic is { } actual
                 ? actual == italic ? PredicateResult.Match() : PredicateResult.NoMatch()
                 : PredicateResult.NoMatch("Structured text does not expose italic style for this candidate.");
         }
 
         if (Kind == FontPredicateKind.ColorIsGrayish)
         {
-            return candidate.IsGrayish is { } actual
+            return textCandidate.IsGrayish is { } actual
                 ? actual ? PredicateResult.Match() : PredicateResult.NoMatch()
                 : PredicateResult.NoMatch("Structured text does not expose fill color style for this candidate.");
         }
@@ -513,7 +524,11 @@ public sealed record FlowOrderRemediationPredicate(
             return PredicateResult.NoMatch("Structured text is not available.");
         }
 
-        var candidates = context.StructuredText.GetCandidates(candidate.Granularity)
+        if (candidate is not TextRemediationCandidate textCandidate)
+        {
+            return PredicateResult.NoMatch($"Flow-order predicate requires text; actual kind was {candidate.Kind}.");
+        }
+        var candidates = context.StructuredText.GetCandidates(textCandidate.Granularity)
             .OrderBy(x => x.SequenceIndex)
             .ToList();
         double boundaryConfidence;
@@ -538,7 +553,25 @@ public sealed record FlowOrderRemediationPredicate(
             }
 
             boundaryConfidence = region.Confidence;
-            candidates = candidates.Where(region.Contains).ToList();
+            if (context.DocumentFlows != null && context.DocumentCandidates.Count > 0)
+            {
+                candidates = context.DocumentCandidates
+                    .OfType<TextRemediationCandidate>()
+                    .Where(x => x.Granularity == textCandidate.Granularity)
+                    .Where(x =>
+                    {
+                        var segment = context.DocumentFlows.Find(Id, x.PageIndex);
+                        return segment != null &&
+                            segment.InstanceId == region.InstanceId &&
+                            segment.Contains(x);
+                    })
+                    .OrderBy(x => x, new FlowCandidateComparer(region.ReadingOrderMode))
+                    .ToList();
+            }
+            else
+            {
+                candidates = candidates.Where(region.Contains).ToList();
+            }
         }
 
         var filtered = new List<(RemediationCandidate Candidate, PredicateResult Result)>();
@@ -576,9 +609,44 @@ public sealed record FlowOrderRemediationPredicate(
     }
 
     private static bool SameCandidate(RemediationCandidate left, RemediationCandidate right) =>
-        left.Granularity == right.Granularity &&
+        left is TextRemediationCandidate leftText &&
+        right is TextRemediationCandidate rightText &&
+        (left.PageIndex < 0 || right.PageIndex < 0 || left.PageIndex == right.PageIndex) &&
+        leftText.Granularity == rightText.Granularity &&
         left.SequenceIndex == right.SequenceIndex &&
-        string.Equals(left.Text, right.Text, StringComparison.Ordinal);
+        string.Equals(leftText.Text, rightText.Text, StringComparison.Ordinal);
+
+    private sealed class FlowCandidateComparer : IComparer<TextRemediationCandidate>
+    {
+        private readonly FlowReadingOrderMode _mode;
+
+        public FlowCandidateComparer(FlowReadingOrderMode mode)
+        {
+            _mode = mode;
+        }
+
+        public int Compare(TextRemediationCandidate? left, TextRemediationCandidate? right)
+        {
+            if (ReferenceEquals(left, right)) return 0;
+            if (left == null) return -1;
+            if (right == null) return 1;
+            var page = left.PageIndex.CompareTo(right.PageIndex);
+            if (page != 0) return page;
+            if (_mode == FlowReadingOrderMode.GeometryTopToBottom)
+            {
+                var top = right.RelativeBoundingBox.URy.CompareTo(left.RelativeBoundingBox.URy);
+                if (top != 0) return top;
+                var x = left.RelativeBoundingBox.LLx.CompareTo(right.RelativeBoundingBox.LLx);
+                if (x != 0) return x;
+            }
+            else
+            {
+                var order = left.ContentOrderIndex.CompareTo(right.ContentOrderIndex);
+                if (order != 0) return order;
+            }
+            return string.Compare(left.CandidateId, right.CandidateId, StringComparison.Ordinal);
+        }
+    }
 }
 
 /// <summary>Geometry match mode.</summary>

@@ -14,12 +14,13 @@ public sealed record Rule
         string id,
         RemediationAction action,
         RemediationPredicate? predicate = null,
-        Granularity granularity = Granularity.Paragraph,
+        CandidateSelector? candidates = null,
         PageSelector? pages = null,
         Stage stage = Stage.Classify,
         bool @override = false,
         double? minConfidence = null,
-        RuleCardinality? cardinality = null)
+        RuleCardinality? cardinality = null,
+        string? slot = null)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -33,32 +34,14 @@ public sealed record Rule
 
         Id = id;
         Stage = stage;
-        Granularity = granularity;
         Pages = pages ?? PageSelector.Every;
         Predicate = predicate ?? RemediationPredicate.Always;
         Action = action ?? throw new ArgumentNullException(nameof(action));
         Override = @override;
         MinConfidence = minConfidence;
         Cardinality = cardinality;
-        Candidates = CandidateSelector.Text(granularity);
-    }
-
-    /// <summary>Creates a classify rule with an explicit typed candidate selector.</summary>
-    public Rule(
-        string id,
-        RemediationAction action,
-        RemediationPredicate? predicate,
-        CandidateSelector candidates,
-        PageSelector? pages = null,
-        Stage stage = Stage.Classify,
-        bool @override = false,
-        double? minConfidence = null,
-        RuleCardinality? cardinality = null)
-        : this(id, action, predicate,
-            candidates is CandidateSelector.TextSelector text ? text.Granularity : Granularity.Paragraph,
-            pages, stage, @override, minConfidence, cardinality)
-    {
-        Candidates = candidates ?? throw new ArgumentNullException(nameof(candidates));
+        Candidates = candidates;
+        Slot = slot;
     }
 
     /// <summary>Caller-supplied stable identifier used for provenance, validation, and reports.</summary>
@@ -73,11 +56,8 @@ public sealed record Rule
     /// <summary>Pipeline stage in which the rule runs.</summary>
     public Stage Stage { get; init; }
 
-    /// <summary>Structured-text granularity targeted by the rule.</summary>
-    public Granularity Granularity { get; init; }
-
     /// <summary>Typed candidate selector. Required for classify rules.</summary>
-    public CandidateSelector Candidates { get; init; }
+    public CandidateSelector? Candidates { get; init; }
 
     /// <summary>Pages eligible for this rule.</summary>
     public PageSelector Pages { get; init; }
@@ -97,6 +77,9 @@ public sealed record Rule
     /// <summary>Optional expected count of inputs matched by this rule.</summary>
     public RuleCardinality? Cardinality { get; init; }
 
+    /// <summary>Optional structural-template slot bound by this structure-producing rule.</summary>
+    public string? Slot { get; init; }
+
     /// <summary>
     /// Validates rule shape that does not require page parsing.
     /// </summary>
@@ -107,13 +90,9 @@ public sealed record Rule
         {
             errors.Add("Classify rules require a candidate selector.");
         }
-        if (Stage != Stage.Classify && Candidates is CandidateSelector.ContentSelector)
+        if (Stage != Stage.Classify && Candidates != null)
         {
-            errors.Add("Group and refine rules do not enumerate content candidates.");
-        }
-        if (Candidates is CandidateSelector.TextSelector text && text.Granularity != Granularity)
-        {
-            errors.Add($"Granularity '{Granularity}' conflicts with candidate selector granularity '{text.Granularity}'.");
+            errors.Add("Group and refine rules must omit candidate selectors.");
         }
         Action.Validate(this, errors);
         return new ReadOnlyCollection<string>(errors);

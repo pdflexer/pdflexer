@@ -61,15 +61,26 @@ public sealed record TableRemediationAction(
     int HeaderRows = 0,
     ClaimPredicate? Over = null,
     ClaimPredicate? HeaderSelector = null,
-    TableCellContentMode CellContentMode = TableCellContentMode.PreserveChildren) : RemediationAction
+    TableCellContentMode CellContentMode = TableCellContentMode.PreserveChildren,
+    TableHeaderRowsScope HeaderRowsScope = TableHeaderRowsScope.LogicalTable) : RemediationAction
 {
     public override RemediationActionKind Kind => RemediationActionKind.Table;
 
-    public override string DebugString => Columns == null
-        ? Over == null ? "Table()" : $"Table(over: {Over.DebugString})"
-        : HeaderRows > 0
-            ? $"Table({Columns.Count} columns, headerRows: {HeaderRows})"
-            : Over == null ? $"Table({Columns.Count} columns)" : $"Table({Columns.Count} columns, over: {Over.DebugString})";
+    public override string DebugString
+    {
+        get
+        {
+            var parts = new List<string>();
+            if (Columns != null) parts.Add($"{Columns.Count} columns");
+            if (Over != null) parts.Add($"over: {Over.DebugString}");
+            if (HeaderRows > 0)
+            {
+                parts.Add($"headerRows: {HeaderRows}");
+                parts.Add($"headerRowsScope: {HeaderRowsScope}");
+            }
+            return $"Table({string.Join(", ", parts)})";
+        }
+    }
 
     internal override void Validate(Rule rule, List<string> errors)
     {
@@ -81,6 +92,15 @@ public sealed record TableRemediationAction(
         if (HeaderRows < 0)
         {
             errors.Add("Table header row count must be non-negative.");
+        }
+        if (!Enum.IsDefined(typeof(TableHeaderRowsScope), HeaderRowsScope))
+        {
+            errors.Add($"Table header-row scope '{HeaderRowsScope}' is not supported.");
+        }
+
+        if (Over == null)
+        {
+            errors.Add("Table actions require an existing-claim selector; classify cell content before grouping it.");
         }
 
         if (Columns is not { Count: > 0 })
@@ -97,6 +117,15 @@ public sealed record TableRemediationAction(
             }
         }
     }
+}
+
+/// <summary>Controls how numeric table header-row counts apply to continued tables.</summary>
+public enum TableHeaderRowsScope
+{
+    /// <summary>Count header rows once at the start of the logical table activation.</summary>
+    LogicalTable,
+    /// <summary>Count header rows independently on every page containing the continued table.</summary>
+    EveryPage
 }
 
 /// <summary>Groups existing claims under a new parent structure element.</summary>
@@ -312,6 +341,13 @@ public static class RemediationActions
     public static RemediationAction TableWithHeaderRows(int headerRows, params double[] columns) =>
         new TableRemediationAction(columns, headerRows);
 
+    /// <summary>Creates a table action with explicitly scoped header rows and column boundaries.</summary>
+    public static RemediationAction TableWithHeaderRows(
+        int headerRows,
+        TableHeaderRowsScope headerRowsScope,
+        params double[] columns) =>
+        new TableRemediationAction(columns, headerRows, HeaderRowsScope: headerRowsScope);
+
     /// <summary>Creates a claim-consuming table action.</summary>
     public static RemediationAction TableOver(ClaimPredicate over, params double[] columns) =>
         new TableRemediationAction(columns, Over: over);
@@ -319,6 +355,14 @@ public static class RemediationActions
     /// <summary>Creates a claim-consuming table action with header rows.</summary>
     public static RemediationAction TableOver(ClaimPredicate over, int headerRows, params double[] columns) =>
         new TableRemediationAction(columns, headerRows, over);
+
+    /// <summary>Creates a claim-consuming table action with explicitly scoped header rows.</summary>
+    public static RemediationAction TableOver(
+        ClaimPredicate over,
+        int headerRows,
+        TableHeaderRowsScope headerRowsScope,
+        params double[] columns) =>
+        new TableRemediationAction(columns, headerRows, over, HeaderRowsScope: headerRowsScope);
 
     /// <summary>Creates a claim-consuming table action with an explicit header selector.</summary>
     public static RemediationAction TableOver(ClaimPredicate over, ClaimPredicate headerSelector, params double[] columns) =>
@@ -331,6 +375,19 @@ public static class RemediationActions
     /// <summary>Creates a claim-consuming table action with header rows that flattens matched leaf claims directly into TD/TH cells.</summary>
     public static RemediationAction TableOverFlattenedCells(ClaimPredicate over, int headerRows, params double[] columns) =>
         new TableRemediationAction(columns, headerRows, Over: over, CellContentMode: TableCellContentMode.FlattenLeafClaims);
+
+    /// <summary>Creates a flattened claim-consuming table with explicitly scoped header rows.</summary>
+    public static RemediationAction TableOverFlattenedCells(
+        ClaimPredicate over,
+        int headerRows,
+        TableHeaderRowsScope headerRowsScope,
+        params double[] columns) =>
+        new TableRemediationAction(
+            columns,
+            headerRows,
+            Over: over,
+            CellContentMode: TableCellContentMode.FlattenLeafClaims,
+            HeaderRowsScope: headerRowsScope);
 
     /// <summary>Creates a claim-consuming table action with an explicit header selector that flattens matched leaf claims directly into TD/TH cells.</summary>
     public static RemediationAction TableOverFlattenedCells(ClaimPredicate over, ClaimPredicate headerSelector, params double[] columns) =>

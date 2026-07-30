@@ -39,14 +39,17 @@ public class RemediationRuleModelTests
             {
               "id": "line-items",
               "start": { "kind": "anchor", "id": "items-header" },
-              "end": { "kind": "anchor", "id": "subtotal-label" }
+              "end": { "kind": "anchor", "id": "subtotal-label" },
+              "continuationPolicy": "continueUntilEnd",
+              "readingOrderMode": "geometryTopToBottom",
+              "maxPages": 12
             }
           ],
           "rules": [
             {
               "id": "invoice-title",
               "stage": "classify",
-              "granularity": "line",
+              "candidates": { "kind": "text", "granularity": "line" },
               "pages": { "kind": "first" },
               "cardinality": { "scope": "document", "minMatches": 1, "maxMatches": 1 },
               "action": { "kind": "tag", "tag": "H1" },
@@ -55,14 +58,14 @@ public class RemediationRuleModelTests
             {
               "id": "line-item-header-cell",
               "stage": "classify",
-              "granularity": "word",
+              "candidates": { "kind": "text", "granularity": "word" },
               "action": { "kind": "tag", "tag": "Span" },
               "predicate": { "kind": "anchorSameRowAs", "id": "items-header", "tolerance": 4 }
             },
             {
               "id": "line-item-cell",
               "stage": "classify",
-              "granularity": "word",
+              "candidates": { "kind": "text", "granularity": "word" },
               "action": { "kind": "tag", "tag": "Span" },
               "predicate": { "kind": "flowInRegion", "id": "line-items" }
             },
@@ -78,6 +81,8 @@ public class RemediationRuleModelTests
                     { "kind": "fromRule", "ruleId": "line-item-cell" }
                   ]
                 },
+                "headerRows": 1,
+                "headerRowsScope": "everyPage",
                 "headerSelector": { "kind": "fromRule", "ruleId": "line-item-header-cell" },
                 "cellContentMode": "flattenLeafClaims",
                 "columns": [72, 250, 450, 600]
@@ -107,10 +112,16 @@ public class RemediationRuleModelTests
         Assert.Equal(3, job.RuleSet.Anchors.Count);
         Assert.Single(job.RuleSet.TolerancedZones);
         Assert.Single(job.RuleSet.FlowRegions);
+        Assert.Equal(FlowContinuationPolicy.ContinueUntilEnd, job.RuleSet.FlowRegions[0].ContinuationPolicy);
+        Assert.Equal(FlowReadingOrderMode.GeometryTopToBottom, job.RuleSet.FlowRegions[0].ReadingOrderMode);
+        Assert.Equal(12, job.RuleSet.FlowRegions[0].MaxPages);
         Assert.Equal(
             new[] { "invoice-title", "line-item-header-cell", "line-item-cell", "line-items-table", "document-lang" },
             job.RuleSet.Rules.Select(x => x.Id).ToArray());
         Assert.Equal(RuleCardinality.Exactly(1), job.RuleSet.Rules[0].Cardinality);
+        var table = Assert.IsType<TableRemediationAction>(job.RuleSet.Rules[3].Action);
+        Assert.Equal(1, table.HeaderRows);
+        Assert.Equal(TableHeaderRowsScope.EveryPage, table.HeaderRowsScope);
         Assert.Empty(job.RuleSet.Rules.SelectMany(x => x.ValidateShape()));
     }
 
@@ -121,7 +132,7 @@ public class RemediationRuleModelTests
             "heading",
             RemediationActions.Tag("H1"),
             Predicates.Text.StartsWith("Invoice"),
-            Granularity.Paragraph,
+            CandidateSelector.Text(Granularity.Paragraph),
             PageSelector.First,
             Stage.Classify,
             minConfidence: 0.8,
@@ -129,7 +140,9 @@ public class RemediationRuleModelTests
 
         Assert.Equal("heading", rule.Id);
         Assert.Equal(Stage.Classify, rule.Stage);
-        Assert.Equal(Granularity.Paragraph, rule.Granularity);
+        Assert.Equal(
+            Granularity.Paragraph,
+            Assert.IsType<CandidateSelector.TextSelector>(rule.Candidates).Granularity);
         Assert.Same(PageSelector.First, rule.Pages);
         Assert.Equal(0.8, rule.MinConfidence);
         Assert.Equal(RuleCardinality.Exactly(1), rule.Cardinality);
@@ -342,7 +355,7 @@ public class RemediationRuleModelTests
 
         var heading = Candidate("Heading", new PdfRect<double>(100, 700, 300, 740), 18, sequenceIndex: 1);
         var anchoredContext = new RemediationEvaluationContext(
-            new[] { new RemediationClaim("heading-rule", Granularity.Paragraph, new[] { heading }, "H1") },
+            new[] { new RemediationClaim("heading-rule", new[] { heading }, "H1") },
             pageBox: pageBox,
             configuration: config);
 
@@ -370,7 +383,7 @@ public class RemediationRuleModelTests
     {
         var heading = Candidate("Heading", new PdfRect<double>(0, 80, 100, 100), 18, sequenceIndex: 1);
         var paragraph = Candidate("Body", new PdfRect<double>(0, 40, 100, 60), 12, sequenceIndex: 2);
-        var claim = new RemediationClaim("heading-rule", Granularity.Paragraph, new[] { heading }, "H1");
+        var claim = new RemediationClaim("heading-rule", new[] { heading }, "H1");
         var context = new RemediationEvaluationContext(new[] { claim });
 
         Assert.True(Predicates.Relational.After("heading-rule").Evaluate(context, paragraph).IsMatch);
@@ -384,7 +397,6 @@ public class RemediationRuleModelTests
     {
         var first = new RemediationClaim(
             "items",
-            Granularity.Paragraph,
             new[] { Candidate("• One", new PdfRect<double>(0, 80, 100, 100), 12, sequenceIndex: 1) },
             "LI")
         {
@@ -395,7 +407,6 @@ public class RemediationRuleModelTests
         };
         var second = new RemediationClaim(
             "items",
-            Granularity.Paragraph,
             new[] { Candidate("• Two", new PdfRect<double>(0, 60, 100, 78), 12, sequenceIndex: 2) },
             "LI")
         {
@@ -543,7 +554,8 @@ public class RemediationRuleModelTests
             "custom",
             RemediationActions.Custom(
                 ctx => new CustomRemediationOutcome(ctx.Candidates),
-                "custom")));
+                "custom"),
+            candidates: CandidateSelector.Text(Granularity.Paragraph)));
 
         Assert.True(report.IsValid);
         Assert.Contains(report.Warnings, x => x.Contains("partially"));

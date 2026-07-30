@@ -13,7 +13,8 @@ public sealed class RuleSet
     public RuleSet(
         string id,
         IEnumerable<Rule> rules,
-        TextNormalizationOptions? textNormalization = null)
+        TextNormalizationOptions? textNormalization = null,
+        RemediationStructuralTemplate? structuralTemplate = null)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -22,6 +23,7 @@ public sealed class RuleSet
 
         Id = id;
         TextNormalization = textNormalization ?? TextNormalizationOptions.Default;
+        StructuralTemplate = structuralTemplate;
         Rules = new ReadOnlyCollection<Rule>(
             (rules ?? throw new ArgumentNullException(nameof(rules)))
             .Select(rule => rule with
@@ -50,11 +52,18 @@ public sealed class RuleSet
         IEnumerable<TolerancedZone>? tolerancedZones = null,
         IEnumerable<FlowRegion>? flowRegions = null,
         TextNormalizationOptions? textNormalization = null,
-        IEnumerable<RemediationSemanticAssertion>? assertions = null)
-        : this(id, rules, textNormalization)
+        IEnumerable<RemediationSemanticAssertion>? assertions = null,
+        RemediationStructuralTemplate? structuralTemplate = null)
+        : this(id, rules, textNormalization, structuralTemplate)
     {
         Anchors = new ReadOnlyCollection<RemediationAnchor>(
-            (anchors ?? throw new ArgumentNullException(nameof(anchors))).ToList());
+            (anchors ?? throw new ArgumentNullException(nameof(anchors)))
+            .Select(anchor => anchor with
+            {
+                RuleSetId = id,
+                TextNormalization = TextNormalization
+            })
+            .ToList());
         TolerancedZones = new ReadOnlyCollection<TolerancedZone>(
             (tolerancedZones ?? Array.Empty<TolerancedZone>()).ToList());
         FlowRegions = new ReadOnlyCollection<FlowRegion>(
@@ -84,4 +93,7 @@ public sealed class RuleSet
     /// <summary>Semantic expectations evaluated against planned and materialized output.</summary>
     public IReadOnlyList<RemediationSemanticAssertion> Assertions { get; } =
         Array.Empty<RemediationSemanticAssertion>();
+
+    /// <summary>Optional closed structural template owned by this rule set.</summary>
+    public RemediationStructuralTemplate? StructuralTemplate { get; }
 }

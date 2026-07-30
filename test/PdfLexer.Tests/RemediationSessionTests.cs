@@ -165,7 +165,7 @@ public class RemediationSessionTests
             "heading",
             RemediationActions.Tag("H1"),
             Predicates.Text.StartsWith("Invoice"),
-            Granularity.Paragraph));
+            CandidateSelector.Text(Granularity.Paragraph)));
 
         Assert.False(report.Committed);
         var claim = Assert.Single(report.Claims);
@@ -187,8 +187,8 @@ public class RemediationSessionTests
 
         using var session = doc.BeginRemediation();
         var skipped = session.DryRun(
-            new Rule("first", RemediationActions.Tag("P"), granularity: Granularity.Paragraph),
-            new Rule("second", RemediationActions.Tag("H1"), granularity: Granularity.Paragraph));
+            new Rule("first", RemediationActions.Tag("P"), candidates: CandidateSelector.Text(Granularity.Paragraph)),
+            new Rule("second", RemediationActions.Tag("H1"), candidates: CandidateSelector.Text(Granularity.Paragraph)));
 
         Assert.Single(skipped.Claims);
         Assert.Equal("first", skipped.Claims[0].RuleId);
@@ -197,8 +197,8 @@ public class RemediationSessionTests
 
         using var overrideSession = doc.BeginRemediation();
         var overridden = overrideSession.DryRun(
-            new Rule("first", RemediationActions.Tag("P"), granularity: Granularity.Paragraph),
-            new Rule("second", RemediationActions.Tag("H1"), granularity: Granularity.Paragraph, @override: true));
+            new Rule("first", RemediationActions.Tag("P"), candidates: CandidateSelector.Text(Granularity.Paragraph)),
+            new Rule("second", RemediationActions.Tag("H1"), candidates: CandidateSelector.Text(Granularity.Paragraph), @override: true));
 
         var claim = Assert.Single(overridden.Claims);
         Assert.Equal("second", claim.RuleId);
@@ -220,7 +220,7 @@ public class RemediationSessionTests
             "low-confidence",
             RemediationActions.Tag("P"),
             RemediationPredicate.Always,
-            Granularity.Paragraph,
+            CandidateSelector.Text(Granularity.Paragraph),
             minConfidence: 1.0));
 
         Assert.Single(report.Claims);
@@ -230,7 +230,7 @@ public class RemediationSessionTests
             "low-confidence",
             RemediationActions.Tag("P"),
             new LowConfidencePredicate(),
-            Granularity.Paragraph,
+            CandidateSelector.Text(Granularity.Paragraph),
             minConfidence: 0.8));
 
         Assert.Empty(failed.Claims);
@@ -254,13 +254,13 @@ public class RemediationSessionTests
                 "invoice",
                 RemediationActions.Tag("H1"),
                 Predicates.Text.Equals("Invoice"),
-                Granularity.Word,
+                CandidateSelector.Text(Granularity.Word),
                 cardinality: RuleCardinality.Exactly(1)),
             new Rule(
                 "missing-total",
                 RemediationActions.Tag("P"),
                 Predicates.Text.Equals("Total"),
-                Granularity.Word,
+                CandidateSelector.Text(Granularity.Word),
                 cardinality: RuleCardinality.Exactly(1)));
 
         Assert.Equal(2, report.RuleEvaluations.Count);
@@ -299,7 +299,7 @@ public class RemediationSessionTests
             "page-total",
             RemediationActions.Tag("P"),
             Predicates.Text.Equals("Total"),
-            Granularity.Word,
+            CandidateSelector.Text(Granularity.Word),
             cardinality: RuleCardinality.Exactly(1, RuleCardinalityScope.PerPage)));
 
         var summary = Assert.Single(report.RuleEvaluations);
@@ -320,9 +320,9 @@ public class RemediationSessionTests
 
         using var session = doc.BeginRemediation();
         var report = session.DryRun(
-            new Rule("first", RemediationActions.Tag("P"), granularity: Granularity.Word),
-            new Rule("conflict", RemediationActions.Tag("Span"), granularity: Granularity.Word),
-            new Rule("replacement", RemediationActions.Tag("H1"), granularity: Granularity.Word, @override: true));
+            new Rule("first", RemediationActions.Tag("P"), candidates: CandidateSelector.Text(Granularity.Word)),
+            new Rule("conflict", RemediationActions.Tag("Span"), candidates: CandidateSelector.Text(Granularity.Word)),
+            new Rule("replacement", RemediationActions.Tag("H1"), candidates: CandidateSelector.Text(Granularity.Word), @override: true));
 
         var first = Assert.Single(report.RuleEvaluations, x => x.RuleId == "first");
         Assert.Equal(0, first.Total.AppliedClaims);
@@ -347,12 +347,15 @@ public class RemediationSessionTests
             writer.Font(Standard14Font.GetHelvetica(), 12).Text("Alpha Beta").EndText();
         }
 
-        using var session = doc.BeginRemediation();
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
+        });
         var report = session.DryRun(
             new Rule(
                 "words",
                 RemediationActions.Tag("Span"),
-                granularity: Granularity.Word,
+                candidates: CandidateSelector.Text(Granularity.Word),
                 cardinality: RuleCardinality.Exactly(2)),
             new Rule(
                 "custom-first",
@@ -361,7 +364,7 @@ public class RemediationSessionTests
                         context.Candidates.Take(1).ToArray(),
                         RemediationActions.Tag("Span")),
                     "first candidate"),
-                granularity: Granularity.Word,
+                candidates: CandidateSelector.Text(Granularity.Word),
                 cardinality: RuleCardinality.Exactly(1)),
             new Rule(
                 "paragraph",
@@ -372,7 +375,7 @@ public class RemediationSessionTests
                 "language",
                 RemediationActions.Lang(ClaimPredicates.FromRule("paragraph"), "en-US"),
                 stage: Stage.Refine,
-                cardinality: RuleCardinality.Exactly(2)));
+                cardinality: RuleCardinality.Exactly(1)));
 
         Assert.Empty(report.Diagnostics);
         Assert.Equal(2, Assert.Single(report.RuleEvaluations, x => x.RuleId == "words").Total.InputsMatched);
@@ -380,7 +383,7 @@ public class RemediationSessionTests
         Assert.Equal(2, custom.Total.InputsConsidered);
         Assert.Equal(1, custom.Total.InputsMatched);
         Assert.Equal(2, Assert.Single(report.RuleEvaluations, x => x.RuleId == "paragraph").Total.InputsMatched);
-        Assert.Equal(2, Assert.Single(report.RuleEvaluations, x => x.RuleId == "language").Total.InputsMatched);
+        Assert.Equal(1, Assert.Single(report.RuleEvaluations, x => x.RuleId == "language").Total.InputsMatched);
     }
 
     [Fact]
@@ -393,6 +396,7 @@ public class RemediationSessionTests
         var report = session.DryRun(new Rule(
             "out-of-range",
             RemediationActions.Tag("P"),
+            candidates: CandidateSelector.Text(Granularity.Paragraph),
             pages: PageSelector.Range(4, 6),
             cardinality: RuleCardinality.AtLeast(1, RuleCardinalityScope.PerPage)));
 
@@ -422,7 +426,7 @@ public class RemediationSessionTests
                 "invoice-total",
                 RemediationActions.Tag("P"),
                 Predicates.Text.Equals("Amount Due"),
-                Granularity.Word,
+                CandidateSelector.Text(Granularity.Word),
                 cardinality: RuleCardinality.Exactly(1))));
 
         var dryRun = session.DryRun();
@@ -455,7 +459,7 @@ public class RemediationSessionTests
             "total",
             RemediationActions.Tag("Span"),
             Predicates.Text.Equals("Total"),
-            Granularity.Word,
+            CandidateSelector.Text(Granularity.Word),
             cardinality: RuleCardinality.Exactly(1)));
 
         var artifact = Assert.Single(report.AutoArtifacts);
@@ -489,7 +493,7 @@ public class RemediationSessionTests
             "optional-label",
             RemediationActions.Tag("P"),
             Predicates.Text.Equals("Absent"),
-            Granularity.Word,
+            CandidateSelector.Text(Granularity.Word),
             cardinality: RuleCardinality.Exactly(1)));
 
         Assert.True(report.Committed);
@@ -519,11 +523,13 @@ public class RemediationSessionTests
             "total-word",
             RemediationActions.Tag("Span"),
             Predicates.Text.Equals("Total").And(Predicates.Font.Size(NumericOperator.GreaterThanOrEqual, 12)),
-            Granularity.Word));
+            CandidateSelector.Text(Granularity.Word)));
 
         var claim = Assert.Single(report.Claims);
         Assert.Equal("total-word", claim.RuleId);
-        Assert.Equal(Granularity.Word, claim.Granularity);
+        Assert.Equal(
+            Granularity.Word,
+            Assert.IsType<TextRemediationCandidate>(Assert.Single(claim.Candidates)).Granularity);
         var binding = Assert.Single(claim.AppliedBindings);
         Assert.Equal("Span", binding.ProducedTag);
         Assert.Equal(new[] { 0 }, binding.Mcids);
@@ -570,12 +576,12 @@ public class RemediationSessionTests
             "label",
             RemediationActions.Tag("Span"),
             Predicates.Text.Equals("Invoice"),
-            Granularity.Word);
+            CandidateSelector.Text(Granularity.Word));
         var value = new Rule(
             "value",
             RemediationActions.Tag("Reference"),
             Predicates.Text.Equals("INV-12345"),
-            Granularity.Word);
+            CandidateSelector.Text(Granularity.Word));
         var rules = reverseRuleOrder ? new[] { value, label } : new[] { label, value };
 
         using var session = doc.BeginRemediation(new RemediationSessionConfiguration
@@ -623,12 +629,12 @@ public class RemediationSessionTests
 
         using var session = doc.BeginRemediation();
         var report = session.DryRun(
-            new Rule("coarse", RemediationActions.Tag("P"), granularity: granularity),
+            new Rule("coarse", RemediationActions.Tag("P"), candidates: CandidateSelector.Text(granularity)),
             new Rule(
                 "word",
                 RemediationActions.Tag("Span"),
                 Predicates.Text.Equals("Beta"),
-                Granularity.Word));
+                CandidateSelector.Text(Granularity.Word)));
 
         Assert.Single(report.Claims);
         Assert.Equal("coarse", report.Claims[0].RuleId);
@@ -651,8 +657,8 @@ public class RemediationSessionTests
                 "middle-character",
                 RemediationActions.Tag("Span"),
                 Predicates.Text.Equals("B"),
-                Granularity.Character),
-            new Rule("whole-word", RemediationActions.Tag("P"), granularity: Granularity.Word));
+                CandidateSelector.Text(Granularity.Character)),
+            new Rule("whole-word", RemediationActions.Tag("P"), candidates: CandidateSelector.Text(Granularity.Word)));
 
         Assert.Single(report.Claims);
         Assert.Equal("middle-character", report.Claims[0].RuleId);
@@ -676,12 +682,12 @@ public class RemediationSessionTests
             LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
         });
         var report = session.Commit(
-            new Rule("line", RemediationActions.Tag("P"), granularity: Granularity.Line),
+            new Rule("line", RemediationActions.Tag("P"), candidates: CandidateSelector.Text(Granularity.Line)),
             new Rule(
                 "beta",
                 RemediationActions.Tag("Span"),
                 Predicates.Text.Equals("Beta"),
-                Granularity.Word,
+                CandidateSelector.Text(Granularity.Word),
                 @override: true));
 
         Assert.True(report.Committed);
@@ -712,7 +718,7 @@ public class RemediationSessionTests
         var report = session.Commit(new Rule(
             "paragraph",
             RemediationActions.Tag("P"),
-            granularity: Granularity.Paragraph));
+            candidates: CandidateSelector.Text(Granularity.Paragraph)));
 
         Assert.True(report.Committed);
         Assert.Single(report.Claims);
@@ -740,7 +746,7 @@ public class RemediationSessionTests
         session.Commit(new Rule(
             "debug-p",
             RemediationActions.Tag("P"),
-            granularity: Granularity.Paragraph));
+            candidates: CandidateSelector.Text(Granularity.Paragraph)));
 
         var root = doc.Structure.GetRoot();
         var p = Assert.Single(root.Children, x => x.Type == "P");
@@ -766,7 +772,7 @@ public class RemediationSessionTests
         session.Commit(new Rule(
             "debug-p",
             RemediationActions.Tag("P"),
-            granularity: Granularity.Paragraph));
+            candidates: CandidateSelector.Text(Granularity.Paragraph)));
 
         var root = doc.Structure.GetRoot();
         var p = Assert.Single(root.Children, x => x.Type == "P");
@@ -793,7 +799,7 @@ public class RemediationSessionTests
             "test-rule-123",
             RemediationActions.Tag("P"),
             Predicates.Text.Equals("Hello"),
-            Granularity.Paragraph);
+            CandidateSelector.Text(Granularity.Paragraph));
 
         var report = session.Commit(rule);
         
@@ -823,13 +829,13 @@ public class RemediationSessionTests
             "rule-1",
             RemediationActions.Tag("Span"),
             Predicates.Text.Equals("Hello"),
-            Granularity.Word);
+            CandidateSelector.Text(Granularity.Word));
 
         var rule2 = new Rule(
             "rule-2",
             RemediationActions.Tag("P"),
             Predicates.Text.Equals("Hello"),
-            Granularity.Paragraph);
+            CandidateSelector.Text(Granularity.Paragraph));
 
         var report = session.DryRun(rule1, rule2);
         
@@ -862,14 +868,18 @@ public class RemediationSessionTests
 
         using (var dryRunSession = doc.BeginRemediation())
         {
-            var inferred = dryRunSession.DryRun(new Rule(
-                "table-inferred",
-                RemediationActions.Table(),
-                Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 520, 730))),
-                Granularity.Word,
-                stage: Stage.Group));
+            var inferred = dryRunSession.DryRun(
+                new Rule(
+                    "inferred-cells",
+                    RemediationActions.Tag("Span"),
+                    Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 520, 730))),
+                    CandidateSelector.Text(Granularity.Word)),
+                new Rule(
+                    "table-inferred",
+                    RemediationActions.TableOver(ClaimPredicates.FromRule("inferred-cells")),
+                    stage: Stage.Group));
 
-            Assert.Equal(0.9, Assert.Single(inferred.Claims).Confidence);
+            Assert.Equal(0.9, Assert.Single(inferred.Claims, x => x.RuleId == "table-inferred").Confidence);
         }
 
         using var session = doc.BeginRemediation(new RemediationSessionConfiguration
@@ -879,12 +889,16 @@ public class RemediationSessionTests
             StrictConformance = false
         });
 
-        var report = session.Commit(new Rule(
-            "table",
-            RemediationActions.TableWithHeaderRows(1, 40, 200, 340, 500),
-            Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 520, 730))),
-            Granularity.Word,
-            stage: Stage.Group));
+        var report = session.Commit(
+            new Rule(
+                "cells",
+                RemediationActions.Tag("Span"),
+                Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 520, 730))),
+                CandidateSelector.Text(Granularity.Word)),
+            new Rule(
+                "table",
+                RemediationActions.TableOverFlattenedCells(ClaimPredicates.FromRule("cells"), 1, 40, 200, 340, 500),
+                stage: Stage.Group));
 
         Assert.True(report.Committed);
         var table = Assert.Single(doc.Structure.GetRoot().Children, x => x.Type == "Table");
@@ -919,7 +933,7 @@ public class RemediationSessionTests
             StrictConformance = false
         });
         var error = Assert.Throws<InvalidOperationException>(() => session.Commit(
-            new Rule("prebuilt-row", RemediationActions.Tag("TR"), granularity: Granularity.Word),
+            new Rule("prebuilt-row", RemediationActions.Tag("TR"), candidates: CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "table",
                 RemediationActions.TableOver(ClaimPredicates.FromRule("prebuilt-row"), 40, 200, 400),
@@ -962,11 +976,10 @@ public class RemediationSessionTests
                 "table-cells",
                 RemediationActions.Tag("Span"),
                 Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 800, 730))),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "table",
                 RemediationActions.TableOver(ClaimPredicates.ClaimIs("Span")),
-                granularity: Granularity.Word,
                 stage: Stage.Group));
 
         Assert.True(report.Committed);
@@ -1019,18 +1032,17 @@ public class RemediationSessionTests
                 "header-cells",
                 RemediationActions.Tag("Span"),
                 Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 690, 800, 730))),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "body-cells",
                 RemediationActions.Tag("Span"),
                 Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 800, 690))),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "table",
                 RemediationActions.TableOver(
                     ClaimPredicates.ClaimIs("Span"),
                     ClaimPredicates.FromRule("header-cells")),
-                granularity: Granularity.Word,
                 stage: Stage.Group));
 
         Assert.True(report.Committed);
@@ -1068,11 +1080,10 @@ public class RemediationSessionTests
                 "table-cells",
                 RemediationActions.Tag("Span"),
                 Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 800, 730))),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "table",
                 RemediationActions.TableOverFlattenedCells(ClaimPredicates.ClaimIs("Span")),
-                granularity: Granularity.Word,
                 stage: Stage.Group));
 
         Assert.True(report.Committed);
@@ -1115,11 +1126,10 @@ public class RemediationSessionTests
                 "items",
                 RemediationActions.Tag("LI"),
                 Predicates.Text.Matches("^(A|B|D)$"),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "list",
                 RemediationActions.Group("L", ClaimPredicates.ClaimIs("LI").And(ClaimPredicates.Consecutive())),
-                granularity: Granularity.Word,
                 stage: Stage.Group));
 
         Assert.True(report.Committed);
@@ -1161,18 +1171,17 @@ public class RemediationSessionTests
                 "heading",
                 RemediationActions.Tag("H1"),
                 Predicates.Text.Equals("Heading"),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "paragraph",
                 RemediationActions.Tag("P"),
                 Predicates.Text.Equals("Body"),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "section",
                 RemediationActions.Group(
                     "Sect",
                     ClaimPredicates.ClaimIs("H1").Or(ClaimPredicates.ClaimIs("P"))),
-                granularity: Granularity.Word,
                 stage: Stage.Group));
 
         Assert.True(report.Committed);
@@ -1206,11 +1215,10 @@ public class RemediationSessionTests
                 "bill-to-lines",
                 RemediationActions.Tag("Span"),
                 Predicates.Text.Matches("^(Acme Corp|123 Main St)$"),
-                Granularity.Line),
+                CandidateSelector.Text(Granularity.Line)),
             new Rule(
                 "bill-to-paragraph",
                 RemediationActions.MergeTo("P", ClaimPredicates.FromRule("bill-to-lines")),
-                granularity: Granularity.Line,
                 stage: Stage.Group));
 
         Assert.True(report.Committed);
@@ -1245,11 +1253,10 @@ public class RemediationSessionTests
                 "span",
                 RemediationActions.Tag("Span", new PdfDictionary { [PdfName.ActualText] = new PdfString("Hello") }),
                 Predicates.Text.Equals("Bonjour"),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "paragraph",
                 RemediationActions.MergeTo("P", ClaimPredicates.FromRule("span")),
-                granularity: Granularity.Word,
                 stage: Stage.Group)));
 
         Assert.Contains("cannot be merged", error.Message);
@@ -1277,11 +1284,10 @@ public class RemediationSessionTests
                 "paragraph",
                 RemediationActions.Tag("P"),
                 Predicates.Text.Equals("Bonjour"),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "lang",
                 RemediationActions.Lang(ClaimPredicates.FromRule("paragraph"), "fr-CA"),
-                granularity: Granularity.Word,
                 stage: Stage.Refine));
 
         Assert.True(report.Committed);
@@ -1320,16 +1326,15 @@ public class RemediationSessionTests
                 "bottom",
                 RemediationActions.Tag("P"),
                 Predicates.Text.Equals("Bottom"),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "top",
                 RemediationActions.Tag("P"),
                 Predicates.Text.Equals("Top"),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "logical-order",
                 RemediationActions.ReorderSiblings(ClaimPredicates.ClaimIs("P"), SiblingReorderMode.GeometryTopToBottom),
-                granularity: Granularity.Word,
                 stage: Stage.Refine));
 
         Assert.True(report.Committed);
@@ -1368,19 +1373,18 @@ public class RemediationSessionTests
                 "source",
                 RemediationActions.Tag("P"),
                 Predicates.Text.Equals("Jump"),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "target",
                 RemediationActions.Tag("H1"),
                 Predicates.Text.Equals("Target"),
-                Granularity.Word),
+                CandidateSelector.Text(Granularity.Word)),
             new Rule(
                 "link",
                 RemediationActions.Link(
                     ClaimPredicates.FromRule("source"),
                     ClaimPredicates.FromRule("target"),
                     "Jump to target"),
-                granularity: Granularity.Word,
                 stage: Stage.Refine));
 
         Assert.True(report.Committed);
@@ -1415,26 +1419,34 @@ public class RemediationSessionTests
         }
 
         using var session = doc.BeginRemediation();
-        var report = session.DryRun(new Rule(
-            "table",
-            RemediationActions.Table(),
-            Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 520, 730))),
-            Granularity.Word,
-            stage: Stage.Group));
+        var report = session.DryRun(
+            new Rule(
+                "cells",
+                RemediationActions.Tag("Span"),
+                Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 520, 730))),
+                CandidateSelector.Text(Granularity.Word)),
+            new Rule(
+                "table",
+                RemediationActions.TableOver(ClaimPredicates.FromRule("cells")),
+                stage: Stage.Group));
 
-        var inferred = Assert.Single(report.Claims);
+        var inferred = Assert.Single(report.Claims, x => x.RuleId == "table");
         Assert.Equal(0.5, inferred.Confidence);
 
         using var thresholdSession = doc.BeginRemediation();
-        var thresholded = thresholdSession.DryRun(new Rule(
-            "table",
-            RemediationActions.Table(),
-            Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 520, 730))),
-            Granularity.Word,
-            stage: Stage.Group,
-            minConfidence: 0.8));
+        var thresholded = thresholdSession.DryRun(
+            new Rule(
+                "threshold-cells",
+                RemediationActions.Tag("Span"),
+                Predicates.Geo.Intersects(LayoutCoord.Absolute(new PdfRect<double>(0, 650, 520, 730))),
+                CandidateSelector.Text(Granularity.Word)),
+            new Rule(
+                "table",
+                RemediationActions.TableOver(ClaimPredicates.FromRule("threshold-cells")),
+                stage: Stage.Group,
+                minConfidence: 0.8));
 
-        Assert.Empty(thresholded.Claims);
+        Assert.DoesNotContain(thresholded.Claims, x => x.RuleId == "table");
         var skipped = Assert.Single(thresholded.SkippedClaims);
         Assert.Equal("table", skipped.RuleId);
         Assert.Equal(0.5, skipped.Confidence);
@@ -1456,7 +1468,7 @@ public class RemediationSessionTests
                 "paragraph",
                 RemediationActions.Tag("P"),
                 Predicates.Text.Equals("Hello"),
-                Granularity.Word));
+                CandidateSelector.Text(Granularity.Word)));
 
         using var session = doc.BeginRemediation();
         session.Use(common);

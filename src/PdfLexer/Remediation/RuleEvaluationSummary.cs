@@ -65,6 +65,31 @@ public sealed record RemediationAutoArtifactOutcome(
     public int ResourceUseCount { get; init; }
 }
 
+/// <summary>Structured details for one painting item left unclaimed by remediation rules.</summary>
+public sealed record RemediationUnaccountedContent(
+    int PageIndex,
+    RemediationCandidateKind CandidateKind,
+    string CandidateId,
+    StructuredSourceRef SourceReference,
+    PdfRect<double> BoundingBox,
+    PdfRect<double> RelativeBoundingBox,
+    string? RawText = null,
+    string? NormalizedText = null,
+    string? ResourceIdentity = null,
+    string? ResourceName = null,
+    int ResourceUseCount = 0);
+
+/// <summary>Read-only inventory entry for an annotation present before remediation.</summary>
+public sealed record RemediationAnnotationInventoryItem(
+    int PageIndex,
+    string Subtype,
+    PdfRect<double>? Bounds,
+    bool Hidden,
+    bool OffPage,
+    bool HasStructParent,
+    bool BlocksConformance,
+    string Reason);
+
 internal sealed class RuleEvaluationAccumulator
 {
     private readonly IReadOnlyList<Rule> _rules;

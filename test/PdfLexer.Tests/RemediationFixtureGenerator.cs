@@ -116,22 +116,22 @@ internal static class RemediationFixtureGenerator
                     "invoice-title",
                     RemediationActions.Tag("H1"),
                     Predicates.Font.Size(NumericOperator.GreaterThanOrEqual, 16),
-                    Granularity.Line),
+                    CandidateSelector.Text(Granularity.Line)),
                 new Rule(
                     "invoice-number",
                     RemediationActions.Tag("P"),
                     Predicates.Text.Contains("INV-10042"),
-                    Granularity.Line),
+                    CandidateSelector.Text(Granularity.Line)),
                 new Rule(
                     "line-item-header-cell",
                     RemediationActions.Tag("Span"),
                     Predicates.Anchor.SameRowAs("line-items-header", tolerance: 4),
-                    Granularity.Word),
+                    CandidateSelector.Text(Granularity.Word)),
                 new Rule(
                     "line-item-cell",
                     RemediationActions.Tag("Span"),
                     Predicates.Flow.InFlowRegion("line-items"),
-                    Granularity.Word),
+                    CandidateSelector.Text(Granularity.Word)),
                 new Rule(
                     "line-items-table",
                     RemediationActions.TableOverFlattenedCells(
@@ -159,12 +159,12 @@ internal static class RemediationFixtureGenerator
             new[]
             {
                 FooterRule(),
-                new Rule("statement-title", RemediationActions.Tag("H1"), Predicates.Text.StartsWith("Account Statement"), Granularity.Line),
+                new Rule("statement-title", RemediationActions.Tag("H1"), Predicates.Text.StartsWith("Account Statement"), CandidateSelector.Text(Granularity.Line)),
                 new Rule(
                     "bill-to-address",
                     RemediationActions.Tag("P"),
                     Predicates.Flow.InFlowRegion("bill-to-address"),
-                    Granularity.Line),
+                    CandidateSelector.Text(Granularity.Line)),
                 BodyParagraphRule()
             },
             new[]
@@ -184,17 +184,17 @@ internal static class RemediationFixtureGenerator
             new[]
             {
                 FooterRule(),
-                new Rule("title", RemediationActions.Tag("H1"), Predicates.Font.Size(NumericOperator.GreaterThanOrEqual, 16), Granularity.Line),
+                new Rule("title", RemediationActions.Tag("H1"), Predicates.Font.Size(NumericOperator.GreaterThanOrEqual, 16), CandidateSelector.Text(Granularity.Line)),
                 BodyParagraphRule()
             },
             Array.Empty<RemediationAnchor>(),
             tolerancedZones: FooterZones());
 
     private static Rule FooterRule() =>
-        new("footer", RemediationActions.Artifact(ArtifactSubtype.Pagination), Predicates.Flow.InZone("footer"), Granularity.Line);
+        new("footer", RemediationActions.Artifact(ArtifactSubtype.Pagination), Predicates.Flow.InZone("footer"), CandidateSelector.Text(Granularity.Line));
 
     private static Rule BodyParagraphRule() =>
-        new("body-line", RemediationActions.Tag("P"), RemediationPredicate.Always, Granularity.Line);
+        new("body-line", RemediationActions.Tag("P"), RemediationPredicate.Always, CandidateSelector.Text(Granularity.Line));
 
     private static TolerancedZone[] FooterZones() =>
         new[] { new TolerancedZone("footer", LayoutCoord.MarginRelative(bottom: 42), Tolerance: 6) };

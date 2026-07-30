@@ -9,6 +9,7 @@ internal sealed class AnchorResolver
     private readonly Dictionary<string, AnchorResolution> _resolutions = new();
     private readonly List<string> _diagnostics;
     private readonly HashSet<string> _resolving = new();
+    private readonly HashSet<string> _attempted = new();
 
     public AnchorResolver(RemediationEvaluationContext context, List<string> diagnostics)
     {
@@ -23,9 +24,15 @@ internal sealed class AnchorResolver
             return resolution;
         }
 
+        if (_attempted.Contains(anchorId))
+        {
+            return null;
+        }
+
         if (!_context.Anchors.TryGetValue(anchorId, out var anchor))
         {
             _diagnostics.Add($"Anchor '{anchorId}' is not defined.");
+            _attempted.Add(anchorId);
             return null;
         }
 
@@ -37,6 +44,7 @@ internal sealed class AnchorResolver
 
         try
         {
+            _attempted.Add(anchorId);
             var result = ResolveInternal(anchor);
             if (result != null)
             {
@@ -56,6 +64,9 @@ internal sealed class AnchorResolver
             _context.PageCount > 0 &&
             !anchor.Pages.Includes(_context.PageIndex, _context.PageCount))
         {
+            _diagnostics.Add(
+                $"Anchor '{anchor.Id}' is not active on page {_context.PageIndex + 1}; " +
+                $"its page selector is {anchor.Pages.DebugString}.");
             return null;
         }
 
@@ -76,12 +87,13 @@ internal sealed class AnchorResolver
     {
         if (_context.StructuredText == null) return null;
 
+        var context = _context.WithTextNormalization(anchor.TextNormalization);
         var granularities = anchor.Granularities.Count == 0
             ? new[] { Granularity.Line }
             : anchor.Granularities.Distinct().ToArray();
         var matches = granularities
             .SelectMany(granularity => _context.StructuredText.GetCandidates(granularity))
-            .Select(candidate => new AnchorCandidateMatch(candidate, anchor.Predicate.Evaluate(_context, candidate)))
+            .Select(candidate => new AnchorCandidateMatch(candidate, anchor.Predicate.Evaluate(context, candidate)))
             .Where(x => x.Result.IsMatch)
             .ToList();
 
@@ -92,10 +104,12 @@ internal sealed class AnchorResolver
     {
         if (_context.StructuredText == null) return null;
 
+        var normalizer = anchor.TextNormalization;
+        var expected = normalizer.Normalize(anchor.Text);
         var matches = new List<AnchorCandidateMatch>();
         foreach (var candidate in _context.StructuredText.GetCandidates(Granularity.Line))
         {
-            if (string.Equals(candidate.Text, anchor.Text, anchor.Comparison))
+            if (string.Equals(normalizer.Normalize(((TextRemediationCandidate)candidate).Text), expected, anchor.Comparison))
             {
                 matches.Add(new AnchorCandidateMatch(candidate, PredicateResult.Match()));
             }
@@ -105,14 +119,14 @@ internal sealed class AnchorResolver
         {
             foreach (var candidate in _context.StructuredText.GetCandidates(Granularity.Word))
             {
-                if (string.Equals(candidate.Text, anchor.Text, anchor.Comparison))
+                if (string.Equals(normalizer.Normalize(((TextRemediationCandidate)candidate).Text), expected, anchor.Comparison))
                 {
                     matches.Add(new AnchorCandidateMatch(candidate, PredicateResult.Match()));
                 }
             }
         }
 
-        return ResolveSelectedCandidate(anchor, matches, GetLegacySelection(anchor), $"text '{anchor.Text}'");
+        return ResolveSelectedCandidate(anchor, matches, anchor.Selection, $"text '{anchor.Text}'");
     }
 
     private AnchorResolution? ResolvePriorClaim(PriorClaimAnchor anchor)
@@ -155,26 +169,30 @@ internal sealed class AnchorResolver
             return null;
         }
 
+        var normalizer = anchor.TextNormalization;
+        var normalizedHeaders = headers.Select(normalizer.Normalize).ToArray();
         var matches = new List<AnchorCandidateMatch>();
         foreach (var candidate in _context.StructuredText.GetCandidates(Granularity.Line))
         {
-            if (headers.All(header => candidate.Text.Contains(header, StringComparison.OrdinalIgnoreCase)))
+            var candidateText = normalizer.Normalize(((TextRemediationCandidate)candidate).Text);
+            if (normalizedHeaders.All(header => candidateText.Contains(header, StringComparison.OrdinalIgnoreCase)))
             {
                 matches.Add(new AnchorCandidateMatch(candidate, PredicateResult.Match()));
             }
         }
 
-        return ResolveSelectedCandidate(anchor, matches, GetLegacySelection(anchor), $"table headers [{string.Join(", ", headers)}]");
+        return ResolveSelectedCandidate(anchor, matches, anchor.Selection, $"table headers [{string.Join(", ", headers)}]");
     }
 
     private AnchorResolution? ResolveRepeatedElement(RepeatedElementAnchor anchor)
     {
         if (_context.StructuredText == null) return null;
 
+        var normalizer = anchor.TextNormalization;
         var matches = new List<AnchorCandidateMatch>();
         foreach (var candidate in _context.StructuredText.GetCandidates(Granularity.Line))
         {
-            if (Regex.IsMatch(candidate.Text, anchor.Pattern))
+            if (Regex.IsMatch(normalizer.Normalize(((TextRemediationCandidate)candidate).Text), anchor.Pattern))
             {
                 matches.Add(new AnchorCandidateMatch(candidate, PredicateResult.Match()));
             }
@@ -184,14 +202,14 @@ internal sealed class AnchorResolver
         {
             foreach (var candidate in _context.StructuredText.GetCandidates(Granularity.Word))
             {
-                if (Regex.IsMatch(candidate.Text, anchor.Pattern))
+                if (Regex.IsMatch(normalizer.Normalize(((TextRemediationCandidate)candidate).Text), anchor.Pattern))
                 {
                     matches.Add(new AnchorCandidateMatch(candidate, PredicateResult.Match()));
                 }
             }
         }
 
-        return ResolveSelectedCandidate(anchor, matches, GetLegacySelection(anchor), $"pattern '{anchor.Pattern}'");
+        return ResolveSelectedCandidate(anchor, matches, anchor.Selection, $"pattern '{anchor.Pattern}'");
     }
 
     private AnchorResolution? ResolveGeometry(GeometryAnchor anchor)
@@ -210,7 +228,8 @@ internal sealed class AnchorResolver
         {
             if (selection.Mode != AnchorSelectionMode.OptionalSingle)
             {
-                _diagnostics.Add($"Anchor '{anchor.Id}' matched no candidates for {description}.");
+                _diagnostics.Add(
+                    $"Anchor '{anchor.Id}' matched no candidates on page {_context.PageIndex + 1} for {description}.");
             }
             return null;
         }
@@ -231,18 +250,16 @@ internal sealed class AnchorResolver
             return null;
         }
 
+        var confidence = selected.Result.UsesDefaultConfidence
+            ? _context.Configuration.DefaultConfidence
+            : selected.Result.Confidence;
         return new AnchorResolution(
             anchor.Id,
             selected.Candidate.RelativeBoundingBox,
-            selected.Result.Confidence,
+            confidence,
             _context.PageIndex,
             new[] { selected.Candidate });
     }
-
-    private static AnchorSelection GetLegacySelection(RemediationAnchor anchor) =>
-        anchor.Occurrence is { } occurrence
-            ? AnchorSelection.NthInReadingOrder(occurrence - 1)
-            : AnchorSelection.RequiredSingle;
 
     private AnchorCandidateMatch? SelectSingle(
         RemediationAnchor anchor,
@@ -256,8 +273,8 @@ internal sealed class AnchorResolver
         }
 
         _diagnostics.Add(required
-            ? $"Anchor '{anchor.Id}' is ambiguous. Found {matches.Count} matches for {description}."
-            : $"Optional anchor '{anchor.Id}' is ambiguous. Found {matches.Count} matches for {description}.");
+            ? $"Anchor '{anchor.Id}' is ambiguous on page {_context.PageIndex + 1}. Found {matches.Count} matches for {description}."
+            : $"Optional anchor '{anchor.Id}' is ambiguous on page {_context.PageIndex + 1}. Found {matches.Count} matches for {description}.");
         return null;
     }
 
@@ -331,14 +348,16 @@ internal sealed class AnchorResolver
         RemediationAnchor anchor,
         IReadOnlyList<AnchorCandidateMatch> candidates)
     {
+        var context = _context.WithTextNormalization(anchor.TextNormalization);
         foreach (var match in candidates.OrderBy(x => x.Candidate.SequenceIndex))
         {
-            if (anchor.Style != null && !anchor.Style.Evaluate(_context, match.Candidate).IsMatch)
+            if (anchor.Style != null && !anchor.Style.Evaluate(context, match.Candidate).IsMatch)
             {
                 continue;
             }
 
-            if (anchor.NeighborText != null && !HasNeighbor(match.Candidate, anchor.NeighborText, anchor.NeighborTolerance))
+            if (anchor.NeighborText != null &&
+                !HasNeighbor(match.Candidate, anchor.NeighborText, anchor.NeighborTolerance, anchor.TextNormalization))
             {
                 continue;
             }
@@ -347,18 +366,23 @@ internal sealed class AnchorResolver
         }
     }
 
-    private bool HasNeighbor(RemediationCandidate anchorCandidate, string neighborText, double tolerance)
+    private bool HasNeighbor(
+        RemediationCandidate anchorCandidate,
+        string neighborText,
+        double tolerance,
+        TextNormalizationOptions normalizer)
     {
         if (_context.StructuredText == null)
         {
             return false;
         }
 
+        var expected = normalizer.Normalize(neighborText);
         return _context.StructuredText.GetCandidates(Granularity.Word)
             .Concat(_context.StructuredText.GetCandidates(Granularity.Line))
             .Any(candidate =>
                 !ReferenceEquals(candidate, anchorCandidate) &&
-                string.Equals(candidate.Text, neighborText, StringComparison.Ordinal) &&
+                string.Equals(normalizer.Normalize(((TextRemediationCandidate)candidate).Text), expected, StringComparison.Ordinal) &&
                 AreNear(anchorCandidate.RelativeBoundingBox, candidate.RelativeBoundingBox, tolerance));
     }
 

@@ -92,14 +92,26 @@ public class RemediationNormalizationAndTraceTests
     }
 
     [Fact]
-    public void RuleValidation_RejectsDivergentGranularityAndSelector()
+    public void NonClassifyRule_RejectsCandidateSelector()
     {
-        var rule = new Rule("text", RemediationActions.Tag("P"), granularity: Granularity.Line)
-        {
-            Granularity = Granularity.Word
-        };
+        var rule = new Rule(
+            "group",
+            RemediationActions.Group("Div", ClaimPredicate.Always),
+            candidates: CandidateSelector.Text(Granularity.Line),
+            stage: Stage.Group);
 
-        Assert.Contains(rule.ValidateShape(), x => x.Contains("conflicts", StringComparison.Ordinal));
+        Assert.Contains(rule.ValidateShape(), x => x.Contains("omit", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void ConfidenceNeutralPredicate_UsesNonZeroSessionDefault()
+    {
+        Assert.Equal(1, new RemediationSessionConfiguration().DefaultConfidence);
+        var result = RemediationPredicate.Always.Evaluate(
+            new RemediationEvaluationContext(),
+            Candidate("text"));
+        Assert.True(result.IsMatch);
+        Assert.Equal(1, result.Confidence);
     }
 
     private static RemediationCandidate Candidate(string text) =>

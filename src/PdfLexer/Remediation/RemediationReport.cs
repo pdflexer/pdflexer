@@ -22,7 +22,11 @@ public sealed class RemediationReport
         IReadOnlyList<RemediationAutoArtifactOutcome>? autoArtifacts = null,
         IReadOnlyList<RemediationPredicateTrace>? predicateTraces = null,
         IReadOnlyList<RemediationAssertionOutcome>? assertionOutcomes = null,
-        RemediationSemanticTree? plannedSemanticTree = null)
+        RemediationSemanticTree? plannedSemanticTree = null,
+        IReadOnlyList<RemediationUnaccountedContent>? unaccountedContent = null,
+        IReadOnlyList<RemediationAnnotationInventoryItem>? annotationInventory = null,
+        IReadOnlyList<string>? warnings = null,
+        IReadOnlyList<RemediationTemplateDifference>? templateDifferences = null)
     {
         Committed = committed;
         AppliedAccessibilitySetup = appliedAccessibilitySetup;
@@ -35,6 +39,10 @@ public sealed class RemediationReport
         PredicateTraces = predicateTraces ?? Array.Empty<RemediationPredicateTrace>();
         AssertionOutcomes = assertionOutcomes ?? Array.Empty<RemediationAssertionOutcome>();
         PlannedSemanticTree = plannedSemanticTree ?? new RemediationSemanticTree(Array.Empty<RemediationSemanticNode>());
+        UnaccountedContent = unaccountedContent ?? Array.Empty<RemediationUnaccountedContent>();
+        AnnotationInventory = annotationInventory ?? Array.Empty<RemediationAnnotationInventoryItem>();
+        Warnings = warnings ?? Array.Empty<string>();
+        TemplateDifferences = templateDifferences ?? Array.Empty<RemediationTemplateDifference>();
         
         Outcomes = Claims.Select(CreateOutcome).ToList();
         SkippedOutcomes = SkippedClaims.Select(CreateOutcome).ToList();
@@ -55,6 +63,12 @@ public sealed class RemediationReport
     /// <summary>Diagnostics produced by validation or commit checks.</summary>
     public IReadOnlyList<string> Diagnostics { get; }
 
+    /// <summary>Nonblocking authoring warnings produced during planning.</summary>
+    public IReadOnlyList<string> Warnings { get; }
+
+    /// <summary>Machine-readable differences from the declared structural template.</summary>
+    public IReadOnlyList<RemediationTemplateDifference> TemplateDifferences { get; }
+
     /// <summary>Diagnostic suppressions configured on the session.</summary>
     public IReadOnlyList<DiagnosticSuppression> Suppressions { get; }
 
@@ -72,6 +86,12 @@ public sealed class RemediationReport
 
     /// <summary>Immutable semantic tree produced from the finalized action plan.</summary>
     public RemediationSemanticTree PlannedSemanticTree { get; }
+
+    /// <summary>Painting content left unclaimed when the leftover policy does not account for it.</summary>
+    public IReadOnlyList<RemediationUnaccountedContent> UnaccountedContent { get; }
+
+    /// <summary>Annotations present in the input and whether they cap strict conformance.</summary>
+    public IReadOnlyList<RemediationAnnotationInventoryItem> AnnotationInventory { get; }
 
     /// <summary>Returns a retained rejection trace for a rule and candidate.</summary>
     public RemediationPredicateTrace? ExplainRejection(string ruleId, string candidateId) =>
@@ -137,11 +157,22 @@ public sealed class RemediationReport
         return new RemediationClaimOutcome(
             claim.RuleId,
             claim.SelectorDebugString,
-            claim.Granularity,
             claim.Confidence,
             claim.Status,
             claim.PageIndex,
+            claim.PageIndexes,
             claim.BoundingBox,
+            claim.BoundsByPage,
+            claim.Candidates.Select(candidate => new RemediationCandidateSummary(
+                candidate.CandidateId,
+                candidate.Kind,
+                candidate is TextRemediationCandidate text ? text.Text : string.Empty,
+                candidate is TextRemediationCandidate normalizedText
+                    ? claim.TextNormalization.Normalize(normalizedText.Text)
+                    : string.Empty,
+                candidate.BoundingBox,
+                candidate.RelativeBoundingBox,
+                candidate.SourceReferences)).ToArray(),
             claim.AppliedBindings.Select(b => new RemediationAppliedBindingSummary(
                 b.ProducedTag,
                 b.Mcids,
@@ -158,18 +189,32 @@ public sealed record RemediationClaimOutcome(
     string RuleId,
     /// <summary>Serialized selector or predicate description.</summary>
     string SelectorDebugString,
-    /// <summary>Candidate granularity targeted by the rule.</summary>
-    Granularity Granularity,
     /// <summary>Outcome confidence in the range [0, 1].</summary>
     double Confidence,
     /// <summary>Claim lifecycle status.</summary>
     ClaimStatus Status,
     /// <summary>Zero-based page index.</summary>
     int PageIndex,
+    /// <summary>All zero-based pages containing the outcome.</summary>
+    IReadOnlyList<int> PageIndexes,
     /// <summary>Union bounds for selected candidates, when available.</summary>
     PdfRect<double>? BoundingBox,
+    /// <summary>Per-page bounds for selected candidates.</summary>
+    IReadOnlyDictionary<int, PdfRect<double>> BoundsByPage,
+    /// <summary>Selected candidates with raw and effective normalized text.</summary>
+    IReadOnlyList<RemediationCandidateSummary> Candidates,
     /// <summary>Applied binding summaries for content and structure nodes.</summary>
     IReadOnlyList<RemediationAppliedBindingSummary> AppliedBindings);
+
+/// <summary>Public candidate summary retained in a rule outcome.</summary>
+public sealed record RemediationCandidateSummary(
+    string CandidateId,
+    RemediationCandidateKind Kind,
+    string RawText,
+    string NormalizedText,
+    PdfRect<double> BoundingBox,
+    PdfRect<double> RelativeBoundingBox,
+    IReadOnlyList<StructuredSourceRef> SourceReferences);
 
 /// <summary>
 /// Public summary of marked-content and structure bindings created for a claim.

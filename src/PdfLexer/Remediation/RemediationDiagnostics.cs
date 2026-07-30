@@ -20,7 +20,18 @@ public enum DiagnosticCode
     /// <summary>A rule matched a number of inputs outside its declared cardinality.</summary>
     RuleCardinalityMismatch = 6,
     /// <summary>A semantic output assertion was not satisfied.</summary>
-    SemanticAssertionFailed = 7
+    SemanticAssertionFailed = 7,
+    /// <summary>An annotation present in the input cannot be adopted by the declarative rule model.</summary>
+    UnmodeledAnnotation = 8,
+    TemplateMissingRequired = 9,
+    TemplateUnexpectedNode = 10,
+    TemplateWrongOrder = 11,
+    TemplateOccurrenceViolation = 12,
+    TemplateIllegalNesting = 13,
+    TemplateSlotUnfilled = 14,
+    TemplatePageMismatch = 15,
+    TemplatePageSpanMismatch = 16,
+    TemplateMaterializationDivergence = 17
 }
 
 /// <summary>

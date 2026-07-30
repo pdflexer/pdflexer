@@ -27,7 +27,7 @@ public sealed class RemediationSessionConfiguration
     public RemediationNamedZoneMargins NamedZoneMargins { get; init; } = new();
 
     /// <summary>Default confidence for matches that do not compute a confidence explicitly.</summary>
-    public double DefaultConfidence { get; init; } = 0.0;
+    public double DefaultConfidence { get; init; } = 1.0;
 
     /// <summary>When true, writes rule identifiers into structure element titles for debugging.</summary>
     public bool DebugWrite { get; init; }

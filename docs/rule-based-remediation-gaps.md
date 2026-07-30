@@ -7,6 +7,10 @@ Last reviewed: 2026-07-26
 > (milestones, dependency order, and exit gates) see the
 > [Rule-Based Remediation Delivery Plan](rule-based-remediation-plan.md). Gap status is tracked
 > here, not there.
+>
+> RRM-039 through RRM-041 are specified together in the
+> [Structural Model design](rule-based-remediation-structural-model.md), which also records how they
+> change RRM-004, RRM-016, RRM-017, and RRM-018.
 
 This document tracks gaps in the current `PdfLexer.Remediation` declarative
 rule language and runtime. It is intentionally narrower than
@@ -37,10 +41,10 @@ PDF/UA assurance as complete.
 
 | ID | Priority | Status | Gap |
 | --- | --- | --- | --- |
-| RRM-001 | P0 | Open | Flow regions do not continue across pages |
-| RRM-002 | P0 | In progress | Declarative rules cannot select or artifact non-text content |
+| RRM-001 | P0 | Complete | Flow regions do not continue across pages |
+| RRM-002 | P0 | Complete | Declarative rules cannot select or artifact non-text content |
 | RRM-003 | P0 | Complete | Multiple inline claims in one text operator may be order-sensitive |
-| RRM-004 | P1 | Open | Group rules cannot consume prior Group outputs |
+| RRM-004 | P0 | Open | Stage vocabulary is fixed at three and Group cannot consume Group |
 | RRM-005 | P0 | Open | Table construction handles only regular, page-local grids |
 | RRM-006 | P0 | Complete | Table examples and validation can admit incorrect hierarchy |
 | RRM-007 | P1 | Open | No declarative Figure/caption association |
@@ -55,7 +59,7 @@ PDF/UA assurance as complete.
 | RRM-016 | P0 | Complete | Rules have no expected-match cardinality, so template drift is silent |
 | RRM-017 | P0 | Open | No rule-set applicability guard or document-family check |
 | RRM-018 | P0 | In progress | No semantic output assertions beyond conformance validation |
-| RRM-019 | P0 | Open | Annotations already present in the input are outside the rule model |
+| RRM-019 | P0 | Partially addressed | Annotations already present in the input are outside the rule model |
 | RRM-020 | P1 | Open | Pre-existing marked content and optional content are unmodeled |
 | RRM-021 | P1 | Open | List interior structure and `/ListNumbering` are not expressible |
 | RRM-022 | P1 | Open | Artifact subtypes cannot express Header/Footer/Watermark |
@@ -63,15 +67,21 @@ PDF/UA assurance as complete.
 | RRM-024 | P1 | Open | No document-level navigation actions (outline, page labels) |
 | RRM-025 | P1 | Open | Table `/Scope` is hardcoded and `/Summary` is unreachable |
 | RRM-026 | P0 | Open | Input-level conformance defects cannot be repaired or diagnosed |
-| RRM-027 | P1 | Open | The confidence model is undefined and `MinConfidence` is unusable by default |
-| RRM-028 | P1 | Open | Anchor resolution scope is per page but documented as absolute |
-| RRM-029 | P1 | Open | Structure sibling order and the reading-order default are unspecified |
+| RRM-027 | P1 | Complete | The confidence model is undefined and `MinConfidence` is unusable by default |
+| RRM-028 | P1 | Complete | Anchor resolution scope is per page but documented as absolute |
+| RRM-029 | P1 | Complete | Structure sibling order and the reading-order default are unspecified |
 | RRM-030 | P1 | Open | `DryRun` does not guarantee `Commit`; failure semantics are undocumented |
 | RRM-031 | P1 | Open | Rule-set composition and precedence are undefined |
-| RRM-032 | P0 | In progress | Text normalization for predicate matching is unspecified |
+| RRM-032 | P0 | Complete | Text normalization for predicate matching is unspecified |
 | RRM-033 | P1 | In progress | No negative explain or per-rule match diagnostics |
 | RRM-034 | P2 | Open | Predicate evaluation cost is unbounded |
 | RRM-035 | P1 | Partially addressed | Documented rule language omits shipped API surface |
+| RRM-036 | P0 | Open | Geometric tolerances are authored constants with no calibration |
+| RRM-037 | P0 | Open | No forward authoring inspection of what the engine sees |
+| RRM-038 | P1 | Open | Serialized schema is a projection of the C# API, not the contract |
+| RRM-039 | P0 | Phase 1 complete; phase 2 deferred | Descriptive structural templates validate planned and materialized output |
+| RRM-040 | P0 | Open | Expected page furniture is not declarable, so artifacting is unbounded |
+| RRM-041 | P1 | Open | Recurring predicate logic cannot be named or reused |
 
 RRM-016 through RRM-035 were added by a second review pass on 2026-07-24 that examined the
 documented concept model and public API rather than runtime behavior. They are concept and contract
@@ -120,10 +130,17 @@ The MVP should explicitly exclude:
 - independently rotated or vertical text unless required by the initial
   document corpus.
 
-Multi-page flow is a scope decision. If the initial document families repeat
-complete boundaries on every page, RRM-001 can be deferred. If a logical
-section or table begins on one page and ends on another, RRM-001 becomes an MVP
-requirement.
+**Multi-page flow — decided 2026-07-28: in scope.** This was left open as a scope decision
+(defer RRM-001 if every page repeats complete boundaries; require it if a logical section or table
+begins on one page and ends on another). The decision is that cross-page spanning is a requirement:
+page-local evaluation only works when every page is self-contained, which excludes multi-page tables,
+sections crossing a page break, and continued lists — that is, most document types other than
+single-page receipts and confirmations.
+
+RRM-001 is therefore an MVP requirement rather than post-MVP work, and remaining vocabulary is
+designed against the cross-page model rather than retrofitted to it. See the
+[delivery plan's M0 record](rule-based-remediation-plan.md#m0--foundations--scope-lock) for the
+sequencing consequences.
 
 ### Estimated AI-assisted engineering effort
 
@@ -137,8 +154,12 @@ requirement.
 | Specify contracts: anchor scope, sibling order, commit semantics, composition, confidence | RRM-027 to RRM-031 | 1-2 days |
 | Establish strict PDF/UA-1 and veraPDF regression baseline | RRM-010 | 1-3 days |
 | Exercise representative internal PDFs and fix discovered blockers | RRM-011 | 3-6 days |
-| Harden JSON authoring, CLI diagnostics, and MVP documentation | RRM-013, RRM-035 | 1-2 days |
-| **Likely internal MVP total, allowing work to overlap** |  | **16-24 focused engineer-days** |
+| Harden JSON authoring, CLI diagnostics, and MVP documentation | RRM-013, RRM-035, RRM-038 | 2-3 days |
+| Cross-page flow: stage-major evaluation and flow continuation | RRM-001, table part of RRM-005 | 3-5 days |
+| Authoring layer: candidate inspection, named predicates, tolerance calibration | RRM-037, RRM-041, RRM-036 | 4-8 days |
+| Structural template (descriptive) and artifact inventory | RRM-039 phase 1, RRM-040 | 5-8 days |
+| Stage/dependency decision and nested grouping | RRM-004 | 2-4 days |
+| **Likely internal MVP total, allowing work to overlap** |  | **30-49 focused engineer-days** |
 
 The second review pass raised this estimate from the original 10-15 days. The added work is almost
 entirely assurance rather than new rule syntax: cardinality, assertions, per-rule diagnostics,
@@ -146,14 +167,30 @@ normalization, and contract specification. That reordering is deliberate. Withou
 RRM-018 there is no automated way to tell whether any of the other fixes actually improved a real
 document, and the MVP exit gate falls back to human inspection of every output.
 
+A third review pass on 2026-07-29, following the RRM-001 delivery, added RRM-036 through RRM-038 and
+raised RRM-004 to P0. The same reasoning applies: RRM-037 is tooling that makes hand-authoring and
+generated authoring tractable at all, RRM-036 closes a class of silent degradation that neither
+external validation nor cardinality can detect, and RRM-004 is a ceiling on expressiveness that gets
+more expensive to raise once rule sets exist to migrate. None of the four is new rule syntax either.
+
+The [structural model design](rule-based-remediation-structural-model.md), also 2026-07-29, added
+RRM-039 through RRM-041. These *are* new syntax, and they are the only additions in three review
+passes that are. The justification is that they close the gap the tracker itself identifies as the
+one that matters most — nothing currently asserts that the semantics the author intended are the
+semantics the document ended up with — and they do it by declaration rather than by accumulating more
+hand-written checks. Part of the added estimate is recovered rather than spent: RRM-039 subsumes most
+of RRM-018's remaining assertion forms and supplies the weak form of RRM-017 for free.
+
 The earlier "80-85% complete" characterization remains reasonable for the *rule language*. It is too
 generous for the *system*, where the assurance layer that would let a rule set run unattended does
 not yet exist.
 
-Conditional additions:
+Cross-page flow was previously a conditional addition of 2-5 days. It is now decided in scope and
+folded into the table above at 3-5 days. The estimate holds despite the wider scope because the DOM
+and serializer already support cross-page structure elements — see RRM-001.
 
-- add 2-5 days if true cross-page flow or continuous multi-page tables are
-  required;
+Remaining conditional additions:
+
 - add 3-7 days to support PDF/UA-2 at the same confidence level;
 - add 5-15 days for complex tables, multi-column reading order, rotated text,
   interactive forms, or nested structures, depending on which are required.
@@ -165,15 +202,20 @@ one week of contingency for issues discovered in real PDFs.
 
 ### Delivery ranges
 
+Revised 2026-07-29 to track the estimate table above; the previous figures predated three review
+passes and had drifted below the MVP total.
+
 | Level | Effort | Result |
 | --- | ---: | --- |
 | Narrow pilot | 3-5 days | One or two text-heavy templates, page-local flows, explicit grids, and manual review |
-| Usable internal MVP | 10-15 days | Several representative templates, basic graphics, stable JSON/CLI workflow, external validation, and regression fixtures |
-| Dependable internal platform | 20-35 days | Multiple PDF producers, multi-page tables, richer figures, wrapped cells, stronger reading order, and broader conformance evidence |
+| Usable internal MVP | 30-49 days | Several representative templates, basic graphics, declared structure with output diffing, stable JSON/CLI workflow, external validation, and regression fixtures |
+| Dependable internal platform | 50-75 days | Multiple PDF producers, prescriptive templates, irregular tables, richer figures, wrapped cells, stronger reading order, and broader conformance evidence |
 
 The narrow pilot is useful for discovering whether the proposed MVP boundary
 matches the actual internal document corpus. It should not be presented as
-general PDF remediation coverage.
+general PDF remediation coverage. It also predates the assurance and structural
+layers, so pilot output is not evidence that a rule set is safe to run
+unattended.
 
 ### MVP exit gate
 
@@ -208,51 +250,72 @@ The internal MVP is ready for use when:
 
 ## RRM-001: Flow regions do not continue across pages
 
-**Status:** Open
+**Status:** Complete (2026-07-29)
 
 **Priority:** P0
 
-`FlowRegion` exposes `ContinuationPolicy` and `ReadingOrderMode`, including
-`ContinueUntilEnd`, but `FlowRegionResolver` currently resolves both boundaries
-against the current page's `StructuredTextPage`. Neither option influences
-resolution.
+**Completed.** Remediation now evaluates stage-major across the document while retaining
+page-scoped ownership, content, and MCID allocation. `ContinueUntilEnd` resolves stable activation
+instances across boundary-free intermediate pages, diagnoses malformed and unterminated
+activations, supports an inclusive `MaxPages` limit, and applies the declared reading-order mode to
+flow-order predicates.
 
-A region whose header is on page 1 and whose subtotal is on page 10 therefore
-does not become one continuous region. Intermediate pages cannot resolve both
-anchors. Group and table actions also execute per page, producing separate
-parents rather than one logical multi-page structure.
+Group/Merge runs cross pages only inside the same activation; `SamePage()` remains authoritative
+and cross-page near misses are reported as nonblocking warnings in both dry-run and commit reports.
+Continued tables produce one table per activation. `HeaderRows` is explicitly scoped to the logical
+table or every page, while `HeaderSelector` identifies actual repainted headers. Planning,
+materialization, reports, semantic nodes, placement, and reading-order checks retain page-span
+provenance using `(page, MCID)` order. RRM-005 remains open for configurable tolerances, `THead`,
+irregular grids, spans, and split rows.
 
-**Impact**
+**Scope decision.** Cross-page spanning is required, not optional. Page-local evaluation is only
+correct when every page is self-contained; multi-page tables, sections crossing a break, and
+continued lists all fail that test, and they cover most document types beyond single-page receipts.
+This moves RRM-001 out of post-MVP work and ahead of the remaining M4 vocabulary, so that vocabulary
+is designed against the cross-page model rather than retrofitted.
 
-- Multi-page invoice and statement tables are not represented as one logical
-  table.
-- A section cannot start on one page and end on a later page unless each page
-  independently contains usable boundaries.
-- The public model promises behavior that the runtime does not currently
-  perform.
+**The output stack already supports cross-page structure.** This is confined to the remediation
+evaluation loop — it is not a format or DOM change:
 
-**Relevant code**
+- `StructureNode.ContentItems` is `List<(PdfPage Page, int MCID)>`, so one structure element can
+  already reference MCIDs on different pages.
+- `StructuralSerializer` already emits the correct format for that case: when a node's content spans
+  more than one page it switches from bare MCID integers to `/MCR` marked-content-reference
+  dictionaries carrying a per-item `/Pg`.
+- `StructuralBuilder` already exercises both paths.
 
-- `src/PdfLexer/Remediation/FlowRegion.cs`
-- `src/PdfLexer/Remediation/FlowRegionResolver.cs`
-- `src/PdfLexer/Remediation/RemediationSession.cs` (`EvaluatePage`)
+**Implementation contract.** The session evaluates Classify across selected pages, then Group,
+then Refine. Candidate ownership, working content, and MCID allocation remain page-scoped.
+`DocumentFlowRegionResolver` carries activation state across pages and caches claim membership.
+Expected boundary-free intermediate pages are silent; malformed, capped, and unterminated
+activations are diagnosed. A logical paragraph, group, or table may intentionally own content on
+multiple pages.
+
+Named claim containment preserves the existing anchor/zone behavior and permits a multi-page claim
+inside a flow only when every page belongs to one activation. Materialized structure placement and
+the reading-order diagnostic compare `(pageIndex, MCID)` tuples because MCIDs restart per page.
 
 **Completion criteria**
 
-- [ ] `CurrentPageOnly` and `ContinueUntilEnd` have observably different
+- [x] Evaluation is stage-major across pages, with MCID allocation, text ownership, and content
+  ownership remaining page-scoped.
+- [x] `CurrentPageOnly` and `ContinueUntilEnd` have observably different
   runtime behavior.
-- [ ] Flow state can start, continue through intermediate pages, and stop on a
+- [x] Flow state can start, continue through intermediate pages, and stop on a
   later page.
-- [ ] Missing start/end anchors are diagnosed according to the page's role in
+- [x] Missing start/end anchors are diagnosed according to the page's role in
   the continuation rather than always treated as failure.
-- [ ] `ReadingOrderMode` controls candidate ordering.
-- [ ] Tests cover a header on page 1, intermediate pages without either
+- [x] `ReadingOrderMode` controls candidate ordering.
+- [x] The reading-order diagnostic handles a structure element whose content interleaves across
+  pages.
+- [x] Tests cover a header on page 1, intermediate pages without either
   boundary, and a subtotal on the final page.
-- [ ] Multi-page grouping and table behavior is explicitly defined and tested.
+- [x] Multi-page grouping and table behavior is explicitly defined and tested.
+- [x] Repeated-header policy is implemented, documented, and asserted.
 
 ## RRM-002: Declarative rules cannot select or artifact non-text content
 
-**Status:** In progress
+**Status:** Complete
 
 **Priority:** P0
 
@@ -274,9 +337,10 @@ document-wide, graphical bounds use the structured-text page transform, and the 
 index is cached. Integration coverage exercises named/reused forms, ruling/background paths,
 dry-run, commit, JSON predicates, and auto-artifact reporting.
 
-Still required: remove the legacy granularity API and require `candidates` in JSON; compute unified
-text/graphics ordering; expose structured unaccounted-content details; verify invocation-level MCID
-binding and Figure `/Alt`; and add real image/logo and shading fixtures.
+The classify API and JSON schema now require typed candidate selectors, structured unaccounted
+painting details are reported, and invocation-level binding plus Figure `/Alt` are covered by
+integration tests. Form XObjects intentionally remain atomic; selective form flattening remains
+separate work.
 
 **Impact**
 
@@ -298,14 +362,14 @@ binding and Figure `/Alt`; and add real image/logo and shading fixtures.
 
 **Completion criteria**
 
-- [ ] The candidate model identifies text, images, paths, and form XObjects.
-- [ ] Candidate predicates can filter by content type, bounds, resource
+- [x] The candidate model identifies text, images, paths, and form XObjects.
+- [x] Candidate predicates can filter by content type, bounds, resource
   identity, and repeated use where applicable.
-- [ ] `Tag("Figure")` can bind an image or suitable graphical content.
-- [ ] `Artifact(...)` and `AutoArtifact` can safely cover decorative non-text
+- [x] `Tag("Figure")` can bind an image or suitable graphical content.
+- [x] `Artifact(...)` and `AutoArtifact` can safely cover decorative non-text
   content.
-- [ ] Diagnostics distinguish painting content from state-only operators.
-- [ ] Tests cover a logo, table ruling lines, a background path, and a reused
+- [x] Diagnostics distinguish painting content from state-only operators.
+- [x] Tests cover a logo, table ruling lines, a background path, and a reused
   XObject.
 
 ## RRM-003: Multiple inline claims in one text operator may be order-sensitive
@@ -350,15 +414,32 @@ support separately tagging the label and value in natural rule order.
 - [x] Override replaces only the intended overlapping range.
 - [x] Reparsed text, glyph selection, and positioning remain unchanged.
 
-## RRM-004: Group rules cannot consume prior Group outputs
+## RRM-004: Stage vocabulary is fixed at three and Group cannot consume Group
 
-**Status:** Open
+**Status:** Phase 1 complete; phase 2 deferred
 
-**Priority:** P1
+**Priority:** P0
 
-`EvaluateClaimRunRule` selects only the `Stage.Classify` snapshot. All Group
-rules therefore consume the same flat classify claims; a later Group rule
-cannot select a parent produced by an earlier Group rule.
+`EvaluateDocument` runs every Group rule against a single `classifyClaims` snapshot taken once, in
+rule declaration order. All Group rules therefore consume the same flat classify claims; a later
+Group rule cannot select a parent produced by an earlier one.
+
+The narrow symptom is group-over-group. The underlying gap is that the pipeline is three hard-coded
+phases rather than a dependency order. Real transactional structure is recursive — cell to row to
+table to section, lists inside sections, tables inside sections — so an author hits a wall at the
+second level of nesting with no workaround expressible in the language.
+
+**Priority raised to P0 on 2026-07-29.** This is a ceiling on what the language can express, not a
+missing convenience, and the cost of changing the stage model rises sharply once authored rule sets
+exist to migrate. Deciding it before the remaining M4 vocabulary is the same argument that moved
+RRM-001 ahead of that vocabulary.
+
+**Sequenced after RRM-039 phase one (2026-07-29).** The structural template changes this calculus
+rather than resolving it. If the template becomes prescriptive, declared hierarchy is no longer
+assembled bottom-up at all — rules bind claims into declared slots, and `L > LI > L > LI` is
+something the template states rather than something Group rules construct. That is a third option,
+cheaper than either listed below, and it only becomes evaluable once the descriptive template has met
+a real corpus. Make this decision after RRM-039 phase one, informed by it, not before.
 
 **Impact**
 
@@ -368,9 +449,20 @@ cannot select a parent produced by an earlier Group rule.
   imperative workarounds.
 - Overlapping Group rules may reparent the same classify nodes rather than
   composing hierarchy.
+- Every action added to the Group stage encodes the flat-snapshot assumption and has to be revisited
+  if the stage model changes later.
+
+**Design decision required**
+
+Keep three stages and give Group rules ordered visibility of earlier Group output, or replace stages
+with rules declaring what they consume and topologically sorting. The second is more work but
+removes the ceiling rather than raising it. The engine is close either way: the change is what
+snapshot each Group rule reads, not how claims are materialized.
 
 **Completion criteria**
 
+- [ ] The stage-versus-dependency decision is recorded with its consequences for the action
+  vocabulary.
 - [ ] Define deterministic visibility of earlier Group outputs within the
   Group stage, or introduce explicit grouping passes.
 - [ ] Detect and reject ambiguous or cyclic reparenting.
@@ -384,9 +476,10 @@ cannot select a parent produced by an earlier Group rule.
 
 **Priority:** P0
 
-Rows are currently grouped by rounding the vertical center to a fixed
-six-point bucket. Inferred columns use a fixed twelve-point center clustering
-tolerance. A matched claim is assigned to a column by its horizontal center,
+Text rows are grouped by their character baseline, with a relative-bounds center fallback for
+non-text claims. This prevents glyph descenders from splitting a regular row, but it is not an
+adaptive irregular-grid model. Inferred columns still use a fixed twelve-point center clustering
+tolerance. A matched claim is assigned to a column by its relative-coordinate horizontal center,
 and each matched claim becomes a separate `TD`/`TH`.
 
 `TableOverFlattenedCells` removes intermediate leaf structure nodes; it does
@@ -398,28 +491,30 @@ not generally merge several claims or visual lines into one semantic cell.
 - Multiple fragments in one column may become duplicate cells.
 - Sparse rows, variable baselines, right-aligned numeric columns, and
   overlapping bounds can be misclassified.
-- Tables do not continue as one structure across pages.
 - There is no first-class representation of row spans, column spans, row
-  headers, complex header associations, `THead`/`TBody`/`TFoot`, or repeated
-  headers.
+  headers, complex header associations, or `THead`/`TBody`/`TFoot`.
 
 **Relevant code**
 
 - `src/PdfLexer/Remediation/RemediationSession.cs`
-  (`ApplyClaimConsumingTableClaim`, `GetRowKey`, `ResolveTableGrid`)
+  (`ApplyClaimConsumingTableClaim`, row grouping, `ResolveTableGrid`)
 - `src/PdfLexer/Remediation/RemediationAction.cs`
   (`TableRemediationAction`, `TableCellContentMode`)
 
 **Completion criteria**
 
 - [ ] Row and column tolerances are explicit rule parameters or derived from
-  document metrics.
+  document metrics. Shares the calibration mechanism tracked in RRM-036.
+- [ ] Row membership is declarable, not only inferred. Columns can be declared today and rows
+  cannot, so a wrapped multi-line cell cannot be expressed as one row by any rule set.
+  `HeaderSelector` already establishes that a `ClaimPredicate` can define row membership; a
+  `RowsBy`-style equivalent is the natural completion.
 - [ ] The rule model can identify several claims as content of one cell.
 - [ ] Sparse and wrapped rows have deterministic behavior and diagnostics.
 - [ ] `RowSpan` and `ColSpan` affect both structure attributes and grid
   occupancy.
 - [ ] Row and column header relationships can be authored and validated.
-- [ ] Multi-page table continuation and repeated header semantics are defined.
+- [x] Multi-page table continuation and repeated header semantics are defined.
 - [ ] Tests use irregular baselines, wrapped cells, missing cells, spans, and
   repeated headers.
 
@@ -768,6 +863,13 @@ layout produces confident, wrong output rather than a refusal.
 This is distinct from RRM-011, which concerns the fixtures used to test the engine. RRM-017 is a
 runtime safety concept: the engine should be able to decline a document it does not recognize.
 
+**Partly supplied by RRM-039 (2026-07-29).** A rule set whose structural template requires anchors
+that do not resolve is not applicable, and that check comes for free once templates exist. It is the
+weak form: it tests the rule set's own preconditions rather than the document's identity, so it
+catches "this rule set cannot work here" but not "this is a different family that happens to satisfy
+the same anchors." Rescope the remaining work against what RRM-039 phase one actually delivers
+before building a separate fingerprint mechanism.
+
 **Impact**
 
 - A silent producer-side template change mis-tags an entire batch.
@@ -809,6 +911,13 @@ The rule language has no way to express expectations about the shape of the resu
 The MVP exit gate covers this with human review ("one reviewed rule set handles those variants").
 That does not scale to production batches and does not survive template drift.
 
+**Largely subsumed by RRM-039 (2026-07-29).** Rule-output counts, structure-element counts, and
+parent-child shapes are all derivable from a structural template, and a positional tree diff is a
+stronger statement than any of them individually — it reports order and position, which no count
+can. The assertion work already delivered stays useful and is not wasted: it remains the mechanism
+for statements a template cannot make, such as value-level or cross-document conditions. Treat
+further hand-written assertion forms as lower value until RRM-039 phase one lands.
+
 **Progress (2026-07-29)**
 
 Implemented immutable planned semantic-tree output; document/per-page rule-output counts,
@@ -843,9 +952,17 @@ materialized dimensions, strengthen tag/page-selector validation, and add rollba
 
 ## RRM-019: Annotations already present in the input are outside the rule model
 
-**Status:** Open
+**Status:** Partially addressed
 
 **Priority:** P0
+
+**Progress (2026-07-29)**
+
+Dry-run now inventories existing annotations with subtype, page, bounds, visibility/off-page
+exclusions, existing `/StructParent`, and whether the item blocks strict conformance. Visible
+unmodeled annotations emit a commit-blocking `UnmodeledAnnotation` diagnostic under strict
+conformance, so the PoC can measure this cap before rule authoring. Adoption, binding, and
+artifacting remain deliberately scheduled for M4.
 
 RRM-009 covers interactive AcroForm widgets. This item covers every other annotation already present
 in the untagged input.
@@ -1156,19 +1273,35 @@ discovering it at commit.
 
 ## RRM-027: The confidence model is undefined and `MinConfidence` is unusable by default
 
-**Status:** Open
+**Status:** Complete
 
 **Priority:** P1
 
-Confidence appears throughout the model — `Rule.MinConfidence`, `RemediationClaimOutcome.Confidence`,
-`RemediationSessionConfiguration.DefaultConfidence`, toleranced-zone "degraded confidence", and a
-"low-confidence inference" diagnostic — but nothing defines it. There is no documented scale
-semantics, no statement of what produces a confidence value, no description of how tolerance degrades
-it, and no rule for how `And`, `Or`, and `Not` combine the confidences of their operands.
+**Completed (2026-07-29)**
 
-`DefaultConfidence` defaults to `0.0`. Since it applies to "matches that do not compute a confidence
-explicitly," any rule that sets `minConfidence` will reject every such match. As shipped and
-documented, the feature cannot be used without reading the implementation.
+Confidence-neutral matches now inherit a defensible `DefaultConfidence` of `1.0`; explicit
+confidence producers remain authoritative. The `[0,1]` scale and composite predicate rules are
+documented, validation rejects invalid defaults, and traces retain the contributing confidence.
+
+**Residual concern (2026-07-29 review).** The contract is now defined, but with
+`DefaultConfidence` at `1.0` and only toleranced layout and table inference producing degraded
+values, the scale is close to degenerate in practice: `MinConfidence` is effectively a binary gate on
+two predicate families while presenting as a continuous threshold. An author, and more reliably a
+generated rule set, will write `MinConfidence: 0.8` believing it expresses a graded confidence.
+Either widen the set of predicates that estimate uncertainty — near-threshold geometric matches are
+the obvious candidates, and RRM-036 has to compute that margin anyway — or rename the knob to what it
+actually gates. Not reopened; revisit alongside RRM-036.
+
+**Original gap.** Confidence appeared throughout the model — `Rule.MinConfidence`,
+`RemediationClaimOutcome.Confidence`, `RemediationSessionConfiguration.DefaultConfidence`,
+toleranced-zone "degraded confidence", and a "low-confidence inference" diagnostic — but nothing
+defined it. There was no documented scale semantics, no statement of what produced a confidence
+value, no description of how tolerance degraded it, and no rule for how `And`, `Or`, and `Not`
+combined the confidences of their operands.
+
+`DefaultConfidence` defaulted to `0.0`. Since it applied to matches that do not compute a confidence
+explicitly, any rule setting `minConfidence` rejected every such match, so the feature could not be
+used without reading the implementation.
 
 **Impact**
 
@@ -1186,17 +1319,24 @@ documented, the feature cannot be used without reading the implementation.
 
 **Completion criteria**
 
-- [ ] The confidence scale, its sources, and its combination rules are specified and documented.
-- [ ] Every predicate either computes a confidence or is documented as confidence-neutral.
-- [ ] `DefaultConfidence` has a defensible default, or rules with `MinConfidence` reject
+- [x] The confidence scale, its sources, and its combination rules are specified and documented.
+- [x] Every predicate either computes a confidence or is documented as confidence-neutral.
+- [x] `DefaultConfidence` has a defensible default, or rules with `MinConfidence` reject
   confidence-neutral predicates with a validation error rather than silently matching nothing.
-- [ ] Reports expose which predicate contributed a degraded confidence.
+- [x] Reports expose which predicate contributed a degraded confidence.
 
 ## RRM-028: Anchor resolution scope is per page but documented as absolute
 
-**Status:** Open
+**Status:** Complete
 
 **Priority:** P1
+
+**Completed (2026-07-29)**
+
+Anchor selection is explicitly per selected page. `RequiredSingle` means exactly one match on that
+page, diagnostics distinguish absence from ambiguity and name the page, `Pages` and `Style` ordering
+is documented, and the redundant one-based `Occurrence` mechanism was removed in favor of the
+zero-based `NthInReadingOrder`.
 
 `AnchorSelection.RequiredSingle` is documented as "exactly one match is required." `AnchorResolver`
 evaluates anchors against the current page. The actual contract is therefore "exactly one match *on
@@ -1229,9 +1369,16 @@ page fails unless `Pages` is narrowed.
 
 ## RRM-029: Structure sibling order and the reading-order default are unspecified
 
-**Status:** Open
+**Status:** Complete
 
 **Priority:** P1
+
+**Completed (2026-07-29)**
+
+Default siblings use a centralized, stable page reading-order comparator: top-to-bottom, then
+left-to-right, with deterministic candidate/rule/tag tie-breakers. The same comparator is used by
+planning, materialization, and reading-order diagnostics; explicit `ReorderSiblings` remains for
+semantic exceptions.
 
 Reading order is structure-tree order. Nothing in the documentation states how sibling order is
 determined: rule declaration order, content-stream order, geometry, or claim creation order. The
@@ -1331,7 +1478,7 @@ case, and nothing confirms it is supported.
 
 ## RRM-032: Text normalization for predicate matching is unspecified
 
-**Status:** In progress
+**Status:** Complete
 
 **Priority:** P0
 
@@ -1354,10 +1501,10 @@ rule-set and predicate overrides. Literal operations normalize both operands; re
 normalize candidate text only. Traces expose raw and normalized text, and focused unit tests cover
 the transformations and overrides.
 
-Still required: route every anchor/table-header/repeated-element/neighbor-text matcher through the
-policy; expose raw/normalized text in general candidate and outcome summaries rather than only
-traces; add decomposed-character and `TJ`-gap fixtures; and verify source-range materialization is
-unchanged end to end.
+Anchor label, table-header, repeated-element, style, and neighbor matching now use the declaring
+rule set's policy. Candidate/outcome summaries expose raw and effective normalized text, while
+materialization remains tied to original characters, source references, and text ranges. Fixture
+coverage includes the normalization pipeline and source-range invariance.
 
 **Impact**
 
@@ -1376,8 +1523,8 @@ unchanged end to end.
 - [x] A documented default normalization is applied to candidate text before matching, covering
   Unicode normal form, whitespace collapsing, and hyphen/dash/quote folding.
 - [x] Normalization is configurable per rule set and per predicate where the default is wrong.
-- [ ] Reports expose both the raw and normalized text for a candidate.
-- [ ] Tests cover ligatures, soft hyphens, non-breaking hyphens and spaces, and `TJ`-derived spacing.
+- [x] Reports expose both the raw and normalized text for a candidate.
+- [x] Tests cover ligatures, soft hyphens, non-breaking hyphens and spaces, and `TJ`-derived spacing.
 
 ## RRM-033: No negative explain or per-rule match diagnostics
 
@@ -1483,6 +1630,260 @@ materially change how the engine's safety story should be read.
   be written to JSON silently.
 - [ ] Add a documentation test or review step so future public API additions cannot ship undocumented.
 
+## RRM-036: Geometric tolerances are authored constants with no calibration
+
+**Status:** Open
+
+**Priority:** P0
+
+Every geometric parameter in the language is a number the rule author guesses, and nothing tells
+them the guess is wrong until the output is silently incorrect. The surface includes
+`Predicates.Anchor.SameRowAs(anchorId, tolerance)`, `RightOf`/`Below`/`NearestTo`
+(`tolerance`, `maxDistance`), `TolerancedZone(..., Tolerance)`, literal table column boundaries, and
+internal constants such as the twelve-point column-clustering tolerance in `ResolveTableGrid`.
+
+RRM-005 owns the table-specific half of this. RRM-036 is the general problem and the missing
+mechanism: there is no way to derive a tolerance from a document family, and no way to learn that a
+chosen tolerance sits close to a boundary where a small layout change flips the result.
+
+This was demonstrated concretely during the RRM-001 review. Row grouping quantized the vertical
+center to a six-point grid, so a descender in one cell and none in its neighbour placed the two on
+opposite sides of a bucket boundary; a two-cell row silently became two one-cell rows in reversed
+order, and the acceptance test still passed. The mechanism was corrected to baseline grouping, but
+the class of failure is structural, not specific to that constant.
+
+**Impact**
+
+- A rule set that passes on the sample document fails on a sibling document for reasons the author
+  cannot see, because the failure is a near-threshold geometric comparison rather than a missing
+  match.
+- Tolerance failures degrade output rather than stopping the run: content lands in the wrong cell,
+  row, or region and remains validly tagged, so RRM-010 external validation cannot catch it and
+  RRM-016 cardinality often cannot either.
+- AI-authored rules are affected more severely than hand-authored ones. A model cannot derive
+  `tolerance: 4` from a document description; it will emit a plausible constant, and plausible and
+  wrong is the failure mode with no signal attached.
+
+**Relevant code**
+
+- `src/PdfLexer/Remediation/RemediationPredicate.cs` (`AnchorRelativeRemediationPredicate`)
+- `src/PdfLexer/Remediation/TolerancedZone.cs`
+- `src/PdfLexer/Remediation/RemediationSession.cs` (`ResolveTableGrid`, row grouping)
+
+**Completion criteria**
+
+- [ ] A calibration pass accepts several sample documents of one family and reports, per tolerance
+  in the rule set, the observed spread and the margin between the authored value and the nearest
+  value that would change the result.
+- [ ] Calibration output is machine-readable so it can be fed back to a rule author, human or
+  generated.
+- [ ] Tolerances that resolve within a configurable margin of a decision boundary are diagnosed on
+  every run, not only during calibration.
+- [ ] Internal constants that behave as tolerances are either exposed as parameters or documented
+  with the reason they are fixed.
+- [ ] Tests cover a family where a plausible authored tolerance is wrong, and assert that the
+  wrongness is reported rather than absorbed.
+
+## RRM-037: No forward authoring inspection of what the engine sees
+
+**Status:** Open
+
+**Priority:** P0
+
+Diagnosis after rules exist is well covered: `Explain`, `ExplainRejection`, `PredicateTraces`, and
+`RuleEvaluations`, with RRM-033 completing the negative direction. The opposite direction does not
+exist. There is no way to ask what the engine sees in a document *before* any rule is written —
+candidate ids, text, granularity, geometry, font, content order, and where declared anchors, zones,
+and flow regions resolve.
+
+**Impact**
+
+- The first rule for a new document family is written against a document the author cannot see in
+  the engine's own terms, so early iterations diagnose the author's mental model rather than the
+  document.
+- Candidate ids appear in `ExplainRejection` and in reports but there is no way to enumerate them,
+  which makes the negative-diagnosis surface hard to enter.
+- This is the specific gap that blocks AI rule authoring. The loop *inspect, propose, dry-run, read
+  traces, revise* is otherwise fully mechanizable, and every step but the first already exists. A
+  human author can compensate by looking at the rendered page; a model cannot.
+
+**Completion criteria**
+
+- [ ] A library call and CLI command emit the candidate index for selected pages and granularities,
+  including candidate id, text, raw and normalized, bounds, font, and content order.
+- [ ] The same output reports how each declared anchor, zone, and flow region resolves, including
+  activation instances and unresolved boundaries.
+- [ ] Output is machine-readable and stable enough to be diffed between two documents of one family,
+  so template drift is visible without authoring a rule first.
+- [ ] Candidate ids in the inspection output are the same ids accepted by `ExplainRejection`.
+- [ ] Documented as the recommended first step in the authoring workflow.
+
+## RRM-038: Serialized schema is a projection of the C# API, not the contract
+
+**Status:** Open
+
+**Priority:** P1
+
+`SerializedRemediationRules` is maintained alongside the fluent C# surface rather than as the
+authoritative definition of the language. Nothing prevents a predicate, action, or parameter from
+shipping in C# and reaching serialization a release later, and the gap is silent in both directions.
+
+RRM-013 covers validation of the schema and RRM-035 covers documentation drift against the API.
+Neither covers parity between the serialized form and the shipped surface, which is a different
+failure with a different remedy.
+
+**Impact**
+
+- Any capability reachable only from C# is invisible to JSON-authored and generated rule sets, which
+  is the authoring path intended for AI assistance and for portable per-family rule files.
+- `RemediationActions.Custom` takes a delegate and is inherently non-serializable, so the language's
+  escape hatch is unavailable on that path. That is defensible as a boundary but needs to be a
+  stated one rather than an accident.
+- Parity gaps surface as an authoring dead end rather than an error, because the C# example in the
+  documentation works and its JSON equivalent cannot be written.
+
+**Completion criteria**
+
+- [ ] A test enumerates the public predicate, action, anchor, zone, and flow surface and fails when
+  a member has no serialized representation and no explicit exemption.
+- [ ] Exemptions are declared in one place with a reason, `Custom` among them.
+- [ ] Round-trip coverage asserts that a rule set built in C# serializes and deserializes to an
+  equivalent rule set for every non-exempt member.
+- [ ] The schema is documented as the language contract, with the C# surface described as a
+  convenience over it.
+
+## RRM-039: Expected document structure is not declarable
+
+**Status:** Open
+
+**Priority:** P0
+
+**Design:** [Structural Model for Rule-Based Remediation](rule-based-remediation-structural-model.md)
+
+A rule set is a flat list of rules. The structure a document is supposed to have exists only in the
+author's head, spread across rule ids, predicates, and cardinality constraints. Because it is never
+stated, it can never be checked.
+
+Everything downstream inherits that. Output correctness is asserted only by hand-written counts
+(RRM-018). Applicability cannot be tested because there is nothing to test against (RRM-017). A
+reviewer cannot tell what a rule set is trying to produce without reading every rule, which puts
+review beyond anyone who knows PDF/UA but not this rule language.
+
+The proposal is a **structural template**: the expected structure tree, declared in PDF standard
+structure vocabulary, as a deterministic content model with sequence, optional, and repetition
+operators. Phase one is descriptive — rules build the tree as they do today and the produced tree is
+diffed against the template. Phase two lets the template drive materialization.
+
+**Impact**
+
+- The only automated statement about output correctness is a set of counts that must be maintained
+  by hand and silently decays as rule sets grow.
+- A wrong-but-conformant tree — the footer tagged `H1`, a total swept into an artifact — is
+  indistinguishable from a correct one to every check that currently exists.
+- Rule sets are not reviewable by accessibility specialists, only by rule-language specialists.
+- Generated rule authoring has no artifact to reason about. A model produces an expected structure
+  far more reliably than a flat list of interdependent rules with geometric tolerances.
+
+**Completion criteria (phase one — descriptive)**
+
+- [x] A template declares expected structure in PDF standard structure types, with sequence, `?`,
+  and `*`/`+` occurrence operators.
+- [x] Templates are validated for PDF/UA legality and for content-model determinism at declaration
+  time, before any document is processed, with the offending position named.
+- [x] Template nodes have stable declared ids for rule binding and derived positional paths for
+  diagnostics.
+- [x] A rule may declare the slot it fills; unbound rules behave exactly as today.
+- [x] The produced tree is diffed against the template, reporting missing required nodes, unexpected
+  nodes, wrong order, occurrence violations, illegal nesting, and slots bound but unfilled.
+- [x] Each difference kind is a suppressible diagnostic code with a scope and recorded reason.
+- [x] Declaring both a template occurrence and a per-rule cardinality on the same rule is a
+  validation error rather than a silent precedence rule.
+- [x] A rule set with no template behaves exactly as it does today.
+- [x] Corpus fixtures cover an optional section absent and present, a repeating section, and a
+  structure that is valid PDF/UA but wrong against its template.
+
+**Deferred to phase two, tracked here**
+
+- [ ] The template drives materialization and rules bind claims into declared slots.
+- [ ] Alternation and recursion operators, if the corpus requires them.
+
+## RRM-040: Expected page furniture is not declarable
+
+**Status:** Open
+
+**Priority:** P0
+
+**Design:** [Structural Model for Rule-Based Remediation](rule-based-remediation-structural-model.md)
+
+Artifacts are not structure elements — they live outside the structure tree — so the structural
+template in RRM-039 cannot describe them. Running headers, footers, page numbers, rules, and
+watermarks need a parallel declaration on the page axis, and none exists.
+
+The absence is why `AutoArtifact` is dangerous. Content that no rule claims is swept into artifacts,
+which is how a rule set silently converts an invoice total into hidden content while passing every
+conformance check available. The leftover policy currently offers only a switch between failing on
+any unclaimed content and absorbing all of it, because there is nothing to check absorbed content
+against.
+
+**Impact**
+
+- `AutoArtifact` cannot be used safely in production, which the authoring guidance already concedes
+  by recommending `FailFast` in production instead.
+- A document family whose page furniture legitimately varies has no way to say so, so the only
+  usable setting is the one that fails on the variation.
+- Artifacted content is invisible to assistive technology by design, so this failure mode is the
+  hardest one for a sighted reviewer to notice.
+
+**Completion criteria**
+
+- [ ] An artifact inventory declares expected page furniture with subtype, page selector, and
+  occurrence.
+- [ ] Content artifacted that matches no declared inventory item is a diagnostic.
+- [ ] A declared artifact that is absent where required is a diagnostic.
+- [ ] `AutoArtifact` reports absorbed content against the inventory rather than only listing it.
+- [ ] Fixtures cover furniture present on every page, on first page only, and legitimately absent.
+
+## RRM-041: Recurring predicate logic cannot be named or reused
+
+**Status:** Open
+
+**Priority:** P1
+
+**Design:** [Structural Model for Rule-Based Remediation](rule-based-remediation-structural-model.md)
+
+There is no way to name a predicate expression and reuse it. Rule ids act as weak labels — a later
+rule can reference an earlier one through `ClaimPredicates.FromRule`,
+`Predicates.Relational.InsideClaimOf`, or `RemediationAnchor.PriorClaim` — but that requires the
+earlier rule to have produced a claim, and classify claims take exclusive ownership of their spans.
+A second rule selecting the same content is rejected as a conflict, and `Override` deletes the first
+claim rather than coexisting with it. Overlapping, orthogonal descriptions of the same content are
+therefore not expressible.
+
+The proposal is **named predicates** in two namespaces, candidate and claim, expanded at the point of
+use rather than evaluated as a marking pass. Because nothing is claimed, labels overlap freely and
+nothing about ownership, staging, or the leftover policy changes.
+
+**Impact**
+
+- Common conditions — "body text", "a currency value", "not in the margins" — are retyped in every
+  rule that needs them and drift apart as a rule set grows.
+- Predicate traces print the fully expanded boolean tree, which is the hardest part of reading a
+  rejection. A named predicate lets the trace print the name and expand on request; the diagnostic
+  payoff is plausibly larger than the authoring one.
+- Rule sets are harder to review because intent is buried in repeated expressions.
+
+**Completion criteria**
+
+- [ ] Candidate and claim label namespaces are declarable on a rule set and usable anywhere a
+  predicate of that kind is accepted.
+- [ ] Labels may reference other labels; cycles are rejected at declaration time.
+- [ ] Using a candidate label where a claim label is expected, or the reverse, is a validation error.
+- [ ] Predicate traces report the label name and expand the definition on request.
+- [ ] Per-label match counts appear wherever per-rule match counts appear, so an author can check a
+  label means what they think before writing rules that consume it.
+- [ ] Labels round-trip through the serialized schema.
+- [ ] Named `label`, not `tag`, throughout the API, schema, and documentation.
+
 ---
 
 ## Suggested delivery order
@@ -1492,10 +1893,15 @@ The dependency reasoning below is scheduled into milestones with entry and exit 
 schedule — it also folds in two authoring-layer prerequisites tracked in
 [accessibility_gaps_2.md](accessibility_gaps_2.md).
 
-0. **Assurance first.** RRM-016 rule cardinality, RRM-018 output assertions, and RRM-033 per-rule
-   match diagnostics. These are small relative to the rest and they are what makes every later item
-   verifiable rather than merely implemented. Until a rule that stops matching produces a failure,
-   no other fix can be trusted in a batch.
+0. **Assurance and authoring tooling first.** RRM-016 rule cardinality, RRM-018 output assertions,
+   RRM-033 per-rule match diagnostics, and RRM-037 forward candidate inspection. These are small
+   relative to the rest and they are what makes every later item verifiable rather than merely
+   implemented. Until a rule that stops matching produces a failure, no other fix can be trusted in
+   a batch. RRM-037 belongs in this band for the same reason from the other side: without it, rules
+   are authored against a document nobody can see in the engine's terms, so early iterations
+   diagnose the author rather than the document. RRM-041 named predicates rides along: it is small,
+   depends on nothing, and its main payoff is that traces print a label name instead of an expanded
+   boolean tree, which is what makes RRM-033 readable in practice.
 1. RRM-032 text normalization and RRM-026 input conformance pre-flight. Both are near-certain first
    contact failures with real third-party PDFs, and both are cheaper to fix before RRM-011 rather
    than as fallout from it.
@@ -1504,18 +1910,30 @@ schedule — it also folds in two authoring-layer prerequisites tracked in
 4. RRM-027 through RRM-031 contract specification. Mostly documentation and small decisions, but
    they unblock everyone authoring rules and several are prerequisites for later work
    (RRM-028 gates RRM-001).
-5. RRM-002 non-text selection and artifact handling, with RRM-019 existing annotations and RRM-022
+5. RRM-001 cross-page evaluation model, with the table-continuation part of RRM-005. Moved ahead of
+   content accounting by the M0 page-locality decision: the evaluation loop must become stage-major
+   before further vocabulary encodes the page-local assumption.
+6. RRM-002 non-text selection and artifact handling, with RRM-019 existing annotations and RRM-022
    artifact subtypes. These three together are what "all content is accounted for" actually requires.
-6. RRM-001 multi-page flow and RRM-005 multi-page/complex tables, with RRM-025.
-7. RRM-017 rule-set applicability, once enough real families exist to know what a fingerprint
-   should assert.
-8. RRM-020 pre-existing and optional content; RRM-021 list interiors; RRM-023 heading levels;
-   RRM-024 navigation.
-9. RRM-004 nested grouping and RRM-012 multi-column reading order.
-10. RRM-007 through RRM-009 semantic expansion.
-11. RRM-013 schema and validation hardening, plus the remaining RRM-035 policy items.
-12. RRM-034 evaluation limits, when rule sets become externally supplied.
-13. Revisit intentional limitations RRM-014 and RRM-015 only when product scope
+7. RRM-039 phase one structural template, descriptive, with RRM-040 artifact inventory. Ahead of the
+   remaining vocabulary because it is what makes every later addition checkable, and ahead of
+   RRM-004 because it changes that decision.
+8. RRM-004 stage/dependency decision and nested grouping, now informed by the descriptive template.
+   Still ahead of the remaining vocabulary for the reason RRM-001 was: every action added to the
+   Group stage encodes the current flat-snapshot assumption.
+9. RRM-036 tolerance calibration, then RRM-005 irregular tables — spans, wrapped cells, sparse rows
+   — with RRM-025. Calibration first: RRM-005 needs somewhere to put the tolerances it exposes, and
+   authoring against uncalibrated constants is what RRM-036 exists to stop.
+10. RRM-017 rule-set applicability, rescoped against what RRM-039 delivers for free, once enough real
+    families exist to know what a fingerprint should assert beyond it.
+11. RRM-020 pre-existing and optional content; RRM-021 list interiors; RRM-023 heading levels;
+    RRM-024 navigation.
+12. RRM-012 multi-column reading order.
+13. RRM-007 through RRM-009 semantic expansion.
+14. RRM-013 schema and validation hardening, RRM-038 schema parity, plus the remaining RRM-035
+    policy items.
+15. RRM-034 evaluation limits, when rule sets become externally supplied.
+16. Revisit intentional limitations RRM-014 and RRM-015 only when product scope
     expands.
 
 ## Definition of credible enterprise coverage
@@ -1538,14 +1956,16 @@ transactional coverage until, at minimum:
 
 ## A note on what conformance validation proves
 
-Several items above — RRM-016, RRM-017, RRM-018, RRM-023, RRM-032 — share a single underlying
-observation, and it is worth stating plainly because it shapes how the veraPDF baseline in RRM-010
-should be interpreted.
+Several items above — RRM-016, RRM-017, RRM-018, RRM-023, RRM-032, RRM-036 — share a single
+underlying observation, and it is worth stating plainly because it shapes how the veraPDF baseline in
+RRM-010 should be interpreted.
 
 External validation proves the output is well-formed PDF/UA. It does not prove the output is right.
-A document in which the invoice total was swept into an artifact by the leftover policy, or the
-footer was tagged `H1`, passes every automated conformance check available. The engine's own
-diagnostics are structural too: orphaned MCIDs, missing `/StructParents`, reading-order drift.
+A document in which the invoice total was swept into an artifact by the leftover policy, the footer
+was tagged `H1`, or an amount landed one row from its description because a tolerance sat a
+half-point from a decision boundary, passes every automated conformance check available. The
+engine's own diagnostics are structural too: orphaned MCIDs, missing `/StructParents`, reading-order
+drift.
 
 Nothing in the current design asserts that the *semantics* the rule author intended are the semantics
 the document ended up with. For a system whose purpose is to make documents readable by people who

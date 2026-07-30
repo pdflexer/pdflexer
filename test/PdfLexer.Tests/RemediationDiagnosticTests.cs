@@ -34,7 +34,7 @@ public class RemediationDiagnosticTests
             "test-rule",
             RemediationActions.Tag("P"),
             Predicates.Text.Equals("Tagged"),
-            Granularity.Paragraph);
+            CandidateSelector.Text(Granularity.Paragraph));
 
         var error = Assert.Throws<InvalidOperationException>(() => session.Commit(rule));
         Assert.Contains("UntaggedContent: Page 1 has", error.Message);
@@ -66,7 +66,7 @@ public class RemediationDiagnosticTests
             "test-rule",
             RemediationActions.Tag("P"),
             Predicates.Text.Equals("Tagged"),
-            Granularity.Paragraph);
+            CandidateSelector.Text(Granularity.Paragraph));
 
         var report = session.Commit(rule);
         
@@ -99,7 +99,7 @@ public class RemediationDiagnosticTests
             "test-rule",
             RemediationActions.Tag("P"),
             Predicates.Text.Equals("Tagged"),
-            Granularity.Paragraph);
+            CandidateSelector.Text(Granularity.Paragraph));
 
         var error = Assert.Throws<InvalidOperationException>(() => session.Commit(rule));
         Assert.Contains("[IGNORED-SUPPRESSION] UntaggedContent: Page 1 has", error.Message);
@@ -124,8 +124,8 @@ public class RemediationDiagnosticTests
             StrictConformance = false
         });
 
-        var r1 = new Rule("r1", RemediationActions.Tag("P"), Predicates.Text.Equals("First"), Granularity.Word);
-        var r2 = new Rule("r2", RemediationActions.Tag("P"), Predicates.Text.Equals("Second"), Granularity.Word);
+        var r1 = new Rule("r1", RemediationActions.Tag("P"), Predicates.Text.Equals("First"), CandidateSelector.Text(Granularity.Word));
+        var r2 = new Rule("r2", RemediationActions.Tag("P"), Predicates.Text.Equals("Second"), CandidateSelector.Text(Granularity.Word));
         var swap = new Rule(
             "swap",
             RemediationActions.ReorderSiblings(ClaimPredicate.Always, SiblingReorderMode.GeometryLeftToRight),

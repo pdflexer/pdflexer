@@ -24,7 +24,8 @@ public class RemediationPlanValidationTests
 
         using var session = doc.BeginRemediation(new RemediationSessionConfiguration
         {
-            StrictConformance = false
+            StrictConformance = false,
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
         });
 
         var error = Assert.Throws<InvalidOperationException>(() => session.Commit(new Rule(
@@ -41,7 +42,8 @@ public class RemediationPlanValidationTests
                     0,
                     12);
                 return new CustomRemediationOutcome(new[] { candidate }, RemediationActions.Tag("P"));
-            }, "bad source"))));
+            }, "bad source"),
+            candidates: CandidateSelector.Text(Granularity.Line))));
 
         Assert.Contains("no longer resolves", error.Message);
     }
@@ -74,8 +76,8 @@ public class RemediationPlanValidationTests
             "non-contiguous",
             RemediationActions.Custom(ctx =>
             {
-                var first = ctx.Candidates.First(x => x.Text == "First");
-                var last = ctx.Candidates.First(x => x.Text == "Last");
+                var first = ctx.Candidates.OfType<TextRemediationCandidate>().First(x => x.Text == "First");
+                var last = ctx.Candidates.OfType<TextRemediationCandidate>().First(x => x.Text == "Last");
                 return new CustomRemediationOutcome(new RemediationCandidate[] { first, last }, RemediationActions.Tag("P"));
             }, "custom"));
 
@@ -102,7 +104,7 @@ public class RemediationPlanValidationTests
             "hello",
             RemediationActions.Tag("P"),
             Predicates.Text.Equals("Hello"),
-            Granularity.Word));
+            CandidateSelector.Text(Granularity.Word)));
 
         Assert.Single(report.Claims);
         Assert.Empty(report.Diagnostics);
@@ -128,7 +130,7 @@ public class RemediationPlanValidationTests
                     "footer",
                     RemediationActions.Artifact(ArtifactSubtype.Pagination),
                     Predicates.Flow.InZone("missing-footer"),
-                    Granularity.Line)
+                    CandidateSelector.Text(Granularity.Line))
             },
             Array.Empty<RemediationAnchor>()));
         Assert.False(unresolvedZone.IsValid);
@@ -161,7 +163,7 @@ public class RemediationPlanValidationTests
                     "value",
                     RemediationActions.Tag("P"),
                     Predicates.Anchor.RightOf("missing-label"),
-                    Granularity.Word)
+                    CandidateSelector.Text(Granularity.Word))
             },
             Array.Empty<RemediationAnchor>()));
         Assert.False(unresolvedAnchor.IsValid);
@@ -175,7 +177,7 @@ public class RemediationPlanValidationTests
                     "items",
                     RemediationActions.Tag("TR"),
                     Predicates.Flow.InFlowRegion("missing-flow"),
-                    Granularity.Line)
+                    CandidateSelector.Text(Granularity.Line))
             },
             Array.Empty<RemediationAnchor>()));
         Assert.False(unresolvedFlow.IsValid);
@@ -218,6 +220,24 @@ public class RemediationPlanValidationTests
         Assert.Contains(invalidFlow.Errors, x => x.Contains("negative max extent"));
         Assert.Contains(invalidFlow.Errors, x => x.Contains("unknown anchor 'missing-start'"));
         Assert.Contains(invalidFlow.Errors, x => x.Contains("unknown toleranced zone 'missing-zone'"));
+
+        var invalidContinuation = session.Validate(new RuleSet(
+            "continued",
+            Array.Empty<Rule>(),
+            Array.Empty<RemediationAnchor>(),
+            flowRegions: new[]
+            {
+                new FlowRegion(
+                    "continued-items",
+                    FlowBoundary.PageBoundary,
+                    FlowBoundary.PageBoundary,
+                    MaxExtent: 12,
+                    ContinuationPolicy: FlowContinuationPolicy.ContinueUntilEnd,
+                    MaxPages: 0)
+            }));
+        Assert.False(invalidContinuation.IsValid);
+        Assert.Contains(invalidContinuation.Errors, x => x.Contains("cannot use max extent"));
+        Assert.Contains(invalidContinuation.Errors, x => x.Contains("greater than zero"));
     }
 
     [Fact]
@@ -246,7 +266,7 @@ public class RemediationPlanValidationTests
                     "value",
                     RemediationActions.Tag("P"),
                     Predicates.Anchor.RightOf("total-label"),
-                    Granularity.Word)
+                    CandidateSelector.Text(Granularity.Word))
             },
             new[] { RemediationAnchor.TextLabel("total-label", "Total") }));
 
@@ -306,12 +326,12 @@ public class RemediationPlanValidationTests
         // Rule 1: Artifact (no structure binding)
         // Rule 2: Grouping the artifact (invalid)
         var report = session.DryRun(
-            new Rule("artifact", RemediationActions.Artifact(ArtifactSubtype.Pagination), Predicates.Text.Equals("Hello"), Granularity.Word),
+            new Rule("artifact", RemediationActions.Artifact(ArtifactSubtype.Pagination), Predicates.Text.Equals("Hello"), CandidateSelector.Text(Granularity.Word)),
             new Rule("group", RemediationActions.Group("Sect", ClaimPredicates.FromRule("artifact")), stage: Stage.Group)
         );
 
         var error = Assert.Throws<InvalidOperationException>(() => session.Commit(
-            new Rule("artifact", RemediationActions.Artifact(ArtifactSubtype.Pagination), Predicates.Text.Equals("Hello"), Granularity.Word),
+            new Rule("artifact", RemediationActions.Artifact(ArtifactSubtype.Pagination), Predicates.Text.Equals("Hello"), CandidateSelector.Text(Granularity.Word)),
             new Rule("group", RemediationActions.Group("Sect", ClaimPredicates.FromRule("artifact")), stage: Stage.Group)
         ));
         
@@ -333,10 +353,15 @@ public class RemediationPlanValidationTests
             StrictConformance = false
         });
 
-        var report = session.DryRun(new Rule(
-            "table",
-            RemediationActions.Table(),
-            stage: Stage.Group));
+        var report = session.DryRun(
+            new Rule(
+                "cell",
+                RemediationActions.Tag("Span"),
+                candidates: CandidateSelector.Text(Granularity.Paragraph)),
+            new Rule(
+                "table",
+                RemediationActions.TableOver(ClaimPredicates.FromRule("cell")),
+                stage: Stage.Group));
 
         Assert.Contains(report.Diagnostics, x => x.Contains("at least two candidates"));
     }

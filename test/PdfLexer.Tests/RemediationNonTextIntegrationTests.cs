@@ -155,6 +155,64 @@ public class RemediationNonTextIntegrationTests
         Assert.False(Assert.Single(report.AssertionOutcomes).Passed);
     }
 
+    [Fact]
+    public void FigureInvocationCanReceiveAltText()
+    {
+        using var doc = CreateGraphicalDocument();
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            StrictConformance = false,
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
+        });
+
+        var report = session.Commit(
+            new Rule(
+                "logo",
+                RemediationActions.Tag("Figure"),
+                Predicates.Content.ResourceName("F1"),
+                CandidateSelector.Content(RemediationCandidateKind.Form)),
+            new Rule(
+                "logo-alt",
+                RemediationActions.Alt(ClaimPredicates.FromRule("logo"), "Company logo"),
+                stage: Stage.Refine));
+
+        Assert.True(report.Committed);
+        var figure = Assert.Single(doc.Structure.GetRoot().Children, x => x.Type == "Figure");
+        Assert.Equal("Company logo", figure.Alt);
+        Assert.Single(figure.ContentItems);
+    }
+
+    [Fact]
+    public void VisibleExistingAnnotationIsInventoriedAsStrictConformanceBlocker()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage(PageSize.LETTER);
+        page.NativeObject[PdfName.Annots] = new PdfArray
+        {
+            new PdfDictionary
+            {
+                [PdfName.Subtype] = PdfName.Link,
+                [PdfName.Rect] = new PdfArray { 10, 10, 30, 30 }
+            }
+        };
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            StrictConformance = true,
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
+        });
+
+        var report = session.DryRun(new Rule(
+            "nothing",
+            RemediationActions.Tag("P"),
+            Predicates.Text.Equals("not present"),
+            CandidateSelector.Text(Granularity.Paragraph)));
+
+        var annotation = Assert.Single(report.AnnotationInventory);
+        Assert.Equal("Link", annotation.Subtype);
+        Assert.True(annotation.BlocksConformance);
+        Assert.Contains(report.Diagnostics, x => x.Contains("UnmodeledAnnotation", StringComparison.Ordinal));
+    }
+
     private static PdfDocument CreateGraphicalDocument()
     {
         var doc = PdfDocument.Create();

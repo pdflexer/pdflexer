@@ -54,6 +54,18 @@ internal sealed class RemediateCmd
     public static int Handler(RemediateCmd cmd)
     {
         var job = SerializedRemediationRules.Load(cmd.Rules);
+        var declarationValidation = SerializedRemediationRules.ValidateDeclarations(job.RuleSet);
+        PrintValidation(declarationValidation);
+        if (!declarationValidation.IsValid)
+        {
+            return 2;
+        }
+
+        if (cmd.ValidateOnly)
+        {
+            return 0;
+        }
+
         using var pdf = PdfDocument.Open(cmd.File);
         using var session = pdf.BeginRemediation(job.Session);
 
@@ -62,11 +74,6 @@ internal sealed class RemediateCmd
         if (!validation.IsValid)
         {
             return 2;
-        }
-
-        if (cmd.ValidateOnly)
-        {
-            return 0;
         }
 
         session.Use(job.RuleSet);
@@ -128,6 +135,16 @@ internal sealed class RemediateCmd
         Console.WriteLine($"Committed: {report.Committed}");
         Console.WriteLine($"Claims: {report.Claims.Count}");
         Console.WriteLine($"Skipped claims: {report.SkippedClaims.Count}");
+        foreach (var warning in report.Warnings)
+        {
+            Console.WriteLine("warning: " + warning);
+        }
+        foreach (var outcome in report.Outcomes.Where(x => x.PageIndexes.Count > 1))
+        {
+            Console.WriteLine(
+                $"cross-page-claim: rule={outcome.RuleId} pages=" +
+                string.Join(",", outcome.PageIndexes.Select(x => x + 1)));
+        }
         foreach (var rule in report.RuleEvaluations)
         {
             var count = rule.Total;
@@ -151,10 +168,48 @@ internal sealed class RemediateCmd
             }
         }
 
+        if (report.UnaccountedContent.Count > 0)
+        {
+            Console.WriteLine($"Unaccounted painting content: {report.UnaccountedContent.Count}");
+            foreach (var item in report.UnaccountedContent)
+            {
+                Console.WriteLine(
+                    $"unaccounted: page={item.PageIndex + 1} kind={item.CandidateKind} " +
+                    $"candidate={item.CandidateId} source={item.SourceReference} " +
+                    $"bounds={item.BoundingBox} relative={item.RelativeBoundingBox} " +
+                    $"resource={item.ResourceIdentity ?? "<none>"} name={item.ResourceName ?? "<none>"} " +
+                    $"reuse={item.ResourceUseCount} raw=\"{Preview(item.RawText ?? string.Empty)}\" " +
+                    $"normalized=\"{Preview(item.NormalizedText ?? string.Empty)}\"");
+            }
+        }
+
+        if (report.AnnotationInventory.Count > 0)
+        {
+            Console.WriteLine($"Input annotations: {report.AnnotationInventory.Count}");
+            foreach (var annotation in report.AnnotationInventory)
+            {
+                Console.WriteLine(
+                    $"annotation: page={annotation.PageIndex + 1} subtype={annotation.Subtype} " +
+                    $"bounds={annotation.Bounds?.ToString() ?? "<none>"} hidden={annotation.Hidden} " +
+                    $"off-page={annotation.OffPage} struct-parent={annotation.HasStructParent} " +
+                    $"blocks-conformance={annotation.BlocksConformance} reason=\"{annotation.Reason}\"");
+            }
+        }
+
         foreach (var diagnostic in report.Diagnostics)
         {
             var output = diagnostic.StartsWith("[SUPPRESSED]", StringComparison.Ordinal) ? Console.Out : Console.Error;
             output.WriteLine("diagnostic: " + diagnostic);
+        }
+
+        foreach (var difference in report.TemplateDifferences)
+        {
+            Console.WriteLine(
+                $"template: kind={difference.Kind} slot={difference.SlotId ?? "<none>"} " +
+                $"expected-path={difference.ExpectedPath ?? "<none>"} expected={difference.ExpectedValue ?? "<none>"} " +
+                $"actual-path={difference.ActualPath ?? "<none>"} actual={difference.ActualValue ?? "<none>"} " +
+                $"pages={string.Join(",", difference.PageIndexes.Select(x => x + 1))} " +
+                $"rule={difference.RuleId ?? "<none>"} suppressed={difference.Suppressed}");
         }
 
         foreach (var trace in report.PredicateTraces)

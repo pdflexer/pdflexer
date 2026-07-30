@@ -10,6 +10,33 @@ namespace PdfLexer.Tests;
 
 public class RemediationAnchorTests
 {
+    [Fact]
+    public void TextLabel_UsesDeclaringRuleSetNormalization()
+    {
+        using var doc = PdfDocument.Create();
+        var page = doc.AddPage();
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Base14.Helvetica, 12).TextMove(100, 700).Text("Invoice   #").EndText();
+        }
+
+        var anchor = RemediationAnchor.TextLabel("invoice-label", "Invoice #");
+        var rule = new Rule(
+            "value",
+            RemediationActions.Tag("Span"),
+            Predicates.Anchor.RightOf("invoice-label"),
+            CandidateSelector.Text(Granularity.Word));
+        using var session = doc.BeginRemediation(new RemediationSessionConfiguration
+        {
+            StrictConformance = false,
+            LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
+        }).Use(new RuleSet("normalized", new[] { rule }, new[] { anchor }));
+
+        var report = session.DryRun();
+
+        Assert.DoesNotContain(report.Diagnostics, x => x.Contains("invoice-label", StringComparison.Ordinal));
+    }
+
     private PdfDocument CreateInvoiceDocument()
     {
         var doc = PdfDocument.Create();
@@ -44,7 +71,7 @@ public class RemediationAnchorTests
         var rule = new Rule(
             id: "tag-invoice-num",
             stage: Stage.Classify,
-            granularity: Granularity.Word,
+            candidates: CandidateSelector.Text(Granularity.Word),
             predicate: new AnchorRelativeRemediationPredicate(AnchorRelativePredicateKind.RightOf, "invoice-lbl", Tolerance: 5.0).And(
                 new AnchorRelativeRemediationPredicate(AnchorRelativePredicateKind.SameRowAs, "invoice-lbl", Tolerance: 5.0)
             ),
@@ -60,7 +87,7 @@ public class RemediationAnchorTests
         Assert.Single(claims);
         
         var candidate = claims[0].Candidates[0];
-        Assert.Equal("INV-10042", candidate.Text);
+        Assert.Equal("INV-10042", Assert.IsType<TextRemediationCandidate>(candidate).Text);
     }
 
     [Fact]
@@ -73,6 +100,7 @@ public class RemediationAnchorTests
         var rule = new Rule(
             id: "tag-total",
             stage: Stage.Classify,
+            candidates: CandidateSelector.Text(Granularity.Word),
             predicate: new AnchorRelativeRemediationPredicate(AnchorRelativePredicateKind.RightOf, "total-lbl", Tolerance: 5.0),
             action: new TagRemediationAction(new PdfName("Span"))
         );
@@ -108,7 +136,7 @@ public class RemediationAnchorTests
         var rule = new Rule(
             id: "tag-price",
             stage: Stage.Classify,
-            granularity: Granularity.Word,
+            candidates: CandidateSelector.Text(Granularity.Word),
             predicate: new AnchorRelativeRemediationPredicate(AnchorRelativePredicateKind.RightOf, "price-lbl").And(
                 new AnchorRelativeRemediationPredicate(AnchorRelativePredicateKind.SameRowAs, "price-lbl", Tolerance: 5.0)
             ),
@@ -128,23 +156,24 @@ public class RemediationAnchorTests
         Assert.Single(claims);
         
         var candidate = claims[0].Candidates[0];
-        Assert.Equal("Ten", candidate.Text);
+        Assert.Equal("Ten", Assert.IsType<TextRemediationCandidate>(candidate).Text);
     }
 
     [Fact]
-    public void Occurrence_Disambiguator_Selects_Repeated_Label()
+    public void NthSelection_Selects_Repeated_Label()
     {
         using var doc = CreateInvoiceDocument();
 
-        var totalLabelAnchor = RemediationAnchor.TextLabel("total-lbl", "Total", StringComparison.Ordinal) with
-        {
-            Occurrence = 1
-        };
+        var totalLabelAnchor = RemediationAnchor.TextLabel(
+            "total-lbl",
+            "Total",
+            StringComparison.Ordinal,
+            AnchorSelection.NthInReadingOrder(0));
 
         var rule = new Rule(
             id: "tag-total",
             stage: Stage.Classify,
-            granularity: Granularity.Word,
+            candidates: CandidateSelector.Text(Granularity.Word),
             predicate: new AnchorRelativeRemediationPredicate(AnchorRelativePredicateKind.RightOf, "total-lbl", Tolerance: 5.0).And(
                 new AnchorRelativeRemediationPredicate(AnchorRelativePredicateKind.SameRowAs, "total-lbl", Tolerance: 5.0)
             ),
@@ -157,7 +186,7 @@ public class RemediationAnchorTests
 
         Assert.DoesNotContain(report.Diagnostics, d => d.Contains("ambiguous", StringComparison.OrdinalIgnoreCase));
         var claim = Assert.Single(report.Claims.Where(x => x.RuleId == "tag-total"));
-        Assert.Equal("$500.00", claim.Candidates[0].Text);
+        Assert.Equal("$500.00", Assert.IsType<TextRemediationCandidate>(claim.Candidates[0]).Text);
     }
 
     [Fact]
@@ -175,7 +204,7 @@ public class RemediationAnchorTests
         var rule = new Rule(
             id: "tag-row",
             stage: Stage.Classify,
-            granularity: Granularity.Line,
+            candidates: CandidateSelector.Text(Granularity.Line),
             predicate: new AnchorRelativeRemediationPredicate(AnchorRelativePredicateKind.Below, "line-items-header", Tolerance: 2.0),
             action: new TagRemediationAction(new PdfName("TR"))
         );
@@ -185,7 +214,7 @@ public class RemediationAnchorTests
         var report = session.DryRun();
 
         var claim = Assert.Single(report.Claims.Where(x => x.RuleId == "tag-row"));
-        Assert.Equal("Widget 2 10.00", claim.Candidates[0].Text);
+        Assert.Equal("Widget 2 10.00", Assert.IsType<TextRemediationCandidate>(claim.Candidates[0]).Text);
     }
 
     [Fact]
@@ -212,14 +241,14 @@ public class RemediationAnchorTests
             RemediationActions.Tag("Span"),
             Predicates.Anchor.RightOf("date-label", tolerance: 2, maxDistance: 160).And(
                 Predicates.Anchor.SameRowAs("date-label", tolerance: 4)),
-            Granularity.Word);
+            CandidateSelector.Text(Granularity.Word));
 
         var report = doc.BeginRemediation()
             .Use(new RuleSet("rs-1", new[] { rule }, new[] { dateAnchor }))
             .DryRun();
 
         var claim = Assert.Single(report.Claims.Where(x => x.RuleId == "tag-date-value"));
-        Assert.Equal("2026-05-04", claim.Candidates[0].Text);
+        Assert.Equal("2026-05-04", Assert.IsType<TextRemediationCandidate>(claim.Candidates[0]).Text);
     }
 
     [Fact]
@@ -241,14 +270,14 @@ public class RemediationAnchorTests
             "tag-invoice-num",
             RemediationActions.Tag("Span"),
             Predicates.Geo.In(LayoutCoord.NamedAnchor("invoice-number-anchor", LayoutCoordExpansion.Inflate(1))),
-            Granularity.Word);
+            CandidateSelector.Text(Granularity.Word));
 
         var report = doc.BeginRemediation()
             .Use(new RuleSet("rs-1", new[] { rule }, anchors))
             .DryRun();
 
         var claim = Assert.Single(report.Claims.Where(x => x.RuleId == "tag-invoice-num"));
-        Assert.Equal("INV-10042", claim.Candidates[0].Text);
+        Assert.Equal("INV-10042", Assert.IsType<TextRemediationCandidate>(claim.Candidates[0]).Text);
     }
 
     [Fact]
@@ -260,13 +289,13 @@ public class RemediationAnchorTests
             "tag-first-invoice",
             RemediationActions.Tag("Span"),
             Predicates.Flow.FirstAfter("invoice-lbl", Predicates.Text.Matches(@"^INV-\d+$")),
-            Granularity.Word);
+            CandidateSelector.Text(Granularity.Word));
 
         var report = doc.BeginRemediation()
             .Use(new RuleSet("rs-1", new[] { rule }, new[] { anchor }))
             .DryRun();
 
         var claim = Assert.Single(report.Claims.Where(x => x.RuleId == "tag-first-invoice"));
-        Assert.Equal("INV-10042", claim.Candidates[0].Text);
+        Assert.Equal("INV-10042", Assert.IsType<TextRemediationCandidate>(claim.Candidates[0]).Text);
     }
 }

@@ -52,7 +52,7 @@ Read [Before You Author Rules](#before-you-author-rules) first. Several document
 | `LeftoverPolicy` | `Flag` | What to do with unclaimed content. See the warning below. |
 | `DiagnosticStrictness` | `Strict` | `Permissive` honors suppressions registered with `session.Suppress(...)`. |
 | `NamedZoneMargins` | 72pt each side | Defines what `NamedLayoutZone.Header`/`Footer`/`Left`/`Right` mean. A document with a 40-point header, or a non-Letter page size, will mis-zone unless you set these. |
-| `DefaultConfidence` | `0.0` | Confidence assigned to matches that do not compute one. See [Confidence](#confidence). |
+| `DefaultConfidence` | `1.0` | Confidence assigned to matches that do not compute one. See [Confidence](#confidence). |
 | `DebugWrite` | `false` | Writes rule ids into structure element titles. |
 
 > [!WARNING]
@@ -82,7 +82,7 @@ new Rule(
     "invoice-number",
     RemediationActions.Tag("P"),
     Predicates.Text.Matches(@"^INV-\d+$"),
-    Granularity.Word,
+    CandidateSelector.Text(Granularity.Word),
     pages: PageSelector.First,
     cardinality: RuleCardinality.Exactly(1));
 
@@ -90,7 +90,7 @@ new Rule(
     "page-number",
     RemediationActions.Artifact(ArtifactSubtype.Pagination),
     Predicates.Flow.InZone("footer"),
-    Granularity.Line,
+    CandidateSelector.Text(Granularity.Line),
     cardinality: RuleCardinality.Exactly(1, RuleCardinalityScope.PerPage));
 ```
 
@@ -105,7 +105,8 @@ var anchor = RemediationAnchor.TextLabel("subtotal-label", "Subtotal") with
 };
 ```
 
-Tracked as RRM-028.
+Document-scoped anchors are not supported: selection and ambiguity are always evaluated independently
+on each selected page. Anchor diagnostics identify the page and distinguish no match from ambiguity.
 
 **Text predicates normalize extracted text by default.** The pipeline applies Unicode NFKC, removes
 soft hyphens, collapses Unicode whitespace, and folds common dash and curly-quote characters.
@@ -113,9 +114,14 @@ soft hyphens, collapses Unicode whitespace, and folds common dash and curly-quot
 text only. Configure the rule-set policy with `TextNormalizationOptions`, or pass an override to
 `TextRemediationPredicate`. Source characters and PDF operator ranges are never rewritten.
 
-**Sibling order in the structure tree is unspecified.** Reading order is tree order, but nothing currently defines whether siblings are ordered by rule declaration, geometry, or content-stream position. If reading order matters, assert it with an explicit `ReorderSiblings` refine rule rather than relying on the default. Tracked as RRM-029.
+**Sibling order follows page reading order.** Claims are ordered top-to-bottom, then left-to-right,
+with stable candidate/rule/tag tie-breakers; rule declaration order does not decide sibling order.
+Use `ReorderSiblings` only when the intended semantic order differs from that default.
 
-**Confidence has no defined model.** See [Confidence](#confidence) before setting `MinConfidence` on anything.
+**Confidence is in `[0,1]`.** Ordinary boolean matches are confidence-neutral and inherit
+`DefaultConfidence` (`1.0`). Predicates that model tolerance or inference may lower it; `And` takes
+the minimum matching confidence, `Or` uses the selected matching branch, and `Not` preserves its
+operand confidence. See [Confidence](#confidence).
 
 ## Rule Model
 
@@ -164,7 +170,7 @@ new Rule(
     Predicates.Flow.FirstAfter(
         "invoice-label",
         Predicates.Text.Matches(@"^INV-\d+$")),
-    Granularity.Word,
+    CandidateSelector.Text(Granularity.Word),
     pages: PageSelector.First);
 ```
 
@@ -300,10 +306,13 @@ Selection modes make ambiguity handling explicit:
 - `AnchorSelection.NthInReadingOrder(n)`: choose the zero-based nth match.
 - `AnchorSelection.NearestToAnchor(id, direction, maxDistance)`: choose the nearest match to another anchor.
 
-Anchors also carry three filtering properties that apply before selection: `Pages` (a `PageSelector`, defaulting to every page), `Style` (a predicate used to disambiguate candidates), and `Occurrence`.
+Anchors carry `Pages` (a `PageSelector`, defaulting to every page) and `Style` (a predicate used to
+disambiguate candidates). `Pages` is applied before matching; `Style` filters matches before
+`AnchorSelection`. Occurrence selection is expressed only through the zero-based
+`NthInReadingOrder(n)` mode.
 
-> [!CAUTION]
-> `Occurrence` is **one-based**, while `AnchorSelection.NthInReadingOrder(n)` is **zero-based**. Both pick an occurrence, and the order in which they apply relative to `Pages` and `Style` is unspecified. Use one or the other, not both. Tracked as RRM-028.
+Text-label, table-header, repeated-element, style, and neighboring-text matching inherit the
+declaring rule set's text normalization policy. Regex syntax itself is never normalized.
 
 Remember that all of this resolves **per page** — see [Before You Author Rules](#before-you-author-rules).
 
@@ -393,6 +402,44 @@ new FlowRegion(
     FlowBoundary.Anchor("summary-heading"),
     FlowBoundary.Matching(Predicates.Text.StartsWith("Disclosures")));
 ```
+
+Flow regions are page-local by default. Use `ContinueUntilEnd` when one activation may span page
+breaks:
+
+```csharp
+new FlowRegion(
+    "line-items",
+    FlowBoundary.Anchor("line-items-header"),
+    FlowBoundary.Anchor("subtotal-label"),
+    ContinuationPolicy: FlowContinuationPolicy.ContinueUntilEnd,
+    ReadingOrderMode: FlowReadingOrderMode.StructuredText,
+    MaxPages: 12);
+```
+
+The start page is page one for `MaxPages`. A continued activation may pass through intermediate
+pages containing neither boundary; a missing end is diagnosed at the limit or document end.
+Repeated start boundaries, such as table headers, remain in the same activation and trim that
+page's segment. A later start after an end creates a new activation.
+
+Classify evaluation completes across the document before Group, and Group completes before Refine.
+MCIDs, candidate ownership, and working content remain page-scoped. Group and Merge cross a page
+break only when adjacent claims share the same continued activation; `SamePage()` always forces a
+split. `Consecutive()` means adjacent in that activation's selected reading order.
+
+`StructuredText` orders by page and structured content order. `GeometryTopToBottom` orders by page,
+then top-to-bottom and left-to-right geometry. The mode controls `FirstIn`, `LastIn`, and `NthIn`
+over the complete activation.
+
+Continued tables produce one `Table` per activation. Numeric `HeaderRows` defaults to
+`TableHeaderRowsScope.LogicalTable`, so the count applies once at the start of the activation.
+Choose `TableHeaderRowsScope.EveryPage` to apply the count independently on every continuation
+page. `HeaderSelector` is additive and remains the authoritative way to identify actually
+repainted headers. JSON rules use `headerRowsScope: "logicalTable"` or `"everyPage"`.
+
+Claim-level `Within("id")` dispatches by declaration kind. Anchors and zones are page-scoped;
+multi-page claims can be within a continued flow only when every page segment belongs to the same
+activation. `THead`, split-row reconstruction, spans, and irregular grids remain separate
+table-model work.
 
 Use ordered flow selectors when the task is field extraction rather than section tagging:
 
@@ -592,7 +639,7 @@ static RuleSet BuildInvoiceRules()
             "invoice-title",
             RemediationActions.Tag("H1"),
             Predicates.Text.StartsWith("Invoice"),
-            Granularity.Line,
+            CandidateSelector.Text(Granularity.Line),
             pages: PageSelector.First),
 
         new Rule(
@@ -686,10 +733,13 @@ Capabilities a rule author will reach for that do not exist yet. Each links to i
 
 ## Confidence
 
-Confidence appears in several places — `Rule.MinConfidence`, `RemediationClaimOutcome.Confidence`, `RemediationSessionConfiguration.DefaultConfidence`, toleranced-zone degradation, and low-confidence diagnostics.
-
-> [!WARNING]
-> The confidence model is currently **unspecified**: what produces a value, the scale, how `Tolerance` degrades it, and how `And`/`Or`/`Not` combine operand confidences are all undefined. `DefaultConfidence` also defaults to `0.0`, and it applies to any match that does not compute a confidence explicitly — so setting `MinConfidence` on a rule can cause it to reject every candidate. Leave `MinConfidence` unset until this is specified. Tracked as RRM-027.
+Confidence uses a closed `[0,1]` scale. `1` is a direct match, `0` is the weakest accepted match,
+and a rule's `MinConfidence` rejects lower values. Predicates that do not estimate uncertainty are
+confidence-neutral and inherit `DefaultConfidence`, which defaults to `1`. Toleranced layout and
+table inference are the built-ins that deliberately produce degraded values. For composition,
+matching `And` uses the minimum operand confidence, `Or` uses the branch that establishes the match,
+and `Not` preserves the evaluated operand confidence. Predicate traces identify the node that
+contributed a degraded value.
 
 ## Diagnostics And Validation
 
@@ -718,7 +768,9 @@ When `DebugWrite = true`, rule ids are written to structure element titles to ma
 
 ### Inspecting Outcomes
 
-`RemediationReport` carries per-claim outcomes with rule provenance, granularity, confidence, status, page, bounds, and the MCIDs bound to each structure node:
+`RemediationReport` carries per-claim outcomes with rule provenance, typed candidate summaries,
+confidence, status, page, bounds, and the MCIDs bound to each structure node. Text summaries expose
+both raw and normalized text:
 
 ```csharp
 foreach (var outcome in report.Outcomes)
@@ -761,6 +813,51 @@ Semantic assertions are attached to `RuleSet.Assertions`. Rule-output counts,
 structure-element counts, and direct parent/child shapes produce
 `RemediationReport.AssertionOutcomes`; an unsuppressed `SemanticAssertionFailed` blocks commit.
 `RemediationReport.PlannedSemanticTree` exposes the immutable tree derived from the finalized plan.
+
+### Structural templates
+
+A rule set may declare one closed, document-scoped `RemediationStructuralTemplate`. Its root must be
+exactly one `Document`; children are ordered and use `ExactlyOne`, `Optional`, `ZeroOrMore`, or
+`OneOrMore`. Template node ids are globally unique slots. A structure-producing rule binds a slot
+with `Rule.Slot`; several rules may share a repeating slot, while singular slots allow one rule.
+Slot-bound rules cannot also declare `RuleCardinality`.
+
+```csharp
+var template = new RemediationStructuralTemplate(new[]
+{
+    new RemediationStructuralTemplateNode("H1", id: "title"),
+    new RemediationStructuralTemplateNode(
+        "P", id: "body", occurrence: RemediationStructuralOccurrence.OneOrMore)
+});
+
+var ruleSet = new RuleSet(
+    "report",
+    new[]
+    {
+        new Rule("title", RemediationActions.Tag("H1"),
+            candidates: CandidateSelector.Text(Granularity.Paragraph), slot: "title"),
+        new Rule("body", RemediationActions.Tag("P"),
+            candidates: CandidateSelector.Text(Granularity.Paragraph), slot: "body")
+    },
+    structuralTemplate: template);
+```
+
+JSON v1 uses a top-level `template` node with `tag`, optional `id`, `occurrence`, `pages`,
+`spansPages`, and `children`; rules use `slot`. Omitted occurrence means `exactlyOne`.
+
+Dry-run matches the finalized planned tree. Commit matches that plan before mutation, snapshots and
+matches the materialized builder tree, and rolls back on an unsuppressed mismatch. Differences are
+available through `RemediationReport.TemplateDifferences`, including positional paths, pages, slot
+and rule provenance. Suppression scopes have the form
+`RuleSet:{id}:Template:{derivedPath}`. Templates are descriptive in phase one: they validate but do
+not create missing containers.
+
+Template preflight recognizes the standard structure types for the configured authoring profiles
+and enforces the containment rules that strict accessibility authoring currently models explicitly:
+tables and their row/cell groups, and lists and their item/label/body groups. Other standard-tag
+parent/child combinations remain permissive in phase one and are still subject to the document's
+normal strict-authoring and external conformance validation. Template preflight should therefore
+not be read as a complete PDF/UA content-model validator.
 
 ## Authoring Guidance
 

@@ -14,42 +14,21 @@ public abstract record RemediationCandidate
     public abstract RemediationCandidateKind Kind { get; }
 
     /// <summary>Stable identity within the parsed page candidate index.</summary>
-    public string CandidateId => $"{Kind}:{SequenceIndex}:{Granularity}:{SourceReferences.FirstOrDefault()}";
+    public abstract string CandidateId { get; }
+
+    /// <summary>Zero-based page index in the document candidate index.</summary>
+    public int PageIndex { get; internal init; } = -1;
     protected RemediationCandidate(
-        Granularity granularity,
-        string text,
         PdfRect<double> boundingBox,
         PdfRect<double> relativeBoundingBox,
-        IReadOnlyList<StructuredCharacter> characters,
         IReadOnlyList<StructuredSourceRef> sourceReferences,
-        int sequenceIndex,
-        double fontSize,
-        string? fontName = null,
-        int? fontWeight = null,
-        bool? italic = null,
-        bool? isGrayish = null,
-        IReadOnlyList<RemediationTextRange>? exactTextRanges = null)
+        int sequenceIndex)
     {
-        Granularity = granularity;
-        Text = text;
         BoundingBox = boundingBox;
         RelativeBoundingBox = relativeBoundingBox;
-        Characters = characters;
         SourceReferences = sourceReferences;
-        SequenceIndex = sequenceIndex;
-        FontSize = fontSize;
-        FontName = fontName ?? GetCommon(characters.Select(x => x.FontName));
-        FontWeight = fontWeight ?? GetCommon(characters.Select(x => x.FontWeight));
-        Italic = italic ?? GetCommon(characters.Select(x => x.Italic));
-        IsGrayish = isGrayish ?? GetCommon(characters.Select(x => x.IsGrayish));
-        ExactTextRanges = exactTextRanges;
+        ContentOrderIndex = sequenceIndex;
     }
-
-    /// <summary>Granularity represented by this candidate.</summary>
-    public Granularity Granularity { get; }
-
-    /// <summary>Candidate text.</summary>
-    public string Text { get; }
 
     /// <summary>Candidate bounds in page coordinates.</summary>
     public PdfRect<double> BoundingBox { get; }
@@ -57,37 +36,13 @@ public abstract record RemediationCandidate
     /// <summary>Candidate bounds in normalized page-relative coordinates.</summary>
     public PdfRect<double> RelativeBoundingBox { get; }
 
-    /// <summary>Structured characters that compose the candidate.</summary>
-    public IReadOnlyList<StructuredCharacter> Characters { get; }
-
     /// <summary>Source references for content operators that compose the candidate.</summary>
     public IReadOnlyList<StructuredSourceRef> SourceReferences { get; }
 
-    /// <summary>Text ranges selected inside content operators.</summary>
-    public IReadOnlyList<RemediationTextRange> TextRanges => ExactTextRanges ?? BuildTextRanges(Characters);
+    /// <summary>Unified page content-order index shared by text and non-text candidates.</summary>
+    public int ContentOrderIndex { get; }
 
-    internal IReadOnlyList<RemediationTextRange>? ExactTextRanges { get; }
-
-    internal bool RequiresExactMaterialization =>
-        Granularity is Granularity.Character or Granularity.Word || ExactTextRanges != null;
-
-    /// <summary>Reading-order sequence index.</summary>
-    public int SequenceIndex { get; }
-
-    /// <summary>Representative font size.</summary>
-    public double FontSize { get; }
-
-    /// <summary>Representative font name, when available.</summary>
-    public string? FontName { get; }
-
-    /// <summary>Representative font weight, when available.</summary>
-    public int? FontWeight { get; }
-
-    /// <summary>Representative italic style, when available.</summary>
-    public bool? Italic { get; }
-
-    /// <summary>Representative grayish color flag, when available.</summary>
-    public bool? IsGrayish { get; }
+    internal virtual int SequenceIndex => ContentOrderIndex;
 
     /// <summary>Creates a candidate from a structured character.</summary>
     public static RemediationCandidate From(StructuredCharacter character) =>
@@ -141,82 +96,12 @@ public abstract record RemediationCandidate
             characters.Count == 0 ? 0 : characters.Average(x => x.FontSize));
     }
 
-    private static T? GetCommon<T>(IEnumerable<T?> values)
-    {
-        var found = false;
-        T? common = default;
-        foreach (var value in values)
-        {
-            if (value == null)
-            {
-                continue;
-            }
-
-            if (!found)
-            {
-                found = true;
-                common = value;
-                continue;
-            }
-
-            if (!EqualityComparer<T>.Default.Equals(common, value))
-            {
-                return default;
-            }
-        }
-
-        return common;
-    }
-
-    private static IReadOnlyList<RemediationTextRange> BuildTextRanges(IReadOnlyList<StructuredCharacter> characters)
-    {
-        if (characters.Count == 0)
-        {
-            return Array.Empty<RemediationTextRange>();
-        }
-
-        var ranges = new List<RemediationTextRange>();
-        foreach (var sourceGroup in characters
-            .GroupBy(x => x.SourceReference)
-            .OrderBy(x => x.Min(y => y.SourceCharacterIndex)))
-        {
-            var ordered = sourceGroup.OrderBy(x => x.SourceCharacterIndex).ToList();
-            var rangeStart = ordered[0].SourceCharacterIndex;
-            var expected = rangeStart;
-            var text = new List<char>();
-            foreach (var character in ordered)
-            {
-                if (character.SourceCharacterIndex != expected)
-                {
-                    ranges.Add(new RemediationTextRange(
-                        sourceGroup.Key,
-                        rangeStart,
-                        text.Count,
-                        new string(text.ToArray())));
-                    rangeStart = character.SourceCharacterIndex;
-                    expected = rangeStart;
-                    text.Clear();
-                }
-
-                text.Add(character.Char);
-                expected++;
-            }
-
-            ranges.Add(new RemediationTextRange(
-                sourceGroup.Key,
-                rangeStart,
-                text.Count,
-                new string(text.ToArray())));
-        }
-
-        return new ReadOnlyCollection<RemediationTextRange>(ranges);
-    }
-
     internal static RemediationCandidate CreateExactRange(
         RemediationCandidate template,
         RemediationTextRange range,
         IReadOnlyList<StructuredCharacter> characters)
     {
+        var textTemplate = (TextRemediationCandidate)template;
         var bounds = characters.Count == 0 ? template.BoundingBox : Union(characters.Select(x => x.BoundingBox));
         var relativeBounds = characters.Count == 0
             ? template.RelativeBoundingBox
@@ -226,19 +111,22 @@ public abstract record RemediationCandidate
             : new string(characters.OrderBy(x => x.SourceCharacterIndex).Select(x => x.Char).ToArray());
 
         return new TextRemediationCandidate(
-            template.Granularity,
+            textTemplate.Granularity,
             text,
             bounds,
             relativeBounds,
             new ReadOnlyCollection<StructuredCharacter>(characters.ToList()),
             new ReadOnlyCollection<StructuredSourceRef>(new[] { range.SourceReference }),
             characters.Count == 0 ? template.SequenceIndex : characters.Min(x => x.SequenceIndex),
-            characters.Count == 0 ? template.FontSize : characters.Average(x => x.FontSize),
-            template.FontName,
-            template.FontWeight,
-            template.Italic,
-            template.IsGrayish,
-            new ReadOnlyCollection<RemediationTextRange>(new[] { range }));
+            characters.Count == 0 ? textTemplate.FontSize : characters.Average(x => x.FontSize),
+            textTemplate.FontName,
+            textTemplate.FontWeight,
+            textTemplate.Italic,
+            textTemplate.IsGrayish,
+            new ReadOnlyCollection<RemediationTextRange>(new[] { range }))
+        {
+            PageIndex = template.PageIndex
+        };
     }
 
     private static PdfRect<double> Union(IEnumerable<PdfRect<double>> rects)
@@ -281,10 +169,86 @@ public sealed record TextRemediationCandidate : RemediationCandidate
         int? fontWeight = null,
         bool? italic = null,
         bool? isGrayish = null,
-        IReadOnlyList<RemediationTextRange>? exactTextRanges = null)
-        : base(granularity, text, boundingBox, relativeBoundingBox, characters, sourceReferences,
-            sequenceIndex, fontSize, fontName, fontWeight, italic, isGrayish, exactTextRanges)
+        IReadOnlyList<RemediationTextRange>? exactTextRanges = null,
+        int? contentOrderIndex = null)
+        : base(boundingBox, relativeBoundingBox, sourceReferences, contentOrderIndex ?? sequenceIndex)
     {
+        Granularity = granularity;
+        Text = text;
+        Characters = characters;
+        FontSize = fontSize;
+        FontName = fontName ?? GetCommon(characters.Select(x => x.FontName));
+        FontWeight = fontWeight ?? GetCommon(characters.Select(x => x.FontWeight));
+        Italic = italic ?? GetCommon(characters.Select(x => x.Italic));
+        IsGrayish = isGrayish ?? GetCommon(characters.Select(x => x.IsGrayish));
+        ExactTextRanges = exactTextRanges;
+        SequenceIndex = sequenceIndex;
+    }
+
+    public override string CandidateId =>
+        $"Text:{ContentOrderIndex}:{Granularity}:{SourceReferences.FirstOrDefault()}:{TextRanges.FirstOrDefault()?.StartCharacterIndex ?? 0}";
+    public Granularity Granularity { get; }
+    public string Text { get; }
+    public IReadOnlyList<StructuredCharacter> Characters { get; }
+    public IReadOnlyList<RemediationTextRange> TextRanges => ExactTextRanges ?? BuildTextRanges(Characters);
+    internal IReadOnlyList<RemediationTextRange>? ExactTextRanges { get; }
+    internal bool RequiresExactMaterialization =>
+        Granularity is Granularity.Character or Granularity.Word || ExactTextRanges != null;
+    internal override int SequenceIndex { get; }
+    public double FontSize { get; }
+    public string? FontName { get; }
+    public int? FontWeight { get; }
+    public bool? Italic { get; }
+    public bool? IsGrayish { get; }
+
+    internal TextRemediationCandidate WithContentOrderIndex(int contentOrderIndex) =>
+        new(
+            Granularity,
+            Text,
+            BoundingBox,
+            RelativeBoundingBox,
+            Characters,
+            SourceReferences,
+            SequenceIndex,
+            FontSize,
+            FontName,
+            FontWeight,
+            Italic,
+            IsGrayish,
+            ExactTextRanges,
+            contentOrderIndex);
+
+    private static T? GetCommon<T>(IEnumerable<T?> values)
+    {
+        var valuesWithData = values.Where(x => x != null).Distinct().Take(2).ToArray();
+        return valuesWithData.Length == 1 ? valuesWithData[0] : default;
+    }
+
+    private static IReadOnlyList<RemediationTextRange> BuildTextRanges(IReadOnlyList<StructuredCharacter> characters)
+    {
+        var ranges = new List<RemediationTextRange>();
+        foreach (var sourceGroup in characters.GroupBy(x => x.SourceReference)
+                     .OrderBy(x => x.Min(y => y.SourceCharacterIndex)))
+        {
+            var ordered = sourceGroup.OrderBy(x => x.SourceCharacterIndex).ToList();
+            var rangeStart = ordered[0].SourceCharacterIndex;
+            var expected = rangeStart;
+            var text = new List<char>();
+            foreach (var character in ordered)
+            {
+                if (character.SourceCharacterIndex != expected)
+                {
+                    ranges.Add(new RemediationTextRange(sourceGroup.Key, rangeStart, text.Count, new string(text.ToArray())));
+                    rangeStart = character.SourceCharacterIndex;
+                    expected = rangeStart;
+                    text.Clear();
+                }
+                text.Add(character.Char);
+                expected++;
+            }
+            ranges.Add(new RemediationTextRange(sourceGroup.Key, rangeStart, text.Count, new string(text.ToArray())));
+        }
+        return new ReadOnlyCollection<RemediationTextRange>(ranges);
     }
 }
 
@@ -300,15 +264,9 @@ public sealed record ContentRemediationCandidate : RemediationCandidate
         int resourceUseCount,
         string? resourceIdentity = null,
         string? resourceName = null)
-        : base(
-            Granularity.Paragraph,
-            string.Empty,
-            bounds,
-            relativeBounds,
-            Array.Empty<StructuredCharacter>(),
+        : base(bounds, relativeBounds,
             item.SourceReference is { } source ? new[] { source } : Array.Empty<StructuredSourceRef>(),
-            sequenceIndex,
-            0)
+            sequenceIndex)
     {
         ContentKind = kind;
         Item = item;
@@ -319,6 +277,8 @@ public sealed record ContentRemediationCandidate : RemediationCandidate
     }
 
     public override RemediationCandidateKind Kind => ContentKind;
+    public override string CandidateId =>
+        $"{Kind}:{ContentOrderIndex}:{ParsedContentIdentity}:{SourceReferences.FirstOrDefault()}";
     public RemediationCandidateKind ContentKind { get; }
     public ParsedContentId? ParsedContentIdentity { get; }
     public string? ResourceIdentity { get; }
@@ -367,20 +327,20 @@ public sealed record RemediationClaimTarget<T>(
 public static class RemediationLeafSelection
 {
     /// <summary>Returns structured-text candidates at the requested granularity.</summary>
-    public static IReadOnlyList<RemediationCandidate> GetCandidates(
+    public static IReadOnlyList<TextRemediationCandidate> GetCandidates(
         this StructuredTextPage textPage,
         Granularity granularity)
     {
         return granularity switch
         {
-            Granularity.Character => new ReadOnlyCollection<RemediationCandidate>(
-                textPage.Characters.Select(RemediationCandidate.From).ToList()),
-            Granularity.Word => new ReadOnlyCollection<RemediationCandidate>(
-                textPage.Words.Select(RemediationCandidate.From).ToList()),
-            Granularity.Line => new ReadOnlyCollection<RemediationCandidate>(
-                textPage.Lines.Select(RemediationCandidate.From).ToList()),
-            Granularity.Paragraph => new ReadOnlyCollection<RemediationCandidate>(
-                textPage.Paragraphs.Select(RemediationCandidate.From).ToList()),
+            Granularity.Character => new ReadOnlyCollection<TextRemediationCandidate>(
+                textPage.Characters.Select(x => (TextRemediationCandidate)RemediationCandidate.From(x)).ToList()),
+            Granularity.Word => new ReadOnlyCollection<TextRemediationCandidate>(
+                textPage.Words.Select(x => (TextRemediationCandidate)RemediationCandidate.From(x)).ToList()),
+            Granularity.Line => new ReadOnlyCollection<TextRemediationCandidate>(
+                textPage.Lines.Select(x => (TextRemediationCandidate)RemediationCandidate.From(x)).ToList()),
+            Granularity.Paragraph => new ReadOnlyCollection<TextRemediationCandidate>(
+                textPage.Paragraphs.Select(x => (TextRemediationCandidate)RemediationCandidate.From(x)).ToList()),
             _ => throw new ArgumentOutOfRangeException(nameof(granularity), granularity, null)
         };
     }
@@ -414,7 +374,8 @@ public static class RemediationLeafSelection
             }
             return new[] { new RemediationClaimTarget<T>((IContentItem<T>)(object)graphical.Item) };
         }
-        if (!candidate.RequiresExactMaterialization)
+        var textCandidate = (TextRemediationCandidate)candidate;
+        if (!textCandidate.RequiresExactMaterialization)
         {
             return new ReadOnlyCollection<RemediationClaimTarget<T>>(
                 candidate.FindLeaves(content).Select(x => new RemediationClaimTarget<T>(x)).ToList());
@@ -422,7 +383,7 @@ public static class RemediationLeafSelection
 
         var targets = new List<RemediationClaimTarget<T>>();
         var seenWholeItems = new HashSet<IContentItem<T>>();
-        foreach (var range in candidate.TextRanges)
+        foreach (var range in textCandidate.TextRanges)
         {
             foreach (var textContent in ContentModelBridge.FindTextFragments(content, range.SourceReference))
             {

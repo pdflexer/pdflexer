@@ -11,10 +11,15 @@ public readonly record struct PredicateResult(
     bool IsMatch,
     double Confidence,
     string? Reason = null,
-    PredicateTraceNode? Trace = null)
+    PredicateTraceNode? Trace = null,
+    bool UsesDefaultConfidence = false)
 {
-    /// <summary>Creates a matching predicate result.</summary>
-    public static PredicateResult Match(double confidence = 1.0, PredicateTraceNode? trace = null) =>
+    /// <summary>Creates a confidence-neutral matching predicate result.</summary>
+    public static PredicateResult Match(PredicateTraceNode? trace = null) =>
+        new(true, 1.0, null, trace, UsesDefaultConfidence: true);
+
+    /// <summary>Creates a matching predicate result with an explicitly computed confidence.</summary>
+    public static PredicateResult Match(double confidence, PredicateTraceNode? trace = null) =>
         new(true, Clamp(confidence), null, trace);
 
     /// <summary>Creates a non-matching predicate result.</summary>
@@ -46,7 +51,8 @@ public sealed class RemediationEvaluationContext
         StructuredTextPage? structuredText = null,
         List<string>? diagnostics = null,
         TextNormalizationOptions? textNormalization = null,
-        bool tracePredicates = false)
+        bool tracePredicates = false,
+        bool flowsArePreResolved = false)
     {
         Claims = claims ?? Array.Empty<RemediationClaim>();
         ClaimsByRuleId = claimsByRuleId ?? BuildClaimLookup(Claims);
@@ -64,6 +70,7 @@ public sealed class RemediationEvaluationContext
         Diagnostics = diagnostics ?? new List<string>();
         TextNormalization = textNormalization ?? TextNormalizationOptions.Default;
         TracePredicates = tracePredicates;
+        FlowsArePreResolved = flowsArePreResolved;
         _anchorResolver = new Lazy<AnchorResolver>(() => new AnchorResolver(this, Diagnostics));
         _flowRegionResolver = new Lazy<FlowRegionResolver>(() => new FlowRegionResolver(this, Diagnostics));
     }
@@ -118,30 +125,46 @@ public sealed class RemediationEvaluationContext
 
     internal bool TracePredicates { get; }
 
+    internal bool FlowsArePreResolved { get; }
+
+    internal DocumentFlowIndex? DocumentFlows { get; init; }
+
+    internal IReadOnlyList<RemediationCandidate> DocumentCandidates { get; init; } =
+        Array.Empty<RemediationCandidate>();
+
     internal RemediationEvaluationContext WithTextNormalization(TextNormalizationOptions normalization) =>
-        new(
-            Claims,
-            ClaimsByRuleId,
-            PageBox,
-            PageIndex,
-            PageCount,
-            Configuration,
-            Anchors,
-            TolerancedZones,
-            FlowRegions,
-            ResolvedAnchors,
-            ResolvedZones,
-            ResolvedFlowRegions,
-            StructuredText,
-            Diagnostics,
-            normalization,
-            TracePredicates);
+        new(this, normalization, TracePredicates);
 
     internal RemediationEvaluationContext WithPredicateTracing(bool enabled) =>
-        new(
-            Claims, ClaimsByRuleId, PageBox, PageIndex, PageCount, Configuration, Anchors,
-            TolerancedZones, FlowRegions, ResolvedAnchors, ResolvedZones, ResolvedFlowRegions,
-            StructuredText, Diagnostics, TextNormalization, enabled);
+        new(this, TextNormalization, enabled);
+
+    private RemediationEvaluationContext(
+        RemediationEvaluationContext source,
+        TextNormalizationOptions textNormalization,
+        bool tracePredicates)
+    {
+        Claims = source.Claims;
+        ClaimsByRuleId = source.ClaimsByRuleId;
+        PageBox = source.PageBox;
+        PageIndex = source.PageIndex;
+        PageCount = source.PageCount;
+        Configuration = source.Configuration;
+        Anchors = source.Anchors;
+        TolerancedZones = source.TolerancedZones;
+        FlowRegions = source.FlowRegions;
+        ResolvedAnchors = source.ResolvedAnchors;
+        ResolvedZones = source.ResolvedZones;
+        ResolvedFlowRegions = source.ResolvedFlowRegions;
+        StructuredText = source.StructuredText;
+        Diagnostics = source.Diagnostics;
+        TextNormalization = textNormalization;
+        TracePredicates = tracePredicates;
+        FlowsArePreResolved = source.FlowsArePreResolved;
+        DocumentFlows = source.DocumentFlows;
+        DocumentCandidates = source.DocumentCandidates;
+        _anchorResolver = new Lazy<AnchorResolver>(() => source._anchorResolver.Value);
+        _flowRegionResolver = new Lazy<FlowRegionResolver>(() => source._flowRegionResolver.Value);
+    }
 
     private readonly Lazy<AnchorResolver> _anchorResolver;
 
@@ -189,7 +212,9 @@ public sealed class RemediationEvaluationContext
     public FlowRegionResolution? ResolveFlowRegion(string regionId) =>
         ResolvedFlowRegions.TryGetValue(regionId, out var resolution)
             ? resolution
-            : _flowRegionResolver.Value.Resolve(regionId);
+            : FlowsArePreResolved
+                ? null
+                : _flowRegionResolver.Value.Resolve(regionId);
 
     private static IReadOnlyDictionary<string, IReadOnlyList<RemediationClaim>> BuildClaimLookup(
         IReadOnlyList<RemediationClaim> claims)
@@ -205,7 +230,6 @@ public sealed class RemediationEvaluationContext
 /// </summary>
 public sealed record RemediationClaim(
     string RuleId,
-    Granularity Granularity,
     IReadOnlyList<RemediationCandidate> Candidates,
     string Tag,
     double Confidence = 1.0)
@@ -221,8 +245,26 @@ public sealed record RemediationClaim(
     /// <summary>Rule-set origin, when available.</summary>
     public string? RuleSetId { get; init; }
 
-    /// <summary>Zero-based page index.</summary>
+    /// <summary>Effective rule normalization used for report summaries.</summary>
+    public TextNormalizationOptions TextNormalization { get; init; } = TextNormalizationOptions.Default;
+
+    /// <summary>Zero-based primary page index. For a multi-page claim this is the first page.</summary>
     public int PageIndex { get; init; } = -1;
+
+    /// <summary>Sorted zero-based pages containing this claim or one of its consumed claims.</summary>
+    public IReadOnlyList<int> PageIndexes
+    {
+        get
+        {
+            var pages = Candidates.Select(x => x.PageIndex)
+                .Concat(_relatedClaims.SelectMany(x => x.PageIndexes))
+                .Where(x => x >= 0)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToArray();
+            return pages.Length == 0 && PageIndex >= 0 ? new[] { PageIndex } : pages;
+        }
+    }
 
     /// <summary>Lifecycle status for the claim.</summary>
     public ClaimStatus Status { get; init; } = ClaimStatus.Applied;
@@ -252,10 +294,23 @@ public sealed record RemediationClaim(
 
     /// <summary>Inline text ranges selected by this claim.</summary>
     public IReadOnlyList<RemediationTextRange> TextRanges { get; init; } =
-        Candidates.SelectMany(x => x.TextRanges).ToArray();
+        Candidates.OfType<TextRemediationCandidate>().SelectMany(x => x.TextRanges).ToArray();
 
-    /// <summary>Union bounds for selected candidates.</summary>
-    public PdfRect<double>? BoundingBox => Candidates.Count == 0 ? null : Union(Candidates.Select(x => x.BoundingBox));
+    /// <summary>Per-page union bounds for selected candidates.</summary>
+    public IReadOnlyDictionary<int, PdfRect<double>> BoundsByPage =>
+        Candidates
+            .Where(x => x.PageIndex >= 0)
+            .GroupBy(x => x.PageIndex)
+            .ToDictionary(x => x.Key, x => Union(x.Select(y => y.BoundingBox)));
+
+    /// <summary>
+    /// Union bounds for a single-page claim. Multi-page claims return null because page coordinate
+    /// spaces cannot be meaningfully unioned.
+    /// </summary>
+    public PdfRect<double>? BoundingBox =>
+        PageIndexes.Count <= 1 && Candidates.Count > 0
+            ? Union(Candidates.Select(x => x.BoundingBox))
+            : null;
 
     /// <summary>First selected candidate sequence index.</summary>
     public int FirstSequenceIndex => Candidates.Count == 0 ? int.MaxValue : Candidates.Min(x => x.SequenceIndex);

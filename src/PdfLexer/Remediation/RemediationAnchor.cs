@@ -16,11 +16,6 @@ public abstract record RemediationAnchor
     /// <summary>Pages on which the anchor can resolve.</summary>
     public PageSelector Pages { get; init; } = PageSelector.Every;
 
-    /// <summary>
-    /// One-based occurrence to select after page/style/neighbor filtering.
-    /// </summary>
-    public int? Occurrence { get; init; }
-
     /// <summary>Optional style predicate used to disambiguate candidate anchor matches.</summary>
     public RemediationPredicate? Style { get; init; }
 
@@ -29,6 +24,10 @@ public abstract record RemediationAnchor
 
     /// <summary>Maximum distance for matching <see cref="NeighborText"/>.</summary>
     public double NeighborTolerance { get; init; } = 24;
+
+    internal TextNormalizationOptions TextNormalization { get; init; } = TextNormalizationOptions.Default;
+
+    internal string? RuleSetId { get; init; }
     
     /// <summary>Debug representation used in validation and reports.</summary>
     public abstract string DebugString { get; }
@@ -58,8 +57,12 @@ public abstract record RemediationAnchor
         Selector(id, granularity, Predicates.Text.Matches(pattern), selection);
 
     /// <summary>Creates an anchor from a text label.</summary>
-    public static RemediationAnchor TextLabel(string id, string text, StringComparison comparison = StringComparison.Ordinal) =>
-        new TextLabelAnchor(id, text, comparison);
+    public static RemediationAnchor TextLabel(
+        string id,
+        string text,
+        StringComparison comparison = StringComparison.Ordinal,
+        AnchorSelection? selection = null) =>
+        new TextLabelAnchor(id, text, comparison, selection ?? AnchorSelection.RequiredSingle);
 
     /// <summary>Creates an anchor from a previously produced rule claim.</summary>
     public static RemediationAnchor PriorClaim(string id, string ruleId) =>
@@ -74,11 +77,21 @@ public abstract record RemediationAnchor
 
     /// <summary>Creates an anchor from a line containing table header text.</summary>
     public static RemediationAnchor TableHeader(string id, params string[] headers) =>
-        new TableHeaderAnchor(id, headers);
+        new TableHeaderAnchor(id, headers, AnchorSelection.RequiredSingle);
+
+    /// <summary>Creates an anchor from a line containing table header text with explicit selection.</summary>
+    public static RemediationAnchor TableHeader(
+        string id,
+        IEnumerable<string> headers,
+        AnchorSelection selection) =>
+        new TableHeaderAnchor(id, headers.ToArray(), selection);
 
     /// <summary>Creates an anchor from repeated text matched by a regular expression.</summary>
-    public static RemediationAnchor RepeatedElement(string id, string pattern) =>
-        new RepeatedElementAnchor(id, pattern);
+    public static RemediationAnchor RepeatedElement(
+        string id,
+        string pattern,
+        AnchorSelection? selection = null) =>
+        new RepeatedElementAnchor(id, pattern, selection ?? AnchorSelection.RequiredSingle);
 
     /// <summary>Creates an anchor from a fixed page-relative rectangle.</summary>
     public static RemediationAnchor Geometry(string id, PdfRect<double> bounds) =>
@@ -96,7 +109,11 @@ public sealed record PredicateAnchor(
 }
 
 /// <summary>Anchor resolved from exact or comparison-based text label matching.</summary>
-public sealed record TextLabelAnchor(string Id, string Text, StringComparison Comparison) : RemediationAnchor
+public sealed record TextLabelAnchor(
+    string Id,
+    string Text,
+    StringComparison Comparison,
+    AnchorSelection Selection) : RemediationAnchor
 {
     public override string DebugString => $"TextLabelAnchor({Id}, '{Text}')";
 }
@@ -114,13 +131,19 @@ public sealed record DeclaredZoneAnchor(string Id, NamedLayoutZone Zone) : Remed
 }
 
 /// <summary>Anchor resolved from a line containing all declared table headers.</summary>
-public sealed record TableHeaderAnchor(string Id, IReadOnlyList<string> Headers) : RemediationAnchor
+public sealed record TableHeaderAnchor(
+    string Id,
+    IReadOnlyList<string> Headers,
+    AnchorSelection Selection) : RemediationAnchor
 {
     public override string DebugString => $"TableHeaderAnchor({Id}, [{string.Join(", ", Headers)}])";
 }
 
 /// <summary>Anchor resolved from repeated text matched by a regular expression.</summary>
-public sealed record RepeatedElementAnchor(string Id, string Pattern) : RemediationAnchor
+public sealed record RepeatedElementAnchor(
+    string Id,
+    string Pattern,
+    AnchorSelection Selection) : RemediationAnchor
 {
     public override string DebugString => $"RepeatedElementAnchor({Id}, '{Pattern}')";
 }

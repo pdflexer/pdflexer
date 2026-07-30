@@ -17,7 +17,12 @@ public sealed record FlowRegion(
     /// <summary>Policy for crossing page boundaries.</summary>
     FlowContinuationPolicy ContinuationPolicy = FlowContinuationPolicy.CurrentPageOnly,
     /// <summary>Reading order mode used to select region candidates.</summary>
-    FlowReadingOrderMode ReadingOrderMode = FlowReadingOrderMode.StructuredText)
+    FlowReadingOrderMode ReadingOrderMode = FlowReadingOrderMode.StructuredText,
+    /// <summary>
+    /// Optional inclusive page limit for a continued activation. The page containing the
+    /// start boundary counts as page one.
+    /// </summary>
+    int? MaxPages = null)
 {
     /// <summary>Validates declaration shape.</summary>
     public IReadOnlyList<string> Validate()
@@ -31,6 +36,18 @@ public sealed record FlowRegion(
         if (MaxExtent is < 0)
         {
             errors.Add($"Flow region '{Id}' has negative max extent.");
+        }
+        if (ContinuationPolicy == FlowContinuationPolicy.ContinueUntilEnd && MaxExtent != null)
+        {
+            errors.Add($"Flow region '{Id}' cannot use max extent with ContinueUntilEnd.");
+        }
+        if (ContinuationPolicy == FlowContinuationPolicy.CurrentPageOnly && MaxPages != null)
+        {
+            errors.Add($"Flow region '{Id}' can only use max pages with ContinueUntilEnd.");
+        }
+        if (MaxPages is <= 0)
+        {
+            errors.Add($"Flow region '{Id}' max pages must be greater than zero.");
         }
 
         errors.AddRange(Start.Validate($"flow region '{Id}' start"));
@@ -114,6 +131,25 @@ public enum FlowReadingOrderMode
     GeometryTopToBottom
 }
 
+/// <summary>Stable identity of one document-order activation of a flow region.</summary>
+public readonly record struct FlowRegionInstanceId(string RegionId, int ActivationIndex)
+{
+    public override string ToString() => $"{RegionId}#{ActivationIndex}";
+}
+
+/// <summary>Role played by one page in a resolved flow-region activation.</summary>
+public enum FlowRegionPageRole
+{
+    /// <summary>The activation starts on this page and continues.</summary>
+    Start,
+    /// <summary>The activation continues through this page.</summary>
+    Continue,
+    /// <summary>The activation ends on this page after starting on an earlier page.</summary>
+    End,
+    /// <summary>The activation starts and ends on this page.</summary>
+    StartAndEnd
+}
+
 /// <summary>
 /// Per-page resolved flow-region bounds and sequence limits.
 /// </summary>
@@ -127,10 +163,19 @@ public sealed record FlowRegionResolution(
     /// <summary>End sequence index excluded from the region.</summary>
     int EndSequenceIndex,
     /// <summary>Resolution confidence in the range [0, 1].</summary>
-    double Confidence)
+    double Confidence,
+    /// <summary>Zero-based page index containing this segment.</summary>
+    int PageIndex = -1,
+    /// <summary>Activation containing this segment.</summary>
+    FlowRegionInstanceId InstanceId = default,
+    /// <summary>Role of this page within the activation.</summary>
+    FlowRegionPageRole PageRole = FlowRegionPageRole.StartAndEnd,
+    /// <summary>Ordering used for candidates in this activation.</summary>
+    FlowReadingOrderMode ReadingOrderMode = FlowReadingOrderMode.StructuredText)
 {
     /// <summary>Returns true when a candidate falls inside the sequence and geometry bounds.</summary>
     public bool Contains(RemediationCandidate candidate) =>
+        (PageIndex < 0 || candidate.PageIndex < 0 || candidate.PageIndex == PageIndex) &&
         candidate.SequenceIndex > StartSequenceIndex &&
         candidate.SequenceIndex < EndSequenceIndex &&
         Bounds.CheckEnclosure(candidate.RelativeBoundingBox) == EncloseType.Full;

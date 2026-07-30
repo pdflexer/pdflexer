@@ -45,6 +45,9 @@ internal sealed class PageRemediationState
     public IReadOnlyList<ContentRemediationCandidate> ContentCandidates { get; internal set; } =
         Array.Empty<ContentRemediationCandidate>();
 
+    public IReadOnlyDictionary<Granularity, IReadOnlyList<TextRemediationCandidate>> TextCandidates { get; internal set; } =
+        new Dictionary<Granularity, IReadOnlyList<TextRemediationCandidate>>();
+
     public IReadOnlyDictionary<Stage, IReadOnlyList<RemediationClaim>> ClaimSnapshots => _claimSnapshots;
 
     public IReadOnlyList<string> PlanDiagnostics => _planDiagnostics;

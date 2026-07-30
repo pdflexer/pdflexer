@@ -17,7 +17,22 @@ public abstract record ClaimPredicate
     public abstract string DebugString { get; }
 
     /// <summary>Evaluates the predicate against a claim in context.</summary>
-    public abstract PredicateResult Evaluate(ClaimPredicateEvaluationContext context, RemediationClaim claim);
+    public PredicateResult Evaluate(ClaimPredicateEvaluationContext context, RemediationClaim claim)
+    {
+        var result = EvaluateCore(context, claim);
+        if (result.IsMatch && result.UsesDefaultConfidence)
+        {
+            return result with
+            {
+                Confidence = (context.Configuration ?? new RemediationSessionConfiguration()).DefaultConfidence
+            };
+        }
+        return result;
+    }
+
+    protected abstract PredicateResult EvaluateCore(
+        ClaimPredicateEvaluationContext context,
+        RemediationClaim claim);
 
     /// <summary>Evaluates the predicate against a claim with an empty context.</summary>
     public PredicateResult Evaluate(RemediationClaim claim) => Evaluate(ClaimPredicateEvaluationContext.Empty, claim);
@@ -49,6 +64,8 @@ public sealed record ClaimPredicateEvaluationContext(
 {
     /// <summary>Empty claim-predicate evaluation context.</summary>
     public static ClaimPredicateEvaluationContext Empty { get; } = new(Array.Empty<RemediationClaim>());
+
+    internal DocumentFlowIndex? DocumentFlows { get; init; }
 }
 
 /// <summary>Claim predicate with a constant result.</summary>
@@ -56,7 +73,7 @@ public sealed record ConstantClaimPredicate(bool Value, string Name) : ClaimPred
 {
     public override string DebugString => Name;
 
-    public override PredicateResult Evaluate(ClaimPredicateEvaluationContext context, RemediationClaim claim) =>
+    protected override PredicateResult EvaluateCore(ClaimPredicateEvaluationContext context, RemediationClaim claim) =>
         Value ? PredicateResult.Match() : PredicateResult.NoMatch();
 }
 
@@ -68,7 +85,7 @@ public sealed record CompositeClaimPredicate(
 {
     public override string DebugString => $"({Left.DebugString} {Kind} {Right.DebugString})";
 
-    public override PredicateResult Evaluate(ClaimPredicateEvaluationContext context, RemediationClaim claim)
+    protected override PredicateResult EvaluateCore(ClaimPredicateEvaluationContext context, RemediationClaim claim)
     {
         var left = Left.Evaluate(context, claim);
         if (Kind == CompositePredicateKind.And)
@@ -99,7 +116,7 @@ public sealed record NotClaimPredicate(ClaimPredicate Inner) : ClaimPredicate
 {
     public override string DebugString => $"Not({Inner.DebugString})";
 
-    public override PredicateResult Evaluate(ClaimPredicateEvaluationContext context, RemediationClaim claim)
+    protected override PredicateResult EvaluateCore(ClaimPredicateEvaluationContext context, RemediationClaim claim)
     {
         var result = Inner.Evaluate(context, claim);
         return result.IsMatch ? PredicateResult.NoMatch() : PredicateResult.Match(result.Confidence);
@@ -183,7 +200,7 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
         _ => Kind.ToString()
     };
 
-    public override PredicateResult Evaluate(ClaimPredicateEvaluationContext context, RemediationClaim claim)
+    protected override PredicateResult EvaluateCore(ClaimPredicateEvaluationContext context, RemediationClaim claim)
     {
         return Kind switch
         {
@@ -193,7 +210,7 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
             ClaimPredicateKind.FromRuleSet => string.Equals(claim.RuleSetId, Value, StringComparison.Ordinal),
             ClaimPredicateKind.StatusIs => claim.Status == Status,
             ClaimPredicateKind.SamePage => context.PreviousClaim == null || context.PreviousClaim.PageIndex == claim.PageIndex,
-            ClaimPredicateKind.Consecutive => IsConsecutive(context.PreviousClaim, claim),
+            ClaimPredicateKind.Consecutive => IsConsecutive(context, claim),
             ClaimPredicateKind.Within => IsWithin(context, claim),
             ClaimPredicateKind.BeforeClaim => IsBeforeClaim(context, claim),
             ClaimPredicateKind.AfterClaim => IsAfterClaim(context, claim),
@@ -201,20 +218,22 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
         } ? PredicateResult.Match() : PredicateResult.NoMatch();
     }
 
-    private static bool IsConsecutive(RemediationClaim? previous, RemediationClaim claim)
+    private static bool IsConsecutive(ClaimPredicateEvaluationContext context, RemediationClaim claim)
     {
-        return previous == null ||
-            previous.PageIndex == claim.PageIndex &&
-            previous.LastSequenceIndex + 1 == claim.FirstSequenceIndex;
+        var previous = context.PreviousClaim;
+        if (previous == null)
+        {
+            return true;
+        }
+        if (previous.PageIndex == claim.PageIndex)
+        {
+            return previous.LastSequenceIndex + 1 == claim.FirstSequenceIndex;
+        }
+        return context.DocumentFlows?.FindSharedInstance(previous, claim) != null;
     }
 
     private bool IsWithin(ClaimPredicateEvaluationContext context, RemediationClaim claim)
     {
-        if (claim.BoundingBox is not { } claimBox)
-        {
-            return false;
-        }
-
         if (LayoutCoord == null && Value == null)
         {
             return false;
@@ -237,7 +256,32 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
             diagnostics: context.Diagnostics);
         if (LayoutCoord != null)
         {
+            if (claim.BoundingBox is not { } claimBox)
+            {
+                return false;
+            }
             return LayoutCoord.Resolve(eval, candidate).CheckEnclosure(claimBox) == EncloseType.Full;
+        }
+
+        if (Value != null &&
+            context.DocumentFlows != null &&
+            context.FlowRegions?.ContainsKey(Value) == true)
+        {
+            FlowRegionInstanceId? instance = null;
+            foreach (var pageIndex in claim.PageIndexes)
+            {
+                var resolution = context.DocumentFlows.Find(Value, pageIndex);
+                var pageCandidates = claim.Candidates.Where(x => x.PageIndex == pageIndex).ToArray();
+                if (resolution == null ||
+                    pageCandidates.Length == 0 ||
+                    !pageCandidates.All(resolution.Contains) ||
+                    instance != null && instance.Value != resolution.InstanceId)
+                {
+                    return false;
+                }
+                instance = resolution.InstanceId;
+            }
+            return instance != null;
         }
 
         if (Value != null && eval.FlowRegions.ContainsKey(Value))
@@ -247,11 +291,19 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
 
         if (Value != null && eval.TolerancedZones.ContainsKey(Value))
         {
+            if (claim.BoundingBox is not { } claimBox)
+            {
+                return false;
+            }
             return eval.ResolveTolerancedZone(Value)?.Contains(claimBox).IsMatch == true;
         }
 
         if (Value != null && eval.Anchors.ContainsKey(Value))
         {
+            if (claim.BoundingBox is not { } claimBox)
+            {
+                return false;
+            }
             return eval.ResolveAnchor(Value)?.Bounds.CheckEnclosure(claimBox) == EncloseType.Full;
         }
 
@@ -260,13 +312,17 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
 
     private bool IsBeforeClaim(ClaimPredicateEvaluationContext context, RemediationClaim claim)
     {
-        var other = context.Claims.FirstOrDefault(x => string.Equals(x.RuleId, Value, StringComparison.Ordinal));
+        var other = context.Claims.FirstOrDefault(x =>
+            x.PageIndex == claim.PageIndex &&
+            string.Equals(x.RuleId, Value, StringComparison.Ordinal));
         return other != null && claim.PageIndex == other.PageIndex && claim.LastSequenceIndex < other.FirstSequenceIndex;
     }
 
     private bool IsAfterClaim(ClaimPredicateEvaluationContext context, RemediationClaim claim)
     {
-        var other = context.Claims.FirstOrDefault(x => string.Equals(x.RuleId, Value, StringComparison.Ordinal));
+        var other = context.Claims.FirstOrDefault(x =>
+            x.PageIndex == claim.PageIndex &&
+            string.Equals(x.RuleId, Value, StringComparison.Ordinal));
         return other != null && claim.PageIndex == other.PageIndex && claim.FirstSequenceIndex > other.LastSequenceIndex;
     }
 }
