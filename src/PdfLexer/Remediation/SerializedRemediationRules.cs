@@ -19,6 +19,7 @@ public static class SerializedRemediationRules
         var errors = ruleSets.SelectMany(x => x.Rules)
             .SelectMany(rule => rule.ValidateShape().Select(error => $"Rule '{rule.Id}': {error}"))
             .Concat(RemediationStructuralTemplateValidator.Validate(ruleSets))
+            .Concat(RemediationArtifactInventoryValidator.Validate(ruleSets))
             .ToArray();
         return new ValidationReport(errors);
     }
@@ -56,9 +57,28 @@ public static class SerializedRemediationRules
             ? new RemediationStructuralTemplate(ParseTemplateNode(templateJson))
             : null;
 
+        var artifacts = root.OptionalArray("artifacts").Select(ParseArtifactInventoryItem).ToArray();
+
         return new SerializedRemediationJob(
             session,
-            new RuleSet(ruleSetId, rules, anchors, zones, flows, normalization, assertions, template));
+            new RuleSet(ruleSetId, rules, anchors, zones, flows, normalization, assertions, template, artifacts));
+    }
+
+    private static RemediationArtifactInventoryItem ParseArtifactInventoryItem(JsonElement json) => new(
+        json.RequiredString("id"),
+        json.OptionalEnum("subtype", ArtifactSubtype.Layout),
+        json.OptionalObject("pages") is { } pages ? ParsePages(pages) : null,
+        json.OptionalString("zone"),
+        ParseOccurrence(json));
+
+    // Omitting every count keeps the C# default of exactly one; an explicit minCount with no maxCount
+    // is unbounded, as in assertion parsing.
+    private static AssertionCount? ParseOccurrence(JsonElement json)
+    {
+        var count = json.OptionalInt("count");
+        var min = json.OptionalInt("minCount") ?? count;
+        var max = json.OptionalInt("maxCount") ?? count;
+        return min == null && max == null ? null : new AssertionCount(min ?? 0, max);
     }
 
     private static RemediationStructuralTemplateNode ParseTemplateNode(JsonElement json) =>
@@ -191,7 +211,8 @@ public static class SerializedRemediationRules
             json.OptionalBool("override") ?? false,
             json.OptionalDouble("minConfidence"),
             json.OptionalObject("cardinality") is { } cardinality ? ParseCardinality(cardinality) : null,
-            json.OptionalString("slot"));
+            json.OptionalString("slot"),
+            json.OptionalString("artifact"));
     }
 
     private static CandidateSelector ParseCandidateSelector(JsonElement json) =>

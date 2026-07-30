@@ -31,7 +31,13 @@ public enum DiagnosticCode
     TemplateSlotUnfilled = 14,
     TemplatePageMismatch = 15,
     TemplatePageSpanMismatch = 16,
-    TemplateMaterializationDivergence = 17
+    TemplateMaterializationDivergence = 17,
+    /// <summary>Content was artifacted that matches no declared artifact inventory item.</summary>
+    ArtifactUndeclared = 18,
+    /// <summary>A declared artifact inventory item produced nothing where it is required.</summary>
+    ArtifactMissingDeclared = 19,
+    /// <summary>A declared artifact inventory item occurred outside its expected per-page count.</summary>
+    ArtifactOccurrenceViolation = 20
 }
 
 /// <summary>

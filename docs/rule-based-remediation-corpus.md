@@ -243,6 +243,10 @@ Generate under all three leftover policies.
 every absorbed item — text and graphical alike — with its content or bounds and its disposition**.
 An artifacted item that appears nowhere in the report is the failure this document exists to catch.
 
+Also generate the `AutoArtifact` variant with an artifact inventory declaring only footer furniture:
+every absorbed item outside that zone must report `ArtifactUndeclared`, and each entry's
+`InventoryItemId` must name the item it matched or be null.
+
 ### C-05 — Semantic assertion catches a conformant error
 **Validates:** RRM-018
 

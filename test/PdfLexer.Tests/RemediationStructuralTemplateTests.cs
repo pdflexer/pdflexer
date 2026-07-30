@@ -199,6 +199,75 @@ public class RemediationStructuralTemplateTests
         Assert.Empty(differences);
     }
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void TablePlanAndMaterializationMatchClosedTemplate(bool flattenCells)
+    {
+        using var document = PdfDocument.Create();
+        var page = document.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12)
+                .TextMove(50, 700).Text("Item")
+                .TextMove(220, 700).Text("Amount")
+                .TextMove(50, 680).Text("Widget")
+                .TextMove(220, 680).Text("$10")
+                .EndText();
+        }
+
+        RemediationStructuralTemplateNode Cell(string tag, string id) =>
+            new(
+                tag,
+                flattenCells
+                    ? Array.Empty<RemediationStructuralTemplateNode>()
+                    : new[] { new RemediationStructuralTemplateNode("Span", id: $"{id}-content") },
+                id);
+        var template = Template(
+            new RemediationStructuralTemplateNode(
+                "Table",
+                new[]
+                {
+                    new RemediationStructuralTemplateNode(
+                        "TR",
+                        new[] { Cell("TH", "item-header"), Cell("TH", "amount-header") },
+                        "header-row"),
+                    new RemediationStructuralTemplateNode(
+                        "TR",
+                        new[] { Cell("TD", "item-value"), Cell("TD", "amount-value") },
+                        "body-row")
+                },
+                "table"));
+        var over = ClaimPredicates.FromRule("cells");
+        var tableAction = flattenCells
+            ? RemediationActions.TableOverFlattenedCells(over, 1, 40, 200, 400)
+            : RemediationActions.TableOver(over, 1, 40, 200, 400);
+        var rules = new[]
+        {
+            new Rule(
+                "cells",
+                RemediationActions.Tag("Span"),
+                candidates: CandidateSelector.Text(Granularity.Word)),
+            new Rule("table", tableAction, stage: Stage.Group)
+        };
+        using var session = document.BeginRemediation(new RemediationSessionConfiguration
+        {
+            Language = "en-US",
+            Title = "Table template parity",
+            StrictConformance = false
+        }).Use(new RuleSet("table-template", rules, structuralTemplate: template));
+
+        var dryRun = session.DryRun();
+        var report = session.Commit();
+
+        Assert.Empty(dryRun.TemplateDifferences);
+        Assert.Empty(report.TemplateDifferences);
+        var plannedTable = Assert.Single(dryRun.PlannedSemanticTree.Roots);
+        Assert.Equal("Table", plannedTable.Tag);
+        Assert.Equal(new[] { "TR", "TR" }, plannedTable.Children.Select(x => x.Tag).ToArray());
+        Assert.All(plannedTable.Children, row => Assert.Equal(2, row.Children.Count));
+    }
+
     private static Rule StructuralRule(string id, string slot) =>
         new(id, RemediationActions.Tag("P"), candidates: CandidateSelector.Text(Granularity.Paragraph), slot: slot);
 

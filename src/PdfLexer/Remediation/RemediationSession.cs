@@ -333,6 +333,8 @@ public sealed class RemediationSession : IDisposable
             .ToDictionary(x => x.Key, x => x.Last().Action);
         var semanticTree = RemediationSemanticTree.FromClaims(allClaims, slots, actions);
         var templateDifferences = EvaluateStructuralTemplate(semanticTree, diagnostics).ToList();
+        templateDifferences.AddRange(
+            EvaluateArtifactInventory(pageStates, ruleList, allClaims, autoArtifacts, diagnostics));
 
         if (apply && !HasUnsuppressedDiagnostics(diagnostics))
         {
@@ -387,6 +389,89 @@ public sealed class RemediationSession : IDisposable
             annotationInventory,
             warnings,
             templateDifferences);
+    }
+
+    /// <summary>
+    /// Grades every produced artifact against the declared inventory. Runs before the apply gates, so
+    /// an unsuppressed difference stops the commit rather than hiding content silently.
+    /// </summary>
+    private IReadOnlyList<RemediationTemplateDifference> EvaluateArtifactInventory(
+        IReadOnlyList<PageRemediationState> pageStates,
+        IReadOnlyList<Rule> rules,
+        IReadOnlyList<RemediationClaim> claims,
+        IReadOnlyList<RemediationAutoArtifactOutcome> autoArtifacts,
+        List<string> diagnostics)
+    {
+        if (ArtifactInventory.Count == 0)
+        {
+            return Array.Empty<RemediationTemplateDifference>();
+        }
+
+        var rulesById = rules.GroupBy(x => x.Id, StringComparer.Ordinal)
+            .ToDictionary(x => x.Key, x => x.Last(), StringComparer.Ordinal);
+        var records = new List<RemediationArtifactRecord>();
+        foreach (var claim in claims.Where(x => x.Action is ArtifactRemediationAction))
+        {
+            var subtype = ((ArtifactRemediationAction)claim.Action!).Subtype;
+            var rule = rulesById.GetValueOrDefault(claim.RuleId);
+            foreach (var page in claim.Candidates.Where(x => x.PageIndex >= 0).GroupBy(x => x.PageIndex))
+            {
+                records.Add(new RemediationArtifactRecord(
+                    page.Key,
+                    subtype,
+                    UnionBounds(page.Select(x => x.RelativeBoundingBox)),
+                    claim.RuleId,
+                    rule?.RuleSetId,
+                    rule?.Artifact));
+            }
+        }
+
+        records.AddRange(autoArtifacts.Select(x =>
+            new RemediationArtifactRecord(x.PageIndex, null, x.RelativeBoundingBox)));
+
+        var zonesByPage = pageStates.ToDictionary(x => x.PageIndex, x => x.ArtifactZones);
+        var differences = RemediationArtifactInventoryMatcher.Match(
+            ArtifactInventory, records, _document.Pages.Count, zonesByPage);
+        return differences.Select(x => ReportArtifactDifference(x, diagnostics)).ToList();
+    }
+
+    private RemediationTemplateDifference ReportArtifactDifference(
+        RemediationTemplateDifference difference,
+        List<string> diagnostics)
+    {
+        var page = difference.PageIndexes.Count > 0 ? $"Page{difference.PageIndexes[0] + 1}" : "*";
+        var scope = $"Artifact:{difference.SlotId ?? "Undeclared"}:{page}";
+        var suppressed = Configuration.DiagnosticStrictness != RemediationDiagnosticStrictness.Strict &&
+            _suppressions.Any(x => x.Code == difference.DiagnosticCode &&
+                (x.Scope == "*" || x.Scope == scope));
+        var message = difference.Kind == RemediationTemplateDifferenceKind.UndeclaredArtifact
+            ? $"Artifact at '{difference.ActualPath}' ({difference.ActualValue}) matches no declared artifact inventory item."
+            : $"Artifact '{difference.SlotId}' expected {difference.ExpectedValue} on " +
+              $"{page.ToLowerInvariant()}, found {difference.ActualValue}.";
+        ReportDiagnostic(difference.DiagnosticCode, scope, message, diagnostics);
+        return difference with { Suppressed = suppressed };
+    }
+
+    private static PdfRect<double> UnionBounds(IEnumerable<PdfRect<double>> rects)
+    {
+        using var enumerator = rects.GetEnumerator();
+        if (!enumerator.MoveNext())
+        {
+            return new PdfRect<double>(0, 0, 0, 0);
+        }
+
+        var result = enumerator.Current;
+        while (enumerator.MoveNext())
+        {
+            var rect = enumerator.Current;
+            result = new PdfRect<double>(
+                Math.Min(result.LLx, rect.LLx),
+                Math.Min(result.LLy, rect.LLy),
+                Math.Max(result.URx, rect.URx),
+                Math.Max(result.URy, rect.URy));
+        }
+
+        return result;
     }
 
     private IReadOnlyList<RemediationTemplateDifference> EvaluateStructuralTemplate(
@@ -739,6 +824,7 @@ public sealed class RemediationSession : IDisposable
     {
         var errors = new List<string>();
         errors.AddRange(RemediationStructuralTemplateValidator.Validate(ruleSets));
+        errors.AddRange(RemediationArtifactInventoryValidator.Validate(ruleSets));
         foreach (var group in ruleSets.SelectMany(x => x.Anchors).GroupBy(x => x.Id, StringComparer.Ordinal).Where(x => x.Count() > 1))
         {
             errors.Add($"Anchor id '{group.Key}' is duplicated across the composed rule set.");
@@ -1533,6 +1619,8 @@ public sealed class RemediationSession : IDisposable
 
         foreach (var pageState in pageStates)
         {
+            pageState.ArtifactZones = ResolveArtifactZones(
+                pageState, allClaims, anchors, tolerancedZones, flowRegions, documentFlows, diagnostics);
             ApplyLeftoverPolicy(
                 pageState,
                 pageState.TextOwnership,
@@ -1542,6 +1630,60 @@ public sealed class RemediationSession : IDisposable
                 isCommit);
         }
     }
+
+    private IReadOnlyDictionary<string, TolerancedZoneResolution> ResolveArtifactZones(
+        PageRemediationState pageState,
+        IReadOnlyList<RemediationClaim> claims,
+        IReadOnlyDictionary<string, RemediationAnchor> anchors,
+        IReadOnlyDictionary<string, TolerancedZone> tolerancedZones,
+        IReadOnlyDictionary<string, FlowRegion> flowRegions,
+        DocumentFlowIndex documentFlows,
+        List<string> diagnostics)
+    {
+        var zoneIds = ArtifactInventory.Where(x => x.ZoneId != null).Select(x => x.ZoneId!)
+            .Distinct(StringComparer.Ordinal).ToList();
+        var resolved = new Dictionary<string, TolerancedZoneResolution>(StringComparer.Ordinal);
+        if (zoneIds.Count == 0)
+        {
+            return resolved;
+        }
+
+        var context = CreateDocumentEvaluationContext(
+            pageState, claims, anchors, tolerancedZones, flowRegions, documentFlows, diagnostics);
+        foreach (var zoneId in zoneIds)
+        {
+            if (context.ResolveTolerancedZone(zoneId) is { } zone)
+            {
+                resolved[zoneId] = zone;
+            }
+        }
+
+        return resolved;
+    }
+
+    /// <summary>
+    /// Resolves the inventory item that absorbed content belongs to. Absorbed content carries no
+    /// authored subtype, so only geometrically qualified furniture can claim it.
+    /// </summary>
+    private RemediationArtifactInventoryItem? ResolveAbsorbedArtifactItem(
+        PageRemediationState pageState,
+        PdfRect<double> relativeBounds)
+    {
+        var itemId = RemediationArtifactInventoryMatcher.ResolveItemId(
+            ArtifactInventory,
+            new RemediationArtifactRecord(pageState.PageIndex, null, relativeBounds),
+            _document.Pages.Count,
+            pageState.ArtifactZones);
+        return itemId == null
+            ? null
+            : ArtifactInventory.First(x => string.Equals(x.Id, itemId, StringComparison.Ordinal));
+    }
+
+    /// <summary>Declared page furniture merged across every composed rule set.</summary>
+    private IReadOnlyList<RemediationArtifactInventoryItem> ArtifactInventory =>
+        _artifactInventory ??= _ruleSets.SelectMany(x => x.Artifacts).ToList();
+
+    private IReadOnlyList<RemediationArtifactInventoryItem>? _artifactInventory;
 
     private RemediationEvaluationContext CreateDocumentEvaluationContext(
         PageRemediationState pageState,
@@ -1883,6 +2025,7 @@ public sealed class RemediationSession : IDisposable
             var text = localStart >= 0 && localStart + span.CharacterCount <= item.Text.Length
                 ? item.Text.Substring(localStart, span.CharacterCount)
                 : item.Text;
+            var relativeBounds = new StructuredPageSpace(pageState.Page).Normalize(item.GetBoundingBox());
             autoArtifacts.Add(new RemediationAutoArtifactOutcome(
                 pageState.PageIndex,
                 item.SourceReference!.Value,
@@ -1890,17 +2033,22 @@ public sealed class RemediationSession : IDisposable
                 item.GetBoundingBox(),
                 isCommit
                     ? RemediationAutoArtifactDisposition.Applied
-                    : RemediationAutoArtifactDisposition.Planned));
+                    : RemediationAutoArtifactDisposition.Planned)
+            {
+                RelativeBoundingBox = relativeBounds,
+                InventoryItemId = ResolveAbsorbedArtifactItem(pageState, relativeBounds)?.Id
+            });
         }
 
         foreach (var item in graphicalLeftovers)
         {
             var candidate = CreateContentCandidate(pageState, item, int.MaxValue);
+            var declared = ResolveAbsorbedArtifactItem(pageState, candidate.RelativeBoundingBox);
             var claim = new RemediationClaim(
                 "__auto_artifact__", new[] { candidate }, "Artifact")
             {
                 PageIndex = pageState.PageIndex,
-                Action = RemediationActions.Artifact(ArtifactSubtype.Layout)
+                Action = RemediationActions.Artifact(declared?.Subtype ?? ArtifactSubtype.Layout)
             };
             pageState.ContentOwnership[item] = claim;
             autoArtifacts.Add(new RemediationAutoArtifactOutcome(
@@ -1912,6 +2060,8 @@ public sealed class RemediationSession : IDisposable
                     ? RemediationAutoArtifactDisposition.Applied
                     : RemediationAutoArtifactDisposition.Planned)
             {
+                RelativeBoundingBox = candidate.RelativeBoundingBox,
+                InventoryItemId = declared?.Id,
                 CandidateKind = candidate.Kind,
                 CandidateId = candidate.CandidateId,
                 ResourceIdentity = candidate.ResourceIdentity,
@@ -2234,6 +2384,7 @@ public sealed class RemediationSession : IDisposable
                 TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
             };
             tableClaim.AddRelatedClaims(claims);
+            tableClaim.TablePlan = ResolveClaimConsumingTablePlan(table, tableClaim, grid);
             stageClaims.Add(tableClaim);
         }
     }
@@ -3026,14 +3177,7 @@ public sealed class RemediationSession : IDisposable
         TableGridResolution grid,
         List<string> diagnostics)
     {
-        var cells = claim.RelatedClaims
-            .Select(related => (Claim: related, Column: GetColumnIndex(grid.Columns, GetCenterX(related))))
-            .Where(x => x.Column >= 0)
-            .GroupBy(x => (x.Claim.PageIndex, Row: GetRowCoordinate(x.Claim)))
-            .OrderBy(x => x.Key.PageIndex)
-            .ThenByDescending(x => x.Average(y =>
-                y.Claim.BoundingBox is { } box ? (box.LLy + box.URy) / 2d : double.MinValue))
-            .ToList();
+        var plan = claim.TablePlan ?? ResolveClaimConsumingTablePlan(table, claim, grid);
 
         var tableNode = Structure.AddElement("Table").GetNode();
         if (Configuration.DebugWrite)
@@ -3041,30 +3185,17 @@ public sealed class RemediationSession : IDisposable
             tableNode.Title = claim.RuleId;
         }
         var reusedMcids = new List<int>();
-        var rowIndexesByPage = new Dictionary<int, int>();
-        for (var rowIndex = 0; rowIndex < cells.Count; rowIndex++)
+        foreach (var row in plan.Rows)
         {
-            var row = cells[rowIndex];
-            var rowClaims = row.Select(x => x.Claim).ToList();
-            var pageRowIndex = rowIndexesByPage.TryGetValue(row.Key.PageIndex, out var currentPageRow)
-                ? currentPageRow
-                : 0;
-            rowIndexesByPage[row.Key.PageIndex] = pageRowIndex + 1;
-            var numericHeaderIndex = table.HeaderRowsScope == TableHeaderRowsScope.EveryPage
-                ? pageRowIndex
-                : rowIndex;
-            var isHeaderRow = numericHeaderIndex < table.HeaderRows ||
-                RowMatchesHeaderSelector(table, rowClaims, claim.RelatedClaims);
             var rowNode = new StructuralContext(Structure, tableNode, Structure)
                 .AddElement("TR")
                 .GetNode();
-            foreach (var cell in row.OrderBy(x => x.Column).ThenBy(x => x.Claim.BoundingBox?.LLx ?? 0))
+            foreach (var cell in row.Cells)
             {
-                var isHeader = isHeaderRow;
                 var cellNode = new StructuralContext(Structure, rowNode, Structure)
-                    .AddElement(isHeader ? "TH" : "TD")
+                    .AddElement(cell.Tag)
                     .GetNode();
-                if (isHeader)
+                if (cell.Tag == "TH")
                 {
                     cellNode.Scope = StructureScope.Column;
                 }
@@ -3087,7 +3218,7 @@ public sealed class RemediationSession : IDisposable
                             return;
                         }
 
-                        FlattenBindingInto(binding, cellNode, isHeader ? "TH" : "TD");
+                        FlattenBindingInto(binding, cellNode, cell.Tag);
                         pageState.MarkDirty();
                     }
                     else
@@ -3097,7 +3228,7 @@ public sealed class RemediationSession : IDisposable
 
                     reusedMcids.AddRange(binding.Mcids);
                     claim.AddAppliedBinding(new RemediationAppliedBinding(
-                        isHeader ? "TH" : "TD",
+                        cell.Tag,
                         binding.Mcids,
                         cellNode,
                         null,
@@ -3117,6 +3248,49 @@ public sealed class RemediationSession : IDisposable
             claim.Candidates.SelectMany(x => x.SourceReferences).ToArray(),
             claim.BoundingBox));
         PositionNodeByFirstMcid(tableNode);
+    }
+
+    private static RemediationTablePlan ResolveClaimConsumingTablePlan(
+        TableRemediationAction table,
+        RemediationClaim claim,
+        TableGridResolution grid)
+    {
+        var rows = claim.RelatedClaims
+            .Select(related => (
+                Claim: related,
+                Column: GetColumnIndex(grid.Columns, GetCenterX(related))))
+            .Where(x => x.Column >= 0)
+            .GroupBy(x => (x.Claim.PageIndex, Row: GetRowCoordinate(x.Claim)))
+            .OrderBy(x => x.Key.PageIndex)
+            .ThenByDescending(x => x.Average(y =>
+                y.Claim.BoundingBox is { } box ? (box.LLy + box.URy) / 2d : double.MinValue))
+            .ToList();
+        var rowIndexesByPage = new Dictionary<int, int>();
+        var plannedRows = new List<RemediationTableRowPlan>(rows.Count);
+        for (var rowIndex = 0; rowIndex < rows.Count; rowIndex++)
+        {
+            var row = rows[rowIndex];
+            var pageRowIndex = rowIndexesByPage.TryGetValue(row.Key.PageIndex, out var currentPageRow)
+                ? currentPageRow
+                : 0;
+            rowIndexesByPage[row.Key.PageIndex] = pageRowIndex + 1;
+            var numericHeaderIndex = table.HeaderRowsScope == TableHeaderRowsScope.EveryPage
+                ? pageRowIndex
+                : rowIndex;
+            var isHeaderRow = numericHeaderIndex < table.HeaderRows ||
+                RowMatchesHeaderSelector(table, row.Select(x => x.Claim).ToList(), claim.RelatedClaims);
+            var cells = row
+                .OrderBy(x => x.Column)
+                .ThenBy(x => x.Claim.BoundingBox?.LLx ?? 0)
+                .Select(x => new RemediationTableCellPlan(
+                    x.Claim,
+                    x.Column,
+                    isHeaderRow ? "TH" : "TD"))
+                .ToList();
+            plannedRows.Add(new RemediationTableRowPlan(row.Key.PageIndex, cells));
+        }
+
+        return new RemediationTablePlan(plannedRows);
     }
 
     private void PositionNodeByFirstMcid(StructureNode node)
@@ -3819,9 +3993,18 @@ public sealed class RemediationSession : IDisposable
             .ToList();
         foreach (var item in leftovers)
         {
+            // Absorbed content adopts the subtype of the furniture it matched, so a declared inventory
+            // is load-bearing rather than only a check.
+            var declared = ResolveAbsorbedArtifactItem(
+                pageState, new StructuredPageSpace(pageState.Page).Normalize(item.GetBoundingBox()));
             pageState.WorkingContent.Wrap(
                 new[] { item },
-                new MarkedContent(PdfName.Artifact));
+                declared == null
+                    ? new MarkedContent(PdfName.Artifact)
+                    : new MarkedContent(PdfName.Artifact)
+                    {
+                        InlineProps = new PdfDictionary { [PdfName.TYPE] = (PdfName)declared.Subtype.ToString() }
+                    });
             pageState.MarkDirty();
         }
     }

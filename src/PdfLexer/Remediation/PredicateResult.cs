@@ -292,6 +292,11 @@ public sealed record RemediationClaim(
     /// <summary>Existing claims consumed by this claim.</summary>
     public IReadOnlyList<RemediationClaim> RelatedClaims => _relatedClaims;
 
+    /// <summary>
+    /// Resolved table hierarchy shared by semantic planning and materialization.
+    /// </summary>
+    internal RemediationTablePlan? TablePlan { get; set; }
+
     /// <summary>Inline text ranges selected by this claim.</summary>
     public IReadOnlyList<RemediationTextRange> TextRanges { get; init; } =
         Candidates.OfType<TextRemediationCandidate>().SelectMany(x => x.TextRanges).ToArray();
@@ -350,6 +355,17 @@ public sealed record RemediationClaim(
         _relatedClaims.AddRange(claims);
     }
 }
+
+internal sealed record RemediationTablePlan(IReadOnlyList<RemediationTableRowPlan> Rows);
+
+internal sealed record RemediationTableRowPlan(
+    int PageIndex,
+    IReadOnlyList<RemediationTableCellPlan> Cells);
+
+internal sealed record RemediationTableCellPlan(
+    RemediationClaim Claim,
+    int ColumnIndex,
+    string Tag);
 
 /// <summary>
 /// Binding between a remediation claim, marked content, and structure nodes.

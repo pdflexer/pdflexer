@@ -13,6 +13,8 @@ public class RemediationFixtureTests
         var fixture = RemediationFixtureGenerator.GenerateStrictInvoiceUa1();
 
         Assert.True(fixture.Report.Committed);
+        Assert.Empty(fixture.Report.TemplateDifferences);
+        Assert.All(fixture.Report.AutoArtifacts, x => Assert.NotNull(x.InventoryItemId));
         using var document = PdfDocument.Open(fixture.Bytes);
         AccessibilityIntegrityAssert.HasDocumentSetup(document, PdfUaProfile.PdfUa1);
         AccessibilityIntegrityAssert.HasBasicStructureIntegrity(document);
@@ -48,6 +50,8 @@ public class RemediationFixtureTests
             Assert.True(File.Exists(fixture.Path), fixture.Path);
             Assert.True(fixture.Report.Committed);
             Assert.Empty(fixture.Report.Diagnostics.Where(x => !x.StartsWith("[SUPPRESSED]")));
+            Assert.Empty(fixture.Report.TemplateDifferences);
+            Assert.All(fixture.Report.AutoArtifacts, x => Assert.NotNull(x.InventoryItemId));
 
             using var document = PdfDocument.Open(fixture.Bytes);
             AccessibilityIntegrityAssert.HasDocumentSetup(document, fixture.Profile);
@@ -73,6 +77,9 @@ public class RemediationFixtureTests
         Assert.Contains(invoice.Report.Claims, x => x.RuleId == "invoice-number");
         Assert.Equal(3, invoice.Report.Claims.Count(x => x.RuleId == "line-item-header-cell"));
         Assert.Equal(6, invoice.Report.Claims.Count(x => x.RuleId == "line-item-cell"));
+        Assert.Equal(
+            new[] { "line-items-header-spacing", "line-items-header-spacing" },
+            invoice.Report.AutoArtifacts.Select(x => x.InventoryItemId).ToArray());
 
         using (var invoiceDocument = PdfDocument.Open(invoice.Bytes))
         {

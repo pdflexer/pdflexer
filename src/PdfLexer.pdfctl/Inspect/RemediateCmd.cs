@@ -163,6 +163,7 @@ internal sealed class RemediateCmd
                     $"auto-artifact: {artifact.Disposition} page={artifact.PageIndex + 1} " +
                     $"kind={artifact.CandidateKind} candidate={artifact.CandidateId ?? "<none>"} " +
                     $"source={artifact.SourceReference} bounds={artifact.BoundingBox} " +
+                    $"inventory={artifact.InventoryItemId ?? "<none>"} " +
                     $"resource={artifact.ResourceIdentity ?? "<none>"} name={artifact.ResourceName ?? "<none>"} " +
                     $"reuse={artifact.ResourceUseCount} text=\"{Preview(artifact.Text)}\"");
             }

@@ -17,10 +17,10 @@ internal static class RemediationFixtureGenerator
     {
         new("Invoice", "invoice-like", CreateInvoiceInput, CreateInvoiceRuleSet),
         new("Statement", "statement-like", CreateStatementInput, CreateStatementRuleSet),
-        new("Report", "report-like", CreateReportInput, CreateGenericRuleSet),
-        new("Form", "form-like", CreateFormInput, CreateGenericRuleSet),
-        new("Multi-column", "multi-column-sidebar", CreateMultiColumnInput, CreateGenericRuleSet),
-        new("Mixed page sizes", "mixed-page-sizes", CreateMixedPageSizeInput, CreateGenericRuleSet)
+        new("Report", "report-like", CreateReportInput, CreateReportRuleSet),
+        new("Form", "form-like", CreateFormInput, CreateFormRuleSet),
+        new("Multi-column", "multi-column-sidebar", CreateMultiColumnInput, CreateMultiColumnRuleSet),
+        new("Mixed page sizes", "mixed-page-sizes", CreateMixedPageSizeInput, CreateMixedPageSizeRuleSet)
     };
 
     public static string FixtureRootPath
@@ -98,6 +98,19 @@ internal static class RemediationFixtureGenerator
             LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
         };
         using var session = document.BeginRemediation(configuration).Use(blueprint.CreateRuleSet());
+        var dryRun = session.DryRun();
+        var unsuppressedDifferences = dryRun.TemplateDifferences.Where(x => !x.Suppressed).ToList();
+        if (unsuppressedDifferences.Count > 0)
+        {
+            var absorbed = string.Join(
+                Environment.NewLine,
+                dryRun.AutoArtifacts.Select(x =>
+                    $"auto-artifact page={x.PageIndex + 1} inventory={x.InventoryItemId ?? "<none>"} " +
+                    $"bounds={x.BoundingBox} text=\"{x.Text}\""));
+            throw new InvalidOperationException(
+                string.Join(Environment.NewLine, dryRun.Diagnostics) +
+                (absorbed.Length == 0 ? string.Empty : Environment.NewLine + absorbed));
+        }
         var report = session.Commit();
         var fileName = GetFixtureFileName(blueprint.BaseName, profile);
         var path = Path.Combine(FixtureRootPath, fileName);
@@ -147,11 +160,13 @@ internal static class RemediationFixtureGenerator
                 RemediationAnchor.TextLabel("line-items-header", "Item"),
                 RemediationAnchor.TextLabel("subtotal-label", "Subtotal")
             },
-            tolerancedZones: FooterZones(),
+            tolerancedZones: InvoiceZones(),
             flowRegions: new[]
             {
                 new FlowRegion("line-items", FlowBoundary.Anchor("line-items-header"), FlowBoundary.Anchor("subtotal-label"))
-            });
+            },
+            structuralTemplate: InvoiceTemplate(),
+            artifacts: InvoiceArtifacts());
 
     private static RuleSet CreateStatementRuleSet() =>
         new(
@@ -176,11 +191,27 @@ internal static class RemediationFixtureGenerator
             flowRegions: new[]
             {
                 new FlowRegion("bill-to-address", FlowBoundary.Anchor("bill-to-label"), FlowBoundary.Anchor("ship-to-label"))
-            });
+            },
+            structuralTemplate: StatementTemplate(),
+            artifacts: FooterArtifacts());
 
-    private static RuleSet CreateGenericRuleSet() =>
+    private static RuleSet CreateReportRuleSet() =>
+        CreateGenericRuleSet("report-template", ReportTemplate());
+
+    private static RuleSet CreateFormRuleSet() =>
+        CreateGenericRuleSet("form-template", FormTemplate());
+
+    private static RuleSet CreateMultiColumnRuleSet() =>
+        CreateGenericRuleSet("multi-column-template", MultiColumnTemplate());
+
+    private static RuleSet CreateMixedPageSizeRuleSet() =>
+        CreateGenericRuleSet("mixed-page-sizes-template", MixedPageSizeTemplate());
+
+    private static RuleSet CreateGenericRuleSet(
+        string id,
+        RemediationStructuralTemplate structuralTemplate) =>
         new(
-            "generic-template",
+            id,
             new[]
             {
                 FooterRule(),
@@ -188,7 +219,9 @@ internal static class RemediationFixtureGenerator
                 BodyParagraphRule()
             },
             Array.Empty<RemediationAnchor>(),
-            tolerancedZones: FooterZones());
+            tolerancedZones: FooterZones(),
+            structuralTemplate: structuralTemplate,
+            artifacts: FooterArtifacts());
 
     private static Rule FooterRule() =>
         new("footer", RemediationActions.Artifact(ArtifactSubtype.Pagination), Predicates.Flow.InZone("footer"), CandidateSelector.Text(Granularity.Line));
@@ -198,6 +231,119 @@ internal static class RemediationFixtureGenerator
 
     private static TolerancedZone[] FooterZones() =>
         new[] { new TolerancedZone("footer", LayoutCoord.MarginRelative(bottom: 42), Tolerance: 6) };
+
+    private static TolerancedZone[] InvoiceZones() =>
+        FooterZones()
+            .Append(new TolerancedZone(
+                "line-items-header-spacing",
+                LayoutCoord.Absolute(new PdfRect<double>(72, 670, 600, 700))))
+            .ToArray();
+
+    private static RemediationArtifactInventoryItem[] FooterArtifacts() =>
+        new[]
+        {
+            new RemediationArtifactInventoryItem(
+                "page-footer",
+                ArtifactSubtype.Pagination,
+                pages: PageSelector.Every,
+                zoneId: "footer",
+                occurrence: AssertionCount.Exactly(1))
+        };
+
+    private static RemediationArtifactInventoryItem[] InvoiceArtifacts() =>
+        FooterArtifacts()
+            .Append(new RemediationArtifactInventoryItem(
+                "line-items-header-spacing",
+                ArtifactSubtype.Layout,
+                pages: PageSelector.Every,
+                zoneId: "line-items-header-spacing",
+                occurrence: AssertionCount.Exactly(2)))
+            .ToArray();
+
+    private static RemediationStructuralTemplate InvoiceTemplate() =>
+        Template(
+            Node("H1", "invoice-title"),
+            Node("P", "invoice-number"),
+            Node(
+                "Table",
+                "line-items-table",
+                Node(
+                    "TR",
+                    "line-items-header-row",
+                    Node("TH", "item-header"),
+                    Node("TH", "quantity-header"),
+                    Node("TH", "amount-header")),
+                Node(
+                    "TR",
+                    "widget-row",
+                    Node("TD", "widget-item"),
+                    Node("TD", "widget-quantity"),
+                    Node("TD", "widget-amount")),
+                Node(
+                    "TR",
+                    "service-row",
+                    Node("TD", "service-item"),
+                    Node("TD", "service-quantity"),
+                    Node("TD", "service-amount"))),
+            Node("P", "invoice-summary"));
+
+    private static RemediationStructuralTemplate StatementTemplate() =>
+        Template(
+            Node("H1", "statement-title"),
+            Node("P", "bill-to-label"),
+            Node("P", "bill-to-name"),
+            Node("P", "bill-to-street"),
+            Node("P", "bill-to-city"),
+            Node("P", "ship-to-label"),
+            Node("P", "ship-to-value"));
+
+    private static RemediationStructuralTemplate ReportTemplate() =>
+        Template(
+            Node("H1", "report-title"),
+            Node("P", "overview-heading"),
+            Node("P", "overview-body"),
+            Node("P", "optional-notes-heading"),
+            Node("P", "optional-notes-body"));
+
+    private static RemediationStructuralTemplate FormTemplate() =>
+        Template(
+            Node("H1", "form-title"),
+            Node("P", "full-name-label"),
+            Node("P", "full-name-value"),
+            Node("P", "email-label"),
+            Node("P", "email-value"),
+            Node("P", "notices-agreement"));
+
+    private static RemediationStructuralTemplate MultiColumnTemplate() =>
+        Template(
+            Node("H1", "policy-title"),
+            Node("P", "sidebar-heading"),
+            Node("P", "main-column-heading"),
+            Node("P", "sidebar-body"),
+            Node("P", "main-column-body-1"),
+            Node("P", "main-column-body-2"));
+
+    private static RemediationStructuralTemplate MixedPageSizeTemplate() =>
+        Template(
+            Node("H1", "letter-title", pages: PageSelector.First),
+            Node("P", "letter-body", pages: PageSelector.First),
+            Node("H1", "a4-title", pages: PageSelector.Last),
+            Node("P", "a4-body", pages: PageSelector.Last));
+
+    private static RemediationStructuralTemplate Template(
+        params RemediationStructuralTemplateNode[] children) => new(children);
+
+    private static RemediationStructuralTemplateNode Node(
+        string tag,
+        string id,
+        params RemediationStructuralTemplateNode[] children) =>
+        new(tag, children, id);
+
+    private static RemediationStructuralTemplateNode Node(
+        string tag,
+        string id,
+        PageSelector pages) =>
+        new(tag, id: id, pages: pages);
 
     private static PdfDocument CreateInvoiceInput() =>
         CreateInvoiceInput(Standard14Font.GetHelvetica());

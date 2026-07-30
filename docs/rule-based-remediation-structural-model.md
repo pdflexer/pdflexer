@@ -173,8 +173,8 @@ watermarks therefore need a parallel declaration on the page axis.
 
 ```
 artifacts:
-  - id=page-footer   subtype=Pagination  pages=every  occurrence=exactly-one
-  - id=letterhead-rule subtype=Layout    pages=first  occurrence=optional
+  - id=page-footer     subtype=Pagination  pages=every  zone=footer  occurrence=exactly-one
+  - id=letterhead-rule subtype=Layout      pages=first  zone=rule    occurrence=0..1
 ```
 
 This closes a hazard the current model has no answer for. Today `AutoArtifact` sweeps unclaimed
@@ -183,6 +183,31 @@ content while passing every conformance check available. With a declared invento
 artifacted that matches no declared artifact is an error**, not a silent success. The leftover
 policy gains something to check against rather than a policy switch between "fail on anything" and
 "absorb everything."
+
+**Delivered semantics** (RRM-040):
+
+- **Closed when declared.** With no inventory, behavior is exactly as before. Once any composed rule
+  set declares an item, every produced artifact must match something declared — whether produced by
+  an explicit `Artifact(...)` rule or absorbed by the leftover policy. Rule-produced artifacts are
+  not exempt; the hazard does not care which path hid the content.
+- **Union composition.** Items from every composed rule set merge into one effective inventory and
+  duplicate ids are rejected, exactly as anchors, zones, and flow regions already compose. A
+  boilerplate rule set can own the shared furniture while a family set adds its own.
+- **Occurrence is per page**, expressed as the same inclusive count range assertions use, and
+  evaluated for every page the item's selector includes. It is the teeth: an item declared
+  `exactly-one` per page that absorbs fourteen items is a violation, which is the "footer zone
+  swallowed the table" case that zone matching alone waves through.
+- **Zone optional, ambiguity rejected conservatively.** `ArtifactSubtype` has four values, so header
+  and footer are both `Pagination`; two items sharing a subtype must both declare a zone. Declaration
+  validation cannot know the page count — a one-page document is both first and last — so page
+  selectors are ignored for this check. The cost is an occasional unnecessary zone.
+- **Untyped absorbed content matches only zone-declared items.** Content swept up by the leftover
+  policy carries no authored subtype, so it is discriminated geometrically or not at all. A zoneless
+  item never absorbs leftovers. This makes zone-qualification load-bearing rather than advisory: a
+  bare "one footer per page" declaration cannot silently absorb a mid-page total.
+- **Matched absorbed content adopts the item's subtype** instead of being wrapped as a bare
+  `/Artifact`, so the inventory is load-bearing rather than only a check. Output changes only when an
+  inventory is declared.
 
 ## 7. Labels
 
@@ -270,7 +295,9 @@ Phase one produces a **positional tree diff** against the template. Reported dif
 | Wrong order | `signature` precedes `line-items` |
 | Occurrence violation | `header-row` expected exactly one, found three |
 | Illegal nesting | `TD` outside a `TR` |
-| Undeclared artifact | 14 items artifacted on page 2 matching no declared artifact |
+| Undeclared artifact | an item artifacted on page 2 matching no declared artifact |
+| Missing declared artifact | `page-footer` required on every page, absent on page 3 |
+| Artifact occurrence violation | `page-footer` expected exactly one, 14 items absorbed on page 2 |
 | Slot bound but unfilled | rule `signature` bound to `body/signature` produced nothing |
 
 Each is a diagnostic with a code, routed through the existing strictness and suppression mechanism,
@@ -323,6 +350,12 @@ Stating these because a declared expected structure can look like it does more t
 - **It does not replace external validation.** veraPDF proves well-formedness; the template proves
   the output matches what the author intended. Both are required and neither implies the other.
 - **It is not a general document schema language.** Scope is bounded to what PDF/UA structure needs.
+- **Declaration-time legality checking is shallow.** The nesting check rejects the constructions PDF/UA
+  names explicitly — `TD` outside a `TR`, `LI` outside an `L` — and defaults permissive everywhere
+  else, so `P > Table` and `Figure > H1` validate clean. "Validated for PDF/UA legality" means
+  "no known-illegal nesting," not "proven legal."
+- **The artifact inventory grades what remediation produces**, not what the input already contained.
+  Marked content that arrived as `/Artifact` is outside its scope.
 
 ## 12. Phasing
 
@@ -335,6 +368,14 @@ Stating these because a declared expected structure can look like it does more t
 
 Phases 0 and 1 are MVP work. Phase 2 is a decision with a small implementation. Phase 3 is post-MVP
 and should not be committed to until phase 1 has met a real corpus.
+
+The first six-family fixture pass established two concrete constraints for phase 2:
+
+- a closed template is owned by a document family, not by any generic rule helper the family happens
+  to reuse; distinct report, form, sidebar, and mixed-page shapes require distinct declarations;
+- actions that synthesize hierarchy must resolve one planned structural shape and materialize that
+  same shape. `TableOver` now shares its resolved `Table > TR > TH/TD` plan between template
+  matching and commit rather than presenting consumed `Span` claims during planning.
 
 ## 13. Open questions
 

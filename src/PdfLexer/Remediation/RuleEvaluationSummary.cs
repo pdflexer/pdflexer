@@ -49,6 +49,12 @@ public sealed record RemediationAutoArtifactOutcome(
     /// <summary>Whether the artifact operation is planned or applied.</summary>
     RemediationAutoArtifactDisposition Disposition)
 {
+    /// <summary>Content bounds in relative page coordinates, as used by toleranced zones.</summary>
+    public PdfRect<double> RelativeBoundingBox { get; init; }
+
+    /// <summary>Declared artifact inventory item this content was absorbed as, when one matched.</summary>
+    public string? InventoryItemId { get; init; }
+
     /// <summary>Candidate family handled by the automatic policy.</summary>
     public RemediationCandidateKind CandidateKind { get; init; } = RemediationCandidateKind.Text;
 

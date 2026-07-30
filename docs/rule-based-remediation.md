@@ -61,6 +61,10 @@ Read [Before You Author Rules](#before-you-author-rules) first. Several document
 > Protect every required semantic rule with `RuleCardinality`. If a producer-side layout change breaks its selector, dry-run and commit report `RuleCardinalityMismatch`, and commit stops before `AutoArtifact` can hide the content. `RemediationReport.AutoArtifacts` also lists every leftover text item that would be or was artifacted.
 >
 > Use `FailFast` in development **and in production** unless you have separately established that the leftover set is decorative. Prefer explicit `Artifact(...)` rules over `AutoArtifact`.
+>
+> **`AutoArtifact` is defensible when an artifact inventory is declared**, every item is zone-qualified, and the run reports zero undeclared artifacts. Declaring an inventory closes the artifact space: every produced artifact must match a declared item, absorbed content outside every declared zone reports `ArtifactUndeclared`, and per-page occurrence catches a zone that swallowed more than it should — an item declared `AssertionCount.Exactly(1)` that absorbs fourteen items reports `ArtifactOccurrenceViolation`. Absorbed content that matches an item is also wrapped with that item's subtype rather than a bare `/Artifact`, and `report.AutoArtifacts[].InventoryItemId` names the match.
+>
+> What this still does not prove: content inside declared furniture is absorbed without semantic inspection. A footer zone containing a total will hide the total, within occurrence, without complaint.
 
 Diagnostic suppression is available but should be treated as a reviewed exception, not a workflow step:
 
@@ -867,7 +871,7 @@ not be read as a complete PDF/UA content-model validator.
 - Use `FirstAfter` or `FirstIn` for ordered field extraction; use `NearestTo` only when geometric nearness is the intent.
 - Classify first, then group or refine claims. Do not try to build parent structure by re-selecting raw text.
 - Keep rule ids stable because reports, debug output, and downstream tests depend on them.
-- Use `RemediationLeftoverPolicy.FailFast` in development *and* in production. When `AutoArtifact` is justified, inspect `report.AutoArtifacts` and declare cardinality on every required semantic rule.
+- Use `RemediationLeftoverPolicy.FailFast` in development *and* in production. When `AutoArtifact` is justified, declare a zone-qualified artifact inventory, inspect `report.AutoArtifacts`, and declare cardinality on every required semantic rule.
 - Route business-critical fields through `RuleCardinality.Exactly(...)` and use `RequiredSingle` anchors where stable anchor identity is also required.
 - Assert semantic output shape in application tests; cardinality detects selector drift but does not replace RRM-018 structure assertions.
 - Verify output with an external validator, and separately verify that the *right* content got the *right* tags. Conformance validation cannot tell you the invoice total was tagged as a footer.

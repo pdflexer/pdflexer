@@ -20,7 +20,8 @@ public sealed record Rule
         bool @override = false,
         double? minConfidence = null,
         RuleCardinality? cardinality = null,
-        string? slot = null)
+        string? slot = null,
+        string? artifact = null)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -42,6 +43,7 @@ public sealed record Rule
         Cardinality = cardinality;
         Candidates = candidates;
         Slot = slot;
+        Artifact = artifact;
     }
 
     /// <summary>Caller-supplied stable identifier used for provenance, validation, and reports.</summary>
@@ -79,6 +81,9 @@ public sealed record Rule
 
     /// <summary>Optional structural-template slot bound by this structure-producing rule.</summary>
     public string? Slot { get; init; }
+
+    /// <summary>Optional artifact inventory item bound by this artifact-producing rule.</summary>
+    public string? Artifact { get; init; }
 
     /// <summary>
     /// Validates rule shape that does not require page parsing.

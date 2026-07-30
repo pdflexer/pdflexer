@@ -71,7 +71,10 @@ public enum RemediationTemplateDifferenceKind
     SlotUnfilled,
     PageMismatch,
     PageSpanMismatch,
-    MaterializationDivergence
+    MaterializationDivergence,
+    UndeclaredArtifact,
+    MissingDeclaredArtifact,
+    ArtifactOccurrenceViolation
 }
 
 /// <summary>A machine-readable structural-template mismatch.</summary>

@@ -14,7 +14,8 @@ public sealed class RuleSet
         string id,
         IEnumerable<Rule> rules,
         TextNormalizationOptions? textNormalization = null,
-        RemediationStructuralTemplate? structuralTemplate = null)
+        RemediationStructuralTemplate? structuralTemplate = null,
+        IEnumerable<RemediationArtifactInventoryItem>? artifacts = null)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -24,6 +25,10 @@ public sealed class RuleSet
         Id = id;
         TextNormalization = textNormalization ?? TextNormalizationOptions.Default;
         StructuralTemplate = structuralTemplate;
+        Artifacts = new ReadOnlyCollection<RemediationArtifactInventoryItem>(
+            (artifacts ?? Array.Empty<RemediationArtifactInventoryItem>())
+            .Select(item => item with { RuleSetId = id })
+            .ToList());
         Rules = new ReadOnlyCollection<Rule>(
             (rules ?? throw new ArgumentNullException(nameof(rules)))
             .Select(rule => rule with
@@ -53,8 +58,9 @@ public sealed class RuleSet
         IEnumerable<FlowRegion>? flowRegions = null,
         TextNormalizationOptions? textNormalization = null,
         IEnumerable<RemediationSemanticAssertion>? assertions = null,
-        RemediationStructuralTemplate? structuralTemplate = null)
-        : this(id, rules, textNormalization, structuralTemplate)
+        RemediationStructuralTemplate? structuralTemplate = null,
+        IEnumerable<RemediationArtifactInventoryItem>? artifacts = null)
+        : this(id, rules, textNormalization, structuralTemplate, artifacts)
     {
         Anchors = new ReadOnlyCollection<RemediationAnchor>(
             (anchors ?? throw new ArgumentNullException(nameof(anchors)))
@@ -96,4 +102,12 @@ public sealed class RuleSet
 
     /// <summary>Optional closed structural template owned by this rule set.</summary>
     public RemediationStructuralTemplate? StructuralTemplate { get; }
+
+    /// <summary>
+    /// Declared page furniture contributed by this rule set. Items from every composed rule set merge
+    /// into one effective inventory; once any set declares an item, every produced artifact must match
+    /// something declared.
+    /// </summary>
+    public IReadOnlyList<RemediationArtifactInventoryItem> Artifacts { get; } =
+        Array.Empty<RemediationArtifactInventoryItem>();
 }

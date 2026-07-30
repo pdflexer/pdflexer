@@ -304,6 +304,13 @@ RRM-040 rides with it because artifacts are not structure elements and cannot li
 It closes the `AutoArtifact` hazard directly: with a declared inventory, content artifacted that
 matches nothing declared becomes an error rather than a silent success.
 
+**Corpus finding (2026-07-30):** all six generated fixture families now carry closed templates and
+zone-qualified inventories. The shared generic rules remain reusable as an implementation helper,
+but their rule sets were split because report, form, sidebar, and mixed-page documents do not share
+one exact ordered tree. Inventory closure also exposed two literal word-spacing segments in the
+invoice table header; they are now declared as exactly two `Layout` artifacts in a tight header
+zone instead of being absorbed silently.
+
 **Exit gate**
 
 - [ ] A template is validated for PDF/UA legality and content-model determinism at declaration time,
@@ -311,7 +318,7 @@ matches nothing declared becomes an error rather than a silent success.
 - [ ] The produced tree is diffed against the template, naming the position of each difference.
 - [ ] Missing required, unexpected, misordered, and occurrence-violating nodes are distinct
       suppressible diagnostic codes.
-- [ ] Content artifacted outside the declared inventory is reported.
+- [x] Content artifacted outside the declared inventory is reported.
 - [ ] An optional section absent, an optional section present, and a repeating section are covered
       by corpus fixtures.
 - [ ] A structure that is valid PDF/UA but wrong against its template fails the run.
@@ -348,6 +355,13 @@ why this milestone follows M3b rather than preceding it.
 The decision itself is the deliverable. Keep three stages and give Group rules ordered visibility of
 earlier Group output; replace stages with rules declaring what they consume and topologically
 sorting; or let the template carry declared hierarchy and reduce Group to the undeclared cases.
+
+The fixture exercise supplies one constraint on that decision: reusable matching logic does not
+imply a reusable closed template. Templates are family-level hierarchy contracts, while rule
+construction may still be shared. It also required table planning to expose the same
+`Table > TR > TH/TD` hierarchy that materialization creates, so future structural actions must
+produce one deterministic planned shape and materialize that shape rather than maintain parallel
+hierarchy algorithms.
 
 **Exit gate**
 

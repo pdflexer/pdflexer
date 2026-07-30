@@ -38,6 +38,11 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
 
         RemediationAction? action = null;
         actions?.TryGetValue((claim.RuleSetId, claim.RuleId), out action);
+        if (action is TableRemediationAction table && claim.TablePlan != null)
+        {
+            return BuildTableNode(claim, table, claim.TablePlan, ancestors, slots, actions);
+        }
+
         var related = action is MergeRemediationAction
             ? Array.Empty<RemediationClaim>()
             : claim.RelatedClaims.Where(x => IsStructural(x, actions));
@@ -55,6 +60,61 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
                 .OrderBy(x => x, RemediationSession.ReadingOrderComparer)
                 .Select(x => BuildNode(x, new HashSet<ClaimId>(ancestors), slots, actions))
                 .ToArray());
+    }
+
+    private static RemediationSemanticNode BuildTableNode(
+        RemediationClaim claim,
+        TableRemediationAction table,
+        RemediationTablePlan plan,
+        HashSet<ClaimId> ancestors,
+        IReadOnlyDictionary<(string? RuleSetId, string RuleId), string?>? slots,
+        IReadOnlyDictionary<(string? RuleSetId, string RuleId), RemediationAction>? actions)
+    {
+        RemediationSemanticNode Synthetic(
+            string tag,
+            int pageIndex,
+            IReadOnlyList<RemediationSemanticNode> children) => new(
+                claim.ClaimId,
+                tag,
+                claim.RuleSetId,
+                claim.RuleId,
+                claim.Candidates.Select(x => x.CandidateId).ToArray(),
+                claim.Candidates.SelectMany(x => x.SourceReferences).Distinct().ToArray(),
+                new[] { pageIndex },
+                GetSlot(claim, slots),
+                children);
+
+        var rows = plan.Rows.Select(row =>
+            Synthetic(
+                "TR",
+                row.PageIndex,
+                row.Cells.Select(cell =>
+                    Synthetic(
+                        cell.Tag,
+                        row.PageIndex,
+                        table.CellContentMode == TableCellContentMode.FlattenLeafClaims
+                            ? Array.Empty<RemediationSemanticNode>()
+                            : new[]
+                            {
+                                BuildNode(
+                                    cell.Claim,
+                                    new HashSet<ClaimId>(ancestors),
+                                    slots,
+                                    actions)
+                            }))
+                    .ToArray()))
+            .ToArray();
+
+        return new RemediationSemanticNode(
+            claim.ClaimId,
+            claim.ProducedTag,
+            claim.RuleSetId,
+            claim.RuleId,
+            claim.Candidates.Select(x => x.CandidateId).ToArray(),
+            claim.Candidates.SelectMany(x => x.SourceReferences).Distinct().ToArray(),
+            claim.PageIndexes,
+            GetSlot(claim, slots),
+            rows);
     }
 
     private static bool IsStructural(

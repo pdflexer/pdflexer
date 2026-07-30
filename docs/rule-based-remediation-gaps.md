@@ -80,7 +80,7 @@ PDF/UA assurance as complete.
 | RRM-037 | P0 | Open | No forward authoring inspection of what the engine sees |
 | RRM-038 | P1 | Open | Serialized schema is a projection of the C# API, not the contract |
 | RRM-039 | P0 | Phase 1 complete; phase 2 deferred | Descriptive structural templates validate planned and materialized output |
-| RRM-040 | P0 | Open | Expected page furniture is not declarable, so artifacting is unbounded |
+| RRM-040 | P0 | Complete | Expected page furniture is not declarable, so artifacting is unbounded |
 | RRM-041 | P1 | Open | Recurring predicate logic cannot be named or reused |
 
 RRM-016 through RRM-035 were added by a second review pass on 2026-07-24 that examined the
@@ -1809,7 +1809,7 @@ diffed against the template. Phase two lets the template drive materialization.
 
 ## RRM-040: Expected page furniture is not declarable
 
-**Status:** Open
+**Status:** Complete
 
 **Priority:** P0
 
@@ -1836,12 +1836,19 @@ against.
 
 **Completion criteria**
 
-- [ ] An artifact inventory declares expected page furniture with subtype, page selector, and
-  occurrence.
-- [ ] Content artifacted that matches no declared inventory item is a diagnostic.
-- [ ] A declared artifact that is absent where required is a diagnostic.
-- [ ] `AutoArtifact` reports absorbed content against the inventory rather than only listing it.
-- [ ] Fixtures cover furniture present on every page, on first page only, and legitimately absent.
+- [x] An artifact inventory declares expected page furniture with subtype, page selector, optional
+  zone, and per-page occurrence. Items merge across composed rule sets; duplicate ids are rejected.
+- [x] Content artifacted that matches no declared inventory item is a diagnostic
+  (`ArtifactUndeclared`), whether produced by an `Artifact(...)` rule or absorbed by the leftover
+  policy. Because it is raised before the apply gates, it stops the commit.
+- [x] A declared artifact absent where required is a diagnostic (`ArtifactMissingDeclared`), and one
+  occurring outside its per-page count is `ArtifactOccurrenceViolation`. All three suppress
+  independently at their own scope.
+- [x] `AutoArtifact` reports absorbed content against the inventory:
+  `RemediationAutoArtifactOutcome.InventoryItemId` names the matched item, and matched content is
+  wrapped with that item's subtype rather than a bare `/Artifact`.
+- [x] Fixtures cover furniture present on every page, on first page only, legitimately absent, and
+  the runaway-zone case.
 
 ## RRM-041: Recurring predicate logic cannot be named or reused
 
