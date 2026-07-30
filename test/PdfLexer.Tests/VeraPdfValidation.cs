@@ -16,7 +16,26 @@ internal static class VeraPdfValidation
 
     public static string? GetSkipReason() => ResolvePath() == null ? SkipMessage : null;
 
+    /// <summary>
+    /// Validates a document, retrying only when the tool produced no verdict at all. veraPDF is an
+    /// external process and occasionally aborts under repeated invocation; retrying a run that never
+    /// completed is not the same as retrying a run that returned a real result, which is never retried.
+    /// </summary>
     public static VeraPdfResult Validate(byte[] pdf, PdfUaProfile profile)
+    {
+        try
+        {
+            var result = RunOnce(pdf, profile);
+            return result.ValidationPerformed && !result.ProcessingFailed ? result : RunOnce(pdf, profile);
+        }
+        catch (InvalidOperationException)
+        {
+            // No verdict was produced at all, so there is nothing to preserve by failing here.
+            return RunOnce(pdf, profile);
+        }
+    }
+
+    private static VeraPdfResult RunOnce(byte[] pdf, PdfUaProfile profile)
     {
         var executable = ResolvePath();
         if (executable == null)
@@ -28,7 +47,14 @@ internal static class VeraPdfValidation
         var pdfPath = Path.Combine(Path.GetTempPath(), $"{Guid.NewGuid():N}.pdf");
         try
         {
-            File.WriteAllBytes(pdfPath, pdf);
+            // Flushed to disk explicitly: veraPDF is a separate process, and without this it
+            // intermittently opens a partially written file and reports "not a valid PDF".
+            using (var stream = new FileStream(pdfPath, FileMode.CreateNew, FileAccess.Write, FileShare.None))
+            {
+                stream.Write(pdf, 0, pdf.Length);
+                stream.Flush(true);
+            }
+
             var startInfo = new ProcessStartInfo
             {
                 FileName = executable,
@@ -44,8 +70,13 @@ internal static class VeraPdfValidation
 
             using var process = Process.Start(startInfo) ??
                 throw new InvalidOperationException($"Could not start veraPDF command '{executable}'.");
-            var standardOutput = process.StandardOutput.ReadToEnd();
-            var standardError = process.StandardError.ReadToEnd();
+            // Both pipes must be drained concurrently. Reading stdout to completion first deadlocks
+            // whenever veraPDF fills the stderr buffer, which truncates the XML report and shows up as
+            // a random fixture "failing" validation.
+            var outputTask = process.StandardOutput.ReadToEndAsync();
+            var errorTask = process.StandardError.ReadToEndAsync();
+            var standardOutput = outputTask.GetAwaiter().GetResult();
+            var standardError = errorTask.GetAwaiter().GetResult();
             process.WaitForExit();
 
             XDocument report;

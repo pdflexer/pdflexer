@@ -41,6 +41,7 @@ internal static class RemediationArtifactInventoryValidator
             for (var j = i + 1; j < items.Count; j++)
             {
                 if (items[i].Subtype == items[j].Subtype &&
+                    items[i].SemanticSubtype == items[j].SemanticSubtype &&
                     (items[i].ZoneId == null || items[j].ZoneId == null))
                 {
                     errors.Add(
@@ -67,9 +68,9 @@ internal static class RemediationArtifactInventoryValidator
             {
                 errors.Add($"Rule '{rule.Id}' binds artifact '{rule.Artifact}', but action '{rule.Action.Kind}' does not produce an artifact.");
             }
-            else if (artifact.Subtype != target.Subtype)
+            else if (artifact.Subtype != target.Subtype || artifact.SemanticSubtype != target.SemanticSubtype)
             {
-                errors.Add($"Rule '{rule.Id}' produces subtype '{artifact.Subtype}' but artifact '{rule.Artifact}' requires '{target.Subtype}'.");
+                errors.Add($"Rule '{rule.Id}' produces artifact '{artifact.Subtype}' with semantic subtype '{artifact.SemanticSubtype}', but artifact '{rule.Artifact}' requires '{target.Subtype}' with semantic subtype '{target.SemanticSubtype}'.");
             }
         }
 

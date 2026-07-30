@@ -146,8 +146,9 @@ Every `Rule` has the same shape:
 - `Id`: stable provenance id used in reports and debug-write titles.
 - `Action`: what to do with matched content or claims.
 - `Predicate`: how raw candidates are selected for classify rules.
-- `Candidates`: `CandidateSelector.Text(Granularity)` or
-  `CandidateSelector.Content(...)` for image, path, form, and shading invocations.
+- `Candidates`: `CandidateSelector.Text(Granularity)`, `CandidateSelector.Content(...)` for image,
+  path, form, and shading invocations, or `CandidateSelector.Annotations()` for existing page
+  annotations. Annotation candidates remain separate from painting content.
 - `Pages`: `PageSelector.Every`, `First`, `Last`, `Range(...)`, or `Parity(...)`.
 - `Cardinality`: optional expected selector-match count, using `Exactly`, `AtLeast`, `AtMost`, or `Between`.
 
@@ -166,6 +167,7 @@ The serialized v1 rule format accepts the same constraint additively:
 - `Stage`: `Classify`, `Group`, or `Refine`.
 - `Override`: whether the rule may replace earlier claims over the same target.
 - `MinConfidence`: optional hard confidence threshold.
+- `GroupPass`: non-negative structural depth for `Stage.Group`; omitted or `0` preserves the original single-pass behavior.
 
 ```csharp
 new Rule(
@@ -183,10 +185,10 @@ new Rule(
 Rules run in fixed stage order.
 
 - `Classify`: selects raw structured-text/content candidates and creates leaf claims such as `H1`, `P`, `Span`, `TD`, or `Artifact`.
-- `Group`: consumes already-applied claims with `ClaimPredicate` and builds parent structure such as `Sect`, `L`, or `Table`, or merges temporary leaf fragments into one final element with `MergeTo`.
+- `Group`: consumes already-applied claims with `ClaimPredicate` and builds parent structure such as `Sect`, `L`, or `Table`, or merges temporary leaf fragments into one final element with `MergeTo`. Group rules may declare `GroupPass` (JSON `groupPass`, default `0`); distinct passes run numerically and each pass reads one immutable frontier produced by lower passes.
 - `Refine`: modifies existing claims by adding attributes, links, or sibling reordering.
 
-Group and refine rules do not re-select raw content. They operate on claims created by classify rules. This avoids duplicate MCIDs and keeps parent construction tied to real structure bindings.
+Group and refine rules do not re-select raw content. Pass 0 starts with applied classify claims. When a Group, MergeTo, or claim-consuming Table output is applied, its consumed roots leave the structural frontier and the new parent enters it; unconsumed roots carry forward. Rules in the same pass cannot consume peer output, and overlapping consumers are a non-suppressible composition error. Refine runs once after the final Group pass. This avoids duplicate MCIDs and keeps parent construction tied to real structure bindings. `Override` remains Classify-only and does not resolve Group composition conflicts.
 
 ```csharp
 var classifyAddress = new Rule(
@@ -205,6 +207,47 @@ var langAddress = new Rule(
     RemediationActions.Lang(ClaimPredicates.FromRule("bill-to-paragraph"), "en-US"),
     stage: Stage.Refine);
 ```
+
+A later pass can consume the parent produced above:
+
+```csharp
+var section = new Rule(
+    "bill-to-section",
+    RemediationActions.Group(
+        "Sect",
+        ClaimPredicates.FromRule("bill-to-heading")
+            .Or(ClaimPredicates.FromRule("bill-to-paragraph"))),
+    stage: Stage.Group,
+    groupPass: 10);
+```
+
+The JSON surface is the optional `groupPass` property on a Group rule:
+
+```json
+{
+  "id": "bill-to-section",
+  "stage": "group",
+  "groupPass": 10,
+  "action": {
+    "kind": "group",
+    "tag": "Sect",
+    "over": { "kind": "fromRule", "ruleId": "bill-to-paragraph" }
+  }
+}
+```
+
+Pass values may be sparse (`0`, `10`, `20`) and are evaluated numerically. Rule declaration and
+rule-set composition order remain the stable order within one pass, but peers read the same frozen
+frontier and cannot see one another. Explicit references from a Group rule to itself or to a
+same/higher-pass Group rule fail declaration validation. Passes are document-scoped after rule sets
+are composed, so a higher-pass rule in one rule set may consume a lower-pass rule from another as
+long as rule ids remain unique.
+
+Ambiguous reparenting and cycles are commit-blocking and cannot be suppressed. If a higher-pass rule
+still names a leaf that a lower pass consumed, its zero-match warning names the consuming parent;
+select that parent instead. The structural template remains descriptive today. When M6 makes
+prescriptive slots create declared containers, Group passes remain available for inferred/open
+hierarchy such as tables and variable list depth.
 
 ## Candidate Predicates
 
@@ -440,10 +483,11 @@ Choose `TableHeaderRowsScope.EveryPage` to apply the count independently on ever
 page. `HeaderSelector` is additive and remains the authoritative way to identify actually
 repainted headers. JSON rules use `headerRowsScope: "logicalTable"` or `"everyPage"`.
 
-Claim-level `Within("id")` dispatches by declaration kind. Anchors and zones are page-scoped;
-multi-page claims can be within a continued flow only when every page segment belongs to the same
-activation. `THead`, split-row reconstruction, spans, and irregular grids remain separate
-table-model work.
+Claim-level `Within("id")` dispatches by declaration kind. Anchors and zones are page-scoped and
+require a single-page bounding box; using them against a cross-page claim is diagnosed rather than
+silently returning no match. Multi-page claims can be within a continued flow only when every page
+segment belongs to the same activation. `THead`, split-row reconstruction, spans, and irregular
+grids remain separate table-model work.
 
 Use ordered flow selectors when the task is field extraction rather than section tagging:
 
@@ -591,6 +635,21 @@ ClaimPredicates.AfterClaim("heading");
 
 Claim predicates compose with `And`, `Or`, and `Not`.
 
+Group-pass predicate semantics are deliberately split between consumption and reference lookup:
+
+| Predicate | Higher-pass behavior |
+| --- | --- |
+| `ClaimIs`, `ActionIs`, `FromRuleSet`, `FromRule` | Match only roots on the current structural frontier. `FromRule` may reference Classify or a lower Group pass. |
+| `BeforeClaim`, `AfterClaim` | Positional only: the referenced rule resolves against every applied lower-pass claim, even if that claim has already left the frontier. |
+| `Consecutive` | Compares the first/last leaf sequence ranges represented by each parent; across pages the parents must share one continued flow activation. |
+| `Within(flowRegionId)` | Supports cross-page parents when every page segment belongs to the same activation. |
+| Geometric `Within(LayoutCoord)`, `Within(zone)`, `Within(anchor)` | Requires one bounding box. Applying it to a cross-page parent is a commit-blocking diagnostic; use a flow region instead. |
+| `SamePage` | Uses the claim's primary page, which is the first page for a cross-page parent. |
+
+Synthetic `TR`/`TH`/`TD` nodes created by `TableOver` and fragments flattened by `MergeTo` are not
+claims and never enter the frontier. A later pass can consume the `Table` or merged parent, not its
+interiors or discarded inputs.
+
 ## Complete Invoice Example
 
 ```csharp
@@ -705,15 +764,77 @@ generated `TH`/`TD` cells. Do not classify visual rows as `TR` before passing th
 preserve-children mode rejects table-row and table-cell claims because they would create an invalid
 `TD > TR` or nested-cell hierarchy.
 
+
+## Existing Annotation Adoption
+
+Existing annotations use `CandidateSelector.Annotations()` with `Predicates.Annotation` filters for
+subtype, destination kind/value, contents, and existing structure ownership. Stable candidate ids are
+formed from the zero-based page and `/Annots` array position. Page predicates always apply; geometry
+predicates explainably reject annotations whose `/Rect` is absent or unusable.
+
+```csharp
+new Rule(
+    "link-text",
+    RemediationActions.Tag("Link"),
+    Predicates.Text.Contains("Account details"),
+    CandidateSelector.Text(Granularity.Line));
+
+new Rule(
+    "existing-link",
+    RemediationActions.AdoptAnnotation(
+        into: ClaimPredicates.FromRule("link-text"),
+        destinationTarget: ClaimPredicates.FromRule("details-heading")),
+    Predicates.Annotation.Subtype("Link")
+        .And(Predicates.Annotation.DestinationKind(AnnotationDestinationKind.Internal)),
+    CandidateSelector.Annotations());
+```
+
+`Into` pairs annotations and compatible Classify claims on the same page by rectangle intersection;
+missing or multiple targets block commit. Omitting it creates a standalone `Link`, `Form`, or `Annot`
+node. `DestinationTarget` also selects Classify claims and reuses profile-aware structure destination
+serialization. A link must already have non-empty `/Contents` or receive
+`accessibleDescription`; descriptions are never inferred. Group passes may subsequently reparent the
+adopted node normally.
+
+Annotation ownership is exclusive. Reports classify every input annotation as `Unmodeled`, `Exempt`,
+`Planned`, or `Applied`, including candidate id, rule, produced tag, and destination kind. Hidden,
+wholly off-page, `Popup`, and valid specialized `PrinterMark` annotations use their documented
+exemptions. Dry-run does not change dictionaries, and a failed commit rolls all annotation changes
+back.
+
+JSON uses candidate kind `annotation`, annotation predicate kinds such as `annotationSubtype` and
+`annotationDestinationKind`, and action kind `adoptAnnotation` with optional `into`,
+`accessibleDescription`, and `destinationTarget` claim predicates.
+
+## Complete Artifact Property Lists
+
+`ArtifactSubtype` remains the historical PDF artifact `/Type`. The additive semantic subtype is
+`Header`, `Footer`, or `Watermark`; actions can also include the candidate `/BBox` and unique
+`Top`, `Bottom`, `Left`, or `Right` attachment edges.
+
+```csharp
+RemediationActions.HeaderArtifact();    // /Type /Pagination, /Subtype /Header, /BBox, /Attached [/Top]
+RemediationActions.FooterArtifact();    // /Type /Pagination, /Subtype /Footer, /BBox, /Attached [/Bottom]
+RemediationActions.WatermarkArtifact(); // /Type /Pagination, /Subtype /Watermark, /BBox
+```
+
+The same fields are available on artifact inventory items and therefore control automatic furniture
+wrappers. JSON keeps legacy `"subtype": "Pagination"` as the `/Type` spelling and adds canonical
+`"type"`, `"semanticSubtype"`, `"includeBoundingBox"`, and `"attached"`; conflicting legacy and
+canonical type values are rejected. The schema remains v1.
+
+`PageWriter.BeginArtifact(PdfName?)` remains compatible. The overload accepting type, subtype,
+optional bounds, and attached edges emits the complete property list; `BeginHeaderArtifact`,
+`BeginFooterArtifact`, and `BeginWatermarkArtifact` supply the standard defaults.
+
 ## What Remediation Cannot Fix
 
 Remediation adds structure. It does not rewrite the content stream's text, fonts, or encodings. Several PDF/UA requirements live below the structure layer and no rule set can reach them:
 
 - **Fonts.** The output reuses the input's fonts. A font that is not embedded, has no `ToUnicode` map, or references `.notdef` fails PDF/UA regardless of tagging quality. Because `StrictConformance` defaults to `true`, a non-embedded font will **fail the commit** with an error that does not obviously point back at the input document.
 - **Word boundaries.** Producers that separate words with `TJ` offsets instead of space characters yield text that fails PDF/UA §7.2 and extracts as `InvoiceNumber`. Wrapping it in a marked-content scope does not change that.
-- **Existing annotations.** Links, stamps, and other annotations already present in the input are not visible to the rule model and will not be tagged. `RemediationActions.Link` creates a *new* structure link and annotation; it does not adopt an existing one.
 
-Check these before investing in a rule set for a new document family. Tracked as RRM-026 and RRM-019.
+Check these before investing in a rule set for a new document family. Tracked as RRM-026.
 
 ## What the Rule Language Cannot Express
 
@@ -724,16 +845,13 @@ Capabilities a rule author will reach for that do not exist yet. Each links to i
 | Expected match counts on a rule (`MinMatches`), so drift fails loudly | RRM-016 |
 | A rule-set applicability guard, so the wrong template is refused | RRM-017 |
 | Output assertions ("exactly one `H1`", "every row has 4 cells") | RRM-018 |
-| Binding annotations already present in the input | RRM-019 |
 | Selecting or excluding pre-existing marked content and optional content | RRM-020 |
 | Splitting a list line into `Lbl` + `LBody`; setting `/ListNumbering` | RRM-021 |
-| Artifact `/Subtype` (`Header`, `Footer`, `Watermark`), `/BBox`, `/Attached` | RRM-022 |
 | Relative or normalized heading levels for optional sections | RRM-023 |
 | Generating an outline from headings; setting `/PageLabels` | RRM-024 |
 | Row-scoped table headers; `/Summary`; declarative `/Headers` | RRM-005, RRM-025 |
 | Selecting non-text content (images, paths, form XObjects) | RRM-002 |
 | Flow regions and tables that continue across a page break | RRM-001, RRM-005 |
-| Group rules that consume the output of earlier group rules | RRM-004 |
 
 ## Confidence
 
@@ -791,8 +909,9 @@ foreach (var outcome in report.Outcomes)
 foreach (var rule in report.RuleEvaluations)
 {
     Console.WriteLine(
-        $"{rule.RuleId}: matched={rule.Total.InputsMatched}, " +
-        $"applied={rule.Total.AppliedClaims}, conflicts={rule.Total.RejectedByConflict}");
+        $"{rule.RuleId}: stage={rule.Stage}, group-pass={rule.GroupPass}, " +
+        $"matched={rule.Total.InputsMatched}, applied={rule.Total.AppliedClaims}, " +
+        $"conflicts={rule.Total.RejectedByConflict}");
 }
 ```
 

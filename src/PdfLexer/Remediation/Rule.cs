@@ -21,7 +21,8 @@ public sealed record Rule
         double? minConfidence = null,
         RuleCardinality? cardinality = null,
         string? slot = null,
-        string? artifact = null)
+        string? artifact = null,
+        int groupPass = 0)
     {
         if (string.IsNullOrWhiteSpace(id))
         {
@@ -31,6 +32,10 @@ public sealed record Rule
         if (minConfidence is < 0 or > 1)
         {
             throw new ArgumentOutOfRangeException(nameof(minConfidence), "Minimum confidence must be between 0 and 1.");
+        }
+        if (groupPass < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(groupPass), "Group pass cannot be negative.");
         }
 
         Id = id;
@@ -44,6 +49,7 @@ public sealed record Rule
         Candidates = candidates;
         Slot = slot;
         Artifact = artifact;
+        GroupPass = groupPass;
     }
 
     /// <summary>Caller-supplied stable identifier used for provenance, validation, and reports.</summary>
@@ -85,6 +91,9 @@ public sealed record Rule
     /// <summary>Optional artifact inventory item bound by this artifact-producing rule.</summary>
     public string? Artifact { get; init; }
 
+    /// <summary>Structural composition pass. Only meaningful for Group rules.</summary>
+    public int GroupPass { get; init; }
+
     /// <summary>
     /// Validates rule shape that does not require page parsing.
     /// </summary>
@@ -98,6 +107,10 @@ public sealed record Rule
         if (Stage != Stage.Classify && Candidates != null)
         {
             errors.Add("Group and refine rules must omit candidate selectors.");
+        }
+        if (Stage != Stage.Group && GroupPass != 0)
+        {
+            errors.Add("Only Group rules may declare a nonzero group pass.");
         }
         Action.Validate(this, errors);
         return new ReadOnlyCollection<string>(errors);

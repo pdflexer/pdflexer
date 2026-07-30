@@ -66,6 +66,9 @@ public sealed record ClaimPredicateEvaluationContext(
     public static ClaimPredicateEvaluationContext Empty { get; } = new(Array.Empty<RemediationClaim>());
 
     internal DocumentFlowIndex? DocumentFlows { get; init; }
+    internal IReadOnlyList<RemediationClaim>? ReferenceClaims { get; init; }
+    internal string? EvaluatingRuleId { get; init; }
+    internal int EvaluatingGroupPass { get; init; }
 }
 
 /// <summary>Claim predicate with a constant result.</summary>
@@ -258,6 +261,7 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
         {
             if (claim.BoundingBox is not { } claimBox)
             {
+                ReportMissingCrossPageGeometry(context, claim);
                 return false;
             }
             return LayoutCoord.Resolve(eval, candidate).CheckEnclosure(claimBox) == EncloseType.Full;
@@ -293,6 +297,7 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
         {
             if (claim.BoundingBox is not { } claimBox)
             {
+                ReportMissingCrossPageGeometry(context, claim);
                 return false;
             }
             return eval.ResolveTolerancedZone(Value)?.Contains(claimBox).IsMatch == true;
@@ -302,6 +307,7 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
         {
             if (claim.BoundingBox is not { } claimBox)
             {
+                ReportMissingCrossPageGeometry(context, claim);
                 return false;
             }
             return eval.ResolveAnchor(Value)?.Bounds.CheckEnclosure(claimBox) == EncloseType.Full;
@@ -312,7 +318,7 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
 
     private bool IsBeforeClaim(ClaimPredicateEvaluationContext context, RemediationClaim claim)
     {
-        var other = context.Claims.FirstOrDefault(x =>
+        var other = (context.ReferenceClaims ?? context.Claims).FirstOrDefault(x =>
             x.PageIndex == claim.PageIndex &&
             string.Equals(x.RuleId, Value, StringComparison.Ordinal));
         return other != null && claim.PageIndex == other.PageIndex && claim.LastSequenceIndex < other.FirstSequenceIndex;
@@ -320,10 +326,30 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
 
     private bool IsAfterClaim(ClaimPredicateEvaluationContext context, RemediationClaim claim)
     {
-        var other = context.Claims.FirstOrDefault(x =>
+        var other = (context.ReferenceClaims ?? context.Claims).FirstOrDefault(x =>
             x.PageIndex == claim.PageIndex &&
             string.Equals(x.RuleId, Value, StringComparison.Ordinal));
         return other != null && claim.PageIndex == other.PageIndex && claim.FirstSequenceIndex > other.LastSequenceIndex;
+    }
+
+    private void ReportMissingCrossPageGeometry(
+        ClaimPredicateEvaluationContext context,
+        RemediationClaim claim)
+    {
+        if (claim.PageIndexes.Count <= 1 || context.Diagnostics == null)
+        {
+            return;
+        }
+
+        var ruleId = context.EvaluatingRuleId ?? "<unknown>";
+        var message =
+            $"Rule '{ruleId}' in Group pass {context.EvaluatingGroupPass} cannot evaluate geometric " +
+            $"predicate '{DebugString}' against cross-page claim '{claim.ClaimId}' from rule " +
+            $"'{claim.RuleId}' because cross-page claims have no single bounding box. Use Within(flowRegionId).";
+        if (!context.Diagnostics.Contains(message, StringComparer.Ordinal))
+        {
+            context.Diagnostics.Add(message);
+        }
     }
 }
 

@@ -44,7 +44,7 @@ PDF/UA assurance as complete.
 | RRM-001 | P0 | Complete | Flow regions do not continue across pages |
 | RRM-002 | P0 | Complete | Declarative rules cannot select or artifact non-text content |
 | RRM-003 | P0 | Complete | Multiple inline claims in one text operator may be order-sensitive |
-| RRM-004 | P0 | Open | Stage vocabulary is fixed at three and Group cannot consume Group |
+| RRM-004 | P0 | Complete | Explicit numbered Group passes support deterministic structural composition |
 | RRM-005 | P0 | Open | Table construction handles only regular, page-local grids |
 | RRM-006 | P0 | Complete | Table examples and validation can admit incorrect hierarchy |
 | RRM-007 | P1 | Open | No declarative Figure/caption association |
@@ -59,10 +59,10 @@ PDF/UA assurance as complete.
 | RRM-016 | P0 | Complete | Rules have no expected-match cardinality, so template drift is silent |
 | RRM-017 | P0 | Open | No rule-set applicability guard or document-family check |
 | RRM-018 | P0 | In progress | No semantic output assertions beyond conformance validation |
-| RRM-019 | P0 | Partially addressed | Annotations already present in the input are outside the rule model |
+| RRM-019 | P0 | Complete | Existing annotations are selectable, adoptable, destination-aware, and fully inventoried |
 | RRM-020 | P1 | Open | Pre-existing marked content and optional content are unmodeled |
 | RRM-021 | P1 | Open | List interior structure and `/ListNumbering` are not expressible |
-| RRM-022 | P1 | Open | Artifact subtypes cannot express Header/Footer/Watermark |
+| RRM-022 | P1 | Complete | Artifact property lists express Header/Footer/Watermark, bounds, and attachment edges |
 | RRM-023 | P1 | Open | Heading levels are literal with no ordering model |
 | RRM-024 | P1 | Open | No document-level navigation actions (outline, page labels) |
 | RRM-025 | P1 | Open | Table `/Scope` is hardcoded and `/Summary` is unreachable |
@@ -414,61 +414,52 @@ support separately tagging the label and value in natural rule order.
 - [x] Override replaces only the intended overlapping range.
 - [x] Reparsed text, glyph selection, and positioning remain unchanged.
 
-## RRM-004: Stage vocabulary is fixed at three and Group cannot consume Group
+## RRM-004: Structural composition across Group passes
 
-**Status:** Phase 1 complete; phase 2 deferred
+**Status:** Complete (M3c — explicit numbered Group passes, 2026-07-30)
 
 **Priority:** P0
 
-`EvaluateDocument` runs every Group rule against a single `classifyClaims` snapshot taken once, in
-rule declaration order. All Group rules therefore consume the same flat classify claims; a later
-Group rule cannot select a parent produced by an earlier one.
+Group rules declare an explicit numeric pass. Each pass consumes the immutable structural frontier produced by lower passes, allowing deterministic parent-over-parent composition while rejecting ambiguous same-pass consumption.
 
-The narrow symptom is group-over-group. The underlying gap is that the pipeline is three hard-coded
-phases rather than a dependency order. Real transactional structure is recursive — cell to row to
-table to section, lists inside sections, tables inside sections — so an author hits a wall at the
-second level of nesting with no workaround expressible in the language.
+The original symptom was group-over-group: real transactional structure is recursive — cell to row
+to table to section, lists inside sections, and tables inside sections — but the former flat Group
+snapshot stopped declarative composition at the second level. Numbered passes remove that ceiling
+without replacing the three public stages.
 
 **Priority raised to P0 on 2026-07-29.** This is a ceiling on what the language can express, not a
 missing convenience, and the cost of changing the stage model rises sharply once authored rule sets
 exist to migrate. Deciding it before the remaining M4 vocabulary is the same argument that moved
 RRM-001 ahead of that vocabulary.
 
-**Sequenced after RRM-039 phase one (2026-07-29).** The structural template changes this calculus
-rather than resolving it. If the template becomes prescriptive, declared hierarchy is no longer
-assembled bottom-up at all — rules bind claims into declared slots, and `L > LI > L > LI` is
-something the template states rather than something Group rules construct. That is a third option,
-cheaper than either listed below, and it only becomes evaluable once the descriptive template has met
-a real corpus. Make this decision after RRM-039 phase one, informed by it, not before.
+**Sequenced after RRM-039 phase one (2026-07-29).** The descriptive structural template informed
+the choice without replacing runtime composition. If it becomes prescriptive in M6, regular declared
+hierarchy can move into template slots, while numbered passes remain the mechanism for derived or
+undeclared hierarchy.
 
-**Impact**
+**Delivered contract**
 
-- Nested lists such as `L -> LI -> L -> LI` cannot be assembled through
-  declarative multi-pass grouping.
-- Multi-level sections and other parent-of-parent structures require
-  imperative workarounds.
-- Overlapping Group rules may reparent the same classify nodes rather than
-  composing hierarchy.
-- Every action added to the Group stage encodes the flat-snapshot assumption and has to be revisited
-  if the stage model changes later.
-
-**Design decision required**
-
-Keep three stages and give Group rules ordered visibility of earlier Group output, or replace stages
-with rules declaring what they consume and topologically sorting. The second is more work but
-removes the ceiling rather than raising it. The engine is close either way: the change is what
-snapshot each Group rule reads, not how claims are materialized.
+- `groupPass` is an optional non-negative integer; omission and explicit pass `0` are equivalent,
+  sparse passes are allowed, and nonzero values are valid only for Group rules.
+- Each pass consumes an immutable frontier produced by lower passes. Classify and lower-pass
+  references are valid; self-, same-, and higher-pass Group references are rejected.
+- Composition validation rejects multiple structural consumers, ancestor-plus-descendant selection,
+  and cycles before materialization. Ambiguity and cycle diagnostics cannot be suppressed.
+- Consuming predicates see the frontier, while `BeforeClaim` and `AfterClaim` can resolve all applied
+  lower-pass claims. Reports expose both stage and pass.
+- C-29 fixtures cover bottom-up nested lists and independent two-level section chains for both PDF/UA
+  profiles, preserving sibling order, MCIDs, ParentTree ownership, rendering, and conformance.
 
 **Completion criteria**
 
-- [ ] The stage-versus-dependency decision is recorded with its consequences for the action
+- [x] The stage-versus-dependency decision is recorded with its consequences for the action
   vocabulary.
-- [ ] Define deterministic visibility of earlier Group outputs within the
+- [x] Define deterministic visibility of earlier Group outputs within the
   Group stage, or introduce explicit grouping passes.
-- [ ] Detect and reject ambiguous or cyclic reparenting.
-- [ ] Tests cover nested lists, nested sections, and two non-overlapping parent
+- [x] Detect and reject ambiguous or cyclic reparenting.
+- [x] Tests cover nested lists, nested sections, and two non-overlapping parent
   layers.
-- [ ] MCIDs remain unique and unchanged through every parent layer.
+- [x] MCIDs remain unique and unchanged through every parent layer.
 
 ## RRM-005: Table construction handles only regular, page-local grids
 
@@ -640,8 +631,14 @@ PDF/UA-2 validation.
 
 CI now installs checksum-pinned veraPDF 1.30.2 and checks a strict,
 embedded-font PDF/UA-1 invoice table as an expected pass plus an intentionally
-invalid `TD > TR` document as an expected failure. Expanding this gate to every
-UA-1/UA-2 remediation fixture and recording PAC/manual review remain open.
+invalid `TD > TR` document as an expected failure. The gate now also runs for
+every committing fixture in its own profile, and every fixture runs strict.
+Recording PAC/manual assistive-technology review remains open.
+
+Extending the gate immediately caught three PDF/UA violations the internal
+checks had passed: `Span` as a direct child of `Document` (C-02, C-23), `Sect`
+holding raw content (C-03), and a heading-level skip from `H2` with no `H1`
+(C-23). That is the argument for the gate, stated as evidence.
 
 **Relevant code and tracking**
 
@@ -651,9 +648,10 @@ UA-1/UA-2 remediation fixture and recording PAC/manual review remain open.
 
 **Completion criteria**
 
-- [ ] All remediation fixtures run with strict conformance enabled unless a
+- [x] All remediation fixtures run with strict conformance enabled unless a
   fixture explicitly tests permissive behavior.
-- [ ] veraPDF is run for the intended UA profile of every fixture.
+- [x] veraPDF is run for the intended UA profile of every fixture
+  (`RemediationVeraPdfTests.EveryCommittedFixtureValidatesForItsProfile`).
 - [x] Expected-pass and expected-failure baselines are checked in CI for the
   strict invoice table and intentional invalid-hierarchy fixtures.
 - [ ] PAC/manual assistive-technology review is recorded for representative
@@ -952,61 +950,37 @@ materialized dimensions, strengthen tag/page-selector validation, and add rollba
 
 ## RRM-019: Annotations already present in the input are outside the rule model
 
-**Status:** Partially addressed
+**Status:** Complete (2026-07-30)
 
 **Priority:** P0
 
-**Progress (2026-07-29)**
+`CandidateSelector.Annotations()` exposes stable page/array identities, subtype, normalized optional
+bounds, flags, existing ownership, contents, and normalized destination metadata. Annotation
+predicates select those fields; ordinary page and geometry predicates apply when `/Rect` is usable.
 
-Dry-run now inventories existing annotations with subtype, page, bounds, visibility/off-page
-exclusions, existing `/StructParent`, and whether the item blocks strict conformance. Visible
-unmodeled annotations emit a commit-blocking `UnmodeledAnnotation` diagnostic under strict
-conformance, so the PoC can measure this cap before rule authoring. Adoption, binding, and
-artifacting remain deliberately scheduled for M4.
+`AdoptAnnotation` preserves the original object, binds `Link`, `Form`, or `Annot` structure through
+an OBJR and `/StructParent`, and can either intersect-pair with compatible Classify claims through
+`Into` or create a standalone required node. Internal links may name a Classify
+`DestinationTarget`; PDF/UA-2 uses the structure-destination serializer. Links require an explicit or
+pre-existing non-empty description. Duplicate consumers, absent or ambiguous targets, and invalid
+tags are non-suppressible commit blockers, and failed commits restore annotation dictionaries.
 
-RRM-009 covers interactive AcroForm widgets. This item covers every other annotation already present
-in the untagged input.
-
-Untagged PDFs produced by common office and layout applications routinely carry real `Link`
-annotations, and frequently `Stamp`, `FileAttachment`, `Popup`, and markup annotations. ISO 14289-1
-§7.18 requires every annotation to be represented in the structure tree or marked as an artifact.
-
-`RemediationActions.Link` creates a *new* structure link and a *new* link annotation between two
-claims. There is no candidate type, predicate, or action that adopts an annotation that already
-exists in the document. A remediated file therefore retains its original untagged annotations and
-fails conformance regardless of how completely the text was tagged.
-
-A secondary concern, now resolved: because `Link` creates a new annotation rather than binding an
-existing one, a rule set that adds links introduced visual change, since `CreateBaseAnnotation` emitted
-no `/Border` and the PDF default `[0 0 1]` draws a 1-unit frame. Created links now carry an explicit
-`/Border [0 0 0]`. Adopting *existing* annotations remains open.
-
-**Impact**
-
-- Documents with pre-existing hyperlinks cannot reach PDF/UA conformance through the rule language.
-- The most common real-world annotation case — a Word or InDesign export with live links — is
-  uncovered.
-- ~~Link creation may alter rendering in a way the exit gate forbids.~~ Fixed: created links carry an
-  explicit zero-width border.
-
-**Relevant code**
-
-- `src/PdfLexer/Remediation/RemediationAction.cs`
-  (`StructureLinkRemediationAction`)
-- `src/PdfLexer/Remediation/RemediationSession.cs` (link application,
-  `BindAnnotation`)
-- `src/PdfLexer/DOM/Annotations.cs` (`AnnotationFactory`)
+The rebuilt inventory reports `Unmodeled`, `Exempt`, `Planned`, or `Applied` with candidate, rule,
+produced tag, and destination provenance. Hidden and wholly off-page annotations, `Popup`, and valid
+specialized `PrinterMark` annotations retain their exemption contracts. C-08 covers internal and URI
+links, Stamp, hidden Popup, and FileAttachment for both PDF/UA profiles; created links retain the
+zero-width border contract.
 
 **Completion criteria**
 
-- [ ] Existing annotations are exposed as candidates with subtype, rect, page, and destination
-  available to predicates.
-- [ ] An action binds an existing annotation to a `Link`, `Form`, or `Annot` structure element
-  without creating a replacement annotation.
-- [ ] An action artifacts or otherwise accounts for annotations that carry no semantics.
-- [ ] Diagnostics report any annotation left with no structure binding at commit.
-- [ ] Link creation documents and, where possible, avoids visual change.
-- [ ] Tests cover a document with pre-existing links, a stamp, and a popup.
+- [x] Existing annotations are exposed as candidates with subtype, rect, page, ownership, contents,
+  and destination metadata available to predicates.
+- [x] Adoption binds existing annotations to `Link`, `Form`, or `Annot` without replacements.
+- [x] Visible semantically empty annotations are deliberately accounted for as `Annot`; supported
+  exemptions are reported separately.
+- [x] Inventory and diagnostics report every annotation disposition at dry-run and commit.
+- [x] Link creation avoids visual change with `/Border [0 0 0]`.
+- [x] C-08 covers both PDF/UA profiles and validates with veraPDF.
 
 ## RRM-020: Pre-existing marked content and optional content are unmodeled
 
@@ -1100,38 +1074,26 @@ RRM-004 covers nested lists. This covers the interior of a single flat list.
 
 ## RRM-022: Artifact subtypes cannot express Header/Footer/Watermark
 
-**Status:** Open
+**Status:** Complete (2026-07-30)
 
 **Priority:** P1
 
-`ArtifactSubtype` offers `Pagination`, `Layout`, `Page`, and `Background` — the `/Type` values.
-PDF/UA-1 §7.8 additionally expects running headers and footers to carry an artifact `/Subtype` of
-`/Header` or `/Footer`, and watermarks `/Watermark`. `/BBox` and `/Attached` are likewise not
-expressible.
+Artifact actions retain the historical `ArtifactSubtype` `/Type` contract and add semantic
+`Header`, `Footer`, and `Watermark` subtypes, candidate-derived `/BBox`, and unique attachment edges.
+`HeaderArtifact`, `FooterArtifact`, and `WatermarkArtifact` provide the normative defaults. Artifact
+inventory items carry the same metadata, so automatic furniture handling emits the declared wrapper.
 
-The guide's own footer rule, `Artifact(ArtifactSubtype.Pagination)`, therefore cannot produce the
-markup the specification asks for, and running heads and feet are the single most common artifact in
-transactional documents.
-
-This gap is shared with the imperative authoring API (`PageWriter.BeginArtifact`), so the underlying
-fix serves both surfaces. See `accessibility_gaps_2.md` finding 7.
-
-**Impact**
-
-Every remediated document with a running header or footer — effectively all of them — carries
-incomplete artifact markup.
-
-**Relevant code**
-
-- `src/PdfLexer/Remediation/RemediationAction.cs` (`ArtifactSubtype`)
-- `src/PdfLexer/Writing/PageWriter.cs` (`BeginArtifact`)
+JSON keeps legacy `"subtype"` as `/Type`, adds canonical `"type"`, `"semanticSubtype"`,
+`"includeBoundingBox"`, and `"attached"`, and rejects conflicting type declarations without a schema
+version bump. `PageWriter.BeginArtifact(PdfName?)` remains source-compatible; the full overload and
+header/footer/watermark conveniences emit complete property dictionaries.
 
 **Completion criteria**
 
-- [ ] Artifact actions express `/Type`, `/Subtype`, `/BBox`, and `/Attached`.
-- [ ] Convenience forms exist for header, footer, and watermark artifacts.
-- [ ] The underlying writer emits the full artifact property list.
-- [ ] Tests assert the emitted artifact dictionary for a running header and footer.
+- [x] Artifact actions express `/Type`, `/Subtype`, `/BBox`, and `/Attached`.
+- [x] Convenience forms exist for header, footer, and watermark artifacts.
+- [x] The underlying writer emits the full artifact property list.
+- [x] C-10 asserts exact dictionaries on four pages for both PDF/UA profiles and passes veraPDF.
 
 ## RRM-023: Heading levels are literal with no ordering model
 

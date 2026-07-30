@@ -14,7 +14,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
     public PageWriter(PdfPage page, PageWriteMode mode = PageWriteMode.Append, PageUnit unit = PageUnit.Points) : base(page.Resources, unit)
     // append without encode / decode ->
     // need to first make sure can turn page into a form (no nested forms with resources on page)
-    // mode == PageWriteMode.Append && page.NativeObject?.Get(PdfName.Contents)?.Resolve()?.Type == PdfObjectType.StreamObj ? new PdfDictionary() : 
+    // mode == PageWriteMode.Append && page.NativeObject?.Get(PdfName.Contents)?.Resolve()?.Type == PdfObjectType.StreamObj ? new PdfDictionary() :
     {
         Page = page;
         Mode = mode;
@@ -68,6 +68,33 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
         return this;
     }
 
+    /// <summary>Begins an Artifact sequence with a complete property list.</summary>
+    public PageWriter<T> BeginArtifact(
+        PdfName type,
+        PdfName? subtype,
+        PdfRect<T>? bbox = null,
+        params PdfName[] attached)
+    {
+        var props = new PdfDictionary { [PdfName.TYPE] = type };
+        if (subtype != null) props[PdfName.Subtype] = subtype;
+        if (bbox != null) props[PdfName.BBox] = PdfRectangle.FromContentModel(bbox).NativeObject;
+        if (attached.Length > 0)
+        {
+            props[(PdfName)"Attached"] = new PdfArray(attached.Cast<IPdfObject>().ToList());
+        }
+        MarkedContent(new MarkedContent(PdfName.Artifact) { InlineProps = props }, accessibilityScope: false);
+        return this;
+    }
+
+    public PageWriter<T> BeginHeaderArtifact(PdfRect<T>? bbox = null) =>
+        BeginArtifact(PdfName.Pagination, PdfName.Header, bbox, (PdfName)"Top");
+
+    public PageWriter<T> BeginFooterArtifact(PdfRect<T>? bbox = null) =>
+        BeginArtifact(PdfName.Pagination, PdfName.Footer, bbox, (PdfName)"Bottom");
+
+    public PageWriter<T> BeginWatermarkArtifact(PdfRect<T>? bbox = null) =>
+        BeginArtifact(PdfName.Pagination, PdfName.Watermark, bbox);
+
     public void Dispose()
     {
         if (Page == null) { return; }
@@ -115,7 +142,7 @@ public sealed class PageWriter<T> : ContentWriter<T>, IDisposable where T : stru
                         arr.Add(PdfIndirectRef.Create(new PdfStream(data)));
                         Page.NativeObject![PdfName.Contents] = arr;
                     }
-                   
+
                     break;
                 }
         }

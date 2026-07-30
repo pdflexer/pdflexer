@@ -44,6 +44,9 @@ public abstract record RemediationCandidate
 
     internal virtual int SequenceIndex => ContentOrderIndex;
 
+    /// <summary>Whether geometry predicates can safely use this candidate's bounds.</summary>
+    public virtual bool HasUsableGeometry => true;
+
     /// <summary>Creates a candidate from a structured character.</summary>
     public static RemediationCandidate From(StructuredCharacter character) =>
         new TextRemediationCandidate(
@@ -287,6 +290,69 @@ public sealed record ContentRemediationCandidate : RemediationCandidate
     internal IContentItem<double> Item { get; }
 }
 
+
+/// <summary>Normalized destination category for an existing annotation.</summary>
+public enum AnnotationDestinationKind
+{
+    None,
+    Internal,
+    Uri,
+    Remote,
+    Other
+}
+
+/// <summary>An annotation already present in a page /Annots array.</summary>
+public sealed record AnnotationRemediationCandidate : RemediationCandidate
+{
+    internal AnnotationRemediationCandidate(
+        PdfDictionary annotation,
+        int annotationIndex,
+        string subtype,
+        PdfRect<double>? bounds,
+        PdfRect<double>? relativeBounds,
+        int flags,
+        bool hidden,
+        bool offPage,
+        bool hasStructParent,
+        string? contents,
+        AnnotationDestinationKind destinationKind,
+        string? destinationValue,
+        int sequenceIndex)
+        : base(bounds ?? new PdfRect<double>(0, 0, 0, 0),
+            relativeBounds ?? new PdfRect<double>(0, 0, 0, 0),
+            Array.Empty<StructuredSourceRef>(), sequenceIndex)
+    {
+        Annotation = annotation;
+        AnnotationIndex = annotationIndex;
+        Subtype = subtype;
+        Bounds = bounds;
+        RelativeBounds = relativeBounds;
+        Flags = flags;
+        Hidden = hidden;
+        OffPage = offPage;
+        HasStructParent = hasStructParent;
+        Contents = contents;
+        DestinationKind = destinationKind;
+        DestinationValue = destinationValue;
+    }
+
+    public override RemediationCandidateKind Kind => RemediationCandidateKind.Annotation;
+    public override string CandidateId => $"Annotation:{PageIndex}:{AnnotationIndex}:{Subtype}";
+    public override bool HasUsableGeometry => Bounds != null && RelativeBounds != null;
+    public int AnnotationIndex { get; }
+    public string Subtype { get; }
+    public PdfRect<double>? Bounds { get; }
+    public PdfRect<double>? RelativeBounds { get; }
+    public int Flags { get; }
+    public bool Hidden { get; }
+    public bool OffPage { get; }
+    public bool HasStructParent { get; }
+    public string? Contents { get; }
+    public AnnotationDestinationKind DestinationKind { get; }
+    public string? DestinationValue { get; }
+    internal PdfDictionary Annotation { get; }
+}
+
 /// <summary>High-level family of content represented by a remediation candidate.</summary>
 public enum RemediationCandidateKind
 {
@@ -294,7 +360,8 @@ public enum RemediationCandidateKind
     Image,
     Path,
     Form,
-    Shading
+    Shading,
+    Annotation
 }
 
 /// <summary>

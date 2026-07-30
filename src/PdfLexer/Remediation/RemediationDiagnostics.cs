@@ -37,7 +37,17 @@ public enum DiagnosticCode
     /// <summary>A declared artifact inventory item produced nothing where it is required.</summary>
     ArtifactMissingDeclared = 19,
     /// <summary>A declared artifact inventory item occurred outside its expected per-page count.</summary>
-    ArtifactOccurrenceViolation = 20
+    ArtifactOccurrenceViolation = 20,
+    /// <summary>Two structural consumers selected the same claim or an ancestor and its descendant.</summary>
+    GroupCompositionAmbiguous = 21,
+    /// <summary>The structural claim graph contains a cycle.</summary>
+    GroupCompositionCycle = 22,
+    /// <summary>An annotation adoption target could not be resolved.</summary>
+    AnnotationAdoptionTargetMissing = 23,
+    /// <summary>An annotation adoption target was ambiguous.</summary>
+    AnnotationAdoptionAmbiguous = 24,
+    /// <summary>An annotation was selected by more than one consumer.</summary>
+    AnnotationAlreadyConsumed = 25
 }
 
 /// <summary>

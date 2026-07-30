@@ -194,22 +194,25 @@ public class RemediationFlowRegionTests
     public void Continued_Table_Uses_One_Table_And_Preserves_Each_Page_Header()
     {
         using var doc = PdfDocument.Create();
+        var testDir = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var font = TrueTypeFont.CreateWritableFont(
+            System.IO.File.ReadAllBytes(System.IO.Path.Combine(testDir, "Roboto-Regular.ttf")));
         for (var pageIndex = 0; pageIndex < 2; pageIndex++)
         {
             var page = doc.AddPage(PageSize.LETTER);
             using var writer = page.GetWriter();
             if (pageIndex == 0)
             {
-                writer.Save().Font(Base14.Helvetica, 12).TextMove(72, 770).Text("Intro A").Restore();
-                writer.Save().Font(Base14.Helvetica, 12).TextMove(72, 745).Text("Intro B").Restore();
+                writer.Save().Font(font, 12).TextMove(72, 770).Text("Intro A").Restore();
+                writer.Save().Font(font, 12).TextMove(72, 745).Text("Intro B").Restore();
             }
-            writer.Save().Font(Base14.Helvetica, 12).TextMove(72, 720).Text("Item").Restore();
-            writer.Save().Font(Base14.Helvetica, 12).TextMove(300, 720).Text("Amount").Restore();
-            writer.Save().Font(Base14.Helvetica, 12).TextMove(72, 690).Text($"Widget{pageIndex + 1}").Restore();
-            writer.Save().Font(Base14.Helvetica, 12).TextMove(300, 690).Text($"{(pageIndex + 1) * 10}.00").Restore();
+            writer.Save().Font(font, 12).TextMove(72, 720).Text("Item").Restore();
+            writer.Save().Font(font, 12).TextMove(300, 720).Text("Amount").Restore();
+            writer.Save().Font(font, 12).TextMove(72, 690).Text($"Widget{pageIndex + 1}").Restore();
+            writer.Save().Font(font, 12).TextMove(300, 690).Text($"{(pageIndex + 1) * 10}.00").Restore();
             if (pageIndex == 1)
             {
-                writer.Save().Font(Base14.Helvetica, 12).TextMove(72, 650).Text("Total").Restore();
+                writer.Save().Font(font, 12).TextMove(72, 650).Text("Total").Restore();
             }
         }
 
@@ -252,7 +255,7 @@ public class RemediationFlowRegionTests
         var report = doc.BeginRemediation(new RemediationSessionConfiguration
             {
                 LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact,
-                StrictConformance = false,
+                StrictConformance = true,
                 DiagnosticStrictness = RemediationDiagnosticStrictness.Permissive
             })
             .Use(new RuleSet("table", rules, anchors, flowRegions: new[] { flow }))
@@ -695,5 +698,75 @@ public class RemediationFlowRegionTests
 
         Assert.Equal("Widget 2 10.00", Assert.IsType<TextRemediationCandidate>(Assert.Single(report.Claims.Where(x => x.RuleId == "tag-first-line-item")).Candidates[0]).Text);
         Assert.Equal("Gadget 1 5.00", Assert.IsType<TextRemediationCandidate>(Assert.Single(report.Claims.Where(x => x.RuleId == "tag-second-line-item")).Candidates[0]).Text);
+    }
+
+    [Fact]
+    public void GeometricWithin_RejectsCrossPageParentAndNamesFlowRegionWorkaround()
+    {
+        using var doc = PdfDocument.Create();
+        var first = doc.AddPage(PageSize.LETTER);
+        var second = doc.AddPage(PageSize.LETTER);
+        using (var writer = first.GetWriter())
+        {
+            writer.Save().Font(Base14.Helvetica, 12).TextMove(72, 720).Text("Start").Restore();
+            writer.Save().Font(Base14.Helvetica, 12).TextMove(72, 690).Text("Body one").Restore();
+        }
+        using (var writer = second.GetWriter())
+        {
+            writer.Save().Font(Base14.Helvetica, 12).TextMove(72, 690).Text("Body two").Restore();
+            writer.Save().Font(Base14.Helvetica, 12).TextMove(72, 650).Text("End").Restore();
+        }
+
+        var anchors = new[]
+        {
+            RemediationAnchor.TextLabel("start", "Start") with { Pages = PageSelector.First },
+            RemediationAnchor.TextLabel("end", "End") with { Pages = PageSelector.Last }
+        };
+        var rules = new[]
+        {
+            new Rule(
+                "body",
+                RemediationActions.Tag("P"),
+                Predicates.Flow.InFlowRegion("section"),
+                CandidateSelector.Text(Granularity.Line)),
+            new Rule(
+                "cross-page-parent",
+                RemediationActions.Group("Div", ClaimPredicates.FromRule("body").And(ClaimPredicates.Consecutive())),
+                stage: Stage.Group),
+            new Rule(
+                "geometric-consumer",
+                RemediationActions.Group(
+                    "Sect",
+                    ClaimPredicates.FromRule("cross-page-parent").And(ClaimPredicates.Within("page-zone"))),
+                stage: Stage.Group,
+                groupPass: 10)
+        };
+        var ruleSet = new RuleSet(
+            "cross-page-geometry",
+            rules,
+            anchors,
+            new[] { new TolerancedZone("page-zone", LayoutCoord.Absolute(new PdfRect<double>(0, 0, 612, 792))) },
+            new[]
+            {
+                new FlowRegion(
+                    "section",
+                    FlowBoundary.Anchor("start"),
+                    FlowBoundary.Anchor("end"),
+                    ContinuationPolicy: FlowContinuationPolicy.ContinueUntilEnd)
+            });
+
+        var report = doc.BeginRemediation(new RemediationSessionConfiguration
+            {
+                LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact,
+                StrictConformance = false
+            })
+            .Use(ruleSet)
+            .DryRun();
+
+        Assert.Contains(report.Diagnostics, x =>
+            x.Contains("geometric-consumer", StringComparison.Ordinal) &&
+            x.Contains("cross-page claim", StringComparison.Ordinal) &&
+            x.Contains("Use Within(flowRegionId)", StringComparison.Ordinal));
+        Assert.DoesNotContain(report.Claims, x => x.RuleId == "geometric-consumer");
     }
 }

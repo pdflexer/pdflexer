@@ -1,6 +1,6 @@
 # Rule-Based Remediation — Delivery Plan
 
-Last updated: 2026-07-24
+Last updated: 2026-07-30
 
 This is the execution plan for closing the gaps recorded in
 [Rule-Based Remediation Gap Tracker](rule-based-remediation-gaps.md) (RRM-001 … RRM-035).
@@ -337,10 +337,11 @@ current flat-snapshot assumption.
 | --- | --- |
 | RRM-004 | Stage/dependency decision, then nested grouping |
 
-`EvaluateDocument` runs every Group rule against a single `classifyClaims` snapshot taken once, so
-a Group rule can never consume another Group rule's output. The narrow symptom is nested lists and
-multi-level sections; the underlying gap is that the pipeline is three hard-coded phases rather than
-a dependency order, and transactional structure is recursive — cell to row to table to section.
+Completed on 2026-07-30 with explicit sparse numbered Group passes. Pass `0` preserves the former
+behavior; each higher pass evaluates consuming predicates against the immutable structural frontier
+produced by lower passes, while positional references can still address all applied lower-pass
+claims. Same-pass peers are invisible, and invalid pass references, ambiguous consumption, and
+cycles are rejected before materialization.
 
 **Raised to P0 and moved here from M8 on 2026-07-29.** This is the same argument that pulled RRM-001
 into M3a: every action added to the Group stage encodes the flat-snapshot assumption, so deciding
@@ -352,9 +353,10 @@ assembled at all — rules bind claims into declared slots and nesting is someth
 states. That option is only evaluable once the descriptive template has met a real corpus, which is
 why this milestone follows M3b rather than preceding it.
 
-The decision itself is the deliverable. Keep three stages and give Group rules ordered visibility of
-earlier Group output; replace stages with rules declaring what they consume and topologically
-sorting; or let the template carry declared hierarchy and reduce Group to the undeclared cases.
+The selected design keeps the three public stages and gives Group rules ordered visibility through
+`groupPass`. This is backward-compatible without a schema-version bump and leaves the prescriptive
+M6 template as a complementary authoring contract: templates may eventually declare regular
+hierarchy, while passes remain available for document-derived or undeclared composition.
 
 The fixture exercise supplies one constraint on that decision: reusable matching logic does not
 imply a reusable closed template. Templates are family-level hierarchy contracts, while rule
@@ -365,12 +367,18 @@ hierarchy algorithms.
 
 **Exit gate**
 
-- [ ] The stage-versus-dependency decision is recorded with its consequences for the action
+- [x] The stage-versus-dependency decision is recorded with its consequences for the action
       vocabulary, including what M6's prescriptive template would change.
-- [ ] A later Group rule can consume an earlier Group rule's output, deterministically.
-- [ ] Ambiguous or cyclic reparenting is detected and rejected.
-- [ ] A nested list and a two-level section are covered by fixtures.
-- [ ] MCIDs remain unique and unchanged through every parent layer.
+- [x] A later Group rule can consume an earlier Group rule's output, deterministically.
+- [x] Ambiguous or cyclic reparenting is detected and rejected.
+- [x] A nested list and a two-level section are covered by fixtures.
+- [x] MCIDs remain unique and unchanged through every parent layer.
+
+Verification on 2026-07-30: all 210 remediation tests passed, including fixture regeneration,
+rendering/glyph invariance, and veraPDF. The repository-wide suite finished with 798 passed, 13
+skipped, and the single pre-existing unrelated
+`DictionaryAccessTests.Legacy_aliases_are_hidden_from_intellisense_without_obsolete_warnings`
+failure; M3c introduced no new failures, so this is not recorded as a repository-wide green run.
 
 **Estimate:** 2–4 days.
 
@@ -391,17 +399,25 @@ These three-and-a-half items are what "all content is accounted for" actually re
 paths, images, and pre-existing annotations are the most common reason a document that looks
 remediated fails validation or reads wrong.
 
-**Progress (2026-07-29):** RRM-002 is complete. Typed selectors are required by the API and JSON,
-graphical candidates have stable resource identities/names and normalized bounds, atomic ownership
-and auto-artifact reporting cover painting items, and invocation-level Figure binding with `/Alt`
-is verified. RRM-019 now inventories existing annotations and blocks strict conformance when they
-cannot be adopted; adoption itself remains scheduled here.
+**Complete (2026-07-30):** RRM-002, RRM-019, and RRM-022 are complete. Typed painting-content
+selectors account for graphical invocations; existing annotations can be selected, adopted into
+compatible claims or standalone structure, destination-bound, inventoried, and commit-blocked when
+unmodeled; and running furniture emits complete `/Type`, `/Subtype`, `/BBox`, and `/Attached`
+property lists. Basic Figure `/Alt` remains delivered under RRM-007, while full caption association
+stays open for M8.
 
 **Exit gate**
 
-- [ ] A page containing paths, images, and annotations remediates with no unaccounted content.
-- [ ] Artifact subtypes round-trip and validate.
-- [ ] Existing annotations receive `/StructParent` and appear in the structure tree.
+- [x] A page containing paths, images, and annotations remediates with no unaccounted content.
+- [x] Artifact subtypes round-trip and validate.
+- [x] Existing annotations receive `/StructParent` and appear in the structure tree.
+
+**Verification (2026-07-30):** library, CLI, and test builds pass; the remediation suite passes all
+222 tests before the final two C-08/C-10 contract assertions, which also pass independently; all
+committed fixtures pass their profile-specific veraPDF checks. The final repository-wide run reports
+812 passed, 13 skipped, and exactly one failed out of 826: the documented unrelated
+`DictionaryAccessTests.Legacy_aliases_are_hidden_from_intellisense_without_obsolete_warnings`
+baseline. M4 introduced zero new failures.
 
 **Estimate:** 4–6 days.
 
@@ -521,7 +537,7 @@ real families exist to know what it should assert. M5 produces that knowledge.
 
 Scope this milestone against actual demand — all four items are conditional on the corpus.
 
-RRM-004 was previously scheduled here. It moved to M3b on 2026-07-29 when it was raised to P0; see
+RRM-004 was previously scheduled here. It moved to M3c on 2026-07-29 when it was raised to P0; see
 that milestone for the reasoning.
 
 **Estimate:** 4–12 days depending on which items are required.
@@ -559,7 +575,7 @@ Revisit only when product scope expands. Both are re-decisions, not backlog item
 | RRM-001 | P0 | M0 (decided: required) → M3a (implementation) |
 | RRM-002 | P0 | M4 |
 | RRM-003 | P0 | M2 |
-| RRM-004 | P0 | M3b (raised from P1/M8 on 2026-07-29) |
+| RRM-004 | P0 | M3c (raised from P1/M8 on 2026-07-29) |
 | RRM-005 | P0 | M3a (continuation) → M6 (irregular grids) |
 | RRM-006 | P0 | M2 |
 | RRM-007 | P1 | M4 (basic) → M8 (full) |

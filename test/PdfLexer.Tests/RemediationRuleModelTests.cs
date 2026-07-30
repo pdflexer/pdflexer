@@ -126,6 +126,50 @@ public class RemediationRuleModelTests
     }
 
     [Fact]
+    public void SerializedRuleSet_GroupPassDefaultsToZeroAndParsesSparseValues()
+    {
+        const string json = """
+        {
+          "schema": "pdflexer.remediation.ruleset.v1",
+          "ruleSet": { "id": "passes" },
+          "rules": [
+            {
+              "id": "leaf",
+              "candidates": { "kind": "text", "granularity": "line" },
+              "action": { "kind": "tag", "tag": "P" }
+            },
+            {
+              "id": "default-pass",
+              "stage": "group",
+              "action": {
+                "kind": "group",
+                "tag": "Div",
+                "over": { "kind": "fromRule", "ruleId": "leaf" }
+              }
+            },
+            {
+              "id": "sparse-pass",
+              "stage": "group",
+              "groupPass": 10,
+              "action": {
+                "kind": "group",
+                "tag": "Sect",
+                "over": { "kind": "fromRule", "ruleId": "default-pass" }
+              }
+            }
+          ]
+        }
+        """;
+
+        using var stream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+        var job = SerializedRemediationRules.Load(stream);
+
+        Assert.Equal(0, job.RuleSet.Rules[1].GroupPass);
+        Assert.Equal(10, job.RuleSet.Rules[2].GroupPass);
+        Assert.True(SerializedRemediationRules.ValidateDeclarations(job.RuleSet).IsValid);
+    }
+
+    [Fact]
     public void Rule_StoresDeclarativeShapeAndValidatesConfidence()
     {
         var rule = new Rule(
@@ -468,6 +512,25 @@ public class RemediationRuleModelTests
             stage: Stage.Refine);
 
         Assert.Empty(validGroup.ValidateShape());
+
+        var laterGroup = new Rule(
+            "later-group",
+            RemediationActions.Group("Sect", ClaimPredicate.Always),
+            stage: Stage.Group,
+            groupPass: 10);
+        var invalidPassStage = new Rule(
+            "invalid-pass-stage",
+            RemediationActions.Tag("P"),
+            candidates: CandidateSelector.Text(Granularity.Paragraph),
+            groupPass: 1);
+        Assert.Equal(10, laterGroup.GroupPass);
+        Assert.Empty(laterGroup.ValidateShape());
+        Assert.Contains(invalidPassStage.ValidateShape(), x => x.Contains("Only Group rules"));
+        Assert.Throws<ArgumentOutOfRangeException>(() => new Rule(
+            "negative-pass",
+            RemediationActions.Group("Sect", ClaimPredicate.Always),
+            stage: Stage.Group,
+            groupPass: -1));
         Assert.Empty(validReorder.ValidateShape());
         Assert.Empty(validLink.ValidateShape());
     }
@@ -514,6 +577,55 @@ public class RemediationRuleModelTests
                 stage: Stage.Refine));
         Assert.False(laterAnchor.IsValid);
         Assert.Contains(laterAnchor.Errors, x => x.Contains("later-stage"));
+
+        var samePassReference = session.Validate(
+            new Rule(
+                "consumer",
+                RemediationActions.Group("Sect", ClaimPredicates.FromRule("producer")),
+                stage: Stage.Group,
+                groupPass: 1),
+            new Rule(
+                "producer",
+                RemediationActions.Group("Div", ClaimPredicate.Always),
+                stage: Stage.Group,
+                groupPass: 1));
+        Assert.False(samePassReference.IsValid);
+        Assert.Contains(samePassReference.Errors, x => x.Contains("same-or-higher-pass"));
+
+        var selfReference = session.Validate(new Rule(
+            "self",
+            RemediationActions.Group("Sect", ClaimPredicates.FromRule("self")),
+            stage: Stage.Group,
+            groupPass: 1));
+        Assert.False(selfReference.IsValid);
+        Assert.Contains(selfReference.Errors, x => x.Contains("same-or-higher-pass"));
+
+        var higherPassReference = session.Validate(
+            new Rule(
+                "lower-consumer",
+                RemediationActions.Group("Sect", ClaimPredicates.AfterClaim("higher-producer")),
+                stage: Stage.Group,
+                groupPass: 1),
+            new Rule(
+                "higher-producer",
+                RemediationActions.Group("Div", ClaimPredicate.Always),
+                stage: Stage.Group,
+                groupPass: 2));
+        Assert.False(higherPassReference.IsValid);
+        Assert.Contains(higherPassReference.Errors, x => x.Contains("same-or-higher-pass"));
+
+        var lowerPassReference = session.Validate(
+            new Rule(
+                "lower-producer",
+                RemediationActions.Group("Div", ClaimPredicate.Always),
+                stage: Stage.Group,
+                groupPass: 1),
+            new Rule(
+                "higher-consumer",
+                RemediationActions.Group("Sect", ClaimPredicates.FromRule("lower-producer")),
+                stage: Stage.Group,
+                groupPass: 2));
+        Assert.True(lowerPassReference.IsValid);
     }
 
     [Fact]

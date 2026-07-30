@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using PdfLexer.DOM;
 using PdfLexer.Fonts;
 using Xunit;
@@ -14,6 +15,30 @@ public class RemediationVeraPdfTests
         var fixture = RemediationFixtureGenerator.GenerateStrictInvoiceUa1();
 
         var result = VeraPdfValidation.Validate(fixture.Bytes, PdfUaProfile.PdfUa1);
+
+        Assert.False(result.ProcessingFailed, result.StandardError);
+        Assert.True(result.IsCompliant, result.Report);
+    }
+
+    public static TheoryData<string> CommittedFixtureNames()
+    {
+        var data = new TheoryData<string>();
+        foreach (var fixture in RemediationFixtureGenerator.GenerateAll()
+                     .Where(x => x.Outcome != FixtureOutcome.DiagnosesOnly))
+        {
+            data.Add(fixture.FileName);
+        }
+
+        return data;
+    }
+
+    [VeraPdfTheory]
+    [MemberData(nameof(CommittedFixtureNames))]
+    public void EveryCommittedFixtureValidatesForItsProfile(string fileName)
+    {
+        var fixture = Assert.Single(RemediationFixtureGenerator.GenerateAll(), x => x.FileName == fileName);
+
+        var result = VeraPdfValidation.Validate(fixture.Bytes, fixture.Profile);
 
         Assert.False(result.ProcessingFailed, result.StandardError);
         Assert.True(result.IsCompliant, result.Report);

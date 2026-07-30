@@ -251,6 +251,9 @@ public sealed record RemediationClaim(
     /// <summary>Zero-based primary page index. For a multi-page claim this is the first page.</summary>
     public int PageIndex { get; init; } = -1;
 
+    /// <summary>Group pass that produced this structural claim.</summary>
+    internal int GroupPass { get; init; }
+
     /// <summary>Sorted zero-based pages containing this claim or one of its consumed claims.</summary>
     public IReadOnlyList<int> PageIndexes
     {
@@ -283,6 +286,7 @@ public sealed record RemediationClaim(
         TableRemediationAction => "Table",
         GroupRemediationAction group => group.ParentTag.Value,
         MergeRemediationAction merge => merge.TargetTag.Value,
+        AdoptAnnotationRemediationAction => Tag,
         _ => Tag
     };
 
@@ -296,6 +300,9 @@ public sealed record RemediationClaim(
     /// Resolved table hierarchy shared by semantic planning and materialization.
     /// </summary>
     internal RemediationTablePlan? TablePlan { get; set; }
+
+    internal RemediationClaim? AnnotationIntoClaim { get; set; }
+    internal RemediationClaim? AnnotationDestinationClaim { get; set; }
 
     /// <summary>Inline text ranges selected by this claim.</summary>
     public IReadOnlyList<RemediationTextRange> TextRanges { get; init; } =

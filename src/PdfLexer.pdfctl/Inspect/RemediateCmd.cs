@@ -149,7 +149,8 @@ internal sealed class RemediateCmd
         {
             var count = rule.Total;
             Console.WriteLine(
-                $"rule: {rule.RuleId} considered={count.InputsConsidered} matched={count.InputsMatched} " +
+                $"rule: {rule.RuleId} stage={rule.Stage} group-pass={rule.GroupPass} " +
+                $"considered={count.InputsConsidered} matched={count.InputsMatched} " +
                 $"applied={count.AppliedClaims} low-confidence={count.RejectedByConfidence} " +
                 $"conflict={count.RejectedByConflict} overridden={count.OverriddenClaims}");
         }
@@ -190,10 +191,13 @@ internal sealed class RemediateCmd
             foreach (var annotation in report.AnnotationInventory)
             {
                 Console.WriteLine(
-                    $"annotation: page={annotation.PageIndex + 1} subtype={annotation.Subtype} " +
+                    $"annotation: disposition={annotation.Disposition} candidate={annotation.CandidateId ?? "<none>"} " +
+                    $"page={annotation.PageIndex + 1} subtype={annotation.Subtype} " +
                     $"bounds={annotation.Bounds?.ToString() ?? "<none>"} hidden={annotation.Hidden} " +
                     $"off-page={annotation.OffPage} struct-parent={annotation.HasStructParent} " +
-                    $"blocks-conformance={annotation.BlocksConformance} reason=\"{annotation.Reason}\"");
+                    $"rule={annotation.RuleId ?? "<none>"} tag={annotation.ProducedTag ?? "<none>"} " +
+                    $"destination={annotation.DestinationKind} blocks-conformance={annotation.BlocksConformance} " +
+                    $"reason=\"{annotation.Reason}\"");
             }
         }
 

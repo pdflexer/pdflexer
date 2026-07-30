@@ -11,7 +11,8 @@ internal sealed record RemediationArtifactRecord(
     PdfRect<double> RelativeBounds,
     string? RuleId = null,
     string? RuleSetId = null,
-    string? BoundItemId = null);
+    string? BoundItemId = null,
+    ArtifactSemanticSubtype? SemanticSubtype = null);
 
 internal static class RemediationArtifactInventoryMatcher
 {
@@ -57,6 +58,10 @@ internal static class RemediationArtifactInventoryMatcher
             if (item.ZoneId == null) return false;
         }
         else if (record.Subtype != item.Subtype)
+        {
+            return false;
+        }
+        if (record.SemanticSubtype != null && record.SemanticSubtype != item.SemanticSubtype)
         {
             return false;
         }

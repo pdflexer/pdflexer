@@ -19,3 +19,11 @@ public sealed class VeraPdfFactAttribute : FactAttribute
         Skip = VeraPdfValidation.GetSkipReason();
     }
 }
+
+public sealed class VeraPdfTheoryAttribute : TheoryAttribute
+{
+    public VeraPdfTheoryAttribute()
+    {
+        Skip = VeraPdfValidation.GetSkipReason();
+    }
+}

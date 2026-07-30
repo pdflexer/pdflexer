@@ -66,10 +66,14 @@ public static class SerializedRemediationRules
 
     private static RemediationArtifactInventoryItem ParseArtifactInventoryItem(JsonElement json) => new(
         json.RequiredString("id"),
-        json.OptionalEnum("subtype", ArtifactSubtype.Layout),
+        ParseArtifactType(json),
         json.OptionalObject("pages") is { } pages ? ParsePages(pages) : null,
         json.OptionalString("zone"),
-        ParseOccurrence(json));
+        ParseOccurrence(json),
+        json.TryGetProperty("semanticSubtype", out _) ? json.OptionalEnum<ArtifactSemanticSubtype>("semanticSubtype") : null,
+        json.OptionalBool("includeBoundingBox") ?? false,
+        json.OptionalArray("attached").Select(x => ParseEnum<ArtifactAttachmentEdge>(
+            x.GetString() ?? throw new InvalidDataException("Artifact attached edges must be strings."))).ToArray());
 
     // Omitting every count keeps the C# default of exactly one; an explicit minCount with no maxCount
     // is unbounded, as in assertion parsing.
@@ -212,7 +216,8 @@ public static class SerializedRemediationRules
             json.OptionalDouble("minConfidence"),
             json.OptionalObject("cardinality") is { } cardinality ? ParseCardinality(cardinality) : null,
             json.OptionalString("slot"),
-            json.OptionalString("artifact"));
+            json.OptionalString("artifact"),
+            json.OptionalInt("groupPass") ?? 0);
     }
 
     private static CandidateSelector ParseCandidateSelector(JsonElement json) =>
@@ -222,6 +227,7 @@ public static class SerializedRemediationRules
             "content" => CandidateSelector.Content(json.RequiredArray("types")
                 .Select(x => ParseEnum<RemediationCandidateKind>(x.GetString() ??
                     throw new InvalidDataException("Candidate content types must be strings."))).ToArray()),
+            "annotation" => CandidateSelector.Annotations(),
             var kind => throw new InvalidDataException($"Unsupported candidate selector kind '{kind}'.")
         };
 
@@ -233,13 +239,36 @@ public static class SerializedRemediationRules
         return new RuleCardinality(min, max, scope);
     }
 
+    private static ArtifactSubtype ParseArtifactType(JsonElement json)
+    {
+        var canonical = json.OptionalString("type");
+        var legacy = json.OptionalString("subtype");
+        if (canonical != null && legacy != null &&
+            !string.Equals(canonical.Token(), legacy.Token(), StringComparison.Ordinal))
+        {
+            throw new InvalidDataException(
+                $"Artifact type '{canonical}' conflicts with legacy subtype value '{legacy}'.");
+        }
+        var value = canonical ?? legacy;
+        return value == null ? ArtifactSubtype.Layout : ParseEnum<ArtifactSubtype>(value);
+    }
+
     private static RemediationAction ParseAction(JsonElement json)
     {
         var kind = json.RequiredString("kind").Token();
         return kind switch
         {
             "tag" => RemediationActions.Tag(json.RequiredString("tag")),
-            "artifact" => RemediationActions.Artifact(json.OptionalEnum("subtype", ArtifactSubtype.Layout)),
+            "artifact" => new ArtifactRemediationAction(
+                ParseArtifactType(json),
+                json.TryGetProperty("semanticSubtype", out _) ? json.OptionalEnum<ArtifactSemanticSubtype>("semanticSubtype") : null,
+                json.OptionalBool("includeBoundingBox") ?? false,
+                json.OptionalArray("attached").Select(x => ParseEnum<ArtifactAttachmentEdge>(
+                    x.GetString() ?? throw new InvalidDataException("Artifact attached edges must be strings."))).ToArray()),
+            "adoptannotation" => RemediationActions.AdoptAnnotation(
+                json.OptionalObject("into") is { } into ? ParseClaimPredicate(into) : null,
+                json.OptionalString("accessibleDescription"),
+                json.OptionalObject("destinationTarget") is { } destination ? ParseClaimPredicate(destination) : null),
             "table" => new TableRemediationAction(
                 json.OptionalDoubleArray("columns"),
                 json.OptionalInt("headerRows") ?? 0,
@@ -289,6 +318,12 @@ public static class SerializedRemediationRules
             "contentresourceusecount" => Predicates.Content.ResourceUseCount(
                 json.OptionalEnum("operator", NumericOperator.Equal),
                 json.RequiredInt("value")),
+            "annotationsubtype" => Predicates.Annotation.Subtype(json.RequiredString("value")),
+            "annotationdestinationkind" => Predicates.Annotation.DestinationKind(
+                json.OptionalEnum<AnnotationDestinationKind>("value")),
+            "annotationdestinationequals" => Predicates.Annotation.DestinationEquals(json.RequiredString("value")),
+            "annotationcontentscontains" => Predicates.Annotation.ContentsContains(json.RequiredString("value")),
+            "annotationhasstructparent" => Predicates.Annotation.HasStructParent(json.OptionalBool("value") ?? true),
             "geocontains" => Predicates.Geo.Contains(ParseLayout(json.RequiredObject("coord"))),
             "geoin" => Predicates.Geo.In(ParseLayout(json.RequiredObject("coord"))),
             "geointersects" => Predicates.Geo.Intersects(ParseLayout(json.RequiredObject("coord"))),

@@ -36,21 +36,78 @@ public sealed record TagRemediationAction(PdfName Name, PdfDictionary? Attribute
         {
             errors.Add("Tag actions that create new leaf claims are not valid in the Refine stage.");
         }
+        if (rule.Candidates is CandidateSelector.AnnotationSelector)
+        {
+            errors.Add("Annotation candidates require AdoptAnnotation rather than Tag.");
+        }
     }
 }
 
 /// <summary>Marks matched content as an artifact.</summary>
-public sealed record ArtifactRemediationAction(ArtifactSubtype Subtype) : RemediationAction
+public sealed record ArtifactRemediationAction(
+    ArtifactSubtype Subtype,
+    ArtifactSemanticSubtype? SemanticSubtype = null,
+    bool IncludeBoundingBox = false,
+    IReadOnlyList<ArtifactAttachmentEdge>? Attached = null) : RemediationAction
 {
     public override RemediationActionKind Kind => RemediationActionKind.Artifact;
 
-    public override string DebugString => $"Artifact({Subtype})";
+    public override string DebugString =>
+        $"Artifact(type: {Subtype}, subtype: {SemanticSubtype?.ToString() ?? "none"})";
 
     internal override void Validate(Rule rule, List<string> errors)
     {
         if (!Enum.IsDefined(typeof(ArtifactSubtype), Subtype))
         {
-            errors.Add($"Artifact subtype '{Subtype}' is not supported.");
+            errors.Add($"Artifact subtype/type '{Subtype}' is not supported.");
+        }
+        if (SemanticSubtype is { } semantic && !Enum.IsDefined(typeof(ArtifactSemanticSubtype), semantic))
+        {
+            errors.Add($"Artifact semantic subtype '{semantic}' is not supported.");
+        }
+        if (SemanticSubtype != null && Subtype != ArtifactSubtype.Pagination)
+        {
+            errors.Add("Header, Footer, and Watermark artifact subtypes require artifact type Pagination.");
+        }
+        if (Attached != null && Attached.Any(x => !Enum.IsDefined(typeof(ArtifactAttachmentEdge), x)))
+        {
+            errors.Add("Artifact /Attached contains an unsupported edge.");
+        }
+        if (Attached != null && Attached.Distinct().Count() != Attached.Count)
+        {
+            errors.Add("Artifact /Attached edges must be unique.");
+        }
+        if (rule.Candidates is CandidateSelector.AnnotationSelector)
+        {
+            errors.Add("Annotation candidates cannot be marked as content-stream artifacts; adopt them into structure instead.");
+        }
+    }
+}
+
+/// <summary>Adopts an annotation already present in the input without creating a replacement.</summary>
+public sealed record AdoptAnnotationRemediationAction(
+    ClaimPredicate? Into = null,
+    string? AccessibleDescription = null,
+    ClaimPredicate? DestinationTarget = null) : RemediationAction
+{
+    public override RemediationActionKind Kind => RemediationActionKind.AdoptAnnotation;
+    public override string DebugString => Into == null
+        ? "AdoptAnnotation(standalone)"
+        : $"AdoptAnnotation(into: {Into.DebugString})";
+
+    internal override void Validate(Rule rule, List<string> errors)
+    {
+        if (rule.Stage != Stage.Classify)
+        {
+            errors.Add("AdoptAnnotation actions are only valid in the Classify stage.");
+        }
+        if (rule.Candidates is not CandidateSelector.AnnotationSelector)
+        {
+            errors.Add("AdoptAnnotation actions require CandidateSelector.Annotations().");
+        }
+        if (AccessibleDescription != null && string.IsNullOrWhiteSpace(AccessibleDescription))
+        {
+            errors.Add("AdoptAnnotation accessible descriptions must be non-empty when supplied.");
         }
     }
 }
@@ -270,6 +327,23 @@ public enum ArtifactSubtype
     Background
 }
 
+/// <summary>PDF artifact /Subtype values used with /Type /Pagination.</summary>
+public enum ArtifactSemanticSubtype
+{
+    Header,
+    Footer,
+    Watermark
+}
+
+/// <summary>Page edge names emitted in an artifact /Attached array.</summary>
+public enum ArtifactAttachmentEdge
+{
+    Top,
+    Bottom,
+    Left,
+    Right
+}
+
 /// <summary>
 /// Remediation action category.
 /// </summary>
@@ -291,6 +365,8 @@ public enum RemediationActionKind
     ReorderSiblings,
     /// <summary>Structure link action.</summary>
     Link,
+    /// <summary>Adopts an annotation already present in the input.</summary>
+    AdoptAnnotation,
     /// <summary>Custom action.</summary>
     Custom
 }
@@ -330,6 +406,31 @@ public static class RemediationActions
 
     /// <summary>Creates an artifact marking action.</summary>
     public static RemediationAction Artifact(ArtifactSubtype subtype) => new ArtifactRemediationAction(subtype);
+
+    public static RemediationAction Artifact(
+        ArtifactSubtype type,
+        ArtifactSemanticSubtype semanticSubtype,
+        bool includeBoundingBox = true,
+        params ArtifactAttachmentEdge[] attached) =>
+        new ArtifactRemediationAction(type, semanticSubtype, includeBoundingBox, attached);
+
+    public static RemediationAction HeaderArtifact(bool includeBoundingBox = true) =>
+        new ArtifactRemediationAction(ArtifactSubtype.Pagination, ArtifactSemanticSubtype.Header,
+            includeBoundingBox, new[] { ArtifactAttachmentEdge.Top });
+
+    public static RemediationAction FooterArtifact(bool includeBoundingBox = true) =>
+        new ArtifactRemediationAction(ArtifactSubtype.Pagination, ArtifactSemanticSubtype.Footer,
+            includeBoundingBox, new[] { ArtifactAttachmentEdge.Bottom });
+
+    public static RemediationAction WatermarkArtifact(bool includeBoundingBox = true) =>
+        new ArtifactRemediationAction(ArtifactSubtype.Pagination, ArtifactSemanticSubtype.Watermark,
+            includeBoundingBox, Array.Empty<ArtifactAttachmentEdge>());
+
+    public static RemediationAction AdoptAnnotation(
+        ClaimPredicate? into = null,
+        string? accessibleDescription = null,
+        ClaimPredicate? destinationTarget = null) =>
+        new AdoptAnnotationRemediationAction(into, accessibleDescription, destinationTarget);
 
     /// <summary>Creates a table action with explicit column boundaries.</summary>
     public static RemediationAction Table(params double[] columns) => new TableRemediationAction(columns);

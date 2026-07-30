@@ -119,10 +119,16 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
 
     private static bool IsStructural(
         RemediationClaim claim,
-        IReadOnlyDictionary<(string? RuleSetId, string RuleId), RemediationAction>? actions) =>
-        actions == null ||
-        actions.TryGetValue((claim.RuleSetId, claim.RuleId), out var action) &&
-        RemediationStructuralTemplateValidator.ProducedTag(action) != null;
+        IReadOnlyDictionary<(string? RuleSetId, string RuleId), RemediationAction>? actions)
+    {
+        if (claim.Action is AdoptAnnotationRemediationAction adopt)
+        {
+            return adopt.Into == null;
+        }
+        return actions == null ||
+            actions.TryGetValue((claim.RuleSetId, claim.RuleId), out var action) &&
+            RemediationStructuralTemplateValidator.ProducedTag(action) != null;
+    }
 
     private static string? GetSlot(
         RemediationClaim claim,

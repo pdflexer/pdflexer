@@ -25,7 +25,8 @@ public sealed record RuleEvaluationSummary(
     string? RuleSetId,
     Stage Stage,
     RuleEvaluationCounts Total,
-    IReadOnlyList<PageRuleEvaluationSummary> Pages);
+    IReadOnlyList<PageRuleEvaluationSummary> Pages,
+    int GroupPass = 0);
 
 /// <summary>Whether an automatically artifacted leftover is prospective or committed.</summary>
 public enum RemediationAutoArtifactDisposition
@@ -85,6 +86,15 @@ public sealed record RemediationUnaccountedContent(
     string? ResourceName = null,
     int ResourceUseCount = 0);
 
+/// <summary>How an existing input annotation is handled by remediation.</summary>
+public enum RemediationAnnotationDisposition
+{
+    Unmodeled,
+    Exempt,
+    Planned,
+    Applied
+}
+
 /// <summary>Read-only inventory entry for an annotation present before remediation.</summary>
 public sealed record RemediationAnnotationInventoryItem(
     int PageIndex,
@@ -94,7 +104,14 @@ public sealed record RemediationAnnotationInventoryItem(
     bool OffPage,
     bool HasStructParent,
     bool BlocksConformance,
-    string Reason);
+    string Reason)
+{
+    public string? CandidateId { get; init; }
+    public RemediationAnnotationDisposition Disposition { get; init; }
+    public string? RuleId { get; init; }
+    public string? ProducedTag { get; init; }
+    public AnnotationDestinationKind DestinationKind { get; init; }
+}
 
 internal sealed class RuleEvaluationAccumulator
 {
@@ -160,7 +177,8 @@ internal sealed class RuleEvaluationAccumulator
                 rule.RuleSetId,
                 rule.Stage,
                 Sum(pages.Select(x => x.Counts)),
-                pages));
+                pages,
+                rule.GroupPass));
         }
 
         return summaries;

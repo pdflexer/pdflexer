@@ -42,8 +42,14 @@ internal sealed class PageRemediationState
     public Dictionary<IContentItem<double>, RemediationClaim> ContentOwnership { get; } =
         new(ReferenceEqualityComparer.Instance);
 
+    public Dictionary<PdfDictionary, RemediationClaim> AnnotationOwnership { get; } =
+        new(ReferenceEqualityComparer.Instance);
+
     public IReadOnlyList<ContentRemediationCandidate> ContentCandidates { get; internal set; } =
         Array.Empty<ContentRemediationCandidate>();
+
+    public IReadOnlyList<AnnotationRemediationCandidate> AnnotationCandidates { get; internal set; } =
+        Array.Empty<AnnotationRemediationCandidate>();
 
     public IReadOnlyDictionary<Granularity, IReadOnlyList<TextRemediationCandidate>> TextCandidates { get; internal set; } =
         new Dictionary<Granularity, IReadOnlyList<TextRemediationCandidate>>();

@@ -436,6 +436,44 @@ public sealed record FontRemediationPredicate : RemediationPredicate
     }
 }
 
+public enum AnnotationPredicateKind
+{
+    Subtype,
+    DestinationKind,
+    DestinationValue,
+    ContentsContains,
+    HasStructParent
+}
+
+/// <summary>Predicate over metadata of an annotation already present in the input.</summary>
+public sealed record AnnotationRemediationPredicate(
+    AnnotationPredicateKind Kind,
+    string? ExpectedText = null,
+    AnnotationDestinationKind? ExpectedDestinationKind = null,
+    bool? ExpectedBoolean = null) : RemediationPredicate
+{
+    public override string DebugString => $"Annotation.{Kind}({ExpectedText ?? ExpectedDestinationKind?.ToString() ?? ExpectedBoolean?.ToString() ?? string.Empty})";
+
+    protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
+    {
+        if (candidate is not AnnotationRemediationCandidate annotation)
+        {
+            return PredicateResult.NoMatch($"Annotation predicate requires an annotation candidate; actual kind was {candidate.Kind}.");
+        }
+
+        var matched = Kind switch
+        {
+            AnnotationPredicateKind.Subtype => string.Equals(annotation.Subtype, ExpectedText, StringComparison.OrdinalIgnoreCase),
+            AnnotationPredicateKind.DestinationKind => annotation.DestinationKind == ExpectedDestinationKind,
+            AnnotationPredicateKind.DestinationValue => string.Equals(annotation.DestinationValue, ExpectedText, StringComparison.Ordinal),
+            AnnotationPredicateKind.ContentsContains => annotation.Contents?.Contains(ExpectedText ?? string.Empty, StringComparison.Ordinal) == true,
+            AnnotationPredicateKind.HasStructParent => annotation.HasStructParent == ExpectedBoolean,
+            _ => false
+        };
+        return matched ? PredicateResult.Match() : PredicateResult.NoMatch($"{DebugString} rejected annotation '{annotation.CandidateId}'.");
+    }
+}
+
 /// <summary>Candidate predicate over candidate geometry.</summary>
 public sealed record GeometryRemediationPredicate(LayoutCoord Coord, GeometryMatchMode Mode = GeometryMatchMode.Intersects) : RemediationPredicate
 {
@@ -443,6 +481,11 @@ public sealed record GeometryRemediationPredicate(LayoutCoord Coord, GeometryMat
 
     protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
+        if (!candidate.HasUsableGeometry)
+        {
+            return PredicateResult.NoMatch($"Candidate '{candidate.CandidateId}' has no usable bounding box for geometry matching.");
+        }
+
         PdfRect<double> rect;
         try
         {
@@ -471,6 +514,10 @@ public sealed record TolerancedZoneRemediationPredicate(string ZoneId) : Remedia
 
     protected override PredicateResult EvaluateCore(RemediationEvaluationContext context, RemediationCandidate candidate)
     {
+        if (!candidate.HasUsableGeometry)
+        {
+            return PredicateResult.NoMatch($"Candidate '{candidate.CandidateId}' has no usable bounding box for zone matching.");
+        }
         var zone = context.ResolveTolerancedZone(ZoneId);
         return zone?.Contains(candidate.RelativeBoundingBox) ?? PredicateResult.NoMatch($"Could not resolve zone '{ZoneId}'.");
     }
@@ -856,6 +903,21 @@ public static class Predicates
             new ContentRemediationPredicate(ContentPredicateKind.ResourceName, ExpectedText: name);
         public static RemediationPredicate ResourceUseCount(NumericOperator op, int count) =>
             new ContentRemediationPredicate(ContentPredicateKind.ResourceUseCount, Operator: op, ExpectedCount: count);
+    }
+
+    /// <summary>Existing-annotation predicate helpers.</summary>
+    public static class Annotation
+    {
+        public static RemediationPredicate Subtype(string subtype) =>
+            new AnnotationRemediationPredicate(AnnotationPredicateKind.Subtype, ExpectedText: subtype);
+        public static RemediationPredicate DestinationKind(AnnotationDestinationKind kind) =>
+            new AnnotationRemediationPredicate(AnnotationPredicateKind.DestinationKind, ExpectedDestinationKind: kind);
+        public static RemediationPredicate DestinationEquals(string value) =>
+            new AnnotationRemediationPredicate(AnnotationPredicateKind.DestinationValue, ExpectedText: value);
+        public static RemediationPredicate ContentsContains(string value) =>
+            new AnnotationRemediationPredicate(AnnotationPredicateKind.ContentsContains, ExpectedText: value);
+        public static RemediationPredicate HasStructParent(bool value = true) =>
+            new AnnotationRemediationPredicate(AnnotationPredicateKind.HasStructParent, ExpectedBoolean: value);
     }
 
     /// <summary>Text predicate factory helpers.</summary>

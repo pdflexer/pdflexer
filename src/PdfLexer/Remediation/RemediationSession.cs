@@ -18,6 +18,14 @@ public sealed class RemediationSession : IDisposable
     private readonly Dictionary<PdfPage, int> _pageStructParents = new();
     private readonly List<RuleSet> _ruleSets = new();
     private readonly List<DiagnosticSuppression> _suppressions = new();
+    private static readonly HashSet<DiagnosticCode> NonSuppressibleDiagnosticCodes = new()
+    {
+        DiagnosticCode.GroupCompositionAmbiguous,
+        DiagnosticCode.GroupCompositionCycle,
+        DiagnosticCode.AnnotationAdoptionTargetMissing,
+        DiagnosticCode.AnnotationAdoptionAmbiguous,
+        DiagnosticCode.AnnotationAlreadyConsumed
+    };
     private RemediationTraceRequest? _traceRequest;
     private List<RemediationPredicateTrace>? _predicateTraces;
     private bool _committed;
@@ -297,19 +305,6 @@ public sealed class RemediationSession : IDisposable
         var autoArtifacts = new List<RemediationAutoArtifactOutcome>();
         var unaccountedContent = new List<RemediationUnaccountedContent>();
         var pageStates = BuildPageStates();
-        var annotationInventory = BuildAnnotationInventory();
-        if (Configuration.StrictConformance)
-        {
-            foreach (var annotation in annotationInventory.Where(x => x.BlocksConformance))
-            {
-                ReportDiagnostic(
-                    DiagnosticCode.UnmodeledAnnotation,
-                    $"Page{annotation.PageIndex + 1}",
-                    $"Input page {annotation.PageIndex + 1} contains a visible {annotation.Subtype} annotation " +
-                    "that declarative remediation cannot adopt into the structure tree.",
-                    diagnostics);
-            }
-        }
         EvaluateDocument(
             pageStates,
             ruleList,
@@ -321,6 +316,21 @@ public sealed class RemediationSession : IDisposable
             autoArtifacts,
             unaccountedContent,
             apply);
+
+        PrepareAnnotationAdoptions(pageStates, allClaims, diagnostics);
+        var annotationInventory = BuildAnnotationInventory(pageStates, allClaims, apply);
+        if (Configuration.StrictConformance)
+        {
+            foreach (var annotation in annotationInventory.Where(x => x.BlocksConformance))
+            {
+                ReportDiagnostic(
+                    DiagnosticCode.UnmodeledAnnotation,
+                    $"Page{annotation.PageIndex + 1}",
+                    $"Input page {annotation.PageIndex + 1} contains a visible {annotation.Subtype} annotation " +
+                    "that remains unmodeled after rule evaluation.",
+                    diagnostics);
+            }
+        }
 
         var ruleEvaluations = evaluations.Build(allClaims, skippedClaims);
         CheckRuleCardinalities(ruleList, ruleEvaluations, diagnostics);
@@ -412,7 +422,8 @@ public sealed class RemediationSession : IDisposable
         var records = new List<RemediationArtifactRecord>();
         foreach (var claim in claims.Where(x => x.Action is ArtifactRemediationAction))
         {
-            var subtype = ((ArtifactRemediationAction)claim.Action!).Subtype;
+            var artifact = (ArtifactRemediationAction)claim.Action!;
+            var subtype = artifact.Subtype;
             var rule = rulesById.GetValueOrDefault(claim.RuleId);
             foreach (var page in claim.Candidates.Where(x => x.PageIndex >= 0).GroupBy(x => x.PageIndex))
             {
@@ -422,7 +433,8 @@ public sealed class RemediationSession : IDisposable
                     UnionBounds(page.Select(x => x.RelativeBoundingBox)),
                     claim.RuleId,
                     rule?.RuleSetId,
-                    rule?.Artifact));
+                    rule?.Artifact,
+                    artifact.SemanticSubtype));
             }
         }
 
@@ -545,66 +557,148 @@ public sealed class RemediationSession : IDisposable
         return builder.ToString();
     }
 
-    private IReadOnlyList<RemediationAnnotationInventoryItem> BuildAnnotationInventory()
+    private void PrepareAnnotationAdoptions(
+        IReadOnlyList<PageRemediationState> pageStates,
+        IReadOnlyList<RemediationClaim> claims,
+        List<string> diagnostics)
     {
-        var inventory = new List<RemediationAnnotationInventoryItem>();
-        for (var pageIndex = 0; pageIndex < _document.Pages.Count; pageIndex++)
+        var ordinaryClaims = claims.Where(x => x.Status == ClaimStatus.Applied &&
+            x.Action is not AdoptAnnotationRemediationAction).ToArray();
+        foreach (var claim in claims.Where(x => x.Status == ClaimStatus.Applied &&
+                     x.Action is AdoptAnnotationRemediationAction))
         {
-            var page = _document.Pages[pageIndex];
-            var annotations = page.NativeObject.Get<PdfArray>(PdfName.Annots);
-            if (annotations == null)
+            var action = (AdoptAnnotationRemediationAction)claim.Action!;
+            var annotation = claim.Candidates.OfType<AnnotationRemediationCandidate>().SingleOrDefault();
+            if (annotation == null) continue;
+            var expectedTag = RequiredAnnotationTag(annotation.Subtype);
+            if (string.Equals(expectedTag, "Link", StringComparison.Ordinal) &&
+                string.IsNullOrWhiteSpace(annotation.Contents) &&
+                string.IsNullOrWhiteSpace(action.AccessibleDescription))
             {
-                continue;
+                ReportDiagnostic(
+                    DiagnosticCode.AnnotationAdoptionTargetMissing,
+                    $"Page{annotation.PageIndex + 1}",
+                    $"Rule '{claim.RuleId}' cannot adopt Link annotation '{annotation.CandidateId}' without non-empty /Contents or an accessible description.",
+                    diagnostics);
             }
 
-            foreach (var item in annotations)
+            if (action.Into != null)
             {
-                if (item.Resolve() is not PdfDictionary annotation)
+                var context = new ClaimPredicateEvaluationContext(
+                    ordinaryClaims,
+                    PageBox: pageStates[annotation.PageIndex].StructuredText.RelativePageBox,
+                    Configuration: Configuration,
+                    Diagnostics: diagnostics);
+                var matches = ordinaryClaims
+                    .Where(x => x.PageIndexes.Contains(annotation.PageIndex))
+                    .Where(x => action.Into.Evaluate(context, x).IsMatch)
+                    .Where(x => string.Equals(x.ProducedTag, expectedTag, StringComparison.Ordinal))
+                    .Where(x => !annotation.HasUsableGeometry ||
+                        x.BoundsByPage.TryGetValue(annotation.PageIndex, out var bounds) &&
+                        bounds.Intersects(annotation.BoundingBox))
+                    .ToArray();
+                if (matches.Length == 0)
                 {
-                    continue;
+                    ReportDiagnostic(
+                        DiagnosticCode.AnnotationAdoptionTargetMissing,
+                        $"Page{annotation.PageIndex + 1}",
+                        $"Rule '{claim.RuleId}' found no intersecting {expectedTag} claim for annotation '{annotation.CandidateId}'.",
+                        diagnostics);
                 }
-
-                var subtype = annotation.Get<PdfName>(PdfName.Subtype)?.Value ?? "Unknown";
-                var flags = (int?)annotation.Get<PdfNumber>(PdfName.F) ?? 0;
-                var hidden = (flags & 2) != 0 || (flags & 32) != 0;
-                var rectArray = annotation.Get<PdfArray>(PdfName.Rect);
-                PdfRect<double>? bounds = null;
-                var offPage = false;
-                if (rectArray != null)
+                else if (matches.Length > 1)
                 {
-                    var rect = new PdfRectangle(rectArray);
-                    bounds = new PdfRect<double>(
-                        (double)rect.LLx,
-                        (double)rect.LLy,
-                        (double)rect.URx,
-                        (double)rect.URy);
-                    var box = page.CropBox;
-                    offPage = rect.URx <= box.LLx || rect.LLx >= box.URx ||
-                              rect.URy <= box.LLy || rect.LLy >= box.URy;
+                    ReportDiagnostic(
+                        DiagnosticCode.AnnotationAdoptionAmbiguous,
+                        $"Page{annotation.PageIndex + 1}",
+                        $"Rule '{claim.RuleId}' found {matches.Length} intersecting {expectedTag} claims for annotation '{annotation.CandidateId}'.",
+                        diagnostics);
                 }
+                else
+                {
+                    claim.AnnotationIntoClaim = matches[0];
+                }
+            }
 
-                var special = string.Equals(subtype, "Popup", StringComparison.Ordinal) ||
-                              string.Equals(subtype, "PrinterMark", StringComparison.Ordinal);
-                var blocks = !hidden && !offPage && !special;
-                var reason = hidden
-                    ? "Hidden annotation."
-                    : offPage
-                        ? "Annotation lies wholly outside the crop box."
-                        : special
-                            ? $"{subtype} is handled by its specialized accessibility contract."
-                            : "Existing visible annotations are not yet adoptable by remediation rules.";
-                inventory.Add(new RemediationAnnotationInventoryItem(
-                    pageIndex,
-                    subtype,
-                    bounds,
-                    hidden,
-                    offPage,
-                    annotation.ContainsKey(PdfName.StructParent),
-                    blocks,
-                    reason));
+            if (action.DestinationTarget != null)
+            {
+                var context = new ClaimPredicateEvaluationContext(ordinaryClaims, Configuration: Configuration, Diagnostics: diagnostics);
+                var targets = ordinaryClaims.Where(x => action.DestinationTarget.Evaluate(context, x).IsMatch).ToArray();
+                if (targets.Length == 0)
+                {
+                    ReportDiagnostic(
+                        DiagnosticCode.AnnotationAdoptionTargetMissing,
+                        $"Page{annotation.PageIndex + 1}",
+                        $"Rule '{claim.RuleId}' found no structure destination target for annotation '{annotation.CandidateId}'.",
+                        diagnostics);
+                }
+                else if (targets.Length > 1)
+                {
+                    ReportDiagnostic(
+                        DiagnosticCode.AnnotationAdoptionAmbiguous,
+                        $"Page{annotation.PageIndex + 1}",
+                        $"Rule '{claim.RuleId}' found {targets.Length} structure destination targets for annotation '{annotation.CandidateId}'.",
+                        diagnostics);
+                }
+                else
+                {
+                    claim.AnnotationDestinationClaim = targets[0];
+                }
             }
         }
+    }
 
+    private static string RequiredAnnotationTag(string subtype) => subtype switch
+    {
+        "Link" => "Link",
+        "Widget" => "Form",
+        _ => "Annot"
+    };
+
+    private IReadOnlyList<RemediationAnnotationInventoryItem> BuildAnnotationInventory(
+        IReadOnlyList<PageRemediationState> pageStates,
+        IReadOnlyList<RemediationClaim> claims,
+        bool applied)
+    {
+        var adopted = claims
+            .Where(x => x.Status == ClaimStatus.Applied && x.Action is AdoptAnnotationRemediationAction)
+            .SelectMany(x => x.Candidates.OfType<AnnotationRemediationCandidate>().Select(candidate => (candidate.Annotation, Claim: x)))
+            .ToDictionary(x => x.Annotation, x => x.Claim, ReferenceEqualityComparer.Instance);
+        var inventory = new List<RemediationAnnotationInventoryItem>();
+        foreach (var candidate in pageStates.SelectMany(x => x.AnnotationCandidates))
+        {
+            var special = string.Equals(candidate.Subtype, "Popup", StringComparison.Ordinal) ||
+                          string.Equals(candidate.Subtype, "PrinterMark", StringComparison.Ordinal);
+            var exempt = candidate.Hidden || candidate.OffPage || special;
+            adopted.TryGetValue(candidate.Annotation, out var claim);
+            var disposition = claim != null
+                ? applied ? RemediationAnnotationDisposition.Applied : RemediationAnnotationDisposition.Planned
+                : exempt ? RemediationAnnotationDisposition.Exempt : RemediationAnnotationDisposition.Unmodeled;
+            var reason = claim != null
+                ? $"Adopted by rule '{claim.RuleId}' as {claim.ProducedTag}."
+                : candidate.Hidden
+                    ? "Hidden annotation."
+                    : candidate.OffPage
+                        ? "Annotation lies wholly outside the crop box."
+                        : special
+                            ? $"{candidate.Subtype} is handled by its specialized accessibility contract."
+                            : "Visible annotation was not adopted by a remediation rule.";
+            inventory.Add(new RemediationAnnotationInventoryItem(
+                candidate.PageIndex,
+                candidate.Subtype,
+                candidate.Bounds,
+                candidate.Hidden,
+                candidate.OffPage,
+                candidate.HasStructParent || applied && claim != null,
+                claim == null && !exempt,
+                reason)
+            {
+                CandidateId = candidate.CandidateId,
+                Disposition = disposition,
+                RuleId = claim?.RuleId,
+                ProducedTag = claim?.ProducedTag,
+                DestinationKind = candidate.DestinationKind
+            });
+        }
         return inventory;
     }
 
@@ -1036,6 +1130,13 @@ public sealed class RemediationSession : IDisposable
         if (referenced.Stage > rule.Stage)
         {
             errors.Add($"Rule '{rule.Id}' has {referenceKind} reference to later-stage rule '{referencedRuleId}' ({referenced.Stage} > {rule.Stage}).");
+            return;
+        }
+
+        if (rule.Stage == Stage.Group && referenced.Stage == Stage.Group &&
+            referenced.GroupPass >= rule.GroupPass)
+        {
+            errors.Add($"Rule '{rule.Id}' has {referenceKind} reference to same-or-higher-pass Group rule '{referencedRuleId}' ({referenced.GroupPass} >= {rule.GroupPass}).");
         }
     }
 
@@ -1069,11 +1170,56 @@ public sealed class RemediationSession : IDisposable
                 ValidateClaimPredicate(rule, link.Source, rulesById, anchors, tolerancedZones, flowRegions, errors);
                 ValidateClaimPredicate(rule, link.Target, rulesById, anchors, tolerancedZones, flowRegions, errors);
                 break;
+            case AdoptAnnotationRemediationAction adopt:
+                if (adopt.Into != null)
+                {
+                    ValidateClaimPredicate(rule, adopt.Into, rulesById, anchors, tolerancedZones, flowRegions, errors);
+                    ValidateAnnotationClaimReferences(rule, "Into", adopt.Into, rulesById, errors);
+                }
+                if (adopt.DestinationTarget != null)
+                {
+                    ValidateClaimPredicate(rule, adopt.DestinationTarget, rulesById, anchors, tolerancedZones, flowRegions, errors);
+                    ValidateAnnotationClaimReferences(rule, "DestinationTarget", adopt.DestinationTarget, rulesById, errors);
+                }
+                break;
         }
 
         if (rule.Stage is Stage.Group or Stage.Refine && rule.Action is TagRemediationAction)
         {
             errors.Add($"Rule '{rule.Id}' uses a raw-content Tag action in {rule.Stage}; claim-consuming stages must select existing claims.");
+        }
+    }
+
+    private static void ValidateAnnotationClaimReferences(
+        Rule rule,
+        string property,
+        ClaimPredicate predicate,
+        IReadOnlyDictionary<string, Rule> rulesById,
+        List<string> errors)
+    {
+        foreach (var referencedRuleId in EnumerateClaimRuleReferences(predicate).Distinct(StringComparer.Ordinal))
+        {
+            if (rulesById.TryGetValue(referencedRuleId, out var referenced) && referenced.Stage != Stage.Classify)
+            {
+                errors.Add($"Rule '{rule.Id}' annotation {property} may reference Classify claims only; rule '{referencedRuleId}' is {referenced.Stage}.");
+            }
+        }
+    }
+
+    private static IEnumerable<string> EnumerateClaimRuleReferences(ClaimPredicate predicate)
+    {
+        switch (predicate)
+        {
+            case BuiltInClaimPredicate { Kind: ClaimPredicateKind.FromRule or ClaimPredicateKind.BeforeClaim or ClaimPredicateKind.AfterClaim, Value: not null } builtIn:
+                yield return builtIn.Value;
+                break;
+            case CompositeClaimPredicate composite:
+                foreach (var value in EnumerateClaimRuleReferences(composite.Left)) yield return value;
+                foreach (var value in EnumerateClaimRuleReferences(composite.Right)) yield return value;
+                break;
+            case NotClaimPredicate not:
+                foreach (var value in EnumerateClaimRuleReferences(not.Inner)) yield return value;
+                break;
         }
     }
 
@@ -1296,6 +1442,10 @@ public sealed class RemediationSession : IDisposable
         {
             return pageState.TextCandidates[text.Granularity];
         }
+        if (selector is CandidateSelector.AnnotationSelector)
+        {
+            return pageState.AnnotationCandidates;
+        }
 
         var kinds = ((CandidateSelector.ContentSelector)selector).Kinds;
         return pageState.ContentCandidates.Where(x => kinds.Contains(x.Kind)).Cast<RemediationCandidate>().ToArray();
@@ -1331,6 +1481,7 @@ public sealed class RemediationSession : IDisposable
                             PageIndex = state.PageIndex
                         })
                         .ToArray());
+            state.AnnotationCandidates = BuildAnnotationCandidates(state, pageSpace);
             state.ContentCandidates = allItems
                 .Where(x => ReferenceEquals(x.State, state))
                 .Select((x, index) =>
@@ -1352,6 +1503,77 @@ public sealed class RemediationSession : IDisposable
                 .ToArray();
         }
     }
+
+    private static IReadOnlyList<AnnotationRemediationCandidate> BuildAnnotationCandidates(
+        PageRemediationState state,
+        StructuredPageSpace pageSpace)
+    {
+        var annotations = state.Page.NativeObject.Get<PdfArray>(PdfName.Annots);
+        if (annotations == null) return Array.Empty<AnnotationRemediationCandidate>();
+        var result = new List<AnnotationRemediationCandidate>();
+        for (var index = 0; index < annotations.Count; index++)
+        {
+            if (annotations[index].Resolve() is not PdfDictionary annotation) continue;
+            var subtype = annotation.Get<PdfName>(PdfName.Subtype)?.Value ?? "Unknown";
+            var flags = (int?)annotation.Get<PdfNumber>(PdfName.F) ?? 0;
+            var hidden = (flags & 2) != 0 || (flags & 32) != 0;
+            PdfRect<double>? bounds = null;
+            PdfRect<double>? relative = null;
+            var offPage = false;
+            if (annotation.Get<PdfArray>(PdfName.Rect) is { } rectArray && rectArray.Count >= 4)
+            {
+                var rect = new PdfRectangle(rectArray);
+                bounds = new PdfRect<double>((double)rect.LLx, (double)rect.LLy, (double)rect.URx, (double)rect.URy);
+                relative = pageSpace.Normalize(bounds);
+                var box = state.Page.CropBox;
+                offPage = rect.URx <= box.LLx || rect.LLx >= box.URx ||
+                    rect.URy <= box.LLy || rect.LLy >= box.URy;
+            }
+            var (destinationKind, destinationValue) = DescribeAnnotationDestination(annotation);
+            result.Add(new AnnotationRemediationCandidate(
+                annotation, index, subtype, bounds, relative, flags, hidden, offPage,
+                annotation.ContainsKey(PdfName.StructParent),
+                annotation.Get<PdfString>(PdfName.Contents)?.Value,
+                destinationKind, destinationValue, int.MaxValue / 2 + index)
+            {
+                PageIndex = state.PageIndex
+            });
+        }
+        return result;
+    }
+
+    private static (AnnotationDestinationKind Kind, string? Value) DescribeAnnotationDestination(PdfDictionary annotation)
+    {
+        if (annotation.TryGetValue(PdfName.Dest, out var direct) && direct != null)
+        {
+            return (AnnotationDestinationKind.Internal, DescribeDestinationValue(direct.Resolve()));
+        }
+        var action = annotation.Get<PdfDictionary>(PdfName.A);
+        if (action == null) return (AnnotationDestinationKind.None, null);
+        var kind = action.Get<PdfName>(PdfName.S)?.Value;
+        if (string.Equals(kind, "URI", StringComparison.Ordinal))
+        {
+            return (AnnotationDestinationKind.Uri, action.Get<PdfString>((PdfName)"URI")?.Value);
+        }
+        if (string.Equals(kind, "GoTo", StringComparison.Ordinal))
+        {
+            return (AnnotationDestinationKind.Internal, DescribeDestinationValue(action.Get((PdfName)"D")?.Resolve()));
+        }
+        if (string.Equals(kind, "GoToR", StringComparison.Ordinal))
+        {
+            return (AnnotationDestinationKind.Remote, DescribeDestinationValue(action.Get((PdfName)"D")?.Resolve()));
+        }
+        return (AnnotationDestinationKind.Other, kind);
+    }
+
+    private static string? DescribeDestinationValue(IPdfObject? destination) => destination switch
+    {
+        PdfString text => text.Value,
+        PdfName name => name.Value,
+        PdfArray array when array.Count > 1 => array[1].Resolve() is PdfName mode ? mode.Value : "array",
+        null => null,
+        _ => destination.ToString()
+    };
 
     private static ContentRemediationCandidate CreateContentCandidate(
         PageRemediationState pageState,
@@ -1541,32 +1763,67 @@ public sealed class RemediationSession : IDisposable
             diagnostics).Resolve();
 
         var groupClaims = new List<RemediationClaim>();
-        foreach (var rule in rules.Where(x => x.Stage == Stage.Group))
+        var frontier = classifyClaims.Where(x => x.Status == ClaimStatus.Applied).ToList();
+        foreach (var pass in rules.Where(x => x.Stage == Stage.Group)
+                     .Select(x => x.GroupPass).Distinct().OrderBy(x => x))
         {
-            if (rule.Action is TableRemediationAction table)
+            var passClaims = new List<RemediationClaim>();
+            var frozenFrontier = frontier.ToArray();
+            var referenceClaims = classifyClaims.Concat(groupClaims)
+                .Where(x => x.Status == ClaimStatus.Applied)
+                .ToArray();
+            foreach (var rule in rules.Where(x => x.Stage == Stage.Group && x.GroupPass == pass))
             {
-                EvaluateDocumentTableRule(
-                    pageStates, rule, table, classifyClaims, documentFlows,
-                    anchors, tolerancedZones, flowRegions, groupClaims,
-                    skippedClaims, diagnostics, evaluations);
+                var outputCount = passClaims.Count;
+                if (rule.Action is TableRemediationAction table)
+                {
+                    EvaluateDocumentTableRule(
+                        pageStates, rule, table, frozenFrontier, referenceClaims, documentFlows,
+                        anchors, tolerancedZones, flowRegions, passClaims,
+                        skippedClaims, diagnostics, evaluations);
+                }
+                else if (rule.Action is GroupRemediationAction group)
+                {
+                    EvaluateDocumentClaimRunRule(
+                        pageStates, rule, group.Over, frozenFrontier, referenceClaims, documentFlows,
+                        anchors, tolerancedZones, flowRegions, passClaims,
+                        skippedClaims, diagnostics, warnings, evaluations);
+                }
+                else if (rule.Action is MergeRemediationAction merge)
+                {
+                    EvaluateDocumentClaimRunRule(
+                        pageStates, rule, merge.Over, frozenFrontier, referenceClaims, documentFlows,
+                        anchors, tolerancedZones, flowRegions, passClaims,
+                        skippedClaims, diagnostics, warnings, evaluations);
+                }
+
+                if (passClaims.Count == outputCount)
+                {
+                    AddConsumedInputWarning(rule, frozenFrontier, referenceClaims, groupClaims, warnings);
+                }
             }
-            else if (rule.Action is GroupRemediationAction group)
+
+            var duplicate = passClaims.SelectMany(parent => parent.RelatedClaims.Select(child => (parent, child)))
+                .GroupBy(x => x.child.ClaimId).FirstOrDefault(x => x.Count() > 1);
+            if (duplicate != null)
             {
-                EvaluateDocumentClaimRunRule(
-                    pageStates, rule, group.Over, classifyClaims, documentFlows,
-                    anchors, tolerancedZones, flowRegions, groupClaims,
-                    skippedClaims, diagnostics, warnings, evaluations);
+                var consumers = string.Join(", ", duplicate.Select(x => x.parent.RuleId).Distinct());
+                ReportDiagnostic(DiagnosticCode.GroupCompositionAmbiguous, $"GroupPass{pass}",
+                    $"Group pass {pass} has consumers [{consumers}] selecting claim '{duplicate.Key}'. Later passes were not evaluated.", diagnostics);
+                break;
             }
-            else if (rule.Action is MergeRemediationAction merge)
-            {
-                EvaluateDocumentClaimRunRule(
-                    pageStates, rule, merge.Over, classifyClaims, documentFlows,
-                    anchors, tolerancedZones, flowRegions, groupClaims,
-                    skippedClaims, diagnostics, warnings, evaluations);
-            }
+
+            var consumed = passClaims.SelectMany(x => x.RelatedClaims).Select(x => x.ClaimId).ToHashSet();
+            frontier = frontier.Where(x => !consumed.Contains(x.ClaimId)).Concat(passClaims)
+                .OrderBy(x => x, ReadingOrderComparer).ToList();
+            groupClaims.AddRange(passClaims);
         }
 
-        groupClaims.Sort(CompareClaimsInReadingOrder);
+        groupClaims.Sort((left, right) =>
+        {
+            var byPass = left.GroupPass.CompareTo(right.GroupPass);
+            return byPass != 0 ? byPass : CompareClaimsInReadingOrder(left, right);
+        });
         foreach (var pageState in pageStates)
         {
             // A cross-page group is planned and refined once, from its primary page.
@@ -1847,12 +2104,23 @@ public sealed class RemediationSession : IDisposable
 
             var targetSpans = GetTargetSpans(candidate);
             var contentItem = (candidate as ContentRemediationCandidate)?.Item;
-            var conflicting = contentItem != null &&
-                pageState.ContentOwnership.TryGetValue(contentItem, out var contentClaim)
-                    ? new[] { new OwnedTextSpan(default, contentClaim) }.ToList()
-                    : ownedTargets.FindOverlaps(targetSpans);
+            var annotationObject = (candidate as AnnotationRemediationCandidate)?.Annotation;
+            var conflicting = annotationObject != null &&
+                pageState.AnnotationOwnership.TryGetValue(annotationObject, out var annotationClaim)
+                    ? new[] { new OwnedTextSpan(default, annotationClaim) }.ToList()
+                    : contentItem != null && pageState.ContentOwnership.TryGetValue(contentItem, out var contentClaim)
+                        ? new[] { new OwnedTextSpan(default, contentClaim) }.ToList()
+                        : ownedTargets.FindOverlaps(targetSpans);
             if (conflicting.Count > 0 && !rule.Override)
             {
+                if (annotationObject != null)
+                {
+                    ReportDiagnostic(
+                        DiagnosticCode.AnnotationAlreadyConsumed,
+                        $"Page{pageState.PageIndex + 1}",
+                        $"Annotation '{candidate.CandidateId}' selected by rule '{rule.Id}' is already consumed by rule '{conflicting[0].Claim.RuleId}'.",
+                        diagnostics);
+                }
                 rejectedByConflict++;
                 skippedClaims.Add(CreateClaim(rule, pageState.PageIndex, candidate, ClaimStatus.Skipped, confidence));
                 continue;
@@ -1875,6 +2143,10 @@ public sealed class RemediationSession : IDisposable
                     {
                         pageState.ContentOwnership.Remove(owned.Key);
                     }
+                    foreach (var owned in pageState.AnnotationOwnership.Where(x => x.Value.ClaimId == previous.ClaimId).ToList())
+                    {
+                        pageState.AnnotationOwnership.Remove(owned.Key);
+                    }
                     foreach (var residual in CreateResidualClaims(previous, targetSpans))
                     {
                         stageClaims.Add(residual);
@@ -1888,6 +2160,10 @@ public sealed class RemediationSession : IDisposable
             if (contentItem != null)
             {
                 pageState.ContentOwnership[contentItem] = claim;
+            }
+            if (annotationObject != null)
+            {
+                pageState.AnnotationOwnership[annotationObject] = claim;
             }
             stageClaims.Add(claim);
         }
@@ -2048,7 +2324,13 @@ public sealed class RemediationSession : IDisposable
                 "__auto_artifact__", new[] { candidate }, "Artifact")
             {
                 PageIndex = pageState.PageIndex,
-                Action = RemediationActions.Artifact(declared?.Subtype ?? ArtifactSubtype.Layout)
+                Action = declared == null
+                    ? RemediationActions.Artifact(ArtifactSubtype.Layout)
+                    : new ArtifactRemediationAction(
+                        declared.Subtype,
+                        declared.SemanticSubtype,
+                        declared.IncludeBoundingBox,
+                        declared.Attached)
             };
             pageState.ContentOwnership[item] = claim;
             autoArtifacts.Add(new RemediationAutoArtifactOutcome(
@@ -2073,6 +2355,62 @@ public sealed class RemediationSession : IDisposable
                 ApplyClassifyClaim(pageState, claim, diagnostics);
             }
         }
+    }
+
+    private void ApplyAdoptAnnotationClaim(
+        PageRemediationState pageState,
+        RemediationClaim claim,
+        List<string> diagnostics)
+    {
+        if (claim.Action is not AdoptAnnotationRemediationAction action ||
+            claim.Candidates.OfType<AnnotationRemediationCandidate>().SingleOrDefault() is not { } candidate)
+        {
+            return;
+        }
+
+        StructureNode? node;
+        RemediationAppliedBinding? targetBinding = null;
+        if (action.Into != null)
+        {
+            targetBinding = claim.AnnotationIntoClaim?.AppliedBindings
+                .Where(x => x.StructureNode != null)
+                .FirstOrDefault(x => !candidate.HasUsableGeometry ||
+                    x.Bounds == null || x.Bounds.Intersects(candidate.BoundingBox));
+            node = targetBinding?.StructureNode;
+            if (node == null)
+            {
+                diagnostics.Add($"Rule '{claim.RuleId}' could not reuse the planned annotation target binding.");
+                return;
+            }
+        }
+        else
+        {
+            node = Structure.AddElement(RequiredAnnotationTag(candidate.Subtype)).GetNode();
+        }
+
+        var destinationNode = claim.AnnotationDestinationClaim?.AppliedBindings
+            .FirstOrDefault(x => x.StructureNode != null)?.StructureNode;
+        if (action.DestinationTarget != null && destinationNode == null)
+        {
+            diagnostics.Add($"Rule '{claim.RuleId}' could not reuse the planned annotation destination binding.");
+            return;
+        }
+
+        BindAnnotation(
+            node,
+            pageState.Page,
+            candidate.Annotation,
+            action.AccessibleDescription ?? candidate.Contents,
+            destinationNode);
+        claim.AddAppliedBinding(new RemediationAppliedBinding(
+            node.Type,
+            targetBinding?.Mcids ?? Array.Empty<int>(),
+            node,
+            targetBinding?.MarkedContentGroup,
+            node.Parent,
+            Array.Empty<StructuredSourceRef>(),
+            candidate.Bounds));
+        pageState.MarkDirty();
     }
 
     private void ApplyClassifyClaim(
@@ -2140,7 +2478,7 @@ public sealed class RemediationSession : IDisposable
                     leaves,
                     new MarkedContent(PdfName.Artifact)
                     {
-                        InlineProps = new PdfDictionary { [PdfName.TYPE] = (PdfName)artifact.Subtype.ToString() }
+                        InlineProps = BuildArtifactProperties(artifact, candidate.BoundingBox)
                     });
                 claim.AddAppliedBinding(new RemediationAppliedBinding(
                     PdfName.Artifact.Value,
@@ -2159,7 +2497,8 @@ public sealed class RemediationSession : IDisposable
         IReadOnlyList<PageRemediationState> pageStates,
         Rule rule,
         ClaimPredicate over,
-        IReadOnlyList<RemediationClaim> classifyClaims,
+        IReadOnlyList<RemediationClaim> frontier,
+        IReadOnlyList<RemediationClaim> referenceClaims,
         DocumentFlowIndex documentFlows,
         IReadOnlyDictionary<string, RemediationAnchor> anchors,
         IReadOnlyDictionary<string, TolerancedZone> tolerancedZones,
@@ -2171,7 +2510,7 @@ public sealed class RemediationSession : IDisposable
         RuleEvaluationAccumulator evaluations)
     {
         var pageLookup = pageStates.ToDictionary(x => x.PageIndex);
-        var eligible = classifyClaims
+        var eligible = frontier
             .Where(x => x.Status == ClaimStatus.Applied)
             .Where(x => rule.Pages.Includes(x.PageIndex, _document.Pages.Count))
             .OrderBy(x => x, ReadingOrderComparer)
@@ -2183,7 +2522,7 @@ public sealed class RemediationSession : IDisposable
             var page = pageLookup[claim.PageIndex];
             var previous = currentRun.LastOrDefault();
             var predicateContext = CreateClaimPredicateContext(
-                eligible, previous, page, anchors, tolerancedZones, flowRegions, documentFlows, diagnostics);
+                eligible, referenceClaims, rule, previous, page, anchors, tolerancedZones, flowRegions, documentFlows, diagnostics);
             var result = over.Evaluate(predicateContext, claim);
             var crossesPage = previous != null && previous.PageIndex != claim.PageIndex;
             var canContinue = !crossesPage ||
@@ -2195,7 +2534,7 @@ public sealed class RemediationSession : IDisposable
                 {
                     var fresh = over.Evaluate(
                         CreateClaimPredicateContext(
-                            eligible, null, page, anchors, tolerancedZones, flowRegions, documentFlows, diagnostics),
+                            eligible, referenceClaims, rule, null, page, anchors, tolerancedZones, flowRegions, documentFlows, diagnostics),
                         claim);
                     if (fresh.IsMatch)
                     {
@@ -2217,7 +2556,7 @@ public sealed class RemediationSession : IDisposable
                 currentRun.Clear();
                 result = over.Evaluate(
                     CreateClaimPredicateContext(
-                        eligible, null, page, anchors, tolerancedZones, flowRegions, documentFlows, diagnostics),
+                        eligible, referenceClaims, rule, null, page, anchors, tolerancedZones, flowRegions, documentFlows, diagnostics),
                     claim);
             }
 
@@ -2261,7 +2600,8 @@ public sealed class RemediationSession : IDisposable
         IReadOnlyList<PageRemediationState> pageStates,
         Rule rule,
         TableRemediationAction table,
-        IReadOnlyList<RemediationClaim> classifyClaims,
+        IReadOnlyList<RemediationClaim> frontier,
+        IReadOnlyList<RemediationClaim> referenceClaims,
         DocumentFlowIndex documentFlows,
         IReadOnlyDictionary<string, RemediationAnchor> anchors,
         IReadOnlyDictionary<string, TolerancedZone> tolerancedZones,
@@ -2280,7 +2620,7 @@ public sealed class RemediationSession : IDisposable
         }
 
         var pageLookup = pageStates.ToDictionary(x => x.PageIndex);
-        var eligible = classifyClaims
+        var eligible = frontier
             .Where(x => x.Status == ClaimStatus.Applied)
             .Where(x => rule.Pages.Includes(x.PageIndex, _document.Pages.Count))
             .OrderBy(x => x, ReadingOrderComparer)
@@ -2292,6 +2632,8 @@ public sealed class RemediationSession : IDisposable
             var result = table.Over.Evaluate(
                 CreateClaimPredicateContext(
                     eligible,
+                    referenceClaims,
+                    rule,
                     previous,
                     pageLookup[claim.PageIndex],
                     anchors,
@@ -2381,7 +2723,8 @@ public sealed class RemediationSession : IDisposable
                 SelectorDebugString = rule.Predicate.DebugString,
                 Action = rule.Action,
                 RuleSetId = rule.RuleSetId,
-                TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
+                TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default,
+                GroupPass = rule.GroupPass
             };
             tableClaim.AddRelatedClaims(claims);
             tableClaim.TablePlan = ResolveClaimConsumingTablePlan(table, tableClaim, grid);
@@ -2391,6 +2734,8 @@ public sealed class RemediationSession : IDisposable
 
     private ClaimPredicateEvaluationContext CreateClaimPredicateContext(
         IReadOnlyList<RemediationClaim> claims,
+        IReadOnlyList<RemediationClaim> referenceClaims,
+        Rule rule,
         RemediationClaim? previous,
         PageRemediationState page,
         IReadOnlyDictionary<string, RemediationAnchor> anchors,
@@ -2409,7 +2754,10 @@ public sealed class RemediationSession : IDisposable
             StructuredText: page.StructuredText,
             Diagnostics: diagnostics ?? new List<string>())
         {
-            DocumentFlows = documentFlows
+            DocumentFlows = documentFlows,
+            ReferenceClaims = referenceClaims,
+            EvaluatingRuleId = rule.Id,
+            EvaluatingGroupPass = rule.GroupPass
         };
 
     private static bool ContainsSamePage(ClaimPredicate predicate) =>
@@ -2421,6 +2769,78 @@ public sealed class RemediationSession : IDisposable
             NotClaimPredicate not => ContainsSamePage(not.Inner),
             _ => false
         };
+
+    private void AddConsumedInputWarning(
+        Rule rule,
+        IReadOnlyList<RemediationClaim> frontier,
+        IReadOnlyList<RemediationClaim> referenceClaims,
+        IReadOnlyList<RemediationClaim> groupClaims,
+        List<string> warnings)
+    {
+        var predicate = rule.Action switch
+        {
+            GroupRemediationAction group => group.Over,
+            MergeRemediationAction merge => merge.Over,
+            TableRemediationAction table => table.Over,
+            _ => null
+        };
+        if (predicate == null)
+        {
+            return;
+        }
+
+        var frontierIds = frontier.Select(x => x.ClaimId).ToHashSet();
+        foreach (var referencedRuleId in EnumerateFromRuleReferences(predicate).Distinct(StringComparer.Ordinal))
+        {
+            var produced = referenceClaims
+                .Where(x => x.Status == ClaimStatus.Applied &&
+                    rule.Pages.Includes(x.PageIndex, _document.Pages.Count) &&
+                    string.Equals(x.RuleId, referencedRuleId, StringComparison.Ordinal))
+                .ToArray();
+            if (produced.Length == 0 || produced.Any(x => frontierIds.Contains(x.ClaimId)))
+            {
+                continue;
+            }
+
+            var producedIds = produced.Select(x => x.ClaimId).ToHashSet();
+            var consumers = groupClaims
+                .Where(x => x.RelatedClaims.Any(y => producedIds.Contains(y.ClaimId)))
+                .Select(x => $"{x.RuleId} (pass {x.GroupPass})")
+                .Distinct(StringComparer.Ordinal)
+                .OrderBy(x => x, StringComparer.Ordinal)
+                .ToArray();
+            if (consumers.Length == 0)
+            {
+                continue;
+            }
+
+            var warning =
+                $"Rule '{rule.Id}' in Group pass {rule.GroupPass} matched no frontier claims from " +
+                $"referenced rule '{referencedRuleId}'; its {produced.Length} applied claim(s) were " +
+                $"consumed by lower-pass rule(s) [{string.Join(", ", consumers)}]. Select the produced parent instead.";
+            if (!warnings.Contains(warning, StringComparer.Ordinal))
+            {
+                warnings.Add(warning);
+            }
+        }
+    }
+
+    private static IEnumerable<string> EnumerateFromRuleReferences(ClaimPredicate predicate)
+    {
+        switch (predicate)
+        {
+            case BuiltInClaimPredicate { Kind: ClaimPredicateKind.FromRule, Value: not null } builtIn:
+                yield return builtIn.Value;
+                break;
+            case CompositeClaimPredicate composite:
+                foreach (var value in EnumerateFromRuleReferences(composite.Left)) yield return value;
+                foreach (var value in EnumerateFromRuleReferences(composite.Right)) yield return value;
+                break;
+            case NotClaimPredicate not:
+                foreach (var value in EnumerateFromRuleReferences(not.Inner)) yield return value;
+                break;
+        }
+    }
 
     private static void EvaluateRefineAttributeRule(
         PageRemediationState pageState,
@@ -2752,7 +3172,8 @@ public sealed class RemediationSession : IDisposable
             SelectorDebugString = rule.Predicate.DebugString,
             Action = rule.Action,
             RuleSetId = rule.RuleSetId,
-            TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
+            TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default,
+            GroupPass = rule.GroupPass
         };
         groupClaim.AddRelatedClaims(run);
         stageClaims.Add(groupClaim);
@@ -2763,6 +3184,13 @@ public sealed class RemediationSession : IDisposable
         List<string> diagnostics)
     {
         var pageLookup = pageStates.ToDictionary(x => x.PageIndex);
+        var groupClaims = pageStates
+            .SelectMany(x => x.GetClaimSnapshot(Stage.Group))
+            .Where(x => x.Status == ClaimStatus.Applied)
+            .DistinctBy(x => x.ClaimId)
+            .ToArray();
+        ValidateGroupComposition(groupClaims, diagnostics);
+
         foreach (var pageState in pageStates)
         {
             foreach (var claim in pageState.GetClaimSnapshot(Stage.Classify).Where(x => x.Status == ClaimStatus.Applied))
@@ -2782,6 +3210,123 @@ public sealed class RemediationSession : IDisposable
                 ValidateClaimConsumingBindings(pageState, claim, diagnostics);
             }
         }
+    }
+
+    internal void ValidateGroupComposition(
+        IReadOnlyList<RemediationClaim> groupClaims,
+        List<string> diagnostics)
+    {
+        var structuralClaims = groupClaims.Where(IsStructuralConsumer).ToArray();
+        var reportedClaims = new HashSet<ClaimId>();
+        foreach (var consumers in structuralClaims
+                     .SelectMany(parent => parent.RelatedClaims.Select(child => (parent, child)))
+                     .GroupBy(x => x.child.ClaimId)
+                     .Where(x => x.Count() > 1))
+        {
+            if (!reportedClaims.Add(consumers.Key))
+            {
+                continue;
+            }
+
+            var rules = consumers.Select(x => $"{x.parent.RuleId} (pass {x.parent.GroupPass})")
+                .Distinct(StringComparer.Ordinal);
+            ReportDiagnostic(
+                DiagnosticCode.GroupCompositionAmbiguous,
+                "GroupComposition",
+                $"Claim '{consumers.Key}' has multiple structural consumers [{string.Join(", ", rules)}].",
+                diagnostics);
+        }
+
+        foreach (var parent in structuralClaims)
+        {
+            for (var i = 0; i < parent.RelatedClaims.Count; i++)
+            {
+                for (var j = i + 1; j < parent.RelatedClaims.Count; j++)
+                {
+                    var left = parent.RelatedClaims[i];
+                    var right = parent.RelatedClaims[j];
+                    if (!IsDescendant(left, right, new HashSet<ClaimId>()) &&
+                        !IsDescendant(right, left, new HashSet<ClaimId>()))
+                    {
+                        continue;
+                    }
+
+                    ReportDiagnostic(
+                        DiagnosticCode.GroupCompositionAmbiguous,
+                        "GroupComposition",
+                        $"Rule '{parent.RuleId}' in Group pass {parent.GroupPass} selects both an ancestor " +
+                        $"and descendant claim ('{left.ClaimId}', '{right.ClaimId}').",
+                        diagnostics);
+                }
+            }
+        }
+
+        var states = new Dictionary<ClaimId, int>();
+        var path = new List<RemediationClaim>();
+        foreach (var claim in structuralClaims)
+        {
+            if (DetectCompositionCycle(claim, states, path, out var cycle))
+            {
+                ReportDiagnostic(
+                    DiagnosticCode.GroupCompositionCycle,
+                    "GroupComposition",
+                    $"Structural claim cycle detected: {string.Join(" -> ", cycle.Select(x => $"{x.RuleId}:{x.ClaimId}"))}.",
+                    diagnostics);
+                break;
+            }
+        }
+    }
+
+    private static bool IsStructuralConsumer(RemediationClaim claim) =>
+        claim.Action is GroupRemediationAction or MergeRemediationAction or TableRemediationAction { Over: not null };
+
+    private static bool IsDescendant(
+        RemediationClaim ancestor,
+        RemediationClaim candidate,
+        HashSet<ClaimId> visited)
+    {
+        if (!visited.Add(ancestor.ClaimId))
+        {
+            return false;
+        }
+        if (ancestor.RelatedClaims.Any(x => x.ClaimId == candidate.ClaimId))
+        {
+            return true;
+        }
+        return ancestor.RelatedClaims.Any(x => IsDescendant(x, candidate, visited));
+    }
+
+    private static bool DetectCompositionCycle(
+        RemediationClaim claim,
+        Dictionary<ClaimId, int> states,
+        List<RemediationClaim> path,
+        out IReadOnlyList<RemediationClaim> cycle)
+    {
+        if (states.TryGetValue(claim.ClaimId, out var state))
+        {
+            if (state == 1)
+            {
+                var start = path.FindIndex(x => x.ClaimId == claim.ClaimId);
+                cycle = path.Skip(Math.Max(0, start)).Append(claim).ToArray();
+                return true;
+            }
+            cycle = Array.Empty<RemediationClaim>();
+            return false;
+        }
+
+        states[claim.ClaimId] = 1;
+        path.Add(claim);
+        foreach (var child in claim.RelatedClaims)
+        {
+            if (DetectCompositionCycle(child, states, path, out cycle))
+            {
+                return true;
+            }
+        }
+        path.RemoveAt(path.Count - 1);
+        states[claim.ClaimId] = 2;
+        cycle = Array.Empty<RemediationClaim>();
+        return false;
     }
 
     private static void ValidateClaimTargets(
@@ -2995,48 +3540,59 @@ public sealed class RemediationSession : IDisposable
     {
         var pageLookup = pageStates.ToDictionary(x => x.PageIndex);
 
-        // Materialize every leaf before any document-scoped action consumes its binding.
+        // Materialize every ordinary leaf in the document before annotations attach to source or
+        // destination bindings that may live on another page.
         foreach (var pageState in pageStates)
         {
-            foreach (var claim in pageState.GetClaimSnapshot(Stage.Classify).Where(x => x.Status == ClaimStatus.Applied))
+            foreach (var claim in pageState.GetClaimSnapshot(Stage.Classify)
+                         .Where(x => x.Status == ClaimStatus.Applied && x.Action is not AdoptAnnotationRemediationAction))
             {
                 ApplyClassifyClaim(pageState, claim, diagnostics);
-                if (HasUnsuppressedDiagnostics(diagnostics))
-                {
-                    return;
-                }
+                if (HasUnsuppressedDiagnostics(diagnostics)) return;
+            }
+        }
+        foreach (var pageState in pageStates)
+        {
+            foreach (var claim in pageState.GetClaimSnapshot(Stage.Classify)
+                         .Where(x => x.Status == ClaimStatus.Applied && x.Action is AdoptAnnotationRemediationAction))
+            {
+                ApplyAdoptAnnotationClaim(pageState, claim, diagnostics);
+                if (HasUnsuppressedDiagnostics(diagnostics)) return;
             }
         }
 
-        foreach (var pageState in pageStates)
+        var orderedGroupClaims = pageStates
+            .SelectMany(x => x.GetClaimSnapshot(Stage.Group))
+            .Where(x => x.Status == ClaimStatus.Applied)
+            .OrderBy(x => x.GroupPass)
+            .ThenBy(x => x, ReadingOrderComparer);
+        foreach (var claim in orderedGroupClaims)
         {
-            foreach (var claim in pageState.GetClaimSnapshot(Stage.Group).Where(x => x.Status == ClaimStatus.Applied))
+            var pageState = pageLookup[claim.PageIndex];
+            if (claim.Action is TableRemediationAction)
             {
-                if (claim.Action is TableRemediationAction)
-                {
-                    ApplyTableClaim(pageState, claim, diagnostics);
-                }
-                else if (claim.Action is GroupRemediationAction)
-                {
-                    ApplyGroupClaim(claim, diagnostics);
-                }
-                else if (claim.Action is MergeRemediationAction)
-                {
-                    ApplyMergeClaim(pageState, claim, diagnostics);
-                }
+                ApplyTableClaim(pageState, claim, diagnostics);
+            }
+            else if (claim.Action is GroupRemediationAction)
+            {
+                ApplyGroupClaim(claim, diagnostics);
+            }
+            else if (claim.Action is MergeRemediationAction)
+            {
+                ApplyMergeClaim(pageState, claim, diagnostics);
+            }
 
-                foreach (var pageIndex in claim.PageIndexes)
+            foreach (var pageIndex in claim.PageIndexes)
+            {
+                if (pageLookup.TryGetValue(pageIndex, out var owningPage))
                 {
-                    if (pageLookup.TryGetValue(pageIndex, out var owningPage))
-                    {
-                        owningPage.MarkDirty();
-                    }
+                    owningPage.MarkDirty();
                 }
+            }
 
-                if (HasUnsuppressedDiagnostics(diagnostics))
-                {
-                    return;
-                }
+            if (HasUnsuppressedDiagnostics(diagnostics))
+            {
+                return;
             }
         }
 
@@ -3200,7 +3756,7 @@ public sealed class RemediationSession : IDisposable
                     cellNode.Scope = StructureScope.Column;
                 }
 
-                var bindings = cell.Claim.AppliedBindings.Where(x => x.StructureNode != null).ToList();
+                var bindings = GetReusableStructureBindings(cell.Claim);
                 if (bindings.Count == 0)
                 {
                     diagnostics.Add($"Rule '{claim.RuleId}' matched claim '{cell.Claim.ClaimId}' without a reusable structure binding.");
@@ -3538,6 +4094,12 @@ public sealed class RemediationSession : IDisposable
         }
     }
 
+    private static List<RemediationAppliedBinding> GetReusableStructureBindings(RemediationClaim claim) =>
+        claim.AppliedBindings
+            .Where(x => x.StructureNode != null &&
+                string.Equals(x.ProducedTag, claim.ProducedTag, StringComparison.Ordinal))
+            .ToList();
+
     private void ApplyGroupClaim(
         RemediationClaim claim,
         List<string> diagnostics)
@@ -3555,7 +4117,7 @@ public sealed class RemediationSession : IDisposable
         var reusedMcids = new List<int>();
         foreach (var related in claim.RelatedClaims.OrderBy(x => x, ReadingOrderComparer))
         {
-            var bindings = related.AppliedBindings.Where(x => x.StructureNode != null).ToList();
+            var bindings = GetReusableStructureBindings(related);
             if (bindings.Count == 0)
             {
                 diagnostics.Add($"Rule '{claim.RuleId}' matched claim '{related.ClaimId}' without a reusable structure binding.");
@@ -3577,6 +4139,7 @@ public sealed class RemediationSession : IDisposable
             parentNode.Parent,
             claim.Candidates.SelectMany(x => x.SourceReferences).ToArray(),
             claim.BoundingBox));
+        PositionNodeByFirstMcid(parentNode);
     }
 
     private void ApplyMergeClaim(
@@ -3603,7 +4166,7 @@ public sealed class RemediationSession : IDisposable
         var reusedMcids = new List<int>();
         foreach (var related in claim.RelatedClaims.OrderBy(x => x, ReadingOrderComparer))
         {
-            var bindings = related.AppliedBindings.Where(x => x.StructureNode != null).ToList();
+            var bindings = GetReusableStructureBindings(related);
             if (bindings.Count == 0)
             {
                 diagnostics.Add($"Rule '{claim.RuleId}' matched claim '{related.ClaimId}' without a reusable structure binding.");
@@ -3632,6 +4195,7 @@ public sealed class RemediationSession : IDisposable
             parentNode.Parent,
             claim.Candidates.SelectMany(x => x.SourceReferences).ToArray(),
             claim.BoundingBox));
+        PositionNodeByFirstMcid(parentNode);
     }
 
     private void FlattenBindingInto(RemediationAppliedBinding binding, StructureNode targetNode, string targetTag)
@@ -3716,7 +4280,7 @@ public sealed class RemediationSession : IDisposable
 
         foreach (var related in claim.RelatedClaims)
         {
-            var bindings = related.AppliedBindings.Where(x => x.StructureNode != null).ToList();
+            var bindings = GetReusableStructureBindings(related);
             if (bindings.Count == 0)
             {
                 diagnostics.Add($"Rule '{claim.RuleId}' matched claim '{related.ClaimId}' without a reusable structure binding.");
@@ -3775,7 +4339,7 @@ public sealed class RemediationSession : IDisposable
         var nodeClaims = new List<(StructureNode Node, RemediationClaim Claim, RemediationAppliedBinding Binding)>();
         foreach (var related in claim.RelatedClaims)
         {
-            var bindings = related.AppliedBindings.Where(x => x.StructureNode != null).ToList();
+            var bindings = GetReusableStructureBindings(related);
             if (bindings.Count == 0)
             {
                 diagnostics.Add($"Rule '{claim.RuleId}' matched claim '{related.ClaimId}' without a reusable structure binding.");
@@ -4003,18 +4567,52 @@ public sealed class RemediationSession : IDisposable
                     ? new MarkedContent(PdfName.Artifact)
                     : new MarkedContent(PdfName.Artifact)
                     {
-                        InlineProps = new PdfDictionary { [PdfName.TYPE] = (PdfName)declared.Subtype.ToString() }
+                        InlineProps = BuildArtifactProperties(
+                            new ArtifactRemediationAction(
+                                declared.Subtype,
+                                declared.SemanticSubtype,
+                                declared.IncludeBoundingBox,
+                                declared.Attached),
+                            item.GetBoundingBox())
                     });
             pageState.MarkDirty();
         }
     }
 
+    private static PdfDictionary BuildArtifactProperties(
+        ArtifactRemediationAction artifact,
+        PdfRect<double> bounds)
+    {
+        var properties = new PdfDictionary
+        {
+            [PdfName.TYPE] = (PdfName)artifact.Subtype.ToString()
+        };
+        if (artifact.SemanticSubtype != null)
+        {
+            properties[PdfName.Subtype] = (PdfName)artifact.SemanticSubtype.Value.ToString();
+        }
+        if (artifact.IncludeBoundingBox)
+        {
+            properties[PdfName.BBox] = PdfRectangle.FromContentModel(bounds).NativeObject;
+        }
+        if (artifact.Attached is { Count: > 0 })
+        {
+            properties[(PdfName)"Attached"] = new PdfArray(
+                artifact.Attached.Select(x => (IPdfObject)(PdfName)x.ToString()).ToList());
+        }
+        return properties;
+    }
+
     private static RemediationClaim CreateClaim(Rule rule, int pageIndex, RemediationCandidate candidate, ClaimStatus status, double confidence)
     {
+        var producedTag = rule.Action is AdoptAnnotationRemediationAction &&
+            candidate is AnnotationRemediationCandidate annotation
+                ? RequiredAnnotationTag(annotation.Subtype)
+                : rule.Action.DebugString;
         return new RemediationClaim(
             rule.Id,
             new[] { candidate },
-            rule.Action.DebugString,
+            producedTag,
             confidence)
         {
             PageIndex = pageIndex,
@@ -4222,7 +4820,9 @@ public sealed class RemediationSession : IDisposable
     private void ReportDiagnostic(DiagnosticCode code, string scope, string message, List<string> diagnostics)
     {
         var strict = Configuration.DiagnosticStrictness == RemediationDiagnosticStrictness.Strict;
-        var suppression = _suppressions.FirstOrDefault(x => x.Code == code && (x.Scope == "*" || x.Scope == scope));
+        var suppression = NonSuppressibleDiagnosticCodes.Contains(code)
+            ? null
+            : _suppressions.FirstOrDefault(x => x.Code == code && (x.Scope == "*" || x.Scope == scope));
         
         if (suppression != null && !strict)
         {
@@ -4508,13 +5108,26 @@ public sealed class RemediationSession : IDisposable
         GetOrCreateStructParentsIndex(page);
     }
 
-    internal void BindAnnotation(StructureNode node, PdfPage page, PdfDictionary annotation)
+    internal void BindAnnotation(
+        StructureNode node,
+        PdfPage page,
+        PdfDictionary annotation,
+        string? accessibleDescription = null,
+        StructureNode? destinationTarget = null)
     {
         ThrowIfDisposed();
 
         var index = Structure.GetStructureRoot().AllocateStructParentIndex();
         annotation[PdfName.StructParent] = new PdfIntNumber(index);
-        node.ObjectReferences.Add(new StructureObjectReference(annotation, index, page));
+        if (!string.IsNullOrWhiteSpace(accessibleDescription))
+        {
+            annotation[PdfName.Contents] = PdfString.CreateTextString(accessibleDescription);
+        }
+        node.ObjectReferences.Add(new StructureObjectReference(annotation, index, page)
+        {
+            AnnotationContents = accessibleDescription,
+            StructureDestinationTarget = destinationTarget
+        });
         GetOrCreateStructParentsIndex(page);
     }
 

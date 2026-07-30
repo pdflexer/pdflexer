@@ -50,8 +50,15 @@ Their shared shape defines the coverage hole this document fills:
 - no pre-existing marked content;
 - strict conformance for every generated remediation fixture.
 
-So the existing corpus exercises rule mechanics on clean input, and almost nothing else. Nothing
-below duplicates it.
+So the six family blueprints exercise rule mechanics on clean input, and almost nothing else. Nothing
+below duplicates them.
+
+**Tier 0 is now built** alongside them, in the same generator: C-01, C-02, C-03, C-12, C-23 and
+C-29-a/b commit; C-04 (three leftover policies plus an inventory variant), C-05, C-06-a/b and C-24 run through the same
+harness under a declared `FixtureOutcome`, so fixtures that must fail or must only diagnose still write
+their input and are still graded. Every committing fixture is gated three ways: raster comparison at
+`CompareMode.Exact`, glyph-position and glyph-box equivalence against its input, and veraPDF for its
+profile. Regeneration is asserted byte-identical.
 
 ---
 
@@ -69,7 +76,10 @@ Applies to every document unless the entry says otherwise.
    The permissive default in the current fixtures hides the path production actually takes.
 5. **Expected results live outside the rule set.** Store expected claim counts, structure shape, and
    MCID ownership as separate fixture data, so a test cannot pass by asserting whatever the rules
-   happened to produce (RRM-011 completion criterion).
+   happened to produce (RRM-011 completion criterion). *Partly satisfied:* the structural template
+   externalizes expected **shape** — it is authored independently and generation fails on any
+   unsuppressed difference — while claim counts and MCID ownership are still asserted inline in
+   `RemediationFixtureTests`.
 6. **Variant pairs.** Several entries below are `-a` / `-b` pairs: same rule set, one input drifted.
    A single document cannot test drift detection — the pair is the unit.
 7. **Visual invariance.** Remediation must not change appearance. See
@@ -293,15 +303,16 @@ marked-content sequence encloses them; content already marked `/Artifact` is not
 the leftover policy; optional content is either handled deliberately or diagnosed as unsupported —
 never silently tagged.
 
-### C-08 — Pre-existing annotations
+### C-08 — Pre-existing annotations — **Built**
 **Validates:** RRM-019
 
 Two-page document with live `Link` annotations over body text (one internal destination, one URI),
 a `Stamp`, a `Popup`, and a `FileAttachment`.
 
-**Assert:** commit diagnoses every annotation left with no structure binding; once adoption lands,
-existing annotations are bound to `Link`/`Annot` structure elements **without creating replacement
-annotations**, receive `/StructParent`, and their dictionaries are otherwise unmodified.
+**Asserted:** every visible supported annotation is adopted or deliberately exempt; existing
+annotations are bound to `Link`/`Annot` structure elements **without replacement**, receive unique
+`/StructParent` ownership and OBJR nesting, preserve object identity, and limit dictionary changes to
+accessibility keys. Both profiles pass veraPDF.
 
 Add a third case where a rule uses `RemediationActions.Link` to create a *new* link. Assert the
 created annotation carries an explicit zero-width border, and assert it at the raster level too — the
@@ -319,16 +330,16 @@ frame.
 naming the font and page — not as a save-time exception, and not as a rule failure. The
 documentation states these are outside what any rule set can repair.
 
-### C-10 — Running header and footer
+### C-10 — Running header, footer, and watermark — **Built**
 **Validates:** RRM-022
 
 Four-page document with a header repeating on every page (`Acme Corp — Confidential`), a footer with
 `Page N of 4`, and a diagonal watermark.
 
 **Assert:** artifacts carry `/Type /Pagination` with `/Subtype /Header` and `/Footer` respectively,
-the watermark carries `/Subtype /Watermark`, and `/BBox` and `/Attached` are emitted. Assert the
-dictionary contents directly — this is the most common artifact in transactional documents and the
-current subtype set cannot express it.
+the watermark carries `/Subtype /Watermark`, and `/BBox` and `/Attached` are emitted. Exact
+dictionaries are asserted on all four pages for both profiles, with rendering invariance and veraPDF
+validation.
 
 ### C-11 — Heading level skip pair
 **Validates:** RRM-023 · **Pair**
@@ -363,6 +374,16 @@ the page-1 rows; and MCIDs remain page-scoped and unique.
 The M0 page-locality decision (2026-07-28) made cross-page spanning an MVP requirement, so this is no
 longer a document that records current behavior for later — it is the acceptance fixture for M3a.
 Build it alongside that work rather than after it.
+
+> **As built (`c-12-continued-table`): five pages, and the terms section spans pages 4-5 rather than
+> 2-3.** Flow regions may not overlap — the engine reports *"Flow regions 'items' and 'terms' overlap
+> on page 2"* and refuses — and the table's flow runs from the page-1 header anchor to the page-4
+> subtotal, so it covers pages 2 and 3 entirely. A second cross-page flow therefore has to begin where
+> the first one ends. Both flows still span a page break, which is what the entry is for. Two related
+> constraints surfaced while building it and are worth knowing before authoring similar rule sets: a
+> flow's boundary lines sit *outside* the region they delimit and must be claimed by their own rules,
+> and a rule whose predicate references a page-scoped anchor must carry the same page selector or it
+> throws when the anchor is inactive.
 
 ### C-13 — Irregular table
 **Validates:** RRM-005, RRM-025
@@ -449,6 +470,25 @@ tags label and value separately.
 > The anchor-relative family is how nearly every hand-authored transactional rule will be written,
 > and no document in the corpus currently exercises it. This should arguably be built first.
 
+### C-29 — Structural composition across Group passes
+**Validates:** RRM-004 · **Pair** · **Tier 0**
+
+`C-29-a` paints list labels and bodies independently and assembles a valid nested list bottom-up:
+`L > LI > LBody > Span + P + L > LI > LBody > Span + P`. The independent label-like spans stay
+inside `LBody` deliberately: PDF/UA-2 requires `/ListNumbering` when `Lbl` is present, and that
+attribute remains RRM-021. The inner body, item, list, outer body, item, and list are produced in
+explicit passes, proving that each parent becomes the only frontier root available to the next
+depth without claiming that label splitting or `/ListNumbering` is complete.
+
+`C-29-b` paints two two-level sections and uses separate zones to produce two sibling chains, each
+`Sect > H1 + P + Sect > H2 + P`. Both outer sections are created in the same higher pass, proving
+that independent chains remain separate and retain global reading order.
+
+**Assert:** every structural rule binds a literal closed-template slot; planned and materialized
+template differences are empty; dry-run and commit claim graphs agree; root and child order are
+exact; leaf MCID sets are unchanged at every parent; ParentTree ownership is unique; regeneration is
+byte-identical; raster and glyph geometry are invariant; and both PDF/UA profiles pass veraPDF.
+
 ### C-24 — Ambiguous and repeated anchors
 **Validates:** RRM-028, anchor selection modes · **Tier 0**
 
@@ -456,10 +496,18 @@ Two pages. Page 1 contains the word `Date` three times — in the header, in a t
 and in the footer. `Amount` appears as both a column heading and a totals label. Page 2 repeats the
 header/footer labels but omits the table.
 
-**Assert:** `RequiredSingle` fails on page 1 with a diagnostic distinguishing **"ambiguous match on
-this page"** from **"no match on this page"**; `Occurrence`, `Style`, `NeighborText`, and
-`NthInReadingOrder` each disambiguate; `Pages` narrows scope so the page-2 absence is not an error;
-and the one-based `Occurrence` versus zero-based `NthInReadingOrder` behaviour is pinned by test.
+**Assert:** a single-match anchor is ambiguous on page 1 with a diagnostic distinguishing **"ambiguous
+match on this page"** from **"no match on this page"** — both messages exist and the fixture asserts
+each; `Style` and `NthInReadingOrder` each disambiguate; `Pages` narrows scope so the page-2 absence
+reads as *"not active on page 2"* rather than a match failure; and `NthInReadingOrder` is pinned as
+**zero-based** (`AnchorResolver.SelectNth`).
+
+> **Corrections against the shipped API.** There is no `Occurrence` anchor option — the shipped
+> disambiguators are the `AnchorSelection` modes plus `Style`, `NeighborText`, and `Pages`, so the
+> one-based/zero-based comparison this entry originally asked for has only one side. `NeighborText` is
+> **not** covered: it did not disambiguate a three-way repeated label at 30pt tolerance in this
+> document and reported ambiguity instead. That is unexplained and left uncovered deliberately rather
+> than tuned until it passed.
 
 ### C-25 — Variable-presence sections
 **Validates:** RRM-016, RRM-017 · **Pair (three variants)** · **Tier 1**
