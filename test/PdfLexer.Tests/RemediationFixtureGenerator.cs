@@ -67,7 +67,7 @@ internal static class RemediationFixtureGenerator
                 CreateStrictInvoiceInput,
                 CreateInvoiceRuleSet);
             var input = SaveInput(blueprint);
-            return SaveFixture(blueprint, input, PdfUaProfile.PdfUa1, strictConformance: true);
+            return SaveFixture(blueprint, input, PdfUaProfile.PdfUa1);
         }
     }
 
@@ -84,8 +84,7 @@ internal static class RemediationFixtureGenerator
     private static GeneratedRemediationFixture SaveFixture(
         RemediationFixtureBlueprint blueprint,
         GeneratedRemediationInput input,
-        PdfUaProfile profile,
-        bool strictConformance = false)
+        PdfUaProfile profile)
     {
         using var document = PdfDocument.Open(input.Bytes);
         var configuration = new RemediationSessionConfiguration
@@ -93,7 +92,7 @@ internal static class RemediationFixtureGenerator
             Language = "en-US",
             Title = $"Remediated {blueprint.Name}",
             Profile = profile,
-            StrictConformance = strictConformance,
+            StrictConformance = true,
             DebugWrite = true,
             LeftoverPolicy = RemediationLeftoverPolicy.AutoArtifact
         };
@@ -346,14 +345,10 @@ internal static class RemediationFixtureGenerator
         new(tag, id: id, pages: pages);
 
     private static PdfDocument CreateInvoiceInput() =>
-        CreateInvoiceInput(Standard14Font.GetHelvetica());
+        CreateInvoiceInput(CreateEmbeddedFont());
 
     private static PdfDocument CreateStrictInvoiceInput()
-    {
-        var testDir = PathUtil.GetPathFromSegmentOfCurrent("test");
-        var fontPath = Path.Combine(testDir, "Roboto-Regular.ttf");
-        return CreateInvoiceInput(TrueTypeFont.CreateWritableFont(File.ReadAllBytes(fontPath)));
-    }
+        => CreateInvoiceInput(CreateEmbeddedFont());
 
     private static PdfDocument CreateInvoiceInput(IWritableFont font)
     {
@@ -385,15 +380,16 @@ internal static class RemediationFixtureGenerator
     {
         var doc = PdfDocument.Create();
         var page = doc.AddPage(PageSize.LETTER);
+        var font = CreateEmbeddedFont();
         using var writer = page.GetWriter();
-        WriteLine(writer, 40, 750, "Account Statement", 18);
-        WriteLine(writer, 40, 710, "Bill To");
-        WriteLine(writer, 40, 688, "Ada Lovelace");
-        WriteLine(writer, 40, 666, "123 Analytical Engine Way");
-        WriteLine(writer, 40, 644, "London");
-        WriteLine(writer, 40, 610, "Ship To");
-        WriteLine(writer, 40, 588, "Same as billing");
-        WriteLine(writer, 520, 24, "Page 1");
+        WriteLine(writer, font, 40, 750, "Account Statement", 18);
+        WriteLine(writer, font, 40, 710, "Bill To");
+        WriteLine(writer, font, 40, 688, "Ada Lovelace");
+        WriteLine(writer, font, 40, 666, "123 Analytical Engine Way");
+        WriteLine(writer, font, 40, 644, "London");
+        WriteLine(writer, font, 40, 610, "Ship To");
+        WriteLine(writer, font, 40, 588, "Same as billing");
+        WriteLine(writer, font, 520, 24, "Page 1");
         return doc;
     }
 
@@ -401,13 +397,14 @@ internal static class RemediationFixtureGenerator
     {
         var doc = PdfDocument.Create();
         var page = doc.AddPage(PageSize.LETTER);
+        var font = CreateEmbeddedFont();
         using var writer = page.GetWriter();
-        WriteLine(writer, 40, 750, "Quarterly Report", 18);
-        WriteLine(writer, 40, 712, "Overview");
-        WriteLine(writer, 40, 690, "Revenue increased across all regions.");
-        WriteLine(writer, 40, 660, "Optional Notes");
-        WriteLine(writer, 40, 638, "No remediation exceptions were observed.");
-        WriteLine(writer, 520, 24, "Page 1");
+        WriteLine(writer, font, 40, 750, "Quarterly Report", 18);
+        WriteLine(writer, font, 40, 712, "Overview");
+        WriteLine(writer, font, 40, 690, "Revenue increased across all regions.");
+        WriteLine(writer, font, 40, 660, "Optional Notes");
+        WriteLine(writer, font, 40, 638, "No remediation exceptions were observed.");
+        WriteLine(writer, font, 520, 24, "Page 1");
         return doc;
     }
 
@@ -415,14 +412,15 @@ internal static class RemediationFixtureGenerator
     {
         var doc = PdfDocument.Create();
         var page = doc.AddPage(PageSize.LETTER);
+        var font = CreateEmbeddedFont();
         using var writer = page.GetWriter();
-        WriteLine(writer, 40, 750, "Registration Form", 18);
-        WriteLine(writer, 40, 710, "Full name");
-        WriteLine(writer, 180, 710, "Ada Lovelace");
-        WriteLine(writer, 40, 680, "Email");
-        WriteLine(writer, 180, 680, "ada@example.com");
-        WriteLine(writer, 40, 640, "I agree to receive notices.");
-        WriteLine(writer, 520, 24, "Page 1");
+        WriteLine(writer, font, 40, 750, "Registration Form", 18);
+        WriteLine(writer, font, 40, 710, "Full name");
+        WriteLine(writer, font, 180, 710, "Ada Lovelace");
+        WriteLine(writer, font, 40, 680, "Email");
+        WriteLine(writer, font, 180, 680, "ada@example.com");
+        WriteLine(writer, font, 40, 640, "I agree to receive notices.");
+        WriteLine(writer, font, 520, 24, "Page 1");
         return doc;
     }
 
@@ -430,42 +428,46 @@ internal static class RemediationFixtureGenerator
     {
         var doc = PdfDocument.Create();
         var page = doc.AddPage(PageSize.LETTER);
+        var font = CreateEmbeddedFont();
         using var writer = page.GetWriter();
-        WriteLine(writer, 40, 750, "Policy Update", 18);
-        WriteLine(writer, 40, 710, "Sidebar");
-        WriteLine(writer, 40, 688, "Important dates");
-        WriteLine(writer, 220, 710, "Main Column");
-        WriteLine(writer, 220, 688, "The updated policy applies next quarter.");
-        WriteLine(writer, 220, 666, "Review the summary before filing.");
-        WriteLine(writer, 520, 24, "Page 1");
+        WriteLine(writer, font, 40, 750, "Policy Update", 18);
+        WriteLine(writer, font, 40, 710, "Sidebar");
+        WriteLine(writer, font, 40, 688, "Important dates");
+        WriteLine(writer, font, 220, 710, "Main Column");
+        WriteLine(writer, font, 220, 688, "The updated policy applies next quarter.");
+        WriteLine(writer, font, 220, 666, "Review the summary before filing.");
+        WriteLine(writer, font, 520, 24, "Page 1");
         return doc;
     }
 
     private static PdfDocument CreateMixedPageSizeInput()
     {
         var doc = PdfDocument.Create();
+        var font = CreateEmbeddedFont();
         var letter = doc.AddPage(PageSize.LETTER);
         using (var writer = letter.GetWriter())
         {
-            WriteLine(writer, 40, 750, "Mixed Size Notice", 18);
-            WriteLine(writer, 40, 710, "Letter page content");
-            WriteLine(writer, 520, 24, "Page 1");
+            WriteLine(writer, font, 40, 750, "Mixed Size Notice", 18);
+            WriteLine(writer, font, 40, 710, "Letter page content");
+            WriteLine(writer, font, 520, 24, "Page 1");
         }
 
         var a4 = doc.AddPage(PageSize.A4);
         using (var writer = a4.GetWriter())
         {
-            WriteLine(writer, 40, 790, "Continuation", 18);
-            WriteLine(writer, 40, 750, "A4 page content");
-            WriteLine(writer, 500, 24, "Page 2");
+            WriteLine(writer, font, 40, 790, "Continuation", 18);
+            WriteLine(writer, font, 40, 750, "A4 page content");
+            WriteLine(writer, font, 500, 24, "Page 2");
         }
 
         return doc;
     }
 
-    private static void WriteLine(ContentWriter<double> writer, double x, double y, string text, double size = 12)
+    private static IWritableFont CreateEmbeddedFont()
     {
-        writer.Save().Font(Base14.Helvetica, size).TextMove(x, y).Text(text).Restore();
+        var testDir = PathUtil.GetPathFromSegmentOfCurrent("test");
+        var fontPath = Path.Combine(testDir, "Roboto-Regular.ttf");
+        return TrueTypeFont.CreateWritableFont(File.ReadAllBytes(fontPath));
     }
 
     private static void WriteLine(

@@ -976,16 +976,18 @@ claims. There is no candidate type, predicate, or action that adopts an annotati
 exists in the document. A remediated file therefore retains its original untagged annotations and
 fails conformance regardless of how completely the text was tagged.
 
-A secondary concern: because `Link` creates a new annotation rather than binding an existing one, a
-rule set that adds links introduces visual change (annotation borders). That conflicts with the MVP
-exit gate requiring "no unintended visual change."
+A secondary concern, now resolved: because `Link` creates a new annotation rather than binding an
+existing one, a rule set that adds links introduced visual change, since `CreateBaseAnnotation` emitted
+no `/Border` and the PDF default `[0 0 1]` draws a 1-unit frame. Created links now carry an explicit
+`/Border [0 0 0]`. Adopting *existing* annotations remains open.
 
 **Impact**
 
 - Documents with pre-existing hyperlinks cannot reach PDF/UA conformance through the rule language.
 - The most common real-world annotation case — a Word or InDesign export with live links — is
   uncovered.
-- Link creation may alter rendering in a way the exit gate forbids.
+- ~~Link creation may alter rendering in a way the exit gate forbids.~~ Fixed: created links carry an
+  explicit zero-width border.
 
 **Relevant code**
 

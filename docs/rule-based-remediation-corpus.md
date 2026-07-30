@@ -44,11 +44,11 @@ Their shared shape defines the coverage hole this document fills:
 
 - single page (except mixed page sizes, which has two);
 - one `Tj` per visual line, written through `Save().Font().TextMove().Text().Restore()`;
-- Base14 Helvetica, **not embedded** (only `invoice-table-strict` embeds Roboto);
+- embedded Roboto;
 - ASCII only;
 - text only — no images, paths, form XObjects, shadings, or annotations;
 - no pre-existing marked content;
-- `StrictConformance = false` in 36 of 37 test references, while production defaults to `true`.
+- strict conformance for every generated remediation fixture.
 
 So the existing corpus exercises rule mechanics on clean input, and almost nothing else. Nothing
 below duplicates it.
@@ -84,7 +84,7 @@ Remediation is expected to be visually lossless. This is a realistic invariant r
 aspiration, because the overwhelming majority of what the engine does is add **non-painting**
 operators — `BDC`/`EMC` scopes around content that is otherwise untouched.
 
-Two operations can break it, and one currently does.
+Two operations can break it. Both are now handled; the second was a live defect until fixed.
 
 **Text operator splitting** — to claim a word inside a `Tj`, the engine splits the operator, and
 that is the step that could move glyphs. `TextContent.TrySplitByCharacterRange` handles it
@@ -95,10 +95,12 @@ preserved by construction — but *by construction is not by test*, which is why
 Residual risk sits in text state that accumulates across a cut: `Tw` (which applies to byte 32 in
 single-byte encodings), `Tc`, `Tz`, `Ts`, and `TJ` kern adjustments straddling the split point.
 
-**Created link annotations** — `AnnotationFactory.CreateBaseAnnotation` emits no `/Border`, no
-`/BS`, and no `/F`. The PDF default `/Border` is `[0 0 1]`, so a viewer honoring the default draws a
-1-unit frame the original document did not have. This is a live defect, noted in RRM-019, and the
-fix is to emit `/Border [0 0 0]` (or `/BS << /W 0 >>`) on links the engine creates.
+**Created link annotations** — `AnnotationFactory.CreateBaseAnnotation` emitted no `/Border`, no
+`/BS`, and no `/F`. The PDF default `/Border` is `[0 0 1]`, so a viewer honoring the default drew a
+1-unit frame the original document did not have. **Fixed:** links created by the factory now carry an
+explicit `/Border [0 0 0]`, pinned by test in `RemediationSessionTests`. Widget annotations are
+deliberately untouched — they carry their own appearance streams and use `/MK` and `/BS` rather than
+`/Border`.
 
 Two further cases are scope caveats rather than defects:
 
@@ -126,9 +128,8 @@ with absolute positioning preserved, so the raster should be bit-identical. Hold
 `Exact` turns the harness into a much sharper instrument — **any** diff is a real defect rather than
 a judgement call about thresholds.
 
-Adapting it is a packaging exercise, not new work: `Compare.cs` is self-contained and depends only on
-`PdfLexer`, `PDFiumCore`, and `ImageSharp`. Extracting it into a small shared library that both the
-`util` tester and `PdfLexer.Tests` reference is the tidiest route.
+The test project already references `pdflexer.PdfiumRegressionTester`, so no extraction is needed.
+`RemediationFixtureTests` runs `CompareAllPages` in `CompareMode.Exact` for every generated fixture.
 
 **2. Content-model equivalence — the diagnosable one.** Compare before and after directly:
 
@@ -151,8 +152,8 @@ This satisfies the MVP exit gate's "rendering comparison shows no unintended vis
 directly, with existing tooling.
 
 Apply both to **every** fixture by default. Keep an explicit opt-out list; that list is then the
-honest inventory of where visual change is knowingly accepted — which today should contain exactly
-one entry, the created-link border in C-08, and should shrink to zero once that is fixed.
+honest inventory of where visual change is knowingly accepted — which today should be **empty**, now
+that the created-link border is fixed. Any entry added to it needs a recorded reason.
 
 ---
 
@@ -303,9 +304,9 @@ existing annotations are bound to `Link`/`Annot` structure elements **without cr
 annotations**, receive `/StructParent`, and their dictionaries are otherwise unmodified.
 
 Add a third case where a rule uses `RemediationActions.Link` to create a *new* link. Assert the
-created annotation carries an explicit zero-width border — this is the one place the engine
-currently introduces visual change, since `CreateBaseAnnotation` emits no `/Border` and the PDF
-default is `[0 0 1]`.
+created annotation carries an explicit zero-width border, and assert it at the raster level too — the
+unit test pins the dictionary, but this fixture is what proves a viewer honoring `/Border` renders no
+frame.
 
 ### C-09 — Conformance floor (three variants)
 **Validates:** RRM-026
@@ -629,6 +630,4 @@ an ambiguous anchor in it.
   changed writer silently changes what the corpus tests — the input is the fixture, not the code
   that produced it.
 - Visual comparison reuses `Compare` from `util/pdflexer.PdfiumRegressionTester` at
-  `CompareMode.Exact`. Extract it into a shared library rather than duplicating it; it depends only
-  on `PdfLexer`, `PDFiumCore`, and `ImageSharp`, all of which resolve from NuGet with no external
-  tool installation.
+  `CompareMode.Exact`; `PdfLexer.Tests` already project-references that library.

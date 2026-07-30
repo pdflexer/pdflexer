@@ -439,6 +439,16 @@ public static class AnnotationFactory
             [PdfName.Rect] = PdfRectangle.FromContentModel(rect).NativeObject
         };
 
+        if (subtype == PdfName.Link)
+        {
+            // The PDF default /Border is [0 0 1], so a viewer honoring it draws a 1-unit frame the
+            // source document never had. Links created by remediation must be visually invisible.
+            annotation[PdfName.Border] = new PdfArray
+            {
+                new PdfIntNumber(0), new PdfIntNumber(0), new PdfIntNumber(0)
+            };
+        }
+
         if (!string.IsNullOrWhiteSpace(contents))
         {
             annotation[PdfName.Contents] = PdfString.CreateTextString(contents);

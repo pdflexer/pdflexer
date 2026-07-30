@@ -1,5 +1,7 @@
 using System.IO;
 using System.Linq;
+using pdflexer.PdfiumRegressionTester;
+using PdfLexer.Content.Model;
 using PdfLexer.DOM;
 using Xunit;
 
@@ -109,6 +111,76 @@ public class RemediationFixtureTests
         Assert.Equal(2, mixedDocument.Pages.Count);
         Assert.All(mixedDocument.Pages, page => Assert.Contains("/Artifact", page.DumpDecodedContents()));
     }
+
+    [Fact]
+    public void Remediation_Fixtures_Are_Visually_And_Glyph_Position_Invariant()
+    {
+        var fixtures = RemediationFixtureGenerator.GenerateAll();
+        var diffRoot = Path.Combine(RemediationFixtureGenerator.FixtureRootPath, "visual-diffs");
+        Directory.CreateDirectory(diffRoot);
+
+        foreach (var fixture in fixtures)
+        {
+            var diffPrefix = Path.Combine(diffRoot, Path.GetFileNameWithoutExtension(fixture.FileName));
+            var comparison = new Compare(diffPrefix).CompareAllPages(
+                fixture.InputPath,
+                fixture.Path,
+                CompareMode.Exact);
+
+            Assert.All(
+                comparison,
+                result => Assert.False(
+                    result.HadChanges,
+                    $"{fixture.FileName}: {result.Type}; {result.Error}; diff={result.DiffImage}"));
+
+            using var baseline = PdfDocument.Open(fixture.InputPath);
+            using var candidate = PdfDocument.Open(fixture.Path);
+            Assert.Equal(baseline.Pages.Count, candidate.Pages.Count);
+            for (var pageIndex = 0; pageIndex < baseline.Pages.Count; pageIndex++)
+            {
+                var baselineText = baseline.Pages[pageIndex]
+                    .GetContentModel()
+                    .Flatten()
+                    .OfType<TextContent<double>>()
+                    .ToArray();
+                var candidateText = candidate.Pages[pageIndex]
+                    .GetContentModel()
+                    .Flatten()
+                    .OfType<TextContent<double>>()
+                    .ToArray();
+                var baselineGlyphs = baselineText.SelectMany(x => x.EnumerateCharacters()).ToArray();
+                var candidateGlyphs = candidateText.SelectMany(x => x.EnumerateCharacters()).ToArray();
+                var baselineBoxes = baselineText.SelectMany(x => x.GetGlyphBoundingBoxes()).ToArray();
+                var candidateBoxes = candidateText.SelectMany(x => x.GetGlyphBoundingBoxes()).ToArray();
+
+                Assert.Equal(baselineGlyphs.Select(x => x.Char), candidateGlyphs.Select(x => x.Char));
+                Assert.Equal(baselineGlyphs.Length, candidateGlyphs.Length);
+                for (var glyphIndex = 0; glyphIndex < baselineGlyphs.Length; glyphIndex++)
+                {
+                    Assert.InRange(
+                        candidateGlyphs[glyphIndex].XPos,
+                        baselineGlyphs[glyphIndex].XPos - 0.000001,
+                        baselineGlyphs[glyphIndex].XPos + 0.000001);
+                    Assert.InRange(
+                        candidateGlyphs[glyphIndex].YPos,
+                        baselineGlyphs[glyphIndex].YPos - 0.000001,
+                        baselineGlyphs[glyphIndex].YPos + 0.000001);
+                }
+
+                Assert.Equal(baselineBoxes.Length, candidateBoxes.Length);
+                for (var glyphIndex = 0; glyphIndex < baselineBoxes.Length; glyphIndex++)
+                {
+                    AssertCoordinateEqual(baselineBoxes[glyphIndex].LLx, candidateBoxes[glyphIndex].LLx);
+                    AssertCoordinateEqual(baselineBoxes[glyphIndex].LLy, candidateBoxes[glyphIndex].LLy);
+                    AssertCoordinateEqual(baselineBoxes[glyphIndex].URx, candidateBoxes[glyphIndex].URx);
+                    AssertCoordinateEqual(baselineBoxes[glyphIndex].URy, candidateBoxes[glyphIndex].URy);
+                }
+            }
+        }
+    }
+
+    private static void AssertCoordinateEqual(double expected, double actual) =>
+        Assert.InRange(actual, expected - 0.000001, expected + 0.000001);
 
     private static PdfName[] GetChildTypes(PdfDictionary parent) =>
         parent.Get<PdfArray>(PdfName.K)!

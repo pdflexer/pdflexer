@@ -1401,6 +1401,11 @@ public class RemediationSessionTests
         var destination = annotation.Get<PdfArray>(PdfName.Dest)!;
         Assert.Equal(PdfName.StructElem, destination[0].Resolve().GetAs<PdfDictionary>().Get<PdfName>(PdfName.TYPE));
         Assert.True(annotation.ContainsKey(PdfName.StructParent));
+
+        // Remediation must be visually lossless: without an explicit zero border the PDF default
+        // /Border [0 0 1] draws a frame the source document never had.
+        var border = annotation.Get<PdfArray>(PdfName.Border)!;
+        Assert.Equal(new[] { 0L, 0L, 0L }, border.Select(x => (long)x.Resolve().GetAs<PdfNumber>()));
     }
 
     [Fact]
