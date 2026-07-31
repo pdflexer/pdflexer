@@ -26,7 +26,8 @@ public sealed class RemediationReport
         IReadOnlyList<RemediationUnaccountedContent>? unaccountedContent = null,
         IReadOnlyList<RemediationAnnotationInventoryItem>? annotationInventory = null,
         IReadOnlyList<string>? warnings = null,
-        IReadOnlyList<RemediationTemplateDifference>? templateDifferences = null)
+        IReadOnlyList<RemediationTemplateDifference>? templateDifferences = null,
+        IReadOnlyList<RemediationTemplateAssemblyItem>? templateAssembly = null)
     {
         Committed = committed;
         AppliedAccessibilitySetup = appliedAccessibilitySetup;
@@ -43,6 +44,7 @@ public sealed class RemediationReport
         AnnotationInventory = annotationInventory ?? Array.Empty<RemediationAnnotationInventoryItem>();
         Warnings = warnings ?? Array.Empty<string>();
         TemplateDifferences = templateDifferences ?? Array.Empty<RemediationTemplateDifference>();
+        TemplateAssembly = templateAssembly ?? Array.Empty<RemediationTemplateAssemblyItem>();
         
         Outcomes = Claims.Select(CreateOutcome).ToList();
         SkippedOutcomes = SkippedClaims.Select(CreateOutcome).ToList();
@@ -68,6 +70,9 @@ public sealed class RemediationReport
 
     /// <summary>Machine-readable differences from the declared structural template.</summary>
     public IReadOnlyList<RemediationTemplateDifference> TemplateDifferences { get; }
+
+    /// <summary>Deterministic prescriptive-template occurrences used by planning and commit.</summary>
+    public IReadOnlyList<RemediationTemplateAssemblyItem> TemplateAssembly { get; }
 
     /// <summary>Diagnostic suppressions configured on the session.</summary>
     public IReadOnlyList<DiagnosticSuppression> Suppressions { get; }

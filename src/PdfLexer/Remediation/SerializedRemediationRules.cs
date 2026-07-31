@@ -54,7 +54,7 @@ public static class SerializedRemediationRules
         var normalization = ParseTextNormalization(root.OptionalObject("textNormalization"));
         var assertions = root.OptionalArray("assertions").Select(ParseAssertion).ToArray();
         var template = root.OptionalObject("template") is { } templateJson
-            ? new RemediationStructuralTemplate(ParseTemplateNode(templateJson))
+            ? new RemediationStructuralTemplate(ParseTemplateNode(templateJson), templateJson.OptionalEnum("mode", RemediationStructuralTemplateMode.Descriptive))
             : null;
 
         var artifacts = root.OptionalArray("artifacts").Select(ParseArtifactInventoryItem).ToArray();
@@ -259,6 +259,9 @@ public static class SerializedRemediationRules
         return kind switch
         {
             "tag" => RemediationActions.Tag(json.RequiredString("tag")),
+            "bind" => json.OptionalObject("over") is { } over
+                ? RemediationActions.BindOver(ParseClaimPredicate(over), json.OptionalEnum("contentMode", TemplateSlotContentMode.PreserveChildren))
+                : RemediationActions.Bind(),
             "artifact" => new ArtifactRemediationAction(
                 ParseArtifactType(json),
                 json.TryGetProperty("semanticSubtype", out _) ? json.OptionalEnum<ArtifactSemanticSubtype>("semanticSubtype") : null,
@@ -362,6 +365,7 @@ public static class SerializedRemediationRules
             "actionis" => ClaimPredicates.ActionIs(json.OptionalEnum<RemediationActionKind>("action")),
             "fromrule" => ClaimPredicates.FromRule(json.RequiredString("ruleId")),
             "fromruleset" => ClaimPredicates.FromRuleSet(json.RequiredString("ruleSetId")),
+            "fromslot" => ClaimPredicates.FromSlot(json.RequiredString("slot")),
             "statusis" => ClaimPredicates.StatusIs(json.OptionalEnum<ClaimStatus>("status")),
             "samepage" => ClaimPredicates.SamePage(),
             "consecutive" => ClaimPredicates.Consecutive(),

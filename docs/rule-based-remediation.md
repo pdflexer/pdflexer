@@ -8,6 +8,13 @@ This is not an automatic tagging system. The caller writes deterministic templat
 
 Use remediation only for untagged documents. Documents with an existing `StructTreeRoot` are rejected.
 
+Author a document family **template first**: declare the structure the family is supposed to have,
+name the regions and anchors, then write rules that bind content into declared slots. Prescriptive
+mode is the supported model — the template owns the structure tree and rules produce bindings, never
+structure. See [Architecture and Direction](rule-based-remediation-architecture.md) for the model,
+its invariants, and the open gaps. Descriptive mode is retained only for migrating rule sets that
+predate it.
+
 ```csharp
 using PdfLexer;
 using PdfLexer.Remediation;
@@ -35,7 +42,7 @@ if (report.Diagnostics.Count == 0)
 `DryRun()` evaluates rules and returns claims/diagnostics without mutating the document. `Commit()` reevaluates, applies accessibility setup, writes marked content, builds the structure tree, and runs integrity diagnostics.
 
 > [!IMPORTANT]
-> Because `Commit()` reevaluates, a clean dry run is not a guarantee of a clean commit. The relationship between the two results, and the document's state after a failed commit, are not currently specified — see RRM-030 in the [gap tracker](rule-based-remediation-gaps.md). Treat a failed commit as requiring a reopen until that contract is defined.
+> `Commit()` reevaluates the rules, but it is transactional: preflight failures do not mutate the document, and any unsuppressed failure after materialization restores the structure tree, page content, annotations, and original structure reference. A failed commit throws and the document’s reachable PDF object graph remains equivalent to its input (the serializer may allocate fresh object numbers on a later save). Reuse the session only for diagnostics; create a fresh session for a retry.
 
 Read [Before You Author Rules](#before-you-author-rules) first. Several documented behaviors have sharp edges that are easier to avoid than to debug.
 
@@ -189,6 +196,23 @@ Rules run in fixed stage order.
 - `Refine`: modifies existing claims by adding attributes, links, or sibling reordering.
 
 Group and refine rules do not re-select raw content. Pass 0 starts with applied classify claims. When a Group, MergeTo, or claim-consuming Table output is applied, its consumed roots leave the structural frontier and the new parent enters it; unconsumed roots carry forward. Rules in the same pass cannot consume peer output, and overlapping consumers are a non-suppressible composition error. Refine runs once after the final Group pass. This avoids duplicate MCIDs and keeps parent construction tied to real structure bindings. `Override` remains Classify-only and does not resolve Group composition conflicts.
+
+> [!NOTE]
+> **The Group stage is transitional.** It was designed to build hierarchy that nothing declared, and
+> prescriptive mode abolished that case — `Tag`, `Group`, and `MergeTo` are rejected there, leaving
+> only `BindOver` and `TableOver`, both of which partition already-bound claims rather than selecting
+> content. Partitioning is expected to move onto the composite slot itself, taking `groupPass` with
+> it. Use it where a repeating composite needs it today, but do not build on the assumption that the
+> stage is permanent. See
+> [Architecture and Direction](rule-based-remediation-architecture.md#the-invariant-puts-the-group-stage-in-question).
+>
+> A practical limit to know now: `BindOver` partitions by run continuation, and no claim predicate
+> expresses "start a new occurrence here." The only boundaries that work are the page break and,
+> indirectly, flow-region instances, so a repeating composite whose occurrences sit on one page
+> collapses into a single occurrence. This is tracked as
+> [RRM-042](rule-based-remediation-gaps.md#rrm-042-repeating-slot-occurrence-boundaries-are-not-declarable);
+> the fix declares the boundary on the repeating slot and derives it from the declared child shape
+> where the shape allows, so most repeating slots will need no partition declaration at all.
 
 ```csharp
 var classifyAddress = new Rule(
@@ -941,55 +965,138 @@ structure-element counts, and direct parent/child shapes produce
 
 A rule set may declare one closed, document-scoped `RemediationStructuralTemplate`. Its root must be
 exactly one `Document`; children are ordered and use `ExactlyOne`, `Optional`, `ZeroOrMore`, or
-`OneOrMore`. Template node ids are globally unique slots. A structure-producing rule binds a slot
-with `Rule.Slot`; several rules may share a repeating slot, while singular slots allow one rule.
-Slot-bound rules cannot also declare `RuleCardinality`.
+`OneOrMore`. Node ids are globally unique template slots. Omitted `mode` is `Descriptive`, which
+keeps the existing rule-built tree and validates its planned and materialized shape.
 
 ```csharp
-var template = new RemediationStructuralTemplate(new[]
-{
-    new RemediationStructuralTemplateNode("H1", id: "title"),
+var template = new RemediationStructuralTemplate(
     new RemediationStructuralTemplateNode(
-        "P", id: "body", occurrence: RemediationStructuralOccurrence.OneOrMore)
-});
-
-var ruleSet = new RuleSet(
-    "report",
-    new[]
-    {
-        new Rule("title", RemediationActions.Tag("H1"),
-            candidates: CandidateSelector.Text(Granularity.Paragraph), slot: "title"),
-        new Rule("body", RemediationActions.Tag("P"),
-            candidates: CandidateSelector.Text(Granularity.Paragraph), slot: "body")
-    },
-    structuralTemplate: template);
+        "Sect",
+        new[]
+        {
+            new RemediationStructuralTemplateNode("H1", id: "title"),
+            new RemediationStructuralTemplateNode("P", id: "body")
+        },
+        id: "section"),
+    RemediationStructuralTemplateMode.Prescriptive);
 ```
 
-JSON v1 uses a top-level `template` node with `tag`, optional `id`, `occurrence`, `pages`,
-`spansPages`, and `children`; rules use `slot`. Omitted occurrence means `exactlyOne`.
+Prescriptive mode is the template-first authoring surface. Every non-`Document` node has an id and
+its tag, hierarchy, occurrence, and sibling order are authoritative. A structure-producing rule
+must bind a declared slot; generic `Tag`, `Group`, and `MergeTo` rules cannot produce parallel
+structure in this mode. Bind leaf candidates with `RemediationActions.Bind()` and compose lower-pass
+claims with `RemediationActions.BindOver(...)`:
 
-Dry-run matches the finalized planned tree. Commit matches that plan before mutation, snapshots and
-matches the materialized builder tree, and rolls back on an unsuppressed mismatch. Differences are
-available through `RemediationReport.TemplateDifferences`, including positional paths, pages, slot
-and rule provenance. Suppression scopes have the form
-`RuleSet:{id}:Template:{derivedPath}`. Templates are descriptive in phase one: they validate but do
-not create missing containers.
+```csharp
+var rules = new[]
+{
+    new Rule("title", RemediationActions.Bind(),
+        Predicates.Text.Equals("Invoice"), CandidateSelector.Text(Granularity.Word), slot: "title"),
+    new Rule("body", RemediationActions.Bind(),
+        Predicates.Flow.InFlowRegion("body"), CandidateSelector.Text(Granularity.Paragraph), slot: "body"),
+    new Rule("section", RemediationActions.BindOver(ClaimPredicates.FromSlot("title")),
+        ClaimPredicate.Always, stage: Stage.Group, groupPass: 10, slot: "section")
+};
+```
 
-Template preflight recognizes the standard structure types for the configured authoring profiles
-and enforces the containment rules that strict accessibility authoring currently models explicitly:
-tables and their row/cell groups, and lists and their item/label/body groups. Other standard-tag
-parent/child combinations remain permissive in phase one and are still subject to the document's
-normal strict-authoring and external conformance validation. Template preflight should therefore
-not be read as a complete PDF/UA content-model validator.
+A singular composite such as `section` is synthesized automatically when a descendant is bound.
+Repeating composites require exactly one `BindOver` producer; each successful Group activation is a
+deterministic occurrence ordered by the earliest consumed child. Repeated leaves may have multiple
+bindings, while direct candidate binding to a composite and automatic correlation of repeated
+sibling branches are rejected. `TemplateSlotContentMode.FlattenLeafClaims` is available when the
+composite should carry leaf marked content directly.
+
+`ClaimPredicates.FromSlot("id")` resolves the first-class `RemediationClaim.SlotId`, including
+synthesized ancestors, and is available to later Group passes and Refine. The execution order is
+Classify, immutable numbered Group frontiers, template assembly, then Refine. Anchors, zones, flow
+regions, positional references, and tag predicates remain the detection tools; the template owns
+the resulting shape.
+
+Prescriptive ordering wins over MCID/content-position ordering for siblings. Repeated occurrences
+still follow document flow. The broad `ReadingOrderDrift` check is not emitted for prescriptive
+roots because a declared slot order is an authoring decision; content order remains available in
+claims and reports for review. Template `Pages` and `SpansPages` remain assertions, not occurrence
+partitioners. Standard table/list containment is enforced; other standard parent/child pairs remain
+permissive pending a complete PDF/UA content model.
+
+Cardinality may be declared alongside a slot. Cardinality counts selector inputs; template occurrence
+counts produced nodes, so both assertions are useful and neither silently overrides the other. One
+template may be owned by one rule set, while composed rule sets may contribute slot-binding rules;
+slot ids remain globally unique. Specialized `TableOver` and `AdoptAnnotation` actions may bind
+compatible slots and the declared root tag remains authoritative.
+
+Prescriptive leftovers are errors. `AutoArtifact` does not absorb content that matches no slot or
+explicit artifact-inventory item, so a prescriptive commit cannot hide a newly introduced semantic
+field. Artifacts remain outside the structural template and use the artifact inventory.
+
+JSON v1 uses the same additive surface:
+
+```json
+{
+  "template": {
+    "mode": "prescriptive",
+    "tag": "Document",
+    "children": [
+      { "tag": "Sect", "id": "section", "children": [
+        { "tag": "H1", "id": "title" },
+        { "tag": "P", "id": "body" }
+      ]
+    ]
+  },
+  "rules": [
+    { "id": "title", "slot": "title",
+      "candidates": { "kind": "text", "granularity": "word" },
+      "action": { "kind": "bind" } },
+    { "id": "section", "slot": "section", "stage": "group", "groupPass": 10,
+      "action": { "kind": "bind", "over": { "kind": "fromSlot", "slot": "title" } } }
+  ]
+}
+```
+
+Dry-run exposes the assembled `PlannedSemanticTree` and `TemplateAssembly`. Each assembly item names
+the slot, declared template path, occurrence index, durable identity, parent identity, producing rule
+and claim, consumed claims, and whether the node was synthesized or has an opaque interior. The CLI
+prints the same records. Identical input and rules produce identical assembly records, including for
+synthesized containers.
+
+Evaluation builds one immutable assembly plan. The planned semantic tree and commit materializer are
+two projections of that same plan; they do not independently infer ordering or parents. A materialized
+occurrence stores its path identity in `/ID`, for example `template:Document/items[2]/body[1]`.
+The `template:` namespace is reserved for this purpose: a colliding pre-existing id or duplicate
+identity is a non-suppressible commit blocker, and committed identities are entered uniquely in the
+structure IDTree.
+
+A specialized table bound to a `Table` slot is opaque below that root for template matching. Its
+`TR`/`TH`/`TD` grid is derived by `TableOver`, retains stable row and cell order, and is validated by
+the table hierarchy checks rather than pretending each derived cell is a declared slot occurrence.
+Table-interior slot ids may therefore be used as staging handles for cell claims, but are not copied
+to synthesized table-interior nodes. Structural `Link(...)` creation is rejected in prescriptive
+mode; use a slot-bound `AdoptAnnotation` rule for links and annotations.
+
+Commit compares the read-back structure against the planned projection before accessibility setup.
+Both pre-mutation validation failures and post-mutation divergences are commit blockers, and the
+transactional checkpoint restores the input object graph on failure. Prescriptive unaccounted content
+uses the non-suppressible `PrescriptiveUnaccountedContent` diagnostic; `AutoArtifact` cannot waive it.
+A later save may allocate fresh object numbers by design. Descriptive templates continue to validate
+but do not create missing containers; omitted templates preserve the original behavior. Both are
+retained only for migrating rule sets authored before prescriptive mode and should not be used for
+new families — see [Architecture and Direction](rule-based-remediation-architecture.md#migration).
 
 ## Authoring Guidance
 
-- Start with stable anchors and flow regions, then classify content inside those regions.
+- Write the template first. It states the structure the family is supposed to have, it is authored
+  from the document rather than from rule output, and its unfilled slots are the worklist for
+  everything below.
+- Name the places next — zones for regions, anchors for labels and repeated landmarks, flow regions
+  for content that continues across pages — then bind slots inside those regions.
+- Bind the easy slots first (titles, footers, fixed labels) and iterate on the positional ones.
+  Adjust the template when samples disagree with it: a slot absent from a third of the corpus is
+  `Optional`, not a rule bug.
 - Prefer predicate-based anchors for common labels that may appear more than once.
 - Use `maxDistance` for label/value fields so a nearby label does not capture unrelated content.
 - Use `FirstAfter` or `FirstIn` for ordered field extraction; use `NearestTo` only when geometric nearness is the intent.
-- Classify first, then group or refine claims. Do not try to build parent structure by re-selecting raw text.
-- Keep rule ids stable because reports, debug output, and downstream tests depend on them.
+- Classify first, then compose with Group passes. Do not try to build parent structure by re-selecting raw text; in prescriptive mode the template owns every node and rules only bind.
+- Reference slots rather than rule ids where the language allows it (`ClaimPredicates.FromSlot`). Slots are the stable names; rules churn during iteration. Rule ids that *are* referenced today — `FromRule`, `BeforeClaim`/`AfterClaim`, `PriorClaimAnchor`, and rule-output assertions — must be kept stable until slot-keyed equivalents exist.
 - Use `RemediationLeftoverPolicy.FailFast` in development *and* in production. When `AutoArtifact` is justified, declare a zone-qualified artifact inventory, inspect `report.AutoArtifacts`, and declare cardinality on every required semantic rule.
 - Route business-critical fields through `RuleCardinality.Exactly(...)` and use `RequiredSingle` anchors where stable anchor identity is also required.
 - Assert semantic output shape in application tests; cardinality detects selector drift but does not replace RRM-018 structure assertions.
@@ -998,3 +1105,11 @@ not be read as a complete PDF/UA content-model validator.
 ## Current Limitations
 
 See the [Rule-Based Remediation Gap Tracker](rule-based-remediation-gaps.md) for the full list with priorities and completion criteria, and the [Delivery Plan](rule-based-remediation-plan.md) for the milestone each one is scheduled into. The items most likely to affect a first template are RRM-016 (silent drift), RRM-026 (input conformance), RRM-032 (text normalization), and RRM-006 (the table example above).
+
+[Architecture and Direction](rule-based-remediation-architecture.md#current-gaps) groups the open
+gaps by where the fix has to happen and marks which ones become migrations if deferred. The four
+that are breaking rather than additive all concern identity: the slot declaration namespace is flat
+rather than path-scoped, durable references key on rule id rather than slot, anchors cannot reference
+slots, and `Pages`/`SpansPages` are assertions living on structural template nodes. The limitation
+most likely to decide whether a complicated family fits the model is the template grammar — an
+unambiguous ordered sequence, with no alternation, unordered groups, or conditional structure.

@@ -9,6 +9,7 @@ and what a test must assert.
 | Document | Role |
 | --- | --- |
 | [rule-based-remediation.md](rule-based-remediation.md) | The rule language and API as shipped |
+| [rule-based-remediation-architecture.md](rule-based-remediation-architecture.md) | The model, its invariants, and open architectural gaps |
 | [rule-based-remediation-gaps.md](rule-based-remediation-gaps.md) | Gap register (RRM-001 … RRM-035) |
 | [rule-based-remediation-plan.md](rule-based-remediation-plan.md) | Milestones, gates, sequencing |
 | **This document** | The input corpus those gaps are validated against |
@@ -53,8 +54,8 @@ Their shared shape defines the coverage hole this document fills:
 So the six family blueprints exercise rule mechanics on clean input, and almost nothing else. Nothing
 below duplicates them.
 
-**Tier 0 is now built** alongside them, in the same generator: C-01, C-02, C-03, C-12, C-23 and
-C-29-a/b commit; C-04 (three leftover policies plus an inventory variant), C-05, C-06-a/b and C-24 run through the same
+**Tier 0 is now built** alongside them, in the same generator: C-01, C-02, C-03, C-12, C-23,
+C-29-a/b, and C-30 commit; C-04 (three leftover policies plus an inventory variant), C-05, C-06-a/b and C-24 run through the same
 harness under a declared `FixtureOutcome`, so fixtures that must fail or must only diagnose still write
 their input and are still graded. Every committing fixture is gated three ways: raster comparison at
 `CompareMode.Exact`, glyph-position and glyph-box equivalence against its input, and veraPDF for its
@@ -488,6 +489,18 @@ that independent chains remain separate and retain global reading order.
 template differences are empty; dry-run and commit claim graphs agree; root and child order are
 exact; leaf MCID sets are unchanged at every parent; ParentTree ownership is unique; regeneration is
 byte-identical; raster and glyph geometry are invariant; and both PDF/UA profiles pass veraPDF.
+
+### C-30 — Prescriptive repeated sections
+**Validates:** RRM-039 phase 2 · **Pair** · **Tier 0**
+
+Two pages each paint one paragraph. A prescriptive template declares repeating
+`Document > Sect#section+ > P#line`; the leaf rule binds paragraph claims and a pass-10 `BindOver`
+rule creates one section occurrence per page. The fixture commits under PDF/UA-1 and PDF/UA-2.
+
+**Assert:** dry-run and commit have no template differences; occurrence identities are deterministic
+and unique; the declared hierarchy and sibling order are exact; ParentTree ownership is unique; and
+the standard corpus gates prove byte-stable regeneration, raster and glyph-box invariance, and
+veraPDF success.
 
 ### C-24 — Ambiguous and repeated anchors
 **Validates:** RRM-028, anchor selection modes · **Tier 0**

@@ -47,7 +47,11 @@ public enum DiagnosticCode
     /// <summary>An annotation adoption target was ambiguous.</summary>
     AnnotationAdoptionAmbiguous = 24,
     /// <summary>An annotation was selected by more than one consumer.</summary>
-    AnnotationAlreadyConsumed = 25
+    AnnotationAlreadyConsumed = 25,
+    /// <summary>Painting content was not bound or declared as an artifact under a prescriptive template.</summary>
+    PrescriptiveUnaccountedContent = 26,
+    /// <summary>A deterministic template occurrence identity collides with another structure node.</summary>
+    TemplateIdentityCollision = 27
 }
 
 /// <summary>

@@ -1,6 +1,6 @@
 # Rule-Based Remediation Gap Tracker
 
-Last reviewed: 2026-07-26
+Last reviewed: 2026-07-31
 
 > [!NOTE]
 > This is the gap **register** — what is missing and why it matters. For the scheduled version
@@ -11,6 +11,10 @@ Last reviewed: 2026-07-26
 > RRM-039 through RRM-041 are specified together in the
 > [Structural Model design](rule-based-remediation-structural-model.md), which also records how they
 > change RRM-004, RRM-016, RRM-017, and RRM-018.
+>
+> RRM-042 through RRM-046 follow from the prescriptive-only decision and are specified in
+> [Architecture and Direction](rule-based-remediation-architecture.md). They are the declarations a
+> dynamic document family needs once the template owns structure.
 
 This document tracks gaps in the current `PdfLexer.Remediation` declarative
 rule language and runtime. It is intentionally narrower than
@@ -70,7 +74,7 @@ PDF/UA assurance as complete.
 | RRM-027 | P1 | Complete | The confidence model is undefined and `MinConfidence` is unusable by default |
 | RRM-028 | P1 | Complete | Anchor resolution scope is per page but documented as absolute |
 | RRM-029 | P1 | Complete | Structure sibling order and the reading-order default are unspecified |
-| RRM-030 | P1 | Open | `DryRun` does not guarantee `Commit`; failure semantics are undocumented |
+| RRM-030 | P1 | Complete | `Commit` is all-or-nothing with checkpointed rollback |
 | RRM-031 | P1 | Open | Rule-set composition and precedence are undefined |
 | RRM-032 | P0 | Complete | Text normalization for predicate matching is unspecified |
 | RRM-033 | P1 | In progress | No negative explain or per-rule match diagnostics |
@@ -79,9 +83,14 @@ PDF/UA assurance as complete.
 | RRM-036 | P0 | Open | Geometric tolerances are authored constants with no calibration |
 | RRM-037 | P0 | Open | No forward authoring inspection of what the engine sees |
 | RRM-038 | P1 | Open | Serialized schema is a projection of the C# API, not the contract |
-| RRM-039 | P0 | Phase 1 complete; phase 2 deferred | Descriptive structural templates validate planned and materialized output |
+| RRM-039 | P0 | Complete | Descriptive validation and prescriptive slot-owned materialization |
 | RRM-040 | P0 | Complete | Expected page furniture is not declarable, so artifacting is unbounded |
 | RRM-041 | P1 | Open | Recurring predicate logic cannot be named or reused |
+| RRM-042 | P0 | Open | Repeating-slot occurrence boundaries are not declarable |
+| RRM-043 | P1 | Open | Region declarations are fragmented and do not compose |
+| RRM-044 | P1 | Open | Content-independent structure attributes require rules |
+| RRM-045 | P0 | Open | Prescriptive content accounting is per item and its diagnostic identifies nothing |
+| RRM-046 | P0 | Open | Declared reading order is never checked against document order |
 
 RRM-016 through RRM-035 were added by a second review pass on 2026-07-24 that examined the
 documented concept model and public API rather than runtime behavior. They are concept and contract
@@ -180,6 +189,17 @@ one that matters most — nothing currently asserts that the semantics the autho
 semantics the document ended up with — and they do it by declaration rather than by accumulating more
 hand-written checks. Part of the added estimate is recovered rather than spent: RRM-039 subsumes most
 of RRM-018's remaining assertion forms and supplies the weak form of RRM-017 for free.
+
+A fourth review pass on 2026-07-31, following the decision that prescriptive mode is the only
+supported model, added RRM-042 through RRM-046. These follow from that decision rather than extending
+scope: once the template owns structure, the remaining authoring work is labeling content into slots,
+partitioning repeated content into occurrences, and accounting for the rest — and only labeling is
+currently declared where it belongs. RRM-042 and RRM-045 are P0 because a dynamic family cannot be
+remediated without them: repeated content on one page collapses into a single occurrence, and content
+accounting is an open-ended rule backlog that never closes. RRM-046 is P0 because the prescriptive
+decision removed every reading-order check without replacing any of them. RRM-042 through RRM-044
+each *remove* authored artifacts — a partition rule, three region types, one Refine rule per static
+attribute — so the net effect on rule-set size is negative even though the declaration surface grows.
 
 The earlier "80-85% complete" characterization remains reasonable for the *rule language*. It is too
 generous for the *system*, where the assurance layer that would let a rule set run unattended does
@@ -1371,38 +1391,32 @@ single-column page, what determines whether the footer claim precedes the title 
 - [ ] The reading-order-drift diagnostic references the documented default.
 - [ ] Tests assert tree order for claims created by rules declared out of visual order.
 
-## RRM-030: `DryRun` does not guarantee `Commit`; failure semantics are undocumented
+## RRM-030: `Commit` failure semantics and rollback
 
-**Status:** Open
+**Status:** Complete
 
 **Priority:** P1
 
-The documented workflow is `if (report.Diagnostics.Count == 0) session.Commit();`, and the same
-section states that `Commit()` reevaluates. Nothing states whether the reevaluation can produce
-diagnostics the dry run did not, what happens when it does, or what state the `PdfDocument` is left
-in on failure.
+`DryRun()` and `Commit()` evaluate the same composed rules, but commit reevaluation can still expose
+input or materialization failures. The commit boundary is now explicit: declaration, cardinality,
+composition, template, and artifact validation run before mutation; `Commit()` then takes a recursive
+checkpoint of reachable PDF dictionaries/arrays and the original structure reference before applying
+content, structure, annotation, and accessibility changes.
 
-The gap tracker asserts "atomic commit behavior" among the engine's strengths. That guarantee, if it
-holds, belongs in the user-facing contract; if it does not hold in some cases, those cases need
-naming.
-
-**Impact**
-
-- The recommended workflow implies a guarantee that is not stated.
-- Callers cannot tell whether a failed commit leaves a reusable document or requires a reopen.
-- Retry and error-handling code cannot be written correctly against the documentation.
-
-**Relevant code**
-
-- `src/PdfLexer/Remediation/RemediationSession.cs` (`DryRun`, `Commit`)
+If any unsuppressed diagnostic or exception occurs after mutation, the checkpoint is restored and the
+exception is rethrown. The document's reachable PDF object graph, page content, annotations, structure
+reference, and catalog/page dictionaries are therefore unchanged. A failed session should be
+replaced with a fresh session for retry. Repeated `Commit()` calls on a successful session remain an
+`InvalidOperationException`; a failed call leaves the document reusable but the session is not a
+retry coordinator.
 
 **Completion criteria**
 
-- [ ] The relationship between dry-run and commit results is specified.
-- [ ] Commit failure semantics — throw, partial application, rollback, document state — are
-  documented.
-- [ ] If commit is atomic, a test demonstrates that a failed commit leaves the document unmodified.
-- [ ] Repeated `Commit()` calls have defined behavior.
+- [x] Dry-run and commit use the same staged evaluation and planned semantic tree.
+- [x] Pre-mutation failures block commit without touching the document.
+- [x] Post-mutation failures restore the structure/content checkpoint and original structure reference.
+- [x] A regression test covers object-graph-stable rollback after a later failure.
+- [x] Repeated `Commit()` calls have defined behavior.
 
 ## RRM-031: Rule-set composition and precedence are undefined
 
@@ -1716,9 +1730,9 @@ failure with a different remedy.
 - [ ] The schema is documented as the language contract, with the C# surface described as a
   convenience over it.
 
-## RRM-039: Expected document structure is not declarable
+## RRM-039: Structural templates own expected document structure
 
-**Status:** Open
+**Status:** Complete
 
 **Priority:** P0
 
@@ -1760,16 +1774,27 @@ diffed against the template. Phase two lets the template drive materialization.
 - [x] The produced tree is diffed against the template, reporting missing required nodes, unexpected
   nodes, wrong order, occurrence violations, illegal nesting, and slots bound but unfilled.
 - [x] Each difference kind is a suppressible diagnostic code with a scope and recorded reason.
-- [x] Declaring both a template occurrence and a per-rule cardinality on the same rule is a
-  validation error rather than a silent precedence rule.
+- [x] Declaring both a template occurrence and a per-rule cardinality is supported as two independent
+  assertions: occurrence constrains produced nodes and cardinality constrains selector inputs.
 - [x] A rule set with no template behaves exactly as it does today.
 - [x] Corpus fixtures cover an optional section absent and present, a repeating section, and a
   structure that is valid PDF/UA but wrong against its template.
 
-**Deferred to phase two, tracked here**
+**Phase two — prescriptive template-first mode (complete 2026-07-30)**
 
-- [ ] The template drives materialization and rules bind claims into declared slots.
-- [ ] Alternation and recursion operators, if the corpus requires them.
+- [x] `Descriptive` and opt-in `Prescriptive` template modes are explicit in C# and JSON.
+- [x] `Bind`, `BindOver`, `TemplateSlotContentMode`, and first-class `RemediationClaim.SlotId` bind claims to declared slots.
+- [x] Singular composite ancestors are synthesized; repeated composites require one `BindOver` producer and receive deterministic occurrence identities.
+- [x] Template-declared tags, hierarchy, occurrence, and sibling order own materialization; Refine can target synthesized slots with `FromSlot`.
+- [x] Specialized tables and annotation adoption can bind compatible template roots; artifacts remain inventory-managed.
+- [x] Pre-mutation validation, prescriptive leftover errors, planned/read-back comparison, and all-or-nothing rollback are documented and tested.
+- [x] Hardening uses one immutable assembly plan for dry-run and commit; root ordering, stable occurrence identities, directly bound parents, and nested `BindOver` passes are covered.
+- [x] Specialized table interiors are opaque to slot matching and a twenty-row regression pins stable order; annotation adoption and Refine-through-slot are covered end to end.
+- [x] Assembly provenance is public in reports and CLI output; reserved durable `/ID` values and non-suppressible prescriptive leftovers are enforced.
+- [x] A committing prescriptive `BindOver` corpus fixture runs under both PDF/UA profiles and inherits regeneration, raster, glyph, and veraPDF gates.
+
+Alternation and recursion operators remain outside this unit and will be added only if the real
+internal corpus requires them.
 
 ## RRM-040: Expected page furniture is not declarable
 
@@ -1854,6 +1879,207 @@ nothing about ownership, staging, or the leftover policy changes.
   label means what they think before writing rules that consume it.
 - [ ] Labels round-trip through the serialized schema.
 - [ ] Named `label`, not `tag`, throughout the API, schema, and documentation.
+
+---
+
+## RRM-042: Repeating-slot occurrence boundaries are not declarable
+
+**Status:** Open
+
+**Priority:** P0
+
+**Design:** [Architecture and Direction](rule-based-remediation-architecture.md#1-occurrence-boundaries-are-declared-on-the-slot)
+
+The template declares *shape* — which slots repeat — but nothing declares *count*: how many
+occurrences of a repeating composite exist, and which bound claims belong to which. That decision is
+unavoidable because it is a fact about the document, and it currently lives in `BindOver`, which
+builds runs of consecutive claims matching a `ClaimPredicate` and breaks a run only at a page
+boundary with no shared flow instance (`RemediationSession.EvaluateDocumentClaimRunRule`).
+
+The consequence is a silent collapse. `RemediationStructuralTemplateTests.cs:504` declares
+`Sect#item` (`OneOrMore`) over `P#line` (`ExactlyOne`) and passes with its two lines on separate
+pages; with both lines on one page it produces **one** `item` containing both, and reports
+`TemplateWrongOrder` naming the child slot rather than the missing partition.
+
+`FlowBoundary` (`FlowRegion.cs:65-74`) is already the right vocabulary — `Anchor`, `Zone`,
+`Matching(predicate)`, `PageBoundary` — but it is reachable only through `FlowRegion` and clipped
+there: `ProbeBoundary` returns one boundary per page, and `byPage[pageIndex][regionId]` holds one
+resolution per region per page (`DocumentFlowRegionResolver.cs:90`, `:138`), so a region cannot
+activate twice on a page.
+
+The proposal is to make the boundary a property of the repeating slot, **derived from the declared
+child shape by default**: the first declared child, when it is required and non-repeating, is the
+opening child, and a claim bound to it closes the current occurrence and opens the next. Where the
+opener is optional, repeating, or absent, the template is rejected at declaration time and the author
+declares `startsOn` explicitly.
+
+**Impact**
+
+- A repeating section that occurs more than once on a page silently collapses into one occurrence,
+  which is the normal case for line items, transaction rows, and repeated blocks — the shapes that
+  make a family dynamic in the first place.
+- The partition is authored procedurally, in a rule, per rule set, rather than declared on the slot
+  it partitions.
+- Occurrence identity keys on run position, so `template:Document/item[2]/line[1]` can shift when an
+  unrelated rule changes what else is on the page.
+- Nesting depth is restated by hand as `groupPass`, though the template already states it.
+
+**Completion criteria**
+
+- [ ] Flow-region activation is not capped at one instance per page; a page holds an ordered list of
+  resolutions per region.
+- [ ] A repeating composite slot carries an occurrence boundary, declared or derived.
+- [ ] The default derivation from the declared opening child is specified and tested, including the
+  nested case where an outer boundary closes open inner occurrences.
+- [ ] A repeating composite whose boundary cannot be derived is rejected at declaration time with the
+  slot named, not at commit.
+- [ ] Occurrence identity keys on boundary activation, and is stable across unrelated rule changes.
+- [ ] A repeating composite occurring twice on one page produces two occurrences, with a fixture that
+  fails before the change.
+- [ ] Boundaries round-trip through the serialized schema.
+
+---
+
+## RRM-043: Region declarations are fragmented and do not compose
+
+**Status:** Open
+
+**Priority:** P1
+
+**Design:** [Architecture and Direction](rule-based-remediation-architecture.md#2-one-region-concept-not-four)
+
+`NamedLayoutZone`, `TolerancedZone`, `FlowRegion`, and anchors are four declarations of one idea — a
+named place on the page — differing only in whether the place is fuzzy and whether it continues. An
+author picks one at declaration time and then cannot obtain the properties of another, because
+tolerance is a property of one type and continuation of a different one. A fuzzy header band that
+continues across pages is not expressible in any of them.
+
+The proposal is one `Region` declaration carrying `Tolerance`, `Start`/`End` boundaries, and
+`Continuation` as optional properties, with the named layout zones retained as presets. Anchors stay
+distinct — they are content-derived points, not places — but should yield regions, so that
+anchor-relative selection is expressed in the same vocabulary as everything else.
+
+**Impact**
+
+- Four concepts to learn before authoring, where the differences are properties rather than kinds.
+- Properties cannot be combined, so real layouts fall between the available types.
+- Positional logic is expressed differently depending on which type was picked, making rule sets
+  harder to read and compare across families.
+
+**Completion criteria**
+
+- [ ] One region declaration subsumes named zones, toleranced zones, and flow regions.
+- [ ] Tolerance and continuation are independent properties, valid in combination.
+- [ ] Anchors yield regions usable anywhere a region is accepted.
+- [ ] Named layout zones remain available as presets over the unified type.
+- [ ] Existing declarations migrate mechanically, and the serialized schema expresses the unified
+  form.
+
+---
+
+## RRM-044: Content-independent structure attributes require rules
+
+**Status:** Open
+
+**Priority:** P1
+
+**Design:** [Architecture and Direction](rule-based-remediation-architecture.md#3-content-independent-attributes-are-declared-not-refined)
+
+Most structure attributes in a known family are constant per slot: `/Lang`, `/Scope` on header cells,
+`/ListNumbering`, `/Placement`, alt text for a fixed logo. Each one currently costs a Refine rule
+whose predicate re-finds content that is *already bound to the slot needing the attribute*. The rule
+carries no information the declaration does not already have.
+
+Content-independent attributes belong on the template node, extending the prescriptive invariant to
+cover the declared nodes and their content-independent properties. Refine then exists only for
+attributes genuinely derived from content — alt text from a caption, `/ColSpan` from geometry.
+
+**Impact**
+
+- A large fraction of a typical rule set is re-selection ceremony rather than mapping logic.
+- Static attributes are expressed against churning rule ids rather than the stable slot.
+- The distinction between "what this node is" and "how content is found" is blurred, in the direction
+  that makes rule sets harder to review.
+
+**Completion criteria**
+
+- [ ] Template nodes carry content-independent attributes, validated against the tag at declaration
+  time.
+- [ ] Assembly applies declared attributes without a rule.
+- [ ] A Refine rule targeting an attribute already declared on the slot is a validation error, not a
+  silent last-writer-wins.
+- [ ] Declared attributes round-trip through the serialized schema.
+
+---
+
+## RRM-045: Prescriptive content accounting is per item and its diagnostic identifies nothing
+
+**Status:** Open
+
+**Priority:** P0
+
+**Design:** [Architecture and Direction](rule-based-remediation-architecture.md#4-accounting-is-declared-by-region)
+
+In prescriptive mode, painting content that matched no slot and no declared artifact is a
+non-suppressible commit blocker (`RemediationSession.cs:2280`). The only way to clear it is an
+`Artifact` rule per kind of incidental content — page numbers, rules, shading, watermarks,
+continuation notices — so each new sample of a dynamic family yields new blockers and the accounting
+backlog never closes. `RemediationArtifactInventoryItem.ZoneId` does not help: it constrains where a
+*declared* artifact may appear, and says nothing about what a region's unbound content is.
+
+Separately, the prescriptive branch of `ApplyLeftoverPolicy` reports one per-page diagnostic and
+returns before populating `unaccountedContent`, so the strictest mode reports the least about what
+actually failed. The author is told that something on page 3 is unaccounted, and not what.
+
+**Impact**
+
+- The strictness that makes prescriptive mode worth having is the thing that makes it impractical to
+  reach a clean commit on a real family.
+- Accounting is an open-ended rule backlog rather than a reviewable declaration.
+- The diagnostic cannot be acted on without instrumenting the engine.
+
+**Completion criteria**
+
+- [ ] The artifact inventory supports region-scoped absorption: unbound painting content in a
+  declared region is a declared artifact of a stated subtype.
+- [ ] Absorption is bounded by the declared region and remains a blocker everywhere else.
+- [ ] Absorbed content is reported per item, so a reviewer can see what a catch region swallowed.
+- [ ] `unaccountedContent` is populated in prescriptive mode, identifying each unaccounted item.
+- [ ] Region-scoped absorption round-trips through the serialized schema.
+
+---
+
+## RRM-046: Declared reading order is never checked against document order
+
+**Status:** Open
+
+**Priority:** P0
+
+**Design:** [Architecture and Direction](rule-based-remediation-architecture.md#the-guardrail)
+
+Under a prescriptive template, declared order is never compared against the order content appears in
+the document. Assembly places nodes in declaration order, the matcher then validates that reordered
+tree — so its ordering checks are near-tautological — and `CheckReadingOrder` returns early
+(`RemediationSession.cs:5063`). Three layers, no check.
+
+This is a deliberate consequence of the template owning order, and it is correct for intentional
+reordering. It is currently unqualified: there is no diagnostic anywhere when declared order and
+content order disagree, so a template that states the wrong order produces a clean commit and an
+output that reads incorrectly. Reading order is most of what PDF/UA exists to guarantee, and every
+gap above moves more authority onto the template.
+
+**Impact**
+
+- The most consequential class of remediation error is the one with no diagnostic.
+- veraPDF cannot catch it: the output is well-formed, and wrong.
+- A template authored from a misread sample stays wrong silently across an entire family.
+
+**Completion criteria**
+
+- [ ] Declared sibling order is compared against document order under a prescriptive template.
+- [ ] Divergence is reported per slot, naming the declared and observed positions.
+- [ ] Intentional reordering is a per-slot opt-in, not a global suppression.
+- [ ] A fixture covers declared order diverging from content order, and fails before the change.
 
 ---
 

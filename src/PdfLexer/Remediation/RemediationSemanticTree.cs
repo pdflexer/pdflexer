@@ -6,18 +6,25 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
     internal static RemediationSemanticTree FromClaims(
         IReadOnlyList<RemediationClaim> claims,
         IReadOnlyDictionary<(string? RuleSetId, string RuleId), string?>? slots = null,
-        IReadOnlyDictionary<(string? RuleSetId, string RuleId), RemediationAction>? actions = null)
+        IReadOnlyDictionary<(string? RuleSetId, string RuleId), RemediationAction>? actions = null,
+        PrescriptiveTemplateAssemblyPlan? assemblyPlan = null)
     {
-        var children = claims.SelectMany(x => x.RelatedClaims).Select(x => x.ClaimId).ToHashSet();
-        var roots = claims
-            .Where(x => x.Status == ClaimStatus.Applied &&
-                IsStructural(x, actions) &&
-                !children.Contains(x.ClaimId))
+        var structuralClaims = claims
+            .Where(x => x.Status == ClaimStatus.Applied && IsStructural(x, actions))
+            .ToArray();
+        var children = structuralClaims
+            .SelectMany(x => x.RelatedClaims)
+            .Where(x => IsStructural(x, actions))
+            .Select(x => x.ClaimId)
+            .ToHashSet();
+        var roots = structuralClaims
+            .Where(x => !children.Contains(x.ClaimId))
             .OrderBy(x => x.PageIndex)
             .ThenBy(x => x, RemediationSession.ReadingOrderComparer)
             .Select(x => BuildNode(x, new HashSet<ClaimId>(), slots, actions))
             .ToArray();
-        return new RemediationSemanticTree(roots);
+        var tree = new RemediationSemanticTree(roots);
+        return assemblyPlan?.ProjectSemanticTree() ?? tree;
     }
 
     private static RemediationSemanticNode BuildNode(
@@ -43,7 +50,8 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
             return BuildTableNode(claim, table, claim.TablePlan, ancestors, slots, actions);
         }
 
-        var related = action is MergeRemediationAction
+        var related = action is MergeRemediationAction ||
+            action is BindTemplateSlotRemediationAction { ContentMode: TemplateSlotContentMode.FlattenLeafClaims }
             ? Array.Empty<RemediationClaim>()
             : claim.RelatedClaims.Where(x => IsStructural(x, actions));
         return
@@ -81,7 +89,7 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
                 claim.Candidates.Select(x => x.CandidateId).ToArray(),
                 claim.Candidates.SelectMany(x => x.SourceReferences).Distinct().ToArray(),
                 new[] { pageIndex },
-                GetSlot(claim, slots),
+                null,
                 children);
 
         var rows = plan.Rows.Select(row =>
@@ -125,15 +133,28 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
         {
             return adopt.Into == null;
         }
+        if (claim.Action is BindTemplateSlotRemediationAction)
+        {
+            return true;
+        }
         return actions == null ||
             actions.TryGetValue((claim.RuleSetId, claim.RuleId), out var action) &&
             RemediationStructuralTemplateValidator.ProducedTag(action) != null;
     }
 
+    private static string? TemplateSlotFromNodeId(string? id)
+    {
+        if (id == null || !id.StartsWith("template:Document/", StringComparison.Ordinal)) return null;
+        var segment = id[(id.LastIndexOf('/') + 1)..];
+        var occurrence = segment.LastIndexOf('[');
+        if (occurrence <= 0 || !segment.EndsWith(']')) return null;
+        return Uri.UnescapeDataString(segment[..occurrence]);
+    }
+
     private static string? GetSlot(
         RemediationClaim claim,
         IReadOnlyDictionary<(string? RuleSetId, string RuleId), string?>? slots) =>
-        slots != null && slots.TryGetValue((claim.RuleSetId, claim.RuleId), out var slot) ? slot : null;
+        claim.SlotId ?? (slots != null && slots.TryGetValue((claim.RuleSetId, claim.RuleId), out var slot) ? slot : null);
 
     internal static RemediationSemanticTree FromStructure(
         PdfLexer.DOM.StructureNode root,
@@ -144,13 +165,18 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
         var byNode = claims
             .SelectMany(claim => claim.AppliedBindings
                 .Where(binding => binding.StructureNode != null)
-                .Select(binding => (Node: binding.StructureNode!, Claim: claim)))
+                .Select(binding => (Node: binding.StructureNode!, Claim: claim, Binding: binding)))
             .GroupBy(x => x.Node, nodeComparer)
-            .ToDictionary(x => x.Key, x => x.First().Claim, nodeComparer);
+            .ToDictionary(x => x.Key, x => (x.First().Claim, x.First().Binding), nodeComparer);
 
         RemediationSemanticNode Build(PdfLexer.DOM.StructureNode node, RemediationClaim? inherited)
         {
-            var claim = byNode.TryGetValue(node, out var direct) ? direct : inherited;
+            var isDirect = byNode.TryGetValue(node, out var direct);
+            var claim = isDirect ? direct.Claim : inherited;
+            var slot = isDirect && claim != null &&
+                string.Equals(direct.Binding.ProducedTag, claim.ProducedTag, StringComparison.Ordinal)
+                    ? GetSlot(claim, slots)
+                    : TemplateSlotFromNodeId(node.ID);
             var children = node.Children.Select(x => Build(x, claim)).ToArray();
             return new RemediationSemanticNode(
                 claim?.ClaimId ?? default,
@@ -161,8 +187,12 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
                 claim?.Candidates.SelectMany(x => x.SourceReferences).Distinct().ToArray() ??
                     Array.Empty<PdfLexer.Content.StructuredSourceRef>(),
                 claim?.PageIndexes ?? Array.Empty<int>(),
-                claim == null ? null : GetSlot(claim, slots),
-                children);
+                slot,
+                children)
+            {
+                TemplateIdentity = node.ID?.StartsWith("template:Document/", StringComparison.Ordinal) == true ? node.ID : null,
+                OpaqueTemplateInterior = isDirect && claim?.Action is TableRemediationAction
+            };
         }
 
         return new RemediationSemanticTree(root.Children.Select(x => Build(x, null)).ToArray());
@@ -178,4 +208,17 @@ public sealed record RemediationSemanticNode(
     IReadOnlyList<PdfLexer.Content.StructuredSourceRef> SourceReferences,
     IReadOnlyList<int> PageIndexes,
     string? SlotId,
-    IReadOnlyList<RemediationSemanticNode> Children);
+    IReadOnlyList<RemediationSemanticNode> Children)
+{
+    /// <summary>Declared template path for a prescriptive occurrence.</summary>
+    public string? TemplatePath { get; init; }
+
+    /// <summary>One-based occurrence within the declared template particle.</summary>
+    public int? TemplateOccurrenceIndex { get; init; }
+
+    /// <summary>Durable deterministic identity rendered into the committed structure /ID.</summary>
+    public string? TemplateIdentity { get; init; }
+
+    /// <summary>True when a specialized action owns and validates the node's internal structure.</summary>
+    public bool OpaqueTemplateInterior { get; init; }
+}

@@ -139,6 +139,8 @@ public enum ClaimPredicateKind
     FromRule,
     /// <summary>Matches claims from a rule set id.</summary>
     FromRuleSet,
+    /// <summary>Matches claims already bound to a structural-template slot.</summary>
+    FromSlot,
     /// <summary>Matches claim lifecycle status.</summary>
     StatusIs,
     /// <summary>Matches claims on the same page as the previous claim.</summary>
@@ -194,6 +196,7 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
         ClaimPredicateKind.ActionIs => $"ActionIs({ActionKind})",
         ClaimPredicateKind.FromRule => $"FromRule({Value})",
         ClaimPredicateKind.FromRuleSet => $"FromRuleSet({Value})",
+        ClaimPredicateKind.FromSlot => $"FromSlot({Value})",
         ClaimPredicateKind.StatusIs => $"StatusIs({Status})",
         ClaimPredicateKind.SamePage => "SamePage",
         ClaimPredicateKind.Consecutive => "Consecutive",
@@ -211,6 +214,7 @@ public sealed record BuiltInClaimPredicate : ClaimPredicate
             ClaimPredicateKind.ActionIs => ActionKind == claim.ActionKind,
             ClaimPredicateKind.FromRule => string.Equals(claim.RuleId, Value, StringComparison.Ordinal),
             ClaimPredicateKind.FromRuleSet => string.Equals(claim.RuleSetId, Value, StringComparison.Ordinal),
+            ClaimPredicateKind.FromSlot => string.Equals(claim.SlotId, Value, StringComparison.Ordinal),
             ClaimPredicateKind.StatusIs => claim.Status == Status,
             ClaimPredicateKind.SamePage => context.PreviousClaim == null || context.PreviousClaim.PageIndex == claim.PageIndex,
             ClaimPredicateKind.Consecutive => IsConsecutive(context, claim),
@@ -373,6 +377,13 @@ public static class ClaimPredicates
     /// <summary>Matches claims produced by the specified rule set.</summary>
     public static ClaimPredicate FromRuleSet(string ruleSetId) =>
         new BuiltInClaimPredicate(ClaimPredicateKind.FromRuleSet, ruleSetId);
+
+    /// <summary>Matches claims bound to a structural-template slot.</summary>
+    public static ClaimPredicate FromSlot(string slotId)
+    {
+        if (string.IsNullOrWhiteSpace(slotId)) throw new ArgumentException("Template slot id is required.", nameof(slotId));
+        return new BuiltInClaimPredicate(ClaimPredicateKind.FromSlot, slotId);
+    }
 
     /// <summary>Matches claims with the specified lifecycle status.</summary>
     public static ClaimPredicate StatusIs(ClaimStatus status) =>

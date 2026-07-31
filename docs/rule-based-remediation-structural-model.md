@@ -109,6 +109,17 @@ Deliberately deferred:
 - **Unordered groups** — PDF reading order is ordered by nature; an unordered content model would be
   asserting something weaker than the document actually guarantees.
 
+> [!NOTE]
+> The operators declare **whether** a slot repeats. They do not declare what **delimits** one
+> occurrence from the next, and that is a separate fact that has to be read from the document. This
+> spec left it implicit; in prescriptive mode it is currently answered by `BindOver`'s claim runs,
+> which break only at a page boundary and therefore collapse a within-page repeat into one
+> occurrence. The occurrence boundary belongs on the repeating slot, derived from the declared child
+> shape where possible — see
+> [RRM-042](rule-based-remediation-gaps.md#rrm-042-repeating-slot-occurrence-boundaries-are-not-declarable)
+> and the
+> [architecture direction](rule-based-remediation-architecture.md#1-occurrence-boundaries-are-declared-on-the-slot).
+
 ### 5.3 Determinism
 
 **Content models must be deterministic**: at any point in matching a child sequence, the next element
@@ -381,7 +392,9 @@ The first six-family fixture pass established two concrete constraints for phase
 
 1. **Slot binding granularity.** May several rules bind to one repeating slot? Probably yes — a
    `data-row` filled by different rules for different row shapes — but it complicates the occurrence
-   check, since the count is then across rules.
+   check, since the count is then across rules. Declaring the occurrence boundary on the slot
+   (RRM-042) resolves this: the count comes from boundary activations, so it is independent of how
+   many rules contributed claims.
 2. **Partial templates.** Should a template be allowed to describe only part of a document, with the
    remainder unconstrained? Useful for incremental adoption; risks becoming the default and
    discarding the guarantee. A per-node `open`/`closed` marker is the likely answer.

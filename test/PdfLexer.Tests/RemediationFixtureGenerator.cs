@@ -32,6 +32,7 @@ internal static class RemediationFixtureGenerator
         new("C-23 Label value pairs", "c-23-label-value-pairs", CreateC23Input, CreateC23RuleSet),
         new("C-29-a Nested list composition", "c-29-a-nested-list", CreateC29aInput, CreateC29aRuleSet),
         new("C-29-b Nested section composition", "c-29-b-nested-sections", CreateC29bInput, CreateC29bRuleSet),
+        new("C-30 Prescriptive repeated sections", "c-30-prescriptive-repeated-sections", CreateC30Input, CreateC30RuleSet),
         new(
             "C-04-a Leftover accounting (Flag)",
             "c-04-a-flag",
@@ -1656,6 +1657,45 @@ internal static class RemediationFixtureGenerator
                 $"c29b-{section}-inner",
                 Node("H2", $"c29b-{section}-h2"),
                 Node("P", $"c29b-{section}-body")));
+
+    // C-30: Prescriptive template assembly and repeated BindOver occurrences
+    internal static PdfDocument CreateC30Input()
+    {
+        var doc = PdfDocument.Create();
+        var font = CreateEmbeddedFont();
+        for (var pageIndex = 0; pageIndex < 2; pageIndex++)
+        {
+            var page = doc.AddPage(PageSize.LETTER);
+            using var writer = page.GetWriter();
+            WriteLine(writer, font, 40, 740, $"Template section {pageIndex + 1}");
+        }
+        return doc;
+    }
+
+    internal static RuleSet CreateC30RuleSet()
+    {
+        var template = new RemediationStructuralTemplate(new[]
+        {
+            new RemediationStructuralTemplateNode(
+                "Sect",
+                new[] { new RemediationStructuralTemplateNode("P", id: "line") },
+                id: "section",
+                occurrence: RemediationStructuralOccurrence.OneOrMore)
+        }, RemediationStructuralTemplateMode.Prescriptive);
+        return new RuleSet(
+            "c-30-rules",
+            new[]
+            {
+                new Rule("c30-line", RemediationActions.Bind(), candidates: CandidateSelector.Text(Granularity.Paragraph), slot: "line"),
+                new Rule(
+                    "c30-section",
+                    RemediationActions.BindOver(ClaimPredicates.FromSlot("line")),
+                    stage: Stage.Group,
+                    groupPass: 10,
+                    slot: "section")
+            },
+            structuralTemplate: template);
+    }
 
     // C-24: Ambiguous and repeated anchors
     internal static PdfDocument CreateC24Input()

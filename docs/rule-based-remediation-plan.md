@@ -12,6 +12,7 @@ together; neither replaces the other.
 | Document | Role |
 | --- | --- |
 | [rule-based-remediation.md](rule-based-remediation.md) | The rule language and API as shipped |
+| [rule-based-remediation-architecture.md](rule-based-remediation-architecture.md) | The model, its invariants, and open architectural gaps |
 | [rule-based-remediation-gaps.md](rule-based-remediation-gaps.md) | Gap register — one section per RRM ID, with completion criteria |
 | **This document** | Sequencing, milestones, gates, risks |
 | [accessibility_gaps_2.md](accessibility_gaps_2.md) | Authoring-layer defects, two of which are hard prerequisites here |
@@ -490,16 +491,19 @@ Reproduced from the tracker so it can be checked in one place:
 | Gap | Work |
 | --- | --- |
 | ↗ RRM-001 | Moved to M3a by the M0 decision — cross-page flow is an MVP requirement |
-| RRM-039 (phase 2) | Prescriptive template — declared slots drive materialization |
+| RRM-039 (phase 2) | Complete 2026-07-30 — prescriptive template slots drive materialization |
 | RRM-005 | Irregular tables — spans, wrapped cells, sparse rows (continuation moved to M3a) |
 | RRM-025 | Table `/Scope` and `/Summary` |
 | RRM-021 | List interiors and `/ListNumbering` |
 
-RRM-039 phase two is the payoff of M3b and the reason M3c's decision was deferred: once the template
-drives materialization, declared hierarchy is no longer assembled bottom-up. Rules bind claims into
-slots, and `L > LI > L > LI` is something the template states rather than something Group rules
-construct. Do not commit to this until the descriptive template has run against a real corpus in M5 —
-that is the whole reason phase one exists separately.
+RRM-039 phase two is the completed template-first authoring surface. Declared hierarchy is no longer
+required to be assembled bottom-up: rules bind claims into slots, and `L > LI > L > LI` can be
+stated directly by the template while sparse Group passes still compose repeated instances. The
+remaining M6 work is limited to irregular tables, list interiors, and richer semantic vocabulary.
+The 2026-07-30 hardening follow-up replaced the separate planning and materialization algorithms with
+one immutable assembly plan, added stable path-based occurrence identities and report/CLI provenance,
+made specialized table interiors opaque to slot matching, and added multi-root, nested-pass,
+annotation, twenty-row table, and two-profile corpus coverage.
 
 RRM-021 carries a design decision larger than its priority label suggests. The action algebra has
 no **split** primitive — `Group` reparents and `MergeTo` flattens, but nothing divides a claim.
@@ -610,7 +614,7 @@ Revisit only when product scope expands. Both are re-decisions, not backlog item
 | RRM-036 | P0 | M5 |
 | RRM-037 | P0 | M1 |
 | RRM-038 | P1 | M3 |
-| RRM-039 | P0 | M3b (descriptive) → M6 (prescriptive) |
+| RRM-039 | P0 | M3b + M6 (complete 2026-07-30) |
 | RRM-040 | P0 | M3b |
 | RRM-041 | P1 | M1 |
 

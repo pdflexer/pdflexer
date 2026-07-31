@@ -24,7 +24,9 @@ public sealed class RemediationSession : IDisposable
         DiagnosticCode.GroupCompositionCycle,
         DiagnosticCode.AnnotationAdoptionTargetMissing,
         DiagnosticCode.AnnotationAdoptionAmbiguous,
-        DiagnosticCode.AnnotationAlreadyConsumed
+        DiagnosticCode.AnnotationAlreadyConsumed,
+        DiagnosticCode.PrescriptiveUnaccountedContent,
+        DiagnosticCode.TemplateIdentityCollision
     };
     private RemediationTraceRequest? _traceRequest;
     private List<RemediationPredicateTrace>? _predicateTraces;
@@ -227,7 +229,8 @@ public sealed class RemediationSession : IDisposable
             report.UnaccountedContent,
             report.AnnotationInventory,
             report.Warnings,
-            report.TemplateDifferences);
+            report.TemplateDifferences,
+            report.TemplateAssembly);
     }
 
     private IReadOnlyList<Rule> ComposeRules(IEnumerable<Rule> rules)
@@ -341,7 +344,18 @@ public sealed class RemediationSession : IDisposable
         var actions = ruleList
             .GroupBy(x => (x.RuleSetId, x.Id))
             .ToDictionary(x => x.Key, x => x.Last().Action);
-        var semanticTree = RemediationSemanticTree.FromClaims(allClaims, slots, actions);
+        var structuralTemplate = _ruleSets.Select(x => x.StructuralTemplate).FirstOrDefault(x => x != null);
+        var assemblySourceClaims = allClaims
+            .Where(x => !x.RuleId.StartsWith("__template__:", StringComparison.Ordinal))
+            .ToArray();
+        var sourceSemanticTree = RemediationSemanticTree.FromClaims(assemblySourceClaims, slots, actions);
+        var claimsById = allClaims
+            .GroupBy(x => x.ClaimId)
+            .ToDictionary(x => x.Key, x => x.First());
+        var assemblyPlan = structuralTemplate?.Mode == RemediationStructuralTemplateMode.Prescriptive
+            ? PrescriptiveTemplateAssemblyPlan.Build(structuralTemplate, sourceSemanticTree, claimsById)
+            : null;
+        var semanticTree = assemblyPlan?.ProjectSemanticTree() ?? sourceSemanticTree;
         var templateDifferences = EvaluateStructuralTemplate(semanticTree, diagnostics).ToList();
         templateDifferences.AddRange(
             EvaluateArtifactInventory(pageStates, ruleList, allClaims, autoArtifacts, diagnostics));
@@ -353,7 +367,7 @@ public sealed class RemediationSession : IDisposable
 
         if (apply && !HasUnsuppressedDiagnostics(diagnostics))
         {
-            ApplyPlan(pageStates, diagnostics);
+            ApplyPlan(pageStates, diagnostics, assemblyPlan);
             if (_ruleSets.Any(x => x.StructuralTemplate != null))
             {
                 var actualTree = RemediationSemanticTree.FromStructure(
@@ -398,7 +412,8 @@ public sealed class RemediationSession : IDisposable
             unaccountedContent,
             annotationInventory,
             warnings,
-            templateDifferences);
+            templateDifferences,
+            assemblyPlan?.Items);
     }
 
     /// <summary>
@@ -571,6 +586,16 @@ public sealed class RemediationSession : IDisposable
             var annotation = claim.Candidates.OfType<AnnotationRemediationCandidate>().SingleOrDefault();
             if (annotation == null) continue;
             var expectedTag = RequiredAnnotationTag(annotation.Subtype);
+            var producedTag = claim.ProducedTag;
+            if (!string.Equals(producedTag, expectedTag, StringComparison.Ordinal))
+            {
+                ReportDiagnostic(
+                    DiagnosticCode.AnnotationAdoptionTargetMissing,
+                    $"Page{annotation.PageIndex + 1}",
+                    $"Rule '{claim.RuleId}' binds {annotation.Subtype} annotation '{annotation.CandidateId}' to incompatible template tag '{producedTag}'; expected '{expectedTag}'.",
+                    diagnostics);
+                continue;
+            }
             if (string.Equals(expectedTag, "Link", StringComparison.Ordinal) &&
                 string.IsNullOrWhiteSpace(annotation.Contents) &&
                 string.IsNullOrWhiteSpace(action.AccessibleDescription))
@@ -1789,6 +1814,13 @@ public sealed class RemediationSession : IDisposable
                         anchors, tolerancedZones, flowRegions, passClaims,
                         skippedClaims, diagnostics, warnings, evaluations);
                 }
+                else if (rule.Action is BindTemplateSlotRemediationAction bind && bind.Over != null)
+                {
+                    EvaluateDocumentClaimRunRule(
+                        pageStates, rule, bind.Over, frozenFrontier, referenceClaims, documentFlows,
+                        anchors, tolerancedZones, flowRegions, passClaims,
+                        skippedClaims, diagnostics, warnings, evaluations);
+                }
                 else if (rule.Action is MergeRemediationAction merge)
                 {
                     EvaluateDocumentClaimRunRule(
@@ -1833,6 +1865,21 @@ public sealed class RemediationSession : IDisposable
         }
         allClaims.AddRange(groupClaims);
 
+        // Prescriptive composite ancestors that have no BindOver producer are represented as
+        // deterministic synthetic claims before Refine, so FromSlot can target the instantiated
+        // template hierarchy rather than relying on report-time slot lookup.
+        var templateClaims = BuildPrescriptiveTemplateClaims(allClaims, rules);
+        if (templateClaims.Count > 0)
+        {
+            allClaims.AddRange(templateClaims);
+            foreach (var pageState in pageStates)
+            {
+                pageState.SetClaimSnapshot(
+                    Stage.Refine,
+                    templateClaims.Where(x => x.PageIndex == pageState.PageIndex).ToArray());
+            }
+        }
+
         var refineClaims = new List<RemediationClaim>();
         foreach (var rule in rules.Where(x => x.Stage == Stage.Refine))
         {
@@ -1870,7 +1917,9 @@ public sealed class RemediationSession : IDisposable
         {
             pageState.SetClaimSnapshot(
                 Stage.Refine,
-                refineClaims.Where(x => x.PageIndex == pageState.PageIndex).ToArray());
+                templateClaims.Concat(refineClaims)
+                    .Where(x => x.PageIndex == pageState.PageIndex)
+                    .ToArray());
         }
         allClaims.AddRange(refineClaims);
 
@@ -2019,6 +2068,7 @@ public sealed class RemediationSession : IDisposable
             SelectorDebugString = rule.Predicate.DebugString,
             Action = outcome.Action ?? custom,
             RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
             TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
         };
 
@@ -2227,6 +2277,16 @@ public sealed class RemediationSession : IDisposable
             return;
         }
 
+        if (IsPrescriptiveTemplate())
+        {
+            ReportDiagnostic(
+                DiagnosticCode.PrescriptiveUnaccountedContent,
+                $"Page{pageState.PageIndex + 1}",
+                $"Prescriptive template left painting content on page {pageState.PageIndex + 1} without a slot or declared artifact inventory item.",
+                diagnostics);
+            return;
+        }
+
         if (Configuration.LeftoverPolicy is RemediationLeftoverPolicy.Flag or RemediationLeftoverPolicy.FailFast)
         {
             foreach (var (item, span) in leftovers)
@@ -2385,7 +2445,7 @@ public sealed class RemediationSession : IDisposable
         }
         else
         {
-            node = Structure.AddElement(RequiredAnnotationTag(candidate.Subtype)).GetNode();
+            node = Structure.AddElement(claim.ProducedTag).GetNode();
         }
 
         var destinationNode = claim.AnnotationDestinationClaim?.AppliedBindings
@@ -2418,7 +2478,7 @@ public sealed class RemediationSession : IDisposable
         RemediationClaim claim,
         List<string> diagnostics)
     {
-        if (claim.Action is not (TagRemediationAction or ArtifactRemediationAction))
+        if (claim.Action is not (TagRemediationAction or ArtifactRemediationAction or BindTemplateSlotRemediationAction))
         {
             return;
         }
@@ -2442,28 +2502,31 @@ public sealed class RemediationSession : IDisposable
                 continue;
             }
 
-            if (claim.Action is TagRemediationAction tag)
+            if (claim.Action is TagRemediationAction or BindTemplateSlotRemediationAction)
             {
+                var tagName = claim.Action is TagRemediationAction
+                    ? ((TagRemediationAction)claim.Action).Name
+                    : (PdfName)claim.Tag;
                 var mcid = AllocateMcid(pageState.Page);
-                var marked = new MarkedContent(tag.Name)
+                var marked = new MarkedContent(tagName)
                 {
                     InlineProps = new PdfDictionary { [PdfName.MCID] = new PdfIntNumber(mcid) }
                 };
                 var wrapper = pageState.WorkingContent.Wrap(leaves, marked);
-                var node = Structure.AddElement(tag.Name.Value).GetNode();
+                var node = Structure.AddElement(tagName.Value).GetNode();
                 if (Configuration.DebugWrite)
                 {
                     node.Title = claim.RuleId;
                 }
 
-                if (tag.Attributes != null)
+                if (claim.Action is TagRemediationAction explicitTag && explicitTag.Attributes != null)
                 {
-                    node.Attributes.Add(tag.Attributes);
+                    node.Attributes.Add(explicitTag.Attributes);
                 }
 
                 BindMarkedContent(node, pageState.Page, mcid);
                 claim.AddAppliedBinding(new RemediationAppliedBinding(
-                    tag.Name.Value,
+                    tagName.Value,
                     new[] { mcid },
                     node,
                     wrapper,
@@ -2703,12 +2766,13 @@ public sealed class RemediationSession : IDisposable
             var confidence = Math.Min(partition.Min(x => x.Confidence), grid.Confidence);
             if (rule.MinConfidence is { } minConfidence && confidence < minConfidence)
             {
-                var skipped = new RemediationClaim(rule.Id, candidates, rule.Action.DebugString, confidence)
+                var skipped = new RemediationClaim(rule.Id, candidates, ResolveProducedTag(rule, rule.Action.DebugString), confidence)
                 {
                     PageIndex = claims[0].PageIndex,
                     Status = ClaimStatus.Skipped,
                     Action = rule.Action,
                     RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
                     TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
                 };
                 skipped.AddRelatedClaims(claims);
@@ -2716,13 +2780,14 @@ public sealed class RemediationSession : IDisposable
                 continue;
             }
 
-            var tableClaim = new RemediationClaim(rule.Id, candidates, rule.Action.DebugString, confidence)
+            var tableClaim = new RemediationClaim(rule.Id, candidates, ResolveProducedTag(rule, rule.Action.DebugString), confidence)
             {
                 PageIndex = claims[0].PageIndex,
                 Status = ClaimStatus.Applied,
                 SelectorDebugString = rule.Predicate.DebugString,
                 Action = rule.Action,
                 RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
                 TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default,
                 GroupPass = rule.GroupPass
             };
@@ -2782,6 +2847,7 @@ public sealed class RemediationSession : IDisposable
             GroupRemediationAction group => group.Over,
             MergeRemediationAction merge => merge.Over,
             TableRemediationAction table => table.Over,
+            BindTemplateSlotRemediationAction { Over: not null } bind => bind.Over,
             _ => null
         };
         if (predicate == null)
@@ -2790,16 +2856,16 @@ public sealed class RemediationSession : IDisposable
         }
 
         var frontierIds = frontier.Select(x => x.ClaimId).ToHashSet();
-        foreach (var referencedRuleId in EnumerateFromRuleReferences(predicate).Distinct(StringComparer.Ordinal))
+        void WarnForReference(string descriptor, Func<RemediationClaim, bool> matches)
         {
             var produced = referenceClaims
                 .Where(x => x.Status == ClaimStatus.Applied &&
                     rule.Pages.Includes(x.PageIndex, _document.Pages.Count) &&
-                    string.Equals(x.RuleId, referencedRuleId, StringComparison.Ordinal))
+                    matches(x))
                 .ToArray();
             if (produced.Length == 0 || produced.Any(x => frontierIds.Contains(x.ClaimId)))
             {
-                continue;
+                return;
             }
 
             var producedIds = produced.Select(x => x.ClaimId).ToHashSet();
@@ -2811,17 +2877,45 @@ public sealed class RemediationSession : IDisposable
                 .ToArray();
             if (consumers.Length == 0)
             {
-                continue;
+                return;
             }
 
             var warning =
                 $"Rule '{rule.Id}' in Group pass {rule.GroupPass} matched no frontier claims from " +
-                $"referenced rule '{referencedRuleId}'; its {produced.Length} applied claim(s) were " +
+                $"referenced producer {descriptor}; its {produced.Length} applied claim(s) were " +
                 $"consumed by lower-pass rule(s) [{string.Join(", ", consumers)}]. Select the produced parent instead.";
             if (!warnings.Contains(warning, StringComparer.Ordinal))
             {
                 warnings.Add(warning);
             }
+        }
+
+        foreach (var referencedRuleId in EnumerateFromRuleReferences(predicate).Distinct(StringComparer.Ordinal))
+        {
+            WarnForReference($"rule '{referencedRuleId}'", x =>
+                string.Equals(x.RuleId, referencedRuleId, StringComparison.Ordinal));
+        }
+        foreach (var slotId in EnumerateFromSlotReferences(predicate).Distinct(StringComparer.Ordinal))
+        {
+            WarnForReference($"slot '{slotId}'", x =>
+                string.Equals(x.SlotId, slotId, StringComparison.Ordinal));
+        }
+    }
+
+    private static IEnumerable<string> EnumerateFromSlotReferences(ClaimPredicate predicate)
+    {
+        switch (predicate)
+        {
+            case BuiltInClaimPredicate { Kind: ClaimPredicateKind.FromSlot, Value: not null } builtIn:
+                yield return builtIn.Value;
+                break;
+            case CompositeClaimPredicate composite:
+                foreach (var value in EnumerateFromSlotReferences(composite.Left)) yield return value;
+                foreach (var value in EnumerateFromSlotReferences(composite.Right)) yield return value;
+                break;
+            case NotClaimPredicate not:
+                foreach (var value in EnumerateFromSlotReferences(not.Inner)) yield return value;
+                break;
         }
     }
 
@@ -2842,7 +2936,7 @@ public sealed class RemediationSession : IDisposable
         }
     }
 
-    private static void EvaluateRefineAttributeRule(
+    private void EvaluateRefineAttributeRule(
         PageRemediationState pageState,
         Rule rule,
         StructureAttributeRemediationAction attributes,
@@ -2853,6 +2947,7 @@ public sealed class RemediationSession : IDisposable
     {
         var existingClaims = pageState.GetClaimSnapshot(Stage.Classify)
             .Concat(pageState.GetClaimSnapshot(Stage.Group))
+            .Concat(pageState.GetClaimSnapshot(Stage.Refine))
             .Where(x => x.Status == ClaimStatus.Applied)
             .OrderBy(x => x, ReadingOrderComparer)
             .ToList();
@@ -2895,6 +2990,7 @@ public sealed class RemediationSession : IDisposable
                     Status = ClaimStatus.Skipped,
                     Action = rule.Action,
                     RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
             TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
                 };
                 skipped.AddRelatedClaims(new[] { claim });
@@ -2913,6 +3009,7 @@ public sealed class RemediationSession : IDisposable
             SelectorDebugString = rule.Predicate.DebugString,
                 Action = rule.Action,
                 RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
             TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
             };
             refineClaim.AddRelatedClaims(new[] { claim });
@@ -2927,7 +3024,7 @@ public sealed class RemediationSession : IDisposable
             rejectedByConfidence: rejectedByConfidence);
     }
 
-    private static void EvaluateRefineReorderRule(
+    private void EvaluateRefineReorderRule(
         PageRemediationState pageState,
         Rule rule,
         ReorderSiblingsRemediationAction reorder,
@@ -2938,6 +3035,7 @@ public sealed class RemediationSession : IDisposable
     {
         var existingClaims = pageState.GetClaimSnapshot(Stage.Classify)
             .Concat(pageState.GetClaimSnapshot(Stage.Group))
+            .Concat(pageState.GetClaimSnapshot(Stage.Refine))
             .Where(x => x.Status == ClaimStatus.Applied)
             .OrderBy(x => x, ReadingOrderComparer)
             .ToList();
@@ -2982,6 +3080,7 @@ public sealed class RemediationSession : IDisposable
                     Status = ClaimStatus.Skipped,
                     Action = rule.Action,
                     RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
             TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
                 };
                 skipped.AddRelatedClaims(new[] { claim });
@@ -3015,13 +3114,14 @@ public sealed class RemediationSession : IDisposable
             SelectorDebugString = rule.Predicate.DebugString,
             Action = rule.Action,
             RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
             TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
         };
         refineClaim.AddRelatedClaims(matched);
         stageClaims.Add(refineClaim);
     }
 
-    private static void EvaluateRefineLinkRule(
+    private void EvaluateRefineLinkRule(
         PageRemediationState pageState,
         Rule rule,
         StructureLinkRemediationAction link,
@@ -3033,6 +3133,7 @@ public sealed class RemediationSession : IDisposable
     {
         var existingClaims = pageState.GetClaimSnapshot(Stage.Classify)
             .Concat(pageState.GetClaimSnapshot(Stage.Group))
+            .Concat(pageState.GetClaimSnapshot(Stage.Refine))
             .Where(x => x.Status == ClaimStatus.Applied)
             .OrderBy(x => x, ReadingOrderComparer)
             .ToList();
@@ -3119,6 +3220,7 @@ public sealed class RemediationSession : IDisposable
             SelectorDebugString = rule.Predicate.DebugString,
                 Action = rule.Action,
                 RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
             TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
             };
             linkClaim.AddRelatedClaims(new[] { source.Claim, target.Claim });
@@ -3126,7 +3228,7 @@ public sealed class RemediationSession : IDisposable
         }
     }
 
-    private static void AddSkippedClaim(
+    private void AddSkippedClaim(
         Rule rule,
         int pageIndex,
         RemediationClaim related,
@@ -3143,13 +3245,14 @@ public sealed class RemediationSession : IDisposable
             Status = ClaimStatus.Skipped,
             Action = rule.Action,
             RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
             TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
         };
         skipped.AddRelatedClaims(new[] { related });
         skippedClaims.Add(skipped);
     }
 
-    private static void AddGroupRun(
+    private void AddGroupRun(
         Rule rule,
         int pageIndex,
         IReadOnlyList<RemediationClaim> run,
@@ -3164,7 +3267,7 @@ public sealed class RemediationSession : IDisposable
         var groupClaim = new RemediationClaim(
             rule.Id,
             run.SelectMany(x => x.Candidates).ToArray(),
-            rule.Action.DebugString,
+            ResolveProducedTag(rule, rule.Action.DebugString),
             confidence)
         {
             PageIndex = pageIndex,
@@ -3172,6 +3275,7 @@ public sealed class RemediationSession : IDisposable
             SelectorDebugString = rule.Predicate.DebugString,
             Action = rule.Action,
             RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
             TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default,
             GroupPass = rule.GroupPass
         };
@@ -3278,7 +3382,10 @@ public sealed class RemediationSession : IDisposable
     }
 
     private static bool IsStructuralConsumer(RemediationClaim claim) =>
-        claim.Action is GroupRemediationAction or MergeRemediationAction or TableRemediationAction { Over: not null };
+        claim.Action is GroupRemediationAction or
+            BindTemplateSlotRemediationAction { Over: not null } or
+            MergeRemediationAction or
+            TableRemediationAction { Over: not null };
 
     private static bool IsDescendant(
         RemediationClaim ancestor,
@@ -3514,7 +3621,7 @@ public sealed class RemediationSession : IDisposable
         RemediationClaim claim,
         List<string> diagnostics)
     {
-        if (claim.Action is not (GroupRemediationAction or MergeRemediationAction or TableRemediationAction { Over: not null } or StructureAttributeRemediationAction or ReorderSiblingsRemediationAction or StructureLinkRemediationAction))
+        if (claim.Action is not (GroupRemediationAction or BindTemplateSlotRemediationAction or MergeRemediationAction or TableRemediationAction { Over: not null } or StructureAttributeRemediationAction or ReorderSiblingsRemediationAction or StructureLinkRemediationAction))
         {
             return;
         }
@@ -3527,7 +3634,7 @@ public sealed class RemediationSession : IDisposable
 
         foreach (var related in claim.RelatedClaims)
         {
-            if (related.Action is not (TagRemediationAction or TableRemediationAction or GroupRemediationAction or MergeRemediationAction))
+            if (related.Action is not (TagRemediationAction or BindTemplateSlotRemediationAction or TableRemediationAction or GroupRemediationAction or MergeRemediationAction or AdoptAnnotationRemediationAction { Into: null }))
             {
                 diagnostics.Add($"Rule '{claim.RuleId}' on page {pageState.PageIndex + 1} matched claim '{related.ClaimId}' that does not produce a structure binding.");
             }
@@ -3536,7 +3643,8 @@ public sealed class RemediationSession : IDisposable
 
     private void ApplyPlan(
         IReadOnlyList<PageRemediationState> pageStates,
-        List<string> diagnostics)
+        List<string> diagnostics,
+        PrescriptiveTemplateAssemblyPlan? assemblyPlan)
     {
         var pageLookup = pageStates.ToDictionary(x => x.PageIndex);
 
@@ -3573,7 +3681,7 @@ public sealed class RemediationSession : IDisposable
             {
                 ApplyTableClaim(pageState, claim, diagnostics);
             }
-            else if (claim.Action is GroupRemediationAction)
+            else if (claim.Action is GroupRemediationAction or BindTemplateSlotRemediationAction)
             {
                 ApplyGroupClaim(claim, diagnostics);
             }
@@ -3594,6 +3702,12 @@ public sealed class RemediationSession : IDisposable
             {
                 return;
             }
+        }
+
+        if (assemblyPlan != null)
+        {
+            ApplyPrescriptiveTemplateAssembly(assemblyPlan, pageStates, diagnostics);
+            if (HasUnsuppressedDiagnostics(diagnostics)) return;
         }
 
         foreach (var pageState in pageStates)
@@ -3633,6 +3747,215 @@ public sealed class RemediationSession : IDisposable
                 pageState.Page.NativeObject[PdfName.Contents] = PdfIndirectRef.Create(new PdfStream(contents));
             }
         }
+    }
+
+    private bool IsPrescriptiveTemplate() =>
+        _ruleSets.Select(x => x.StructuralTemplate).FirstOrDefault(x => x != null)?.Mode ==
+        RemediationStructuralTemplateMode.Prescriptive;
+
+    private IReadOnlyList<RemediationClaim> BuildPrescriptiveTemplateClaims(
+        IReadOnlyList<RemediationClaim> existingClaims,
+        IReadOnlyList<Rule> rules)
+    {
+        var template = _ruleSets.Select(x => x.StructuralTemplate).FirstOrDefault(x => x != null);
+        if (template?.Mode != RemediationStructuralTemplateMode.Prescriptive)
+        {
+            return Array.Empty<RemediationClaim>();
+        }
+
+        var slots = rules.GroupBy(x => (x.RuleSetId, x.Id))
+            .ToDictionary(x => x.Key, x => x.Last().Slot);
+        var actions = rules.GroupBy(x => (x.RuleSetId, x.Id))
+            .ToDictionary(x => x.Key, x => x.Last().Action);
+        var source = RemediationSemanticTree.FromClaims(existingClaims, slots, actions);
+        var claimsById = existingClaims.GroupBy(x => x.ClaimId)
+            .ToDictionary(x => x.Key, x => x.First());
+        var plan = PrescriptiveTemplateAssemblyPlan.Build(template, source, claimsById);
+        var synthetic = new Dictionary<string, RemediationClaim>(StringComparer.Ordinal);
+        var templateOwnerId = _ruleSets.Single(x => x.StructuralTemplate != null).Id;
+
+        RemediationClaim? Build(PrescriptiveTemplateAssemblyNode occurrence)
+        {
+            if (occurrence.Template == null || occurrence.Source != null) return null;
+            var children = new List<RemediationClaim>();
+            foreach (var child in occurrence.Children)
+            {
+                if (child.ClaimId is { } childId && claimsById.TryGetValue(childId, out var direct))
+                {
+                    children.Add(direct);
+                }
+                else if (Build(child) is { } created)
+                {
+                    children.Add(created);
+                }
+            }
+            var pages = children.SelectMany(x => x.PageIndexes).Distinct().OrderBy(x => x).ToArray();
+            var pageIndex = pages.FirstOrDefault();
+            var claim = new RemediationClaim(
+                $"__template__:{occurrence.Template.Id}:{occurrence.OccurrenceIndex}",
+                Array.Empty<RemediationCandidate>(),
+                occurrence.Template.Tag,
+                children.Count == 0 ? 1 : children.Min(x => x.Confidence))
+            {
+                ClaimId = new ClaimId(occurrence.Identity),
+                PageIndex = pageIndex,
+                Status = ClaimStatus.Applied,
+                Action = new BindTemplateSlotRemediationAction(),
+                RuleSetId = templateOwnerId,
+                SlotId = occurrence.Template.Id,
+                SelectorDebugString = "template"
+            };
+            claim.AddRelatedClaims(children);
+            synthetic[occurrence.Identity] = claim;
+            claimsById[claim.ClaimId] = claim;
+            return claim;
+        }
+
+        foreach (var root in plan.Document.Children) Build(root);
+        return synthetic.Values.OrderBy(x => x.PageIndex).ThenBy(x => x.ClaimId.Value, StringComparer.Ordinal).ToArray();
+    }
+
+    private void ApplyPrescriptiveTemplateAssembly(
+        PrescriptiveTemplateAssemblyPlan plan,
+        IReadOnlyList<PageRemediationState> pageStates,
+        List<string> diagnostics)
+    {
+        var claims = pageStates
+            .SelectMany(x => x.GetClaimSnapshot(Stage.Classify)
+                .Concat(x.GetClaimSnapshot(Stage.Group))
+                .Concat(x.GetClaimSnapshot(Stage.Refine)))
+            .Where(x => x.Status == ClaimStatus.Applied)
+            .DistinctBy(x => x.ClaimId)
+            .ToArray();
+        var claimsById = claims.ToDictionary(x => x.ClaimId);
+        var syntheticBySlot = claims
+            .Where(x => x.RuleId.StartsWith("__template__:", StringComparison.Ordinal) && x.SlotId != null)
+            .GroupBy(x => x.SlotId!, StringComparer.Ordinal)
+            .ToDictionary(x => x.Key, x => new Queue<RemediationClaim>(x), StringComparer.Ordinal);
+        var existingIds = new Dictionary<string, StructureNode>(StringComparer.Ordinal);
+
+        void IndexExisting(StructureNode node)
+        {
+            if (node.ID != null)
+            {
+                if (node.ID.StartsWith("template:", StringComparison.Ordinal))
+                {
+                    ReportDiagnostic(
+                        DiagnosticCode.TemplateIdentityCollision,
+                        $"TemplateIdentity:{node.ID}",
+                        $"Pre-existing structure /ID '{node.ID}' uses the reserved prescriptive-template namespace.",
+                        diagnostics);
+                }
+                else if (!existingIds.TryAdd(node.ID, node))
+                {
+                    ReportDiagnostic(
+                        DiagnosticCode.TemplateIdentityCollision,
+                        $"TemplateIdentity:{node.ID}",
+                        $"Structure /ID '{node.ID}' is already duplicated before template assembly.",
+                        diagnostics);
+                }
+            }
+            foreach (var child in node.Children) IndexExisting(child);
+        }
+
+        var documentRoot = Structure.GetRoot();
+        IndexExisting(documentRoot);
+        if (HasUnsuppressedDiagnostics(diagnostics)) return;
+
+        IReadOnlyList<StructureNode> MaterializeChildren(
+            IReadOnlyList<PrescriptiveTemplateAssemblyNode> planned,
+            StructureNode parent)
+        {
+            var ordered = new List<StructureNode>();
+            foreach (var occurrence in planned)
+            {
+                if (occurrence.Template == null) continue;
+
+                RemediationClaim? claim = null;
+                if (occurrence.ClaimId is { } claimId) claimsById.TryGetValue(claimId, out claim);
+                if (claim == null) claimsById.TryGetValue(new ClaimId(occurrence.Identity), out claim);
+                if (claim == null && syntheticBySlot.TryGetValue(occurrence.Template.Id!, out var queue) && queue.Count > 0)
+                {
+                    claim = queue.Dequeue();
+                }
+
+                var bindings = claim?.AppliedBindings.Where(x =>
+                        x.StructureNode != null &&
+                        string.Equals(x.ProducedTag, occurrence.Template.Tag, StringComparison.Ordinal))
+                    .ToArray() ?? Array.Empty<RemediationAppliedBinding>();
+                if (bindings.Length > 1)
+                {
+                    diagnostics.Add($"Template occurrence '{occurrence.Identity}' has {bindings.Length} structure bindings; exactly one is required.");
+                    return ordered;
+                }
+
+                StructureNode node;
+                if (bindings.Length == 1)
+                {
+                    node = bindings[0].StructureNode!;
+                }
+                else if (occurrence.Source == null)
+                {
+                    node = Structure.AddElement(occurrence.Template.Tag).GetNode();
+                    claim?.AddAppliedBinding(new RemediationAppliedBinding(
+                        occurrence.Template.Tag,
+                        Array.Empty<int>(),
+                        node,
+                        null,
+                        parent,
+                        Array.Empty<StructuredSourceRef>(),
+                        null));
+                }
+                else
+                {
+                    diagnostics.Add($"Bound template occurrence '{occurrence.Identity}' has no materialized structure node.");
+                    return ordered;
+                }
+
+                if (node.ID != null && !string.Equals(node.ID, occurrence.Identity, StringComparison.Ordinal))
+                {
+                    ReportDiagnostic(
+                        DiagnosticCode.TemplateIdentityCollision,
+                        $"TemplateIdentity:{occurrence.Identity}",
+                        $"Template occurrence '{occurrence.Identity}' would overwrite existing structure /ID '{node.ID}'.",
+                        diagnostics);
+                    return ordered;
+                }
+                if (existingIds.TryGetValue(occurrence.Identity, out var owner) && !ReferenceEquals(owner, node))
+                {
+                    ReportDiagnostic(
+                        DiagnosticCode.TemplateIdentityCollision,
+                        $"TemplateIdentity:{occurrence.Identity}",
+                        $"Template occurrence identity '{occurrence.Identity}' is already owned by another structure node.",
+                        diagnostics);
+                    return ordered;
+                }
+                node.ID = occurrence.Identity;
+                existingIds[occurrence.Identity] = node;
+                if (!ReferenceEquals(node.Parent, parent)) Structure.ReparentStructureNode(node, parent);
+
+                if (!occurrence.OpaqueInterior)
+                {
+                    var childOrder = MaterializeChildren(occurrence.Children, node);
+                    Reorder(node, childOrder);
+                }
+                ordered.Add(node);
+            }
+            return ordered;
+        }
+
+        static void Reorder(StructureNode parent, IReadOnlyList<StructureNode> desired)
+        {
+            if (desired.Count == 0) return;
+            var desiredSet = desired.ToHashSet(ReferenceEqualityComparer.Instance);
+            var stableExtras = parent.Children.Where(x => !desiredSet.Contains(x)).ToArray();
+            parent.Children.Clear();
+            parent.Children.AddRange(desired);
+            parent.Children.AddRange(stableExtras);
+        }
+
+        var rootOrder = MaterializeChildren(plan.Document.Children, documentRoot);
+        Reorder(documentRoot, rootOrder);
     }
 
     private void ApplyTableClaim(
@@ -4073,24 +4396,78 @@ public sealed class RemediationSession : IDisposable
 
     private void CommitDocumentChanges(Action commit)
     {
-        var catalogSnapshot = _document.Catalog.CloneShallow();
-        var pageSnapshots = _document.Pages
-            .Select(x => (Page: x, NativeObject: x.NativeObject.CloneShallow()))
-            .ToList();
-
+        var checkpoint = PdfMutationCheckpoint.Capture(_document);
+        var originalStructure = _document.ExistingStructure;
         try
         {
             commit();
         }
         catch
         {
-            RestoreDictionary(_document.Catalog, catalogSnapshot);
-            foreach (var snapshot in pageSnapshots)
+            checkpoint.Restore();
+            _document.Structure = originalStructure!;
+            throw;
+        }
+    }
+
+    private sealed class PdfMutationCheckpoint
+    {
+        private readonly List<(PdfDictionary Target, PdfDictionary Snapshot)> _dictionaries;
+        private readonly List<(PdfArray Target, PdfArray Snapshot)> _arrays;
+
+        private PdfMutationCheckpoint(
+            List<(PdfDictionary Target, PdfDictionary Snapshot)> dictionaries,
+            List<(PdfArray Target, PdfArray Snapshot)> arrays)
+        {
+            _dictionaries = dictionaries;
+            _arrays = arrays;
+        }
+
+        public static PdfMutationCheckpoint Capture(PdfDocument document)
+        {
+            var dictionaries = new List<(PdfDictionary, PdfDictionary)>();
+            var arrays = new List<(PdfArray, PdfArray)>();
+            var seenDictionaries = new HashSet<PdfDictionary>(ReferenceEqualityComparer.Instance);
+            var seenArrays = new HashSet<PdfArray>(ReferenceEqualityComparer.Instance);
+
+            void Visit(IPdfObject? value)
             {
-                RestoreDictionary(snapshot.Page.NativeObject, snapshot.NativeObject);
+                if (value == null) return;
+                var resolved = value.Resolve();
+                switch (resolved)
+                {
+                    case PdfDictionary dictionary when seenDictionaries.Add(dictionary):
+                        var dictionarySnapshot = dictionary.CloneShallow();
+                        dictionaries.Add((dictionary, dictionarySnapshot));
+                        foreach (var item in dictionary) Visit(item.Value);
+                        break;
+                    case PdfArray array when seenArrays.Add(array):
+                        arrays.Add((array, array.CloneShallow()));
+                        foreach (var item in array) Visit(item);
+                        break;
+                    case PdfStream stream:
+                        Visit(stream.Dictionary);
+                        break;
+                }
             }
 
-            throw;
+            Visit(document.Catalog);
+            foreach (var page in document.Pages) Visit(page.NativeObject);
+            return new PdfMutationCheckpoint(dictionaries, arrays);
+        }
+
+        public void Restore()
+        {
+            for (var i = _arrays.Count - 1; i >= 0; i--)
+            {
+                var (target, snapshot) = _arrays[i];
+                target.Clear();
+                foreach (var item in snapshot) target.Add(item);
+            }
+            for (var i = _dictionaries.Count - 1; i >= 0; i--)
+            {
+                RestoreDictionary(_dictionaries[i].Target, _dictionaries[i].Snapshot);
+            }
         }
     }
 
@@ -4104,12 +4481,13 @@ public sealed class RemediationSession : IDisposable
         RemediationClaim claim,
         List<string> diagnostics)
     {
-        if (claim.Action is not GroupRemediationAction group)
+        if (claim.Action is not (GroupRemediationAction or BindTemplateSlotRemediationAction))
         {
             return;
         }
 
-        var parentNode = Structure.AddElement(group.ParentTag.Value).GetNode();
+        var parentTag = claim.ProducedTag;
+        var parentNode = Structure.AddElement(parentTag).GetNode();
         if (Configuration.DebugWrite)
         {
             parentNode.Title = claim.RuleId;
@@ -4126,13 +4504,26 @@ public sealed class RemediationSession : IDisposable
 
             foreach (var binding in bindings)
             {
-                Structure.ReparentStructureNode(binding.StructureNode!, parentNode);
+                if (claim.Action is BindTemplateSlotRemediationAction bind &&
+                    bind.ContentMode == TemplateSlotContentMode.FlattenLeafClaims)
+                {
+                    if (!CanFlattenBinding(binding, out var reason))
+                    {
+                        diagnostics.Add($"Rule '{claim.RuleId}' matched claim '{related.ClaimId}' that cannot be flattened into '{parentTag}': {reason}");
+                        return;
+                    }
+                    FlattenBindingInto(binding, parentNode, parentTag);
+                }
+                else
+                {
+                    Structure.ReparentStructureNode(binding.StructureNode!, parentNode);
+                }
                 reusedMcids.AddRange(binding.Mcids);
             }
         }
 
         claim.AddAppliedBinding(new RemediationAppliedBinding(
-            group.ParentTag.Value,
+            parentTag,
             reusedMcids,
             parentNode,
             null,
@@ -4603,12 +4994,41 @@ public sealed class RemediationSession : IDisposable
         return properties;
     }
 
-    private static RemediationClaim CreateClaim(Rule rule, int pageIndex, RemediationCandidate candidate, ClaimStatus status, double confidence)
+    private string ResolveProducedTag(Rule rule, string fallback)
+    {
+        if (string.IsNullOrWhiteSpace(rule.Slot) ||
+            rule.Action is not (BindTemplateSlotRemediationAction or TableRemediationAction or AdoptAnnotationRemediationAction))
+        {
+            return fallback;
+        }
+
+        var template = _ruleSets.Select(x => x.StructuralTemplate).FirstOrDefault(x => x != null);
+        var node = template == null ? null : FindTemplateNode(template.Document, rule.Slot!);
+        return node?.Tag ?? fallback;
+    }
+
+    private static RemediationStructuralTemplateNode? FindTemplateNode(
+        RemediationStructuralTemplateNode node,
+        string slotId)
+    {
+        if (string.Equals(node.Id, slotId, StringComparison.Ordinal))
+        {
+            return node;
+        }
+        foreach (var child in node.Children)
+        {
+            var found = FindTemplateNode(child, slotId);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
+    private RemediationClaim CreateClaim(Rule rule, int pageIndex, RemediationCandidate candidate, ClaimStatus status, double confidence)
     {
         var producedTag = rule.Action is AdoptAnnotationRemediationAction &&
             candidate is AnnotationRemediationCandidate annotation
-                ? RequiredAnnotationTag(annotation.Subtype)
-                : rule.Action.DebugString;
+                ? ResolveProducedTag(rule, RequiredAnnotationTag(annotation.Subtype))
+                : ResolveProducedTag(rule, rule.Action.DebugString);
         return new RemediationClaim(
             rule.Id,
             new[] { candidate },
@@ -4620,6 +5040,7 @@ public sealed class RemediationSession : IDisposable
             SelectorDebugString = rule.Predicate.DebugString,
             Action = rule.Action,
             RuleSetId = rule.RuleSetId,
+                SlotId = rule.Slot,
             TextNormalization = rule.TextNormalization ?? TextNormalizationOptions.Default
         };
     }
@@ -4639,6 +5060,7 @@ public sealed class RemediationSession : IDisposable
 
     private void CheckReadingOrder(IReadOnlyList<PageRemediationState> pageStates, List<string> diagnostics)
     {
+        if (IsPrescriptiveTemplate()) return;
         var pageIndexes = pageStates.ToDictionary(x => x.Page, x => x.PageIndex);
         var contentInLogicalOrder = new List<(int PageIndex, int Mcid)>();
 
@@ -4905,6 +5327,7 @@ public sealed class RemediationSession : IDisposable
                         SelectorDebugString = previous.SelectorDebugString,
                         Action = previous.Action,
                         RuleSetId = previous.RuleSetId,
+                        SlotId = previous.SlotId,
                         TextNormalization = previous.TextNormalization
                     });
                 }

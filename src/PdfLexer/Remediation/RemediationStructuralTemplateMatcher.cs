@@ -70,7 +70,10 @@ internal static class RemediationStructuralTemplateMatcher
                     differences.Add(Create(ruleSetId, RemediationTemplateDifferenceKind.IllegalNesting,
                         particle, path, path, parent.Tag, node.Tag, AllPages(node), node.RuleId));
                 }
-                MatchChildren(ruleSetId, particle, node.Children, path, pageCount, boundSlots, differences);
+                if (!node.OpaqueTemplateInterior)
+                {
+                    MatchChildren(ruleSetId, particle, node.Children, path, pageCount, boundSlots, differences);
+                }
             }
         }
 

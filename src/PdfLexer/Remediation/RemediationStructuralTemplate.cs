@@ -11,6 +11,13 @@ public enum RemediationStructuralOccurrence
     OneOrMore
 }
 
+/// <summary>Controls whether a structural template validates output or owns its materialized shape.</summary>
+public enum RemediationStructuralTemplateMode
+{
+    Descriptive,
+    Prescriptive
+}
+
 /// <summary>A closed, ordered structural-template particle.</summary>
 public sealed record RemediationStructuralTemplateNode
 {
@@ -48,16 +55,33 @@ public sealed record RemediationStructuralTemplateNode
 public sealed record RemediationStructuralTemplate
 {
     public RemediationStructuralTemplate(RemediationStructuralTemplateNode document)
+        : this(document, RemediationStructuralTemplateMode.Descriptive)
+    {
+    }
+
+    public RemediationStructuralTemplate(
+        RemediationStructuralTemplateNode document,
+        RemediationStructuralTemplateMode mode = RemediationStructuralTemplateMode.Descriptive)
     {
         Document = document ?? throw new ArgumentNullException(nameof(document));
+        Mode = mode;
     }
 
     public RemediationStructuralTemplate(IEnumerable<RemediationStructuralTemplateNode> children)
-        : this(new RemediationStructuralTemplateNode("Document", children))
+        : this(children, RemediationStructuralTemplateMode.Descriptive)
+    {
+    }
+
+    public RemediationStructuralTemplate(
+        IEnumerable<RemediationStructuralTemplateNode> children,
+        RemediationStructuralTemplateMode mode = RemediationStructuralTemplateMode.Descriptive)
+        : this(new RemediationStructuralTemplateNode("Document", children), mode)
     {
     }
 
     public RemediationStructuralTemplateNode Document { get; }
+
+    public RemediationStructuralTemplateMode Mode { get; }
 }
 
 /// <summary>Kind of structural-template mismatch.</summary>
@@ -90,3 +114,16 @@ public sealed record RemediationTemplateDifference(
     IReadOnlyList<int> PageIndexes,
     string? RuleId,
     bool Suppressed);
+
+/// <summary>A deterministic occurrence in a prescriptive structural-template assembly plan.</summary>
+public sealed record RemediationTemplateAssemblyItem(
+    string SlotId,
+    string TemplatePath,
+    int OccurrenceIndex,
+    string Identity,
+    string ParentIdentity,
+    string? ProducingRuleId,
+    string? ProducingClaimReference,
+    IReadOnlyList<string> ConsumedClaimReferences,
+    bool Synthesized,
+    bool OpaqueInterior);

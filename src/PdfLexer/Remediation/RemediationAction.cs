@@ -43,7 +43,33 @@ public sealed record TagRemediationAction(PdfName Name, PdfDictionary? Attribute
     }
 }
 
-/// <summary>Marks matched content as an artifact.</summary>
+
+/// <summary>Binds candidate or lower-pass claim content to a named prescriptive-template slot.</summary>
+public sealed record BindTemplateSlotRemediationAction(
+    ClaimPredicate? Over = null,
+    TemplateSlotContentMode ContentMode = TemplateSlotContentMode.PreserveChildren) : RemediationAction
+{
+    public override RemediationActionKind Kind => RemediationActionKind.BindTemplateSlot;
+    public override string DebugString => Over == null
+        ? "BindSlot()"
+        : $"BindSlot(over: {Over.DebugString}, content: {ContentMode})";
+
+    internal override void Validate(Rule rule, List<string> errors)
+    {
+        if (rule.Stage == Stage.Classify && Over != null) errors.Add("Classify Bind actions cannot select existing claims; use BindOver in Group.");
+        if (rule.Stage == Stage.Group && Over == null) errors.Add("Group Bind actions require an existing-claim selector.");
+        if (rule.Stage == Stage.Refine) errors.Add("Bind actions are not valid in the Refine stage.");
+        if (!Enum.IsDefined(typeof(TemplateSlotContentMode), ContentMode)) errors.Add($"Template slot content mode {ContentMode} is not supported.");
+    }
+}
+
+/// <summary>Controls how a claim-consuming template binding carries lower-level structure.</summary>
+public enum TemplateSlotContentMode
+{
+    PreserveChildren,
+    FlattenLeafClaims
+}
+
 public sealed record ArtifactRemediationAction(
     ArtifactSubtype Subtype,
     ArtifactSemanticSubtype? SemanticSubtype = null,
@@ -368,7 +394,9 @@ public enum RemediationActionKind
     /// <summary>Adopts an annotation already present in the input.</summary>
     AdoptAnnotation,
     /// <summary>Custom action.</summary>
-    Custom
+    Custom,
+    /// <summary>Binds content or claims to a prescriptive structural-template slot.</summary>
+    BindTemplateSlot
 }
 
 /// <summary>
@@ -403,6 +431,13 @@ public static class RemediationActions
     /// <summary>Creates a structure tagging action.</summary>
     public static RemediationAction Tag(string name, PdfDictionary? attributes = null) =>
         new TagRemediationAction((PdfName)name, attributes);
+
+    /// <summary>Creates a prescriptive-template leaf-slot binding.</summary>
+    public static RemediationAction Bind() => new BindTemplateSlotRemediationAction();
+
+    /// <summary>Creates a prescriptive-template composite-slot binding.</summary>
+    public static RemediationAction BindOver(ClaimPredicate over, TemplateSlotContentMode contentMode = TemplateSlotContentMode.PreserveChildren) =>
+        new BindTemplateSlotRemediationAction(over, contentMode);
 
     /// <summary>Creates an artifact marking action.</summary>
     public static RemediationAction Artifact(ArtifactSubtype subtype) => new ArtifactRemediationAction(subtype);

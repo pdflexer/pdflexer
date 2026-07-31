@@ -61,6 +61,7 @@ public class RemediationFixtureTests
             "c-23-label-value-pairs",
             "c-29-a-nested-list",
             "c-29-b-nested-sections",
+            "c-30-prescriptive-repeated-sections",
             "c-04-a-flag",
             "c-04-b-failfast",
             "c-04-c-autoartifact",

@@ -207,6 +207,17 @@ internal sealed class RemediateCmd
             output.WriteLine("diagnostic: " + diagnostic);
         }
 
+        foreach (var occurrence in report.TemplateAssembly)
+        {
+            Console.WriteLine(
+                $"template-assembly: slot={occurrence.SlotId} path={occurrence.TemplatePath} " +
+                $"occurrence={occurrence.OccurrenceIndex} identity={occurrence.Identity} " +
+                $"parent={occurrence.ParentIdentity} rule={occurrence.ProducingRuleId ?? "<synthesized>"} " +
+                $"claim={occurrence.ProducingClaimReference ?? "<none>"} " +
+                $"consumed={string.Join(",", occurrence.ConsumedClaimReferences)} " +
+                $"synthesized={occurrence.Synthesized} opaque-interior={occurrence.OpaqueInterior}");
+        }
+
         foreach (var difference in report.TemplateDifferences)
         {
             Console.WriteLine(

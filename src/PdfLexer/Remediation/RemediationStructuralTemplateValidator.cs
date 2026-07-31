@@ -44,16 +44,22 @@ internal static class RemediationStructuralTemplateValidator
             errors.Add("The structural template Document root cannot be a bindable slot.");
         }
 
+        var prescriptive = owner.StructuralTemplate.Mode == RemediationStructuralTemplateMode.Prescriptive;
         var slots = new Dictionary<string, (RemediationStructuralTemplateNode Node, string Path)>(StringComparer.Ordinal);
-        var boundSlots = owner.Rules.Where(x => x.Slot != null).Select(x => x.Slot!)
+        var boundSlots = ruleSets.SelectMany(x => x.Rules).Where(x => x.Slot != null).Select(x => x.Slot!)
             .ToHashSet(StringComparer.Ordinal);
-        ValidateNode(root, "Document", null, slots, boundSlots, errors);
+        ValidateNode(root, "Document", null, slots, boundSlots, errors, prescriptive);
 
-        foreach (var rule in ruleSets.SelectMany(x => x.Rules).Where(x => x.Slot != null))
+        foreach (var rule in ruleSets.SelectMany(x => x.Rules))
         {
-            if (!string.Equals(rule.RuleSetId, owner.Id, StringComparison.Ordinal))
+            var structureProducing = IsStructureProducing(rule.Action);
+            if (prescriptive && structureProducing && rule.Slot == null)
             {
-                errors.Add($"Rule '{rule.Id}' binds a structural-template slot but does not belong to template rule set '{owner.Id}'.");
+                errors.Add($"Prescriptive structural rule '{rule.Id}' must bind a template slot.");
+                continue;
+            }
+            if (rule.Slot == null)
+            {
                 continue;
             }
             if (!slots.TryGetValue(rule.Slot!, out var target))
@@ -61,24 +67,68 @@ internal static class RemediationStructuralTemplateValidator
                 errors.Add($"Rule '{rule.Id}' references unknown structural-template slot '{rule.Slot}'.");
                 continue;
             }
-            var tag = ProducedTag(rule.Action);
-            if (tag == null)
+            var tableInterior = prescriptive && IsSpecializedTableInterior(root, rule.Slot!);
+            if (prescriptive && !tableInterior && rule.Action is TagRemediationAction or GroupRemediationAction or MergeRemediationAction)
             {
-                errors.Add($"Rule '{rule.Id}' binds slot '{rule.Slot}', but action '{rule.Action.Kind}' does not produce structure.");
+                errors.Add($"Prescriptive rule '{rule.Id}' must use Bind, BindOver, or a supported specialized slot action; '{rule.Action.Kind}' would duplicate template structure.");
+                continue;
             }
-            else if (!string.Equals(tag, target.Node.Tag, StringComparison.Ordinal))
+            if (prescriptive && rule.Action is StructureLinkRemediationAction)
+            {
+                errors.Add($"Prescriptive rule '{rule.Id}' cannot create a structural Link; bind link content or use AdoptAnnotation with a compatible Link slot.");
+                continue;
+            }
+            if (rule.Action is BindTemplateSlotRemediationAction bind)
+            {
+                var composite = target.Node.Children.Count > 0;
+                if (bind.Over == null && composite)
+                {
+                    errors.Add($"Rule '{rule.Id}' binds composite slot '{rule.Slot}' directly; use BindOver.");
+                }
+                if (bind.Over != null && !composite)
+                {
+                    errors.Add($"Rule '{rule.Id}' uses BindOver for leaf slot '{rule.Slot}'.");
+                }
+            }
+            var tag = ProducedTag(rule.Action);
+            if (!tableInterior && tag != null && !string.Equals(tag, target.Node.Tag, StringComparison.Ordinal))
             {
                 errors.Add($"Rule '{rule.Id}' produces '{tag}' but slot '{rule.Slot}' requires '{target.Node.Tag}'.");
             }
-            if (rule.Cardinality != null)
+            if (rule.Action is AdoptAnnotationRemediationAction &&
+                target.Node.Tag is not ("Link" or "Form" or "Annot"))
             {
-                errors.Add($"Rule '{rule.Id}' cannot declare RuleCardinality while bound to slot '{rule.Slot}'.");
+                errors.Add($"Rule '{rule.Id}' adopts annotations into slot '{rule.Slot}', which requires Link, Form, or Annot.");
+            }
+        }
+
+        if (prescriptive)
+        {
+            foreach (var slot in slots)
+            {
+                if (IsSpecializedTableInterior(root, slot.Key)) continue;
+                var producers = ruleSets.SelectMany(x => x.Rules).Where(x => x.Slot == slot.Key).ToArray();
+                var composite = slot.Value.Node.Children.Count > 0;
+                var groupBindings = producers.OfType<Rule>()
+                    .Select(x => x.Action).OfType<BindTemplateSlotRemediationAction>()
+                    .Count(x => x.Over != null);
+                if (slot.Value.Node.Occurrence is RemediationStructuralOccurrence.ZeroOrMore or RemediationStructuralOccurrence.OneOrMore)
+                {
+                    if (composite && groupBindings != 1)
+                    {
+                        errors.Add($"Repeating composite slot '{slot.Key}' requires exactly one BindOver producer.");
+                    }
+                }
+                else if (composite && groupBindings > 1)
+                {
+                    errors.Add($"Singular composite slot '{slot.Key}' may have at most one BindOver producer.");
+                }
             }
         }
 
         foreach (var slot in slots)
         {
-            var bound = owner.Rules.Count(x => x.Slot == slot.Key);
+            var bound = ruleSets.SelectMany(x => x.Rules).Count(x => x.Slot == slot.Key);
             if (bound > 1 && slot.Value.Node.Occurrence is
                 RemediationStructuralOccurrence.ExactlyOne or RemediationStructuralOccurrence.Optional)
             {
@@ -94,8 +144,13 @@ internal static class RemediationStructuralTemplateValidator
         RemediationStructuralTemplateNode? parent,
         Dictionary<string, (RemediationStructuralTemplateNode, string)> slots,
         IReadOnlySet<string> boundSlots,
-        List<string> errors)
+        List<string> errors,
+        bool prescriptive = false)
     {
+        if (prescriptive && node != null && parent != null && node.Id == null)
+        {
+            errors.Add($"Prescriptive template node '{path}' requires a slot id.");
+        }
         if (!Enum.IsDefined(typeof(RemediationStructuralOccurrence), node.Occurrence))
         {
             errors.Add($"Template node '{path}' has an invalid occurrence.");
@@ -124,7 +179,7 @@ internal static class RemediationStructuralTemplateValidator
         {
             var child = node.Children[i];
             var childPath = RemediationStructuralTemplateMatcher.ExpectedPath(path, node.Children, i);
-            ValidateNode(child, childPath, node, slots, boundSlots, errors);
+            ValidateNode(child, childPath, node, slots, boundSlots, errors, prescriptive);
             for (var j = i + 1; j < node.Children.Count; j++)
             {
                 var other = node.Children[j];
@@ -138,6 +193,17 @@ internal static class RemediationStructuralTemplateValidator
                 }
             }
         }
+    }
+
+    private static bool IsSpecializedTableInterior(RemediationStructuralTemplateNode root, string slot)
+    {
+        bool Find(RemediationStructuralTemplateNode node, bool insideTable)
+        {
+            if (node.Id == slot) return insideTable;
+            var childInsideTable = insideTable || node.Tag == "Table";
+            return node.Children.Any(child => Find(child, childInsideTable));
+        }
+        return Find(root, false);
     }
 
     private static bool CanBeEmptyBetween(IReadOnlyList<RemediationStructuralTemplateNode> nodes, int from, int to)
@@ -156,6 +222,14 @@ internal static class RemediationStructuralTemplateValidator
         node.Id != null && boundSlots.Contains(node.Id)
             ? $"{node.Tag}\0{node.Id}"
             : node.Tag;
+
+    private static bool IsStructureProducing(RemediationAction action) => action switch
+    {
+        TagRemediationAction or GroupRemediationAction or MergeRemediationAction or
+        TableRemediationAction or AdoptAnnotationRemediationAction or BindTemplateSlotRemediationAction or
+        StructureLinkRemediationAction => true,
+        _ => false
+    };
 
     internal static string? ProducedTag(RemediationAction action) => action switch
     {

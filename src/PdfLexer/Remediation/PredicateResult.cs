@@ -254,6 +254,9 @@ public sealed record RemediationClaim(
     /// <summary>Group pass that produced this structural claim.</summary>
     internal int GroupPass { get; init; }
 
+    /// <summary>Template slot bound by this claim, when one exists.</summary>
+    public string? SlotId { get; init; }
+
     /// <summary>Sorted zero-based pages containing this claim or one of its consumed claims.</summary>
     public IReadOnlyList<int> PageIndexes
     {
