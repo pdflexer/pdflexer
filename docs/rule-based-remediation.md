@@ -2,7 +2,130 @@
 
 Rule-based remediation lets callers add a new accessibility structure tree to existing rendered PDFs that are still untagged. It is intended for known transactional document families such as invoices, statements, notices, reports, and exports where the layout repeats but field values, row counts, optional sections, and page sizes can vary.
 
-This is not an automatic tagging system. The caller writes deterministic template rules; `PdfLexer` evaluates those rules, wraps existing content in marked-content scopes, builds structure nodes, and reports diagnostics.
+This is not an automatic tagging system. The caller writes a deterministic template and bindings;
+`PdfLexer` evaluates them, wraps existing content in marked-content scopes, builds structure nodes,
+and reports diagnostics. The preview program path is compiled before page parsing and keeps the
+declared semantic model separate from the legacy rule engine.
+
+## Prescriptive program API (preview greenfield path)
+
+New document-family work should use one `RemediationProgram`. The program is the complete selected
+mapping: a closed `RemediationTemplate`, named anchors, declared artifacts, bindings, and slot-count
+assertions. A template node owns the tag, local slot name, occurrence, children, static properties,
+and declared sibling order; a `BindingRule` only selects source candidates and targets a leaf slot or
+declared artifact.
+
+```csharp
+var program = new RemediationProgram(
+    "invoice-v1",
+    new RemediationTemplate(
+        "invoice", "1", PdfUaProfile.PdfUa1,
+        new RemediationTemplateNode("Document", children: new[]
+        {
+            new RemediationTemplateNode("H1", "title"),
+            new RemediationTemplateNode("P", "body", occurrence: RemediationStructuralOccurrence.ZeroOrMore)
+        })),
+    new[]
+    {
+        new BindingRule(
+            "title", BindingTarget.ToSlot(SlotRef.Parse("/title")),
+            CandidateSelector.Text(Granularity.Paragraph), Predicates.Text.Equals("Invoice"),
+            cardinality: RuleCardinality.Exactly(1)),
+        new BindingRule(
+            "body", BindingTarget.ToSlot(SlotRef.Parse("/body")),
+            CandidateSelector.Text(Granularity.Paragraph),
+            Predicates.Text.StartsWith("Account"))
+    });
+
+using var session = document.BeginRemediation(new RemediationSessionConfiguration
+{
+    Profile = program.Template.Profile,
+    StrictConformance = true
+});
+session.Use(program);
+var report = session.DryRun();
+if (report.Diagnostics.Count == 0) session.Commit();
+```
+
+`SlotRef` paths are canonical and root-relative (`/title`, `/body`). The compiler resolves every
+slot, anchor, artifact, tag, occurrence, and dependency before page parsing. Slot anchors and
+anchor-relative predicates therefore run in deterministic dependency layers; a dependent binding
+cannot observe a partially produced slot. `RequireSourceAgreement` is the default order policy,
+while `AllowDeclaredReorder` is an explicit acknowledgement that declared sibling order differs from
+source order. Repeating composites are partitioned by a derived or explicit content-traversal
+boundary. Mounted fragments use stable aliases and resolve their local `./slot` references beneath
+the mount path.
+
+The equivalent serialized document uses schema `pdflexer.remediation.program.preview1`:
+
+```json
+{
+  "schema": "pdflexer.remediation.program.preview1",
+  "id": "invoice-v1",
+  "template": {
+    "id": "invoice", "version": "1", "profile": "PdfUa1",
+    "document": { "tag": "Document", "children": [
+      { "tag": "H1", "name": "title" },
+      { "tag": "P", "name": "body", "occurrence": "ZeroOrMore" }
+    ]
+  },
+  "bindings": [
+    { "id": "title", "target": { "slot": "/title" },
+      "candidates": { "kind": "text", "granularity": "Paragraph" },
+      "predicate": { "kind": "textEquals", "text": "Invoice" },
+      "cardinality": { "minMatches": 1, "maxMatches": 1 } }
+  ]
+}
+```
+
+The prescriptive program path is intentionally narrow in this first migration unit: it does not
+adopt annotations, derive table interiors, absorb regions into artifacts, or perform content-derived
+refinement. Those features will extend the compiled template model rather than reintroduce
+procedural structure-producing actions.
+
+### Preview runtime execution and reporting
+
+The preview runtime compiles a program once to `CompiledRemediationProgram` and executes its
+dependency layers directly. It does not lower program bindings into legacy `Rule`/`RuleSet` stages,
+`GroupPass` values, or rule-id lookups. Each layer reads an immutable snapshot published by completed
+layers; bindings in the same layer cannot create hidden dependencies, and their proposals are
+resolved deterministically by binding id. Claims retain their typed binding and `SlotRef` identity
+through assembly, assertions, and reports.
+
+Slot-relative anchors resolve from typed applied claims after every producer of the referenced slot
+has completed. A missing bounded claim is unresolved and multiple bounded claims are ambiguous; the
+anchor's page selector is retained. Program sessions are isolated from the legacy path and reject
+injected legacy rules while a compiled program is active. Legacy `Rule`/`RuleSet` execution and its
+stage/pass-oriented reports remain available for migration, but are not part of preview program
+semantics.
+
+Preview reports expose structured runtime diagnostics with `Error`, `WorkItem`, `Warning`, and
+`Acknowledged` dispositions, plus program-facing binding evaluations. The existing string diagnostic
+views and legacy `RuleEvaluations` remain compatibility surfaces. Missing matches, underfilled
+bindings or slots, and unaccounted content are work items in `Authoring` and commit-blocking errors
+in `Enforced`; ambiguity, conflicts, illegal structure, identity collisions, and materialization
+divergence are errors in either mode. An explicitly permitted declared reorder remains an
+acknowledged report item.
+
+Declared child order is checked before assembly at the Document root and recursively for each
+materialized composite. The preview report records inversions against available content-stream and
+geometric top-to-bottom/left-to-right evidence, including the container, child occurrences, pages,
+bounds, and source references. `RequireSourceAgreement` makes an inversion a non-suppressible
+commit blocker; `AllowDeclaredReorder` records the same comparison as an explicit acknowledgement.
+The ordinary logical-order and MCID checks still run after materialization.
+
+Occurrence indices are deterministic for one input and one compiled program, but they are not durable
+cross-revision identifiers: inserting or removing an earlier occurrence can change later indices.
+Use the canonical slot path for the semantic location; do not treat an identity such as
+`template:invoice-v1@1:Document/items[2]` as a persistent business identity.
+
+The serialized surface remains `pdflexer.remediation.program.preview1`; `program.v1` is reserved
+until the identity contracts have been exercised against two real producer families and the
+compositional `Region` and richer assertion contracts are settled. Preview1 supports mounted,
+parameterless fragments; derived, slot, and named repeating-composite boundaries; and `Only`,
+`SameOccurrence`, one-based `Nth`, and `NearestPrevious` point references. `All` is reserved for
+aggregate consumers and is rejected by point anchors. Partitioning is content-traversal based;
+multi-column, rotated, keyed, joined, and geometry-derived strategies remain unsupported.
 
 ## Supported Workflow
 
@@ -39,7 +162,10 @@ if (report.Diagnostics.Count == 0)
 }
 ```
 
-`DryRun()` evaluates rules and returns claims/diagnostics without mutating the document. `Commit()` reevaluates, applies accessibility setup, writes marked content, builds the structure tree, and runs integrity diagnostics.
+`DryRun()` evaluates rules and returns claims/diagnostics without mutating the document. For a
+preview program it evaluates the compiled layers and assembly plan; for a legacy rule set it retains
+the existing stage/pass execution. `Commit()` reevaluates, applies accessibility setup, writes marked
+content, builds the structure tree, and runs integrity diagnostics.
 
 > [!IMPORTANT]
 > `Commit()` reevaluates the rules, but it is transactional: preflight failures do not mutate the document, and any unsuppressed failure after materialization restores the structure tree, page content, annotations, and original structure reference. A failed commit throws and the document’s reachable PDF object graph remains equivalent to its input (the serializer may allocate fresh object numbers on a later save). Reuse the session only for diagnostics; create a fresh session for a retry.
@@ -61,6 +187,11 @@ Read [Before You Author Rules](#before-you-author-rules) first. Several document
 | `NamedZoneMargins` | 72pt each side | Defines what `NamedLayoutZone.Header`/`Footer`/`Left`/`Right` mean. A document with a 40-point header, or a non-Letter page size, will mis-zone unless you set these. |
 | `DefaultConfidence` | `1.0` | Confidence assigned to matches that do not compute one. See [Confidence](#confidence). |
 | `DebugWrite` | `false` | Writes rule ids into structure element titles. |
+| `RunMode` | `Enforced` | `Authoring` permits dry-runs and reports work items but rejects `Commit()`; `Enforced` is required for mutation. |
+
+For preview programs, runtime dispositions are authoritative for commit gating. A report can retain
+warnings and acknowledged order comparisons, but an `Error` blocks an enforced commit. Authoring is
+a dry-run worklist and cannot be used to weaken a production commit.
 
 > [!WARNING]
 > **`RemediationLeftoverPolicy.AutoArtifact` can hide content.** Unclaimed content is marked as an artifact, which removes it from the structure tree and from assistive technology entirely. That is correct for decorative content and wrong for everything else — and the engine cannot tell the difference.
@@ -956,10 +1087,11 @@ diagnostics, pass a `RemediationTraceRequest` to `DryRun`. Rejections appear in
 Tracing preserves short-circuit behavior and records skipped operands and the rejecting `And`
 operand. The CLI equivalent is `--dry-run --explain-rule <id>` with optional `--explain-page`.
 
-Semantic assertions are attached to `RuleSet.Assertions`. Rule-output counts,
-structure-element counts, and direct parent/child shapes produce
-`RemediationReport.AssertionOutcomes`; an unsuppressed `SemanticAssertionFailed` blocks commit.
-`RemediationReport.PlannedSemanticTree` exposes the immutable tree derived from the finalized plan.
+Legacy semantic assertions remain attached to `RuleSet.Assertions`. Preview programs currently expose
+slot-count assertions against canonical `SlotRef` paths, and their outcomes include the slot rather
+than inferring it from a structure tag. Richer conditional, subtree, and per-occurrence assertion
+contracts remain deferred. `RemediationReport.PlannedSemanticTree` exposes the immutable tree derived
+from the finalized preview plan.
 
 ### Structural templates
 
@@ -1012,10 +1144,12 @@ Classify, immutable numbered Group frontiers, template assembly, then Refine. An
 regions, positional references, and tag predicates remain the detection tools; the template owns
 the resulting shape.
 
-Prescriptive ordering wins over MCID/content-position ordering for siblings. Repeated occurrences
-still follow document flow. The broad `ReadingOrderDrift` check is not emitted for prescriptive
-roots because a declared slot order is an authoring decision; content order remains available in
-claims and reports for review. Template `Pages` and `SpansPages` remain assertions, not occurrence
+Prescriptive ordering determines the assembled sibling order, but preview execution does not silently
+discard source evidence. Before assembly, the runtime compares each container's declared direct-child
+order with content-stream order and geometric reading evidence, recursively through materialized
+composites. `RequireSourceAgreement` is the default and blocks on an inversion;
+`AllowDeclaredReorder` acknowledges the inversion while keeping it visible. Repeated leaves still
+follow document flow. Template `Pages` and `SpansPages` remain assertions, not occurrence
 partitioners. Standard table/list containment is enforced; other standard parent/child pairs remain
 permissive pending a complete PDF/UA content model.
 
@@ -1029,7 +1163,7 @@ Prescriptive leftovers are errors. `AutoArtifact` does not absorb content that m
 explicit artifact-inventory item, so a prescriptive commit cannot hide a newly introduced semantic
 field. Artifacts remain outside the structural template and use the artifact inventory.
 
-JSON v1 uses the same additive surface:
+Serialized preview1 uses the same additive surface:
 
 ```json
 {
@@ -1054,14 +1188,17 @@ JSON v1 uses the same additive surface:
 ```
 
 Dry-run exposes the assembled `PlannedSemanticTree` and `TemplateAssembly`. Each assembly item names
-the slot, declared template path, occurrence index, durable identity, parent identity, producing rule
-and claim, consumed claims, and whether the node was synthesized or has an opaque interior. The CLI
-prints the same records. Identical input and rules produce identical assembly records, including for
-synthesized containers.
+the canonical slot, declared template path, occurrence index, typed occurrence identity, parent
+identity, producing binding and claim, consumed claims, and whether the node was synthesized or has
+an opaque interior. The CLI prints the same records. Identical input and compiled program produce
+identical assembly records within a run, including for synthesized containers; occurrence indices
+are not durable across revisions that insert or remove earlier occurrences.
 
 Evaluation builds one immutable assembly plan. The planned semantic tree and commit materializer are
 two projections of that same plan; they do not independently infer ordering or parents. A materialized
-occurrence stores its path identity in `/ID`, for example `template:Document/items[2]/body[1]`.
+occurrence stores its typed path identity in `/ID`, for example
+`template:invoice-v1@1:Document/items[2]/body[1]`, while the semantic slot remains a canonical path
+such as `/items/body`.
 The `template:` namespace is reserved for this purpose: a colliding pre-existing id or duplicate
 identity is a non-suppressible commit blocker, and committed identities are entered uniquely in the
 structure IDTree.
@@ -1075,8 +1212,9 @@ mode; use a slot-bound `AdoptAnnotation` rule for links and annotations.
 
 Commit compares the read-back structure against the planned projection before accessibility setup.
 Both pre-mutation validation failures and post-mutation divergences are commit blockers, and the
-transactional checkpoint restores the input object graph on failure. Prescriptive unaccounted content
-uses the non-suppressible `PrescriptiveUnaccountedContent` diagnostic; `AutoArtifact` cannot waive it.
+transactional checkpoint restores the input object graph on failure. Prescriptive text and graphical
+leftovers are first recorded individually in `RemediationReport.UnaccountedContent`, then summarized
+by the non-suppressible `PrescriptiveUnaccountedContent` diagnostic; `AutoArtifact` cannot waive it.
 A later save may allocate fresh object numbers by design. Descriptive templates continue to validate
 but do not create missing containers; omitted templates preserve the original behavior. Both are
 retained only for migrating rule sets authored before prescriptive mode and should not be used for

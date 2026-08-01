@@ -74,6 +74,7 @@ internal sealed class AnchorResolver
         {
             PredicateAnchor predicate => ResolvePredicateAnchor(predicate),
             TextLabelAnchor text => ResolveTextLabel(text),
+            SlotAnchor slot => ResolveSlot(slot),
             PriorClaimAnchor claim => ResolvePriorClaim(claim),
             DeclaredZoneAnchor zone => ResolveDeclaredZone(zone),
             TableHeaderAnchor header => ResolveTableHeader(header),
@@ -149,6 +150,163 @@ internal sealed class AnchorResolver
         }
 
         return new AnchorResolution(anchor.Id, claim.BoundingBox, claim.Confidence, claim.PageIndex, claim.Candidates);
+    }
+
+    private AnchorResolution? ResolveSlot(SlotAnchor anchor)
+    {
+        var slotId = anchor.Slot.Path[1..];
+        var slotClaims = _context.Claims.Where(x =>
+                x.Status == ClaimStatus.Applied &&
+                (x.ProgramSlot != null ? x.ProgramSlot == anchor.Slot :
+                    string.Equals(x.SlotId, slotId, StringComparison.Ordinal)))
+            .ToArray();
+        if (slotClaims.Length == 0)
+        {
+            EmitFailure(DiagnosticCode.ProgramAnchorUnresolved, anchor,
+                $"Slot anchor '{anchor.Id}' references unfilled slot '{anchor.Slot}'.");
+            return null;
+        }
+        var bounded = slotClaims.Where(x => x.BoundingBox != null).ToArray();
+        if (bounded.Length == 0)
+        {
+            EmitFailure(DiagnosticCode.ProgramAnchorUnresolved, anchor,
+                $"Slot anchor '{anchor.Id}' found no bounded claim for slot '{anchor.Slot}'.",
+                slotClaims);
+            return null;
+        }
+
+        var ordered = bounded
+            .OrderBy(x => x.PageIndex)
+            .ThenBy(x => x.Candidates.Count == 0 ? int.MaxValue : x.Candidates.Min(y => y.ContentOrderIndex))
+            .ThenBy(x => x.ClaimId.Value, StringComparer.Ordinal)
+            .ToArray();
+        RemediationClaim? selected = anchor.OccurrenceSelector switch
+        {
+            OccurrenceSelector.Nth when anchor.OccurrenceNumber is { } number =>
+                SelectNth(anchor, ordered, number),
+            OccurrenceSelector.NearestPrevious => SelectNearestPrevious(ordered),
+            OccurrenceSelector.SameOccurrence => SelectSameOccurrence(anchor, ordered),
+            OccurrenceSelector.Only when ordered.Length == 1 => ordered[0],
+            _ => null
+        };
+        if (selected == null)
+        {
+            EmitFailure(
+                anchor.OccurrenceSelector is OccurrenceSelector.Only or OccurrenceSelector.SameOccurrence
+                    ? DiagnosticCode.ProgramAnchorAmbiguous
+                    : DiagnosticCode.ProgramAnchorUnresolved,
+                anchor,
+                anchor.OccurrenceSelector == OccurrenceSelector.Nth
+                    ? $"Anchor '{anchor.Id}' could not resolve occurrence {anchor.OccurrenceNumber} for slot '{anchor.Slot}'."
+                    : $"Anchor '{anchor.Id}' could not uniquely resolve {anchor.OccurrenceSelector} for slot '{anchor.Slot}'.",
+                ordered);
+            return null;
+        }
+        if (_context.PageIndex >= 0 && !selected.PageIndexes.Contains(_context.PageIndex))
+        {
+            EmitFailure(DiagnosticCode.ProgramAnchorUnresolved, anchor,
+                $"Anchor '{anchor.Id}' selected slot '{anchor.Slot}' on another page; preview geometry anchors are page-local.",
+                new[] { selected });
+            return null;
+        }
+        var claim = selected;
+        return new AnchorResolution(anchor.Id, claim.BoundingBox!, claim.Confidence, claim.PageIndex, claim.Candidates);
+    }
+
+    private RemediationClaim? SelectNth(
+        SlotAnchor anchor,
+        IReadOnlyList<RemediationClaim> ordered,
+        int number)
+    {
+        var partitions = RelevantPartitions(anchor)
+            .OrderBy(x => ActivationOrdinal(x))
+            .ToArray();
+        if (partitions.Length == 0)
+            return number <= ordered.Count ? ordered[number - 1] : null;
+        if (number > partitions.Length) return null;
+        var ids = partitions[number - 1].AssignedClaims.ToHashSet(StringComparer.Ordinal);
+        var matches = ordered.Where(x => ids.Contains(x.ClaimId.Value)).ToArray();
+        return matches.Length == 1 ? matches[0] : null;
+    }
+
+    private RemediationClaim? SelectNearestPrevious(IReadOnlyList<RemediationClaim> ordered)
+    {
+        if (_context.CurrentCandidate == null) return null;
+        var current = CandidateOrdinal(_context.PageIndex, _context.CurrentCandidate);
+        return ordered
+            .Where(x => ClaimOrdinal(x) < current)
+            .OrderByDescending(ClaimOrdinal)
+            .FirstOrDefault();
+    }
+
+    private RemediationClaim? SelectSameOccurrence(
+        SlotAnchor anchor,
+        IReadOnlyList<RemediationClaim> ordered)
+    {
+        if (_context.CurrentCandidate == null) return null;
+        var current = CandidateOrdinal(_context.PageIndex, _context.CurrentCandidate);
+        var partitions = RelevantPartitions(anchor)
+            .OrderBy(x => ActivationOrdinal(x))
+            .ToArray();
+        var containing = partitions
+            .Where(x => ActivationOrdinal(x) <= current)
+            .LastOrDefault();
+        if (containing == null) return null;
+        var ids = containing.AssignedClaims.ToHashSet(StringComparer.Ordinal);
+        var matches = ordered.Where(x => ids.Contains(x.ClaimId.Value)).ToArray();
+        return matches.Length == 1 ? matches[0] : null;
+    }
+
+    private IEnumerable<RemediationOccurrencePartition> RelevantPartitions(SlotAnchor anchor)
+    {
+        var candidates = _context.OccurrencePartitions
+            .Where(x => anchor.Slot.Path.StartsWith(x.CompositeSlot.Path + "/", StringComparison.Ordinal))
+            .ToArray();
+        if (candidates.Length == 0) return candidates;
+        var depth = candidates.Max(x => x.CompositeSlot.Path.Count(c => c == '/'));
+        return candidates.Where(x => x.CompositeSlot.Path.Count(c => c == '/') == depth);
+    }
+
+    private long ActivationOrdinal(RemediationOccurrencePartition partition)
+    {
+        if (partition.ActivationSourceOrdinal is { } ordinal) return ordinal;
+        var id = partition.Activations.FirstOrDefault();
+        var candidate = _context.DocumentCandidates.FirstOrDefault(x => x.CandidateId == id);
+        return candidate == null
+            ? ((long)(partition.Pages.FirstOrDefault()) << 32)
+            : CandidateOrdinal(partition.Pages.FirstOrDefault(), candidate);
+    }
+
+    private static long ClaimOrdinal(RemediationClaim claim)
+    {
+        var candidate = claim.Candidates.OrderBy(x => x.ContentOrderIndex).FirstOrDefault();
+        return candidate == null
+            ? ((long)claim.PageIndex << 32) | uint.MaxValue
+            : CandidateOrdinal(claim.PageIndex, candidate);
+    }
+
+    private static long CandidateOrdinal(int pageIndex, RemediationCandidate candidate) =>
+        ((long)pageIndex << 32) | (uint)candidate.ContentOrderIndex;
+
+    private void EmitFailure(
+        DiagnosticCode code,
+        SlotAnchor anchor,
+        string message,
+        IReadOnlyList<RemediationClaim>? claims = null)
+    {
+        if (_context.RuntimeDiagnosticSink != null)
+        {
+            _context.RuntimeDiagnosticSink(new RemediationRuntimeDiagnostic(
+                code,
+                RemediationDiagnosticDisposition.Error,
+                _context.ProgramDiagnosticScope ?? $"Anchor:{anchor.Id}",
+                message,
+                anchor.Slot,
+                CandidateIds: claims?.SelectMany(x => x.Candidates)
+                    .Select(x => x.CandidateId).Distinct().ToArray()));
+            return;
+        }
+        _diagnostics.Add(message);
     }
 
     private AnchorResolution? ResolveDeclaredZone(DeclaredZoneAnchor anchor)

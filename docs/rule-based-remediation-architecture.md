@@ -1,6 +1,6 @@
 # Rule-Based Remediation — Architecture and Direction
 
-Last updated: 2026-07-31
+Last updated: 2026-08-01
 
 What the model *is*, where it is going, and what is missing. The reference doc says how to use the
 language as shipped; this says why it is shaped that way and which parts are not settled yet.
@@ -13,6 +13,57 @@ language as shipped; this says why it is shaped that way and which parts are not
 | [rule-based-remediation-structural-model.md](rule-based-remediation-structural-model.md) | Design spec for the template and artifact inventory (RRM-039 – RRM-041) |
 | [rule-based-remediation-plan.md](rule-based-remediation-plan.md) | Milestones, gates, sequencing |
 | [rule-based-remediation-corpus.md](rule-based-remediation-corpus.md) | The input corpus gaps are validated against |
+
+### Current migration boundary
+
+The greenfield migration preview starts with `pdflexer.remediation.program.preview1`: one `RemediationProgram`
+selects a prescriptive `RemediationTemplate`, and `BindingRule` instances target canonical `SlotRef`
+paths or declared artifacts. The compiler validates the closed template and produces deterministic
+dependency layers before page parsing. The preview runtime executes that compiled program directly;
+it is not lowered into the legacy rule/stage engine. The existing sections below describe the
+architectural decisions that led to this model and the staged engine that is being retired; they
+remain useful for understanding the invariants, but new families should author against the program
+API documented in the reference guide.
+
+### Preview runtime milestone
+
+The native preview path has a deliberately narrow boundary. A compiled program executes its
+dependency layers in order, with each layer reading an immutable snapshot from completed layers.
+Bindings within one layer are independent and resolve deterministically by binding id. Typed binding
+and slot references remain attached to claims, assembly records, assertions, and reports; program
+behavior does not depend on legacy rule ids, stages, or `groupPass`.
+
+Slot anchors resolve from applied claims after all producers of the referenced slot have completed.
+Zero bounded claims is unresolved and more than one is ambiguous, with the anchor's page selector
+preserved. Program sessions are isolated from legacy `Rule`/`RuleSet` execution and reject
+injected legacy rules while a program is active. Legacy execution and its stage/pass-oriented report
+contract remain available for migration.
+
+Preview runtime diagnostics are structured with `Error`, `WorkItem`, `Warning`, and
+`Acknowledged` dispositions. Authoring reports missing matches, underfilled bindings or slots, and
+unaccounted content as work items; Enforced promotes those conditions to commit-blocking errors.
+Ambiguity, conflicts, illegal structure, identity collisions, and materialization divergence remain
+errors. Existing string diagnostics and legacy rule evaluations are compatibility views.
+
+Before assembly, the preview runtime recursively compares declared direct-child order at the Document
+root and materialized composite containers with available content-stream and geometric
+top-to-bottom/left-to-right evidence. Each inversion remains visible with its container, child
+occurrences, pages, bounds, and source references. `RequireSourceAgreement` makes the inversion a
+non-suppressible blocker; `AllowDeclaredReorder` records an acknowledged comparison. Normal
+logical-order and MCID integrity checks still run after materialization.
+
+Occurrence indices are deterministic within one input and compiled program, but are not durable across
+document revisions: inserting or removing an earlier occurrence can change subsequent indices.
+Canonical slot paths identify semantic locations; an occurrence identity such as
+`template:invoice-v1@1:Document/items[2]` is not a persistent business identity.
+
+Preview1 supports mounted parameterless fragments with relative local references, repeating
+composites with derived or explicit boundaries, and occurrence-scoped point references. Partitioning
+uses page-aware content traversal and reports activation evidence and assigned or rejected claims;
+geometry-derived, multi-column, rotated, keyed, and joined partition strategies remain deferred.
+Compositional `Region`, fragment parameters, and richer conditional/subtree/per-occurrence assertions
+also remain deferred. Synthetic invoice and statement fixtures provide useful evidence for the
+preview path, but do not satisfy the two-family real-producer gate.
 
 ---
 
@@ -164,7 +215,7 @@ concerns *identity* — the part of a language that cannot be refactored once ru
 ### 1. The slot namespace should be path-scoped, not flat
 
 Occurrence identity is already hierarchical: a materialized node stores
-`template:Document/items[2]/body[1]` in `/ID`. The *declaration* namespace is not — slot ids are
+`template:invoice-v1@1:Document/items[2]/body[1]` in `/ID`. The *declaration* namespace is not — slot ids are
 globally unique strings enforced by a duplicate check in
 `RemediationStructuralTemplateValidator`.
 
@@ -180,11 +231,12 @@ Direction: a slot is identified by its declared path; a `ref`/`define` particle 
 additive once it is. The matcher already computes paths (`ExpectedPath`), so most of the machinery
 exists.
 
-### 2. Slots, not rule ids, are the durable reference
+### 2. Slots, not rule ids, are the durable program reference
 
 In template-first authoring the template is stable and rules churn — a positional rule may be
-rewritten five times while iterating. But every durable reference in the language currently keys on
-rule id:
+rewritten five times while iterating. The preview program therefore uses canonical slot paths for
+binding targets, slot anchors, and slot assertions. The legacy rule language still has these
+rule-id-keyed constructs:
 
 | Construct | Keys on | Should key on |
 | --- | --- | --- |
@@ -252,22 +304,13 @@ trivial cases and forces a second syntax the moment a slot needs anchor-relative
 does not fit the shapes that actually occur, such as several rules feeding one repeating slot, or a
 rule binding by position relative to *another slot*.
 
-#### What assertions need before this holds
+#### What assertions remain to settle
 
-`RemediationSemanticAssertion` is the right home but currently keys on the wrong axis. Assertions
-key on rule id or tag, and scope only to `Document` or `PerPage`, so there is no way to say "this
-constraint applies to slot X." That is *why* `Pages`/`SpansPages` leaked onto the template node —
-there was nowhere else for a per-slot condition to go. Three additions close it:
-
-- **slot-keyed** — count, presence, or content of whatever bound to slot X, instead of keying on a
-  churning rule id or an ambiguous tag when five slots are `P`;
-- **slot-scoped** — `Scope = Slot("items")`, so "every row has four cells" applies within a subtree;
-- **conditional** — "if slot X is bound then slot Y is required," the cross-slot case.
-
-The third is also the pressure valve for the grammar limitation: a loose template plus conditional
-assertions expresses a variable family better than encoding every variant into one closed tree. Once
-these exist, `Pages`/`SpansPages` migrate to slot-scoped assertions rather than being joined by more
-fields.
+Preview1 closes the first part of this contract: `SlotCountAssertion` is keyed by canonical
+`SlotRef`, so a slot assertion cannot pass by counting a different slot that happens to use the
+same structure tag. Richer slot-scoped subtree, conditional, child-count, and per-occurrence
+assertions remain deferred. Those assertions are the pressure valve for variable families; they
+should be specified before the preview surface is promoted beyond `preview1`.
 
 ---
 
@@ -413,9 +456,8 @@ absorption — *"unbound painting content in the footer region is `Pagination`"*
 declaration to review rather than an open-ended rule backlog, and still a blocker everywhere outside
 a declared catch region.
 
-One related hole belongs with it: the prescriptive branch of `ApplyLeftoverPolicy` reports a single
-per-page diagnostic and returns before populating `unaccountedContent`, so the strictest mode gives
-the *least* information about what actually failed.
+The preview now inventories every unaccounted text and graphical item before emitting its summary
+diagnostic. Region-scoped absorption, overlap precedence, and emitted artifact metadata remain open.
 
 ### What this removes
 
@@ -429,12 +471,11 @@ the *least* information about what actually failed.
 
 ### The guardrail
 
-Everything above moves authority onto the template, and declared order is currently unverified
-against document order at three layers: assembly reorders into declaration order, the matcher
-validates the reordered tree, and `CheckReadingOrder` returns early under a prescriptive template
-(`RemediationSession.cs:5063`). Reading order is most of what PDF/UA is for. A per-slot opt-in for
-intentional reordering, with a diagnostic otherwise, should land before more authority moves onto the
-template.
+Everything above moves authority onto the template, so the preview runtime now performs the required
+guardrail before assembly. It compares declared order with content-stream and geometric evidence at
+the root and recursively through materialized composites. `RequireSourceAgreement` is the default
+non-suppressible blocking policy; `AllowDeclaredReorder` is an explicit, visible acknowledgement.
+The legacy staged path remains isolated for migration and does not define preview-program semantics.
 
 ---
 
@@ -451,8 +492,8 @@ Slot-relative anchors and predicates introduce data dependencies. If the rule bi
 label slot must finish before the dependent rule runs. The dependency is more important than the
 order in which rules happen to be declared.
 
-The rule set should therefore compile to an internal execution graph even if `Stage` disappears from
-the authoring language:
+The preview program therefore compiles to an internal execution graph; `Stage` and `groupPass`
+are not part of its execution semantics:
 
 1. Resolve template, fragment, slot, region, and artifact references.
 2. Build edges for every slot-relative anchor, predicate, partition, and content-derived refinement.
@@ -462,10 +503,10 @@ the authoring language:
 5. Partition repeating composites bottom-up, assemble the declared tree, apply static declaration
    properties and content-derived refinements, then evaluate assertions and accounting.
 
-These are engine phases, not choices exposed to the author. Rules with no dependency may execute in
-parallel, but their committed result and report order must remain deterministic. A future
-candidate predicate that depends on a slot is valid only through this graph; it must not introduce a
-hidden fixed-point evaluation loop.
+These are engine phases, not choices exposed to the author. Bindings with no dependency may execute
+in parallel, but their committed result and report order remain deterministic. A candidate predicate
+that depends on a slot is valid only through this graph; it must not introduce a hidden fixed-point
+evaluation loop. The legacy staged engine continues separately until migration is complete.
 
 ### Slot identity has three distinct levels
 
@@ -475,7 +516,7 @@ must distinguish:
 - a **slot definition** inside a template or reusable fragment;
 - a **mounted slot path** inside a particular family template, such as `billing/address/line`;
 - a **materialized occurrence identity**, such as
-  `template:Document/billing[1]/address[2]/line[1]`.
+  `template:invoice-v1@1:Document/billing[1]/address[2]/line[1]`.
 
 Public APIs and serialized rules should use a typed `SlotRef` representation with defined absolute
 and relative forms. Rules shipped with a fragment need relative references; family-level rules need
@@ -541,20 +582,14 @@ Slot-declared boundaries should land additively while Group remains available. G
 decision made from real family evidence, including multi-column and irregular-table inputs, not only
 from synthetic fixtures.
 
-### Reading-order disagreement is a prerequisite gate
+### Reading-order disagreement is a preview guardrail
 
-The proposed per-slot guardrail must land before broad migration or additional authority moves onto
-the template. Assembly cannot silently use declaration order and then validate the tree it just
-constructed.
-
-Source painting order is not automatically the intended reading order either, so the check is not a
-universal requirement to preserve source order. The report should compare source/content-stream
-order, geometric reading evidence, and declared output order, and identify every inversion with its
-slot and candidates. The default is a diagnostic requiring review. Intentional reordering requires
-an explicit per-slot policy or acknowledgement and remains visible in dry-run and commit reports.
-
-The result still undergoes the ordinary logical-order and MCID integrity checks. An acknowledgement
-permits an intentional move; it does not waive output validation.
+Source painting order is not automatically the intended reading order, so preview execution does not
+require every document to preserve source order. It compares source/content-stream order, geometric
+reading evidence, and declared output order before assembly, identifies each inversion with its
+container, slots, occurrences, candidates, and evidence, and keeps the comparison in dry-run and
+commit reports. `RequireSourceAgreement` blocks an inversion; `AllowDeclaredReorder` acknowledges
+the intentional move without waiving logical-order or MCID validation.
 
 ### Region accounting is guarded absorption, not a semantic catch-all
 
@@ -638,15 +673,20 @@ the engine has no supported way to realize for the selected profile.
 
 ### Required sequencing before broad migration
 
-1. Fix declaration-only ambiguity validation so a prescriptive template validates without rules.
-2. Settle typed slot references, fragment mount identity, occurrence scoping, and dependency-graph
-   compilation before publishing the replacement serialized language.
-3. Add detailed unaccounted-content inventory and the reading-order disagreement policy.
-4. Add inferred and explicit slot occurrence boundaries without removing Group.
-5. Exercise the authoring loop against at least two or three real internal template families and run
-   them as corpora, not one document at a time.
-6. Use that evidence to decide whether Group disappears and how much of the existing region surface
-   should migrate behind the compositional `Region` API.
+The preview milestone establishes the compile boundary, typed slot references, deterministic
+dependency layers, slot-keyed assertions, slot anchors, recursive order evidence/policies, and
+individual prescriptive leftover inventory. Those capabilities are available to preview programs;
+they do not remove the legacy engine or settle the deferred contracts.
+
+Before broad migration, the remaining gates are:
+
+1. Harden the implemented fragment, occurrence, and boundary contracts with representative corpus
+   runs and keep the preview schema while those contracts remain pre-release.
+2. Exercise preview programs against at least two real producer families as corpus runs. Synthetic
+   invoice and statement fixtures are not substitutes for this gate.
+3. Define the compositional `Region` contract and richer conditional, subtree, and per-occurrence
+   assertion surface.
+4. Use producer evidence to decide how much of the legacy Group and region surface can migrate.
 
 Do not migrate the forty-one legacy generated rule sets merely to validate the new surface. A small
 real vertical slice should settle the breaking identity and execution contracts first; broad
@@ -656,20 +696,20 @@ migration follows once those contracts survive producer variation.
 
 ## Current gaps
 
-Split by where the fix has to happen. **Breaking** means deferring it makes the eventual change a
-migration for existing rule sets; **additive** means it can be added later without disturbing them.
+Split by where the fix has to happen. The rows below are remaining gaps after the preview runtime
+milestone; preview capabilities that are already available are described above rather than repeated
+as missing. **Breaking** means deferring a change makes the eventual change a migration for existing
+rule sets; **additive** means it can be added later without disturbing them.
 
 ### Architecture
 
 | Gap | Impact | Deferral cost |
 | --- | --- | --- |
 | Slot declaration namespace is flat | No reusable template fragments; manual disambiguation for nested repetition | **Breaking** |
-| Durable references key on rule id | Rule refactors break anchors, predicates, and assertions | **Breaking** |
-| Anchors cannot reference slots | Positional logic is bound to rule names, the least stable identity in the system | **Breaking** |
+| Fragment mount aliases and relative references are not settled | Reusable fragments cannot yet promise unambiguous mounted paths or relative-reference behavior | **Breaking**, before fragments |
 | `Pages`/`SpansPages` live on template nodes | Structure/assertion factoring erodes as constraints accumulate | **Breaking** |
 | Group stage may be vestigial | Its premise — undeclared hierarchy — was abolished by the invariant. What remains (`BindOver`, `TableOver`) is partitioning wearing a rule's clothes, and it is a second hierarchy mechanism to keep aligned with the first | Unscheduled by design; see [the invariant](#the-invariant-puts-the-group-stage-in-question) |
 | Four declarations for one idea — a named place | `NamedLayoutZone`, `TolerancedZone`, `FlowRegion`, and anchors do not compose: tolerance lives on one type and continuation on another, so a fuzzy band that continues across pages is inexpressible | **Breaking** for the declaration surface — RRM-043 |
-| Declared order is never checked against document order | Assembly reorders, the matcher validates the reordered tree, `CheckReadingOrder` early-returns (`RemediationSession.cs:5063`). Reading order is most of what PDF/UA is for, and there is no diagnostic when the two disagree | Additive, but the risk grows as more authority moves onto the template — RRM-046 |
 | Descriptive mode still present | Two materialization paths to maintain and test | Additive (removal) |
 | One template per composed rule set | Families cannot share declared structure even where it is genuinely identical | Additive, after fragments |
 | Artifact accounting is a parallel declaration system | "Content matched nothing declared" answers to two vocabularies (`PrescriptiveUnaccountedContent`, `ArtifactUndeclared`) | Additive |
@@ -680,20 +720,17 @@ migration for existing rule sets; **additive** means it can be added later witho
 | --- | --- | --- | --- |
 | No alternation or unordered groups | Variable families are forced to over-use `Optional`, which weakens the contract toward nothing | Additive — see the note below; cheaper than it looks | — |
 | Declaration ambiguity check is coupled to binding state | A prescriptive template cannot be declaration-validated before its rules exist, which is step 1 of the authoring process | Defect, not a design gap | — |
-| Occurrence boundaries are not declarable | `BindOver` partitions by run-continuation, and no claim predicate says "start a new occurrence here." The page break is the only working boundary, so a within-page repeating composite silently collapses into one occurrence | Do not extend the predicate vocabulary; declare the boundary on the slot instead | RRM-042 |
+| Repeating-composite occurrence boundaries are not settled in preview1 | Partitioning, nested boundaries, and failure behavior need an explicit contract before repeating composites become part of the preview language | Breaking, before repeating composites | RRM-042 |
 | Flow-region instances are page-granular and unused within a page | `FlowRegionInstanceId(regionId, activationIndex)` and `FindSharedInstance` already express "did new content start a new occurrence," but both resolver paths activate at most once per page (`DocumentFlowRegionResolver.cs:90`, `:138`), and `BindOver` only consults the instance when claims cross a page | Additive, and correct under either outcome of the Group question — both designs consume the same instances | RRM-042 |
 | Content-independent attributes require a rule | A fixed `/Lang` or `TH` `/Scope` costs a Refine rule that re-selects content already bound to the slot needing the attribute | Additive | RRM-044 |
-| Content accounting is per item, not per region | Every kind of page furniture needs its own `Artifact` rule; `ZoneId` constrains where a declared artifact may appear but does not declare a region's leftovers, so the backlog never closes on a dynamic family | Additive | RRM-045 |
-| The prescriptive leftover diagnostic identifies nothing | `ApplyLeftoverPolicy` reports one per-page message and returns before populating `unaccountedContent`, so the strictest mode reports the least about what failed | Defect, not a design gap | RRM-045 |
+| Region-scoped accounting is not compositional | Preview inventories each prescriptive text and graphical leftover, but guarded region absorption, overlap precedence, and emitted artifact metadata remain deferred | Additive | RRM-045 |
 | No split primitive | One content item carrying two roles — `Lbl` + `LBody`, label + value — is unreachable | Additive | RRM-021 |
 | Recurring predicate logic cannot be named | Compound positional conditions are restated per slot; traces print expanded boolean trees | Additive | RRM-041 |
 | No forward candidate inspection | Authoring a positional rule means guessing at what the engine sees | Additive | RRM-037 |
 | Row membership is not declarable; no spans, `/Scope`, `/Summary` | Irregular and complex tables are not expressible | Additive | RRM-005, RRM-025 |
 | Heading levels are literal with no ordering model | Optional sections shift heading levels and cannot be expressed relatively | Additive | RRM-023 |
 | Geometry is not text-orientation aware | Rotated or vertical content is out of reach | Additive | RRM-008 |
-| Assertions cannot key on a slot | They key on rule id (churns) or tag (ambiguous when five slots are `P`), so per-slot constraints have nowhere to live — which is why `Pages`/`SpansPages` leaked onto template nodes | Additive | — |
-| Assertions cannot scope to a slot | `Scope` is `Document` or `PerPage` only; "every row has four cells" cannot be confined to a subtree | Additive | — |
-| No conditional assertions | "If slot X is bound then slot Y is required" is inexpressible, so variable families are pushed into the grammar instead | Additive | — |
+| Preview assertions are limited to slot counts | Slot-count assertions use canonical `SlotRef` paths; conditional, subtree, and per-occurrence assertions remain to be specified | Additive | — |
 | Candidate and claim predicates are separate languages | `ClaimPredicates.FromSlot` lets a Group or Refine rule condition on what a slot bound, but Classify rules use candidate predicates with no slot awareness — so a leaf bind cannot say "only if slot X was bound" | Additive | — |
 
 ### Extending the grammar is cheap in prescriptive mode
@@ -720,28 +757,17 @@ the template, so its ordering checks are near-tautological and its useful residu
 unexpected, and occurrence detection. Extending the grammar therefore does not require teaching the
 matcher to backtrack; it requires deciding how much of the matcher survives descriptive removal.
 
-The flip side, and the reason this is cheap: **prescriptive mode does not verify declared order
-against the document.** Assembly silently reorders content into declared order, the matcher then
-validates that reordered tree, and `CheckReadingOrder` returns early under a prescriptive template
-(`RemediationSession.cs:5063`). Three layers, no check that the declared order is the order a reader
-needs. That is a deliberate consequence of the template owning order, but it is currently
-unqualified: there is no diagnostic when declared order and content order disagree. Reading order is
-most of what PDF/UA is for, and this should be scoped — a per-slot opt-in for intentional
-reordering — rather than left globally silent.
+The flip side, and the reason this remains cheap: **assembly still emits declared order**, but the
+preview runtime now checks that decision before assembly. It compares content-stream and geometric
+evidence recursively with the declared order and retains each inversion in the report. The default
+`RequireSourceAgreement` policy blocks an inversion; `AllowDeclaredReorder` is an explicit,
+visible acknowledgement. The legacy staged path retains its migration behavior and is not the
+source of preview-program semantics.
 
-**The declaration ambiguity defect.** `ValidateNode` rejects two same-tag sibling particles when one
-can be empty, using `ParticleKey`, which only includes the slot id when that slot appears in
-`boundSlots` — a set derived from the *rules*. With no rules, every particle keys on tag alone.
-Verified: a prescriptive template of `H1#title`, `P#body` (Optional), `P#notes` (Optional) fails
-declaration validation with *"Template child sequence is ambiguous between 'Document/body' and
-'Document/notes'"* when zero rules exist, still fails when partially bound, and passes once all three
-slots are bound. That directly blocks step 1 of the authoring process, and the error disappears as
-rules are written, which is the most confusing possible signal.
-
-Prescriptive mode requires a unique id on every non-`Document` node, so ambiguity is impossible there
-by construction. The fix is to key on the id whenever the template is prescriptive rather than
-whenever a rule happens to bind it. It is a one-line condition and should land before any POC
-authoring starts.
+**Declaration ambiguity decision.** Prescriptive nodes have unique canonical slot paths, so
+same-tag siblings are keyed by slot identity and no longer become ambiguous merely because bindings
+are missing. Multiple producers for one singular slot are admitted by compilation and diagnosed from
+the finalized runtime claims when they overfill or make a slot anchor ambiguous.
 
 ### Process
 

@@ -27,6 +27,115 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
         return assemblyPlan?.ProjectSemanticTree() ?? tree;
     }
 
+    /// <summary>
+    /// Builds the source tree for a compiled prescriptive program without consulting legacy
+    /// rule-set metadata. Claims still expose SlotId for compatibility, so the only conversion
+    /// performed at this boundary is to the canonical SlotRef carried by the compiled program.
+    /// </summary>
+    internal static RemediationSemanticTree FromProgramClaims(
+        CompiledRemediationProgram compiled,
+        IReadOnlyList<RemediationClaim> claims,
+        PrescriptiveTemplateAssemblyPlan? assemblyPlan = null)
+    {
+        ArgumentNullException.ThrowIfNull(compiled);
+        ArgumentNullException.ThrowIfNull(claims);
+
+        var structuralClaims = claims
+            .Where(x => x.Status == ClaimStatus.Applied && TryGetProgramSlot(compiled, x, out _))
+            .DistinctBy(x => x.ClaimId)
+            .ToArray();
+        var children = structuralClaims
+            .SelectMany(x => x.RelatedClaims)
+            .Where(x => TryGetProgramSlot(compiled, x, out _))
+            .Select(x => x.ClaimId)
+            .ToHashSet();
+        var roots = structuralClaims
+            .Where(x => !children.Contains(x.ClaimId))
+            .OrderBy(x => x.PageIndex)
+            .ThenBy(x => x, RemediationSession.ReadingOrderComparer)
+            .Select(x => BuildProgramNode(x, compiled, new HashSet<ClaimId>()))
+            .ToArray();
+
+        var tree = new RemediationSemanticTree(roots);
+        return assemblyPlan?.ProjectSemanticTree() ?? tree;
+    }
+
+    /// <summary>
+    /// Typed overload retained beside the legacy FromClaims overload so a native session can
+    /// switch assembly paths without introducing a rule-set lookup at the call site.
+    /// </summary>
+    internal static RemediationSemanticTree FromClaims(
+        CompiledRemediationProgram compiled,
+        IReadOnlyList<RemediationClaim> claims,
+        PrescriptiveTemplateAssemblyPlan? assemblyPlan = null) =>
+        FromProgramClaims(compiled, claims, assemblyPlan);
+
+    private static RemediationSemanticNode BuildProgramNode(
+        RemediationClaim claim,
+        CompiledRemediationProgram compiled,
+        HashSet<ClaimId> ancestors)
+    {
+        if (!ancestors.Add(claim.ClaimId))
+        {
+            return CreateProgramNode(claim, compiled, Array.Empty<RemediationSemanticNode>());
+        }
+
+        var related = claim.RelatedClaims
+            .Where(x => TryGetProgramSlot(compiled, x, out _))
+            .OrderBy(x => x, RemediationSession.ReadingOrderComparer)
+            .Select(x => BuildProgramNode(x, compiled, new HashSet<ClaimId>(ancestors)))
+            .ToArray();
+        return CreateProgramNode(claim, compiled, related);
+    }
+
+    private static RemediationSemanticNode CreateProgramNode(
+        RemediationClaim claim,
+        CompiledRemediationProgram compiled,
+        IReadOnlyList<RemediationSemanticNode> children)
+    {
+        if (!TryGetProgramSlot(compiled, claim, out var slot) ||
+            !compiled.Slots.TryGetValue(slot, out var descriptor))
+        {
+            throw new InvalidOperationException(
+                $"Program claim '{claim.ClaimId}' does not resolve to a compiled template slot.");
+        }
+
+        return new RemediationSemanticNode(
+            claim.ClaimId,
+            descriptor.Node.Tag,
+            null,
+            string.Empty,
+            claim.Candidates.Select(x => x.CandidateId).ToArray(),
+            claim.Candidates.SelectMany(x => x.SourceReferences).Distinct().ToArray(),
+            claim.PageIndexes,
+            slot.Path[1..],
+            children)
+        {
+            SlotReference = slot
+        };
+    }
+
+    private static bool TryGetProgramSlot(
+        CompiledRemediationProgram compiled,
+        RemediationClaim claim,
+        out SlotRef slot)
+    {
+        slot = null!;
+        if (claim.ProgramSlot != null && compiled.Slots.ContainsKey(claim.ProgramSlot))
+        {
+            slot = claim.ProgramSlot;
+            return true;
+        }
+        if (string.IsNullOrWhiteSpace(claim.SlotId)) return false;
+
+        var value = claim.SlotId!;
+        var path = value.StartsWith("/", StringComparison.Ordinal) ? value : "/" + value;
+        if (!SlotRef.TryParse(path, out var parsed) || parsed == null) return false;
+        if (!compiled.Slots.ContainsKey(parsed)) return false;
+        slot = parsed;
+        return true;
+    }
+
     private static RemediationSemanticNode BuildNode(
         RemediationClaim claim,
         HashSet<ClaimId> ancestors,
@@ -144,6 +253,7 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
 
     private static string? TemplateSlotFromNodeId(string? id)
     {
+        if (TemplateOccurrenceIdentity.TryParseSlot(id, out var programSlot)) return programSlot!.Path[1..];
         if (id == null || !id.StartsWith("template:Document/", StringComparison.Ordinal)) return null;
         var segment = id[(id.LastIndexOf('/') + 1)..];
         var occurrence = segment.LastIndexOf('[');
@@ -190,7 +300,10 @@ public sealed record RemediationSemanticTree(IReadOnlyList<RemediationSemanticNo
                 slot,
                 children)
             {
-                TemplateIdentity = node.ID?.StartsWith("template:Document/", StringComparison.Ordinal) == true ? node.ID : null,
+                TemplateIdentity = node.ID?.StartsWith("template:", StringComparison.Ordinal) == true ? node.ID : null,
+                SlotReference = TemplateOccurrenceIdentity.TryParseSlot(node.ID, out var parsedSlot)
+                    ? parsedSlot
+                    : null,
                 OpaqueTemplateInterior = isDirect && claim?.Action is TableRemediationAction
             };
         }
@@ -221,4 +334,10 @@ public sealed record RemediationSemanticNode(
 
     /// <summary>True when a specialized action owns and validates the node's internal structure.</summary>
     public bool OpaqueTemplateInterior { get; init; }
+
+    /// <summary>
+    /// Canonical compiled-program slot for this node. The public SlotId remains the legacy
+    /// compatibility projection until claim/report records can carry typed slot metadata.
+    /// </summary>
+    internal SlotRef? SlotReference { get; init; }
 }

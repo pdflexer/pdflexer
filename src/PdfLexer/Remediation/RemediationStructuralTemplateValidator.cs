@@ -15,6 +15,8 @@ internal static class RemediationStructuralTemplateValidator
         "Title", "Sub", "Em", "Strong"
     };
 
+    internal static bool IsStandardTag(string tag) => StandardTags.Contains(tag);
+
     internal static IReadOnlyList<string> Validate(IReadOnlyList<RuleSet> ruleSets)
     {
         var errors = new List<string>();
@@ -129,7 +131,7 @@ internal static class RemediationStructuralTemplateValidator
         foreach (var slot in slots)
         {
             var bound = ruleSets.SelectMany(x => x.Rules).Count(x => x.Slot == slot.Key);
-            if (bound > 1 && slot.Value.Node.Occurrence is
+            if (!prescriptive && bound > 1 && slot.Value.Node.Occurrence is
                 RemediationStructuralOccurrence.ExactlyOne or RemediationStructuralOccurrence.Optional)
             {
                 errors.Add($"Slot '{slot.Key}' at '{slot.Value.Path}' is singular but is bound by {bound} rules.");
@@ -183,7 +185,7 @@ internal static class RemediationStructuralTemplateValidator
             for (var j = i + 1; j < node.Children.Count; j++)
             {
                 var other = node.Children[j];
-                if (ParticleKey(child, boundSlots) == ParticleKey(other, boundSlots) &&
+                if (ParticleKey(child, boundSlots, prescriptive) == ParticleKey(other, boundSlots, prescriptive) &&
                     CanBeEmptyBetween(node.Children, i + 1, j) &&
                     child.Occurrence is not RemediationStructuralOccurrence.ExactlyOne)
                 {
@@ -218,8 +220,9 @@ internal static class RemediationStructuralTemplateValidator
 
     private static string ParticleKey(
         RemediationStructuralTemplateNode node,
-        IReadOnlySet<string> boundSlots) =>
-        node.Id != null && boundSlots.Contains(node.Id)
+        IReadOnlySet<string> boundSlots,
+        bool prescriptive) =>
+        node.Id != null && (prescriptive || boundSlots.Contains(node.Id))
             ? $"{node.Tag}\0{node.Id}"
             : node.Tag;
 

@@ -86,11 +86,11 @@ PDF/UA assurance as complete.
 | RRM-039 | P0 | Complete | Descriptive validation and prescriptive slot-owned materialization |
 | RRM-040 | P0 | Complete | Expected page furniture is not declarable, so artifacting is unbounded |
 | RRM-041 | P1 | Open | Recurring predicate logic cannot be named or reused |
-| RRM-042 | P0 | Open | Repeating-slot occurrence boundaries are not declarable |
+| RRM-042 | P0 | Partial | Preview programs declare and execute occurrence boundaries; legacy flow activation and real-producer validation remain open |
 | RRM-043 | P1 | Open | Region declarations are fragmented and do not compose |
-| RRM-044 | P1 | Open | Content-independent structure attributes require rules |
-| RRM-045 | P0 | Open | Prescriptive content accounting is per item and its diagnostic identifies nothing |
-| RRM-046 | P0 | Open | Declared reading order is never checked against document order |
+| RRM-044 | P1 | Partial | Preview nodes support language, alternate text, actual text, and expansion; tag-specific attributes remain open |
+| RRM-045 | P0 | Partial | Per-item leftover inventory is complete; guarded region absorption remains open |
+| RRM-046 | P0 | Partial | Preview order guardrail is implemented; real-producer and richer-layout validation remain open |
 
 RRM-016 through RRM-035 were added by a second review pass on 2026-07-24 that examined the
 documented concept model and public API rather than runtime behavior. They are concept and contract
@@ -483,7 +483,7 @@ undeclared hierarchy.
 
 ## RRM-005: Table construction handles only regular, page-local grids
 
-**Status:** Open
+**Status:** Partial
 
 **Priority:** P0
 
@@ -565,7 +565,7 @@ strict validation requires every `TR` to have a table-related parent.
 
 ## RRM-007: No declarative Figure/caption association
 
-**Status:** Open
+**Status:** Partial
 
 **Priority:** P1
 
@@ -1884,13 +1884,13 @@ nothing about ownership, staging, or the leftover policy changes.
 
 ## RRM-042: Repeating-slot occurrence boundaries are not declarable
 
-**Status:** Open
+**Status:** Partial
 
 **Priority:** P0
 
 **Design:** [Architecture and Direction](rule-based-remediation-architecture.md#1-occurrence-boundaries-are-declared-on-the-slot)
 
-The template declares *shape* — which slots repeat — but nothing declares *count*: how many
+The legacy template declares *shape* — which slots repeat — but nothing declares *count*: how many
 occurrences of a repeating composite exist, and which bound claims belong to which. That decision is
 unavoidable because it is a fact about the document, and it currently lives in `BindOver`, which
 builds runs of consecutive claims matching a `ClaimPredicate` and breaks a run only at a page
@@ -1907,7 +1907,7 @@ there: `ProbeBoundary` returns one boundary per page, and `byPage[pageIndex][reg
 resolution per region per page (`DocumentFlowRegionResolver.cs:90`, `:138`), so a region cannot
 activate twice on a page.
 
-The proposal is to make the boundary a property of the repeating slot, **derived from the declared
+The preview program now makes the boundary a property of the repeating slot, **derived from the declared
 child shape by default**: the first declared child, when it is required and non-repeating, is the
 opening child, and a claim bound to it closes the current occurrence and opens the next. Where the
 opener is optional, repeating, or absent, the template is rejected at declaration time and the author
@@ -1928,15 +1928,18 @@ declares `startsOn` explicitly.
 
 - [ ] Flow-region activation is not capped at one instance per page; a page holds an ordered list of
   resolutions per region.
-- [ ] A repeating composite slot carries an occurrence boundary, declared or derived.
+- [x] A repeating composite slot carries an occurrence boundary, declared or derived.
 - [ ] The default derivation from the declared opening child is specified and tested, including the
   nested case where an outer boundary closes open inner occurrences.
-- [ ] A repeating composite whose boundary cannot be derived is rejected at declaration time with the
+- [x] A repeating composite whose boundary cannot be derived is rejected at declaration time with the
   slot named, not at commit.
-- [ ] Occurrence identity keys on boundary activation, and is stable across unrelated rule changes.
-- [ ] A repeating composite occurring twice on one page produces two occurrences, with a fixture that
+- [x] Occurrence identity keys on boundary activation, and is stable across unrelated rule changes.
+- [x] A repeating composite occurring twice on one page produces two occurrences, with a fixture that
   fails before the change.
-- [ ] Boundaries round-trip through the serialized schema.
+- [x] Boundaries round-trip through the serialized schema.
+
+Preview completion does not close the legacy flow-region activation limitation, and RRM-042 remains
+Partial until nested outer-boundary dominance and representative real-producer cases are accepted.
 
 ---
 
@@ -1979,7 +1982,7 @@ anchor-relative selection is expressed in the same vocabulary as everything else
 
 ## RRM-044: Content-independent structure attributes require rules
 
-**Status:** Open
+**Status:** Partial
 
 **Priority:** P1
 
@@ -1993,6 +1996,10 @@ carries no information the declaration does not already have.
 Content-independent attributes belong on the template node, extending the prescriptive invariant to
 cover the declared nodes and their content-independent properties. Refine then exists only for
 attributes genuinely derived from content — alt text from a caption, `/ColSpan` from geometry.
+
+The preview template and JSON schema currently support `/Lang`, alternate text, actual text, and
+expansion on the Document root and child occurrences. `/Scope`, `/ListNumbering`, and
+`/Placement` remain deferred.
 
 **Impact**
 
@@ -2014,7 +2021,7 @@ attributes genuinely derived from content — alt text from a caption, `/ColSpan
 
 ## RRM-045: Prescriptive content accounting is per item and its diagnostic identifies nothing
 
-**Status:** Open
+**Status:** Partial
 
 **Priority:** P0
 
@@ -2027,9 +2034,9 @@ continuation notices — so each new sample of a dynamic family yields new block
 backlog never closes. `RemediationArtifactInventoryItem.ZoneId` does not help: it constrains where a
 *declared* artifact may appear, and says nothing about what a region's unbound content is.
 
-Separately, the prescriptive branch of `ApplyLeftoverPolicy` reports one per-page diagnostic and
-returns before populating `unaccountedContent`, so the strictest mode reports the least about what
-actually failed. The author is told that something on page 3 is unaccounted, and not what.
+The preview now populates `unaccountedContent` per text or graphical item, including deterministic
+raw-span fallback records when structured paragraph/line candidates are unavailable. Region-scoped
+absorption remains deferred.
 
 **Impact**
 
@@ -2044,23 +2051,24 @@ actually failed. The author is told that something on page 3 is unaccounted, and
   declared region is a declared artifact of a stated subtype.
 - [ ] Absorption is bounded by the declared region and remains a blocker everywhere else.
 - [ ] Absorbed content is reported per item, so a reviewer can see what a catch region swallowed.
-- [ ] `unaccountedContent` is populated in prescriptive mode, identifying each unaccounted item.
+- [x] `unaccountedContent` is populated in prescriptive mode, identifying each unaccounted item.
 - [ ] Region-scoped absorption round-trips through the serialized schema.
 
 ---
 
 ## RRM-046: Declared reading order is never checked against document order
 
-**Status:** Open
+**Status:** Partial
 
 **Priority:** P0
 
 **Design:** [Architecture and Direction](rule-based-remediation-architecture.md#the-guardrail)
 
-Under a prescriptive template, declared order is never compared against the order content appears in
-the document. Assembly places nodes in declaration order, the matcher then validates that reordered
-tree — so its ordering checks are near-tautological — and `CheckReadingOrder` returns early
-(`RemediationSession.cs:5063`). Three layers, no check.
+The preview program compares declared direct-child order with page-aware content traversal and
+geometric evidence at the Document root and recursively through assembled composite occurrences.
+`RequireSourceAgreement` blocks an inversion from either available evidence source;
+`AllowDeclaredReorder` retains an acknowledged report item. Validation against real producer
+families and richer layouts remains outstanding.
 
 This is a deliberate consequence of the template owning order, and it is correct for intentional
 reordering. It is currently unqualified: there is no diagnostic anywhere when declared order and

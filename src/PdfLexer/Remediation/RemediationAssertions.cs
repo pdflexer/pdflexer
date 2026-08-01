@@ -38,6 +38,15 @@ public sealed record StructureElementCountAssertion(
     PageSelector? Pages = null)
     : RemediationSemanticAssertion(Id, Expected, Scope, Pages);
 
+/// <summary>Counts applied occurrences bound to one canonical prescriptive-program slot.</summary>
+public sealed record SlotElementCountAssertion(
+    string Id,
+    SlotRef Slot,
+    AssertionCount Expected,
+    SemanticAssertionScope Scope = SemanticAssertionScope.Document,
+    PageSelector? Pages = null)
+    : RemediationSemanticAssertion(Id, Expected, Scope, Pages);
+
 public sealed record ParentChildShapeAssertion(
     string Id,
     string ParentTag,
@@ -56,4 +65,11 @@ public sealed record RemediationAssertionOutcome(
     string Observed,
     bool Passed,
     string? RuleId = null,
-    string? Tag = null);
+    string? Tag = null)
+{
+    /// <summary>Program binding associated with the assertion result, when available.</summary>
+    public string? BindingId { get; init; }
+
+    /// <summary>Canonical program slot associated with the assertion result.</summary>
+    public SlotRef? ProgramSlot { get; init; }
+}

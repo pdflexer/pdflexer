@@ -1,12 +1,13 @@
 using System.CommandLine;
 using System.Diagnostics;
+using System.Text.Json;
 using PdfLexer.Remediation;
 
 namespace PdfLexer.pdfctl.Inspect;
 
 internal sealed class RemediateCmd
 {
-    public string File { get; set; } = null!;
+    public string? File { get; set; }
 
     public string Rules { get; set; } = null!;
 
@@ -15,6 +16,8 @@ internal sealed class RemediateCmd
     public bool DryRun { get; set; }
 
     public bool ValidateOnly { get; set; }
+
+    public bool Authoring { get; set; }
 
     public bool VeraPdf { get; set; }
 
@@ -28,15 +31,14 @@ internal sealed class RemediateCmd
     {
         return new Command("remediate", "Applies serialized remediation rules to an untagged PDF")
         {
-            new Option<string>(new[] { "-f", "--file" })
+            new Option<string?>(new[] { "-f", "--file" })
             {
-                IsRequired = true,
-                Description = "Path to the source PDF."
+                Description = "Path to the source PDF. Required unless --validate-only is used."
             },
             new Option<string>(new[] { "-r", "--rules" })
             {
                 IsRequired = true,
-                Description = "Path to a pdflexer.remediation.ruleset.v1 JSON file."
+                Description = "Path to a preview remediation program or legacy ruleset JSON file."
             },
             new Option<string?>(new[] { "-o", "--output" })
             {
@@ -44,6 +46,7 @@ internal sealed class RemediateCmd
             },
             new Option<bool>("--dry-run", "Evaluate rules and print diagnostics without writing output."),
             new Option<bool>("--validate-only", "Validate rule shape without parsing page content."),
+            new Option<bool>("--authoring", "Run an authoring-mode dry-run and report incomplete work."),
             new Option<bool>("--verapdf", "Run veraPDF on the output PDF after a successful commit."),
             new Option<string>("--verapdf-command", () => "verapdf", "veraPDF executable path or command name."),
             new Option<string?>("--explain-rule", "Retain and print rejection traces for this rule (dry-run only)."),
@@ -52,6 +55,117 @@ internal sealed class RemediateCmd
     }
 
     public static int Handler(RemediateCmd cmd)
+    {
+        try
+        {
+            if (!Preflight(cmd)) return 4;
+            if (SerializedRemediationProgram.IsProgram(cmd.Rules)) return HandleProgram(cmd);
+            Console.Error.WriteLine("warning: legacy remediation rules are deprecated; migrate to pdflexer.remediation.program.preview1.");
+            return HandleLegacyRules(cmd);
+        }
+        catch (JsonException ex)
+        {
+            Console.Error.WriteLine("error: malformed remediation JSON: " + ex.Message);
+            return 2;
+        }
+        catch (InvalidDataException ex)
+        {
+            Console.Error.WriteLine("error: " + ex.Message);
+            return 2;
+        }
+        catch (IOException ex)
+        {
+            Console.Error.WriteLine("error: " + ex.Message);
+            return 5;
+        }
+    }
+
+    private static bool Preflight(RemediateCmd cmd)
+    {
+        var dryRun = cmd.DryRun || cmd.Authoring;
+        if (!cmd.ValidateOnly && string.IsNullOrWhiteSpace(cmd.File))
+        {
+            Console.Error.WriteLine("--file is required unless --validate-only is used.");
+            return false;
+        }
+        if (!cmd.ValidateOnly && !dryRun && string.IsNullOrWhiteSpace(cmd.Output))
+        {
+            Console.Error.WriteLine("--output is required unless --dry-run or --validate-only is used.");
+            return false;
+        }
+        if (cmd.ExplainRule != null && !dryRun)
+        {
+            Console.Error.WriteLine("--explain-rule is dry-run only; use --dry-run or --authoring.");
+            return false;
+        }
+        if (cmd.ValidateOnly && cmd.VeraPdf)
+        {
+            Console.Error.WriteLine("--verapdf cannot be used with --validate-only.");
+            return false;
+        }
+        return true;
+    }
+
+    private static int HandleProgram(RemediateCmd cmd)
+    {
+        var program = SerializedRemediationProgram.Load(cmd.Rules);
+        var compiled = RemediationProgramCompiler.Compile(program);
+        var declarationValidation = new ValidationReport(compiled.Errors);
+        PrintValidation(declarationValidation);
+        if (!declarationValidation.IsValid)
+        {
+            return 2;
+        }
+
+        Console.WriteLine($"program: id={program.Id} template={program.Template.Id}@{program.Template.Version} profile={program.Template.Profile}");
+        for (var layer = 0; layer < compiled.Layers.Count; layer++)
+        {
+            Console.WriteLine($"dependency-layer: {layer} bindings={string.Join(",", compiled.Layers[layer].Select(x => x.Id))}");
+        }
+
+        if (cmd.ValidateOnly)
+        {
+            return 0;
+        }
+
+        using var pdf = PdfDocument.Open(cmd.File!);
+        using var session = pdf.BeginRemediation(new RemediationSessionConfiguration
+        {
+            Profile = program.Template.Profile,
+            RunMode = cmd.Authoring ? RemediationRunMode.Authoring : RemediationRunMode.Enforced
+        });
+
+        session.Use(compiled);
+
+        var dryRun = cmd.DryRun || cmd.Authoring;
+        var report = cmd.ExplainRule == null
+            ? dryRun ? session.DryRun() : session.Commit()
+            : session.DryRun(new RemediationTraceRequest(
+                new[] { cmd.ExplainRule },
+                cmd.ExplainPage is { } page ? page - 1 : null));
+        PrintReport(report, programMode: true);
+        if (report.RuntimeDiagnostics.Any(d => d.IsBlocking))
+        {
+            return 3;
+        }
+
+        if (dryRun)
+        {
+            return 0;
+        }
+
+        pdf.SaveTo(cmd.Output!);
+        Console.WriteLine($"Wrote {cmd.Output}");
+
+        if (cmd.VeraPdf)
+        {
+            return RunVeraPdf(cmd.VeraPdfCommand, cmd.Output!, program.Template.Profile);
+        }
+
+        return 0;
+    }
+
+    private static int HandleLegacyRules(RemediateCmd cmd)
     {
         var job = SerializedRemediationRules.Load(cmd.Rules);
         var declarationValidation = SerializedRemediationRules.ValidateDeclarations(job.RuleSet);
@@ -66,7 +180,7 @@ internal sealed class RemediateCmd
             return 0;
         }
 
-        using var pdf = PdfDocument.Open(cmd.File);
+        using var pdf = PdfDocument.Open(cmd.File!);
         using var session = pdf.BeginRemediation(job.Session);
 
         var validation = session.Validate(job.RuleSet);
@@ -77,14 +191,9 @@ internal sealed class RemediateCmd
         }
 
         session.Use(job.RuleSet);
-        if (cmd.ExplainRule != null && !cmd.DryRun)
-        {
-            Console.Error.WriteLine("--explain-rule is dry-run only.");
-            return 4;
-        }
-
+        var dryRun = cmd.DryRun || cmd.Authoring;
         var report = cmd.ExplainRule == null
-            ? cmd.DryRun ? session.DryRun() : session.Commit()
+            ? dryRun ? session.DryRun() : session.Commit()
             : session.DryRun(new RemediationTraceRequest(
                 new[] { cmd.ExplainRule },
                 cmd.ExplainPage is { } page ? page - 1 : null));
@@ -94,23 +203,17 @@ internal sealed class RemediateCmd
             return 3;
         }
 
-        if (cmd.DryRun)
+        if (dryRun)
         {
             return 0;
         }
 
-        if (string.IsNullOrWhiteSpace(cmd.Output))
-        {
-            Console.Error.WriteLine("--output is required unless --dry-run or --validate-only is used.");
-            return 4;
-        }
-
-        pdf.SaveTo(cmd.Output);
+        pdf.SaveTo(cmd.Output!);
         Console.WriteLine($"Wrote {cmd.Output}");
 
         if (cmd.VeraPdf)
         {
-            return RunVeraPdf(cmd.VeraPdfCommand, cmd.Output);
+            return RunVeraPdf(cmd.VeraPdfCommand, cmd.Output!, job.Session.Profile);
         }
 
         return 0;
@@ -130,29 +233,60 @@ internal sealed class RemediateCmd
         }
     }
 
-    internal static void PrintReport(RemediationReport report)
+    internal static void PrintReport(RemediationReport report, bool programMode = false)
     {
         Console.WriteLine($"Committed: {report.Committed}");
-        Console.WriteLine($"Claims: {report.Claims.Count}");
-        Console.WriteLine($"Skipped claims: {report.SkippedClaims.Count}");
+        Console.WriteLine($"{(programMode ? "Binding" : "Rule")} occurrences: {report.Claims.Count}");
+        Console.WriteLine($"Skipped {(programMode ? "binding" : "rule")} occurrences: {report.SkippedClaims.Count}");
         foreach (var warning in report.Warnings)
         {
             Console.WriteLine("warning: " + warning);
         }
+        if (programMode)
+        {
+            foreach (var binding in report.BindingEvaluations)
+            {
+                Console.WriteLine(
+                    $"binding: {binding.BindingId} layer={binding.DependencyLayer} " +
+                    $"slot={binding.ProgramSlot?.Path ?? "<none>"} artifact={binding.ArtifactId ?? "<none>"} " +
+                    $"considered={binding.InputsConsidered} matched={binding.InputsMatched} " +
+                    $"applied={binding.AppliedClaims} skipped={binding.SkippedClaims} " +
+                    $"cardinality={binding.CardinalityOutcome ?? "<none>"}");
+            }
+            foreach (var comparison in report.OrderComparisons)
+            {
+                Console.WriteLine(
+                    $"order: disposition={comparison.Disposition} " +
+                    $"container={comparison.ContainerSlot?.Path ?? "/"} " +
+                    $"first={comparison.FirstOccurrenceIdentity} second={comparison.SecondOccurrenceIdentity} " +
+                    $"source-inverted={comparison.SourceOrderInverted} " +
+                    $"geometry-inverted={comparison.GeometricOrderInverted}");
+            }
+            foreach (var diagnostic in report.RuntimeDiagnostics)
+            {
+                var output = diagnostic.IsBlocking ? Console.Error : Console.Out;
+                output.WriteLine(
+                    $"diagnostic: disposition={diagnostic.Disposition} code={diagnostic.Code} " +
+                    $"scope={diagnostic.Scope} slot={diagnostic.ProgramSlot?.Path ?? "<none>"} " +
+                    $"binding={diagnostic.BindingId ?? "<none>"} message={diagnostic.Message}");
+            }
+        }
         foreach (var outcome in report.Outcomes.Where(x => x.PageIndexes.Count > 1))
         {
             Console.WriteLine(
-                $"cross-page-claim: rule={outcome.RuleId} pages=" +
+                $"cross-page-binding: binding={outcome.RuleId} pages=" +
                 string.Join(",", outcome.PageIndexes.Select(x => x + 1)));
         }
         foreach (var rule in report.RuleEvaluations)
         {
             var count = rule.Total;
             Console.WriteLine(
-                $"rule: {rule.RuleId} stage={rule.Stage} group-pass={rule.GroupPass} " +
+                (programMode
+                    ? $"binding: {rule.RuleId} "
+                    : $"rule: {rule.RuleId} stage={rule.Stage} group-pass={rule.GroupPass} ") +
                 $"considered={count.InputsConsidered} matched={count.InputsMatched} " +
                 $"applied={count.AppliedClaims} low-confidence={count.RejectedByConfidence} " +
-                $"conflict={count.RejectedByConflict} overridden={count.OverriddenClaims}");
+                $"conflict={count.RejectedByConflict}");
         }
 
         if (report.AutoArtifacts.Count > 0)
@@ -201,7 +335,7 @@ internal sealed class RemediateCmd
             }
         }
 
-        foreach (var diagnostic in report.Diagnostics)
+        foreach (var diagnostic in programMode ? Array.Empty<string>() : report.Diagnostics)
         {
             var output = diagnostic.StartsWith("[SUPPRESSED]", StringComparison.Ordinal) ? Console.Out : Console.Error;
             output.WriteLine("diagnostic: " + diagnostic);
@@ -256,7 +390,7 @@ internal sealed class RemediateCmd
         return normalized.Length <= 80 ? normalized : normalized[..77] + "...";
     }
 
-    private static int RunVeraPdf(string command, string output)
+    private static int RunVeraPdf(string command, string output, PdfUaProfile profile)
     {
         var startInfo = new ProcessStartInfo
         {
@@ -267,7 +401,7 @@ internal sealed class RemediateCmd
         startInfo.ArgumentList.Add("--format");
         startInfo.ArgumentList.Add("text");
         startInfo.ArgumentList.Add("--flavour");
-        startInfo.ArgumentList.Add("ua1");
+        startInfo.ArgumentList.Add(profile == PdfUaProfile.PdfUa2 ? "ua2" : "ua1");
         startInfo.ArgumentList.Add(output);
 
         using var process = Process.Start(startInfo);

@@ -183,7 +183,9 @@ internal static class RemediationStructuralTemplateMatcher
         string? ruleId,
         string? slot = null) =>
         new(kind, Code(kind), ruleSetId, expected?.Id ?? slot, expectedPath, actualPath,
-            expectedValue, actualValue, pages, ruleId, false);
+            expectedValue, actualValue, pages, ruleId,
+            kind == RemediationTemplateDifferenceKind.WrongOrder &&
+            expected?.OrderPolicy == TemplateOrderPolicy.AllowDeclaredReorder);
 
     private static DiagnosticCode Code(RemediationTemplateDifferenceKind kind) => kind switch
     {

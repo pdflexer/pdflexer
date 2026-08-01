@@ -51,7 +51,19 @@ public enum DiagnosticCode
     /// <summary>Painting content was not bound or declared as an artifact under a prescriptive template.</summary>
     PrescriptiveUnaccountedContent = 26,
     /// <summary>A deterministic template occurrence identity collides with another structure node.</summary>
-    TemplateIdentityCollision = 27
+    TemplateIdentityCollision = 27,
+    /// <summary>The selected program contains an invalid runtime configuration.</summary>
+    ProgramConfigurationInvalid = 28,
+    /// <summary>Two program bindings compete for the same candidate or ownership range.</summary>
+    ProgramBindingConflict = 29,
+    /// <summary>A program binding produced an ambiguous result.</summary>
+    ProgramBindingAmbiguous = 30,
+    /// <summary>A slot anchor could not resolve a bounded claim on the selected page.</summary>
+    ProgramAnchorUnresolved = 31,
+    /// <summary>A slot anchor resolved more than one bounded claim.</summary>
+    ProgramAnchorAmbiguous = 32,
+    /// <summary>Program materialization diverged from its compiled plan.</summary>
+    ProgramMaterializationFailed = 33
 }
 
 /// <summary>

@@ -27,13 +27,18 @@ public sealed class RemediationReport
         IReadOnlyList<RemediationAnnotationInventoryItem>? annotationInventory = null,
         IReadOnlyList<string>? warnings = null,
         IReadOnlyList<RemediationTemplateDifference>? templateDifferences = null,
-        IReadOnlyList<RemediationTemplateAssemblyItem>? templateAssembly = null)
+        IReadOnlyList<RemediationTemplateAssemblyItem>? templateAssembly = null,
+        IReadOnlyList<RemediationRuntimeDiagnostic>? runtimeDiagnostics = null,
+        IReadOnlyList<RemediationBindingEvaluationSummary>? bindingEvaluations = null,
+        IReadOnlyList<RemediationOrderComparison>? orderComparisons = null,
+        IReadOnlyList<RemediationOccurrencePartition>? occurrencePartitions = null)
     {
         Committed = committed;
         AppliedAccessibilitySetup = appliedAccessibilitySetup;
         Claims = claims ?? Array.Empty<RemediationClaim>();
         SkippedClaims = skippedClaims ?? Array.Empty<RemediationClaim>();
-        Diagnostics = diagnostics ?? Array.Empty<string>();
+        RuntimeDiagnostics = runtimeDiagnostics ?? Array.Empty<RemediationRuntimeDiagnostic>();
+        Diagnostics = diagnostics ?? RuntimeDiagnostics.Select(x => x.Message).ToArray();
         Suppressions = suppressions ?? Array.Empty<DiagnosticSuppression>();
         RuleEvaluations = ruleEvaluations ?? Array.Empty<RuleEvaluationSummary>();
         AutoArtifacts = autoArtifacts ?? Array.Empty<RemediationAutoArtifactOutcome>();
@@ -42,9 +47,15 @@ public sealed class RemediationReport
         PlannedSemanticTree = plannedSemanticTree ?? new RemediationSemanticTree(Array.Empty<RemediationSemanticNode>());
         UnaccountedContent = unaccountedContent ?? Array.Empty<RemediationUnaccountedContent>();
         AnnotationInventory = annotationInventory ?? Array.Empty<RemediationAnnotationInventoryItem>();
-        Warnings = warnings ?? Array.Empty<string>();
+        Warnings = warnings ?? RuntimeDiagnostics
+            .Where(x => x.Disposition is RemediationDiagnosticDisposition.Warning or RemediationDiagnosticDisposition.WorkItem)
+            .Select(x => x.Message)
+            .ToArray();
         TemplateDifferences = templateDifferences ?? Array.Empty<RemediationTemplateDifference>();
         TemplateAssembly = templateAssembly ?? Array.Empty<RemediationTemplateAssemblyItem>();
+        BindingEvaluations = bindingEvaluations ?? Array.Empty<RemediationBindingEvaluationSummary>();
+        OrderComparisons = orderComparisons ?? Array.Empty<RemediationOrderComparison>();
+        OccurrencePartitions = occurrencePartitions ?? Array.Empty<RemediationOccurrencePartition>();
         
         Outcomes = Claims.Select(CreateOutcome).ToList();
         SkippedOutcomes = SkippedClaims.Select(CreateOutcome).ToList();
@@ -65,8 +76,20 @@ public sealed class RemediationReport
     /// <summary>Diagnostics produced by validation or commit checks.</summary>
     public IReadOnlyList<string> Diagnostics { get; }
 
+    /// <summary>Structured runtime diagnostics. This is the authoritative program-facing view.</summary>
+    public IReadOnlyList<RemediationRuntimeDiagnostic> RuntimeDiagnostics { get; }
+
     /// <summary>Nonblocking authoring warnings produced during planning.</summary>
     public IReadOnlyList<string> Warnings { get; }
+
+    /// <summary>Evaluation summaries for compiled program bindings.</summary>
+    public IReadOnlyList<RemediationBindingEvaluationSummary> BindingEvaluations { get; }
+
+    /// <summary>Declared-order comparisons retained with the report.</summary>
+    public IReadOnlyList<RemediationOrderComparison> OrderComparisons { get; }
+
+    /// <summary>Occurrence partition decisions used by the native preview assembly.</summary>
+    public IReadOnlyList<RemediationOccurrencePartition> OccurrencePartitions { get; }
 
     /// <summary>Machine-readable differences from the declared structural template.</summary>
     public IReadOnlyList<RemediationTemplateDifference> TemplateDifferences { get; }
@@ -182,7 +205,17 @@ public sealed class RemediationReport
                 b.ProducedTag,
                 b.Mcids,
                 b.StructureNode?.ID,
-                b.Bounds)).ToList());
+                b.Bounds)
+            {
+                BindingId = b.BindingId,
+                ProgramSlot = b.ProgramSlot
+            }).ToList())
+        {
+            BindingId = claim.BindingId,
+            ProgramSlot = claim.ProgramSlot,
+            DefinitionId = claim.DefinitionId,
+            OccurrenceIdentity = claim.OccurrenceIdentity
+        };
     }
 }
 
@@ -209,7 +242,18 @@ public sealed record RemediationClaimOutcome(
     /// <summary>Selected candidates with raw and effective normalized text.</summary>
     IReadOnlyList<RemediationCandidateSummary> Candidates,
     /// <summary>Applied binding summaries for content and structure nodes.</summary>
-    IReadOnlyList<RemediationAppliedBindingSummary> AppliedBindings);
+    IReadOnlyList<RemediationAppliedBindingSummary> AppliedBindings)
+{
+    /// <summary>Program binding that produced this outcome, when available.</summary>
+    public string? BindingId { get; init; }
+
+    /// <summary>Canonical program slot associated with this outcome, when available.</summary>
+    public SlotRef? ProgramSlot { get; init; }
+
+    public string? DefinitionId { get; init; }
+
+    public string? OccurrenceIdentity { get; init; }
+}
 
 /// <summary>Public candidate summary retained in a rule outcome.</summary>
 public sealed record RemediationCandidateSummary(
@@ -232,4 +276,11 @@ public sealed record RemediationAppliedBindingSummary(
     /// <summary>Structure node identifier, when one is available.</summary>
     string? StructureNodeId,
     /// <summary>Bounds associated with the binding, when available.</summary>
-    PdfRect<double>? Bounds);
+    PdfRect<double>? Bounds)
+{
+    /// <summary>Program binding that produced this applied binding, when available.</summary>
+    public string? BindingId { get; init; }
+
+    /// <summary>Canonical program slot associated with this applied binding, when available.</summary>
+    public SlotRef? ProgramSlot { get; init; }
+}

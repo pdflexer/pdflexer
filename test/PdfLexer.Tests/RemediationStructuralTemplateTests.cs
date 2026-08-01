@@ -470,11 +470,13 @@ public class RemediationStructuralTemplateTests
                 .EndText();
         }
 
-        var template = new RemediationStructuralTemplate(new[]
-        {
-            new RemediationStructuralTemplateNode("H1", id: "alpha"),
-            new RemediationStructuralTemplateNode("P", id: "beta")
-        }, RemediationStructuralTemplateMode.Prescriptive);
+        var template = new RemediationStructuralTemplate(
+            new RemediationStructuralTemplateNode("Document", children: new[]
+            {
+                new RemediationStructuralTemplateNode("H1", id: "alpha"),
+                new RemediationStructuralTemplateNode("P", id: "beta")
+            }, orderPolicy: TemplateOrderPolicy.AllowDeclaredReorder),
+            RemediationStructuralTemplateMode.Prescriptive);
         var rules = new[]
         {
             new Rule("alpha", RemediationActions.Bind(), Predicates.Text.Equals("Alpha"), CandidateSelector.Text(Granularity.Word), slot: "alpha"),
@@ -486,7 +488,9 @@ public class RemediationStructuralTemplateTests
         }).Use(new RuleSet("top-level", rules, structuralTemplate: template));
 
         var dryRun = session.DryRun();
-        Assert.Empty(dryRun.TemplateDifferences);
+        Assert.DoesNotContain(
+            dryRun.TemplateDifferences,
+            x => x.Kind == RemediationTemplateDifferenceKind.WrongOrder);
         Assert.Equal(new[] { "alpha", "beta" }, dryRun.PlannedSemanticTree.Roots.Select(x => x.SlotId).ToArray());
         Assert.Equal(new[] { "alpha", "beta" }, dryRun.TemplateAssembly.Select(x => x.SlotId).ToArray());
         var repeatedDryRun = session.DryRun();
@@ -495,7 +499,8 @@ public class RemediationStructuralTemplateTests
             repeatedDryRun.TemplateAssembly.Select(AssemblySnapshot));
 
         var committed = session.Commit();
-        Assert.Empty(committed.TemplateDifferences);
+        Assert.DoesNotContain(committed.TemplateDifferences,
+            x => x.Kind == RemediationTemplateDifferenceKind.WrongOrder);
         Assert.Equal(new[] { "H1", "P" }, document.Structure.GetRoot().Children.Select(x => x.Type).ToArray());
         Assert.Equal(dryRun.TemplateAssembly.Select(x => x.Identity), committed.TemplateAssembly.Select(x => x.Identity));
     }

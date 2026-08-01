@@ -11,13 +11,15 @@ namespace PdfLexer.Remediation;
 /// <summary>
 /// Coordinates rule-driven remediation for a currently untagged PDF document.
 /// </summary>
-public sealed class RemediationSession : IDisposable
+public sealed partial class RemediationSession : IDisposable
 {
     private readonly PdfDocument _document;
     private readonly HashSet<PdfPage> _pagesWithAllocatedMcids = new();
     private readonly Dictionary<PdfPage, int> _pageStructParents = new();
     private readonly List<RuleSet> _ruleSets = new();
+    private CompiledRemediationProgram? _program;
     private readonly List<DiagnosticSuppression> _suppressions = new();
+    private PdfUaProfile _effectiveProfile;
     private static readonly HashSet<DiagnosticCode> NonSuppressibleDiagnosticCodes = new()
     {
         DiagnosticCode.GroupCompositionAmbiguous,
@@ -30,6 +32,7 @@ public sealed class RemediationSession : IDisposable
     };
     private RemediationTraceRequest? _traceRequest;
     private List<RemediationPredicateTrace>? _predicateTraces;
+    private List<RemediationRuntimeDiagnostic>? _programRuntimeDiagnostics;
     private bool _committed;
     private bool _disposed;
 
@@ -37,6 +40,7 @@ public sealed class RemediationSession : IDisposable
     {
         _document = document;
         Configuration = configuration;
+        _effectiveProfile = configuration.Profile;
         Structure = new StructuralBuilder();
     }
 
@@ -50,6 +54,8 @@ public sealed class RemediationSession : IDisposable
     public RemediationSession Use(params RuleSet[] ruleSets)
     {
         ThrowIfDisposed();
+        if (_program != null)
+            throw new InvalidOperationException("A prescriptive program cannot be mixed with legacy rule sets.");
         if (ruleSets == null)
         {
             throw new ArgumentNullException(nameof(ruleSets));
@@ -57,6 +63,42 @@ public sealed class RemediationSession : IDisposable
 
         _ruleSets.AddRange(ruleSets.Where(x => x != null));
         return this;
+    }
+
+    /// <summary>
+    /// Adds the prescriptive program selected for this document. The program is compiled before it
+    /// is selected as the session's native execution plan; only one program may be selected.
+    /// </summary>
+    public RemediationSession Use(RemediationProgram program)
+    {
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(program);
+        return Use(RemediationProgramCompiler.Compile(program));
+    }
+
+    /// <summary>Adds an already compiled prescriptive program without compiling it again.</summary>
+    public RemediationSession Use(CompiledRemediationProgram program)
+    {
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(program);
+        if (_ruleSets.Count > 0 || _program != null)
+            throw new InvalidOperationException("A remediation session accepts exactly one prescriptive program.");
+        if (!program.IsValid)
+            throw new ArgumentException(string.Join(Environment.NewLine, program.Errors), nameof(program));
+        _program = program;
+        _effectiveProfile = program.Program.Template.Profile;
+        return this;
+    }
+
+    /// <summary>Compiles a prescriptive program without parsing pages or mutating the document.</summary>
+    public ValidationReport Validate(RemediationProgram program)
+    {
+        ThrowIfDisposed();
+        ArgumentNullException.ThrowIfNull(program);
+        if (_ruleSets.Count > 0)
+            return new ValidationReport(new[] { "A remediation session accepts exactly one prescriptive program." });
+        var compiled = RemediationProgramCompiler.Compile(program);
+        return new ValidationReport(compiled.Errors);
     }
 
     /// <summary>Adds a justified diagnostic suppression.</summary>
@@ -74,9 +116,12 @@ public sealed class RemediationSession : IDisposable
     public ValidationReport Validate(IEnumerable<Rule> rules)
     {
         ThrowIfDisposed();
+        var additions = (rules ?? throw new ArgumentNullException(nameof(rules))).ToList();
+        if (_program != null && additions.Count > 0)
+            return new ValidationReport(new[] { "A prescriptive program cannot be mixed with legacy rules." });
         var composedRuleSets = _ruleSets.ToList();
         return ValidateRules(
-            ComposeRules(rules),
+            ComposeRules(additions),
             BuildAnchorLookup(composedRuleSets),
             BuildTolerancedZoneLookup(composedRuleSets),
             BuildFlowRegionLookup(composedRuleSets),
@@ -91,6 +136,8 @@ public sealed class RemediationSession : IDisposable
         {
             throw new ArgumentNullException(nameof(ruleSets));
         }
+        if (_program != null && ruleSets.Length > 0)
+            return new ValidationReport(new[] { "A prescriptive program cannot be mixed with legacy rule sets." });
 
         var composedRuleSets = _ruleSets.Concat(ruleSets).ToList();
         return ValidateRules(
@@ -105,6 +152,10 @@ public sealed class RemediationSession : IDisposable
     public RemediationReport DryRun()
     {
         ThrowIfDisposed();
+        if (_program != null)
+        {
+            return EvaluateProgram(apply: false);
+        }
         if (_ruleSets.Count > 0)
         {
             return Evaluate(ComposeRules(Array.Empty<Rule>()), apply: false);
@@ -122,6 +173,10 @@ public sealed class RemediationSession : IDisposable
         _predicateTraces = new List<RemediationPredicateTrace>();
         try
         {
+            if (_program != null)
+            {
+                return EvaluateProgram(apply: false);
+            }
             return Evaluate(ComposeRules(Array.Empty<Rule>()), apply: false);
         }
         finally
@@ -138,7 +193,14 @@ public sealed class RemediationSession : IDisposable
     public RemediationReport DryRun(IEnumerable<Rule> rules)
     {
         ThrowIfDisposed();
-        return Evaluate(ComposeRules(rules), apply: false);
+        var additions = (rules ?? throw new ArgumentNullException(nameof(rules))).ToList();
+        if (_program != null && additions.Count > 0)
+            throw new InvalidOperationException("A prescriptive program cannot be mixed with legacy rules.");
+        if (_program != null)
+        {
+            return EvaluateProgram(apply: false);
+        }
+        return Evaluate(ComposeRules(additions), apply: false);
     }
 
     /// <summary>Applies configured rule sets, accessibility setup, and diagnostics to the document.</summary>
@@ -148,6 +210,15 @@ public sealed class RemediationSession : IDisposable
         if (_committed)
         {
             throw new InvalidOperationException("Remediation session has already been committed.");
+        }
+        if (Configuration.RunMode == RemediationRunMode.Authoring)
+        {
+            throw new InvalidOperationException("Authoring remediation sessions are dry-run only and cannot commit.");
+        }
+
+        if (_program != null)
+        {
+            return CommitProgram();
         }
 
         if (_ruleSets.Count > 0)
@@ -166,7 +237,7 @@ public sealed class RemediationSession : IDisposable
             _document.ApplyAccessibilitySetup(
                 Configuration.Language,
                 Configuration.Title,
-                Configuration.Profile,
+                _effectiveProfile,
                 Configuration.StrictConformance);
             _document.ValidateAccessibilityAuthoringSnapshot();
         });
@@ -187,11 +258,22 @@ public sealed class RemediationSession : IDisposable
         {
             throw new InvalidOperationException("Remediation session has already been committed.");
         }
+        if (Configuration.RunMode == RemediationRunMode.Authoring)
+        {
+            throw new InvalidOperationException("Authoring remediation sessions are dry-run only and cannot commit.");
+        }
+        var additions = (rules ?? throw new ArgumentNullException(nameof(rules))).ToList();
+        if (_program != null && additions.Count > 0)
+            throw new InvalidOperationException("A prescriptive program cannot be mixed with legacy rules.");
+        if (_program != null)
+        {
+            return CommitProgram();
+        }
 
         RemediationReport report = null!;
         CommitDocumentChanges(() =>
         {
-            report = Evaluate(ComposeRules(rules), apply: true);
+            report = Evaluate(ComposeRules(additions), apply: true);
             var unsuppressed = report.Diagnostics.Where(d => !d.StartsWith("[SUPPRESSED]")).ToList();
             if (unsuppressed.Count > 0)
             {
@@ -207,7 +289,7 @@ public sealed class RemediationSession : IDisposable
             _document.ApplyAccessibilitySetup(
                 Configuration.Language,
                 Configuration.Title,
-                Configuration.Profile,
+                _effectiveProfile,
                 Configuration.StrictConformance);
             _document.ValidateAccessibilityAuthoringSnapshot();
         });
@@ -376,13 +458,17 @@ public sealed class RemediationSession : IDisposable
                 var actualShape = SemanticShape(actualTree);
                 if (!string.Equals(plannedShape, actualShape, StringComparison.Ordinal))
                 {
-                    var owner = _ruleSets.Single(x => x.StructuralTemplate != null);
-                    var difference = new RemediationTemplateDifference(
-                        RemediationTemplateDifferenceKind.MaterializationDivergence,
-                        DiagnosticCode.TemplateMaterializationDivergence,
-                        owner.Id, null, "Document", "Document", plannedShape, actualShape,
-                        Array.Empty<int>(), null, false);
-                    templateDifferences.Add(ReportTemplateDifference(difference, diagnostics));
+                    var owner = _ruleSets.FirstOrDefault(x =>
+                        ReferenceEquals(x.StructuralTemplate, structuralTemplate));
+                    if (owner != null)
+                    {
+                        var difference = new RemediationTemplateDifference(
+                            RemediationTemplateDifferenceKind.MaterializationDivergence,
+                            DiagnosticCode.TemplateMaterializationDivergence,
+                            owner.Id, null, "Document", "Document", plannedShape, actualShape,
+                            Array.Empty<int>(), null, false);
+                        templateDifferences.Add(ReportTemplateDifference(difference, diagnostics));
+                    }
                 }
                 var plannedKeys = templateDifferences.Select(TemplateDifferenceKey)
                     .ToHashSet(StringComparer.Ordinal);
@@ -765,6 +851,12 @@ public sealed class RemediationSession : IDisposable
                                 selected.Count(x => x.ProducedTag == structure.Tag),
                                 null, structure.Tag);
                             break;
+                        case SlotElementCountAssertion slot:
+                            AddCountOutcome(ruleSet.Id, slot.Id, page,
+                                slot.Expected,
+                                selected.Count(x => string.Equals(x.SlotId, slot.Slot.Path[1..], StringComparison.Ordinal)),
+                                null, null, slot.Slot);
+                            break;
                         case ParentChildShapeAssertion shape:
                             var parents = selected.Where(x => x.ProducedTag == shape.ParentTag).ToList();
                             if (parents.Count == 0)
@@ -792,15 +884,16 @@ public sealed class RemediationSession : IDisposable
         return outcomes;
 
         void AddCountOutcome(string ruleSetId, string id, int? page, AssertionCount expected,
-            int observed, string? ruleId, string? tag) =>
+            int observed, string? ruleId, string? tag, SlotRef? slot = null) =>
             AddOutcome(ruleSetId, id, page, expected.Description, observed.ToString(),
-                expected.Accepts(observed), ruleId, tag);
+                expected.Accepts(observed), ruleId, tag, slot);
 
         void AddOutcome(string ruleSetId, string id, int? page, string expected,
-            string observed, bool passed, string? ruleId, string? tag)
+            string observed, bool passed, string? ruleId, string? tag, SlotRef? slot = null)
         {
             outcomes.Add(new RemediationAssertionOutcome(
-                ruleSetId, id, page, expected, observed, passed, ruleId, tag));
+                ruleSetId, id, page, expected, observed, passed, ruleId, tag)
+                { ProgramSlot = slot });
             if (!passed)
             {
                 var location = page is { } p ? $" on page {p + 1}" : string.Empty;
@@ -1987,7 +2080,12 @@ public sealed class RemediationSession : IDisposable
 
     /// <summary>Declared page furniture merged across every composed rule set.</summary>
     private IReadOnlyList<RemediationArtifactInventoryItem> ArtifactInventory =>
-        _artifactInventory ??= _ruleSets.SelectMany(x => x.Artifacts).ToList();
+        _artifactInventory ??= _program != null
+            ? _program.Program.Artifacts.Select(x => new RemediationArtifactInventoryItem(
+                x.Id, x.Subtype, x.Pages, occurrence: x.Occurrence,
+                semanticSubtype: x.SemanticSubtype, includeBoundingBox: x.IncludeBoundingBox,
+                attached: x.Attached) { RuleSetId = _program.Program.Id }).ToList()
+            : _ruleSets.SelectMany(x => x.Artifacts).ToList();
 
     private IReadOnlyList<RemediationArtifactInventoryItem>? _artifactInventory;
 
@@ -2253,8 +2351,10 @@ public sealed class RemediationSession : IDisposable
         List<string> diagnostics,
         List<RemediationAutoArtifactOutcome> autoArtifacts,
         List<RemediationUnaccountedContent> unaccountedContent,
-        bool isCommit)
+        bool isCommit,
+        TextNormalizationOptions? normalization = null)
     {
+        var textNormalization = normalization ?? TextNormalizationOptions.Default;
         var leftovers = EnumerateItems(pageState.WorkingContent)
             .OfType<TextContent<double>>()
             .Where(x => x.SourceReference is { })
@@ -2277,17 +2377,8 @@ public sealed class RemediationSession : IDisposable
             return;
         }
 
-        if (IsPrescriptiveTemplate())
-        {
-            ReportDiagnostic(
-                DiagnosticCode.PrescriptiveUnaccountedContent,
-                $"Page{pageState.PageIndex + 1}",
-                $"Prescriptive template left painting content on page {pageState.PageIndex + 1} without a slot or declared artifact inventory item.",
-                diagnostics);
-            return;
-        }
-
-        if (Configuration.LeftoverPolicy is RemediationLeftoverPolicy.Flag or RemediationLeftoverPolicy.FailFast)
+        var prescriptive = IsPrescriptiveTemplate();
+        if (prescriptive || Configuration.LeftoverPolicy is RemediationLeftoverPolicy.Flag or RemediationLeftoverPolicy.FailFast)
         {
             foreach (var (item, span) in leftovers)
             {
@@ -2295,30 +2386,38 @@ public sealed class RemediationSession : IDisposable
                 var text = localStart >= 0 && localStart + span.CharacterCount <= item.Text.Length
                     ? item.Text.Substring(localStart, span.CharacterCount)
                     : item.Text;
-                var candidate = RemediationCandidate.CreateExactRange(
-                    pageState.StructuredText.GetCandidates(Granularity.Paragraph)
+                var templateCandidate = pageState.StructuredText.GetCandidates(Granularity.Paragraph)
                         .FirstOrDefault(x => x.SourceReferences.Contains(span.SourceReference)) ??
                     pageState.StructuredText.GetCandidates(Granularity.Line)
-                        .First(x => x.SourceReferences.Contains(span.SourceReference)),
-                    new RemediationTextRange(
+                        .FirstOrDefault(x => x.SourceReferences.Contains(span.SourceReference));
+                var range = new RemediationTextRange(
                         span.SourceReference,
                         span.StartCharacterIndex,
                         span.CharacterCount,
-                        text),
-                    pageState.StructuredText.Characters
+                        text);
+                var characters = pageState.StructuredText.Characters
                         .Where(x => x.SourceReference == span.SourceReference &&
                                     x.SourceCharacterIndex >= span.StartCharacterIndex &&
                                     x.SourceCharacterIndex < span.EndCharacterIndex)
-                        .ToArray());
+                        .ToArray();
+                var candidate = templateCandidate == null
+                    ? null
+                    : RemediationCandidate.CreateExactRange(templateCandidate, range, characters);
+                var bounds = candidate?.BoundingBox ?? item.GetBoundingBox();
+                var relativeBounds = candidate?.RelativeBoundingBox ??
+                    new StructuredPageSpace(pageState.Page).Normalize(bounds);
+                var candidateId = candidate?.CandidateId ??
+                    $"RawText:{pageState.PageIndex}:{span.SourceReference.StreamId}:" +
+                    $"{span.SourceReference.OperatorStart}:{span.StartCharacterIndex}:{span.CharacterCount}";
                 unaccountedContent.Add(new RemediationUnaccountedContent(
                     pageState.PageIndex,
                     RemediationCandidateKind.Text,
-                    candidate.CandidateId,
+                    candidateId,
                     span.SourceReference,
-                    candidate.BoundingBox,
-                    candidate.RelativeBoundingBox,
+                    bounds,
+                    relativeBounds,
                     text,
-                    TextNormalizationOptions.Default.Normalize(text)));
+                    textNormalization.Normalize(text)));
             }
 
             foreach (var item in graphicalLeftovers)
@@ -2342,9 +2441,11 @@ public sealed class RemediationSession : IDisposable
                 .OrderBy(x => x.Key)
                 .Select(x => $"{x.Key}={x.Count()}");
             ReportDiagnostic(
-                DiagnosticCode.UntaggedContent,
+                prescriptive ? DiagnosticCode.PrescriptiveUnaccountedContent : DiagnosticCode.UntaggedContent,
                 $"Page{pageState.PageIndex + 1}",
-                $"Page {pageState.PageIndex + 1} has unclaimed painting content: " +
+                (prescriptive
+                    ? $"Prescriptive template left painting content on page {pageState.PageIndex + 1} without a slot or declared artifact inventory item: "
+                    : $"Page {pageState.PageIndex + 1} has unclaimed painting content: ") +
                 string.Join(", ", typeCounts) + ".",
                 diagnostics);
             return;
@@ -3441,7 +3542,7 @@ public sealed class RemediationSession : IDisposable
         RemediationClaim claim,
         List<string> diagnostics)
     {
-        if (claim.Action is not (TagRemediationAction or ArtifactRemediationAction))
+        if (claim.Action is not (TagRemediationAction or ArtifactRemediationAction or BindTemplateSlotRemediationAction))
         {
             return;
         }
@@ -3750,6 +3851,7 @@ public sealed class RemediationSession : IDisposable
     }
 
     private bool IsPrescriptiveTemplate() =>
+        _program != null ||
         _ruleSets.Select(x => x.StructuralTemplate).FirstOrDefault(x => x != null)?.Mode ==
         RemediationStructuralTemplateMode.Prescriptive;
 
@@ -3772,7 +3874,8 @@ public sealed class RemediationSession : IDisposable
             .ToDictionary(x => x.Key, x => x.First());
         var plan = PrescriptiveTemplateAssemblyPlan.Build(template, source, claimsById);
         var synthetic = new Dictionary<string, RemediationClaim>(StringComparer.Ordinal);
-        var templateOwnerId = _ruleSets.Single(x => x.StructuralTemplate != null).Id;
+        var templateOwnerId = _ruleSets.FirstOrDefault(x =>
+            ReferenceEquals(x.StructuralTemplate, template))?.Id ?? string.Empty;
 
         RemediationClaim? Build(PrescriptiveTemplateAssemblyNode occurrence)
         {
@@ -3818,12 +3921,13 @@ public sealed class RemediationSession : IDisposable
     private void ApplyPrescriptiveTemplateAssembly(
         PrescriptiveTemplateAssemblyPlan plan,
         IReadOnlyList<PageRemediationState> pageStates,
-        List<string> diagnostics)
+        List<string> diagnostics,
+        IReadOnlyList<RemediationClaim>? executionClaims = null)
     {
-        var claims = pageStates
+        var claims = (executionClaims ?? pageStates
             .SelectMany(x => x.GetClaimSnapshot(Stage.Classify)
                 .Concat(x.GetClaimSnapshot(Stage.Group))
-                .Concat(x.GetClaimSnapshot(Stage.Refine)))
+                .Concat(x.GetClaimSnapshot(Stage.Refine))))
             .Where(x => x.Status == ClaimStatus.Applied)
             .DistinctBy(x => x.ClaimId)
             .ToArray();
@@ -3859,6 +3963,11 @@ public sealed class RemediationSession : IDisposable
         }
 
         var documentRoot = Structure.GetRoot();
+        var documentProperties = plan.Document.Template?.Properties ?? plan.Document.ProgramTemplate?.Properties;
+        documentRoot.Language = documentProperties?.Language ?? documentRoot.Language;
+        documentRoot.Alt = documentProperties?.AlternateText ?? documentRoot.Alt;
+        documentRoot.ActualText = documentProperties?.ActualText ?? documentRoot.ActualText;
+        documentRoot.Expansion = documentProperties?.Expansion ?? documentRoot.Expansion;
         IndexExisting(documentRoot);
         if (HasUnsuppressedDiagnostics(diagnostics)) return;
 
@@ -3869,19 +3978,22 @@ public sealed class RemediationSession : IDisposable
             var ordered = new List<StructureNode>();
             foreach (var occurrence in planned)
             {
-                if (occurrence.Template == null) continue;
+                if (occurrence.Template == null && occurrence.ProgramTemplate == null) continue;
+                var occurrenceTag = occurrence.Template?.Tag ?? occurrence.ProgramTemplate!.Tag;
+                var occurrenceProperties = occurrence.Template?.Properties ?? occurrence.ProgramTemplate!.Properties;
+                var occurrenceSlotId = occurrence.Template?.Id ?? occurrence.SlotReference?.Path[1..];
 
                 RemediationClaim? claim = null;
                 if (occurrence.ClaimId is { } claimId) claimsById.TryGetValue(claimId, out claim);
                 if (claim == null) claimsById.TryGetValue(new ClaimId(occurrence.Identity), out claim);
-                if (claim == null && syntheticBySlot.TryGetValue(occurrence.Template.Id!, out var queue) && queue.Count > 0)
+                if (claim == null && syntheticBySlot.TryGetValue(occurrenceSlotId!, out var queue) && queue.Count > 0)
                 {
                     claim = queue.Dequeue();
                 }
 
                 var bindings = claim?.AppliedBindings.Where(x =>
                         x.StructureNode != null &&
-                        string.Equals(x.ProducedTag, occurrence.Template.Tag, StringComparison.Ordinal))
+                        string.Equals(x.ProducedTag, occurrenceTag, StringComparison.Ordinal))
                     .ToArray() ?? Array.Empty<RemediationAppliedBinding>();
                 if (bindings.Length > 1)
                 {
@@ -3896,9 +4008,9 @@ public sealed class RemediationSession : IDisposable
                 }
                 else if (occurrence.Source == null)
                 {
-                    node = Structure.AddElement(occurrence.Template.Tag).GetNode();
+                    node = Structure.AddElement(occurrenceTag).GetNode();
                     claim?.AddAppliedBinding(new RemediationAppliedBinding(
-                        occurrence.Template.Tag,
+                        occurrenceTag,
                         Array.Empty<int>(),
                         node,
                         null,
@@ -3932,6 +4044,10 @@ public sealed class RemediationSession : IDisposable
                 }
                 node.ID = occurrence.Identity;
                 existingIds[occurrence.Identity] = node;
+                node.Language = occurrenceProperties.Language ?? node.Language;
+                node.Alt = occurrenceProperties.AlternateText ?? node.Alt;
+                node.ActualText = occurrenceProperties.ActualText ?? node.ActualText;
+                node.Expansion = occurrenceProperties.Expansion ?? node.Expansion;
                 if (!ReferenceEquals(node.Parent, parent)) Structure.ReparentStructureNode(node, parent);
 
                 if (!occurrence.OpaqueInterior)
@@ -5245,6 +5361,35 @@ public sealed class RemediationSession : IDisposable
         var suppression = NonSuppressibleDiagnosticCodes.Contains(code)
             ? null
             : _suppressions.FirstOrDefault(x => x.Code == code && (x.Scope == "*" || x.Scope == scope));
+
+        if (_programRuntimeDiagnostics != null)
+        {
+            if (suppression != null && !strict)
+            {
+                _programRuntimeDiagnostics.Add(new RemediationRuntimeDiagnostic(
+                    code,
+                    RemediationDiagnosticDisposition.Acknowledged,
+                    scope,
+                    message,
+                    Suppression: suppression));
+                diagnostics.Add($"[SUPPRESSED] {code}: {message} (Reason: {suppression.Reason})");
+                return;
+            }
+
+            _programRuntimeDiagnostics.Add(new RemediationRuntimeDiagnostic(
+                code,
+                Configuration.RunMode == RemediationRunMode.Authoring && ProgramWorkItemCodes.Contains(code)
+                    ? RemediationDiagnosticDisposition.WorkItem
+                    : RemediationDiagnosticDisposition.Error,
+                scope,
+                message,
+                Suppression: suppression));
+
+            if (suppression != null && strict)
+                diagnostics.Add($"[IGNORED-SUPPRESSION] {code}: {message}");
+            diagnostics.Add($"{code}: {message}");
+            return;
+        }
         
         if (suppression != null && !strict)
         {

@@ -14,6 +14,12 @@ public readonly record struct PredicateResult(
     PredicateTraceNode? Trace = null,
     bool UsesDefaultConfidence = false)
 {
+    /// <summary>Program binding that requested this predicate evaluation, when available.</summary>
+    public string? BindingId { get; init; }
+
+    /// <summary>Canonical program slot associated with this predicate evaluation, when available.</summary>
+    public SlotRef? ProgramSlot { get; init; }
+
     /// <summary>Creates a confidence-neutral matching predicate result.</summary>
     public static PredicateResult Match(PredicateTraceNode? trace = null) =>
         new(true, 1.0, null, trace, UsesDefaultConfidence: true);
@@ -132,11 +138,28 @@ public sealed class RemediationEvaluationContext
     internal IReadOnlyList<RemediationCandidate> DocumentCandidates { get; init; } =
         Array.Empty<RemediationCandidate>();
 
+    internal Action<RemediationRuntimeDiagnostic>? RuntimeDiagnosticSink { get; init; }
+    internal string? ProgramDiagnosticScope { get; init; }
+
+    internal RemediationCandidate? CurrentCandidate { get; init; }
+
+    internal IReadOnlyList<RemediationOccurrencePartition> OccurrencePartitions { get; init; } =
+        Array.Empty<RemediationOccurrencePartition>();
+
     internal RemediationEvaluationContext WithTextNormalization(TextNormalizationOptions normalization) =>
         new(this, normalization, TracePredicates);
 
     internal RemediationEvaluationContext WithPredicateTracing(bool enabled) =>
         new(this, TextNormalization, enabled);
+
+    internal RemediationEvaluationContext WithProgramOccurrence(
+        RemediationCandidate candidate,
+        IReadOnlyList<RemediationOccurrencePartition> partitions) =>
+        new(this, TextNormalization, TracePredicates)
+        {
+            CurrentCandidate = candidate,
+            OccurrencePartitions = partitions
+        };
 
     private RemediationEvaluationContext(
         RemediationEvaluationContext source,
@@ -162,7 +185,13 @@ public sealed class RemediationEvaluationContext
         FlowsArePreResolved = source.FlowsArePreResolved;
         DocumentFlows = source.DocumentFlows;
         DocumentCandidates = source.DocumentCandidates;
-        _anchorResolver = new Lazy<AnchorResolver>(() => source._anchorResolver.Value);
+        CurrentCandidate = source.CurrentCandidate;
+        OccurrencePartitions = source.OccurrencePartitions;
+        RuntimeDiagnosticSink = source.RuntimeDiagnosticSink;
+        ProgramDiagnosticScope = source.ProgramDiagnosticScope;
+        // Anchor resolution is context-sensitive for program occurrence selectors.
+        // A copied context must not reuse a resolver bound to the source candidate.
+        _anchorResolver = new Lazy<AnchorResolver>(() => new AnchorResolver(this, Diagnostics));
         _flowRegionResolver = new Lazy<FlowRegionResolver>(() => source._flowRegionResolver.Value);
     }
 
@@ -256,6 +285,18 @@ public sealed record RemediationClaim(
 
     /// <summary>Template slot bound by this claim, when one exists.</summary>
     public string? SlotId { get; init; }
+
+    /// <summary>Canonical program slot bound by this claim, when one exists.</summary>
+    public SlotRef? ProgramSlot { get; init; }
+
+    /// <summary>Program binding that produced this claim, when one exists.</summary>
+    public string? BindingId { get; init; }
+
+    /// <summary>Original local definition id for a mounted program binding.</summary>
+    public string? DefinitionId { get; init; }
+
+    /// <summary>Materialized occurrence assigned by the native partition plan.</summary>
+    public string? OccurrenceIdentity { get; internal set; }
 
     /// <summary>Sorted zero-based pages containing this claim or one of its consumed claims.</summary>
     public IReadOnlyList<int> PageIndexes
@@ -387,7 +428,14 @@ public sealed record RemediationAppliedBinding(
     MarkedContentGroup<double>? MarkedContentGroup,
     StructureNode? ParentStructureNode,
     IReadOnlyList<StructuredSourceRef> SourceReferences,
-    PdfRect<double>? Bounds);
+    PdfRect<double>? Bounds)
+{
+    /// <summary>Program binding that produced this applied binding, when available.</summary>
+    public string? BindingId { get; init; }
+
+    /// <summary>Canonical program slot associated with this applied binding, when available.</summary>
+    public SlotRef? ProgramSlot { get; init; }
+}
 
 /// <summary>
 /// Stable remediation claim identifier.

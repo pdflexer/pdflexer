@@ -31,6 +31,9 @@ public sealed class RemediationSessionConfiguration
 
     /// <summary>When true, writes rule identifiers into structure element titles for debugging.</summary>
     public bool DebugWrite { get; init; }
+
+    /// <summary>Controls whether the session is an authoring dry-run or an enforced production run.</summary>
+    public RemediationRunMode RunMode { get; init; } = RemediationRunMode.Enforced;
 }
 
 /// <summary>

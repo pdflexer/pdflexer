@@ -5,7 +5,7 @@ namespace PdfLexer.Remediation;
 /// </summary>
 public sealed class ValidationReport
 {
-    internal ValidationReport(IReadOnlyList<string>? errors = null, IReadOnlyList<string>? warnings = null)
+    public ValidationReport(IReadOnlyList<string>? errors = null, IReadOnlyList<string>? warnings = null)
     {
         Errors = errors ?? Array.Empty<string>();
         Warnings = warnings ?? Array.Empty<string>();

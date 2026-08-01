@@ -27,7 +27,9 @@ public sealed record RemediationStructuralTemplateNode
         string? id = null,
         RemediationStructuralOccurrence occurrence = RemediationStructuralOccurrence.ExactlyOne,
         PageSelector? pages = null,
-        bool? spansPages = null)
+        bool? spansPages = null,
+        RemediationNodeProperties? properties = null,
+        TemplateOrderPolicy orderPolicy = TemplateOrderPolicy.RequireSourceAgreement)
     {
         if (string.IsNullOrWhiteSpace(tag))
         {
@@ -39,6 +41,8 @@ public sealed record RemediationStructuralTemplateNode
         Occurrence = occurrence;
         Pages = pages;
         SpansPages = spansPages;
+        Properties = properties ?? new RemediationNodeProperties();
+        OrderPolicy = orderPolicy;
         Children = new ReadOnlyCollection<RemediationStructuralTemplateNode>(
             (children ?? Array.Empty<RemediationStructuralTemplateNode>()).ToList());
     }
@@ -49,6 +53,17 @@ public sealed record RemediationStructuralTemplateNode
     public IReadOnlyList<RemediationStructuralTemplateNode> Children { get; }
     public PageSelector? Pages { get; }
     public bool? SpansPages { get; }
+    public RemediationNodeProperties Properties { get; }
+    public TemplateOrderPolicy OrderPolicy { get; }
+
+    /// <summary>Canonical program slot carried while the preview program uses the legacy materializer.</summary>
+    public SlotRef? ProgramSlot { get; init; }
+
+    /// <summary>Local declaration name used when rendering occurrence identity.</summary>
+    public string? IdentitySegment { get; init; }
+
+    /// <summary>Program binding associated with this template node, when available.</summary>
+    public string? BindingId { get; init; }
 }
 
 /// <summary>A document-scoped, closed description of the complete produced structure tree.</summary>
@@ -82,6 +97,12 @@ public sealed record RemediationStructuralTemplate
     public RemediationStructuralTemplateNode Document { get; }
 
     public RemediationStructuralTemplateMode Mode { get; }
+
+    /// <summary>Optional stable identity copied from a compiled prescriptive template.</summary>
+    public string? Id { get; init; }
+
+    /// <summary>Optional template version copied from a compiled prescriptive template.</summary>
+    public string? Version { get; init; }
 }
 
 /// <summary>Kind of structural-template mismatch.</summary>
@@ -113,7 +134,15 @@ public sealed record RemediationTemplateDifference(
     string? ActualValue,
     IReadOnlyList<int> PageIndexes,
     string? RuleId,
-    bool Suppressed);
+    bool Suppressed)
+{
+    /// <summary>Program binding associated with this template difference, when available.</summary>
+    public string? BindingId { get; init; }
+
+    /// <summary>Canonical program slot associated with this template difference.</summary>
+    public SlotRef? ProgramSlot { get; init; }
+
+}
 
 /// <summary>A deterministic occurrence in a prescriptive structural-template assembly plan.</summary>
 public sealed record RemediationTemplateAssemblyItem(
@@ -126,4 +155,10 @@ public sealed record RemediationTemplateAssemblyItem(
     string? ProducingClaimReference,
     IReadOnlyList<string> ConsumedClaimReferences,
     bool Synthesized,
-    bool OpaqueInterior);
+    bool OpaqueInterior)
+{
+    public SlotRef? ProgramSlot { get; init; }
+
+    /// <summary>Program binding that produced this occurrence, when available.</summary>
+    public string? BindingId { get; init; }
+}

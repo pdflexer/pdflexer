@@ -10,6 +10,7 @@ namespace PdfLexer.Remediation;
 /// </summary>
 public abstract record RemediationAnchor
 {
+    public const double DefaultNeighborTolerance = 24;
     /// <summary>Stable anchor identifier.</summary>
     public abstract string Id { get; init; }
 
@@ -23,7 +24,7 @@ public abstract record RemediationAnchor
     public string? NeighborText { get; init; }
 
     /// <summary>Maximum distance for matching <see cref="NeighborText"/>.</summary>
-    public double NeighborTolerance { get; init; } = 24;
+    public double NeighborTolerance { get; init; } = DefaultNeighborTolerance;
 
     internal TextNormalizationOptions TextNormalization { get; init; } = TextNormalizationOptions.Default;
 
